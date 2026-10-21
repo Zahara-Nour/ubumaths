@@ -2,6 +2,82 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.43.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.42.0...v0.43.0) (2026-10-21)
+
+### ✨ Features
+
+- **arbre:** lot 2 bis, resserrer les nombres tirés — 39 modèles modifiés et tagués ([3cf2c68](https://github.com/Zahara-Nour/ubumaths/commit/3cf2c68d0e7c7b4a710c6831973f5515d01a00b7))
+- **arbre:** lot B — retirer des variations hors point (7 modèles) + tags ([cef75a9](https://github.com/Zahara-Nour/ubumaths/commit/cef75a9cdb33fe9065e7452b6f60936981c11621))
+- **arbre:** tags du lot 2 bis — 306 modèles du CP à la 3e tagués, 91 déplacés (R2) ([2cdf5ea](https://github.com/Zahara-Nour/ubumaths/commit/2cdf5eafff19018e4d634b9e4e3aaca1def07555))
+- **mathast:** durées juxtaposées lues comme une somme marquée (2[h] 30[min]) ([2ef5546](https://github.com/Zahara-Nour/ubumaths/commit/2ef5546761c9ccbdd9237dffe7bbf17a2bb608db))
+- **mathast:** l'unité multiplie tout le terme, espaces entre chiffres, π constante ([2f67c48](https://github.com/Zahara-Nour/ubumaths/commit/2f67c48cd4fd847b9efbc2dffbe1f43b8ef1a0ef))
+- **mathast:** parseur maison, virgule toujours séparatrice et « ; » refusé (lecture-grandeurs PR 6) ([726ba5c](https://github.com/Zahara-Nour/ubumaths/commit/726ba5c4f15d87faea4704f0f68969bf0f50eb8c))
+- **mathast:** température multipliée opaque, -20[°C] signée, refus traduits ([5ae23ed](https://github.com/Zahara-Nour/ubumaths/commit/5ae23ed529629c9219c9ceeb6a58dbb4895b3727))
+- **tidy:** deux termes le positif devant, signe sorti d'un facteur à tout degré ([3013bbd](https://github.com/Zahara-Nour/ubumaths/commit/3013bbdc8e67c5c9b8f1492c72ab5eca51c0bef9))
+- **tidy:** les termes simples avant ceux qui contiennent une somme ([1abc3f0](https://github.com/Zahara-Nour/ubumaths/commit/1abc3f043733fe33255269d9174dc4b58d860b13))
+- **tidy:** produit sans dénominateur réduit, signe passé au-delà du degré 1 ([17138c2](https://github.com/Zahara-Nour/ubumaths/commit/17138c2a47af7eaad8a6d8fbd6cfae6f9638ab5a))
+- **tidy:** rendre irréductible une fraction de sommes ([96bd94e](https://github.com/Zahara-Nour/ubumaths/commit/96bd94ebdb542cd1aaff981b9cf80be57929e97b))
+
+### 🐛 Bug Fixes
+
+- **arbre:** lot A — corrigé de dd7db98e pour les fractions ajoutées ([c6b11d2](https://github.com/Zahara-Nour/ubumaths/commit/c6b11d2d64d0b028ba2aca2fd5bdcd0e6674d257))
+- **arbre:** lot A — verrou dans la garde, garde md5 du rollback ([424b9c5](https://github.com/Zahara-Nour/ubumaths/commit/424b9c5db4e9e7eab3ee42baf0eb2a8ebb26676d))
+- **arbre:** rollback du lot 2 bis strict — un chemin d'origine introuvable fait échouer ([59c0c4d](https://github.com/Zahara-Nour/ubumaths/commit/59c0c4dbefe1df9818a0746e9ab866b481172dc5))
+- **atelier:** texte rangé relu avec l'ancienne virgule décimale, contenus réécrits au point ([2407c93](https://github.com/Zahara-Nour/ubumaths/commit/2407c935507c11e896afc17a46c13300d9eaec9d))
+- **eval:** pi nu aussi dans le bon choix d'un QCM, suites de la revue ([6a1a4bc](https://github.com/Zahara-Nour/ubumaths/commit/6a1a4bcbf3dbc39074a6c16c63e58b08c4aa60ac))
+- **geometrie:** chaînes du DSL lues avec l'ancienne virgule décimale, refus traduits ([1af2092](https://github.com/Zahara-Nour/ubumaths/commit/1af20928686ab6b0a18c5d91edc559bda14a336a))
+- **mathast:** durées juxtaposées, correctifs de la revue (parenthèses, couleurs, aides) ([ecea413](https://github.com/Zahara-Nour/ubumaths/commit/ecea413a154ed164196e5544a44e0c4bdac685c9))
+- **mathast:** les recopies d'arbre gardent la marque juxtaposée, tests et garde ([24e8f8d](https://github.com/Zahara-Nour/ubumaths/commit/24e8f8defdea7b7dd4a0ecd23dc137a05f79934b))
+- **mathast:** revue PR 4 — grandeur du panneau, signe d'une grandeur, -(20[°C]) ([13cc110](https://github.com/Zahara-Nour/ubumaths/commit/13cc1107926f65f123d1a641fedae5d5b4d55abb))
+- **scripts:** réponses attendues {{a}},{{c}} au point, copies de la base alignées ([016c278](https://github.com/Zahara-Nour/ubumaths/commit/016c2785b46df9ca1c72fcf0c93079d537d6d0b7))
+- **tidy:** réduire la fraction sur le terme accumulé ([4fd94d6](https://github.com/Zahara-Nour/ubumaths/commit/4fd94d6bdc602587ce93dc754fe0a7e171b9fc57))
+- **tidy:** regrouper les fractions avant d'y faire entrer le signe ([5290de1](https://github.com/Zahara-Nour/ubumaths/commit/5290de1c6377cfe676b656cb9078fb7735cc09b9)), closes [#1559](https://github.com/Zahara-Nour/ubumaths/issues/1559)
+- **tidy:** un signe qui rencontrerait un facteur reste devant, réduction gardée ([3b18ab4](https://github.com/Zahara-Nour/ubumaths/commit/3b18ab4887a9e8266c41b413b0f0820b39e299f2))
+
+### 📚 Documentation
+
+- durées juxtaposées dans la doc système et le journal du chantier ([c6ee2ce](https://github.com/Zahara-Nour/ubumaths/commit/c6ee2cec0b0452bfbd4a9e4eaa9efd8dc41f4547))
+- espaces entre chiffres partout, décisions de la revue PR 4 ([fed7e17](https://github.com/Zahara-Nour/ubumaths/commit/fed7e17549bb6c9bee00dd41d56816a1c43f9a07))
+- l'unité multiplie tout le terme (notation, grandeurs, tidy, mathAST) ([29e2f72](https://github.com/Zahara-Nour/ubumaths/commit/29e2f72e3b52455ceb02e66fe98ed9a23ab863f9))
+- **mathast:** commentaires pointés vers la phase 0 archivée de lecture-grandeurs ([dcdf713](https://github.com/Zahara-Nour/ubumaths/commit/dcdf7138e7f9c448191977fdd0b40ef0fd246b88))
+- **mathast:** fin du chantier lecture-grandeurs — ADR 0031, journal archivé ([dad7339](https://github.com/Zahara-Nour/ubumaths/commit/dad7339578515c1b8ad2c59d4ab39ccc3d61553b))
+- virgule et point-virgule du parseur maison, relecture des virgules rangées ([df42be1](https://github.com/Zahara-Nour/ubumaths/commit/df42be1a4d13cde2f79b38fd0e55e9515b565c9c))
+- **wip:** arbre des notions — audit de sécurité du lot A sans bloquant ([ce8d2f1](https://github.com/Zahara-Nour/ubumaths/commit/ce8d2f183894774ab46099686af618bdd7bfa694))
+- **wip:** arbre des notions — bloc « Reprendre ici » ([4779f47](https://github.com/Zahara-Nour/ubumaths/commit/4779f47abd9a5f6fd2387679a96a235f545bbc05))
+- **wip:** arbre des notions — instantané de la prod du lot 2 bis versionné ([da6d639](https://github.com/Zahara-Nour/ubumaths/commit/da6d6393f771a2e47b1eb45c6a7be79c37a5f8ae))
+- **wip:** arbre des notions — journal : bornes validées, verdicts des modèles ([0784230](https://github.com/Zahara-Nour/ubumaths/commit/07842300bf4070bd3485987f3f2a8e70d837074a))
+- **wip:** arbre des notions — lot B en prod ([#1566](https://github.com/Zahara-Nour/ubumaths/issues/1566)) ([05f2313](https://github.com/Zahara-Nour/ubumaths/commit/05f2313e09161a40880ee6773f53d282bd4998e6))
+- **wip:** arbre des notions — lot B généré et testé ([2c7bebe](https://github.com/Zahara-Nour/ubumaths/commit/2c7bebe3f189041ae9d5cfc2b339a91ee9f27e7e))
+- **wip:** arbre des notions — médiane d'effectif pair, bornes comprises (c4-3) ([c215d6e](https://github.com/Zahara-Nour/ubumaths/commit/c215d6e294e4d776ea777eec7bc1b0d78afbff2b))
+- **wip:** arbre des notions — niveaux validés, liste des modifications du lot 2 bis ([df908a0](https://github.com/Zahara-Nour/ubumaths/commit/df908a0deb437791e01f1e06ca195b980d67ee15))
+- **wip:** arbre des notions — questions des modèles en version courte, dossier replié ([5cb9808](https://github.com/Zahara-Nour/ubumaths/commit/5cb98083fb8cd4f0f9a09333bc9c3577ba5ed073))
+- **wip:** arbre des notions — relevé : décimales groupées lues, division à trou CM2 à modifier ([a2349c7](https://github.com/Zahara-Nour/ubumaths/commit/a2349c7085e67739e5a6391a11abad7f36c32264))
+- **wip:** arbre des notions — relevé : espaces insécables échappées dans l'expression régulière ([b6b217c](https://github.com/Zahara-Nour/ubumaths/commit/b6b217cf8a3f990059d73f4b71655bc329a9672c))
+- **wip:** arbre des notions — relevés des 573 modèles suivis dans git ([ec4105a](https://github.com/Zahara-Nour/ubumaths/commit/ec4105addd717f841164c5e095cb1a861d73005a))
+- **wip:** arbre des notions — réponses de David appliquées aux verdicts des modèles ([1eaa206](https://github.com/Zahara-Nour/ubumaths/commit/1eaa2065640f3c0ee2422e4b1f7642c61899f773))
+- **wip:** arbre des notions — réponses de David aux questions des modèles ([bb7fda5](https://github.com/Zahara-Nour/ubumaths/commit/bb7fda5da0a1c85306566cb13b3453a41b47cd8f))
+- **wip:** arbre des notions — reprendre ici après [#1563](https://github.com/Zahara-Nour/ubumaths/issues/1563) (tags du lot 2 bis en prod) ([f474cf5](https://github.com/Zahara-Nour/ubumaths/commit/f474cf55770fc5e4295add95b43f5d2f8acd3b4d))
+- **wip:** arbre des notions — reprendre ici après [#1564](https://github.com/Zahara-Nour/ubumaths/issues/1564) (lot A en prod) ([b57cf97](https://github.com/Zahara-Nour/ubumaths/commit/b57cf970a58c38c0bc113d194c19df4891a288e4))
+- **wip:** arbre des notions — reprendre ici après [#1566](https://github.com/Zahara-Nour/ubumaths/issues/1566) (lot B mergé) ([cf63cc9](https://github.com/Zahara-Nour/ubumaths/commit/cf63cc92af4794c3400bac7f7e29d6e33031e1f0))
+- **wip:** arbre des notions — reprendre ici, lot A en revue ([cedad4d](https://github.com/Zahara-Nour/ubumaths/commit/cedad4d2b23185d21ca256217ce49a16f1fab232))
+- **wip:** arbre des notions — retire une ligne de reprise périmée ([ab9f653](https://github.com/Zahara-Nour/ubumaths/commit/ab9f653dcd452e940d7a1914a28824318c27d6df))
+- **wip:** lecture-grandeurs — décisions 16 et 17 (atelier 2 m 30 cm, angles ′ ″) ([7da8328](https://github.com/Zahara-Nour/ubumaths/commit/7da83282d1477f9b266f70b7678e0053a4904f04))
+- **wip:** lecture-grandeurs — inventaire PR 4, π constante, pi reste p × i ([9f8e9d2](https://github.com/Zahara-Nour/ubumaths/commit/9f8e9d29ff852fe523cb80d1a605ec11f95294e8))
+- **wip:** lecture-grandeurs — limites laissées après [#1565](https://github.com/Zahara-Nour/ubumaths/issues/1565) ([159a538](https://github.com/Zahara-Nour/ubumaths/commit/159a538b413d42b9441852aade74b3571c51d3e8))
+- **wip:** lecture-grandeurs — PR 5 démarrée, inventaire des juxtapositions ([c858e20](https://github.com/Zahara-Nour/ubumaths/commit/c858e20b1249b2b7e9bcd6ba69b35a8c6ee51e30))
+- **wip:** lecture-grandeurs — reprendre ici après [#1560](https://github.com/Zahara-Nour/ubumaths/issues/1560) ([edfa11c](https://github.com/Zahara-Nour/ubumaths/commit/edfa11ca7fae2e79e84e4199cb6648174bc559db))
+- **wip:** lecture-grandeurs — reprendre ici après [#1561](https://github.com/Zahara-Nour/ubumaths/issues/1561) ([52bdda3](https://github.com/Zahara-Nour/ubumaths/commit/52bdda3c61c7fa76ea2f74547118d171c3fbe48a))
+- **wip:** lecture-grandeurs — reprendre ici après [#1562](https://github.com/Zahara-Nour/ubumaths/issues/1562) ([4d57f2d](https://github.com/Zahara-Nour/ubumaths/commit/4d57f2dc37025cb4ee792fc890dcbc10f3649769))
+- **wip:** lecture-grandeurs — reprendre ici après [#1565](https://github.com/Zahara-Nour/ubumaths/issues/1565) ([4aea94f](https://github.com/Zahara-Nour/ubumaths/commit/4aea94ff67be2ce7c80b781d54693057ddb7b6e3))
+- **wip:** lecture-grandeurs — reprendre ici, PR 4 [#1560](https://github.com/Zahara-Nour/ubumaths/issues/1560) ouverte ([aeded38](https://github.com/Zahara-Nour/ubumaths/commit/aeded384e60f33228dbe3f23b8c70c61a12ffebd))
+- **wip:** lecture-grandeurs PR 6, inventaire de prod et réécriture avant deploy ([734a86b](https://github.com/Zahara-Nour/ubumaths/commit/734a86b821d7522f40d29ccc7737c032daa88865))
+- **wip:** mathoux-v1 — en prod depuis la v0.42.0 ([34b13ec](https://github.com/Zahara-Nour/ubumaths/commit/34b13ecefc8ab3d795d17be0eba8a1f57dd91777))
+- **wip:** tidy — reprendre ici après [#1559](https://github.com/Zahara-Nour/ubumaths/issues/1559) ([f593fe0](https://github.com/Zahara-Nour/ubumaths/commit/f593fe06090bdd9e267282f6ecadce8ec8adb202))
+- **wip:** tidy — reprendre ici pendant la 2e revue ([365bbaa](https://github.com/Zahara-Nour/ubumaths/commit/365bbaaa2ac0107a3870c72f5ea3d0a0990f0a56))
+- **wip:** tidy — reprendre ici, deux décisions à implémenter ([55f9181](https://github.com/Zahara-Nour/ubumaths/commit/55f9181f9a1e03183dd49c6ab104e91a0e4b4bc2))
+- **wip:** tidy — reprendre ici, règle d'ordre en attente ([f576b51](https://github.com/Zahara-Nour/ubumaths/commit/f576b516676b948a82cc32cf511dc2371f358254))
+- **wip:** virgule décimale réécrite en prod avant le deploy de [#1565](https://github.com/Zahara-Nour/ubumaths/issues/1565) ([eb126a8](https://github.com/Zahara-Nour/ubumaths/commit/eb126a828761990188b8302623e6d8103b4e03bf))
+
 ## [0.42.0](https://github.com/Zahara-Nour/ubumaths/compare/v0.41.0...v0.42.0) (2026-10-20)
 
 ### ✨ Features
