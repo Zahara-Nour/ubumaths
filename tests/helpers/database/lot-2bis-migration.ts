@@ -33,6 +33,8 @@ interface Contenu {
 	variations: unknown[];
 	shared: unknown;
 	test_specs: unknown[] | null;
+	/** Seulement pour un lot qui change aussi `options` (lot C : QCM à ne pas mélanger). */
+	options?: unknown;
 }
 
 interface Modele {
@@ -88,6 +90,12 @@ async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Pro
 	for (const m of modeles) {
 		const node = parChemin.get(m.noeud.join(' > '));
 		if (!node) throw new Error(`chemin introuvable : ${m.noeud.join(' > ')}`);
+		if ('options' in m.avant) {
+			await pg.query('update public.question_templates set options = $2 where id = $1', [
+				m.id,
+				m.avant.options === null ? null : JSON.stringify(m.avant.options)
+			]);
+		}
 		await pg.query(
 			`update public.question_templates
 			    set classification_node_id = $2, grades = $3, title = $4, description = $5,
@@ -110,9 +118,9 @@ async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Pro
 	);
 }
 
-async function lireEtat(pg: Client, ids: string[]): Promise<Etat> {
+async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promise<Etat> {
 	const q = await pg.query<Contenu & { id: string; updated_at: Date }>(
-		`select id, title, description, variations, shared, test_specs, updated_at
+		`select id, title, description, variations, shared, test_specs, options, updated_at
 		   from public.question_templates where id = any($1::uuid[])`,
 		[ids]
 	);
@@ -130,7 +138,8 @@ async function lireEtat(pg: Client, ids: string[]): Promise<Etat> {
 					description: r.description,
 					variations: r.variations,
 					shared: r.shared,
-					test_specs: r.test_specs
+					test_specs: r.test_specs,
+					...(avecOptions ? { options: r.options } : {})
 				}
 			])
 		),
@@ -165,6 +174,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 	const { modeles }: { modeles: Modele[] } = JSON.parse(readFileSync(lot.fixture, 'utf-8'));
 	const ids = modeles.map((m) => m.id);
 	const n = lot.taille;
+	const avecOptions = modeles.some((m) => 'options' in m.avant);
 
 	describe(`Lot 2 bis, ${lot.nom} (migration de données)`, () => {
 		let pg: Client;
@@ -179,11 +189,11 @@ export function decrireLotModifier(lot: LotModifier): void {
 
 			await pg.query('begin');
 			await poserEtatProd(pg, prof.id, modeles);
-			pose = await lireEtat(pg, ids);
+			pose = await lireEtat(pg, ids, avecOptions);
 			await pg.query(readFileSync(lot.migration, 'utf-8'));
-			apres = await lireEtat(pg, ids);
+			apres = await lireEtat(pg, ids, avecOptions);
 			await pg.query(extractRollback(lot.migration));
-			annule = await lireEtat(pg, ids);
+			annule = await lireEtat(pg, ids, avecOptions);
 		}, 60_000);
 
 		afterAll(async () => {
@@ -262,6 +272,22 @@ export function decrireLotModifier(lot: LotModifier): void {
 				/modèles modifiés depuis le relevé : 1/
 			);
 		});
+
+		it.runIf(avecOptions)(
+			'des options modifiées depuis le relevé font échouer la migration',
+			async () => {
+				await echoue(
+					() =>
+						pg.query(
+							`update public.question_templates
+							    set options = coalesce(options, '{}'::jsonb) || '{"delay": 99}'::jsonb
+							  where id = $1`,
+							[ids[0]]
+						),
+					/modèles modifiés depuis le relevé : 1/
+				);
+			}
+		);
 
 		it('un modèle déplacé ou reclassé depuis le relevé fait échouer la migration', async () => {
 			await echoue(
