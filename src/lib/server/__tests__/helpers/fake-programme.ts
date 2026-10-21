@@ -1,10 +1,10 @@
 /**
  * Décor commun des tests qui lisent l'arbre du programme (génération neuve).
  *
- * Une branche « Nombres » > notion « Fractions » > sous-notion « Addition », et
- * une branche « Géométrie » > notion « Triangles ». Points de 5e : deux actifs,
- * un archivé ; un point de 4e ; un ANCIEN point (rattaché à un objectif, sans
- * nœud ni niveau).
+ * Une branche « Nombres » > notions « Fractions » (> sous-notion « Addition »)
+ * et « Décimaux », et une branche « Géométrie » > notion « Triangles ». Points
+ * de 5e : trois actifs, un archivé ; un point de 4e ; un ANCIEN point (rattaché
+ * à un objectif, sans nœud ni niveau).
  *
  * `answerProgramme` répond aux requêtes de `getProgrammeTree` en appliquant les
  * filtres demandés (niveau, nœud non nul, archivés exclus) : un test vérifie
@@ -21,6 +21,7 @@ export const NODES = [
 	{ id: 'b-nombres', kind: 'branch', parent_id: null, name: 'Nombres', position: 0 },
 	{ id: 'b-geo', kind: 'branch', parent_id: null, name: 'Géométrie', position: 1 },
 	{ id: 'n-fractions', kind: 'notion', parent_id: 'b-nombres', name: 'Fractions', position: 0 },
+	{ id: 'n-decimaux', kind: 'notion', parent_id: 'b-nombres', name: 'Décimaux', position: 1 },
 	{ id: 'n-triangles', kind: 'notion', parent_id: 'b-geo', name: 'Triangles', position: 0 },
 	{ id: 's-addition', kind: 'subnotion', parent_id: 'n-fractions', name: 'Addition', position: 0 }
 ].map((n) => ({ ...n, archived_at: null, created_at: '', updated_at: '' }));
@@ -30,6 +31,7 @@ export const P_ADDITION = 'aaaaaaaa-0000-4000-8000-000000000002';
 export const P_TRIANGLE_ARCHIVE = 'aaaaaaaa-0000-4000-8000-000000000003';
 export const P_QUATRIEME = 'aaaaaaaa-0000-4000-8000-000000000004';
 export const P_ANCIEN = 'aaaaaaaa-0000-4000-8000-000000000005';
+export const P_DECIMAL = 'aaaaaaaa-0000-4000-8000-000000000006';
 
 function row(
 	id: string,
@@ -53,6 +55,7 @@ function row(
 export const POINTS = [
 	row(P_FRACTION, '5-010', '5', 'n-fractions'),
 	row(P_ADDITION, '5-011', '5', 's-addition'),
+	row(P_DECIMAL, '5-015', '5', 'n-decimaux'),
 	row(P_TRIANGLE_ARCHIVE, '5-020', '5', 'n-triangles', true),
 	row(P_QUATRIEME, '4-010', '4', 'n-fractions'),
 	row(P_ANCIEN, '0-001', null, null)

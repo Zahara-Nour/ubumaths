@@ -610,77 +610,85 @@
 	/>
 
 	<!-- Points de programme (tagging → couverture auto dans le cahier de texte) -->
-	{#if data.curriculumByGrade.length > 0}
-		<Card.Root class="mt-6">
-			<Card.Header>
-				<Card.Title class="flex items-center gap-2">
-					<ListTodo class="h-5 w-5 text-primary" />
-					Points de programme
-				</Card.Title>
-				<Card.Description>
-					Tague les points du programme couverts par cette {lore.learning.exercise}. Quand elle est
-					référencée dans une entrée de cahier de texte, ces points sont cochés automatiquement.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content class="space-y-4">
-				{#each data.curriculumByGrade as { grade, tree } (grade)}
-					{#if data.curriculumByGrade.length > 1}
-						<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
-					{/if}
-					<div class="space-y-1">
-						{#each tree as branch (branch.id)}
-							{@const branchKey = `${grade}:${branch.id}`}
-							<div class="rounded-md border">
-								<button
-									class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
-									onclick={() => (openTagBranches[branchKey] = !openTagBranches[branchKey])}
-								>
-									{#if openTagBranches[branchKey]}
-										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-									{:else}
-										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-									{/if}
-									{branch.name}
-								</button>
+	<Card.Root class="mt-6">
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<ListTodo class="h-5 w-5 text-primary" />
+				Points de programme
+			</Card.Title>
+			<Card.Description>
+				Tague les points du programme couverts par cette {lore.learning.exercise}. Quand elle est
+				référencée dans une entrée de cahier de texte, ces points sont cochés automatiquement.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			{#if data.exerciseUnranked}
+				<p class="text-sm text-muted-foreground">
+					Cette {lore.learning.exercise} n’est rangée dans aucune notion : aucun point du programme ne
+					peut lui être associé.
+				</p>
+			{:else if data.curriculumByGrade.length === 0}
+				<p class="text-sm text-muted-foreground">
+					Aucun point du programme de ses niveaux sur les notions où elle est rangée.
+				</p>
+			{/if}
+			{#each data.curriculumByGrade as { grade, tree } (grade)}
+				{#if data.curriculumByGrade.length > 1}
+					<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
+				{/if}
+				<div class="space-y-1">
+					{#each tree as branch (branch.id)}
+						{@const branchKey = `${grade}:${branch.id}`}
+						<div class="rounded-md border">
+							<button
+								class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
+								onclick={() => (openTagBranches[branchKey] = !openTagBranches[branchKey])}
+							>
 								{#if openTagBranches[branchKey]}
-									<div class="space-y-1 border-t p-2 pl-4">
-										{#each branch.notions as notion (notion.id)}
-											{@const notionKey = `${grade}:${notion.id}`}
-											<div>
-												<button
-													class="flex w-full items-center gap-2 py-1 text-left text-sm"
-													onclick={() => (openTagNotions[notionKey] = !openTagNotions[notionKey])}
-												>
-													{#if openTagNotions[notionKey]}
-														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-													{:else}
-														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-													{/if}
-													<span class="font-medium">{notion.name}</span>
-												</button>
-												{#if openTagNotions[notionKey]}
-													<div class="space-y-1 py-1 pl-6">
-														{#each notion.points as point (point.id)}
-															<MyCheckbox
-																checked={isTagged(point.id)}
-																onchange={() => toggleTag(point.id)}
-															>
-																<ProgrammePointLabel {point} />
-															</MyCheckbox>
-														{/each}
-													</div>
-												{/if}
-											</div>
-										{/each}
-									</div>
+									<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+								{:else}
+									<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 								{/if}
-							</div>
-						{/each}
-					</div>
-				{/each}
-			</Card.Content>
-		</Card.Root>
-	{/if}
+								{branch.name}
+							</button>
+							{#if openTagBranches[branchKey]}
+								<div class="space-y-1 border-t p-2 pl-4">
+									{#each branch.notions as notion (notion.id)}
+										{@const notionKey = `${grade}:${notion.id}`}
+										<div>
+											<button
+												class="flex w-full items-center gap-2 py-1 text-left text-sm"
+												onclick={() => (openTagNotions[notionKey] = !openTagNotions[notionKey])}
+											>
+												{#if openTagNotions[notionKey]}
+													<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+												{:else}
+													<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+												{/if}
+												<span class="font-medium">{notion.name}</span>
+											</button>
+											{#if openTagNotions[notionKey]}
+												<div class="space-y-1 py-1 pl-6">
+													{#each notion.points as point (point.id)}
+														<MyCheckbox
+															checked={isTagged(point.id)}
+															onchange={() => toggleTag(point.id)}
+														>
+															<ProgrammePointLabel {point} />
+														</MyCheckbox>
+													{/each}
+												</div>
+											{/if}
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			{/each}
+		</Card.Content>
+	</Card.Root>
 </div>
 
 <!-- JSON Debug Dialog -->

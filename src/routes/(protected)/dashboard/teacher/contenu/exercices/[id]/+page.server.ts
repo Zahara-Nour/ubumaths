@@ -1,8 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getExercise } from '$lib/server/exercises';
-import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
-import type { ProgrammeBranch } from '$lib/utils/programme-tree';
+import { getProgrammeTreeKeeping, loadNodesWithAncestors } from '$lib/server/programme-tree';
+import { filterTreePoints, taggableNodeIds, type ProgrammeBranch } from '$lib/utils/programme-tree';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger(
@@ -52,19 +52,40 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	}
 	const taggedPointIds = (tagRows ?? []).map((r) => r.point_id);
 
-	// Arbre du programme de chaque niveau de l'exercice ; un archivé déjà tagué
-	// reste visible pour pouvoir le retirer.
+	// Rangement de l'exercice : la base n'accepte que les points posés sur l'un
+	// de ses nœuds ou sur leur notion (règle 1) ; non rangé, il n'en reçoit aucun.
+	const { data: placementRows, error: placementError } = await locals.supabase
+		.from('exercise_classifications')
+		.select('node_id')
+		.eq('exercise_id', id);
+
+	if (placementError) {
+		logger.error('Lecture impossible :', placementError);
+		throw error(500, 'Impossible de charger les données');
+	}
+	const placementIds = (placementRows ?? []).map((r) => r.node_id);
+	const exerciseUnranked = placementIds.length === 0;
+
+	// Arbre du programme de chaque niveau de l'exercice, réduit aux points qu'il
+	// peut prendre ; un archivé déjà tagué reste visible pour pouvoir le retirer.
 	const grades = (result.data.grades ?? []) as string[];
 	const curriculumByGrade: { grade: string; tree: ProgrammeBranch[] }[] = [];
-	for (const g of grades) {
-		const tree = await getProgrammeTreeKeeping(locals.supabase, g, taggedPointIds);
-		if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
+	if (!exerciseUnranked) {
+		const nodes = await loadNodesWithAncestors(locals.supabase, placementIds);
+		const allowed = taggableNodeIds(nodes.filter((n) => placementIds.includes(n.id)));
+		const tagged = new Set(taggedPointIds);
+		for (const g of grades) {
+			const full = await getProgrammeTreeKeeping(locals.supabase, g, taggedPointIds);
+			const tree = filterTreePoints(full, (p) => allowed.has(p.node_id) || tagged.has(p.id));
+			if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
+		}
 	}
 
 	return {
 		exercise: result.data,
 		assignmentCount,
 		curriculumByGrade,
+		exerciseUnranked,
 		taggedPointIds
 	};
 };

@@ -74,7 +74,7 @@ describe('avancement — arbre branche > notion > points (C5, B2)', () => {
 		const result = await loadWith('5', []);
 
 		expect(result.tree.map((b) => b.name)).toEqual(['Nombres']);
-		expect(result.tree[0].notions.map((n) => n.name)).toEqual(['Fractions']);
+		expect(result.tree[0].notions.map((n) => n.name)).toEqual(['Fractions', 'Décimaux']);
 		const points = result.tree[0].notions[0].points;
 		expect(points.map((p) => p.id)).toEqual([P_FRACTION, P_ADDITION]);
 		expect(points[1].subnotionName).toBe('Addition');

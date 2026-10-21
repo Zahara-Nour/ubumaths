@@ -98,6 +98,16 @@ async function cleanupCurriculum() {
 		.eq('grade', TEST_GRADE);
 	// Points NEUFS puis nœuds (les modèles sont déjà partis : leur rangement et leurs tags aussi).
 	if (createdNodeIds.length > 0) {
+		// Tags et rangements d'exercices d'abord : ils tiennent les points et les nœuds.
+		const { data: testPoints } = await service
+			.from('curriculum_points')
+			.select('id')
+			.in('node_id', createdNodeIds);
+		const testPointIds = (testPoints ?? []).map((p) => p.id);
+		if (testPointIds.length > 0) {
+			await service.from('exercise_curriculum_points').delete().in('point_id', testPointIds);
+		}
+		await service.from('exercise_classifications').delete().in('node_id', createdNodeIds);
 		await service.from('curriculum_points').delete().in('node_id', createdNodeIds);
 		// Enfants d'abord : parent_id est en RESTRICT.
 		for (const kind of ['notion', 'branch']) {
@@ -211,9 +221,35 @@ async function setup(): Promise<Ctx> {
 }
 
 /** Create an exercise owned by `teacherId`, tagged with the given points. */
-async function makeTaggedExercise(teacherId: string, pointIds: string[]): Promise<string> {
+/**
+ * Un exercice tagué avec ces points. La base n'accepte un point neuf que sur un
+ * exercice rangé sur son nœud (règle 1) : l'exercice est donc rangé sur le nœud
+ * de chaque point neuf, et sur `rangeOn` en plus.
+ */
+async function makeTaggedExercise(
+	teacherId: string,
+	pointIds: string[],
+	rangeOn: string[] = []
+): Promise<string> {
 	const exercise = await TestData.exercise(teacherId).create();
 	const exId = (exercise as { id: string }).id;
+	const { data: points, error: pErr } =
+		pointIds.length > 0
+			? await service.from('curriculum_points').select('node_id').in('id', pointIds)
+			: { data: [], error: null };
+	if (pErr) throw new Error(`points de l'exercice : ${pErr.message}`);
+	const nodeIds = [
+		...new Set([
+			...rangeOn,
+			...(points ?? []).map((p) => p.node_id).filter((id): id is string => id !== null)
+		])
+	];
+	if (nodeIds.length > 0) {
+		const { error } = await service
+			.from('exercise_classifications')
+			.insert(nodeIds.map((node_id, position) => ({ exercise_id: exId, node_id, position })));
+		if (error) throw new Error(`rangement de l'exercice : ${error.message}`);
+	}
 	if (pointIds.length > 0) {
 		const { error } = await service
 			.from('exercise_curriculum_points' as never)
@@ -376,8 +412,9 @@ describe('Exercise tagging', () => {
 	it('tags an exercise with a point (201) and is idempotent', async () => {
 		expect.assertions(2);
 		const ctx = await setup();
-		const point = await svcNewPoint(await makeNotion(), 'P');
-		const exId = (await TestData.exercise(ctx.teacher.id).create()) as { id: string };
+		const notion = await makeNotion();
+		const point = await svcNewPoint(notion, 'P');
+		const exId = { id: await makeTaggedExercise(ctx.teacher.id, [], [notion]) };
 
 		const r1 = await tagsPOST({
 			request: req({ exercise_id: exId.id, point_id: point }),
