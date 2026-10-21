@@ -5,21 +5,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1570 (lot D mergé, migration PAS encore appliquée en prod)._
+_Mis à jour le 2026-10-21, après #1572 (lot D en prod)._
 
-- **État** : C5 étape 2 bis, MODIFIER : lots A (39), B (7), C (16) en prod ; lot D (3 scissions addition /
-  soustraction de fractions, 5e) mergé (#1570) : migration `20261021150000_lot_2bis_scissions`, 3 modèles neufs
-  (UUID fixés) tagués 5-123, origines taguées 5-026. Outillage : `generer(…, scissions=…)`.
-- **Prochaine action** : `db:migrate` depuis le dépôt principal dès que la question d'accès est tranchée → vérifier en
-  prod 3 origines + 3 neufs + 6 tags (la migration passe SANS RIEN FAIRE si les origines manquent).
-- **Décisions de David (2026-10-21)** : origine = addition, neuf = soustraction ; titres « Additionner / Soustraire
-  des fractions » ; 71ee6212 garde une seule soustraction ; f92d63a6 accepte le non simplifié (`off`).
-- **En attente de David** : question d'accès du lot D (« personne ne lit rien de neuf » selon l'audit).
-  Signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
-- **Pièges en cours** : PL/pgSQL refuse `if x <> case … end` (→ `least`) ; les commentaires DANS le bloc
-  ROLLBACK s'écrivent `-- -- ` ; relever la prod juste avant de générer ; `question:specs --file` veut le
-  format de l'app (camelCase, sans colonnes de base) ; supprimer un modèle emporte cartes SRS et journal.
-- **Worktree / branche** : aucun (worktree de #1570 supprimé).
+- **État** : C5 étape 2 bis, MODIFIER **terminé** : lots A (39), B (7), C (16), D (3 scissions) en prod. Lot D :
+  3 origines « Additionner des fractions » (5-026) + 3 neufs « Soustraire des fractions » (5-123) aux niveaux
+  8, 9, 10 de « Fractions › Calculer › Addition et Soustraction ». Seul reste du § 4 : c9d6c5db (sorti du lot C),
+  qui attend une règle de correction NON décidée.
+- **Prochaine action** : demander à David la suite du chantier (C5 : liens → bascule → suppression).
+- **En attente de David** : la suite ; signalé : 11 modèles sans aucun corrigé (tables, 2d8e7948, acf15102).
+- **Pièges en cours** : un modèle neuf publié ne peut pas copier la catégorie (thème, domaine, sous-domaine,
+  niveau) de son origine (`idx_question_templates_unique_category`) ; le décor de test doit poser statut et
+  catégorie de la prod ; commentaires DANS le bloc ROLLBACK en `-- -- ` ; relever la prod juste avant de générer.
+- **Worktree / branche** : aucun.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1149,3 +1146,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   « oui » à la question d'accès, garde le sous-titre de 716d5c68. Revues : code-reviewer et security-auditor sans
   bloquant. Vérifié en prod : variations 3/1/2/4/1/1/2, specs et tags attendus (CP-026, 5-045 ×3, 4-007, 4-024 ×2),
   variable `c` retirée de b1550840, `updated_at` avancé.
+- **2026-10-21 — Lot D en prod (#1570 puis #1572).** Premier `db:migrate` en échec SANS effet (transaction annulée) :
+  les neufs copiaient la catégorie de leur origine, interdit entre modèles publiés ; le test posait les origines en
+  brouillon, catégorie bidon, d'où le trou. Correctif : niveaux 8, 9, 10 (tranché par David), garde « catégories des
+  modèles neufs déjà prises », décor de test aligné sur la prod (rouge sur l'ancienne migration avec l'erreur de la
+  prod, 18/18 sur la nouvelle). security-auditor sans bloquant (0 série, session de test ni tentative ne vise ces
+  niveaux). Vérifié en prod : 3 origines (titres, sous-titres, 2/1/1 variations, `off` pour f92d63a6), 3 neufs
+  publiés aux niveaux 8-10, 6 tags (3 × 5-026, 3 × 5-123).
