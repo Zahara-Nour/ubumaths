@@ -13,9 +13,7 @@ _Mis à jour le 2026-10-21, après #1596 (étape 3, E mergée)._
 - **Prochaine action** : **étape 4** (destructive : tables thèmes / objectifs, anciens points et leurs 1 026 liens,
   8 fonctions SQL, tests d'intégration de l'ancien monde, copie `db:seed-riche`) — **arrêt** : expliquer à David ce
   qui sera perdu, grep des usages ; seulement APRÈS le `deploy:prod` qui livre l'étape 3.
-- **En attente de David** : `deploy:prod` de l'étape 3 ; F — garder `keepLinksOfGrade` (carte d'un autre niveau sans
-  point du niveau de la classe = colonne gardée) ou n'afficher que les points du niveau ? Signalés avant : 11
-  modèles sans corrigé ; c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement
+- **En attente de David** : `deploy:prod` de l'étape 3. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement
   des exercices (51).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
   d'intégration : tags d'exercice AVANT rangements ; MySelect et infobulles de l'analytique affichent le LaTeX brut ;
@@ -1257,3 +1255,7 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   **Q2** : les 1 026 liens de modèles vers les anciens points restent jusqu'à l'étape 4. Restent aussi jusque-là :
   tables, 8 fonctions SQL, tests d'intégration de l'ancien monde, copie par `db:seed-riche`. Accès : rien ne change,
   pas de migration.
+- **2026-10-21 — F : `keepLinksOfGrade` gardé** (David : « je te suis »). Une carte d'un autre niveau sans point du
+  niveau de la classe garde sa colonne (révision, remédiation : le travail reste visible) ; même règle que le cahier
+  de texte et le paquet « Programme ». Le cas ancien point du niveau + point neuf d'un autre niveau disparaît à
+  l'étape 4. Retouche possible, non demandée : marquer le niveau sous une colonne hors programme.
