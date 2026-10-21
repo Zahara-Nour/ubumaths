@@ -3,7 +3,7 @@
  * ====================================================
  *
  * Deux axes orthogonaux, volontairement distincts :
- *   · « Ce que je sais faire »        → arbre `curriculum_*` du niveau de l'élève
+ *   · « Ce que je sais faire »        → programme de son niveau, par branche > notion
  *   · « Ma façon de faire des maths » → les 6 compétences transversales du socle
  *
  * ⚠️ POURQUOI CE MODULE EXISTE
@@ -18,20 +18,23 @@
  *
  * Toute surface qui affiche une progression élève passe désormais par ici.
  *
- * Spec : docs/archive/wip/progression-eleve-progress.md
+ * Spec : docs/archive/wip/progression-eleve-progress.md ; bascule sur l'arbre
+ * des notions : docs/wip/arbre-notions-progress.md (C5, étape 3, PR D).
  */
 
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { computePointBadges, worstBadge, type CapacityBadge } from '$lib/server/srs/capacity-badge';
+import { getProgrammeTree } from '$lib/server/programme-tree';
 import {
-	objectiveLevel,
+	notionLevel,
 	isCompetenceObserved,
 	type MathCompetenceCode,
-	type MathCompetenceLevel,
-	type ObjectiveLevel
+	type MathCompetenceLevel
 } from '$lib/types/skills';
+import { isValidGradeCode } from '$lib/utils/grades';
 import { createServerLogger } from '$lib/utils/logger';
+import type { ProgrammePointView } from '$lib/utils/programme-tree';
 
 const logger = createServerLogger('server/progression/student-progression');
 
@@ -41,33 +44,27 @@ type SB = SupabaseClient<Database>;
 // Types
 // ============================================================================
 
-export interface ObjectiveSummary {
+export interface NotionSummary {
 	id: string;
 	name: string;
-	theme_id: string;
-	theme_name: string;
-	display_order: number;
-	/** true si l'objectif porte une échelle descriptive (points rangés 1-4). */
-	has_scale: boolean;
-	/** Rang max acquis. Toujours 0 quand `has_scale` est false. */
-	rang_max_acquired: ObjectiveLevel;
+	branch_id: string;
+	branch_name: string;
 	acquired_count: number;
+	/** Points actifs du niveau de l'élève sur cette notion, entraînables ou non (Q1). */
 	total_count: number;
 	has_remediation: boolean;
 	/** Pire badge FSRS parmi les points (priorité a_remedier > a_renforcer > ...). */
 	fsrs_badge: CapacityBadge;
 }
 
-export interface ThemeWithObjectives {
+export interface BranchWithNotions {
 	id: string;
 	name: string;
-	display_order: number;
-	objectives: ObjectiveSummary[];
+	notions: NotionSummary[];
 }
 
-export interface ObjectivesStats {
+export interface NotionsStats {
 	total: number;
-	mastery: number; // ✨
 	atteint: number; // 🟢
 	en_cours: number; // 🟠
 	non_commence: number; // ◯
@@ -75,16 +72,42 @@ export interface ObjectivesStats {
 	to_reinforce_count: number;
 }
 
-export interface ObjectivesProgression {
+export interface NotionsProgression {
 	/**
-	 * false quand le référentiel ne couvre pas le niveau de l'élève (ou qu'il
-	 * n'a pas de niveau). À distinguer d'un élève qui n'a simplement rien
-	 * commencé : l'UI doit dire « pas encore disponible », pas « 0 sur 0 ».
+	 * false quand l'élève n'a pas de niveau, ou que son niveau n'a aucun point
+	 * actif. À distinguer d'un élève qui n'a simplement rien commencé : l'UI doit
+	 * dire « pas encore disponible », pas « 0 sur 0 ».
 	 */
-	hasReferentiel: boolean;
+	hasProgramme: boolean;
 	grade: string | null;
-	themes: ThemeWithObjectives[];
-	stats: ObjectivesStats;
+	branches: BranchWithNotions[];
+	stats: NotionsStats;
+}
+
+/** Un point du programme vu par l'élève, sur la page d'une notion. */
+export interface NotionPointDetail {
+	id: string;
+	code: string;
+	name: string;
+	/** Sous-notion où le point est posé, `null` s'il est posé sur la notion. */
+	subnotionName: string | null;
+	kind: string;
+	/** Niveaux dont ce point figure dans la liste des « Automatismes ». */
+	automatisme_grades: string[];
+	/** Au moins un modèle de question tagué : l'élève peut s'y entraîner (Q1). */
+	trainable: boolean;
+	is_acquired: boolean;
+	needs_remediation: boolean;
+	badge: CapacityBadge;
+}
+
+export interface NotionDetail {
+	id: string;
+	name: string;
+	branch_name: string;
+	points: NotionPointDetail[];
+	acquired_count: number;
+	total_count: number;
 }
 
 export interface CompetenceSummary {
@@ -116,19 +139,8 @@ export interface CompetencesProgression {
 // Constantes
 // ============================================================================
 
-/**
- * Niveaux pour lesquels `curriculum_themes` est semé (état 2026-09-15).
- *
- * Sert uniquement à distinguer deux silences : « ce niveau n'a pas encore de
- * référentiel » (légitime) et « ce niveau en a un, mais la requête n'a rien
- * rendu » (suspect — RLS ou code de niveau décalé). N'ouvre aucun droit et ne
- * filtre rien : une valeur périmée ici ne fait que taire ou ajouter un log.
- */
-const COVERED_GRADES = new Set(['6', '2', '1_SPE']);
-
-const EMPTY_OBJECTIVE_STATS: ObjectivesStats = {
+const EMPTY_NOTION_STATS: NotionsStats = {
 	total: 0,
-	mastery: 0,
 	atteint: 0,
 	en_cours: 0,
 	non_commence: 0,
@@ -141,36 +153,22 @@ const EMPTY_OBJECTIVE_STATS: ObjectivesStats = {
 // ============================================================================
 
 /**
- * Compte les objectifs par niveau atteint.
+ * Compte les notions par niveau atteint.
  *
- * Le niveau vient de `objectiveLevel()` (`$lib/types/skills`), partagée avec
- * l'UI : c'est ce partage qui empêche la tuile et la page de diverger.
+ * Le niveau vient de `notionLevel()` (`$lib/types/skills`), partagée avec l'UI :
+ * c'est ce partage qui empêche la tuile et la page de diverger.
  */
-export function aggregateObjectiveStats(objectives: ObjectiveSummary[]): ObjectivesStats {
-	const stats: ObjectivesStats = { ...EMPTY_OBJECTIVE_STATS };
+export function aggregateNotionStats(notions: NotionSummary[]): NotionsStats {
+	const stats: NotionsStats = { ...EMPTY_NOTION_STATS };
 
-	for (const objective of objectives) {
+	for (const notion of notions) {
 		stats.total += 1;
+		stats[notionLevel(notion)] += 1;
 
-		switch (objectiveLevel(objective)) {
-			case 4:
-				stats.mastery += 1;
-				break;
-			case 3:
-				stats.atteint += 1;
-				break;
-			case 2:
-			case 1:
-				stats.en_cours += 1;
-				break;
-			default:
-				stats.non_commence += 1;
-		}
-
-		// La remédiation prime : un objectif à remédier n'est pas « à renforcer ».
-		if (objective.has_remediation || objective.fsrs_badge === 'a_remedier') {
+		// La remédiation prime : une notion à remédier n'est pas « à renforcer ».
+		if (notion.has_remediation || notion.fsrs_badge === 'a_remedier') {
 			stats.remediation_count += 1;
-		} else if (objective.fsrs_badge === 'a_renforcer') {
+		} else if (notion.fsrs_badge === 'a_renforcer') {
 			stats.to_reinforce_count += 1;
 		}
 	}
@@ -179,155 +177,192 @@ export function aggregateObjectiveStats(objectives: ObjectiveSummary[]): Objecti
 }
 
 // ============================================================================
-// Axe 1 — « Ce que je sais faire » (contenus du programme)
+// Axe 1 — « Ce que je sais faire » (programme, branche > notion > points)
 // ============================================================================
 
-/**
- * Charge l'arbre Thème → Objectif → Point du niveau de l'élève, croisé avec son
- * état d'acquisition et ses badges FSRS.
- *
- * @param grade `profiles.grade`. NULL → aucune requête, `hasReferentiel` false.
- */
-export async function getObjectivesProgression(
+type PointState = { is_acquired: boolean; needs_remediation: boolean };
+
+/** État d'acquisition de l'élève sur ces points (vue `student_point_state_v`). */
+async function loadPointStates(
 	supabase: SB,
 	studentId: string,
-	grade: string | null
-): Promise<ObjectivesProgression> {
-	// Pas de niveau renseigné → rien à montrer, et rien à demander à la base.
-	if (!grade) {
-		return { hasReferentiel: false, grade: null, themes: [], stats: { ...EMPTY_OBJECTIVE_STATS } };
-	}
+	pointIds: string[]
+): Promise<Map<string, PointState>> {
+	const stateByPoint = new Map<string, PointState>();
+	if (pointIds.length === 0) return stateByPoint;
 
-	const [themesResult, stateResult] = await Promise.all([
-		supabase
-			.from('curriculum_themes')
-			.select(
-				`
-				id,
-				name,
-				display_order,
-				curriculum_objectives (
-					id,
-					name,
-					display_order,
-					theme_id,
-					curriculum_points (
-						id,
-						rang,
-						archived_at
-					)
-				)
-			`
-			)
-			.eq('grade', grade)
-			.order('display_order', { ascending: true }),
-		supabase
-			.from('student_point_state_v')
-			.select('point_id, is_acquired, needs_remediation')
-			.eq('student_id', studentId)
-	]);
+	const { data, error } = await supabase
+		.from('student_point_state_v')
+		.select('point_id, is_acquired, needs_remediation')
+		.eq('student_id', studentId);
+	if (error) throw new Error(`Chargement de l'état impossible : ${error.message}`);
 
-	if (themesResult.error) {
-		throw new Error(`Chargement du référentiel impossible : ${themesResult.error.message}`);
-	}
-	if (stateResult.error) {
-		throw new Error(`Chargement de l'état impossible : ${stateResult.error.message}`);
-	}
-
-	const themesData = themesResult.data ?? [];
-
-	// Le référentiel ne couvre pas ce niveau (cas de 1_GEN et T_SPE en prod).
-	//
-	// ⚠️ Zéro ligne, c'est AUSSI ce que rend un refus RLS ou un `grade` décalé
-	// ('6e' au lieu de '6') — la RLS échoue en silence, elle ne lève pas. Sans
-	// cette trace, un durcissement de policy ferait lire « Il arrivera » aux 37
-	// élèves de 6ᵉ, et personne ne le saurait.
-	if (themesData.length === 0) {
-		if (COVERED_GRADES.has(grade)) {
-			logger.warn(
-				`[progression] aucun thème pour le niveau "${grade}", pourtant censé être couvert — RLS ou code de niveau décalé ?`
-			);
-		}
-		return { hasReferentiel: false, grade, themes: [], stats: { ...EMPTY_OBJECTIVE_STATS } };
-	}
-
-	const stateByPoint = new Map<string, { is_acquired: boolean; needs_remediation: boolean }>();
-	for (const row of stateResult.data ?? []) {
-		if (!row.point_id) continue;
+	const wanted = new Set(pointIds);
+	for (const row of data ?? []) {
+		if (!row.point_id || !wanted.has(row.point_id)) continue;
 		stateByPoint.set(row.point_id, {
 			is_acquired: row.is_acquired ?? false,
 			needs_remediation: row.needs_remediation ?? false
 		});
 	}
+	return stateByPoint;
+}
 
-	// Badges FSRS sur l'ensemble des points actifs, en un seul aller-retour.
-	const activePointIds: string[] = [];
-	for (const theme of themesData) {
-		for (const objective of theme.curriculum_objectives ?? []) {
-			for (const point of objective.curriculum_points ?? []) {
-				if (!point.archived_at) activePointIds.push(point.id);
-			}
-		}
+/** Résumé d'une notion à partir de ses points actifs. */
+function summarizeNotion(
+	notion: { id: string; name: string; points: ProgrammePointView[] },
+	branch: { id: string; name: string },
+	stateByPoint: Map<string, PointState>,
+	badges: Map<string, CapacityBadge>
+): NotionSummary {
+	let acquired_count = 0;
+	let has_remediation = false;
+	const notionBadges: CapacityBadge[] = [];
+
+	for (const point of notion.points) {
+		const state = stateByPoint.get(point.id);
+		if (state?.is_acquired) acquired_count += 1;
+		if (state?.needs_remediation) has_remediation = true;
+		const badge = badges.get(point.id);
+		if (badge) notionBadges.push(badge);
 	}
-	const badges = await computePointBadges(supabase, studentId, activePointIds);
 
-	const themes: ThemeWithObjectives[] = themesData.map((theme) => {
-		const objectives: ObjectiveSummary[] = (theme.curriculum_objectives ?? []).map((objective) => {
-			const points = (objective.curriculum_points ?? []).filter((p) => !p.archived_at);
-			// Un objectif « à échelle » est celui dont au moins un point porte un rang.
-			const has_scale = points.some((p) => p.rang !== null);
+	return {
+		id: notion.id,
+		name: notion.name,
+		branch_id: branch.id,
+		branch_name: branch.name,
+		acquired_count,
+		total_count: notion.points.length,
+		has_remediation,
+		fsrs_badge: worstBadge(notionBadges)
+	};
+}
 
-			let rang_max: ObjectiveLevel = 0;
-			let acquired_count = 0;
-			let has_remediation = false;
-			const objectiveBadges: CapacityBadge[] = [];
+/**
+ * Le programme du niveau de l'élève (points neufs actifs, rangés branche >
+ * notion), croisé avec son état d'acquisition et ses badges FSRS.
+ *
+ * Un point sans modèle tagué compte dans le total (Q1 de la PR D) : c'est le
+ * programme, pas seulement ce que l'appli sait entraîner.
+ *
+ * @param grade `profiles.grade`. NULL → aucune requête, `hasProgramme` false.
+ */
+export async function getNotionsProgression(
+	supabase: SB,
+	studentId: string,
+	grade: string | null
+): Promise<NotionsProgression> {
+	if (!grade) {
+		return { hasProgramme: false, grade: null, branches: [], stats: { ...EMPTY_NOTION_STATS } };
+	}
 
-			for (const point of points) {
-				const state = stateByPoint.get(point.id);
-				if (state?.is_acquired) {
-					acquired_count += 1;
-					const rang = point.rang;
-					if (rang !== null && rang >= 1 && rang <= 4 && rang > rang_max) {
-						rang_max = rang as ObjectiveLevel;
-					}
-				}
-				if (state?.needs_remediation) has_remediation = true;
-				const badge = badges.get(point.id);
-				if (badge) objectiveBadges.push(badge);
-			}
+	const tree = await getProgrammeTree(supabase, grade);
 
-			return {
-				id: objective.id,
-				name: objective.name,
-				theme_id: objective.theme_id,
-				theme_name: theme.name,
-				display_order: objective.display_order,
-				has_scale,
-				rang_max_acquired: has_scale ? rang_max : 0,
-				acquired_count,
-				total_count: points.length,
-				has_remediation,
-				fsrs_badge: worstBadge(objectiveBadges)
-			};
-		});
+	// ⚠️ Zéro point, c'est AUSSI ce que rend un refus RLS ou un `grade` décalé
+	// ('6e' au lieu de '6') — la RLS échoue en silence. Tous les niveaux valides
+	// ont un programme depuis le seed des points neufs : un niveau valide sans
+	// point est donc suspect, et le journal doit le dire.
+	if (tree.length === 0) {
+		if (isValidGradeCode(grade)) {
+			logger.warn(
+				`[progression] aucun point du programme pour le niveau "${grade}" — RLS ou code de niveau décalé ?`
+			);
+		}
+		return { hasProgramme: false, grade, branches: [], stats: { ...EMPTY_NOTION_STATS } };
+	}
 
-		objectives.sort((a, b) => a.display_order - b.display_order);
+	const pointIds = tree.flatMap((b) => b.notions.flatMap((n) => n.points.map((p) => p.id)));
+	const [stateByPoint, badges] = await Promise.all([
+		loadPointStates(supabase, studentId, pointIds),
+		computePointBadges(supabase, studentId, pointIds)
+	]);
 
+	const branches: BranchWithNotions[] = tree.map((branch) => ({
+		id: branch.id,
+		name: branch.name,
+		notions: branch.notions.map((notion) => summarizeNotion(notion, branch, stateByPoint, badges))
+	}));
+
+	return {
+		hasProgramme: true,
+		grade,
+		branches,
+		stats: aggregateNotionStats(branches.flatMap((b) => b.notions))
+	};
+}
+
+/**
+ * Une notion du programme de l'élève, point par point.
+ *
+ * `null` quand la notion n'a aucun point actif du niveau de l'élève (identifiant
+ * inconnu, autre niveau, ou élève sans niveau) : la page répond 404.
+ */
+export async function getNotionDetail(
+	supabase: SB,
+	studentId: string,
+	grade: string | null,
+	notionId: string
+): Promise<NotionDetail | null> {
+	if (!grade) return null;
+
+	const tree = await getProgrammeTree(supabase, grade);
+	let found: { branchName: string; notion: (typeof tree)[number]['notions'][number] } | null = null;
+	for (const branch of tree) {
+		const notion = branch.notions.find((n) => n.id === notionId);
+		if (notion) found = { branchName: branch.name, notion };
+	}
+	if (!found) return null;
+
+	const pointIds = found.notion.points.map((p) => p.id);
+	const [stateByPoint, badges, kindsResult, tagsResult, automatismesResult] = await Promise.all([
+		loadPointStates(supabase, studentId, pointIds),
+		computePointBadges(supabase, studentId, pointIds),
+		supabase.from('curriculum_points').select('id, kind').in('id', pointIds),
+		supabase.from('question_template_points').select('point_id').in('point_id', pointIds),
+		supabase
+			.from('curriculum_point_automatismes')
+			.select('point_id, grade')
+			.in('point_id', pointIds)
+	]);
+	if (kindsResult.error) throw new Error(`Points illisibles : ${kindsResult.error.message}`);
+	if (tagsResult.error) throw new Error(`Tags illisibles : ${tagsResult.error.message}`);
+	if (automatismesResult.error) {
+		throw new Error(`Automatismes illisibles : ${automatismesResult.error.message}`);
+	}
+
+	const kindById = new Map((kindsResult.data ?? []).map((p) => [p.id, p.kind]));
+	const trainable = new Set((tagsResult.data ?? []).map((t) => t.point_id));
+	const automatismeGrades = new Map<string, string[]>();
+	for (const row of automatismesResult.data ?? []) {
+		const list = automatismeGrades.get(row.point_id) ?? [];
+		list.push(row.grade);
+		automatismeGrades.set(row.point_id, list);
+	}
+
+	const points: NotionPointDetail[] = found.notion.points.map((p) => {
+		const state = stateByPoint.get(p.id);
 		return {
-			id: theme.id,
-			name: theme.name,
-			display_order: theme.display_order,
-			objectives
+			id: p.id,
+			code: p.code,
+			name: p.name,
+			subnotionName: p.subnotionName,
+			kind: kindById.get(p.id) ?? 'savoir_faire',
+			automatisme_grades: automatismeGrades.get(p.id) ?? [],
+			trainable: trainable.has(p.id),
+			is_acquired: state?.is_acquired ?? false,
+			needs_remediation: state?.needs_remediation ?? false,
+			badge: badges.get(p.id) ?? 'non_commencee'
 		};
 	});
 
-	const allObjectives = themes.flatMap((theme) => theme.objectives);
-
 	return {
-		hasReferentiel: true,
-		grade,
-		themes,
-		stats: aggregateObjectiveStats(allObjectives)
+		id: found.notion.id,
+		name: found.notion.name,
+		branch_name: found.branchName,
+		points,
+		acquired_count: points.filter((p) => p.is_acquired).length,
+		total_count: points.length
 	};
 }
 

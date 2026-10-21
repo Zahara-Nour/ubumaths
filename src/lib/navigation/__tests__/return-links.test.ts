@@ -3,6 +3,8 @@ import {
 	assignmentPreviewHref,
 	assignmentPreviewReturn,
 	automathsQuitLink,
+	notionHref,
+	notionReturn,
 	studentJournalHref,
 	studentJournalReturn,
 	studySessionHref,
@@ -10,6 +12,30 @@ import {
 } from '../return-links';
 
 const params = (query: string) => new URLSearchParams(query);
+
+describe('notion du programme (élève)', () => {
+	it('ouverte depuis « Ma progression » : retour à la progression', () => {
+		expect(notionHref('n1')).toBe('/dashboard/student/notions/n1');
+		expect(notionReturn(params(''))).toEqual({
+			href: '/dashboard/student/progression?onglet=objectifs',
+			label: 'Retour à ma progression'
+		});
+	});
+
+	it('ouverte depuis le deck « Programme » : retour au deck', () => {
+		expect(notionHref('n1', 'programme')).toBe('/dashboard/student/notions/n1?depuis=programme');
+		expect(notionReturn(params('depuis=programme'))).toEqual({
+			href: '/dashboard/revisions/decks/programme',
+			label: 'Retour au Programme'
+		});
+	});
+
+	it('origine inconnue : retour à la progression', () => {
+		expect(notionReturn(params('depuis=https://exemple.com')).href).toBe(
+			'/dashboard/student/progression?onglet=objectifs'
+		);
+	});
+});
 
 describe('journal d’un élève (prof)', () => {
 	it('ouvert depuis les classes : retour aux classes', () => {

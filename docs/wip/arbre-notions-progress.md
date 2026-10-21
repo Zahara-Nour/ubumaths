@@ -5,21 +5,19 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1583 (étape 3, B3 mergée)._
+_Mis à jour le 2026-10-21, PR D en cours (phase 0 validée)._
 
-- **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3 : point archivé refusé
-  à l'API, à la création de séance et à la couverture AUTO — qui écarte aussi les anciens points des tags
-  d'exercice ; Avancement : archivés hors « vus / total », ratio masqué si 0/0). Pas en prod (aucun `deploy:prod`
-  depuis B1).
-- **Prochaine action** : **D** (élève : progression, `COVERED_GRADES`, `/student/objectifs`) — phase 0 à faire
-  valider ; puis F, E, étape 4 (destructive : arrêt).
+- **État** : C5 étape 3. Faits : #1060, #1577 (B1), #1581 (B2), #1583 (B3). **D en cours** : « Ma progression »
+  élève sur branche > notion (`getNotionsProgression`, page `/dashboard/student/notions/[id]`, ancienne
+  `/objectifs/[id]` → redirection, tuile sans ✨, lien notion du deck avec `?depuis=programme`). Pas en prod.
+- **Prochaine action** : finir D (tests client, doc `couvre:`, revues code-reviewer + security-auditor, PR) ; puis
+  F, E, étape 4 (destructive : arrêt).
 - **En attente de David** : rien. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
-- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) → décors :
-  ranger l'exercice ; nettoyage : tags d'exercice AVANT rangements (sinon la garde laisse rangements et nœuds, et
-  `rangements-modeles-exercices` casse) ; un test sur points ANCIENS asserte l'ancien comportement ; PR en conflit
-  = pas de CI `pull_request` ; MySelect affiche le LaTeX en brut.
-- **Worktree / branche** : aucun (B3 nettoyé).
+- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
+  d'intégration : tags d'exercice AVANT rangements ; PR en conflit = pas de CI `pull_request` ; MySelect affiche le
+  LaTeX en brut.
+- **Worktree / branche** : `ubumaths-wt-arbre-notions` · `refactor/arbre-bascule-d`.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1210,3 +1208,14 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   `journal-pending-activities` retirait les rangements AVANT les tags : la garde de la règle 1 les refusait, la
   suppression des points emportait les tags en cascade, rangements et nœuds restaient. Tags d'abord ; 75/75 deux fois.
 - **2026-10-21 — #1583 mergée (B3).** CI verte au 2e essai (correctif du nettoyage d'intégration).
+- **2026-10-21 — Étape 3, PR D, phase 0 validée par David** (« je te suis », worktree `ubumaths-wt-arbre-notions`,
+  branche `refactor/arbre-bascule-d`). Prod mesurée : 0 point neuf avec rang (échelle ✨ sans objet) ; tous les
+  niveaux ont un programme (1_GEN 19 élèves et T_SPE 17 le voient enfin ; 3 élèves sans niveau) ; points tagués :
+  6e 26/111, 2de 27/201, 1_SPE 78/165, T_SPE 90/239, 1_GEN 0/44 ; `student_point_state` vide (trigger sur
+  `skill_attempts`, valable aussi pour les points neufs) ; 125 points de type `algorithme`. Décidé : « Ce que je
+  sais faire » par branche > notion (◯ / 🟠 / 🟢), page d'une notion `/dashboard/student/notions/[id]` (points du
+  niveau, ordre du BO, sous-notion nommée), ancienne `/objectifs/[id]` → 307 vers la progression ; archivés exclus ;
+  élève sans niveau : « Ton niveau n'est pas renseigné : demande à ton professeur. » ; `COVERED_GRADES` retiré
+  (alerte dès qu'un niveau valide ne rend aucun point) ; notion inconnue ou hors niveau → 404. **Q1** : les points
+  sans modèle tagué comptent, marqués « Pas encore d'entraînement ici ». **Q2** : nouvelle route `notions/[id]`.
+  **Q3** : ✨ maîtrisé retiré. Accès : rien ne change (arbre lisible par tous, état propre à l'élève).

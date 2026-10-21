@@ -46,9 +46,9 @@ import { getStudentWorkInbox } from '$lib/server/student-inbox';
 import type { StudentWorkInbox } from '$lib/types/student-inbox';
 import type { WeekConfig } from '$lib/utils/week-config';
 import {
-	getObjectivesProgression,
+	getNotionsProgression,
 	getCompetencesProgression,
-	type ObjectivesProgression,
+	type NotionsProgression,
 	type CompetencesProgression
 } from '$lib/server/progression/student-progression';
 import { createServerLogger } from '$lib/utils/logger';
@@ -181,7 +181,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	 * affichait le vrai décompte.
 	 */
 	let progression: {
-		objectives: ObjectivesProgression;
+		notions: NotionsProgression;
 		competences: CompetencesProgression;
 	} | null = null;
 
@@ -192,7 +192,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 			exercisesData,
 			achievementsData,
 			inbox,
-			objectivesProgression,
+			notionsProgression,
 			competencesProgression
 		] = await Promise.all([
 			// Get count of successfully solved riddles
@@ -256,8 +256,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 			// Ici, non : le tableau de bord porte aussi l'inbox, les exercices et les
 			// récompenses. Une VIEW renommée ou un timeout ne doit pas priver les 81
 			// élèves de leur page d'accueil pour une tuile de résumé.
-			getObjectivesProgression(supabase, profile.id, profile.grade).catch((err) => {
-				logger.error('[dashboard] progression objectifs indisponible :', err);
+			getNotionsProgression(supabase, profile.id, profile.grade).catch((err) => {
+				logger.error('[dashboard] progression notions indisponible :', err);
 				return null;
 			}),
 			getCompetencesProgression(supabase, profile.id).catch((err) => {
@@ -268,8 +268,8 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 		// Sans les DEUX axes, pas de tuile — plutôt qu'une tuile à moitié vraie.
 		progression =
-			objectivesProgression && competencesProgression
-				? { objectives: objectivesProgression, competences: competencesProgression }
+			notionsProgression && competencesProgression
+				? { notions: notionsProgression, competences: competencesProgression }
 				: null;
 
 		// Une lecture en échec compte 0 : la tuile « Énigmes » dit alors « Découvre les
