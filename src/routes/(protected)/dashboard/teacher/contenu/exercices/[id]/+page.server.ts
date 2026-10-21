@@ -10,6 +10,31 @@ const logger = createServerLogger(
 );
 
 /**
+ * Niveaux dont on montre les points : ceux de l'exercice, puis ceux de ses
+ * points déjà tagués (un niveau retiré de l'exercice garde ses tags, qu'il
+ * faut pouvoir retirer).
+ */
+async function gradesToShow(
+	supabase: App.Locals['supabase'],
+	exerciseGrades: string[],
+	taggedPointIds: string[]
+): Promise<string[]> {
+	if (taggedPointIds.length === 0) return exerciseGrades;
+	const { data, error: pointsError } = await supabase
+		.from('curriculum_points')
+		.select('id, grade')
+		.in('id', taggedPointIds);
+	if (pointsError) {
+		logger.error('Lecture impossible :', pointsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+	const extra = (data ?? [])
+		.map((p) => p.grade)
+		.filter((g): g is string => g !== null && !exerciseGrades.includes(g));
+	return [...exerciseGrades, ...[...new Set(extra)].sort()];
+}
+
+/**
  * Load exercise for editing and view assignments
  */
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
@@ -68,9 +93,13 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 
 	// Arbre du programme de chaque niveau de l'exercice, réduit aux points qu'il
 	// peut prendre ; un archivé déjà tagué reste visible pour pouvoir le retirer.
-	const grades = (result.data.grades ?? []) as string[];
 	const curriculumByGrade: { grade: string; tree: ProgrammeBranch[] }[] = [];
 	if (!exerciseUnranked) {
+		const grades = await gradesToShow(
+			locals.supabase,
+			(result.data.grades ?? []) as string[],
+			taggedPointIds
+		);
 		const nodes = await loadNodesWithAncestors(locals.supabase, placementIds);
 		const allowed = taggableNodeIds(nodes.filter((n) => placementIds.includes(n.id)));
 		const tagged = new Set(taggedPointIds);

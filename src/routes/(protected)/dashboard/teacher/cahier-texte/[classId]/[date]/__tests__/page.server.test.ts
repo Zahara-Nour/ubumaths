@@ -61,8 +61,11 @@ type CreateEvent = Parameters<(typeof actions)['create']>[0];
 // HELPERS
 // ============================================================================
 
-function fakeDb(grade: string | null, coveredPointIds: string[]) {
+function fakeDb(grade: string | null, coveredPointIds: string[], pointsUnreadable = false) {
 	return createFakeSupabase((table, calls) => {
+		if (pointsUnreadable && table === 'curriculum_points') {
+			return { data: null, error: { message: 'panne' } };
+		}
 		const programme = answerProgramme(table, calls);
 		if (programme) return programme;
 		switch (table) {
@@ -162,5 +165,25 @@ describe('création d’une séance — points cochés avant enregistrement (Q2)
 			.find((c) => c.method === 'insert');
 		const rows = insert?.args[0] as { point_id: string }[];
 		expect(rows.map((r) => r.point_id)).toEqual([P_FRACTION]);
+	});
+
+	it('lecture des points en panne : séance créée, avertie, aucun point écrit', async () => {
+		const fake = fakeDb('5', [], true);
+		const formData = new FormData();
+		formData.set('coveredPointIds', P_FRACTION);
+		const event = {
+			locals: { supabase: fake.client, user: { id: USER_ID } },
+			params: { classId: CLASS_ID, date: DATE },
+			request: { formData: async () => formData }
+		} as unknown as CreateEvent;
+
+		const result = (await actions.create(event)) as { success?: boolean; warning?: string };
+
+		expect(result.success).toBe(true);
+		expect(result.warning).toMatch(/points du programme/);
+		const inserts = fake
+			.on('journal_entry_points')
+			.filter((q) => q.calls.some((c) => c.method === 'insert'));
+		expect(inserts).toHaveLength(0);
 	});
 });

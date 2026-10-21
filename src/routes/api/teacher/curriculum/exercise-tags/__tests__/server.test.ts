@@ -31,8 +31,11 @@ const URL_BASE = 'http://localhost/api/teacher/curriculum/exercise-tags';
 // HELPERS
 // ============================================================================
 
-function fakeDb(deleted: unknown[] = []) {
+function fakeDb(deleted: unknown[] = [], pointsUnreadable = false) {
 	return createFakeSupabase((table, calls) => {
+		if (pointsUnreadable && table === 'curriculum_points') {
+			return { data: null, error: { message: 'panne' } };
+		}
 		const programme = answerProgramme(table, calls);
 		if (programme) return programme;
 		if (table === 'exercise_curriculum_points') {
@@ -43,8 +46,8 @@ function fakeDb(deleted: unknown[] = []) {
 	});
 }
 
-async function post(pointId: string) {
-	const fake = fakeDb();
+async function post(pointId: string, pointsUnreadable = false) {
+	const fake = fakeDb([], pointsUnreadable);
 	const request = new Request(URL_BASE, {
 		method: 'POST',
 		body: JSON.stringify({ exercise_id: OWNER_ID, point_id: pointId })
@@ -87,6 +90,12 @@ describe('POST exercise-tags', () => {
 	it('point introuvable : 400, rien d’écrit', async () => {
 		const { response, fake } = await post(INCONNU);
 		expect(response.status).toBe(400);
+		expect(inserts(fake)).toHaveLength(0);
+	});
+
+	it('point illisible (panne) : 500 propre, rien d’écrit', async () => {
+		const { response, fake } = await post(P_FRACTION, true);
+		expect(response.status).toBe(500);
 		expect(inserts(fake)).toHaveLength(0);
 	});
 });

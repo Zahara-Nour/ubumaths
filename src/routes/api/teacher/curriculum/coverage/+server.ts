@@ -63,7 +63,13 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	// Q2 (C5, B2) : seuls les points neufs se cochent ; un ancien point n'est plus proposé.
-	const generation = await readPointGeneration(locals.supabase, parsed.data.point_id);
+	let generation: Awaited<ReturnType<typeof readPointGeneration>>;
+	try {
+		generation = await readPointGeneration(locals.supabase, parsed.data.point_id);
+	} catch (e) {
+		logger.error('[curriculum] coverage POST point read failed:', e);
+		return json({ error: 'Erreur serveur' }, { status: 500 });
+	}
 	if (generation === 'introuvable') {
 		return json({ error: 'Référence introuvable' }, { status: 400 });
 	}
@@ -131,7 +137,7 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] coverage DELETE failed:', dbErr);
-		return json({ error: dbErr.message }, { status: 500 });
+		return json({ error: 'Erreur serveur' }, { status: 500 });
 	}
 	if (!deleted || deleted.length === 0) {
 		return json({ error: 'Point non coché pour cette séance' }, { status: 404 });

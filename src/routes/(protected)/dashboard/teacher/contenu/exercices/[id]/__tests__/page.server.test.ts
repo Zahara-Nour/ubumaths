@@ -113,6 +113,12 @@ describe('édition d’un exercice — tags du programme (C5, B2)', () => {
 		expect(result.curriculumByGrade.map((c) => c.grade)).toEqual(['5']);
 	});
 
+	it('un tag d’un niveau que l’exercice n’a plus reste affiché, pour pouvoir le retirer', async () => {
+		const result = await loadWith(['5'], ['s-addition'], [P_QUATRIEME]);
+		expect(result.curriculumByGrade.map((c) => c.grade)).toEqual(['5', '4']);
+		expect(pointIdsOf(result.curriculumByGrade[1].tree)).toEqual([P_QUATRIEME]);
+	});
+
 	it('un ancien point n’apparaît jamais, même tagué', async () => {
 		const result = await loadWith(['5'], ['s-addition'], [P_ANCIEN]);
 		expect(pointIdsOf(result.curriculumByGrade[0].tree)).not.toContain(P_ANCIEN);
