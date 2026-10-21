@@ -5,12 +5,12 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR du lot D ouverte (branche `feat/arbre-lot-2bis-scissions`)._
+_Mis à jour le 2026-10-21, après #1570 (lot D mergé, migration PAS encore appliquée en prod)._
 
 - **État** : C5 étape 2 bis, MODIFIER : lots A (39), B (7), C (16) en prod ; lot D (3 scissions addition /
-  soustraction de fractions, 5e) en PR : migration `20261021150000_lot_2bis_scissions`, 3 modèles neufs
+  soustraction de fractions, 5e) mergé (#1570) : migration `20261021150000_lot_2bis_scissions`, 3 modèles neufs
   (UUID fixés) tagués 5-123, origines taguées 5-026. Outillage : `generer(…, scissions=…)`.
-- **Prochaine action** : PR verte → merge → `db:migrate` (si la question d'accès est tranchée) → vérifier en
+- **Prochaine action** : `db:migrate` depuis le dépôt principal dès que la question d'accès est tranchée → vérifier en
   prod 3 origines + 3 neufs + 6 tags (la migration passe SANS RIEN FAIRE si les origines manquent).
 - **Décisions de David (2026-10-21)** : origine = addition, neuf = soustraction ; titres « Additionner / Soustraire
   des fractions » ; 71ee6212 garde une seule soustraction ; f92d63a6 accepte le non simplifié (`off`).
@@ -19,7 +19,7 @@ _Mis à jour le 2026-10-21, PR du lot D ouverte (branche `feat/arbre-lot-2bis-sc
 - **Pièges en cours** : PL/pgSQL refuse `if x <> case … end` (→ `least`) ; les commentaires DANS le bloc
   ROLLBACK s'écrivent `-- -- ` ; relever la prod juste avant de générer ; `question:specs --file` veut le
   format de l'app (camelCase, sans colonnes de base) ; supprimer un modèle emporte cartes SRS et journal.
-- **Worktree / branche** : `ubumaths-wt-arbre-notions` / `feat/arbre-lot-2bis-scissions`.
+- **Worktree / branche** : aucun (worktree de #1570 supprimé).
 
 ## Tranché avec David (2026-10-06)
 
