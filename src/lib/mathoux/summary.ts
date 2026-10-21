@@ -18,7 +18,7 @@ export const mathouNewsSchema = z.object({
 	items: z
 		.array(
 			z.object({
-				kind: z.enum(['birth', 'growth', 'star']),
+				kind: z.enum(['birth', 'growth', 'wake', 'star']),
 				notionId: z.string().min(1).max(100),
 				name: z.string().min(1).max(200),
 				raceIndex: z.number().int().min(0).max(1000),

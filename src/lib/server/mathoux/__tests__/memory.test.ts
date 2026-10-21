@@ -69,8 +69,20 @@ describe('readMathouMemory', () => {
 	it('lit les lignes de l’élève de la session et les range par notion', async () => {
 		const { client, queries } = buildMock(() => ({
 			data: [
-				{ notion_id: 'n1', best_stage: 'matou', starred_grades: ['2'], updated_at: T0 },
-				{ notion_id: 'n2', best_stage: 'n_importe', starred_grades: [], updated_at: T0 }
+				{
+					notion_id: 'n1',
+					best_stage: 'matou',
+					starred_grades: ['2'],
+					asleep: true,
+					updated_at: T0
+				},
+				{
+					notion_id: 'n2',
+					best_stage: 'n_importe',
+					starred_grades: [],
+					asleep: false,
+					updated_at: T0
+				}
 			],
 			error: null
 		}));
@@ -79,7 +91,7 @@ describe('readMathouMemory', () => {
 		expect(callOf(queries[0], 'eq')).toEqual(['student_id', STUDENT]);
 		// Un stade inconnu est écarté (la base l'interdit : défense en profondeur)
 		expect([...memory.entries()]).toEqual([
-			['n1', { bestStage: 'matou', starredGrades: ['2'], updatedAt: T0 }]
+			['n1', { bestStage: 'matou', starredGrades: ['2'], asleep: true, updatedAt: T0 }]
 		]);
 	});
 
@@ -110,16 +122,28 @@ describe('rememberMathoux', () => {
 			client,
 			STUDENT,
 			[
-				{ notionId: 'n1', bestStage: 'chaton', starredGrades: [] },
-				{ notionId: 'n2', bestStage: 'grand_matou', starredGrades: ['1_SPE'] }
+				{ notionId: 'n1', bestStage: 'chaton', starredGrades: [], asleep: false },
+				{ notionId: 'n2', bestStage: 'grand_matou', starredGrades: ['1_SPE'], asleep: false }
 			],
 			new Map()
 		);
 		expect(queries).toHaveLength(1);
 		const [rows, options] = callOf(queries[0], 'upsert') as [unknown[], Record<string, unknown>];
 		expect(rows).toEqual([
-			{ student_id: STUDENT, notion_id: 'n1', best_stage: 'chaton', starred_grades: [] },
-			{ student_id: STUDENT, notion_id: 'n2', best_stage: 'grand_matou', starred_grades: ['1_SPE'] }
+			{
+				student_id: STUDENT,
+				notion_id: 'n1',
+				best_stage: 'chaton',
+				starred_grades: [],
+				asleep: false
+			},
+			{
+				student_id: STUDENT,
+				notion_id: 'n2',
+				best_stage: 'grand_matou',
+				starred_grades: ['1_SPE'],
+				asleep: false
+			}
 		]);
 		expect(options).toMatchObject({
 			onConflict: 'student_id,notion_id',
@@ -141,12 +165,12 @@ describe('rememberMathoux', () => {
 		const written = await rememberMathoux(
 			client,
 			STUDENT,
-			[{ notionId: 'n1', bestStage: 'grand_matou', starredGrades: ['2'] }],
-			new Map([['n1', stored({ bestStage: 'matou', starredGrades: [] })]])
+			[{ notionId: 'n1', bestStage: 'grand_matou', starredGrades: ['2'], asleep: false }],
+			new Map([['n1', stored({ bestStage: 'matou', starredGrades: [], asleep: false })]])
 		);
 		expect(queries).toHaveLength(1);
 		expect(callOf(queries[0], 'update')).toEqual([
-			{ best_stage: 'grand_matou', starred_grades: ['2'] }
+			{ best_stage: 'grand_matou', starred_grades: ['2'], asleep: false }
 		]);
 		const eqs = queries[0].calls.filter(([m]) => m === 'eq').map((c) => c.slice(1));
 		expect(eqs).toEqual([
@@ -154,7 +178,9 @@ describe('rememberMathoux', () => {
 			['notion_id', 'n1'],
 			['updated_at', T0]
 		]);
-		expect(written).toEqual(new Map([['n1', { bestStage: 'matou', starredGrades: [] }]]));
+		expect(written).toEqual(
+			new Map([['n1', { bestStage: 'matou', starredGrades: [], asleep: false }]])
+		);
 	});
 
 	it('concurrence : la ligne a bougé → relue, fusionnée, jamais redescendue', async () => {
@@ -166,23 +192,31 @@ describe('rememberMathoux', () => {
 				return { data: updates === 1 ? [] : [{ notion_id: 'n1' }], error: null };
 			}
 			return {
-				data: { notion_id: 'n1', best_stage: 'grand_matou', starred_grades: ['2'], updated_at: T1 },
+				data: {
+					notion_id: 'n1',
+					best_stage: 'grand_matou',
+					starred_grades: ['2'],
+					asleep: false,
+					updated_at: T1
+				},
 				error: null
 			};
 		});
 		const written = await rememberMathoux(
 			client,
 			STUDENT,
-			[{ notionId: 'n1', bestStage: 'matou', starredGrades: ['1_SPE'] }],
-			new Map([['n1', stored({ bestStage: 'chaton', starredGrades: [] })]])
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: ['1_SPE'], asleep: false }],
+			new Map([['n1', stored({ bestStage: 'chaton', starredGrades: [], asleep: false })]])
 		);
 		// L'étoile 1_SPE est de CE calcul : la ligne compte comme écrite par lui
-		expect(written).toEqual(new Map([['n1', { bestStage: 'grand_matou', starredGrades: ['2'] }]]));
+		expect(written).toEqual(
+			new Map([['n1', { bestStage: 'grand_matou', starredGrades: ['2'], asleep: false }]])
+		);
 		const writes = queries.filter((q) => isWrite(q, 'update'));
 		expect(writes).toHaveLength(2);
 		// 2e essai : le stade relu (grand matou) gardé, les deux étoiles, sur le nouvel `updated_at`
 		expect(callOf(writes[1], 'update')).toEqual([
-			{ best_stage: 'grand_matou', starred_grades: ['2', '1_SPE'] }
+			{ best_stage: 'grand_matou', starred_grades: ['2', '1_SPE'], asleep: false }
 		]);
 		expect(writes[1].calls).toContainEqual(['eq', 'updated_at', T1]);
 	});
@@ -196,6 +230,7 @@ describe('rememberMathoux', () => {
 							notion_id: 'n1',
 							best_stage: 'grand_matou',
 							starred_grades: ['1_SPE'],
+							asleep: false,
 							updated_at: T1
 						},
 						error: null
@@ -204,8 +239,8 @@ describe('rememberMathoux', () => {
 		const written = await rememberMathoux(
 			client,
 			STUDENT,
-			[{ notionId: 'n1', bestStage: 'matou', starredGrades: ['1_SPE'] }],
-			new Map([['n1', stored({ bestStage: 'chaton', starredGrades: [] })]])
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: ['1_SPE'], asleep: false }],
+			new Map([['n1', stored({ bestStage: 'chaton', starredGrades: [], asleep: false })]])
 		);
 		expect(queries.filter((q) => isWrite(q, 'update'))).toHaveLength(1);
 		// Un autre calcul a tout écrit : pas une nouveauté de celui-ci (jamais annoncée deux fois)
@@ -217,22 +252,32 @@ describe('rememberMathoux', () => {
 			if (isWrite(query, 'upsert')) return { data: [], error: null }; // conflit : rien inséré
 			if (isWrite(query, 'update')) return { data: [{ notion_id: 'n1' }], error: null };
 			return {
-				data: [{ notion_id: 'n1', best_stage: 'matou', starred_grades: ['2'], updated_at: T1 }],
+				data: [
+					{
+						notion_id: 'n1',
+						best_stage: 'matou',
+						starred_grades: ['2'],
+						asleep: false,
+						updated_at: T1
+					}
+				],
 				error: null
 			};
 		});
 		const written = await rememberMathoux(
 			client,
 			STUDENT,
-			[{ notionId: 'n1', bestStage: 'grand_matou', starredGrades: [] }],
+			[{ notionId: 'n1', bestStage: 'grand_matou', starredGrades: [], asleep: false }],
 			new Map()
 		);
 		// La ligne remplacée est celle de l'autre calcul : ce n'est pas une naissance pour celui-ci
-		expect(written).toEqual(new Map([['n1', { bestStage: 'matou', starredGrades: ['2'] }]]));
+		expect(written).toEqual(
+			new Map([['n1', { bestStage: 'matou', starredGrades: ['2'], asleep: false }]])
+		);
 		const update = queries.find((q) => isWrite(q, 'update'));
 		expect(update).toBeDefined();
 		expect(callOf(update!, 'update')).toEqual([
-			{ best_stage: 'grand_matou', starred_grades: ['2'] }
+			{ best_stage: 'grand_matou', starred_grades: ['2'], asleep: false }
 		]);
 		expect(update!.calls).toContainEqual(['eq', 'updated_at', T1]);
 	});
@@ -247,13 +292,48 @@ describe('rememberMathoux', () => {
 			client,
 			STUDENT,
 			[
-				{ notionId: 'n1', bestStage: 'chaton', starredGrades: [] },
-				{ notionId: 'n2', bestStage: 'matou', starredGrades: [] }
+				{ notionId: 'n1', bestStage: 'chaton', starredGrades: [], asleep: false },
+				{ notionId: 'n2', bestStage: 'matou', starredGrades: [], asleep: false }
 			],
-			new Map([['n2', stored({ bestStage: 'chaton', starredGrades: [] })]])
+			new Map([['n2', stored({ bestStage: 'chaton', starredGrades: [], asleep: false })]])
 		).catch((err: unknown) => err);
 		expect(error).toBeInstanceOf(MathouMemoryWriteError);
 		expect((error as MathouMemoryWriteError).written).toEqual(new Map([['n1', null]]));
+	});
+
+	it('sieste : écrite à l’insertion, et réécrite seule quand elle change (réveil)', async () => {
+		const insert = buildMock(() => ({ data: [{ notion_id: 'n1' }], error: null }));
+		await rememberMathoux(
+			insert.client,
+			STUDENT,
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [], asleep: true }],
+			new Map()
+		);
+		const [rows] = callOf(insert.queries[0], 'upsert') as [unknown[]];
+		expect(rows).toEqual([
+			{
+				student_id: STUDENT,
+				notion_id: 'n1',
+				best_stage: 'matou',
+				starred_grades: [],
+				asleep: true
+			}
+		]);
+
+		const wake = buildMock(() => ({ data: [{ notion_id: 'n1' }], error: null }));
+		const written = await rememberMathoux(
+			wake.client,
+			STUDENT,
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [], asleep: false }],
+			new Map([['n1', stored({ bestStage: 'matou', starredGrades: [], asleep: true })]])
+		);
+		expect(callOf(wake.queries[0], 'update')).toEqual([
+			{ best_stage: 'matou', starred_grades: [], asleep: false }
+		]);
+		// La ligne remplacée (endormie) : c'est elle qui fait annoncer le réveil
+		expect(written).toEqual(
+			new Map([['n1', { bestStage: 'matou', starredGrades: [], asleep: true }]])
+		);
 	});
 
 	it('une écriture en échec lève (l’appelant journalise, l’affichage tient)', async () => {
@@ -262,7 +342,7 @@ describe('rememberMathoux', () => {
 			rememberMathoux(
 				client,
 				STUDENT,
-				[{ notionId: 'n1', bestStage: 'chaton', starredGrades: [] }],
+				[{ notionId: 'n1', bestStage: 'chaton', starredGrades: [], asleep: false }],
 				new Map()
 			)
 		).rejects.toThrow(/refus/);

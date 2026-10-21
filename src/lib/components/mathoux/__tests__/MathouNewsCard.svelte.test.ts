@@ -104,6 +104,19 @@ describe('MathouNewsCard', () => {
 		expect(confetti[2]).toBe(0);
 	});
 
+	it('réveil : le Mathou joue la scène du réveil', async () => {
+		const news: MathouNews = {
+			firstVisit: false,
+			total: 1,
+			items: [item('a', { kind: 'wake', stage: 'matou' })]
+		};
+		const { container } = await render(MathouNewsCard, { news });
+		expect(textOf(container)).toContain('Nom a s’est réveillé !');
+		const svg = container.querySelector('li svg');
+		expect(svg?.querySelector('.reaction')?.getAttribute('data-reaction')).toBe('reveil');
+		expect(svg?.querySelector('.bonnet-part')).not.toBeNull();
+	});
+
 	it('premier passage : le Mathou est là, sans réaction', async () => {
 		const news: MathouNews = { firstVisit: true, total: 7, items: [item('a'), item('b')] };
 		const { container } = await render(MathouNewsCard, { news });

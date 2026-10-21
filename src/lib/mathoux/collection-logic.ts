@@ -54,6 +54,8 @@ export interface MathouMemory {
 	bestStage: MathouStage;
 	/** Codes de niveau étoilés (valides, sans doublon). */
 	starredGrades: string[];
+	/** Sieste écrite par le dernier calcul : sert à annoncer le réveil. */
+	asleep: boolean;
 }
 
 /** Ce que la mémoire doit apprendre d'un Mathou : sa ligne complète, jamais en baisse. */
@@ -256,15 +258,21 @@ function sortGrades(grades: Iterable<string>): string[] {
 export function mergeMemory(a: MathouMemory, b: MathouMemory): MathouMemory {
 	return {
 		bestStage: bestGrowth(a.bestStage, b.bestStage),
-		starredGrades: sortGrades([...a.starredGrades, ...b.starredGrades])
+		starredGrades: sortGrades([...a.starredGrades, ...b.starredGrades]),
+		// La sieste n'est pas un acquis : c'est celle du calcul qui écrit (le second)
+		asleep: b.asleep
 	};
 }
 
-/** `have` contient-elle déjà tout ce que dit `want` (stade au moins égal, toutes les étoiles) ? */
+/**
+ * `have` contient-elle déjà tout ce que dit `want` (stade au moins égal, toutes les étoiles, même
+ * sieste) ?
+ */
 export function memoryCovers(have: MathouMemory, want: MathouMemory): boolean {
 	return (
 		GROWTH_RANK[have.bestStage] >= GROWTH_RANK[want.bestStage] &&
-		want.starredGrades.every((grade) => have.starredGrades.includes(grade))
+		want.starredGrades.every((grade) => have.starredGrades.includes(grade)) &&
+		have.asleep === want.asleep
 	);
 }
 
@@ -467,8 +475,14 @@ export function memoryUpdates(
 	const updates: MathouMemoryUpdate[] = [];
 	for (const mathou of collection.races.flatMap((race) => race.mathoux)) {
 		if (mathou.growth === 'a_decouvrir') continue;
-		const want: MathouMemory = { bestStage: mathou.growth, starredGrades: mathou.stars };
 		const have = memory.get(mathou.notionId);
+		const want: MathouMemory = {
+			bestStage: mathou.growth,
+			starredGrades: mathou.stars,
+			// Mathou de la seule mémoire (aucun point travaillable) : affiché sans sieste, sa sieste
+			// mémorisée ne bouge pas (sinon un faux réveil serait annoncé)
+			asleep: mathou.workablePoints > 0 ? mathou.asleep : (have?.asleep ?? false)
+		};
 		if (have && memoryCovers(have, want)) continue;
 		updates.push({ notionId: mathou.notionId, ...want });
 	}
