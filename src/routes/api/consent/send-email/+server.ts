@@ -28,6 +28,10 @@
  */
 
 import { json, error } from '@sveltejs/kit';
+import {
+	closePendingConsentRequest,
+	consentRequestPlan
+} from '$lib/server/parental-consent-requests';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
 import { requireRole } from '$lib/server/middleware/auth';
@@ -141,7 +145,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	// 7. Check existing consent record or create new one
 	const { data: existingConsent, error: existingConsentError } = await supabase
 		.from('parental_consents')
-		.select('id, email_count, status, consent_token, expires_at')
+		.select('id, email_count, status, consent_token, expires_at, parent_email')
 		.eq('student_id', student_id)
 		.order('created_at', { ascending: false })
 		.limit(1)
@@ -158,46 +162,32 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	let consentToken: string;
 	let expiresAt: Date;
 
-	if (existingConsent && existingConsent.status === 'pending') {
-		// Check if token is expired
-		if (new Date(existingConsent.expires_at) < new Date()) {
-			// Create new consent record with fresh token
-			const { data: newConsent, error: insertError } = await supabase
-				.from('parental_consents')
-				.insert({
-					student_id,
-					parent_email,
-					status: 'pending',
-					email_count: 1
-				})
-				.select('consent_token, expires_at')
-				.single();
+	// Le même lien ne repart que vers la même adresse : envoyé ailleurs, le lien déjà reçu
+	// par l'ancienne adresse accorderait la demande à la nouvelle, que personne n'a
+	// confirmée (contre-revue de la PR 3). Autre adresse → ancienne fermée, jeton neuf.
+	const plan = consentRequestPlan(existingConsent, parent_email);
 
-			if (insertError || !newConsent) {
-				logger.error('[Send Consent Email] Error creating consent record:', insertError);
-				throw error(500, 'Erreur lors de la création de la demande de consentement');
-			}
+	if (plan === 'replace' && existingConsent) {
+		if (!(await closePendingConsentRequest(supabase, existingConsent.id))) {
+			throw error(409, 'La demande précédente n’a pas pu être fermée');
+		}
+	}
 
-			consentToken = newConsent.consent_token;
-			expiresAt = new Date(newConsent.expires_at);
-		} else {
-			// Use existing token, increment count
-			consentToken = existingConsent.consent_token;
-			expiresAt = new Date(existingConsent.expires_at);
+	if (plan === 'reuse' && existingConsent) {
+		// Use existing token, increment count
+		consentToken = existingConsent.consent_token;
+		expiresAt = new Date(existingConsent.expires_at);
 
-			// Update email count and parent_email (in case it changed)
-			const { error: updateError } = await supabase
-				.from('parental_consents')
-				.update({
-					email_count: existingConsent.email_count + 1,
-					parent_email,
-					last_email_sent_at: new Date().toISOString()
-				})
-				.eq('id', existingConsent.id);
+		const { error: updateError } = await supabase
+			.from('parental_consents')
+			.update({
+				email_count: existingConsent.email_count + 1,
+				last_email_sent_at: new Date().toISOString()
+			})
+			.eq('id', existingConsent.id);
 
-			if (updateError) {
-				logger.error('[Send Consent Email] Error updating consent record:', updateError);
-			}
+		if (updateError) {
+			logger.error('[Send Consent Email] Error updating consent record:', updateError);
 		}
 	} else {
 		// Create new consent record

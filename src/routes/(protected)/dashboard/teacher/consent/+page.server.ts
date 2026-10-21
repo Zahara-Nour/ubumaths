@@ -20,6 +20,7 @@ import { requireRole, requireRoles } from '$lib/server/middleware/auth';
 import { verifyTeacherStudent } from '$lib/server/middleware/student-access';
 import { requiresParentalConsent } from '$lib/utils/consent';
 import { isBrevoConfigured } from '$lib/server/email/brevo';
+import { closePendingConsentRequest } from '$lib/server/parental-consent-requests';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/teacher/consent/+page.server');
@@ -359,7 +360,7 @@ export const actions: Actions = {
 		// Check if consent record exists, create or update
 		const { data: existing, error: existingError } = await supabase
 			.from('parental_consents')
-			.select('id, status')
+			.select('id, status, parent_email')
 			.eq('student_id', studentId)
 			.order('created_at', { ascending: false })
 			.limit(1)
@@ -382,7 +383,18 @@ export const actions: Actions = {
 			});
 		}
 
-		if (existing) {
+		// Demande en attente : son lien est peut-être déjà parti à l'ancienne adresse, et
+		// l'accorderait à la nouvelle. Elle est fermée ; une nouvelle demande, à jeton neuf,
+		// est créée plus bas (contre-revue de la PR 3).
+		const replacesPending = existing?.status === 'pending';
+		if (replacesPending && existing.parent_email === parentEmail) {
+			return { success: true };
+		}
+		if (replacesPending && !(await closePendingConsentRequest(supabase, existing.id))) {
+			return fail(409, { error: "L'adresse n'a pas pu être changée." });
+		}
+
+		if (existing && !replacesPending) {
 			const { data: updated, error: updateError } = await supabase
 				.from('parental_consents')
 				.update({ parent_email: parentEmail })

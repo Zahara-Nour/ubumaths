@@ -22,6 +22,17 @@ couvre:
 > non 30 jours) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
+> **Adresse du parent et lien (2026-10-21, PR 3 de l'inscription par le parent)** : l'adresse
+> d'une demande `granted` est celle où part le lien « Mot de passe oublié » d'un enfant à
+> identifiant. Elle est donc **figée** : `updateParentEmail` répond 409. Une demande `pending`
+> n'est jamais réécrite vers une autre adresse : son lien, peut-être déjà reçu à l'ancienne,
+> l'accorderait à la nouvelle sans confirmation. `closePendingConsentRequest`
+> (`src/lib/server/parental-consent-requests.ts`) la ferme (`expired` **et** `expires_at` =
+> maintenant : `grant_parental_consent` ne regarde que l'échéance) et une nouvelle demande, à
+> jeton neuf, est créée — par `updateParentEmail` comme par le renvoi `/api/consent/send-email`
+> (`consentRequestPlan` : même adresse → même lien, autre adresse → `replace`). Preuve :
+> `tests/integration/consentement-changement-adresse.test.ts`.
+
 > **Domaine fictif (2026-10-21)** : `sendEmail` (`src/lib/server/email/brevo.ts`) refuse toute
 > adresse `@eleves.chiph.re` (compte d'un enfant inscrit par son parent, voir
 > [auth.md](../auth.md#le-domaine-fictif-eleveschiphre)) : le courriel de consentement part

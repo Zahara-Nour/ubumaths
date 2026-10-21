@@ -5,6 +5,8 @@
  * Audit de la PR 3, M1 : l'adresse d'une demande déjà `granted` est celle que le parent a
  * confirmée ; c'est là que part le lien « Mot de passe oublié » de l'enfant. La réécrire
  * enverrait ce lien à une adresse que personne n'a confirmée → refus (David, 2026-10-21).
+ * Demande EN ATTENTE (contre-revue) : son lien est peut-être déjà parti à l'ancienne adresse ;
+ * il accorderait la demande à la nouvelle. La demande est fermée, une nouvelle est créée.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
@@ -17,13 +19,17 @@ vi.mock('$lib/server/middleware/auth', () => ({
 vi.mock('$lib/server/middleware/student-access', () => ({
 	verifyTeacherStudent: vi.fn(async () => true)
 }));
+const { closePendingConsentRequest } = vi.hoisted(() => ({
+	closePendingConsentRequest: vi.fn()
+}));
+vi.mock('$lib/server/parental-consent-requests', () => ({ closePendingConsentRequest }));
 
 const { actions } = await import('../+page.server');
 
 const TEACHER_ID = '550e8400-e29b-41d4-a716-446655440000';
 const STUDENT_ID = '550e8400-e29b-41d4-a716-446655440001';
 
-type Existing = { id: string; status: string } | null;
+type Existing = { id: string; status: string; parent_email: string } | null;
 
 /** Client factice : lecture de la dernière demande, puis mise à jour ou création. */
 function makeSupabase(existing: Existing) {
@@ -74,20 +80,55 @@ async function modifier(existing: Existing) {
 	return { res, calls };
 }
 
-beforeEach(() => vi.clearAllMocks());
+beforeEach(() => {
+	vi.clearAllMocks();
+	closePendingConsentRequest.mockResolvedValue(true);
+});
+
+const ANCIENNE = 'ancienne@exemple.fr';
 
 describe('updateParentEmail', () => {
 	it('demande confirmée (granted) → refus, adresse intacte', async () => {
-		const { res, calls } = await modifier({ id: 'c1', status: 'granted' });
+		const { res, calls } = await modifier({ id: 'c1', status: 'granted', parent_email: ANCIENNE });
 		expect(res.status).toBe(409);
 		expect(res.data?.error).toMatch(/confirm/);
 		expect(calls.update).not.toHaveBeenCalled();
 		expect(calls.insert).not.toHaveBeenCalled();
 	});
 
-	it.each(['pending', 'expired'])('demande %s → adresse mise à jour', async (status) => {
-		const { res, calls } = await modifier({ id: 'c1', status });
+	it('demande en attente, autre adresse → ancienne fermée, nouvelle demande (jeton neuf)', async () => {
+		const { res, calls } = await modifier({ id: 'c1', status: 'pending', parent_email: ANCIENNE });
 		expect(res).toEqual({ success: true });
+		expect(closePendingConsentRequest).toHaveBeenCalledWith(expect.anything(), 'c1');
+		expect(calls.update).not.toHaveBeenCalled();
+		expect(calls.insert).toHaveBeenCalledWith(
+			expect.objectContaining({ parent_email: 'autre@exemple.fr', status: 'pending' })
+		);
+	});
+
+	it('demande en attente non fermée (RLS, accordée entre-temps) → 409, rien de créé', async () => {
+		closePendingConsentRequest.mockResolvedValue(false);
+		const { res, calls } = await modifier({ id: 'c1', status: 'pending', parent_email: ANCIENNE });
+		expect(res.status).toBe(409);
+		expect(calls.insert).not.toHaveBeenCalled();
+	});
+
+	it('demande en attente, même adresse → rien ne change', async () => {
+		const { res, calls } = await modifier({
+			id: 'c1',
+			status: 'pending',
+			parent_email: 'autre@exemple.fr'
+		});
+		expect(res).toEqual({ success: true });
+		expect(closePendingConsentRequest).not.toHaveBeenCalled();
+		expect(calls.update).not.toHaveBeenCalled();
+		expect(calls.insert).not.toHaveBeenCalled();
+	});
+
+	it('demande expirée (lien mort) → adresse mise à jour', async () => {
+		const { res, calls } = await modifier({ id: 'c1', status: 'expired', parent_email: ANCIENNE });
+		expect(res).toEqual({ success: true });
+		expect(closePendingConsentRequest).not.toHaveBeenCalled();
 		expect(calls.update).toHaveBeenCalledWith({ parent_email: 'autre@exemple.fr' });
 	});
 
