@@ -331,8 +331,9 @@ async function loadProgress(
 				.eq('student_id', studentId)
 				.in('point_id', batch)
 		),
-		// Sieste : badge FSRS « à revoir », sur un point de n'importe quel niveau
-		computePointBadges(supabase, studentId, workableIds)
+		// Sieste : badge FSRS « à revoir », sur un point de n'importe quel niveau ; une
+		// panne lève (sinon toutes les siestes disparaîtraient en silence)
+		computePointBadges(supabase, studentId, workableIds, { onError: 'throw' })
 	]);
 	if (statesResult.error) throw new Error(`États illisibles : ${statesResult.error.message}`);
 

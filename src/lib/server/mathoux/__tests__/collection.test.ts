@@ -166,7 +166,9 @@ describe('loadMathouCollection', () => {
 			asleep: false
 		});
 		// Les badges ne sont demandés que pour les points travaillables
-		expect(computePointBadges).toHaveBeenCalledWith(supabase, STUDENT, ['p1', 'p2']);
+		expect(computePointBadges).toHaveBeenCalledWith(supabase, STUDENT, ['p1', 'p2'], {
+			onError: 'throw'
+		});
 	});
 
 	it('sieste : un badge a_renforcer ou a_remedier endort le Mathou', async () => {

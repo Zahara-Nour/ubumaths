@@ -7,7 +7,8 @@
  * l'élève restent intactes.
  *
  * SÉCURITÉ :
- * - prof ou admin (`requireRoles`) ;
+ * - prof seul (`requireRole`), comme l'onglet Gamification d'où l'on vient et
+ *   vers lequel mène le retour (son layout refuse l'admin) ;
  * - l'élève doit être un élève du prof (`verifyTeacherStudentWithRole`) AVANT
  *   toute lecture : `readMathouCollection` n'a pas de garde, seule la RLS borne
  *   ce qu'elle lit.
@@ -21,7 +22,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { z } from 'zod';
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import { readMathouCollection } from '$lib/server/mathoux/collection';
 import type { MathouCollection } from '$lib/mathoux/collection-logic';
@@ -41,7 +42,7 @@ const EMPTY_COLLECTION: MathouCollection = {
 };
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const { user, profile } = await requireRoles(locals, ['teacher', 'admin']);
+	const { user, profile } = await requireRole(locals, 'teacher');
 	const supabase = locals.supabase;
 
 	const parsed = paramsSchema.safeParse(params);

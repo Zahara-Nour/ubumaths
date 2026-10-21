@@ -47,11 +47,16 @@ interface FsrsStateRow {
  * Les deux listes `.in()` sont découpées en lots (cf. `IN_CHUNK_SIZE`) : cette
  * fonction tourne sur le tableau de bord depuis la fusion « Ma progression »,
  * donc sur la première page que voit chaque élève après connexion.
+ *
+ * Lecture en échec : par défaut, `non_commencee` partout (la page reste
+ * affichée). `onError: 'throw'` lève à la place : la Chatterie l'exige, une
+ * panne y effacerait toutes les siestes en silence.
  */
 export async function computePointBadges(
 	supabase: SB,
 	studentId: string,
-	pointIds: string[]
+	pointIds: string[],
+	options: { onError?: 'neutral' | 'throw' } = {}
 ): Promise<Map<string, CapacityBadge>> {
 	const result = new Map<string, CapacityBadge>();
 	if (pointIds.length === 0) return result;
@@ -62,6 +67,7 @@ export async function computePointBadges(
 	);
 
 	if (tagErr) {
+		if (options.onError === 'throw') throw new Error(`Tags illisibles : ${tagErr.message}`);
 		logger.error('[capacity-badge] tag lookup failed:', tagErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;
@@ -94,6 +100,9 @@ export async function computePointBadges(
 	);
 
 	if (fsrsErr) {
+		if (options.onError === 'throw') {
+			throw new Error(`Cartes de révision illisibles : ${fsrsErr.message}`);
+		}
 		logger.error('[capacity-badge] fsrs lookup failed:', fsrsErr);
 		for (const id of pointIds) result.set(id, 'non_commencee');
 		return result;

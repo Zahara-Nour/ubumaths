@@ -6,7 +6,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('$lib/server/middleware/auth', () => ({ requireRoles: vi.fn() }));
+vi.mock('$lib/server/middleware/auth', () => ({ requireRole: vi.fn() }));
 vi.mock('$lib/server/middleware/student-access', () => ({
 	verifyTeacherStudentWithRole: vi.fn()
 }));
@@ -16,7 +16,7 @@ vi.mock('$lib/server/mathoux/collection', () => ({
 	loadMathouCollectionWithNews: vi.fn()
 }));
 
-import { requireRoles } from '$lib/server/middleware/auth';
+import { requireRole } from '$lib/server/middleware/auth';
 import { verifyTeacherStudentWithRole } from '$lib/server/middleware/student-access';
 import {
 	loadMathouCollection,
@@ -52,7 +52,7 @@ beforeEach(() => {
 		lastname: null,
 		grade: '1_SPE'
 	};
-	vi.mocked(requireRoles).mockResolvedValue({
+	vi.mocked(requireRole).mockResolvedValue({
 		user: { id: 'prof-1' },
 		profile: { id: 'prof-1', role: 'teacher' }
 	} as never);
@@ -60,10 +60,10 @@ beforeEach(() => {
 });
 
 describe('teacher/students/[studentId]/chatterie load', () => {
-	it('réservée aux profs et à l’admin', async () => {
-		vi.mocked(requireRoles).mockRejectedValue({ status: 403 });
+	it('réservée au prof', async () => {
+		vi.mocked(requireRole).mockRejectedValue({ status: 403 });
 		await expect(run()).rejects.toMatchObject({ status: 403 });
-		expect(requireRoles).toHaveBeenCalledWith(locals, ['teacher', 'admin']);
+		expect(requireRole).toHaveBeenCalledWith(locals, 'teacher');
 	});
 
 	it('identifiant invalide → 400, sans aucune lecture', async () => {

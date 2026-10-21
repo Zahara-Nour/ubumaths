@@ -618,3 +618,43 @@ describe('computePointBadges — listes découpées en lots', () => {
 		expect(pointBatches).toHaveLength(1);
 	});
 });
+
+// ============================================================================
+// computePointBadges — lecture en échec
+// ============================================================================
+
+/**
+ * Par défaut, une lecture en échec rend `non_commencee` partout (le tableau de
+ * bord reste affiché). La Chatterie demande `onError: 'throw'` : une panne y
+ * effacerait toutes les siestes en silence (revue de la vue prof, 2026-10-21).
+ */
+describe('computePointBadges — lecture en échec', () => {
+	function failingMock(failing: 'question_template_points' | 'srs_card_stats') {
+		const from = vi.fn().mockImplementation((table: string) => {
+			const error = table === failing ? { message: 'boom' } : null;
+			const data =
+				table === 'question_template_points' && !error
+					? [{ point_id: 'p1', template_id: 't1' }]
+					: null;
+			return {
+				select: vi.fn().mockReturnThis(),
+				eq: vi.fn().mockReturnThis(),
+				in: vi.fn().mockResolvedValue({ data, error })
+			};
+		});
+		return { from } as unknown as Parameters<typeof computePointBadges>[0];
+	}
+
+	for (const table of ['question_template_points', 'srs_card_stats'] as const) {
+		it(`${table} en échec : non_commencee par défaut`, async () => {
+			const result = await computePointBadges(failingMock(table), 'eleve', ['p1']);
+			expect(result.get('p1')).toBe('non_commencee');
+		});
+
+		it(`${table} en échec : lève avec onError 'throw'`, async () => {
+			await expect(
+				computePointBadges(failingMock(table), 'eleve', ['p1'], { onError: 'throw' })
+			).rejects.toThrow(/boom/);
+		});
+	}
+});

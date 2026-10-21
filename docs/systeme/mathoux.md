@@ -288,7 +288,8 @@ Phase 0 validée par David le 2026-10-21 ([journal](../wip/mathoux-prof-progress
   élève. Un Mathou né depuis la dernière séance de l'élève n'y paraît donc qu'à la suivante, et les
   siestes ne s'y voient pas. Une notion archivée, ou dont la branche l'est, n'est pas comptée. La
   mémoire est lue par lots de 100 élèves, par pages de 1 000 lignes.
-- **Chatterie d'un élève** (`/dashboard/teacher/students/[studentId]/chatterie`) : prof ou admin,
+- **Chatterie d'un élève** (`/dashboard/teacher/students/[studentId]/chatterie`) : prof seul (comme
+  l'onglet, dont le layout refuse l'admin),
   élève du prof (`verifyTeacherStudentWithRole`, sinon 403) **avant toute lecture**, identifiant
   validé par Zod (sinon 400). Même rendu que chez l'élève (`ChatterieRaces`), sans « Réveiller » ni
   « Faire grandir » ; « Pas encore de niveau : pas de Chatterie » sans niveau ; « fermée » si une

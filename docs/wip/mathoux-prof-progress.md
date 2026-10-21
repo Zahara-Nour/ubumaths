@@ -5,16 +5,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, code fini, revues en cours._
+_Mis à jour le 2026-10-21, revues faites et corrigées._
 
-- **État** : code, tests et doc faits sur la branche (non poussée) ; revues `code-reviewer` +
-  `security-auditor` lancées.
-- **Prochaine action** : si la session a été vidée avant leurs rapports, RELANCER les deux revues
-  (diff `origin/main...HEAD`) ; corriger les findings → push → PR → CI verte → merge → `db:migrate`
-  (policy `srs_card_stats`, additive, 4 conditions) → vérification manuelle notée.
-- **En attente de David** : rien (accès tranché : le prof lit les cartes de révision de ses élèves).
-- **Pièges en cours** : la vue prof ne doit JAMAIS écrire la mémoire (elle brûlerait les
-  nouveautés de fin de séance de l'élève). Policy appliquée à la main sur la base locale (psql).
+- **État** : code, tests, doc et corrections des revues commités sur la branche, **non poussée**.
+  `code-reviewer` : 1 important (corrigé), mineurs ; `security-auditor` : **aucun bloquant**.
+- **Prochaine action** : push → PR (corps : effets de bord de la policy, ci-dessous) → CI verte →
+  merge → `db:migrate` (4 conditions réunies : accès tranché, rouge sans la migration vérifié,
+  audit sans bloquant, additive + rollback) → vérification manuelle notée → nettoyage worktree.
+- **En attente de David** : élèves hors classe (ou en classe inactive) absents de l'onglet Mathoux,
+  comme dans l'onglet Palotins : les y ajouter (section « Hors classe ») ou non ? Pas bloquant.
+- **Pièges en cours** : la vue prof ne doit JAMAIS écrire la mémoire. Policy appliquée à la main
+  sur la base locale (psql). Avertissement `no-thenable` de `collection.test.ts:65` : antérieur.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-prof` · `feat/mathoux-vue-prof`.
 
 ## Phase 0 (validée par David le 2026-10-21)
@@ -59,4 +60,15 @@ Erreurs :
 - [x] Pages (onglet Mathoux, Chatterie d'un élève) + `ChatterieRaces` partagé avec la page élève
 - [x] Doc : `mathoux.md` § Vue du professeur, `base-de-donnees.md`, `comptes-classes-ecoles.md`,
       `jeux-et-economie.md`
-- [ ] Revue, PR, merge, `db:migrate`
+- [x] Revues (2026-10-21). Corrigé : `computePointBadges` avalait ses erreurs (siestes effacées en
+      silence) → option `onError: 'throw'`, utilisée par la Chatterie seule (le tableau de bord ne
+      change pas) ; page Chatterie d'un élève réservée au prof (le layout Gamification refuse
+      l'admin, son retour lui aurait rendu 403). Non retenu : `classes` vide lu comme « aucune classe »
+      (même modèle que l'onglet Palotins, le prof lit ses classes).
+- À écrire dans la PR (audit) : avec la policy, toute lecture prof/admin de `srs_card_stats` voit
+  tous les élèves — `src/lib/server/stats/class-knowledge.ts` compte désormais les cartes hors
+  paquet (corrige la même incohérence) ; `src/lib/server/anti-fraud/runner.ts:90-97` (client de
+  session admin, sans filtre élève, non paginé) voit plus de lignes → risque de troncature à
+  1 000 lignes, préexistant, aggravé. `is_my_student` ignore son paramètre : le prof lit aussi les
+  cartes de l'admin (même modèle que `student_point_state`).
+- [ ] PR, merge, `db:migrate`
