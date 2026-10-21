@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-21, après #1594 (mergée, pas en prod)._
 
 - **État** : PR 3 (mots de passe des élèves) mergée : jeton maison du lien du parent (B1), adresse confirmée figée (M1), changement d'adresse = nouvelle demande à jeton neuf (contre-revue), plancher 2 s, revues n° 2-5, doc. Aucune migration.
-- **Prochaine action** : petite PR **M1 bis** (5 comptes par classe et par 24 h, écran parent) + **M2** (suffixe d'identifiant à 3 chiffres), avant le `deploy:prod`. Nouveau worktree depuis `origin/main`.
+- **Prochaine action** : faire valider la **phase 0 de M1 bis + M2** (écrite, Q1-Q3 sans réponse : section en bas du journal), puis petite PR **M1 bis** (5 comptes par classe et par 24 h, écran parent) + **M2** (suffixe d'identifiant à 3 chiffres), avant le `deploy:prod`. Nouveau worktree depuis `origin/main`.
 - **Décisions de David (2026-10-21, « je te suis »)** : plancher dépassable → **envoi en tâche de fond (`waitUntil`) dans la PR M1 bis + M2**, si l'adaptateur Vercel le permet (à vérifier d'abord ; sinon risque accepté) ; jeton dans les journaux Vercel → **accepté** ; `/auth/confirm` qui refuse un `recovery` d'enfant → **non** (risque nul, domaine sans DNS) ; F-c → **David coupe le suivi des clics** du transactionnel Brevo.
 - **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
 - **En attente de David** : couper le suivi des clics Brevo (F-c). F1 vérifié le 2026-10-21.
@@ -305,3 +305,28 @@ dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jama
 4. Marque non levée → l'élève doit choisir un 3e mot de passe (`same_password`) : nouvel essai de la levée + message clair. **Fait.**
 5. Ancien mot de passe sur le seau de connexion (3/15 min) : seau dédié + `currentPassword` dans le schéma Zod. **Fait.**
 6. = F-a.
+
+## PR M1 bis + M2 — phase 0 (2026-10-21, écrite, PAS validée)
+
+Écrite depuis la session `arbre-notions` (le `deploy:prod` attend cette PR) ; David n'a répondu à aucune question.
+
+- **M2** : suffixe de l'identifiant à **3 chiffres** au minimum (`pickChildLoginId`, `src/lib/utils/child-account.ts`,
+  boucle partant de 2) ; 1 000 candidats par prénom ; tous pris → 4 chiffres, jamais de refus. Comptes existants
+  inchangés.
+- **M1 bis** : écran « J'inscris mon enfant » (`/auth/register/parent`) seulement : au plus **5 comptes par classe et
+  par 24 h**. 6e → refus avant création, 429 « Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou
+  prévenir le professeur. » ; compteur illisible → refus (fermé en panne). Ordre : code de classe → plafond du
+  parent → plafond de la classe → création.
+- **Tâche de fond** (décision « je te suis ») : « Mot de passe oublié » (`/auth/reset-password`) — le lien au parent
+  part APRÈS la réponse (`waitUntil`), toutes les réponses durent le plancher de 2 s. `@vercel/functions` absent →
+  nouvelle dépendance.
+- Accès : rien ne change, pas de migration.
+
+Questions (recos entre parenthèses) :
+
+- **Q1** — plafond de classe compté sur les comptes **réellement créés**, en base sur 24 h (reco) ou sur les essais
+  (limiteur actuel : 5 « mot de passe trop faible » bloquent la classe pour la journée) ?
+- **Q2** — 5 par classe : adapté aux petits groupes d'Akadada ; une autre école qui donne le code à 25 parents le
+  même soir en verrait 20 refusés. Reco : garder 5, relever si besoin.
+- **Q3** — ajouter `@vercel/functions` pour `waitUntil` (reco : oui ; hors Vercel, envoi sans attente) ; sinon plancher
+  tel quel, risque accepté.
