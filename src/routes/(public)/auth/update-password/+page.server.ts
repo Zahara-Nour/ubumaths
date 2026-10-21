@@ -35,7 +35,7 @@ import {
 	verifyCurrentPassword
 } from '$lib/server/child-password';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
-import { checkLoginRateLimitByEmail } from '$lib/server/rateLimiter';
+import { checkPasswordChangeRateLimitByUser } from '$lib/server/rateLimiter';
 
 const logger = createServerLogger('auth/update-password/+page.server.ts');
 
@@ -49,6 +49,19 @@ async function requiresCurrentPassword(
 	if (mustChangePassword(user)) return false;
 	const { data } = await supabase.auth.getClaims();
 	return !isFreshEmailLinkSession(data?.claims?.amr, Math.floor(Date.now() / 1000));
+}
+
+/** Lève la marque « à changer » par la clé service ; deux essais. */
+async function clearMustChangeFlag(userId: string): Promise<boolean> {
+	const service = createServiceRoleClient();
+	for (let attempt = 0; attempt < 2; attempt++) {
+		const { error } = await service.auth.admin.updateUserById(userId, {
+			app_metadata: { [MUST_CHANGE_PASSWORD]: false }
+		});
+		if (!error) return true;
+		logger.error('Must-change flag not cleared:', error.message);
+	}
+	return false;
 }
 
 export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
@@ -95,7 +108,7 @@ export const actions = {
 			});
 		}
 
-		const { password, confirmPassword } = validation.data;
+		const { currentPassword, password, confirmPassword } = validation.data;
 
 		if (password !== confirmPassword) {
 			return fail(400, {
@@ -104,11 +117,10 @@ export const actions = {
 		}
 
 		if (await requiresCurrentPassword(supabase, user)) {
-			const currentPassword = String(formData.get('currentPassword') ?? '');
-			if (!currentPassword || currentPassword.length > 128 || !user.email) {
+			if (!currentPassword || !user.email) {
 				return fail(400, { error: 'Mot de passe actuel requis.' });
 			}
-			const limit = await checkLoginRateLimitByEmail(user.email);
+			const limit = await checkPasswordChangeRateLimitByUser(user.id);
 			if (!limit.allowed) {
 				return fail(429, { error: limit.message ?? 'Trop de tentatives. Réessayer plus tard.' });
 			}
@@ -134,17 +146,13 @@ export const actions = {
 
 		// Mot de passe provisoire remplacé : la marque se lève par la clé service
 		// (`app_metadata` n'est pas modifiable par l'élève). Sans elle, il resterait bloqué.
-		if (mustChangePassword(user)) {
-			const { error: flagError } = await createServiceRoleClient().auth.admin.updateUserById(
-				user.id,
-				{ app_metadata: { [MUST_CHANGE_PASSWORD]: false } }
-			);
-			if (flagError) {
-				logger.error('Must-change flag not cleared:', flagError.message);
-				return fail(500, {
-					error: 'Mot de passe changé, mais une erreur est survenue. Réessayer.'
-				});
-			}
+		// Un second essai : marque restée, la page reviendrait et le même mot de passe serait
+		// refusé (`same_password`) — d'où le message qui dit d'en choisir un autre.
+		if (mustChangePassword(user) && !(await clearMustChangeFlag(user.id))) {
+			return fail(500, {
+				error:
+					'Mot de passe bien changé, mais une erreur est survenue. Si la page en redemande un, en choisir un autre.'
+			});
 		}
 
 		logger.info('Password updated successfully');

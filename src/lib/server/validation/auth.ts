@@ -161,6 +161,8 @@ export const requestPasswordResetSchema = z.object({
  */
 export const updatePasswordSchema = z
 	.object({
+		// Exigé seulement depuis une session ordinaire (cf. `requiresCurrentPassword`).
+		currentPassword: z.string().max(128, 'Mot de passe actuel invalide').optional(),
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
 	})

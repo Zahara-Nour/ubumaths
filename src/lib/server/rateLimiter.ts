@@ -681,6 +681,28 @@ export async function checkChildSignupRateLimitByParentEmail(
 }
 
 /**
+ * « Changer mon mot de passe » : essais de l'ancien mot de passe, par compte.
+ *
+ * Seau distinct de la connexion (revue de la PR 3, n° 5) : des essais ratés ici ne doivent
+ * pas bloquer `/auth/login`, ni l'inverse. 5 essais par 15 minutes ; fermé en cas de panne,
+ * la vérification de l'ancien mot de passe étant un oracle.
+ */
+export async function checkPasswordChangeRateLimitByUser(userId: string): Promise<RateLimitResult> {
+	const key = `ratelimit:pwchange:user:${userId}`;
+	const result = await checkRateLimitWithMessage(
+		key,
+		5,
+		900, // 15 minutes
+		'Trop d’essais du mot de passe actuel. Réessayer dans 15 minutes.',
+		true
+	);
+	if (!result.allowed) {
+		logger.warn('Password change rate limit exceeded', { key: maskKey(key) });
+	}
+	return result;
+}
+
+/**
  * Check password-reset rate limit by email (finding H7).
  *
  * Prevents email-bombing a specific address and exhausting the Brevo quota

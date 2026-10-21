@@ -7,11 +7,13 @@
  */
 import { describe, expect, it, vi, beforeEach } from 'vitest';
 
-const { verifyCurrentPassword, updateUserById, checkLoginRateLimitByEmail } = vi.hoisted(() => ({
-	verifyCurrentPassword: vi.fn(),
-	updateUserById: vi.fn(),
-	checkLoginRateLimitByEmail: vi.fn()
-}));
+const { verifyCurrentPassword, updateUserById, checkPasswordChangeRateLimitByUser } = vi.hoisted(
+	() => ({
+		verifyCurrentPassword: vi.fn(),
+		updateUserById: vi.fn(),
+		checkPasswordChangeRateLimitByUser: vi.fn()
+	})
+);
 
 vi.mock('$lib/server/child-password', async (importOriginal) => ({
 	...(await importOriginal<typeof import('$lib/server/child-password')>()),
@@ -20,7 +22,7 @@ vi.mock('$lib/server/child-password', async (importOriginal) => ({
 vi.mock('$lib/server/serviceRoleClient', () => ({
 	createServiceRoleClient: () => ({ auth: { admin: { updateUserById } } })
 }));
-vi.mock('$lib/server/rateLimiter', () => ({ checkLoginRateLimitByEmail }));
+vi.mock('$lib/server/rateLimiter', () => ({ checkPasswordChangeRateLimitByUser }));
 
 const { actions, load } = await import('../+page.server');
 
@@ -71,7 +73,7 @@ beforeEach(() => {
 	vi.clearAllMocks();
 	verifyCurrentPassword.mockResolvedValue(true);
 	updateUserById.mockResolvedValue({ error: null });
-	checkLoginRateLimitByEmail.mockResolvedValue({ allowed: true });
+	checkPasswordChangeRateLimitByUser.mockResolvedValue({ allowed: true });
 });
 
 describe('load', () => {
@@ -127,14 +129,25 @@ describe('action updatePassword', () => {
 		expect(updateUserById).not.toHaveBeenCalled();
 	});
 
-	it('trop d’essais → 429, aucune vérification', async () => {
-		checkLoginRateLimitByEmail.mockResolvedValue({ allowed: false, message: 'Trop.' });
+	it('trop d’essais → 429, aucune vérification ; seau du compte, pas celui de la connexion', async () => {
+		checkPasswordChangeRateLimitByUser.mockResolvedValue({ allowed: false, message: 'Trop.' });
 		const { res } = await envoyer(
 			{},
 			{ currentPassword: 'x', password: BON, confirmPassword: BON }
 		);
 		expect(res.status).toBe(429);
+		expect(checkPasswordChangeRateLimitByUser).toHaveBeenCalledWith('u1');
 		expect(verifyCurrentPassword).not.toHaveBeenCalled();
+	});
+
+	it('ancien mot de passe démesuré → 400 (Zod), aucune vérification', async () => {
+		const { res, updateUser } = await envoyer(
+			{},
+			{ currentPassword: 'x'.repeat(200), password: BON, confirmPassword: BON }
+		);
+		expect(res.status).toBe(400);
+		expect(verifyCurrentPassword).not.toHaveBeenCalled();
+		expect(updateUser).not.toHaveBeenCalled();
 	});
 
 	it('mot de passe provisoire → changé sans l’ancien, marque levée par la clé service', async () => {
@@ -150,10 +163,23 @@ describe('action updatePassword', () => {
 		expect(res).toMatchObject({ status: 303, location: '/' });
 	});
 
-	it('marque non levée → erreur (sinon l’élève resterait bloqué sans le savoir)', async () => {
+	it('marque non levée au 1er essai → 2e essai, puis accueil', async () => {
+		updateUserById
+			.mockResolvedValueOnce({ error: { message: 'boom' } })
+			.mockResolvedValueOnce({ error: null });
+		const { res } = await envoyer({ marque: true }, { password: BON, confirmPassword: BON });
+		expect(updateUserById).toHaveBeenCalledTimes(2);
+		expect(res).toMatchObject({ status: 303, location: '/' });
+	});
+
+	it('marque non levée deux fois → erreur claire : mot de passe bien changé, en choisir un autre', async () => {
 		updateUserById.mockResolvedValue({ error: { message: 'boom' } });
 		const { res } = await envoyer({ marque: true }, { password: BON, confirmPassword: BON });
+		expect(updateUserById).toHaveBeenCalledTimes(2);
 		expect(res.status).toBe(500);
+		const message = (res as { data: { error: string } }).data.error;
+		expect(message).toMatch(/bien changé/);
+		expect(message).toMatch(/autre/);
 	});
 
 	it('lien de courriel récent → changé sans l’ancien', async () => {
