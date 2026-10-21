@@ -2,7 +2,6 @@
 	"title": "Loi exponentielle : probabilités, espérance, absence de mémoire",
 	"description": "X ~ E(λ) : P(X ⩽ t) = 1 − e^(−λt), P(X ⩾ t) = e^(−λt), P(s ⩽ X ⩽ t) = e^(−λs) − e^(−λt), E(X) = 1/λ, P(X > s + t | X > s) = e^(−λt) (pièges : P(X ⩾ t) et P(X ⩽ t) confondues, E = λ, mémoire non utilisée)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-110", "TCOMP-112", "TCOMP-113"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Loi exponentielle",

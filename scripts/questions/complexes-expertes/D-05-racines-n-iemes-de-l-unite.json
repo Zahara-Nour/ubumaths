@@ -2,7 +2,6 @@
 	"title": "Racines n-ièmes de l'unité et polygones réguliers",
 	"description": "Racines 4es et cubiques de l'unité, somme des racines n-ièmes, argument de ωᵏ, côté d'un polygone régulier inscrit dans le cercle unité (pièges : racine oubliée, signe, argument non ramené, côté confondu avec le rayon)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-057", "TEXP-058", "TEXP-059", "TEXP-065", "TEXP-016", "TEXP-068"],
 	"theme": "Nombres complexes",
 	"domain": "Géométrie et nombres complexes",
 	"subdomain": "Racines de l'unité",

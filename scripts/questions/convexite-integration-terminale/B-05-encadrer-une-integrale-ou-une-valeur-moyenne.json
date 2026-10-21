@@ -2,7 +2,6 @@
 	"title": "Encadrer une intégrale ou une valeur moyenne",
 	"description": "m ≤ f ≤ M sur [a ; b] donne m(b − a) ≤ ∫ₐᵇ f ≤ M(b − a) et m ≤ μ ≤ M ; lecture sur une courbe (piège : oubli de la longueur b − a)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-070", "TCOMP-075", "TSPE-206", "TSPE-208", "TSPE-210"],
 	"theme": "Intégration",
 	"domain": "Valeur moyenne",
 	"subdomain": "Encadrement",

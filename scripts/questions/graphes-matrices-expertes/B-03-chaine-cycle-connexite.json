@@ -2,7 +2,6 @@
 	"title": "Chaîne, cycle, connexité",
 	"description": "Reconnaître une chaîne, sa longueur, un cycle, un graphe connexe, sur une figure (pièges : longueur comptée en sommets, arête inexistante, graphe dessiné en un seul bloc mais non connexe)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-115", "TEXP-116"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Chaînes et connexité",

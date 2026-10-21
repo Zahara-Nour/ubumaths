@@ -2,7 +2,6 @@
 	"title": "Quel modèle ? k-uplet, k-uplet d'éléments distincts ou combinaison",
 	"description": "Reconnaître l'objet à dénombrer selon que l'ordre compte et que la répétition est permise : mot de passe, tiercé, copies tirées au sort, desserts de la semaine (pièges : kⁿ au lieu de nᵏ, combinaison quand l'ordre compte)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-043", "TSPE-032", "TSPE-034", "TSPE-037"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Reconnaître le modèle",

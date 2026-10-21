@@ -2,7 +2,6 @@
 	"title": "Bernoulli, binomiale ou géométrique : identifier la loi",
 	"description": "Reconnaître la loi d'une variable aléatoire décrite par un énoncé : nombre de succès (binomiale), rang du premier succès (géométrique), indicatrice (Bernoulli), tirages sans remise (aucune des trois)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-093", "TCOMP-091", "TCOMP-088", "TSPE-231", "TSPE-239"],
 	"theme": "Probabilités",
 	"domain": "Loi binomiale",
 	"subdomain": "Reconnaître une loi",

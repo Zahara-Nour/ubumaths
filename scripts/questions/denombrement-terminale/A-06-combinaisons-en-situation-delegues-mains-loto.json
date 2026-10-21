@@ -2,7 +2,6 @@
 	"title": "Combinaisons en situation : délégués, mains de cartes, loto, poignées de main",
 	"description": "Parties à k éléments d'un ensemble à n éléments comptées par la formule : délégués, mains de cartes, grille de loto, poignées de main (pièges : arrangement au lieu de combinaison, soit k! fois trop ; compter deux fois chaque poignée de main)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-037", "TSPE-038", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Combinaisons",

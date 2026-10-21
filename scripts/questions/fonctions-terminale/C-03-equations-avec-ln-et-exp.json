@@ -2,7 +2,6 @@
 	"title": "Résoudre une équation avec ln ou exp",
 	"description": "ln x = a, eˣ = b, ln(ax+b) = c, e^{ax+b} = k, 2 ln x = ln a ; valeur exacte (pièges : ln et exp confondus, domaine x > 0 oublié, signe)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-036", "TCOMP-022", "TSPE-174", "TSPE-167"],
 	"theme": "Fonctions",
 	"domain": "Fonction logarithme",
 	"subdomain": "Équations et inéquations",

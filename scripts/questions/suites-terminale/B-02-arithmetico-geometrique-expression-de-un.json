@@ -2,7 +2,6 @@
 	"title": "Suite arithmético-géométrique : expression de uₙ en fonction de n",
 	"description": "Suite auxiliaire vₙ = uₙ − ℓ géométrique de raison a, puis uₙ = (u₀ − ℓ)aⁿ + ℓ (pièges : u₀·aⁿ + ℓ, (u₀ − ℓ)aⁿ − ℓ, oubli de + ℓ)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-006", "TCOMP-012", "TCOMP-013", "TSPE-115"],
 	"theme": "Suites",
 	"domain": "Suites arithmético-géométriques",
 	"subdomain": "Suite auxiliaire",

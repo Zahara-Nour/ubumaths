@@ -2,7 +2,6 @@
 	"title": "Espace : trouver un vecteur directeur ou un vecteur normal",
 	"description": "Vecteur directeur de (AB), d'une droite orthogonale à un plan, de l'intersection de deux plans ; vecteur normal au plan (ABC) — tout vecteur colinéaire non nul est juste (pièges : point pris pour vecteur, vecteur directeur pris pour normal)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-053", "TSPE-054", "TSPE-074", "TSPE-075", "TSPE-093", "TSPE-102", "TSPE-103"],
 	"theme": "Géométrie",
 	"domain": "Représentations paramétriques et équations cartésiennes",
 	"subdomain": "Vecteurs directeurs et normaux",

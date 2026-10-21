@@ -2,7 +2,6 @@
 	"title": "Loi à densité : probabilité = aire sous la courbe, constante de normalisation",
 	"description": "Lire une probabilité comme une aire sous la densité (figure), fonction de répartition F(x) = P(X ⩽ x), constante k pour que f soit une densité (aire totale 1) (pièges : t/a au lieu de t²/a², b − a au lieu de 1/(b − a))",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-106", "TCOMP-107", "TCOMP-111", "TCOMP-112"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Densité et aire",

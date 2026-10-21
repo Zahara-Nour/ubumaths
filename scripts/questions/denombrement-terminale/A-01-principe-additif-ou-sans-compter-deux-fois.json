@@ -2,7 +2,6 @@
 	"title": "Principe additif : « ou », sans compter deux fois",
 	"description": "Cardinal d'une réunion d'ensembles deux à deux disjoints : sorties, codes de 3 ou 4 chiffres, cartes « cœur ou figure » (pièges : multiplier au lieu d'additionner, compter deux fois l'intersection)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-030", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Principes additif et multiplicatif",

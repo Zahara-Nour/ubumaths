@@ -2,7 +2,6 @@
 	"title": "Passer de la forme algébrique à la forme exponentielle",
 	"description": "z = a(1+i), −a + a√3 i, a√3 − ai, ki : r et θ dans re^{iθ} (pièges : r négatif, mauvais quadrant, argument non principal, cos et sin échangés)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-034", "TEXP-037", "TEXP-019", "TEXP-032"],
 	"theme": "Nombres complexes",
 	"domain": "Formes trigonométrique et exponentielle",
 	"subdomain": "Forme exponentielle",

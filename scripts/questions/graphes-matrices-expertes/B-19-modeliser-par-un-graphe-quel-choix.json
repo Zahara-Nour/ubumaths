@@ -2,7 +2,6 @@
 	"title": "Modéliser par un graphe : sommets, arêtes, situation possible ?",
 	"description": "Choisir ce que représentent sommets et arêtes, reconnaître le graphe complet d'un tournoi, décider si une situation est réalisable par la somme des degrés (pièges : sommets et arêtes inversés, ordre confondu avec le nombre d'arêtes, croire qu'un degré impair est interdit)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-118", "TEXP-112", "TEXP-113", "TEXP-114"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Modélisation par un graphe",

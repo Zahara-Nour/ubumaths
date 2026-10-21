@@ -2,7 +2,6 @@
 	"title": "Suites de matrices colonnes Uₙ₊₁ = AUₙ + C",
 	"description": "Calculer U₁ et U₂ pour une suite de matrices colonnes définie par Uₙ₊₁ = AUₙ ou Uₙ₊₁ = AUₙ + C, en situation de populations (pièges : UₙA au lieu de AUₙ, C oubliée, U₂ = 2U₁)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-129", "TEXP-131", "TEXP-136"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Suites et matrices",

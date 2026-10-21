@@ -2,7 +2,6 @@
 	"title": "Chaîne de Markov à deux états : distribution invariante",
 	"description": "Déterminer la distribution invariante π = πP d'une chaîne de Markov à deux états (pièges : composantes échangées, π = (½ ½) d'office, oubli de la condition a + b = 1)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-145", "TEXP-148"],
 	"theme": "Graphes et matrices",
 	"domain": "Chaînes de Markov",
 	"subdomain": "Chaînes de Markov",

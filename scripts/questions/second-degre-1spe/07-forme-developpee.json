@@ -2,7 +2,6 @@
 	"title": "Développer une forme canonique ou factorisée",
 	"description": "Forme développée réduite ax² + bx + c",
 	"grades": ["1_SPE"],
-	"points": ["1SPE-050"],
 	"theme": "Fonctions",
 	"domain": "Polynôme du second degré",
 	"status": "draft",

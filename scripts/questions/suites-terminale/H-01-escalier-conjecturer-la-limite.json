@@ -2,7 +2,6 @@
 	"title": "uₙ₊₁ = f(uₙ) : conjecturer la limite sur l'escalier",
 	"description": "Lecture de la construction en escalier pour des fonctions non affines : la limite conjecturée est l'abscisse d'un point d'intersection de 𝒞f et de y = x, celui vers lequel l'escalier se resserre (piège : l'autre point fixe, u₀)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-010", "TCOMP-011", "TSPE-160"],
 	"theme": "Suites",
 	"domain": "Suites récurrentes",
 	"subdomain": "Escalier",

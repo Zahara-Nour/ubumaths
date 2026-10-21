@@ -2,7 +2,6 @@
 	"title": "Nombre de parties d'un ensemble : 2 puissance n",
 	"description": "Parties d'un ensemble à n éléments, mots binaires, garnitures (avec ou sans partie vide), issues de n épreuves de Bernoulli (pièges : 2n, n², oubli ou ajout à tort de la partie vide)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-033"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Parties d'un ensemble",

@@ -2,7 +2,6 @@
 	"title": "Raisonnement par récurrence : hypothèse, hérédité, initialisation",
 	"description": "QCM : ce que l'on suppose dans l'hérédité, l'étape de calcul qui la prouve, l'implication à démontrer, et une récurrence sans initialisation (pièges : supposer P(n) pour tout n, réciproque)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-114"],
 	"theme": "Suites",
 	"domain": "Raisonnement par récurrence",
 	"subdomain": "Structure d'une récurrence",

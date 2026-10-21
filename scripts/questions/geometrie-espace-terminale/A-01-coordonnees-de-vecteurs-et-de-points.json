@@ -2,7 +2,6 @@
 	"title": "Espace : coordonnées de vecteurs et de points",
 	"description": "Coordonnées de AB, d'une combinaison linéaire, du milieu, de l'image par une translation, du 4e sommet d'un parallélogramme (pièges : A − B, z oublié, signe)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-051", "TSPE-052", "TSPE-057", "TSPE-058", "TSPE-064"],
 	"theme": "Géométrie",
 	"domain": "Vecteurs, droites et plans de l'espace",
 	"subdomain": "Coordonnées dans l'espace",

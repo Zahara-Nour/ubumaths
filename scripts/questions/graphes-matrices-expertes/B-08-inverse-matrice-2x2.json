@@ -2,7 +2,6 @@
 	"title": "Inverse d'une matrice carrée d'ordre 2",
 	"description": "Calculer le déterminant ad − bc et l'inverse d'une matrice 2 × 2, à coefficients entiers ou fractionnaires (pièges : signes de b et c non changés, a et d non échangés, oubli de diviser par ad − bc)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-125", "TEXP-133"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Calcul matriciel",

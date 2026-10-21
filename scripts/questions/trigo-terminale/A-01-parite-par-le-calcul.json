@@ -2,7 +2,6 @@
 	"title": "Parité d'une fonction trigonométrique : calculer f(−x)",
 	"description": "Fonctions construites avec cos et sin (somme avec un polynôme, produit, quotient par x) : paire, impaire ou ni l'une ni l'autre (pièges : sin(−x) = −sin x, produit impaire × paire, quotient de deux impaires)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-181"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Parité et périodicité",

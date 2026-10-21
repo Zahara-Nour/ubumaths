@@ -2,7 +2,6 @@
 	"title": "Calculer avec des nombres complexes sous forme algébrique",
 	"description": "Somme, produit, carré, cube par la formule du binôme, puissance de i (pièges : i² = 1, signe de la partie imaginaire, période 4 des puissances de i)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-001", "TEXP-002", "TEXP-005", "TEXP-006"],
 	"theme": "Nombres complexes",
 	"domain": "Forme algébrique",
 	"subdomain": "Calculs algébriques",

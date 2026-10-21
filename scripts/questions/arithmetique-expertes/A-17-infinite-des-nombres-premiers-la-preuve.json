@@ -2,7 +2,6 @@
 	"title": "Infinité des nombres premiers : l'idée de la preuve",
 	"description": "Comprendre la preuve d'Euclide : N = p₁ × … × pₖ + 1 n'est divisible par aucun pᵢ (reste 1), son plus petit diviseur premier est hors de la liste, N n'est pas forcément premier (pièges : « N est premier », « N est impair », conclure que la liste était fausse sans raison)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-100", "TEXP-104", "TEXP-099"],
 	"theme": "Arithmétique",
 	"domain": "Nombres premiers",
 	"subdomain": "Nombres premiers",

@@ -2,7 +2,6 @@
 	"title": "Somme des coefficients binomiaux : 2 puissance n",
 	"description": "Σ C(n, k) = 2ⁿ (toutes les parties comptées selon leur taille), somme privée des termes extrêmes, parties d'au moins 2 éléments (pièges : 2n, n!, oubli de la partie vide ou des singletons)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-045", "TSPE-033", "TSPE-039"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Parties d'un ensemble",

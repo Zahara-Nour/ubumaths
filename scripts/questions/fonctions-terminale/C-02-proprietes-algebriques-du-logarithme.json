@@ -2,7 +2,6 @@
 	"title": "Propriétés algébriques du logarithme",
 	"description": "ln(ab), ln(a/b), ln(aⁿ), ln(1/a), ln √a pour transformer une écriture (pièges : ln(a+b) = ln a + ln b, ln a / ln b = ln(a − b), signe de ln(1/a))",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-024", "TCOMP-035", "TSPE-168", "TSPE-173"],
 	"theme": "Fonctions",
 	"domain": "Fonction logarithme",
 	"subdomain": "Propriétés algébriques",

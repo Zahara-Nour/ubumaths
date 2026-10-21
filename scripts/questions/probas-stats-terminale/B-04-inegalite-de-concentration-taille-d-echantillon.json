@@ -2,7 +2,6 @@
 	"title": "Inégalité de concentration : majorant et taille d'échantillon",
 	"description": "P(|Mₙ − μ| ⩾ δ) ⩽ V/(nδ²) : majorant pour n donné, plus petit n pour un risque α donné (pièges : V/(nδ), oubli de n, arrondi par défaut)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-254", "TSPE-256", "TSPE-255", "TSPE-247"],
 	"theme": "Probabilités",
 	"domain": "Concentration et loi des grands nombres",
 	"subdomain": "Inégalité de concentration",

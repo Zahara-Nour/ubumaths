@@ -2,7 +2,6 @@
 	"title": "Dérivée d'une composée : √u, uⁿ, cos u, sin u",
 	"description": "Formule (v∘u)′ = (v′∘u) × u′ appliquée à √(x²+c), (x²+b)ⁿ, cos(ax+b), sin(ax²) (pièges : u′ oublié, exposant non diminué, signe de (cos)′)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-137", "TSPE-142", "TSPE-143", "TSPE-182"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions composées",

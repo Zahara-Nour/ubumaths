@@ -2,7 +2,6 @@
 	"title": "Solution de y′ = ay + b vérifiant une condition initiale",
 	"description": "Solution constante −b/a, solutions x ↦ Ce^{ax} − b/a, puis la constante C fixée par f(0) ; formes y′ = ay + b et y′ + ay = b",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-056", "TCOMP-055", "TSPE-195"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Équations différentielles",
 	"subdomain": "Équation y′ = ay + b",

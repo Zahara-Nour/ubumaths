@@ -2,7 +2,6 @@
 	"title": "Inégalité de Bienaymé-Tchebychev",
 	"description": "P(|X − μ| ⩾ δ) ⩽ V(X)/δ² : majorer un écart, minorer la probabilité d'un intervalle centré, avec la variance ou l'écart type (pièges : V/δ, σ/δ², oubli du 1 − …)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-253", "TSPE-249"],
 	"theme": "Probabilités",
 	"domain": "Concentration et loi des grands nombres",
 	"subdomain": "Inégalité de Bienaymé-Tchebychev",

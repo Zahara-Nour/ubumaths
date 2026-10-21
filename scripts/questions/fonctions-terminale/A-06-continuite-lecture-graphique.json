@@ -2,7 +2,6 @@
 	"title": "Continuité lue sur une courbe : saut ou point anguleux",
 	"description": "Reconnaître sur un graphique une discontinuité (saut) et distinguer continuité et dérivabilité (point anguleux : continue, non dérivable)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-018", "TSPE-154", "TSPE-155"],
 	"theme": "Fonctions",
 	"domain": "Continuité",
 	"subdomain": "Lecture graphique",

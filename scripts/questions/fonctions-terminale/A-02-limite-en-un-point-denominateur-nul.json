@@ -2,7 +2,6 @@
 	"title": "Limite en un point : dénominateur qui tend vers 0",
 	"description": "Limite à droite, à gauche ou des deux côtés de k/(x−a), k/(x−a)², (x+b)/(x−a) : signe du dénominateur selon le côté (pièges : côté oublié, signe du numérateur, 0 au lieu de ±∞)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-018", "TCOMP-028", "TSPE-126", "TSPE-130", "TSPE-144"],
 	"theme": "Fonctions",
 	"domain": "Limites de fonctions",
 	"subdomain": "Limite en un point",

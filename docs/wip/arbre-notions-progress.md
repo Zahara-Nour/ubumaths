@@ -10,8 +10,8 @@ _Mis à jour le 2026-10-21, après #1595 (étape 3, F mergée)._
 - **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D : « Ma
   progression » élève), #1595 (F : analytique de classe sur l'arbre — points neufs, ordre de l'arbre, notion,
   rétention par branche). Pas en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **E** (suppression éditeur et API thèmes/objectifs) — phase 0 à faire valider ; puis
-  étape 4 (destructive : arrêt).
+- **Prochaine action** : **E** en PR (`refactor/arbre-bascule-e`, rattachement par code retiré) ; puis étape 4
+  (destructive : arrêt).
 - **En attente de David** : F — garder `keepLinksOfGrade` (carte d'un autre niveau sans point du niveau de la
   classe = colonne gardée) ou n'afficher que les points du niveau ? Signalés avant : 11 modèles sans corrigé ;
   c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
@@ -1244,3 +1244,14 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   niveau apparaît (règle « aucun point du niveau → tous ») ; `branchId` inconnu → courbe vide sans erreur.
   Écart à la phase 0 signalé à David : règle `keepLinksOfGrade` gardée (carte d'un autre niveau sans point du
   niveau de la classe = colonne gardée).
+- **2026-10-21 — Étape 3, PR E, phase 0 validée par David** (« je te suis », worktree `ubumaths-wt-arbre-notions`,
+  branche `refactor/arbre-bascule-e`). Constat : l'éditeur et les routes thèmes / objectifs étaient déjà partis avec
+  #1060 ; `src/` ne lit plus les tables. E retire les rattachements par CODE (Q8) : `link-template-points.ts`,
+  `scripts/lib/template-points*.ts` et leurs tests, la lecture de `"points"` dans `create-questions.ts`
+  (`--remplacer-points`, `--liens-publies`) et `question-specs.ts` ; deux générateurs morts
+  (`generate-curriculum-seed.ts`, `generate-competence-seeds.ts`) ; types `CurriculumTheme` / `CurriculumObjective`.
+  **Q1 (a)** : `"points"` retiré des 398 JSON de `scripts/questions` (contrôle : chaque fichier relu identique hors
+  `points`) ; un fichier qui le porte encore est refusé (`readTemplateFile`, `scripts/lib/template-file.ts`).
+  **Q2** : les 1 026 liens de modèles vers les anciens points restent jusqu'à l'étape 4. Restent aussi jusque-là :
+  tables, 8 fonctions SQL, tests d'intégration de l'ancien monde, copie par `db:seed-riche`. Accès : rien ne change,
+  pas de migration.

@@ -2,7 +2,6 @@
 	"title": "Espace : équation d'une sphère, centre et rayon",
 	"description": "Équation de la sphère de centre et de rayon donnés (forme libre ou centre-rayon), passant par un point ; centre et rayon lus sur une équation développée (pièges : signes du centre, r au lieu de r², multiple de l'équation)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-104"],
 	"theme": "Géométrie",
 	"domain": "Représentations paramétriques et équations cartésiennes",
 	"subdomain": "Équation d'une sphère",

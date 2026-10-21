@@ -2,7 +2,6 @@
 	"title": "Modéliser une situation par une matrice",
 	"description": "Traduire une situation par une matrice : système de prix AX = B, échanges de population U(n+1) = MU(n) (pourcentages), suite récurrente d'ordre 2 X(n+1) = AX(n), système U(n+1) = AU(n) + C (pièges : matrice transposée, pourcentages gardés entiers, lignes de la suite échangées, terme constant oublié)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-132", "TEXP-128", "TEXP-129", "TEXP-131"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Modélisation matricielle",

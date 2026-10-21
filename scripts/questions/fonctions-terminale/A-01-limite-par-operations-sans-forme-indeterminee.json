@@ -2,7 +2,6 @@
 	"title": "Limite d'une fonction par opérations, sans forme indéterminée",
 	"description": "Limites en ±∞ ou en 0 de sommes simples de fonctions de référence (1/x, 1/x², √x, x³, eˣ, ln) sans forme indéterminée (pièges : signe du coefficient, eˣ → 0 en −∞, ln 0 « = 0 »)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-019", "TCOMP-028", "TSPE-128", "TSPE-130", "TSPE-144", "TSPE-170"],
 	"theme": "Fonctions",
 	"domain": "Limites de fonctions",
 	"subdomain": "Opérations sur les limites",

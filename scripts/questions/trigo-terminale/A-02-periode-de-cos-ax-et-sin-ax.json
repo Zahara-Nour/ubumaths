@@ -2,7 +2,6 @@
 	"title": "Période de x ↦ cos(ax + b) et x ↦ sin(ax + b)",
 	"description": "Plus petite période strictement positive : 2π/a (pièges : 2π recopié, π/a, 2aπ, constante b comptée, période 2 pour sin(πx))",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-181"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Parité et périodicité",

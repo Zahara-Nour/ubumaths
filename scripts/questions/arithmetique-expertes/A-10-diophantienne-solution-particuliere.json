@@ -2,7 +2,6 @@
 	"title": "Équation diophantienne ax + by = c : une solution particulière",
 	"description": "Trouver une solution particulière de ax + by = c (plusieurs bonnes réponses), compléter une solution, résoudre un problème de pièces (pièges : u et v de Bézout non multipliés par c, x et y inversés)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-090"],
 	"theme": "Arithmétique",
 	"domain": "PGCD, Bézout et Gauss",
 	"subdomain": "Équations diophantiennes",

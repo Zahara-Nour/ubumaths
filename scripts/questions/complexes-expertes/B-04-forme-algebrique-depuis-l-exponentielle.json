@@ -2,7 +2,6 @@
 	"title": "Passer de la forme exponentielle ou trigonométrique à la forme algébrique",
 	"description": "re^{iπ/3}, k√2 e^{−iπ/4}, r(cos 2π/3 + i sin 2π/3), re^{−iπ/2}, re^{5iπ/6} → a + ib (pièges : cos et sin échangés, signe, valeurs remarquables)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-038", "TEXP-032", "TEXP-019"],
 	"theme": "Nombres complexes",
 	"domain": "Formes trigonométrique et exponentielle",
 	"subdomain": "Forme algébrique",

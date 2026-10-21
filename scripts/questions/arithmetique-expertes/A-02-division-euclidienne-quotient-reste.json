@@ -2,7 +2,6 @@
 	"title": "Division euclidienne : quotient et reste, dividende négatif",
 	"description": "Quotient et reste de la division euclidienne d'un entier relatif par un entier naturel non nul, avec 0 ⩽ r < b (pièges : reste négatif pour un dividende négatif, égalité a = bq + r où r ⩾ b)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-072"],
 	"theme": "Arithmétique",
 	"domain": "Divisibilité",
 	"subdomain": "Division euclidienne",

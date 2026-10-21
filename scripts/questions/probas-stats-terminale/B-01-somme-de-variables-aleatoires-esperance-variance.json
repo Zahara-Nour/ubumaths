@@ -2,7 +2,6 @@
 	"title": "Somme de variables aléatoires : espérance et variance",
 	"description": "E(aX + bY) = aE(X) + bE(Y) ; si X et Y indépendantes : V(X + Y) = V(X) + V(Y), V(X − Y) = V(X) + V(Y), V(aX + bY) = a²V(X) + b²V(Y), écart type de la somme (pièges : V(X) − V(Y), aV(X), σ(X) + σ(Y))",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-241", "TSPE-242", "TSPE-243", "TSPE-244", "TSPE-249", "TSPE-250"],
 	"theme": "Probabilités",
 	"domain": "Sommes de variables aléatoires",
 	"subdomain": "Espérance et variance",

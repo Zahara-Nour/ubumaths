@@ -2,7 +2,6 @@
 	"title": "Angle et rapport de longueurs par le quotient (z_C − z_A)/(z_B − z_A)",
 	"description": "Calculer le quotient, en déduire AC/AB (module) et une mesure de l'angle (AB, AC) (argument principal) (pièges : quotient inversé, angle de signe faux, module au carré)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-056", "TEXP-063", "TEXP-062"],
 	"theme": "Nombres complexes",
 	"domain": "Géométrie et nombres complexes",
 	"subdomain": "Angles et quotient",

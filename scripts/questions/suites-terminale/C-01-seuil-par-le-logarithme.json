@@ -2,7 +2,6 @@
 	"title": "Seuil : plus petit entier n tel que qⁿ dépasse une valeur (logarithme)",
 	"description": "qⁿ < s ⟺ n > ln(s)/ln(q) en changeant le sens car ln(q) < 0 ; doublement d'un capital ; seuil d'une suite arithmético-géométrique (pièges : partie entière sans + 1, sens de l'inégalité)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-036", "TCOMP-037", "TSPE-174", "TSPE-175"],
 	"theme": "Suites",
 	"domain": "Seuils",
 	"subdomain": "Logarithme",

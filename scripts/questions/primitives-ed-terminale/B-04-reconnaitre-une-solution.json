@@ -2,7 +2,6 @@
 	"title": "Reconnaître une solution d'une équation différentielle",
 	"description": "QCM : vérifier, en dérivant, laquelle de quatre fonctions est solution de y′ = ay, y′ = ay + b ou y′ = g(x)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-051", "TCOMP-047", "TSPE-189", "TSPE-192", "TSPE-193"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Équations différentielles",
 	"subdomain": "Notion de solution",

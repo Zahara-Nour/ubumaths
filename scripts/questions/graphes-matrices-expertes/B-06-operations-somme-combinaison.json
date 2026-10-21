@@ -2,7 +2,6 @@
 	"title": "Opérations sur les matrices : somme, combinaison linéaire",
 	"description": "Calculer A + B, kA − B, et trouver B tel que A + B = C pour des matrices 2 × 2, coefficient par coefficient (pièges : signe d'un coefficient négatif, k appliqué aux deux matrices)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-124", "TEXP-122"],
 	"theme": "Graphes et matrices",
 	"domain": "Matrices",
 	"subdomain": "Calcul matriciel",

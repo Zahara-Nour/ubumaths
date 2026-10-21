@@ -2,7 +2,6 @@
 	"title": "Coefficient d'une primitive de la forme (v′∘u)×u′",
 	"description": "Trouver k pour que k·uⁿ⁺¹, k·sin(u) ou k/u soit une primitive de u′uⁿ, u′cos u ou u′/u² à un facteur près (spécialité seulement)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-194"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Primitives",
 	"subdomain": "Forme (v′∘u)×u′",

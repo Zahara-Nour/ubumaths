@@ -2,7 +2,6 @@
 	"title": "Reconnaître l'allure d'une courbe à partir de tableaux",
 	"description": "Choisir parmi quatre courbes celle compatible avec le tableau de variations de f (et le signe de f″) ; chaque leurre contredit une information (variations, convexité, abscisse de l'inflexion ou des extremums, valeurs des extremums)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-147"],
 	"theme": "Fonctions convexes",
 	"domain": "Convexité",
 	"subdomain": "Lecture graphique",

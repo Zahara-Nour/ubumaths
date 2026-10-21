@@ -2,7 +2,6 @@
 	"title": "Statistique à deux variables : coordonnées du point moyen",
 	"description": "Calculer G(x̄ ; ȳ) à partir d'un tableau de 4 à 6 points (pièges : moyenne des y oubliée, division par le mauvais effectif)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-122", "TCOMP-116"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Point moyen",

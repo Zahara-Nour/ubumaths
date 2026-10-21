@@ -2,7 +2,6 @@
 	"title": "Limite de a × qⁿ + b, raison positive",
 	"description": "Limite d'une suite géométrique de raison q > 0 (q > 1 ou 0 < q < 1), multipliée et translatée (pièges : qⁿ → 0 pour q > 1, signe de a, q proche de 1)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-004", "TCOMP-008", "TSPE-111", "TSPE-113"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Suites géométriques",

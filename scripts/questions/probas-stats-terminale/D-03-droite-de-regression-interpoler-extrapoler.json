@@ -2,7 +2,6 @@
 	"title": "Droite de régression donnée par la calculatrice : estimer une valeur",
 	"description": "Utiliser l'équation y = ax + b fournie par la calculatrice pour estimer y (ou x), avec un rang d'année (pièges : année au lieu du rang, rang décalé de 1, a et b échangés)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-123", "TCOMP-124", "TCOMP-120"],
 	"theme": "Statistiques",
 	"domain": "Statistique à deux variables",
 	"subdomain": "Ajustement affine",

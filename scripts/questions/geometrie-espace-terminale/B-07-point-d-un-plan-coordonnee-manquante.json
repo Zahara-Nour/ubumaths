@@ -2,7 +2,6 @@
 	"title": "Espace : point d'un plan, coordonnée manquante",
 	"description": "Trouver la coordonnée manquante d'un point appartenant à un plan donné par une équation cartésienne (pièges : signe, division oubliée)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-092", "TSPE-096"],
 	"theme": "Géométrie",
 	"domain": "Représentations paramétriques et équations cartésiennes",
 	"subdomain": "Équation cartésienne d'un plan",

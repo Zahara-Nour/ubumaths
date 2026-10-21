@@ -2,7 +2,6 @@
 	"title": "Primitive d'un polynôme vérifiant une condition",
 	"description": "Primitive de xⁿ (n entier naturel) et d'un polynôme du second degré, unique grâce à F(0) = 0 ou F(1) = y₀",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-048", "TCOMP-052", "TSPE-190", "TSPE-191"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Primitives",
 	"subdomain": "Primitives des fonctions de référence",

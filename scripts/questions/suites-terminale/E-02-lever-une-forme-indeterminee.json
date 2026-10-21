@@ -2,7 +2,6 @@
 	"title": "Limite d'une suite : lever une forme indéterminée",
 	"description": "∞ − ∞ et ∞/∞ levées par factorisation du terme prépondérant : polynôme, n − a√n, quotients de polynômes de degrés égaux ou différents (pièges : 0 ou « pas de limite », a/c quel que soit le degré)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-110", "TSPE-113", "TSPE-131"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Formes indéterminées",

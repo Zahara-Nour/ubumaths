@@ -2,7 +2,6 @@
 	"title": "Chaîne de Markov : matrice de transition et graphe pondéré",
 	"description": "Écrire la matrice de transition d'une chaîne de Markov à deux ou trois états, donnée par un énoncé ou par son graphe orienté pondéré (pièges : matrice transposée — lignes et colonnes inversées —, probabilité de rester oubliée, ligne de somme différente de 1)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-140", "TEXP-142", "TEXP-139", "TEXP-146"],
 	"theme": "Graphes et matrices",
 	"domain": "Chaînes de Markov",
 	"subdomain": "Chaînes de Markov",

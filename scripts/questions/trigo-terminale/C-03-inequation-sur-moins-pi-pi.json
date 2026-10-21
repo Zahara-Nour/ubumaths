@@ -2,7 +2,6 @@
 	"title": "Résoudre cos x ⩽ a ou sin x ⩾ a entre −π et π (bornes comprises)",
 	"description": "Inéquations cos x ⩽ a, cos x > a, sin x ⩾ a, sin x < a sur [−π ; π] (bornes −π et π comprises), valeurs remarquables ; réponse en intervalles (pièges : −π oublié, bornes ouvertes ou fermées, sens, cos et sin confondus, mesure hors intervalle)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-186", "TSPE-183"],
 	"theme": "Fonctions",
 	"domain": "Fonctions trigonométriques",
 	"subdomain": "Équations et inéquations",

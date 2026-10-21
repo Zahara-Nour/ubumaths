@@ -2,7 +2,6 @@
 	"title": "Théorème des valeurs intermédiaires : nombre de solutions de f(x) = k",
 	"description": "Compter les solutions de f(x) = k à partir d'un tableau de variations (fonction continue, strictement monotone par morceaux), limites aux bornes comprises (pièges : une solution par intervalle quoi qu'il arrive, limite non atteinte)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-032", "TCOMP-020", "TSPE-159", "TSPE-157", "TSPE-158"],
 	"theme": "Fonctions",
 	"domain": "Continuité",
 	"subdomain": "Théorème des valeurs intermédiaires",

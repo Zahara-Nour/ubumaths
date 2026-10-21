@@ -2,7 +2,6 @@
 	"title": "Dérivée de x ↦ ∫ₐˣ f(t) dt",
 	"description": "F(x) = ∫ₐˣ g(t) dt est la primitive de g qui s'annule en a : F′ = g, F′(2) = g(2), sens de variation par le signe de g, F(a) = 0 (pièges : F′ = g′, F′(x) = g(x) − g(a), F(a) ≠ 0)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-073", "TSPE-202"],
 	"theme": "Intégration",
 	"domain": "Fonction intégrale",
 	"subdomain": "Dérivée",

@@ -2,7 +2,6 @@
 	"title": "Principe multiplicatif : produit cartésien, menus, identifiants",
 	"description": "Cardinal d'un produit cartésien, choix successifs indépendants (menus, identifiants lettres puis chiffres), formule « entrée + plat ou plat + dessert » (pièges : additionner au lieu de multiplier, multiplier les deux formules)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-031", "TSPE-030", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "Principes additif et multiplicatif",

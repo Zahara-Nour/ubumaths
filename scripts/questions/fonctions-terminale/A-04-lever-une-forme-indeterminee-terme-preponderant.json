@@ -2,7 +2,6 @@
 	"title": "Limite d'une fonction : lever une forme indéterminée par le terme prépondérant",
 	"description": "Polynôme en −∞ et fractions rationnelles en +∞ : factoriser par le terme de plus haut degré (pièges : FI prise pour 0 ou 1, quotient des termes constants, signe de x³ en −∞)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-131", "TSPE-144", "TSPE-130"],
 	"theme": "Fonctions",
 	"domain": "Limites de fonctions",
 	"subdomain": "Formes indéterminées",

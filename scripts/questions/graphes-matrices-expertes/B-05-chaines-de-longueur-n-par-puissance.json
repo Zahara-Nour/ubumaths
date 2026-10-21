@@ -2,7 +2,6 @@
 	"title": "Nombre de chaînes de longueur n par la puissance de la matrice d'adjacence",
 	"description": "Lire dans Aⁿ le nombre de chaînes (ou de chemins orientés) de longueur n entre deux sommets, compter les chaînes de longueur 2 (pièges : coefficient de A au lieu de Aⁿ, coefficient (j, i) au lieu de (i, j) pour un graphe orienté)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-119", "TEXP-115", "TEXP-117"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Matrice d'adjacence",

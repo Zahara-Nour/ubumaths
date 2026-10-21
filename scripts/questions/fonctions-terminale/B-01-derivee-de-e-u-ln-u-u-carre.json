@@ -2,7 +2,6 @@
 	"title": "Dérivée de eᵘ, ln u et u²",
 	"description": "Formules (eᵘ)′ = u′eᵘ, (ln u)′ = u′/u, (u²)′ = 2u′u avec u affine ou du second degré (pièges : (eᵘ)′ = eᵘ, (ln u)′ = 1/u, (u²)′ = 2u)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-026", "TCOMP-027", "TSPE-137", "TSPE-142", "TSPE-143"],
 	"theme": "Fonctions",
 	"domain": "Dérivation",
 	"subdomain": "Fonctions composées",

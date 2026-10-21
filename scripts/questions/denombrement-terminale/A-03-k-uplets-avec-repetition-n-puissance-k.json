@@ -2,7 +2,6 @@
 	"title": "k-uplets (avec répétition) : n puissance k",
 	"description": "Nombre de k-uplets d'un ensemble à n éléments : cadenas, questionnaire, ADN, dés, mots (pièges : kⁿ au lieu de nᵏ, n × k, éléments distincts à tort)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-032", "TSPE-044"],
 	"theme": "Probabilités",
 	"domain": "Dénombrement",
 	"subdomain": "k-uplets",

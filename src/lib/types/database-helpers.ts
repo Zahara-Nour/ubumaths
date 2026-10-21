@@ -582,12 +582,6 @@ export interface TextbookRef {
 	numero?: string;
 }
 
-/** Level 1 — Thème (per grade). e.g. "Calcul". */
-export type CurriculumTheme = Omit<Tables<'curriculum_themes'>, 'grade'> & { grade: GradeCode };
-
-/** Level 2 — Objectif (under a Thème). e.g. "Fractions". What the student sees. */
-export type CurriculumObjective = Tables<'curriculum_objectives'>;
-
 /**
  * Level 3 — Point: the single grain for programme coverage, resource tagging
  * and student acquisition (refonte 2026-08-29 — absorbed family A capacities).

@@ -15,31 +15,16 @@
  * Statut forcé à `draft` (David publie lui-même) ; `test_specs` écrit ; chaque ligne
  * est relue après écriture. S'arrête à la première erreur.
  *
- * Rattachement au référentiel : champ facultatif `"points": ["1SPE-135", …]` (codes de
- * `curriculum_points`, ≤ 20, sans doublon), écrit dans `question_template_points`. Tous les
- * fichiers sont vérifiés AVANT toute écriture (modèle, codes résolus en une requête, niveau de
- * chaque point présent dans `grades`). Sans champ `points`, aucun lien n'est lu ni touché.
- * Un lien en base absent du fichier n'est JAMAIS supprimé, sauf `--remplacer-points`.
+ * Le champ `points` (codes des anciens points) est abandonné : un fichier qui le porte est
+ * refusé. Les points d'un modèle se rattachent dans sa page admin.
  *
  * Usage :
  *   pnpm tsx scripts/create-questions.ts --dir <dossier>            (simulation)
  *   pnpm tsx scripts/create-questions.ts --dir <dossier> --publier  (écrit)
  *   … --publier --mettre-a-jour   remplace aussi le contenu des modèles DÉJÀ en base, s'ils
- *                                 sont encore en brouillon (un modèle publié n'est jamais touché),
- *                                 et ajoute leurs liens manquants vers les points du fichier.
+ *                                 sont encore en brouillon (un modèle publié n'est jamais touché).
  *                                 Contenu = variations, shared, options, test_specs ET grades
- *                                 (comparés comme un ensemble). Les grades sont écrits AVANT les
- *                                 liens ; un lien d'un ancien niveau reste en base, signalé
- *                                 « en base absents du fichier » (retiré seulement avec
- *                                 --remplacer-points)
- *   … --mettre-a-jour --remplacer-points   supprime en plus les liens en base absents du fichier
- *   … --mettre-a-jour --liens-publies      sur un modèle PUBLIÉ : AJOUTE seulement ses liens
- *                                 manquants (son contenu n'est jamais touché, aucun lien n'est
- *                                 retiré ; ses grades ne changent pas, et les points sont
- *                                 contrôlés contre les grades LUS EN BASE). Une carte publiée rattachée entre dans le paquet de
- *                                 révision « Programme » des élèves : simuler d'abord.
- *
- * Modèle sans fichier dans le dépôt : `scripts/link-template-points.ts --mapping`.
+ *                                 (comparés comme un ensemble).
  */
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -47,20 +32,11 @@ import type { QuestionTemplate } from '$lib/questions/types';
 import { checkTemplate } from '$lib/migration/review/check-template';
 import { toTemplateInsertRow } from '$lib/migration/review/template-insert-row';
 import { argValue, createScriptClient, findReviewerId, hasFlag } from './relecture/common';
-import {
-	checkPointCodes,
-	describeLinkPlan,
-	extractTemplatePoints,
-	planPointLinks,
-	sameGrades
-} from './lib/template-points';
-import { readLinks, resolvePoints, writeLinks } from './lib/template-points-db';
+import { readTemplateFile, sameGrades } from './lib/template-file';
 
 interface Entree {
 	fichier: string;
 	modele: Omit<QuestionTemplate, 'id'>;
-	/** `null` : pas de champ `points` dans le fichier */
-	codes: string[] | null;
 }
 
 /** Sérialisation à clés triées : `jsonb` réordonne les clés, `JSON.stringify` seul verrait
@@ -76,22 +52,11 @@ function canonique(valeur: unknown): string {
 async function main(): Promise<number> {
 	const publier = hasFlag('--publier');
 	const mettreAJour = hasFlag('--mettre-a-jour');
-	const remplacerPoints = hasFlag('--remplacer-points');
-	const liensPublies = hasFlag('--liens-publies');
 	const dossier = argValue('--dir');
 	if (!dossier) {
 		console.error(
-			'Usage : pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier [--mettre-a-jour [--remplacer-points | --liens-publies]]]'
+			'Usage : pnpm tsx scripts/create-questions.ts --dir <dossier> [--publier [--mettre-a-jour]]'
 		);
-		return 2;
-	}
-	if ((remplacerPoints || liensPublies) && !mettreAJour) {
-		console.error('⛔ --remplacer-points et --liens-publies ne valent qu’avec --mettre-a-jour');
-		return 2;
-	}
-	// Un modèle publié ne perd jamais un lien : les deux drapeaux ne vont pas ensemble
-	if (remplacerPoints && liensPublies) {
-		console.error('⛔ --remplacer-points et --liens-publies sont incompatibles');
 		return 2;
 	}
 	const { supabase, target } = createScriptClient(publier);
@@ -109,7 +74,7 @@ async function main(): Promise<number> {
 	// 1. Tout vérifier avant la moindre écriture
 	const entrees: Entree[] = [];
 	for (const fichier of fichiers) {
-		const extrait = extractTemplatePoints(
+		const extrait = readTemplateFile(
 			JSON.parse(readFileSync(join(dossier, fichier), 'utf8')) as unknown,
 			fichier
 		);
@@ -123,24 +88,14 @@ async function main(): Promise<number> {
 			console.error(`⛔ ${fichier} refusé : ${rapport.reasons.join(' ; ')}`);
 			return 1;
 		}
-		entrees.push({ fichier, modele, codes: extrait.codes });
-	}
-	const tousLesCodes = [...new Set(entrees.flatMap((e) => e.codes ?? []))];
-	const resolus = await resolvePoints(supabase, tousLesCodes);
-	const erreursPoints = checkPointCodes(
-		entrees.map((e) => ({ file: e.fichier, codes: e.codes, grades: e.modele.grades ?? [] })),
-		resolus
-	);
-	if (erreursPoints.length > 0) {
-		for (const erreur of erreursPoints) console.error(`⛔ ${erreur}`);
-		return 1;
+		entrees.push({ fichier, modele });
 	}
 
 	// 2. Créer / mettre à jour
 	let crees = 0;
 	let deja = 0;
 	let misAJour = 0;
-	for (const { fichier, modele, codes } of entrees) {
+	for (const { fichier, modele } of entrees) {
 		let requete = supabase
 			.from('question_templates')
 			.select('id, status, grades, variations, shared, options, test_specs')
@@ -162,7 +117,6 @@ async function main(): Promise<number> {
 			}
 			const existant = existants[0];
 			const ligne = toTemplateInsertRow(modele, auteur);
-			// `points` n'est pas du contenu du modèle : comparé à part, sur les liens.
 			// `grades` : comparé comme un ensemble (l'ordre ne compte pas)
 			const memesGrades = sameGrades(existant.grades, ligne.grades);
 			const identique =
@@ -171,99 +125,48 @@ async function main(): Promise<number> {
 				canonique(existant.shared) === canonique(ligne.shared) &&
 				canonique(existant.options) === canonique(ligne.options) &&
 				canonique(existant.test_specs) === canonique(ligne.test_specs);
-			const plan = codes ? planPointLinks(codes, await readLinks(supabase, existant.id)) : null;
-			const liensAEcrire =
-				!!plan && (plan.toAdd.length > 0 || (remplacerPoints && plan.extra.length > 0));
 			const noteGrades = memesGrades
 				? ''
 				: `\n      grades : [${existant.grades.join(', ')}] → [${ligne.grades.join(', ')}]`;
-			const noteLiens = `${noteGrades}${plan ? `\n      ${describeLinkPlan(plan, remplacerPoints)}` : ''}`;
-			if ((identique && !liensAEcrire) || !mettreAJour) {
-				const aFaire = [
-					identique ? '' : 'CONTENU DIFFÉRENT',
-					plan?.toAdd.length ? 'LIENS À AJOUTER' : ''
-				].filter(Boolean);
+			if (identique || !mettreAJour) {
 				console.log(
-					`  = ${fichier} : déjà en base (${existant.id})${aFaire.length ? ` — ${aFaire.join(', ')} (--mettre-a-jour)` : ''}${noteLiens}`
+					`  = ${fichier} : déjà en base (${existant.id})${identique ? '' : ' — CONTENU DIFFÉRENT (--mettre-a-jour)'}${noteGrades}`
 				);
 				deja++;
 				continue;
 			}
 			if (existant.status !== 'draft') {
-				// Publié : avec --liens-publies, seulement l'AJOUT de liens ; le contenu reste tel quel
-				if (!liensPublies || !codes || !plan) {
-					console.error(`⛔ ${fichier} : modèle ${existant.status}, jamais modifié par ce script`);
-					return 1;
-				}
-				// Les grades du fichier ne s'appliquent pas à un modèle publié : ses points doivent
-				// correspondre aux grades LUS EN BASE
-				const erreursPublie = checkPointCodes(
-					[{ file: fichier, codes, grades: existant.grades }],
-					resolus
-				);
-				if (erreursPublie.length > 0) {
-					for (const erreur of erreursPublie) console.error(`⛔ ${erreur} (grades en base)`);
-					return 1;
-				}
-				const noteContenu = identique ? '' : ' — contenu différent du fichier, NON touché';
-				if (plan.toAdd.length === 0) {
-					console.log(
-						`  = ${fichier} : ${existant.status}, aucun lien à ajouter${noteContenu}${noteLiens}`
-					);
-					deja++;
-					continue;
-				}
-				if (!publier) {
-					console.log(
-						`  ↻ ${fichier} : ${existant.status}, liens à ajouter (${existant.id})${noteContenu}${noteLiens}`
-					);
-					continue;
-				}
-				await writeLinks(supabase, fichier, existant.id, codes, plan, resolus, false);
-				console.log(
-					`  ↻ ${fichier} : ${existant.status}, liens ajoutés (${existant.id})${noteContenu}${noteLiens}`
-				);
-				misAJour++;
-				continue;
+				console.error(`⛔ ${fichier} : modèle ${existant.status}, jamais modifié par ce script`);
+				return 1;
 			}
-			const quoi = identique ? 'liens à mettre à jour' : 'contenu à mettre à jour';
 			if (!publier) {
-				console.log(`  ↻ ${fichier} : ${quoi} (${existant.id})${noteLiens}`);
+				console.log(`  ↻ ${fichier} : contenu à mettre à jour (${existant.id})${noteGrades}`);
 				continue;
 			}
-			if (!identique) {
-				const { data: maj, error: e3 } = await supabase
-					.from('question_templates')
-					.update({
-						grades: ligne.grades,
-						variations: ligne.variations,
-						shared: ligne.shared,
-						options: ligne.options,
-						test_specs: ligne.test_specs
-					})
-					.eq('id', existant.id)
-					.eq('status', 'draft')
-					.select('id, grades');
-				if (e3 || maj?.length !== 1 || !sameGrades(maj[0].grades, ligne.grades))
-					throw new Error(
-						`${fichier} : mise à jour non confirmée — ${e3?.message ?? 'aucune ligne'}`
-					);
-			}
-			if (codes && plan) {
-				await writeLinks(supabase, fichier, existant.id, codes, plan, resolus, remplacerPoints);
-			}
-			console.log(
-				`  ↻ ${fichier} : ${identique ? 'liens' : 'contenu'} mis à jour (${existant.id})${noteLiens}`
-			);
+			const { data: maj, error: e3 } = await supabase
+				.from('question_templates')
+				.update({
+					grades: ligne.grades,
+					variations: ligne.variations,
+					shared: ligne.shared,
+					options: ligne.options,
+					test_specs: ligne.test_specs
+				})
+				.eq('id', existant.id)
+				.eq('status', 'draft')
+				.select('id, grades');
+			if (e3 || maj?.length !== 1 || !sameGrades(maj[0].grades, ligne.grades))
+				throw new Error(
+					`${fichier} : mise à jour non confirmée — ${e3?.message ?? 'aucune ligne'}`
+				);
+			console.log(`  ↻ ${fichier} : contenu mis à jour (${existant.id})${noteGrades}`);
 			misAJour++;
 			continue;
 		}
 
 		const specs = modele.testSpecs?.length ?? 0;
-		const planNeuf = codes ? planPointLinks(codes, []) : null;
-		const noteNeuf = planNeuf ? `\n      ${describeLinkPlan(planNeuf, false)}` : '';
 		if (!publier) {
-			console.log(`  ✓ ${fichier} : « ${modele.title} » (${specs} specs) — à créer${noteNeuf}`);
+			console.log(`  ✓ ${fichier} : « ${modele.title} » (${specs} specs) — à créer`);
 			continue;
 		}
 		const { data: cree, error: e2 } = await supabase
@@ -277,10 +180,7 @@ async function main(): Promise<number> {
 				`${fichier} : création non confirmée — ${e2?.message ?? JSON.stringify(cree)}`
 			);
 		}
-		if (codes && planNeuf) {
-			await writeLinks(supabase, fichier, cree.id, codes, planNeuf, resolus, false);
-		}
-		console.log(`  ✍️  ${fichier} : « ${cree.title} » créé en brouillon (${cree.id})${noteNeuf}`);
+		console.log(`  ✍️  ${fichier} : « ${cree.title} » créé en brouillon (${cree.id})`);
 		crees++;
 	}
 	console.log(

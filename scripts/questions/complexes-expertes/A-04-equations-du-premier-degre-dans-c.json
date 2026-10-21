@@ -2,7 +2,6 @@
 	"title": "Résoudre une équation du premier degré dans ℂ, avec z ou son conjugué",
 	"description": "az = b avec a complexe, iz + b = c, αz + βz̄ = c en posant z = x + iy (pièges : diviser par a sans conjugué, traiter z̄ comme z, 1/i = i)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-007", "TEXP-008", "TEXP-006"],
 	"theme": "Nombres complexes",
 	"domain": "Forme algébrique",
 	"subdomain": "Équations",

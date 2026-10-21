@@ -2,7 +2,6 @@
 	"title": "Loi uniforme sur [a ; b] : probabilités et espérance",
 	"description": "X uniforme sur [a ; b] : P(c ⩽ X ⩽ d) = (d − c)/(b − a), P(X ⩾ c) = (b − c)/(b − a), E(X) = (a + b)/2, P(X = c) = 0 (pièges : (b − a)/2, longueur non divisée, 1/(b − a) pour P(X = c))",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-109", "TCOMP-112", "TCOMP-113"],
 	"theme": "Probabilités",
 	"domain": "Lois à densité",
 	"subdomain": "Loi uniforme",

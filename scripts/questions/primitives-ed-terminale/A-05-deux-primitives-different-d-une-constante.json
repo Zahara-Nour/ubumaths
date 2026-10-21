@@ -2,7 +2,6 @@
 	"title": "Deux primitives d'une même fonction diffèrent d'une constante",
 	"description": "Utiliser G = F + k : retrouver une autre primitive, calculer G(t) − F(t) ou la constante k entre deux expressions",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-049", "TSPE-190"],
 	"theme": "Primitives et équations différentielles",
 	"domain": "Primitives",
 	"subdomain": "Notion de primitive",

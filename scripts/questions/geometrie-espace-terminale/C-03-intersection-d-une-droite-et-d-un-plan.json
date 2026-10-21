@@ -2,7 +2,6 @@
 	"title": "Espace : intersection d'une droite et d'un plan",
 	"description": "Reporter une représentation paramétrique dans l'équation du plan : paramètre t puis coordonnées du point d'intersection (pièges : signe de t, t mal reporté, point de la droite recopié)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-061", "TSPE-091", "TSPE-099", "TSPE-100"],
 	"theme": "Géométrie",
 	"domain": "Représentations paramétriques et équations cartésiennes",
 	"subdomain": "Intersections",

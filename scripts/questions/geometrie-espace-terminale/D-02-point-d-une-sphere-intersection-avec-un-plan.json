@@ -2,7 +2,6 @@
 	"title": "Espace : point d'une sphère, intersection d'une sphère et d'un plan",
 	"description": "Sphère donnée par une équation centre-rayon : coordonnée manquante d'un point de la sphère ; cercle d'intersection avec un plan (centre et rayon, Pythagore avec la distance du centre au plan) — pièges : solution négative, ρ² au lieu de ρ, centre Ω au lieu de H",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-087", "TSPE-104"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Sphère",

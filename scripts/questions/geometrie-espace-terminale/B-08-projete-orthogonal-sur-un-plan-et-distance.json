@@ -2,7 +2,6 @@
 	"title": "Espace : projeté orthogonal sur un plan, distance à un plan",
 	"description": "Coordonnées du projeté orthogonal H d'un point sur un plan d'équation donnée, et distance MH (pièges : M recopié, symétrique, MH², racine non simplifiée)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-076", "TSPE-082", "TSPE-097"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Projeté orthogonal",

@@ -2,7 +2,6 @@
 	"title": "Factoriser un polynôme dont une racine est connue, équation de degré 3",
 	"description": "P(z) = (z − r)Q(z) : trouver Q, factoriser z³ − a³, résoudre P(z) = 0 de degré 3 avec une racine réelle ou imaginaire pure connue (pièges : signe de la racine, solution conjuguée oubliée, racine connue oubliée)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-048", "TEXP-049", "TEXP-045", "TEXP-044", "TEXP-043"],
 	"theme": "Nombres complexes",
 	"domain": "Équations polynomiales",
 	"subdomain": "Degré 3 et factorisation",

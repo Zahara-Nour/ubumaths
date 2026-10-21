@@ -2,7 +2,6 @@
 	"title": "Nombre de racines d'un polynôme, racines conjuguées",
 	"description": "Un polynôme de degré n a au plus n racines ; un polynôme de degré au plus n qui s'annule en n + 1 points est nul ; à coefficients réels, le conjugué d'une racine est racine, un degré impair donne une racine réelle (pièges : « exactement n racines distinctes », opposé au lieu du conjugué, « aucun polynôme ne convient »)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-046", "TEXP-045", "TEXP-043"],
 	"theme": "Nombres complexes",
 	"domain": "Équations polynomiales",
 	"subdomain": "Racines d'un polynôme",

@@ -2,7 +2,6 @@
 	"title": "Loi uniforme sur {1, …, n} : probabilités et espérance",
 	"description": "X uniforme sur {1, …, n} : P(X = k) = 1/n, P(X ⩽ k) = k/n, P(a ⩽ X ⩽ b) = (b − a + 1)/n, E(X) = (n + 1)/2 (pièges : n/2, b − a au lieu de b − a + 1)",
 	"grades": ["T_COMP"],
-	"points": ["TCOMP-084", "TCOMP-098"],
 	"theme": "Probabilités",
 	"domain": "Lois discrètes",
 	"subdomain": "Loi uniforme",

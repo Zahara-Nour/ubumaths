@@ -2,7 +2,6 @@
 	"title": "Reste de aⁿ modulo m : cycle des restes",
 	"description": "Reste de la division de aⁿ par m pour un grand exposant, à l'aide d'une puissance congrue à 1 ou à −1 (pièges : reste négatif −1 au lieu de m − 1, exposant réduit modulo m au lieu de la période)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-074", "TEXP-073"],
 	"theme": "Arithmétique",
 	"domain": "Congruences",
 	"subdomain": "Congruences",

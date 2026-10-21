@@ -2,7 +2,6 @@
 	"title": "Tests de divisibilité par 3, 9 et 11",
 	"description": "Utiliser les critères de divisibilité par 3, 9 et 11 (somme des chiffres, somme alternée) : chiffre manquant, reste modulo 9 (pièges : somme des chiffres non réduite, somme alternée lue dans le mauvais sens)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-078", "TEXP-079"],
 	"theme": "Arithmétique",
 	"domain": "Divisibilité",
 	"subdomain": "Divisibilité",

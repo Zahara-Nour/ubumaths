@@ -2,7 +2,6 @@
 	"title": "Produit, quotient, puissance et inverse sous forme exponentielle",
 	"description": "z₁z₂, z₁/z₂, zⁿ, 1/z avec z = re^{iθ} : module et argument principal du résultat (pièges : modules additionnés, arguments multipliés, argument non ramené dans ]−π ; π])",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-033", "TEXP-039", "TEXP-015", "TEXP-017", "TEXP-034"],
 	"theme": "Nombres complexes",
 	"domain": "Formes trigonométrique et exponentielle",
 	"subdomain": "Calculs sous forme exponentielle",

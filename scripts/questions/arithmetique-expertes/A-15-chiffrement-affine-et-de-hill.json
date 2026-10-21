@@ -2,7 +2,6 @@
 	"title": "Chiffrement affine modulo 26 et chiffrement de Hill",
 	"description": "Chiffrer une lettre par x ↦ ax + b modulo 26, trouver l'inverse de a modulo 26, déchiffrer, chiffrer un bloc de deux lettres par une matrice 2 × 2 (pièges : réduction modulo 26 oubliée, a et b échangés, division par a au lieu de l'inverse, produit ligne × matrice)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-080", "TEXP-077", "TEXP-076", "TEXP-082"],
 	"theme": "Arithmétique",
 	"domain": "Congruences",
 	"subdomain": "Chiffrement",

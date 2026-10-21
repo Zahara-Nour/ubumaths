@@ -2,7 +2,6 @@
 	"title": "Graphe : ordre, degrés, nombre d'arêtes",
 	"description": "Lire sur un graphe (figure ou liste d'arêtes) son ordre, le degré d'un sommet et le nombre d'arêtes (pièges : ordre confondu avec le nombre d'arêtes, arête comptée deux fois, degré compté en sommets voisins non adjacents)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-112", "TEXP-114"],
 	"theme": "Graphes et matrices",
 	"domain": "Graphes",
 	"subdomain": "Vocabulaire des graphes",

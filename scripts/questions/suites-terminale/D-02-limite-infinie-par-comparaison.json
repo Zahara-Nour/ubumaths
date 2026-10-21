@@ -2,7 +2,6 @@
 	"title": "Limite infinie par comparaison : minoration, majoration",
 	"description": "QCM : minorée par une suite qui tend vers +∞ ⟹ +∞, majorée par une suite qui tend vers −∞ ⟹ −∞ ; majorée par une suite qui tend vers +∞ : on ne peut pas conclure",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-109", "TSPE-113", "TSPE-118"],
 	"theme": "Suites",
 	"domain": "Limites de suites",
 	"subdomain": "Comparaison et encadrement",

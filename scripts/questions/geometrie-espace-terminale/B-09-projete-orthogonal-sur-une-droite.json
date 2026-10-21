@@ -2,7 +2,6 @@
 	"title": "Espace : projeté orthogonal d'un point sur une droite",
 	"description": "Projeté orthogonal H de M sur une droite donnée par un point et un vecteur directeur (ou une représentation paramétrique) : paramètre t puis coordonnées (pièges : A ou M recopié, division par ‖u‖² oubliée)",
 	"grades": ["T_SPE"],
-	"points": ["TSPE-076", "TSPE-091", "TSPE-098"],
 	"theme": "Géométrie",
 	"domain": "Orthogonalité et distances dans l'espace",
 	"subdomain": "Projeté orthogonal",

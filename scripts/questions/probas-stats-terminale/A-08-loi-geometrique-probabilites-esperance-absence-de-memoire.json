@@ -2,7 +2,6 @@
 	"title": "Loi géométrique : P(X = k), P(X ⩽ k), espérance, absence de mémoire",
 	"description": "X ~ G(p) : P(X = k) = (1 − p)ᵏ⁻¹p, P(X > k) = (1 − p)ᵏ, P(X ⩽ k) = 1 − (1 − p)ᵏ, E(X) = 1/p, P(X > m + n | X > m) = P(X > n) (pièges : exposant k au lieu de k − 1, E = p, mémoire non utilisée)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-091", "TCOMP-096", "TCOMP-092", "TCOMP-099", "TCOMP-098", "TSPE-239"],
 	"theme": "Probabilités",
 	"domain": "Loi géométrique",
 	"subdomain": "Calcul de probabilités",

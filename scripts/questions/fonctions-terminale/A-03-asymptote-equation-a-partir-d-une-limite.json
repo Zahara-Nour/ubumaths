@@ -2,7 +2,6 @@
 	"title": "Asymptote parallèle à un axe : équation à partir d'une limite",
 	"description": "Lien limite ↔ asymptote : limite finie en ±∞ → y = b ; limite infinie en a → x = a ; lecture sur f(x) = b + k/(x−a) (pièges : x et y échangés, limite de la fraction seule)",
 	"grades": ["T_SPE", "T_COMP"],
-	"points": ["TCOMP-018", "TSPE-127", "TSPE-132"],
 	"theme": "Fonctions",
 	"domain": "Limites de fonctions",
 	"subdomain": "Asymptotes",

@@ -2,7 +2,6 @@
 	"title": "Inverse et quotient de nombres complexes",
 	"description": "Inverse 1/(a+ib), quotient par multiplication par le conjugué du dénominateur (pièges : conjugué du numérateur, a²−b² au dénominateur, i² = 1)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-004", "TEXP-006", "TEXP-003"],
 	"theme": "Nombres complexes",
 	"domain": "Forme algébrique",
 	"subdomain": "Inverse et quotient",

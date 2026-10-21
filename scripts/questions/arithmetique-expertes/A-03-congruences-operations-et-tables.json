@@ -2,7 +2,6 @@
 	"title": "Congruences : compatibilité avec les opérations, tables de restes",
 	"description": "Reste d'une somme, d'une différence, d'un produit à partir des restes ; tables de restes de x² modulo 5 et de 2ᵏ modulo 7 (pièges : reste négatif laissé tel quel, produit des restes non réduit)",
 	"grades": ["T_EXP"],
-	"points": ["TEXP-073", "TEXP-074"],
 	"theme": "Arithmétique",
 	"domain": "Congruences",
 	"subdomain": "Congruences",
