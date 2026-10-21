@@ -5,8 +5,8 @@
 _Mis à jour le 2026-10-21, avant toute PR (chantier pas commencé)._
 
 - **État** : décisions prises (ci-dessous), aucun code. Ordre validé par David : **B** (ce chantier) → **A** cloisonnement d'Akadada → **C** année d'une classe à la création.
-- **Prochaine action** : obtenir les réponses aux 4 questions ouvertes, puis rédiger la phase 0 (comportements nominal / limite / erreur) et la faire valider.
-- **En attente de David** : questions ouvertes 1 à 4.
+- **Prochaine action** : créer le worktree, rédiger la phase 0 (comportements nominal / limite / erreur) et la faire valider.
+- **En attente de David** : rien (questions tranchées le 2026-10-21).
 - **Pièges en cours** : la prod exige la confirmation du courriel à l'inscription (`auth/register/+page.server.ts`) ; auth de mineurs + consentement → tests d'intégration, `code-reviewer` et `security-auditor` ; question d'accès avant tout SQL.
 - **Worktree / branche** : à créer — `../ubumaths-wt-inscription-parent`, `feat/inscription-parent`.
 
@@ -29,10 +29,11 @@ aujourd'hui la seule connexion est courriel + mot de passe (Google désactivé).
    l'enfant peut changer lui-même son mot de passe.
 5. Aucun courriel ne part vers une fausse adresse (bienvenue, notifications, réinitialisation).
 
-## Questions ouvertes
-
-1. **Format de l'identifiant** — proposé : prénom sans accent + 2 caractères au hasard (`noelie.k4`).
-2. **Nom de famille de l'enfant** demandé au parent, ou prénom seul (minimisation) ?
-3. **Question d'accès** : le parent voit-il quelque chose du compte de l'enfant ? Proposé : rien
-   pour l'instant (le bilan reste le PDF envoyé par le prof).
-4. **Noélie** : inscription immédiate par alias à la main, ou attendre l'écran parent ?
+6. **Identifiant** : prénom sans accent ni majuscule + 2 chiffres, **sans point** (`noelie42`) ;
+   saisie insensible aux majuscules et aux accents.
+7. **Prénom seul** demandé au parent (minimisation) ; le prof ajoute le nom dans l'admin s'il le
+   faut — vérifier en phase 0 que le profil accepte un nom vide.
+8. **Question d'accès : le parent ne voit rien du compte de l'enfant** (il n'a pas de compte, il
+   reçoit seulement des liens) ; le bilan reste le PDF envoyé par le prof.
+9. **Noélie** s'inscrit dès maintenant par l'écran actuel avec **l'adresse de son parent telle
+   quelle** (un seul enfant → pas d'alias) ; son compte n'aura pas à être converti.
