@@ -1,5 +1,23 @@
 # Atelier — tableur intégré : journal du chantier
 
+## Reprendre ici (2026-10-21)
+
+**Tout est livré sur `main`, rien n'est en production.** Lots 1 à 5 (#1410 → #1439), défauts
+(#1442, #1444), mise en forme (#1466, #1469), RESTE et ET/OU (#1472), ouvrir un CSV (#1473),
+NBVAL et NB.VIDE (#1477). Aucune PR ouverte, aucun worktree du tableur.
+
+Reste, à décider par David :
+
+1. **Mise en production** (`pnpm deploy:prod`, sur sa demande seulement).
+2. **Le sort de `/spreadsheet`** (V4) : retirer, rediriger vers l'atelier, ou garder. L'atelier en
+   reprend l'essentiel ; ce qu'il ne reprend pas : NON, VRAI/FAUX, les fonctions de texte
+   (CONCATENER…), trigonométrie et autres fonctions de calcul de V4 (SIN, PUISSANCE, PLAFOND…).
+3. **Les vérifications manuelles** du tableur dans
+   [verifications-manuelles.md](verifications-manuelles.md) (#1410 → #1477), à faire par David.
+4. **Fin de chantier = versement** : ce journal et les phases 0 du tableur partent en
+   `docs/archive/` une fois le chantier déclaré clos (la doc durable est déjà dans
+   [atelier.md](../systeme/atelier.md)).
+
 Phase 0 validée : [atelier-tableur-phase0.md](atelier-tableur-phase0.md) (option C ; Q1-Q5, T1-T9,
 P1-P2 décidées le 2026-10-15).
 
@@ -315,3 +333,12 @@ validée le 2026-10-18 (Q-RE-1 à Q-RE-6 = les recos).
       aller-retour annoncé à tort, refus « ; » hors sujet, UTF-16, tests de focus et de taille →
       corrigés (8 tests rouges d'abord)
 - [x] PR #1473, CI verte, mergée le 2026-10-18
+
+## NBVAL et NB.VIDE (phase 0 : `atelier-tableur-nbval-phase0.md`, VALIDÉE le 2026-10-18)
+
+- [x] tests : `formules-tableur-nbval.test.ts` (32)
+- [x] `COUNT_FUNCTIONS`, `countCells` : une case qui montre du vide est vide pour les deux
+      (Q-NV-1) ; erreur → arrêt (Q-NV-2) ; `NB.VIDE(A:A)` refusé (Q-NV-3) ; trous d'une liste
+      jusqu'à sa dernière valeur (Q-NV-4)
+- [x] revue (3 mineurs : nom inconnu nommé, conseil `.stats` retiré pour NB.VIDE, tests)
+- [x] PR #1477, CI verte, mergée le 2026-10-18
