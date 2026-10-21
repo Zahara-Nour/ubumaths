@@ -170,10 +170,14 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 
 ### Le domaine fictif `eleves.chiph.re`
 
-Un enfant sans adresse a un compte Supabase à l'adresse `<identifiant>@eleves.chiph.re`, domaine
-qui ne reçoit rien (enregistrement « null MX »). **Aucun courriel ne part vers ce domaine** :
-`sendEmail` (Brevo, donc bienvenue et consentement) le refuse, `/auth/reset-password` ne le
-transmet pas à GoTrue. Chantier : [inscription-parent](../wip/inscription-parent-progress.md).
+Un enfant sans adresse a un compte Supabase à l'adresse `<identifiant>@eleves.chiph.re`. Ce
+domaine ne reçoit rien : il est **absent du DNS** (NXDOMAIN, vérifié le 2026-10-21) ; un
+enregistrement « null MX » (`MX 0 .`) est à poser chez OVH pour qu'un futur joker `*.chiph.re`
+ne le rende pas livrable. **Aucun courriel ne part vers ce domaine** : `sendEmail` (Brevo, donc
+bienvenue et consentement) le refuse, `/auth/reset-password` ne le transmet pas à GoTrue,
+`/auth/register` refuse une telle adresse. Reste ouvert : un appel direct à l'API GoTrue
+(`/auth/v1/signup`, `/auth/v1/recover`) passe à côté de ces gardes — à fermer côté base avec la
+création des comptes d'enfants. Chantier : [inscription-parent](../wip/inscription-parent-progress.md).
 
 ## Profils, statuts et création de compte
 

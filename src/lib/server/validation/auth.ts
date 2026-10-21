@@ -5,7 +5,7 @@
 import { z } from 'zod';
 import { formDataTransforms } from './common';
 import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
-import { normalizeLoginIdentifier } from '$lib/utils/child-account';
+import { isChildAccountEmail, normalizeLoginIdentifier } from '$lib/utils/child-account';
 
 /**
  * SECURITY (finding H6): the server-side password policy was dead code — real
@@ -69,7 +69,11 @@ export const registerFormSchema = z
 		// an orphaned auth.users row with no profile (email permanently burned).
 		firstname: z.string().trim().min(1, 'Prénom requis').max(50),
 		lastname: z.string().trim().min(1, 'Nom requis').max(50),
-		email: formDataTransforms.email,
+		// Le domaine fictif est réservé aux comptes créés par le serveur (inscription par le
+		// parent) : un signUp y enverrait la confirmation pour rien et squatterait l'identifiant.
+		email: formDataTransforms.email.refine((email) => !isChildAccountEmail(email), {
+			message: 'Utilise une adresse email réelle'
+		}),
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
 		classCode: z.string().trim().min(1, 'Code de classe requis').max(64),

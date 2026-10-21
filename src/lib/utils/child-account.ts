@@ -4,8 +4,8 @@
  *
  * Un enfant sans adresse se connecte par un identifiant (`noelie42`). Supabase Auth exige une
  * adresse : l'identifiant devient `noelie42@eleves.chiph.re`, sur un domaine qui ne reçoit
- * rien (enregistrement « null MX »). Aucun courriel ne doit partir vers ce domaine : les
- * envois le vérifient avec `isChildAccountEmail`.
+ * rien (aujourd'hui absent du DNS ; « null MX » à poser chez OVH). Aucun courriel ne doit
+ * partir vers ce domaine : les envois le vérifient avec `isChildAccountEmail`.
  */
 
 // Constantes

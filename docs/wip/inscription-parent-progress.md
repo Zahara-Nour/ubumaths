@@ -6,8 +6,8 @@ _Mis à jour le 2026-10-21, phase 0 validée, PR 1 en cours._
 
 - **État** : phase 0 validée ; Q1-Q6 : David suit mes recommandations (2026-10-21). PR 1 (connexion par identifiant + garde des courriels) en cours.
 - **Prochaine action** : finir la PR 1, puis PR 2 (écran « J'inscris mon enfant »).
-- **En attente de David** : enregistrement « null MX » sur `eleves.chiph.re` chez OVH (Q1), à faire avant la PR 2 en prod.
-- **Pièges en cours** : la prod exige la confirmation du courriel → le compte de l'enfant ne peut PAS passer par `signUp` ; auth de mineurs + consentement → tests d'intégration, `code-reviewer` et `security-auditor` ; question d'accès avant tout SQL.
+- **En attente de David** : enregistrement « null MX » (`eleves.chiph.re. MX 0 .`, + SPF `v=spf1 -all`) chez OVH — le domaine est aujourd'hui absent du DNS (NXDOMAIN) ; à faire avant la PR 2 en prod.
+- **Pièges en cours** : la prod exige la confirmation du courriel → le compte de l'enfant ne peut PAS passer par `signUp` ; **PR 2 doit fermer côté base** un `signUp` GoTrue direct sur `@eleves.chiph.re` (squat d'identifiant, audit PR 1) et générer l'identifiant avec la même normalisation que la connexion (`normalizeLoginIdentifier`) ; auth de mineurs + consentement → tests d'intégration, `code-reviewer` et `security-auditor` ; question d'accès avant tout SQL.
 - **Worktree / branche** : `../ubumaths-wt-inscription-parent`, `feat/inscription-parent`.
 
 ## Contexte
@@ -137,3 +137,14 @@ David : « je suis tes recos » → phase 0 validée, et pour chaque question la
 Q1 `@eleves.chiph.re` + null MX · Q2 lecture seule avant le clic · Q3 mot de passe provisoire
 généré, affiché une fois · Q4 lien sans case de consentement pour 1re/Tle · Q5 plafond ~5 comptes
 par adresse de parent et par 24 h · Q6 adresse du parent lue par le prof et l'admin seulement.
+
+## PR 1 — connexion par identifiant (2026-10-21)
+
+- `src/lib/utils/child-account.ts` : `CHILD_ACCOUNT_DOMAIN`, `normalizeLoginIdentifier` (NFKC,
+  lettres non décomposables, `[a-z0-9]`), `isChildAccountEmail`.
+- `/auth/login` accepte adresse ou identifiant ; Brevo, `/auth/reset-password` et
+  `/auth/register` refusent le domaine fictif.
+- Revues : `code-reviewer` (3 mineurs, 2 corrigés, le 3e = PR 3) ; `security-auditor` (aucun
+  bloquant ; Moyen 1 — `signUp` GoTrue direct → PR 2 ; Faible 2 — null MX absent → David/OVH ;
+  Faible 3 — même normalisation à la création → PR 2). Mesure prod : 83 comptes, aucune adresse
+  en majuscules → personne ne perd sa connexion.
