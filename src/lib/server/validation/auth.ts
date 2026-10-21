@@ -152,7 +152,8 @@ export const parentRegisterFormSchema = z
  * Request password reset schema
  */
 export const requestPasswordResetSchema = z.object({
-	email: formDataTransforms.email
+	// Adresse OU identifiant d'un enfant, comme à la connexion (PR 3).
+	email: loginFormSchema.shape.email
 });
 
 /**
@@ -161,6 +162,17 @@ export const requestPasswordResetSchema = z.object({
 export const updatePasswordSchema = z
 	.object({
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères'),
+		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
+
+/**
+ * Page du lien du parent (PR 3) : jeton de réinitialisation + nouveau mot de passe de l'enfant.
+ */
+export const parentSetChildPasswordSchema = z
+	.object({
+		tokenHash: z.string().min(1, 'Lien incomplet').max(512, 'Lien invalide'),
+		password: z.string().max(128),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise')
 	})
 	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));

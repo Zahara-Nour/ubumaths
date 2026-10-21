@@ -2,10 +2,14 @@
  * Password Reset Request - Server Actions
  *
  * FLOW:
- * 1. User enters their email address
+ * 1. User enters their email address — or a child's login id (`noelie42`)
  * 2. Server sends password reset email via Supabase
  * 3. User receives email with reset link pointing to /auth/update-password
  * 4. User clicks link and is taken to password update page
+ *
+ * CHILD ACCOUNT (PR 3): the account address is fictitious. The link goes to the parent's
+ * CONFIRMED address, sent by Brevo; it opens /auth/reset-password/parent, which changes the
+ * password without logging the parent in (`$lib/server/child-password`).
  *
  * SECURITY:
  * - Server-side processing ensures email sending is secure
@@ -17,6 +21,9 @@ import type { Actions } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import { requestPasswordResetSchema } from '$lib/server/validation/auth';
 import { isChildAccountEmail } from '$lib/utils/child-account';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { createChildRecoveryToken, findChildResetTarget } from '$lib/server/child-password';
+import { sendChildPasswordResetEmail } from '$lib/server/email/brevo';
 import {
 	checkPasswordResetRateLimitByEmail,
 	checkPasswordResetRateLimitByIP
@@ -28,8 +35,26 @@ const logger = createServerLogger('auth/reset-password/+page.server.ts');
 const GENERIC_SUCCESS = {
 	success: true as const,
 	message:
-		'Si un compte existe avec cette adresse, tu vas recevoir un lien pour choisir un nouveau mot de passe.'
+		'Si un compte existe avec cette adresse ou cet identifiant, un lien pour choisir un nouveau mot de passe va être envoyé.'
 };
+
+/** Lien au parent de l'enfant ; rien si l'adresse du parent n'est pas confirmée. */
+async function sendResetLinkToParent(childEmail: string): Promise<void> {
+	const service = createServiceRoleClient();
+	const target = await findChildResetTarget(service, childEmail);
+	if (!target.ok) {
+		logger.info('Child password reset skipped:', target.reason);
+		return;
+	}
+	const tokenHash = await createChildRecoveryToken(service, childEmail);
+	if (!tokenHash) return;
+	const sent = await sendChildPasswordResetEmail(target.parentEmail, {
+		childFirstname: target.firstname,
+		loginId: target.loginId,
+		tokenHash
+	});
+	if (!sent.success) logger.error('Child password reset email not sent:', sent.error);
+}
 
 export const actions = {
 	/**
@@ -60,9 +85,10 @@ export const actions = {
 		}
 
 		// L'adresse d'un enfant inscrit par son parent est fictive : GoTrue y enverrait le
-		// lien pour rien. Même réponse neutre (pas d'énumération).
+		// lien pour rien. Le lien part au parent, si son adresse est confirmée (R1). Même
+		// réponse neutre dans tous les cas (pas d'énumération).
 		if (isChildAccountEmail(email)) {
-			logger.info('Password reset skipped: child account address');
+			await sendResetLinkToParent(email);
 			return GENERIC_SUCCESS;
 		}
 

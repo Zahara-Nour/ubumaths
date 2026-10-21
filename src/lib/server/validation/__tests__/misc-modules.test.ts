@@ -438,11 +438,20 @@ describe('miscellaneous validation modules', () => {
 
 		it('should reject invalid email', () => {
 			const data = {
-				email: 'invalid'
+				email: 'invalid@'
 			};
 
 			const result = requestPasswordResetSchema.safeParse(data);
 			expect(result.success).toBe(false);
+		});
+
+		it("accepte l'identifiant d'un enfant (PR 3), changé en adresse du domaine fictif", () => {
+			const result = requestPasswordResetSchema.safeParse({ email: 'Noélie42' });
+			expect(result.success && result.data.email).toBe('noelie42@eleves.chiph.re');
+		});
+
+		it('refuse une saisie vide', () => {
+			expect(requestPasswordResetSchema.safeParse({ email: '  ' }).success).toBe(false);
 		});
 	});
 

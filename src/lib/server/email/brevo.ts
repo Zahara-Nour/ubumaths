@@ -23,6 +23,7 @@ import { env } from '$env/dynamic/private';
 import { createServerLogger } from '$lib/utils/logger';
 import { isChildAccountEmail } from '$lib/utils/child-account';
 import type { ChildRegistrationEmailData } from '$lib/email-templates/child-registration';
+import type { ChildPasswordResetEmailData } from '$lib/email-templates/child-password-reset';
 
 const logger = createServerLogger('server/email/brevo');
 
@@ -206,6 +207,28 @@ export async function sendChildRegistrationEmail(
 		getChildRegistrationSubject(data),
 		getChildRegistrationEmailHtml(data),
 		getChildRegistrationEmailText(data)
+	);
+}
+
+/**
+ * Courriel au parent : lien pour choisir le nouveau mot de passe de son enfant. Toujours à
+ * l'adresse du parent, jamais à celle (fictive) de l'enfant : `sendEmail` le refuserait.
+ */
+export async function sendChildPasswordResetEmail(
+	toEmail: string,
+	data: ChildPasswordResetEmailData
+): Promise<EmailSendResult> {
+	const {
+		getChildPasswordResetSubject,
+		getChildPasswordResetEmailHtml,
+		getChildPasswordResetEmailText
+	} = await import('$lib/email-templates/child-password-reset');
+
+	return sendEmail(
+		toEmail,
+		getChildPasswordResetSubject(data),
+		getChildPasswordResetEmailHtml(data),
+		getChildPasswordResetEmailText(data)
 	);
 }
 
