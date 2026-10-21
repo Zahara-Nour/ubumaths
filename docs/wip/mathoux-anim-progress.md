@@ -7,16 +7,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, démo publiée._
+_Mis à jour le 2026-10-21, naissance retravaillée._
 
-- **État** : animations au repos et réactions écrites dans `MathouAvatar.svelte` (props `animated`,
-  `reaction`, `reactionKey`) ; démo publiée ; **rien n'est encore branché** (Chatterie, annonce).
-- **Prochaine action** : retour de David sur la démo, puis phase 0 (comportements) et branchement.
-- **En attente de David** : (1) combien de Mathoux animés à la fois sur la Chatterie (tous,
-  décalés, ou au survol) ; (2) gestes propres à chaque race, ou communs seulement ; (3) où animer.
-- **Pièges en cours** : démo générée par `node_modules/.cache/mathoux-demo/` (build.mjs compile le
-  composant en SSR, render.ts sort les SVG) puis `page.py` du scratchpad ; `$props.id()` rend
-  `s1-` à chaque rendu SSR isolé → ids réécrits dans la page.
+- **État** : animations au repos et réactions dans `MathouAvatar.svelte` ; naissance = apparition
+  lente (1,5 s) + confettis + étoiles (« très bien », David) + auréole qui s'allume et deux ondes
+  (à juger). Démo à jour ; **rien n'est encore branché** (Chatterie, annonce).
+- **Décidé par David** : Chatterie animée comme la démo (tous, décalés) ; gestes communs à toutes
+  les races pour l'instant ; rythmes revus au cas par cas avec lui.
+- **Prochaine action** : avis sur l'auréole, puis phase 0 (proposée en séance : naissance /
+  croissance / étoile → réaction sur la carte d'annonce ; pas de réveil visible) à faire valider.
+- **Pièges en cours** : démo générée par `node_modules/.cache/mathoux-demo/` (build.mjs, render.ts)
+  puis `page.py` du scratchpad ; ids `s1-` de `$props.id()` réécrits dans la page.
 - **Worktree / branche** : `../ubumaths-wt-mathoux-anim` · `feat/mathoux-anim`.
 
 ## Au repos (proposé)
