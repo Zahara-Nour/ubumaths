@@ -65,7 +65,9 @@ def reponse(rep: str, statut: str, variables: dict, description: str, variation:
 
 CONSIGNE_COMPARER = 'Complète avec le symbole qui convient.'
 SYMBOLES = [{'content': '$$<$$'}, {'content': '$$=$$'}, {'content': '$$>$$'}]
-EGALITE = {'name': 'egal', 'expression': '1..6'}  # egal = 1 (pas « e » : e est la constante d'Euler) : le second nombre est le premier (une fois sur six)
+# egal = 1 : le second nombre est le premier ; avec les égalités du hasard, au moins une fois sur six.
+# (Pas « e » : dans une condition, e est la constante d'Euler.)
+EGALITE = {'name': 'egal', 'expression': '1..6'}
 
 
 def bon_symbole(x: str, y: str) -> dict:
@@ -181,10 +183,12 @@ def m_9c0c47ef(t):
     for i, v in enumerate(t['variations']):
         changer(v, 'statement', 'Quel est le plus petit de ces deux nombres ?', s['statement'])
         changer(v, 'correctChoiceIndex', ['{{if:h<j|0|1}}'], ['{{r}}'])
-        # Égalité en variation 1 seulement (même écriture) : en variation 2, les deux nombres n'ont pas
-        # le même nombre de décimales.
+        # Égalité en variation 1 seulement (même écriture). La variation 2 (piège 5,9 / 5,12) garde sa
+        # condition h ≠ j, retirée de la partie commune : sans elle, d = 10c donnerait « 7,4 … 7,4 ».
         if i == 0:
             egal_possible(v, 'j', 'eval:(f+c*10^b)/10^b;d', 'h')
+        else:
+            v['conditions'] = ['h!=j']
         v['variables'].append(bon_symbole('h', 'j'))
         corrige_comparer(v, 'h', 'j')
     sans_melange(t)

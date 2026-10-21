@@ -13,7 +13,7 @@ _Mis à jour le 2026-10-21, lot C codé (pas encore de PR)._
   check:incremental, cliquet et lint rapide verts.
 - **Prochaine action** : PR, revues code-reviewer (Opus) + security-auditor
   (correction des réponses), merge, `db:migrate` ; puis D (3 scissions, phase 0 à part).
-- **Décisions de David (2026-10-21)** : comparaisons < = > avec égalité ~1 fois sur 6 ; tableaux : Masse/Prix,
+- **Décisions de David (2026-10-21)** : comparaisons < = > avec égalité au moins 1 fois sur 6 (9c0c47ef v2 sans égalité) ; tableaux : Masse/Prix,
   Durée/Distance, Cahiers/Prix ; factoriser par une constante ; c9d6c5db sorti (aucun réglage ne refuse la
   fraction recopiée).
 - **En attente de David** : rien (accès tranché : personne). Signalé : 11 modèles sans corrigé.

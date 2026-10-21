@@ -4370,7 +4370,8 @@
 								"On écrit donc :\n\n$${{h}} {{if:h<j|<|{{if:h=j|=|>}}}} {{j}}$$"
 							]
 						},
-						"correctChoiceIndex": ["{{r}}"]
+						"correctChoiceIndex": ["{{r}}"],
+						"conditions": ["h!=j"]
 					}
 				],
 				"shared": {
