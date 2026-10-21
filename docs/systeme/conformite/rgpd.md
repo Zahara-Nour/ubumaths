@@ -184,6 +184,18 @@ total_combats     -> Historique activite
 last_played_at    -> Dernier acces
 ```
 
+#### `student_last_visits` - Presence de l'eleve (Palotin « tu m'as manque », 2026-10-21)
+
+```
+student_id        -> Identite eleve (supprimee avec le profil, ON DELETE CASCADE)
+last_visit_date   -> Jour UTC de la derniere page vue (hors API), remplace chaque jour de presence
+welcome_back_on   -> Jour du retour apres 21 jours d'absence, efface des que le Palotin l'a salue,
+                     sans effet apres 7 jours
+```
+
+Lisible par le serveur seul (RLS sans policy, droits retires a anon et authenticated) ; le navigateur
+ne recoit que « retour a feter oui/non ». Aucun cookie. Detail : [buddy-palotins.md](../buddy-palotins.md).
+
 ### 2.7 Donnees de monitoring (`error_logs`)
 
 ```
@@ -683,17 +695,17 @@ Fonctionnalites implementees :
 
 **Categories exportees** (format `1.4`, reecrit le 2026-10-11 contre le code — C12) :
 
-| Categorie        | Tables                                                                                                                              |
-| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**)                                         |
-| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts`, `student_observable_state`                                     |
-| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)                                       |
-| `communications` | `messages`, `private_messages`, `notifications`                                                                                     |
-| `social`         | `friendships`                                                                                                                       |
-| `gaming`         | `game_players`, `student_mathoux` (sieste `asleep` comprise depuis le 2026-10-21) et `student_buddies` (**ajoutées le 2026-10-18**) |
-| `rewards`        | `reward_events`                                                                                                                     |
-| `classes`        | `class_members`                                                                                                                     |
-| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                                                                 |
+| Categorie        | Tables                                                                                                                                                                                                        |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `profile`        | `profiles` (identite, niveau, gidouilles, **consentement parental**, **declaration d'age**)                                                                                                                   |
+| `evaluation`     | `student_point_state`, `student_competence_level`, `skill_attempts`, `student_observable_state`                                                                                                               |
+| `activite`       | `exercise_completions`, `student_exercise_mastery`, `srs_decks`, `test_sessions` (+ reponses)                                                                                                                 |
+| `communications` | `messages`, `private_messages`, `notifications`                                                                                                                                                               |
+| `social`         | `friendships`                                                                                                                                                                                                 |
+| `gaming`         | `game_players`, `student_mathoux` (sieste `asleep` comprise depuis le 2026-10-21) et `student_buddies` (**ajoutées le 2026-10-18**) ; `student_last_visits` (`dernier_passage`, `retour_a_feter`, 2026-10-22) |
+| `rewards`        | `reward_events`                                                                                                                                                                                               |
+| `classes`        | `class_members`                                                                                                                                                                                               |
+| `tuteur`         | `tutor_conversations` + `tutor_messages` (**ajoute le 2026-10-11**)                                                                                                                                           |
 
 **Metadata incluses** :
 
