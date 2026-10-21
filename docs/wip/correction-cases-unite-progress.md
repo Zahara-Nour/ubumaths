@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21 : phase 0 de la PR 2 bis rédigée, en attente de David._
+_Mis à jour le 2026-10-21 : phase 0 de la PR 2 bis validée (version finale en bas du journal)._
 
-- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis reprise après `lecture-grandeurs` ([ADR 0031](../adr/0031-parseur-maison-langue-interne-bipm.md)). Rien en prod.
-- **Prochaine action** : après validation, tests rouges (cas A-E de la phase 0 du 2026-10-21) puis code dans `questions/units`.
-- **En attente de David** : validation de la phase 0 du 2026-10-21 (section en bas du journal).
-- **Tranché le 2026-10-21** : calcul non effectué de même grandeur → `bad_form` comme sans unité ; découpage #411 gardé, seconde lecture en arbre seulement s'il échoue ; le code de la carte de l'Atelier n'est PAS réutilisé (`5m` y est un produit).
-- **Pièges en cours** : `3+2 m` réduit par `tidy` reste « 3 + 2 m » et `validateQuantityAnswer` le croit juste → exiger une seule grandeur ; messages d'unité validés (ne pas reformuler).
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` (avancée sur `origin/main` le 2026-10-21) ; sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`.
+- **État** : PR 1-3 mergées (#1543, #1545, #1547). PR 2 bis en cours (tests puis code). Rien en prod.
+- **Prochaine action** : tests rouges des cas de la « phase 0 finale » du 2026-10-21, puis code dans `questions/units`.
+- **En attente de David** : rien.
+- **PR suivante (validée)** : corriger le test « nombre simple » (`isSimpleNumberLatex`) : `(−3)` perfectible « parenthèses inutiles », `.5` et `5,` refusés (BIPM) — cases avec et sans unité, mesurée sur les modèles publiés.
+- **Pièges en cours** : `3+2 m` réduit par `tidy` reste « 3 + 2 m » et `validateQuantityAnswer` le croit juste → exiger une seule grandeur ; le mode « attendu modèle » des cases sans unité est inutilisable après conversion (`1/2 h` pour 30 min refusé) ; messages d'unité validés (ne pas reformuler).
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` ; sondes non suivies dans `src/lib/questions/units/__tests__/tmp/`.
 
 ## Historique
 
@@ -181,3 +181,34 @@ Comportements (mesurés par sonde le 2026-10-21, sauf « nouveau ») :
 - Oracle des 25 modèles publiés : 0 changement attendu (aucune saisie élève en prod).
 - Exécution : tests rouges puis code par moi (2-3 fichiers de `questions/units`) ; revue `code-reviewer`
   en opus (correction des réponses).
+
+### 2026-10-21 — PR 2 bis, phase 0 finale (validée par David)
+
+Revient sur la phase 0 ci-dessus. Principe de David : **une fois l'unité séparée, la partie numérique est jugée
+comme une case sans unité.** Mesuré : le mode « attendu modèle » des cases sans unité est inutilisable après
+conversion (`1/2 h` pour 30 min, `−1/2 m`, `1,5·10³ m` deviendraient faux) ; le mode « nombre simple » (cases à
+arrondi, `rulesSuffice`) est ce que la case à unité applique déjà au nombre (`isQuantityValueLatex`), notation
+scientifique en plus. Validé : mode « nombre simple » + notation scientifique.
+
+- Découpage #411 gardé ; s'il échoue (pas de découpage, ou unité illisible), seconde lecture en arbre :
+  unités marquées → `parseLatex` → dimensions (`quantityProblem`) → `tidy` → UNE grandeur, comparée par
+  `validateQuantityAnswer` (conversion, unité imposée, arrondi inchangés).
+- Partie numérique pour la forme = la saisie, unités retirées (`2\times3`, `3+2`, `10^{3}`, `(-3)`).
+
+| Saisie                                                                                           | Attendu       | Aujourd'hui                                     | Après                                                                   |
+| ------------------------------------------------------------------------------------------------ | ------------- | ----------------------------------------------- | ----------------------------------------------------------------------- |
+| `6 m`, `6m`, `2,5 km`, `1/2 h` (30 min), `1,5·10³ m`, `−1/2 m`                                   | —             | JUSTE                                           | inchangé                                                                |
+| `6/2 m`                                                                                          | 3 m           | perfectible (fraction)                          | inchangé                                                                |
+| `2×3 m`, `3 m + 2 m`, `(3+2) m`, `10^3 m`, `2^3 m`, `2 m × 3 m` (6 m²), `3 h + 30 min` (210 min) | même grandeur | « Unité inconnue : … » / message général        | FAUX `bad_form` « Ta réponse n'est pas écrite sous la forme demandée. » |
+| `2×3 m`                                                                                          | 7 m           | « Unité inconnue : .3 m »                       | « Valeur incorrecte. »                                                  |
+| `2×3 kg`                                                                                         | 6 m           | « Unité inconnue »                              | « Cette unité ne mesure pas la bonne grandeur. »                        |
+| `3+2 m`                                                                                          | 5 m           | « Unité inconnue : +2 m »                       | « On ne peut pas ajouter un nombre sans unité et une longueur. »        |
+| `2√2 m`, `3π m`                                                                                  | 3 m           | « Unité inconnue : … »                          | « Valeur incorrecte. »                                                  |
+| `3x m`                                                                                           | 3 m           | « Unité inconnue : x m »                        | « Réponse invalide : vérifier le format. »                              |
+| `(−3) m`                                                                                         | −3 m          | « Réponse invalide »                            | FAUX `bad_form` (mode nombre simple ; corrigé à la PR suivante)         |
+| `.5 m`, `5, m`                                                                                   | 0,5 m, 5 m    | « Réponse invalide » / « Unité inconnue : , m » | JUSTE (idem, PR suivante)                                               |
+| `5xyz`                                                                                           | 5 m           | « Unité inconnue : xyz »                        | inchangé                                                                |
+
+- Limite : unité imposée + calcul à deux unités (`3 h + 30 min`, `min` imposée) → message d'unité imposée
+  (la grandeur réduite est en h), pas « forme demandée ».
+- Oracle des 25 modèles publiés : 0 changement attendu.
