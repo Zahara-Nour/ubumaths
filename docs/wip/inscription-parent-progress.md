@@ -2,10 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, #1594 : tous les constats des revues traités, poussés (4efb0fe39), CI et contre-revue sécurité en cours._
+_Mis à jour le 2026-10-21, #1594 : constats des revues + contre-revue traités, poussés, CI en cours._
 
-- **État** : B1 fermé (jeton maison `?u=&t=`, empreinte dans `app_metadata.password_reset`, aucune session) ; M1 (adresse `granted` figée, 409), F-a (plancher 2 s), revue n° 2 (bouton masqué sans `email`), n° 3 (fenêtre du prof non fermable pendant la requête), n° 4 (levée de la marque en 2 essais + message), n° 5 (seau `pwchange` par compte + Zod), M2 et `auth.md` documentés. Non fait, optionnel : `/auth/confirm` refuse un `recovery` d'enfant.
-- **Prochaine action** : contre-revue `security-auditor` du delta `4ff3d9a1b..HEAD` → corriger si bloquant ; CI verte → merger #1594 ; puis petite PR M1 bis + M2 avant le `deploy:prod`.
+- **État** : B1 fermé (jeton maison `?u=&t=`, aucune session) — contre-revue `security-auditor` : aucun bloquant. Son « moyen » corrigé : changer l'adresse d'une demande `pending` (prof ou renvoi) la ferme (`expired` + `expires_at` maintenant) et en crée une à jeton neuf (`parental-consent-requests.ts`, intégration rouge→verte). Faits aussi : M1, F-a, revues n° 2-5, M2 et `auth.md`. Optionnel non fait : `/auth/confirm` refuse un `recovery` d'enfant.
+- **Prochaine action** : CI verte → merger #1594 ; puis petite PR M1 bis + M2 avant le `deploy:prod`.
+- **Faibles de la contre-revue, laissés tels quels (à signaler à David)** : plancher de 2 s dépassable si Brevo est lent (sinon `waitUntil` ou plancher plus haut) ; jeton du lien dans les journaux d'accès Vercel (1 h, usage unique).
 - **Décisions de David (2026-10-21, « ok pour les recos »)** : M1 audit → refuser la modification de `parent_email` sur une demande `granted` ; M2 audit → documenter « ancien mot de passe » comme garde d'interface (risque accepté) ; revue n° 2 → masquer « Changer mon mot de passe » sans fournisseur `email` ; F-c → David vérifie/coupe le suivi des clics Brevo. PR 2 : **F1 = David** (Dashboard) ; **M1 bis** (5 comptes par classe et par 24 h, écran parent) et **M2** (suffixe à 3 chiffres) = petite PR après #1594, avant le `deploy:prod`.
 - **En attente de David** : F-c (suivi des clics Brevo). F1 vérifié par David dans le Dashboard le 2026-10-21.
 - **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `app_metadata` seul n'en ferme aucune ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit).
