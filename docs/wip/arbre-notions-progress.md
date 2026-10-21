@@ -5,20 +5,22 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après la v0.44.0 (étape 3 en prod)._
+_Mis à jour le 2026-10-22, après #1598 (étape 4 mergée, migration NON jouée en prod)._
 
-- **État** : C5 étape 3 (bascule du code) **terminée**. Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D),
-  #1595 (F, analytique), #1596 (E : rattachement des modèles par code retiré, `"points"` ôté des 398 JSON).
-  **En prod depuis la v0.44.0** (2026-10-21).
-- **Prochaine action** : **étape 4** (destructive), inventaire fait (entrée du 2026-10-21 « Étape 4 : inventaire ») —
-  phase 0 à présenter à David, grep collé dans le message, rien d'écrit avant sa réponse.
-- **En attente de David** : sort des 12 modèles (brouillons) qui n'ont QUE d'anciens points (leur donner un point
-  neuf avant, ou accepter qu'ils restent sans rangement). Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend
-  une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
-- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
-  d'intégration : tags d'exercice AVANT rangements ; MySelect et infobulles de l'analytique affichent le LaTeX brut ;
-  pas de test de rendu des pages élève de D.
-- **Worktree / branche** : aucun (E nettoyé).
+- **État** : C5 étape 3 en prod (v0.44.0). Étape 4 mergée (#1598) : migration destructive
+  `20261022080000_suppression_ancien_programme` (thèmes, objectifs, 1 007 anciens points, 1 026 liens, `objective_id`,
+  8 fonctions ; `node_id` obligatoire), copie figée dans `docs/archive/arbre-notions/ancien-programme/`.
+- **Prochaine action** : `db:migrate` **sur go explicite de David** (destructive), puis vérifier en prod (tables
+  absentes, 2 126 points, aucun lien vers un point disparu) ; puis PR 2 : `db:types` + simplification des filtres de
+  génération (`isProgrammePoint`, `.not('node_id', 'is', null)`, cas `'ancien'` de `readPointGeneration`) (Q3).
+  Ensuite : **passe lycée** (5 étapes, décidée le 2026-10-21), chantier à part.
+- **En attente de David** : go du `db:migrate`. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
+  correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
+- **Pièges en cours** : jusqu'au `db:migrate`, `db:seed-riche` échouerait (anciens points copiés, `node_id` NOT NULL) ;
+  base locale déjà migrée (worktrees partis de `main` avant #1598 : tests de l'ancien monde rouges en local) ;
+  `supabase start` joue les migrations hors transaction (LOCK seulement dans un `do`) ; points `TEST-SK-*` sans grade,
+  voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
+- **Worktree / branche** : aucun (supprimés au merge de #1598).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1285,3 +1287,8 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   Migration `20261022080000_suppression_ancien_programme` : garde d'arrêt si une ligne d'élève, de cahier, d'exercice,
   d'automatisme ou d'anti-fraude pointe vers un ancien point. `db:migrate` : go explicite de David (destructive).
   Piège : le classifieur du mode auto a refusé l'export prod et des commandes de lecture du worktree.
+- **2026-10-22 — #1598 mergée (étape 4).** CI rouge au 1er essai : `supabase start` joue les migrations hors
+  transaction, `LOCK TABLE` y est refusé (25P01) → verrou, garde et suppressions dans un seul bloc `do` ; verte au
+  2e. Revues : security-auditor 0 bloquant (verrou, garde sur 5 tables : corrigés) ; code-reviewer prêt (points
+  `TEST-SK-*` nettoyés, grade nul documenté, nom du rollback, titre d'un test). Intégration locale complète :
+  258 fichiers, 3 307 tests. `db:migrate` : en attente du go de David.
