@@ -6,13 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR #1580 ouverte._
+_Mis à jour le 2026-10-21, après #1580._
 
-- **État** : PR #1580 ouverte (revue faite, correctif `<picture>` poussé) : 21 SVG animés + 21 versions `-fixe` dans `static/images/buddies/`, `determined` dans `BuddyExpression`, `incorrect` et `streak_lost` → `determined`, réactions (bond, tressaut, affaissement) dans `BuddyAvatar.svelte`.
-- **Décidé par David (2026-10-21)** : recos suivies — `streak_lost` → « déterminé » ; « triste » après **21 jours** sans connexion, une seule fois au retour, réplique « tu m'as manqué », à la place de `streak_lost`.
-- **Prochaine action** : CI verte → merge ; puis phase 0 du contexte « absence longue » (comportements en français, source de la dernière connexion à vérifier).
-- **Pièges en cours** : une `<img>` ne transmet pas « réduire les animations » au SVG (Chromium) → versions `-fixe` choisies par `<picture><source media>` (pas `prefersReducedMotion` : `false` au rendu serveur, `src` non corrigé à l'hydratation — trouvé en revue). Générateur : `node gen.mjs && node gen2.mjs && node page.mjs` dans `scripts/palotins-svg/`, puis copier `final/*.svg`.
-- **Worktree / branche** : `../ubumaths-wt-palotins-svg` · `feat/palotins-svg`.
+- **État** : #1580 mergée (pas encore en prod) : Palotins redessinés et animés, 7 expressions, « déterminé » après une erreur et une Constance perdue, réactions dans `BuddyAvatar`, versions `-fixe` pour « réduire les animations ». Vérification manuelle notée.
+- **Décidé par David (2026-10-21)** : « triste » après **21 jours** sans connexion, une seule fois au retour, réplique « tu m'as manqué », à la place de `streak_lost`.
+- **Prochaine action** : phase 0 du contexte « absence longue » (comportements en français, source de la dernière connexion à vérifier), nouveau worktree.
+- **En attente de David** : rien.
+- **Pièges en cours** : une `<img>` ne transmet pas « réduire les animations » au SVG (Chromium) → `<picture><source media>` (pas `prefersReducedMotion` : `false` au rendu serveur). Générateur : `node gen.mjs && node gen2.mjs && node page.mjs` dans `scripts/palotins-svg/`, puis copier `final/*.svg`.
+- **Worktree / branche** : aucun (`../ubumaths-wt-palotins-svg` retiré après #1580).
 
 ## Décisions de David (2026-10-21)
 
