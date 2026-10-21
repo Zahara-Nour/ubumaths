@@ -1586,7 +1586,9 @@ export function isSimpleNumberLatex(latex: string): boolean {
 	// Un seul signe, entre des parenthèses inutiles : `((-3))`, `-(3)` ; pas `-(-3)`
 	const node = withoutParentheses(withoutSign(withoutParentheses(parsed.ast)));
 	// Un couple `(3,14)` reste refusé : entre parenthèses, la virgule nue sépare
-	if (trimmed.includes('(') && /(^|[^{]),/.test(trimmed)) return false;
+	// (les espaces `\,` de `(1\,000)` ne sont pas des virgules)
+	const withoutSpaces = trimmed.replace(/\\[,;:! ]/g, ' ');
+	if (trimmed.includes('(') && /(^|[^{]),/.test(withoutSpaces)) return false;
 	return isWrittenNumber(node);
 }
 

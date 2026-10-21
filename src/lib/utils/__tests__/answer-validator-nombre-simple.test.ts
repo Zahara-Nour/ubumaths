@@ -73,14 +73,22 @@ describe('isSimpleNumberLatex — écriture d’un nombre', () => {
 		}
 	);
 
-	it.each(['(-3)', '\\left(-3\\right)', '(3)', '((-3))', '(+3)', '-(3)', '(3{,}14)'])(
-		'%s : nombre entre parenthèses inutiles, encore un nombre simple',
-		(latex) => {
-			expect(isSimpleNumberLatex(latex)).toBe(true);
-			expect(isNumberOrNumberFractionLatex(latex)).toBe(true);
-			expect(isQuantityValueLatex(latex)).toBe(true);
-		}
-	);
+	it.each([
+		'(-3)',
+		'\\left(-3\\right)',
+		'(3)',
+		'((-3))',
+		'(+3)',
+		'-(3)',
+		'(3{,}14)',
+		'(1\\,000)',
+		'(-1\\,000{,}5)',
+		'(-3\\,)'
+	])('%s : nombre entre parenthèses inutiles, encore un nombre simple', (latex) => {
+		expect(isSimpleNumberLatex(latex)).toBe(true);
+		expect(isNumberOrNumberFractionLatex(latex)).toBe(true);
+		expect(isQuantityValueLatex(latex)).toBe(true);
+	});
 
 	it.each(['.5', '-.5', '{,}5', '5{,}', '5.', '5,'])(
 		'%s : un chiffre manque d’un côté du séparateur décimal (BIPM)',

@@ -243,3 +243,6 @@ scientifique en plus. Validé : mode « nombre simple » + notation scientifique
 - Oracle des 25 modèles à unité : 0 verdict changé (sa batterie n'a ni `(-3)` ni `.5`). Aucune réponse
   d'élève en prod : l'effet ne peut pas être mesuré sur de vraies saisies.
 - Doc : `questions.md` (point 4 de la correction).
+- Revue opus (#1574) : 0 bloquant. Corrigé : le garde-fou du couple prenait l'espace `\,` pour une virgule
+  (`(1\,000)`, `(-3\,)` refusés). Laissé (antérieur, hors diff) : case `precision` sans `rulesSuffice`,
+  `blank-verdicts` compare le texte → `(3{,}1)` juste perfectible au validateur mais rouge en FlashCard.
