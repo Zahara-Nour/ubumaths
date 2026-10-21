@@ -5,13 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR 2 en cours._
+_Mis à jour le 2026-10-21, après #1588._
 
-- **État** : PR 1 #1584 mergée et migrée ; `db:types` fait. PR 2 codée (passage enregistré au layout, `longAbsence` → `BuddyWidget`, `long_absence` → `sad`, répliques, export RGPD `gaming.dernier_passage`, ligne `legal/confidentialite` § 3.2, doc `buddy-palotins.md`), tests verts, check 0 erreur.
-- **Prochaine action** : PR 2 ouverte → revue `code-reviewer` + `security-auditor`, CI verte → merge. Puis noter la vérification manuelle et archiver le journal (fin de chantier).
-- **En attente de David** : formulation de la ligne de confidentialité, adaptée au registre de la page (« Jour du dernier passage sur le tableau de bord » / « Que le Palotin remarque le retour de l'élève après une longue absence (supprimé avec le compte) »).
-- **Pièges en cours** : base locale avec `20261021200000` (mathoux, autre worktree) → `supabase migration up` refuse ; migration appliquée à la main. `record_student_visit` est typée `Returns: string` mais rend NULL au premier passage (géré par `isLongAbsence`).
-- **Worktree / branche** : `../ubumaths-wt-palotins-absence`, `feat/palotins-absence-2`.
+- **État** : PR 1 #1584 (donnée) et PR 2 #1588 (code) mergées ; aucune migration en attente. Vérification manuelle notée (#1588). Pas en prod tant que `deploy:prod` n'est pas lancé.
+- **Prochaine action** : selon la réponse de David sur le préchargement ; sinon fin de chantier → verser (la doc durable est déjà dans `docs/systeme/buddy-palotins.md`) et archiver ce journal.
+- **En attente de David** : (1) préchargement au survol (`data-sveltekit-preload-data="hover"`, `src/app.html`) : le `load` du layout élève tourne au survol d'un lien et enregistre le passage → « tu m'as manqué » perdu si l'élève ne clique pas. Option (a) couper le préchargement sur les liens vers `/dashboard/student` (recommandée), (b) enregistrer le passage côté client après affichage. (2) Formulation des deux lignes de la page Confidentialité (§ 3.2 et § 7, registre « l'élève »).
+- **Pièges en cours** : `record_student_visit` typée `Returns: string` mais rend NULL au premier passage (géré par `isLongAbsence`, testé).
+- **Worktree / branche** : aucun (retiré après #1588).
 
 ## Décisions de David (2026-10-21)
 
