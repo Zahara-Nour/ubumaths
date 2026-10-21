@@ -129,13 +129,10 @@
 										<div class="mb-1 text-sm font-medium">
 											{card.templateName ?? 'Variation sans nom'}
 										</div>
-										{#if card.objectiveName}
-											<a
-												href="/dashboard/student/objectifs/{card.objectiveId}"
-												class="block text-xs text-muted-foreground hover:underline"
-											>
-												Objectif : {card.objectiveName}
-											</a>
+										{#if card.notionName}
+											<div class="text-xs text-muted-foreground">
+												Notion : {card.notionName}
+											</div>
 										{/if}
 										<div class="mt-1 text-xs text-muted-foreground">
 											Prochaine review : {relativeDate(card.nextReview)}

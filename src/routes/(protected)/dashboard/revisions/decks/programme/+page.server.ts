@@ -13,6 +13,10 @@ import { error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { templateToBadge } from '$lib/server/srs/capacity-badge';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
+import { isProgrammePoint } from '$lib/server/curriculum-generation';
+import { loadNodesWithAncestors } from '$lib/server/programme-tree';
+import { placeOfNode } from '$lib/utils/programme-tree';
+import type { ClassificationNode } from '$lib/types/database-helpers';
 
 /**
  * Sous-ensemble des CapacityBadge utilisé côté Programme : un template seul
@@ -25,8 +29,9 @@ export interface ProgrammeCard {
 	cardId: string;
 	templateId: string;
 	templateName: string | null;
-	objectiveName: string | null;
-	objectiveId: string | null;
+	/** Notion de l'arbre où se range le point de la carte (niveau de l'élève). */
+	notionName: string | null;
+	notionId: string | null;
 	state: 'new' | 'learning' | 'review' | 'relearning';
 	nextReview: string | null;
 	lastReview: string | null;
@@ -125,12 +130,8 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		locals.supabase.from('question_templates').select('id, subdomain').in('id', templateIds),
 		locals.supabase
 			.from('question_template_points')
-			.select(
-				'template_id, curriculum_points!inner(objective_id, curriculum_objectives!inner(id, name, display_order, curriculum_themes(grade)))'
-			)
+			.select('template_id, curriculum_points(code, node_id, grade)')
 			.in('template_id', templateIds)
-			// Cast nécessaire : Supabase JS ne type pas la syntaxe d'ordre sur jointure nested.
-			.order('curriculum_objectives(display_order)' as never, { ascending: true })
 	]);
 
 	if (statsRes.error) throw error(500, `Erreur stats FSRS : ${statsRes.error.message}`);
@@ -164,34 +165,42 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 
 	type LinkRow = {
 		template_id: string;
-		curriculum_points: {
-			objective_id: string;
-			curriculum_objectives: {
-				id: string;
-				name: string;
-				display_order: number;
-				curriculum_themes: { grade: string } | null;
-			} | null;
-		} | null;
+		curriculum_points: { code: string; node_id: string | null; grade: string | null } | null;
 	};
+	// Seuls les points neufs comptent (les tags des anciens points restent en base jusqu'à
+	// l'étape 4 de C5), rangés par code pour que le « 1er point » ne dépende pas de la lecture.
+	const programmeLinks = ((links ?? []) as unknown as LinkRow[])
+		.filter((l) => isProgrammePoint(l.curriculum_points))
+		.sort((a, b) =>
+			(a.curriculum_points?.code ?? '').localeCompare(b.curriculum_points?.code ?? '', 'fr')
+		);
 	// Carte partagée entre deux référentiels (ex. T_SPE et T_COMP) : seuls les
-	// objectifs du niveau de l'élève comptent. Sans cela, le « 1er objectif
-	// rencontré » pouvait être celui de l'autre programme.
-	const linksOfGrade = keepLinksOfGrade(
-		(links ?? []) as unknown as LinkRow[],
-		profile.grade,
-		(l) => ({
-			template_id: l.template_id,
-			grade: l.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
-		})
-	);
-	const objectiveByTemplate = new Map<string, { id: string; name: string }>();
-	// On garde le 1er objectif rencontré (le plus petit display_order grâce au tri ci-dessus)
-	for (const l of linksOfGrade) {
-		const obj = l.curriculum_points?.curriculum_objectives;
-		if (obj && !objectiveByTemplate.has(l.template_id)) {
-			objectiveByTemplate.set(l.template_id, { id: obj.id, name: obj.name });
+	// points du niveau de l'élève comptent. Sans cela, le « 1er point rencontré »
+	// pouvait être celui de l'autre programme.
+	const linksOfGrade = keepLinksOfGrade(programmeLinks, profile.grade, (l) => ({
+		template_id: l.template_id,
+		grade: l.curriculum_points?.grade ?? null
+	}));
+
+	const nodeIds = linksOfGrade
+		.map((l) => l.curriculum_points?.node_id)
+		.filter((id): id is string => typeof id === 'string');
+	let nodeById = new Map<string, ClassificationNode>();
+	if (nodeIds.length > 0) {
+		try {
+			const nodes = await loadNodesWithAncestors(locals.supabase, nodeIds);
+			nodeById = new Map(nodes.map((n) => [n.id, n]));
+		} catch (err) {
+			throw error(500, err instanceof Error ? err.message : 'Arbre des notions illisible');
 		}
+	}
+
+	const notionByTemplate = new Map<string, { id: string; name: string }>();
+	// On garde la notion du 1er point rencontré (le plus petit code, cf. le tri ci-dessus)
+	for (const l of linksOfGrade) {
+		if (notionByTemplate.has(l.template_id)) continue;
+		const notion = placeOfNode(l.curriculum_points?.node_id ?? null, nodeById)?.notion;
+		if (notion) notionByTemplate.set(l.template_id, { id: notion.id, name: notion.name });
 	}
 
 	// 6. Construire les ProgrammeCard et regrouper par section
@@ -207,14 +216,14 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		const nextReview = stat?.next_review ?? null;
 		const lastReview = stat?.last_review ?? null;
 		const badge = toProgrammeBadge(templateToBadge(state, nextReview, nowMs));
-		const obj = objectiveByTemplate.get(tid) ?? null;
+		const notion = notionByTemplate.get(tid) ?? null;
 
 		const card: ProgrammeCard = {
 			cardId: c.id,
 			templateId: tid,
 			templateName: templateNameById.get(tid) ?? null,
-			objectiveName: obj?.name ?? null,
-			objectiveId: obj?.id ?? null,
+			notionName: notion?.name ?? null,
+			notionId: notion?.id ?? null,
 			state,
 			nextReview,
 			lastReview,

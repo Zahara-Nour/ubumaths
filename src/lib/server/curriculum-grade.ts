@@ -23,7 +23,7 @@
 /** Ligne de rattachement, réduite à ce que la règle lit. */
 export interface GradedTemplateLink {
 	template_id: string;
-	/** `curriculum_themes.grade` du point, `null` si la jointure est vide. */
+	/** Programme du point (`curriculum_points.grade`), `null` si la jointure est vide. */
 	grade: string | null;
 }
 

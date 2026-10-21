@@ -17,18 +17,7 @@ import type { PageServerLoad } from './$types';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { mapDbTemplateToForm } from '$lib/questions/types';
 import { requireAdmin } from '$lib/server/middleware/auth';
-import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
-import { isLegacyPoint, type PointGeneration } from '$lib/server/curriculum-generation';
-import { getGradesAtOrAbove } from '$lib/types/grades';
-import { createServerLogger } from '$lib/utils/logger';
-
-const logger = createServerLogger('(protected)/dashboard/admin/questions/[id]/edit/+page.server');
-
-/** Tag lu pour l'écran : le point, et de quoi connaître sa génération. */
-interface TagRow {
-	point_id: string;
-	curriculum_points: PointGeneration | null;
-}
+import { loadTemplateProgrammeTags, type TemplateProgrammeTags } from '$lib/server/programme-tags';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	// Check admin (real admin login OR step-up elevation)
@@ -47,49 +36,25 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		throw error(404, 'Question non trouvée');
 	}
 
-	// Arbres du référentiel taguables, et tags actuels.
+	// Tags vers les points du programme : un choix par programme (cf. `programme-tags`).
 	// `question_template_points` est le pivot de l'acquisition : une tentative n'a
-	// pas de clé étrangère vers un point, elle s'y relie par le template tagué.
+	// pas de clé étrangère vers un point, elle s'y relie par le modèle tagué.
 	// Sans un tag ici, aucun point ne se validera jamais.
-	//
-	// Les niveaux proposés ne sont pas ceux de création mais tous ceux d'année
-	// scolaire supérieure ou égale : un programme plus tardif remobilise
-	// couramment une notion vue plus tôt — la distance entre deux points est une
-	// capacité de seconde que la 1ʳᵉ spé réutilise. Les niveaux sans programme
-	// amorcé tombent d'eux-mêmes, leur arbre étant vide.
-	const grades = ((template as { grades?: string[] }).grades ?? []) as string[];
-	const curriculumByGrade: { grade: string; tree: CurriculumTreeTheme[] }[] = [];
-	const trees = await Promise.all(
-		getGradesAtOrAbove(grades).map(async (g) => ({
-			grade: g,
-			tree: await getCurriculumTree(supabase, g)
-		}))
-	);
-	for (const t of trees) {
-		if (t.tree.length > 0) curriculumByGrade.push(t);
-	}
-
-	const { data: tagRows, error: tagRowsError } = await supabase
-		.from('question_template_points')
-		.select('point_id, curriculum_points(objective_id)')
-		.eq('template_id', id);
-
-	// Enrichissement d'affichage : son absence ne ferme pas l'écran, mais elle
-	// laisse une trace.
-	if (tagRowsError) {
-		logger.error('Enrichissement illisible :', tagRowsError);
+	const row = template as { grades?: string[] | null; classification_node_id?: string | null };
+	let programmeTags: TemplateProgrammeTags;
+	try {
+		programmeTags = await loadTemplateProgrammeTags(supabase, {
+			id,
+			grades: row.grades ?? [],
+			classification_node_id: row.classification_node_id ?? null
+		});
+	} catch (err) {
+		throw error(500, err instanceof Error ? err.message : 'Tags du modèle illisibles');
 	}
 
 	return {
 		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>),
 		templateId: id,
-		curriculumByGrade,
-		// Filtre provisoire jusqu'à la bascule du code (étape 3 de C5) : l'écran coche les
-		// points de l'ancien référentiel ; un tag de point neuf compterait sans case où
-		// s'afficher. Chaque case s'écrit seule (POST/DELETE) : les tags neufs restent intacts.
-		// (client admin non typé : la jointure plusieurs-à-un rend un objet, pas un tableau)
-		taggedPointIds: ((tagRows ?? []) as unknown as TagRow[])
-			.filter((r) => isLegacyPoint(r.curriculum_points))
-			.map((r) => r.point_id)
+		programmeTags
 	};
 };

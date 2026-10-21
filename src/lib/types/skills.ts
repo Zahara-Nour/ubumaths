@@ -14,18 +14,6 @@
  */
 
 // ============================================================================
-// Family — distinction knowledge / competence (décision 67)
-// ============================================================================
-
-/**
- * Famille d'un skill, dérivée des FK `objective_id` / `subdimension_id`.
- * En DB : colonne GENERATED stockée dans `skills.family`.
- * - `'knowledge'`  : famille A (capacités, connaissances et savoir-faire)
- * - `'competence'` : famille B (observables, compétences mathématiques transversales)
- */
-export type Family = 'knowledge' | 'competence';
-
-// ============================================================================
 // MathCompetence — les 6 compétences mathématiques transversales (famille B)
 // ============================================================================
 
@@ -78,35 +66,6 @@ export type SkillAttemptCode = 'plus' | 'minus';
  * diagnostic post-erreur (décision 30). En DB : `skill_attempts.phase_blocage`.
  */
 export type PhaseBlocage = 'comprendre' | 'modeliser' | 'calculer' | 'repondre' | 'regulation';
-
-// ============================================================================
-// Helpers de lecture
-// ============================================================================
-
-/**
- * Détermine la famille d'un skill à partir de ses FK. Source de vérité
- * équivalente à la colonne GENERATED `skills.family`.
- */
-export function getSkillFamily(skill: {
-	objective_id: string | null;
-	subdimension_id: string | null;
-}): Family {
-	return skill.objective_id !== null ? 'knowledge' : 'competence';
-}
-
-export function isKnowledgeSkill(skill: {
-	objective_id: string | null;
-	subdimension_id: string | null;
-}): boolean {
-	return skill.objective_id !== null;
-}
-
-export function isCompetenceSkill(skill: {
-	objective_id: string | null;
-	subdimension_id: string | null;
-}): boolean {
-	return skill.subdimension_id !== null;
-}
 
 // ============================================================================
 // Helpers d'affichage UI (libellés français)

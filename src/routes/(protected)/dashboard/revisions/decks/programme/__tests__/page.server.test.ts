@@ -1,10 +1,12 @@
 /**
- * Deck Programme — objectif affiché sous chaque carte.
+ * Deck Programme — notion affichée sous chaque carte.
  *
- * Une carte peut être rattachée à des points de PLUSIEURS référentiels
- * (Terminale spécialité `T_SPE` et maths complémentaires `T_COMP`). L'élève ne
- * doit voir que l'objectif de SON niveau : un élève de spécialité qui voit le
- * nom — et le lien — d'un objectif de complémentaires est perdu.
+ * La notion d'une carte est celle de l'arbre où se range le point que la carte
+ * valide (point posé sur la notion ou sur une de ses sous-notions). Une carte
+ * peut être rattachée à des points de PLUSIEURS référentiels (Terminale
+ * spécialité `T_SPE` et maths complémentaires `T_COMP`) : l'élève ne voit que
+ * la notion de SON niveau. Les tags des anciens points (thème → objectif) ne
+ * comptent plus.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -26,26 +28,30 @@ import type { PageServerData } from '../$types';
 // sans l'annotation `PageServerLoad`, dont le type de retour admet `void`.
 type Loaded = PageServerData;
 
-function link(templateId: string, objectiveId: string, displayOrder: number, grade: string) {
-	return {
-		template_id: templateId,
-		curriculum_points: {
-			objective_id: objectiveId,
-			curriculum_objectives: {
-				id: objectiveId,
-				name: `Objectif ${objectiveId}`,
-				display_order: displayOrder,
-				curriculum_themes: { grade }
-			}
-		}
-	};
+function link(templateId: string, code: string, nodeId: string | null, grade: string | null) {
+	return { template_id: templateId, curriculum_points: { code, node_id: nodeId, grade } };
 }
+
+/** Branche > deux notions ; la notion « Suites » a une sous-notion. */
+const NODES = [
+	{ id: 'branche', kind: 'branch', parent_id: null, name: 'Analyse', archived_at: null },
+	{ id: 'n-comp', kind: 'notion', parent_id: 'branche', name: 'Suites', archived_at: null },
+	{
+		id: 'sn-comp',
+		kind: 'subnotion',
+		parent_id: 'n-comp',
+		name: 'Arithmétiques',
+		archived_at: null
+	},
+	{ id: 'n-spe', kind: 'notion', parent_id: 'branche', name: 'Limites', archived_at: null },
+	{ id: 'n-seule', kind: 'notion', parent_id: 'branche', name: 'Dérivation', archived_at: null }
+];
 
 /**
  * Deux cartes :
- *  - `t-partagee` : rattachée à un objectif T_COMP (rangé en premier) ET à un
- *    objectif T_SPE — le cas visé ;
- *  - `t-seule` : rattachée à un seul objectif, de T_COMP — non-régression.
+ *  - `t-partagee` : un point T_COMP (code rangé en premier, sur une sous-notion)
+ *    ET un point T_SPE — le cas visé ; plus un ancien point, jamais retenu ;
+ *  - `t-seule` : un seul point, de T_COMP — non-régression.
  */
 function supabaseFixture() {
 	return createFakeSupabase((table) => {
@@ -69,45 +75,44 @@ function supabaseFixture() {
 					]
 				};
 			case 'question_template_points':
-				// Déjà triées par display_order, comme la requête le demande.
 				return {
 					data: [
-						link('t-partagee', 'obj-comp', 1, 'T_COMP'),
-						link('t-seule', 'obj-comp-seule', 2, 'T_COMP'),
-						link('t-partagee', 'obj-spe', 5, 'T_SPE')
+						link('t-partagee', '0-ancien', null, null),
+						link('t-partagee', 'TCOMP-001', 'sn-comp', 'T_COMP'),
+						link('t-seule', 'TCOMP-002', 'n-seule', 'T_COMP'),
+						link('t-partagee', 'TSPE-005', 'n-spe', 'T_SPE')
 					]
 				};
+			case 'classification_nodes':
+				return { data: NODES };
 			default:
 				throw new Error(`Table inattendue : ${table}`);
 		}
 	});
 }
 
-async function objectiveOf(grade: string | null, templateId: string) {
+async function notionOf(grade: string | null, templateId: string) {
 	auth.grade = grade;
 	const fake = supabaseFixture();
 	const data = (await load({ locals: { supabase: fake.client } } as never)) as Loaded;
 	const card = data.sections.flatMap((s) => s.cards).find((c) => c.templateId === templateId);
-	return { id: card?.objectiveId, name: card?.objectiveName };
+	return { id: card?.notionId, name: card?.notionName };
 }
 
-describe('deck Programme — objectif selon le niveau de l’élève', () => {
-	it('carte partagée : l’élève de T_SPE voit l’objectif T_SPE, pas le premier rencontré', async () => {
-		expect(await objectiveOf('T_SPE', 't-partagee')).toEqual({
-			id: 'obj-spe',
-			name: 'Objectif obj-spe'
-		});
+describe('deck Programme — notion selon le niveau de l’élève', () => {
+	it('carte partagée : l’élève de T_SPE voit la notion de son point T_SPE', async () => {
+		expect(await notionOf('T_SPE', 't-partagee')).toEqual({ id: 'n-spe', name: 'Limites' });
 	});
 
-	it('carte partagée : l’élève de T_COMP voit l’objectif T_COMP', async () => {
-		expect((await objectiveOf('T_COMP', 't-partagee')).id).toBe('obj-comp');
+	it('point sur une sous-notion : la carte affiche sa notion', async () => {
+		expect(await notionOf('T_COMP', 't-partagee')).toEqual({ id: 'n-comp', name: 'Suites' });
 	});
 
-	it('carte d’un seul niveau, autre que celui de l’élève : objectif conservé', async () => {
-		expect((await objectiveOf('T_SPE', 't-seule')).id).toBe('obj-comp-seule');
+	it('carte d’un seul niveau, autre que celui de l’élève : notion conservée', async () => {
+		expect((await notionOf('T_SPE', 't-seule')).id).toBe('n-seule');
 	});
 
-	it('élève sans niveau : premier objectif rencontré, comme avant', async () => {
-		expect((await objectiveOf(null, 't-partagee')).id).toBe('obj-comp');
+	it('élève sans niveau : premier point neuf dans l’ordre des codes, jamais l’ancien', async () => {
+		expect((await notionOf(null, 't-partagee')).id).toBe('n-comp');
 	});
 });

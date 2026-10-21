@@ -27,7 +27,7 @@ import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/re
 import { parseExerciseSelection } from '$lib/resources/exercise-selection';
 import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { isLegacyPoint } from '$lib/server/curriculum-generation';
+import { isProgrammePoint } from '$lib/server/curriculum-generation';
 
 type Sb = App.Locals['supabase'];
 
@@ -56,10 +56,7 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 interface TemplatePointRow {
 	template_id: string;
 	point_id: string;
-	curriculum_points: {
-		objective_id: string | null;
-		curriculum_objectives: { curriculum_themes: { grade: string } | null } | null;
-	} | null;
+	curriculum_points: { node_id: string | null; grade: string | null } | null;
 }
 
 /**
@@ -79,21 +76,18 @@ async function templatePointIds(
 ): Promise<string[]> {
 	const { data, error } = await supabase
 		.from('question_template_points')
-		.select(
-			'template_id, point_id, curriculum_points(objective_id, curriculum_objectives(curriculum_themes(grade)))'
-		)
+		.select('template_id, point_id, curriculum_points(node_id, grade)')
 		.in('template_id', templateIds);
 	if (error) throw new Error(`reconcileAutoCoverage ${context}: ${error.message}`);
 
-	// Filtre provisoire jusqu'à la bascule du code (étape 3 de C5) : la couverture compte les
-	// points de l'ancien référentiel ; un tag de point neuf n'y a pas sa place. Écarté AVANT la
-	// règle du niveau, pour qu'elle tranche exactement comme avant l'étape 2.
-	const legacyRows = ((data ?? []) as unknown as TemplatePointRow[]).filter((r) =>
-		isLegacyPoint(r.curriculum_points)
+	// Les tags des anciens points (thème → objectif) restent en base jusqu'à l'étape 4 de C5 :
+	// écartés AVANT la règle du niveau, ils ne comptent plus dans la couverture.
+	const programmeRows = ((data ?? []) as unknown as TemplatePointRow[]).filter((r) =>
+		isProgrammePoint(r.curriculum_points)
 	);
-	const rows = keepLinksOfGrade(legacyRows, grade, (r) => ({
+	const rows = keepLinksOfGrade(programmeRows, grade, (r) => ({
 		template_id: r.template_id,
-		grade: r.curriculum_points?.curriculum_objectives?.curriculum_themes?.grade ?? null
+		grade: r.curriculum_points?.grade ?? null
 	}));
 	return [...new Set(rows.map((r) => r.point_id))];
 }
