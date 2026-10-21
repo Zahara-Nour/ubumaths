@@ -39,11 +39,16 @@ import {
 } from './names';
 import {
 	astOf,
+	parseDefinition,
+	pointCoordinatesOf,
 	readingMode,
 	readNumber,
 	readListValue,
+	referencesOf,
+	variablesOf,
 	individualEntries,
 	withPiCommand,
+	latexUnitsWithPi,
 	mixedNotationMessage,
 	withLatexFunctionNames
 } from './parse';
@@ -107,10 +112,52 @@ import {
 	plain
 } from './commands';
 import { renderResult } from './render';
+import {
+	POINT_TWO,
+	POINT_UNIT,
+	citesXOrY,
+	figureCitedMessage,
+	hasRelation,
+	looksLikePoint,
+	splitCoordinates
+} from './geometry';
 import { DEV_HELP_ARGUMENT, studentHelpText } from './help';
 import { frequencyCommand, samplesCommand, simulateCommand } from './simulate';
 import { tabulateCommand } from './tabulate';
+import { surveyCommand } from './survey';
 import { gridFunctionCalledIn, gridFunctionInCalcul } from './grid-functions';
+import {
+	citesMeasure,
+	measureCallNames,
+	measuredText,
+	pairNames,
+	withoutMeasureCalls
+} from './measures';
+import { evaluate } from '$lib/mathAST/eval';
+import { format as formatUnit } from '$lib/mathAST/units';
+import {
+	bareLineShortcut,
+	constructionWordIn,
+	laterWordIn,
+	laterWordMessage,
+	readConstruction,
+	type ReadOutcome
+} from './construction-read';
+import { objectKindOf, partsOf, specOfCall } from './construction-spec';
+import {
+	circleEquation,
+	approximatePoint,
+	constructionFromText,
+	constructionLatex,
+	constructionOf,
+	isConstruction,
+	kindsOf,
+	lineEquation,
+	nodeOf,
+	plainLatex,
+	segmentLength,
+	type BuiltOutcome
+} from './construction';
 import { PI_IN_LETTERS, PI_IN_LETTERS_MESSAGE } from './names';
 import { crossCommand } from './cross';
 import { compareCommand } from './compare';
@@ -126,6 +173,8 @@ import { filterCommand } from './filter';
 import type { StatChartScene } from '$lib/ubumark/utils/stat-chart-scene';
 import { solveSteps, type SolvedSteps } from './solve-steps';
 import { readNaturalQuantities, singleLetterHint, type NaturalReading } from './natural-quantities';
+import { degreeSignWritten, strayDegreeRefusal, withDegreeUnits } from './degrees';
+import { radiansInLatex, radiansInText } from './angle-radians';
 import { quantityProblem } from '$lib/mathAST/cli/quantities';
 import { EQUATION_UNSOLVED, INEQUALITY_UNSOLVED } from '$lib/mathAST/cli/commands/solve.command';
 import { VALUE_FORBIDDEN, typedValueLatex } from '$lib/mathAST/cli/commands/eval.command';
@@ -224,6 +273,20 @@ export type CalcResult =
 			readonly alternative?: Alternative;
 			/** Une aide sur l'écriture (`5km` collé, lot C des grandeurs) */
 			readonly note?: string;
+			/**
+			 * Une construction tapée seule (`(AB)`, géométrie lot 2, L2) : ce que
+			 * « Garder » crée — la définition TELLE QU'ÉCRITE, pas le résultat.
+			 */
+			readonly construction?: {
+				readonly kind: 'point' | 'curve';
+				readonly definition: string;
+				readonly provenance: Provenance;
+			};
+			/**
+			 * Une ligne qui mesure (`AE`, `aire(A, B, C)`, lot 2, L4) : « Garder » crée une
+			 * VALEUR de cette définition, qui suit ses points (décision de David, 2026-10-18).
+			 */
+			readonly measure?: { readonly definition: string; readonly provenance: Provenance };
 	  }
 	| {
 			readonly kind: 'commande';
@@ -442,6 +505,80 @@ function recurrenceTermsIn(
 	return failure === null ? { ok: true, text } : { ok: false, message: failure };
 }
 
+/**
+ * `u_3`, `u_{12}` : le nom d'une suite ou d'une fonction de l'atelier, suivi d'un
+ * indice entier. Pas après une lettre ni une barre oblique (`\mu_3`, `ab_3`), ni
+ * devant une parenthèse (`u_3(2)` appelle la fonction `u_3`).
+ */
+const INDEXED_TERM =
+	/(?<![A-Za-z_\\])([A-Za-z])_(?:(\d+)|\{\s*(\d+)\s*\})(?![\d'’]|\s*(?:\(|\\left))/g;
+
+/**
+ * Chaque terme `u_3` d'une suite (ou d'une fonction) de l'atelier récrit en
+ * appel `u(3)` : le sens qu'il a dans une définition (`subscriptsAsCalls`,
+ * `engine.ts`). Laissés tels quels : `u_n` (la notation), et `u_3` quand un
+ * objet `u_3` existe ou que `u` n'est ni une suite ni une fonction.
+ */
+function indexedTermsAsCalls(atelier: Atelier, input: string): string {
+	return input.replace(
+		INDEXED_TERM,
+		(whole, base: string, plain: string | undefined, braced: string | undefined) => {
+			const term = indexedTermOf(atelier, `${base}_${plain ?? braced}`);
+			return term === null ? whole : `${term.base}(${term.index})`;
+		}
+	);
+}
+
+/**
+ * `u_3` est-il le terme d'une suite (ou une valeur d'une fonction) de l'atelier ?
+ * Oui quand u est une suite ou une fonction et qu'aucun objet ne s'appelle `u_3`.
+ */
+function indexedTermOf(
+	atelier: Atelier,
+	name: string
+): {
+	readonly base: string;
+	readonly index: string;
+	readonly kind: 'sequence' | 'function';
+} | null {
+	const match = /^([A-Za-z])_(\d+)$/.exec(name);
+	if (match === null || atelier.get(name) !== undefined) return null;
+	const kind = atelier.get(match[1])?.kind;
+	if (kind !== 'sequence' && kind !== 'function') return null;
+	return { base: match[1], index: match[2], kind };
+}
+
+/**
+ * Le texte d'un refus calculé sur la ligne récrite (`u(3)`), rendu à ce que
+ * l'élève a tapé (`u_3`) : il ne doit pas lire une écriture qu'il n'a pas faite.
+ */
+function typedTermsIn(atelier: Atelier, typed: string, message: string): string {
+	let out = message;
+	for (const match of typed.matchAll(INDEXED_TERM)) {
+		const [whole, base, plain, braced] = match;
+		const term = indexedTermOf(atelier, `${base}_${plain ?? braced}`);
+		if (term !== null) out = out.split(`${term.base}(${term.index})`).join(whole);
+	}
+	return out;
+}
+
+/**
+ * Les termes `u_3` de l'argument d'une commande de CALCUL, récrits `u(3)` comme
+ * sur une ligne de calcul. Pas ce qui NOMME une variable : après « ; »
+ * (`.dériver x^2 ; t`) ni la valeur posée par `.évaluer … en u_3=3`.
+ */
+function indexedTermsInArgument(atelier: Atelier, command: string, argument: string): string {
+	const semicolon = argument.indexOf(';');
+	const evaluated = command === 'eval' ? argument.search(/\sen\s/) : -1;
+	const cut = [semicolon, evaluated].filter((i) => i !== -1);
+	const end = cut.length === 0 ? argument.length : Math.min(...cut);
+	// `en x=u_3` : la VALEUR posée est un calcul, le nom posé (`u_3=`) non
+	const tail = argument
+		.slice(end)
+		.replace(/=([^;=]*)/g, (_whole, value: string) => `=${indexedTermsAsCalls(atelier, value)}`);
+	return indexedTermsAsCalls(atelier, argument.slice(0, end)) + tail;
+}
+
 /** Une « définition » de dérivée (`f'(x) = …`), refusée (§2 E1). */
 const DERIVATIVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?'+)\s*(?:\(\s*[A-Za-z]\s*\))?\s*=(?!=)/;
 
@@ -464,7 +601,8 @@ function kindOf(parameter: string | undefined, body: string): ObjectKind {
 
 	const ast = astOf(body);
 	if (ast === null) return 'value';
-	const variables = new Set(getVariables(ast));
+	// `x_1` est un nom, pas la variable x (`variablesOf`)
+	const variables = variablesOf(ast, undefined);
 	if (variables.has('x')) return 'function';
 	// `f'` n'a pas de variable libre, mais désigne bien une fonction : c'est le
 	// nœud lui-même qui le dit (`derivativeOrder`).
@@ -499,8 +637,451 @@ function isNumberList(body: string): boolean {
 const KIND_WORDS: Readonly<Record<Exclude<ObjectKind, 'list'>, string>> = {
 	value: 'un nombre : supprime-le',
 	function: 'une fonction : supprime-la',
-	sequence: 'une suite : supprime-la'
+	sequence: 'une suite : supprime-la',
+	point: 'un point : supprime-le',
+	curve: 'une courbe : supprime-la'
 };
+
+/** Le type d'un objet, pour refuser de le changer (V62) : « « d » est déjà une valeur. » */
+const KIND_NAMES: Readonly<Record<ObjectKind, string>> = {
+	value: 'une valeur',
+	function: 'une fonction',
+	sequence: 'une suite',
+	list: 'une liste',
+	point: 'un point',
+	curve: 'une courbe'
+};
+
+function kindKeptRefusal(name: string, kind: ObjectKind): CalcResult {
+	return { kind: 'refus', message: `« ${name} » est déjà ${KIND_NAMES[kind]}.` };
+}
+
+// =============================================================================
+// Géométrie (v2, lot 1) : points et courbes
+// =============================================================================
+
+/**
+ * `d : y = 3x − 2` : un nom, « : » (`\colon` en LaTeX), puis le reste — qui
+ * n'est une courbe que s'il porte une relation (`a : b` reste la division, C15).
+ */
+const CURVE_DEFINITION = /^\s*([A-Za-z](?:_\d+)?)\s*(?::|\\colon)\s*(.+)$/s;
+
+/**
+ * Créer — ou redéfinir — une courbe tapée dans Calcul (C1-C15), ou `null` si la
+ * saisie n'en a pas la forme (elle suit alors le chemin d'un calcul).
+ *
+ * ⚠️ Un refus de forme (C8-C11) ne crée rien : l'élève corrige sa ligne.
+ */
+function defineCurve(
+	session: CalcSession,
+	input: string,
+	provenance: Provenance
+): CalcResult | null {
+	const match = CURVE_DEFINITION.exec(input);
+	if (match === null) return null;
+	const [, name, typedBody] = match;
+	const body = typedBody.trim();
+	if (!hasRelation(body)) return null;
+	const { atelier } = session;
+	const existing = atelier.get(name);
+	const cites = equationCitesXOrY(atelier, body);
+	if (existing !== undefined && existing.kind !== 'curve') {
+		// `a : b = 2` avec deux valeurs reste une comparaison (C15) ; `d : y = 3x`
+		// sur une valeur d ne la change pas en courbe (C12, V62)
+		return cites ? kindKeptRefusal(name, existing.kind) : null;
+	}
+	// `x : 2 = 4` : un nom réservé, sans x ni y — un calcul, comme avant la géométrie
+	if (!cites && validateName(name, []) === 'reserved') return null;
+	const rejection = validateName(
+		name,
+		atelier.names.filter((n) => n !== name)
+	);
+	if (rejection !== null) {
+		return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+	}
+	// Une courbe ne se restreint pas (seule une fonction se définit sur un intervalle)
+	if (splitInterval(body, readingMode(provenance)).written !== null) {
+		return { kind: 'refus', message: ONLY_FUNCTIONS };
+	}
+	const read = parseDefinition('curve', body, provenance, atelier.functionNames);
+	if (read.error !== undefined) return { kind: 'refus', message: read.error };
+	const done =
+		existing === undefined
+			? atelier.create({ kind: 'curve', name, definition: body }, provenance)
+			: atelier.update(name, body, provenance);
+	if (!done.ok) return { kind: 'refus', message: done.message };
+	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/**
+ * Le corps cite-t-il x ou y ? Lu sur l'ARBRE quand il se lit (`2xy`, `axy`),
+ * sinon dans le texte (`y = 2x = 3`, que le parseur maison lit d'ailleurs).
+ */
+function equationCitesXOrY(atelier: Atelier, body: string): boolean {
+	const ast = astOf(body, 'text', atelier.functionNames);
+	if (ast === null) return citesXOrY(body);
+	const variables = variablesOf(ast, atelier.functionNames);
+	return variables.has('x') || variables.has('y');
+}
+
+/**
+ * Créer — ou redéfinir — un point tapé dans Calcul : `A = (1 ; 2)` (G3, P1-P8).
+ *
+ * Les refus de forme (P6, P7) et l'unité (P8) ne créent rien ; une coordonnée
+ * illisible crée le point en erreur, comme toute définition (§2 E1).
+ */
+function definePoint(
+	session: CalcSession,
+	name: string,
+	typedBody: string,
+	provenance: Provenance
+): CalcResult {
+	const { atelier } = session;
+	const body = typedBody.trim();
+	const existing = atelier.get(name);
+	if (existing !== undefined && existing.kind !== 'point') {
+		return kindKeptRefusal(name, existing.kind);
+	}
+	const split = splitCoordinates(body);
+	if (!split.ok) {
+		// P7 : trois nombres entre parenthèses, c'est peut-être une liste mal écrite
+		const list = bracketedListRefusal(name, body);
+		const message =
+			split.message === POINT_TWO && list !== null ? `${POINT_TWO} ${list}` : split.message;
+		return { kind: 'refus', message };
+	}
+	// Une coordonnée qui mesure le point lui-même (`A = (AM ; 0)`) : circulaire (revue de la PR 2)
+	const selfMeasured = split.coordinates.some(
+		(c) =>
+			measureCallNames(c, provenance).includes(name) ||
+			pairNames(c, provenance, (n) => n === name || atelier.get(n)?.kind === 'point').includes(name)
+	);
+	if (selfMeasured) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » ne peut pas se mesurer à partir de lui-même : une coordonnée de ${name} cite ${name}.`
+		};
+	}
+	if (parseDefinition('point', body, provenance, atelier.functionNames).error === POINT_UNIT) {
+		return { kind: 'refus', message: POINT_UNIT };
+	}
+	if (existing === undefined) {
+		const rejection = validateName(name, atelier.names);
+		if (rejection !== null) {
+			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+		}
+	}
+	const done =
+		existing === undefined
+			? atelier.create({ kind: 'point', name, definition: body }, provenance)
+			: atelier.update(name, body, provenance);
+	if (!done.ok) return { kind: 'refus', message: done.message };
+	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/** `I = milieu(A, B)` : un nom, « = », puis la construction. */
+// Tout mot avant « = » : un nom hors forme (`m2`) est refusé COMME nom, pas lu en calcul (revue)
+const NAMED_CONSTRUCTION = /^\s*([A-Za-z][A-Za-z0-9_]*)\s*=(?!=)\s*([\s\S]+)$/;
+
+/**
+ * Une ligne de construction (géométrie, lot 2 : L2, L3) — nommée, elle crée ou
+ * redéfinit l'objet ; tapée seule, c'est un calcul. `null` : ce n'en est pas
+ * une, la ligne suit le chemin d'un calcul.
+ */
+function constructionLine(
+	session: CalcSession,
+	input: string,
+	provenance: Provenance
+): CalcResult | null {
+	const { atelier } = session;
+	const named = NAMED_CONSTRUCTION.exec(input);
+	if (named !== null) {
+		const [, name, body] = named;
+		const read = readConstruction(body, provenance);
+		if (read === null || !countsAsConstruction(atelier, read, body, name)) return null;
+		return defineConstruction(session, name, body.trim(), provenance, read);
+	}
+	const read = readConstruction(input, provenance);
+	if (read === null || !countsAsConstruction(atelier, read, input)) return null;
+	return builtLine(session, null, constructionFromText(atelier, input, provenance), {
+		definition: input.trim(),
+		provenance
+	});
+}
+
+/**
+ * Est-ce bien une construction ? Deux écritures ont un autre sens :
+ * - `(ab)` est un PRODUIT, sauf entre deux points de l'atelier (L4 : la
+ *   lecture ne change pas ailleurs) — ou pour redéfinir une construction ;
+ * - une fonction de la grille (`médiane(L)`) a son propre refus.
+ */
+function countsAsConstruction(
+	atelier: Atelier,
+	read: ReadOutcome,
+	text: string,
+	target?: string
+): boolean {
+	if (gridFunctionCalledIn(text) !== null) return false;
+	if (!read.ok) return true;
+	const pair = bareLineShortcut(read.call);
+	if (pair === null) return true;
+	const existing = target === undefined ? undefined : atelier.get(target);
+	if (existing !== undefined && existing.kind === 'curve' && isConstruction(existing)) return true;
+	// Décision de David (2026-10-18, option a) : le TYPE de A et B tranche. Deux
+	// valeurs : le produit, comme avant ; un nom encore absent : la construction
+	// attend (D9) et le type tranchera à l'arrivée (`#shortcutKinds`) ; un point
+	// et une valeur : la construction refuse, avec la raison
+	const kinds = pair.map((name) => atelier.get(name)?.kind);
+	if (kinds.every((kind) => kind === 'value')) return false;
+	return kinds.every((kind) => kind === undefined || kind === 'point' || kind === 'value');
+}
+
+/** Créer — ou redéfinir — une construction nommée (L2, L8). Un refus ne crée rien. */
+function defineConstruction(
+	session: CalcSession,
+	name: string,
+	body: string,
+	provenance: Provenance,
+	read: ReadOutcome
+): CalcResult {
+	const { atelier } = session;
+	// Le nom d'abord : `m2 = milieu(A, B)` doit dire ce qui ne va pas dans `m2`
+	const existing = atelier.get(name);
+	if (existing === undefined) {
+		const rejection = validateName(name, atelier.names);
+		if (rejection !== null) {
+			return { kind: 'refus', message: nameRejectionMessage(rejection, name) };
+		}
+	}
+	if (!read.ok) return { kind: 'refus', message: read.message };
+	const typed = specOfCall(read.call, kindsOf(atelier));
+	if (!typed.ok) return { kind: 'refus', message: typed.message };
+	const kind = objectKindOf(typed.spec);
+	if (existing !== undefined && existing.kind !== kind) return kindKeptRefusal(name, existing.kind);
+	// L8 : une construction circulaire est refusée
+	const { names, scalars } = partsOf(typed.spec);
+	const cited = new Set([
+		...names,
+		...scalars.flatMap((scalar) =>
+			referencesOf(scalar, 'text', atelier.functionNames).map((r) => r.name)
+		)
+	]);
+	if (cited.has(name)) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » ne peut pas se construire à partir de lui-même.`
+		};
+	}
+	if (existing !== undefined) {
+		const dependents = atelier.removalOf(name);
+		const loop = [...cited].find((c) => dependents.includes(c));
+		if (loop !== undefined) {
+			return {
+				kind: 'refus',
+				message: `Construction circulaire : « ${loop} » dépend déjà de « ${name} ».`
+			};
+		}
+	}
+	const shape = parseDefinition(kind, body, provenance, atelier.functionNames).error;
+	if (shape !== undefined) return { kind: 'refus', message: shape };
+	// PR 3 (L5) : plusieurs points sans k, une infinité de points communs, un couple
+	// pas encore coupé — rien n'est créé, la réponse dit quoi écrire (une ATTENTE,
+	// elle, crée l'objet)
+	const trial = constructionFromText(atelier, body, provenance);
+	if (
+		!trial.ok &&
+		(trial.reason === 'ambiguous' || trial.reason === 'infinite' || trial.reason === 'unsupported')
+	) {
+		return { kind: 'refus', message: trial.message };
+	}
+	const done =
+		existing === undefined
+			? atelier.create({ kind, name, definition: body }, provenance)
+			: atelier.update(name, body, provenance);
+	if (!done.ok) return { kind: 'refus', message: done.message };
+	syncEngine(atelier, session.engine);
+	return { kind: 'definition', name, object: atelier.get(name) ?? done.object };
+}
+
+/** Un nombre de la figure, écrit comme une ligne de Calcul l'écrirait (exact d'abord). */
+function shownNumber(
+	session: CalcSession,
+	node: MathNode
+): { readonly text: string; readonly latex: string } {
+	const line = computeInput(session, toCustom(node), 'text');
+	if (line.kind === 'calcul') return { text: line.output, latex: line.latex ?? line.output };
+	return { text: toCustom(node), latex: plainLatex(node) };
+}
+
+/** Une équation en texte : `y=2x+1`, les fractions entre parenthèses (`(1/2)x`). */
+function equationText(node: MathNode): string {
+	return toCustom(node).replace(/\{([^{}]*)\}/g, '($1)');
+}
+
+/**
+ * Ce que répond une construction (L2) : ses coordonnées, son équation réduite,
+ * sa longueur. `name` : l'objet nommé (`d : y=2x+1`), sinon la construction
+ * tapée seule (`(AB) : y=2x+1`), que « Garder » peut nommer.
+ */
+function builtLine(
+	session: CalcSession,
+	name: string | null,
+	outcome: BuiltOutcome,
+	typed: { readonly definition: string; readonly provenance: Provenance } | null
+): CalcResult {
+	if (!outcome.ok) return { kind: 'refus', message: outcome.message };
+	const { built, call } = outcome;
+	const label = name ?? call.text;
+	const labelLatex = name === null ? constructionLatex(call) : latexName(name);
+	const keep =
+		typed === null
+			? {}
+			: {
+					construction: {
+						kind: built.shape === 'point' ? ('point' as const) : ('curve' as const),
+						...typed
+					}
+				};
+	if (built.shape === 'point') {
+		// PR 3 : une coordonnée seulement approchée (conique, fonction sans racine
+		// exacte, angle non remarquable) se dit « ≈ », 4 décimales — jamais en fraction
+		const approximate = approximatePoint(built.at);
+		if (approximate !== null) {
+			const prefix = name === null ? '' : `${name} `;
+			return {
+				kind: 'calcul',
+				input: label,
+				output: `${prefix}≈ (${approximate.text})`,
+				latex: `${name === null ? '' : latexName(name)}\\approx\\left(${approximate.latex}\\right)`,
+				...keep
+			};
+		}
+		const [x, y] = [built.at.x, built.at.y].map((v) => shownNumber(session, nodeOf(v)));
+		return {
+			kind: 'calcul',
+			input: label,
+			output: `${name ?? ''}(${x.text} ; ${y.text})`,
+			latex: `${name === null ? '' : latexName(name)}\\left(${x.latex};${y.latex}\\right)`,
+			...keep
+		};
+	}
+	if (built.shape === 'segment') {
+		const length = shownNumber(session, nodeOf(segmentLength(built.from, built.to)));
+		return {
+			kind: 'calcul',
+			input: label,
+			output: `${label} : segment de longueur ${length.text}`,
+			latex: `${labelLatex} : \\text{segment de longueur } ${length.latex}`,
+			...keep
+		};
+	}
+	const equation =
+		built.shape === 'circle'
+			? circleEquation(built.center, built.radius)
+			: lineEquation(built.from, built.to);
+	const ray = built.shape === 'ray';
+	return {
+		kind: 'calcul',
+		input: label,
+		output: `${label} : ${ray ? 'demi-droite portée par ' : ''}${equationText(equation)}`,
+		latex: `${labelLatex} : ${ray ? '\\text{demi-droite portée par } ' : ''}${plainLatex(equation)}`,
+		...keep
+	};
+}
+
+/** x écrit comme une lettre seule (pas celui de `max`). */
+const CITES_X = /(?<![A-Za-z\\])x(?![A-Za-z])/;
+
+/**
+ * Q1 (a) : `y = …` sans nom de courbe. `y` est réservé (G5) : le refus propose
+ * les deux écritures, avec des noms LIBRES et la saisie de l'élève.
+ */
+function reservedYDefinition(atelier: Atelier, typedBody: string): string {
+	const body = typedBody.trim();
+	const curveName = nextName('curve', atelier.names);
+	const ast = astOf(body, 'text', atelier.functionNames);
+	const degree = ast === null ? null : getPolynomialDegree(ast, 'x');
+	const shape = degree !== null && degree <= 1 ? 'une droite' : 'une courbe';
+	const asCurve = `pour ${shape}, nomme-la : ${curveName} : y = ${body}.`;
+	if (CITES_X.test(body)) {
+		return `Pour une fonction, écris ${nextName('function', atelier.names)}(x) = ${body} ; ${asCurve}`;
+	}
+	return `« y » est réservé aux équations. Pour une valeur, choisis une autre lettre : ${nextName('value', atelier.names)} = ${body} ; ${asCurve}`;
+}
+
+/** `A(1 ; 2)` : la notation des manuels, qui n'est pas acceptée au lot 1 (G3, P5). */
+const POINT_CALL = /^\s*([A-Za-z](?:_\d+)?)\s*\(([^()]*;[^()]*)\)\s*$/;
+
+function pointCallRefusal(atelier: Atelier, input: string): string | null {
+	const match = POINT_CALL.exec(input);
+	if (match === null) return null;
+	const called = atelier.get(match[1]);
+	if (called?.kind === 'function' || called?.kind === 'sequence') return null;
+	return `Pour définir un point, écris ${match[1]} = (${match[2].trim()}).`;
+}
+
+/**
+ * Une ligne qui nomme un point ou une courbe : `A` répond `A(1 ; 2)` (P4), `d`
+ * répond son équation ; un calcul qui en cite un est refusé (P9). `null` sinon.
+ */
+function figureLine(session: CalcSession, input: string): CalcResult | null {
+	const { atelier } = session;
+	const object = atelier.get(input.trim());
+	if (object !== undefined && (object.kind === 'point' || object.kind === 'curve')) {
+		if (object.status !== 'ok') {
+			return {
+				kind: 'refus',
+				message: object.message ?? `« ${object.name} » n’a pas encore de définition.`
+			};
+		}
+		if (isConstruction(object)) {
+			return builtLine(session, object.name, constructionOf(atelier, object.name), null);
+		}
+		return object.kind === 'point' ? pointLine(session, object) : curveLine(atelier, object);
+	}
+	const ast = astOf(input, 'text', atelier.functionNames);
+	if (ast === null) return null;
+	const cited = figureCitedMessage(atelier.objects, variablesOf(ast, atelier.functionNames));
+	return cited === null ? null : { kind: 'refus', message: cited };
+}
+
+/** `A(1 ; 2)` : chaque coordonnée calculée comme une ligne de Calcul, exacte d'abord (P3). */
+function pointLine(session: CalcSession, point: AtelierObject): CalcResult {
+	const shown = (pointCoordinatesOf(point.definition) ?? []).map((coordinate) =>
+		computeInput(session, coordinate, 'text')
+	);
+	const [x, y] = shown;
+	if (x?.kind !== 'calcul' || y?.kind !== 'calcul') {
+		const failed = shown.find((line) => line.kind === 'refus');
+		return {
+			kind: 'refus',
+			message:
+				failed?.kind === 'refus'
+					? failed.message
+					: `Les coordonnées de « ${point.name} » ne se calculent pas.`
+		};
+	}
+	return {
+		kind: 'calcul',
+		input: point.name,
+		output: `${point.name}(${x.output} ; ${y.output})`,
+		...(x.latex !== undefined &&
+			y.latex !== undefined && {
+				latex: `${latexName(point.name)}\\left(${x.latex};${y.latex}\\right)`
+			})
+	};
+}
+
+/** `d : y = 3x − 2` : l'équation telle qu'écrite (C7), jamais réécrite. */
+function curveLine(atelier: Atelier, curve: AtelierObject): CalcResult {
+	const ast = astOf(curve.definition, curve.provenance, atelier.functionNames);
+	return {
+		kind: 'calcul',
+		input: curve.name,
+		output: `${curve.name} : ${curve.definition}`,
+		...(ast !== null && { latex: `${latexName(curve.name)} : ${toLatex(ast)}` })
+	};
+}
 
 /**
  * `M = L`, `2L + 1` : une liste lue comme un nombre — la règle des cartes
@@ -509,7 +1090,7 @@ const KIND_WORDS: Readonly<Record<Exclude<ObjectKind, 'list'>, string>> = {
 function listCitedAsNumber(atelier: Atelier, text: string): string | null {
 	const ast = astOf(text, 'text', atelier.functionNames);
 	if (ast === null) return null;
-	return listCitedMessage(atelier.objects, getVariables(ast));
+	return listCitedMessage(atelier.objects, variablesOf(ast, atelier.functionNames));
 }
 
 /**
@@ -582,7 +1163,8 @@ function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcR
 	const ast = astOf(reading.text, 'url', atelier.functionNames);
 	if (ast === null) return null;
 	const hint = singleLetterHint(reading.singleLetters);
-	const free = [...getVariables(ast)].filter((v) => !atelier.names.includes(v));
+	const variables = [...variablesOf(ast, atelier.functionNames)];
+	const free = variables.filter((v) => !atelier.names.includes(v));
 	if (free.length > 0) {
 		return {
 			kind: 'refus',
@@ -590,6 +1172,9 @@ function naturalReadingRefusal(atelier: Atelier, reading: NaturalReading): CalcR
 			...notesOf(hint)
 		};
 	}
+	// `2πr m` : r est une valeur du panneau, inconnue de cet arbre — le moteur,
+	// qui la connaît, juge les dimensions (grandeur après une expression)
+	if (variables.length > 0) return null;
 	const problem = quantityProblem(ast);
 	if (problem === null) return null;
 	return { kind: 'refus', message: problem, ...notesOf(problem.includes(UNITLESS) ? hint : null) };
@@ -635,6 +1220,23 @@ function defineObject(
 		return {
 			kind: 'refus',
 			message: `« ${name} » est déjà ${KIND_WORDS[existing.kind]} ou choisis un autre nom pour créer une liste.`
+		};
+	}
+	// V62 : même règle entre nombre, fonction et suite — `a = 3` puis
+	// `a(x) = x^2` laissait une VALEUR de définition x², et `f(x) = a x`
+	// échappait au refus de V58 (dérivée fausse). Sans parenthèses, `f = t + 1`
+	// redéfinit la fonction dans SA lettre (#905) : seul l'écrit explicite compte.
+	const wanted = kindOf(parameter, body);
+	if (
+		existing !== undefined &&
+		existing.kind !== 'list' &&
+		wanted !== existing.kind &&
+		wanted !== 'list' &&
+		!(parameter === undefined && (existing.kind === 'function' || existing.kind === 'sequence'))
+	) {
+		return {
+			kind: 'refus',
+			message: `« ${name} » est déjà ${KIND_WORDS[existing.kind]} ou choisis un autre nom pour créer ${KIND_NAMES[wanted]}.`
 		};
 	}
 	const citedList = listCitedAsNumber(atelier, body);
@@ -1144,7 +1746,10 @@ const SIMULATIONS: Readonly<Record<string, typeof simulateCommand>> = {
 	// Loi normale (2026-10-09) : `gaussian`, `normal` est la forme normale du moteur
 	gaussian: (atelier, argument) => normalCommand(atelier, argument),
 	// `.tabuler f` (tableur, lot 3) : lit un NOM de fonction, écrit dans la grille
-	tabulate: (atelier, argument) => tabulateCommand(atelier, argument)
+	tabulate: (atelier, argument) => tabulateCommand(atelier, argument),
+	// `.relever` (géométrie lot 2, PR 4) : lit le NOM de ce qui varie et des
+	// mesures (`AM`) que la substitution des noms défigurerait ; crée deux listes
+	survey: (atelier, argument) => surveyCommand(atelier, argument)
 };
 
 /**
@@ -1325,12 +1930,36 @@ function withListsByRow(session: CalcSession, input: string): CalcResult {
 }
 
 /** Exécuter une commande, après l'avoir traduite vers ce que comprend le moteur. */
+/**
+ * Les commandes qui ÉCRIVENT l'expression (LaTeX, texte, arbre, empreinte,
+ * forme normale) : son angle reste une grandeur (`cos(60~\unit{°})`).
+ */
+const WRITING_COMMANDS: ReadonlySet<string> = new Set([
+	'latex',
+	'custom',
+	'parse',
+	'tree',
+	'hash',
+	'normal'
+]);
+
+/** Le résultat de `.évaluer`, un angle pris par un sin, cos, tan calculé en radians. */
+function evaluatedInRadians(result: ReplExecutionResult): ReplExecutionResult {
+	if (!result.success || result.latex === undefined) return result;
+	const converted = radiansInLatex(result.latex);
+	if (converted === null) return result;
+	// `ast` porte la VALEUR pour `.évaluer` (`evaluatedLine`)
+	return { ...result, latex: converted.latex, output: converted.text, ast: converted.ast };
+}
+
 function runCommand(session: CalcSession, input: string): CalcResult {
 	const { engine } = session;
-	const resolved = resolveCommand(input);
+	const typedLine = resolveCommand(input);
 
-	const space = resolved.indexOf(' ');
-	const typed = (space === -1 ? resolved.slice(1) : resolved.slice(1, space)).trim().toLowerCase();
+	const space = typedLine.indexOf(' ');
+	const typed = (space === -1 ? typedLine.slice(1) : typedLine.slice(1, space))
+		.trim()
+		.toLowerCase();
 
 	// ⚠️ On vérifie AVANT d'exécuter : le moteur répondrait « Unknown command »
 	// en anglais, sans dire ce qui s'en approche (§2 E2).
@@ -1365,6 +1994,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	 * commande : sans ça, `.simp` ne dépliait rien là où `.simplifier` dépliait.
 	 */
 	const name = known.name.toLowerCase();
+	// `.évaluer cos(60°)*x en x=2` : l'unité degré dans l'argument d'une commande
+	// de CALCUL (`degrees.ts`) ; les commandes de données (`SIMULATIONS`) lisent
+	// des modalités. Rien ne change avant la première espace : `space` tient
+	// `.convertir °` : un `°` CIBLE de conversion, pas un angle (revue)
+	const calculation = SIMULATIONS[known.name] === undefined && name !== 'convert';
+	const resolved = calculation ? withDegreeUnits(typedLine, 'detect') : typedLine;
+	const stray = calculation && space !== -1 ? strayDegreeRefusal(resolved.slice(space + 1)) : null;
+	if (stray !== null) return { kind: 'refus', message: stray };
 
 	// `.latex` et `.texte` SANS expression n'ont rien à écrire : refus qui montre
 	// l'écriture attendue. (Ils basculaient autrefois le mode de saisie du moteur,
@@ -1452,6 +2089,14 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	if (SIMULATIONS[known.name] === undefined) {
 		const broken = brokenObjectRefusal(session.atelier, typedArgument);
 		if (broken !== null) return { kind: 'refus', message: broken };
+		// P9 : `.dériver A` répondait `d/dA(A) = 1` — le refus d'un calcul. Lu dans
+		// le TEXTE : l'argument porte des mots-clés (`en x=1`, `; t`) qu'aucun
+		// parseur ne lit en entier
+		const figure = figureCitedMessage(
+			session.atelier.objects,
+			session.atelier.names.filter((n) => citesName(typedArgument, n))
+		);
+		if (figure !== null) return { kind: 'refus', message: figure };
 	}
 	const recurrence = session.atelier.objects.find(
 		(o) =>
@@ -1515,10 +2160,16 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		series: SERIES_COMMANDS.has(known.name)
 	});
 	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
-	const rawArgument =
+	const typedRaw =
 		space === -1
 			? ''
 			: withPiCommand(decimalCommaInput(resolved.slice(space + 1)).replace(/’/g, "'"));
+	// `.dériver u_3 x^2` : le terme u_3, comme sur une ligne de calcul (2026-10-19) ;
+	// pas pour une commande d'écriture (`.latex u_3` écrit ce qui est tapé)
+	const rawArgument =
+		calculation && !WRITING_COMMANDS.has(name)
+			? indexedTermsInArgument(session.atelier, name, typedRaw)
+			: typedRaw;
 	const mixed = mixedNotationMessage(rawArgument);
 	if (mixed !== null) return { kind: 'refus', message: mixed };
 	const derived = derivedSequence(session, rawArgument);
@@ -1530,11 +2181,21 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	}
 	// `f'(x)` → son expression d'abord, puis les noms (voir plus haut)
 	// `f⁻¹` aussi, calculée à la volée comme `f'` (décision (1) de David)
+	// Puis un angle pris par un sin, cos, tan devient un nombre de radians : le
+	// moteur ne calcule pas `cos((π/3)[rad])` (`.résoudre h(x)=1`, h(x) = cos(60°)·x)
+	// Pas pour une commande d'ÉCRITURE (`.latex`, `.texte`…) : elle montre
+	// l'expression telle quelle, pas sa valeur (revue : `.latex cos(60[°])` → `1 / 2`)
+	const inRadians = (text: string | null): string | null =>
+		text === null || WRITING_COMMANDS.has(name)
+			? text
+			: radiansInText(text, session.atelier.functionNames);
 	const substitute = (text: string): string | null =>
-		!text.includes("'") && !citesReciprocal(session.atelier, text)
-			? substituteNames(session, text)
-			: (expandCommandArgument(session.atelier, text) ??
-				substituteNames(session, expandInput(session.atelier, text)));
+		inRadians(
+			!text.includes("'") && !citesReciprocal(session.atelier, text)
+				? substituteNames(session, text)
+				: (expandCommandArgument(session.atelier, text) ??
+						substituteNames(session, expandInput(session.atelier, text)))
+		);
 	// `.limite EXPR en POINT` : lue AVANT la substitution des noms — `en 0 à
 	// droite` n'est pas une expression, et `a` (une valeur) y est le mot `à`
 	if (known.name === 'limit') {
@@ -1607,7 +2268,7 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 		name === 'eval'
 			? (text: string): string | null =>
 					!text.includes("'") && !citesReciprocal(session.atelier, text)
-						? substituteNames(session, text, true)
+						? inRadians(substituteNames(session, text, true))
 						: substitute(text)
 			: substitute;
 	const args = typedArgs === null ? null : substituteArguments(typedArgs, substituteArgument);
@@ -1732,7 +2393,10 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 	const commandArgument = finalArgs === null ? argument : writeCommandArguments(finalArgs);
 	const executed = space === -1 ? `.${known.name}` : `.${known.name} ${commandArgument}`;
 
-	const result = engine.execute(executed);
+	// `.évaluer sin(x) en x=30°` : le moteur remplace x et rend `sin((π/6)[rad])`,
+	// non calculé ; l'angle y devient un nombre de radians (revue de la PR « 60° »)
+	const executedResult = engine.execute(executed);
+	const result = name === 'eval' ? evaluatedInRadians(executedResult) : executedResult;
 	// V57 : une résolution qui DIVISE par un paramètre (`a x = 0` → x = 0, faux
 	// pour a = 0) refuse plutôt que de répondre (Q5, David, 2026-10-14). Les
 	// refus du moteur passent avant : il dit déjà ce qu'il ne sait pas faire
@@ -2202,7 +2866,7 @@ function citesOtherLetters(
 ): boolean {
 	const ast = typed === null ? undefined : parseCommandExpression(typed).ast;
 	if (ast === undefined) return true;
-	return [...getVariables(ast)].some(
+	return [...variablesOf(ast, session.atelier.functionNames)].some(
 		(name) => !letters.has(name) && session.atelier.get(name)?.kind !== 'function'
 	);
 }
@@ -2242,12 +2906,14 @@ function evaluatedCallLatex(functionName: string | null, typedValue: string | nu
  */
 function freeParameters(session: CalcSession, ast: MathNode, variable: string): string[] {
 	const bound = new Set(session.engine.getEvalState().bindings.keys());
-	return [...getVariables(ast)].filter((v) => v !== variable && !bound.has(v));
+	return [...variablesOf(ast, session.atelier.functionNames)].filter(
+		(v) => v !== variable && !bound.has(v)
+	);
 }
 
 /** Les lettres de `parameters` qu'un arbre contient. */
 function citedParameters(ast: MathNode, parameters: readonly string[]): string[] {
-	const letters = getVariables(ast);
+	const letters = variablesOf(ast, undefined);
 	return parameters.filter((p) => letters.has(p));
 }
 
@@ -2816,6 +3482,13 @@ function integralLatex(ast: MathNode, text: string): string {
 function derivativeOfUnusable(session: CalcSession, input: string): string | null {
 	for (const match of input.matchAll(/([A-Za-z](?:_\d+)?)['\u2019]/g)) {
 		const object = session.atelier.get(match[1]);
+		// `u_3'` : le terme d'une suite, `f_3'` : f(3) — des nombres, sans dérivée
+		const term = object === undefined ? indexedTermOf(session.atelier, match[1]) : null;
+		if (term !== null) {
+			return term.kind === 'sequence'
+				? `« ${match[1]} » est le terme de rang ${term.index} de la suite ${term.base} : un nombre, il n'a pas de dérivée.`
+				: `« ${match[1]} » désigne ${term.base}(${term.index}) : un nombre, il n'a pas de dérivée. Pour la dérivée en ${term.index} : ${term.base}'(${term.index}).`;
+		}
 		if (object === undefined) {
 			return `« ${match[1]} » n'existe pas : sa dérivée non plus.`;
 		}
@@ -2847,7 +3520,160 @@ export function runInput(
 	text: string,
 	provenance: Provenance = 'text'
 ): CalcResult {
-	return resultWithDecimalComma(computeInput(session, text, provenance));
+	return resultWithDegreeSign(
+		resultWithDecimalComma(
+			measureLine(
+				session.atelier,
+				text,
+				approximatedResult(session.atelier, text, computeInput(session, text, provenance))
+			)
+		)
+	);
+}
+
+/** Un angle s'écrit `60°` dans la réponse, sans espace (`degrees.ts`). */
+function resultWithDegreeSign(result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' && result.kind !== 'commande') return result;
+	return {
+		...result,
+		output: degreeSignWritten(result.output),
+		...(result.latex !== undefined && { latex: degreeSignWritten(result.latex) }),
+		...(result.alternative !== undefined && {
+			alternative: {
+				...result.alternative,
+				latex: degreeSignWritten(result.alternative.latex)
+			}
+		})
+	};
+}
+
+/** Une ligne qui cite une mesure (`AM`, `angle(…)`) ou une grandeur d'angle nommée. */
+function citesMeasureOrAngle(atelier: Atelier, text: string): boolean {
+	const isPoint = (name: string) => atelier.get(name)?.kind === 'point';
+	if (citesMeasure(text, 'text', isPoint)) return true;
+	const angles = atelier.angleQuantities();
+	if (angles.size === 0) return false;
+	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
+	return (
+		ast !== null && [...variablesOf(ast, atelier.functionNames)].some((name) => angles.has(name))
+	);
+}
+
+/**
+ * La réponse d'une ligne de mesure, lisible (revue de la PR 2) : `π/2 rad`, pas
+ * `\pi/2 rad` ; une comparaison dit vrai ou faux, sans « ≈ » ; une PUISSANCE
+ * d'un angle (`angle(…)^2` → `8100 °^2`) est refusée — choix prudent, noté.
+ */
+function measureLine(atelier: Atelier, text: string, result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul') return result;
+	// Toute ligne, pas seulement une mesure : `(60°)^2` écrivait `3600{}^{\circ}^{2}`,
+	// que KaTeX ne rend pas (revue de la PR « 60° », la décision des mesures)
+	if (result.ast !== undefined && hasAnglePower(result.ast)) {
+		return { kind: 'refus', message: ANGLE_POWER_MESSAGE };
+	}
+	if (!citesMeasureOrAngle(atelier, text)) return result;
+	const bare = result.output.replace(/^≈ /, '');
+	if (bare === 'true' || bare === 'false') {
+		const word = bare === 'true' ? 'vrai' : 'faux';
+		return { ...result, output: word, latex: `\\text{${word}}` };
+	}
+	return { ...result, output: result.output.replace(/\\pi(?![A-Za-z])/g, 'π') };
+}
+
+/** Un exposant collé à l'unité degré : `60[°]^2`, `60\unit{°}^{2}`. */
+const DEGREE_POWER = /(?:\[°\]|\\unit\{°\})\s*\^/;
+
+const ANGLE_POWER_MESSAGE =
+	'Une puissance d’un angle n’est pas une mesure : élève plutôt son cosinus, son sinus, ou une valeur sans unité.';
+
+/** Une puissance d'un angle dans l'arbre d'un résultat (`°^2`, `rad^2`) : décidé sur l'ARBRE. */
+function hasAnglePower(ast: MathNode): boolean {
+	return findNodes(ast, isUnit).some((node) => {
+		const unit = (node as Extract<MathNode, { type: 'unit' }>).unit;
+		return [...unit.components].some(
+			([symbol, exponent]) =>
+				(symbol === '°' || symbol === 'rad' || symbol === 'deg') && exponent !== 1
+		);
+	});
+}
+
+/** Une session de calcul par atelier, pour les cartes (`valueAnswerOf`). */
+const cardSessions = new WeakMap<Atelier, CalcSession>();
+
+/**
+ * Ce que Calcul répond quand on tape le nom de cette valeur — la carte d'une
+ * mesure l'affiche tel quel : une seule source de vérité (revue de la PR 2).
+ * `null` si Calcul refuse.
+ */
+export function valueAnswerOf(
+	atelier: Atelier,
+	name: string
+): { readonly text: string; readonly latex: string } | null {
+	let session = cardSessions.get(atelier);
+	if (session === undefined) {
+		session = { atelier, engine: new WebReplEngine(), seed: () => 1 };
+		cardSessions.set(atelier, session);
+	}
+	// Le mode de la console (exact / décimal) : la carte dit ce que dit Calcul
+	session.engine.getState().mode = atelier.calcMode;
+	const result = runInput(session, name);
+	return result.kind === 'calcul'
+		? { text: result.output, latex: result.latex ?? result.output }
+		: null;
+}
+
+/** Le LaTeX de l'unité d'une grandeur approchée : `°`, `rad` comme le moteur les écrit. */
+const APPROXIMATE_UNIT_LATEX: Readonly<Record<string, string>> = {
+	'°': '{}^{\\circ}',
+	rad: '\\mathrm{rad}'
+};
+
+/**
+ * La valeur décimale d'un résultat, 4 décimales (`≈ 0,7071` du mode décimal),
+ * unité comprise (`36.8699 °`, un angle — décision de David, 2026-10-18), ou `null`.
+ */
+function approximationOf(
+	ast: MathNode | undefined
+): { readonly text: string; readonly latex: string } | null {
+	if (ast === undefined) return null;
+	if (isUnit(ast)) {
+		const inner = approximationOf(ast.expression);
+		if (inner === null) return null;
+		const symbol = formatUnit(ast.unit, 'original');
+		const unitLatex = APPROXIMATE_UNIT_LATEX[symbol] ?? `\\text{${symbol}}`;
+		return { text: `${inner.text} ${symbol}`, latex: `${inner.latex}~${unitLatex}` };
+	}
+	const value = evaluate(ast, { mode: 'decimal' });
+	if (
+		value.status !== 'value' ||
+		typeof value.value !== 'number' ||
+		!Number.isFinite(value.value)
+	) {
+		return null;
+	}
+	const shown = String(Number(value.value.toFixed(4)));
+	return { text: shown, latex: shown };
+}
+
+/**
+ * Une ligne qui cite un objet de valeur APPROCHÉE (`T = angle(B, A, C)`, puis
+ * `2T`, `g(1)`) : le moteur rendait une fraction exacte (368699/10000) d'une
+ * valeur qui ne l'est pas — elle se dit « ≈ », en décimal (revue de la PR 2).
+ */
+function approximatedResult(atelier: Atelier, text: string, result: CalcResult): CalcResult {
+	if (result.kind !== 'calcul' || result.output.startsWith('≈ ')) return result;
+	const approximate = atelier.approximateNames();
+	if (approximate.size === 0) return result;
+	const ast = astOf(withoutMeasureCalls(text, 'text'), 'text', atelier.functionNames);
+	if (ast === null) return result;
+	const cited = [
+		...variablesOf(ast, atelier.functionNames),
+		...findNodes(ast, (n) => n.type === 'function').map((n) => (n as { name?: string }).name ?? '')
+	];
+	if (!cited.some((name) => approximate.has(name))) return result;
+	const shown = approximationOf(result.ast);
+	if (shown === null) return result;
+	return { ...result, output: `≈ ${shown.text}`, latex: `\\approx ${shown.latex}` };
 }
 
 /**
@@ -3011,8 +3837,18 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// `f^-1`, `f^(-1)`, `f⁻¹` d'une fonction de l'atelier : écrits `f^{-1}`, la
 	// réciproque que lisent les parseurs (décision (1) de David, 2026-10-13)
 	// `ln\left(x\right)` de MathLive : ln de x, pas l·n·(x) (`withLatexFunctionNames`)
-	const input = withReciprocalNotation(session.atelier, withLatexFunctionNames(text.trim()));
-	if (input === '') return { kind: 'vide' };
+	const written = withReciprocalNotation(session.atelier, withLatexFunctionNames(text.trim()));
+	if (written === '') return { kind: 'vide' };
+	// `cos(60°)`, `\cos(60^{\circ})` : l'unité degré, avant toute lecture (`degrees.ts`).
+	// Une commande le fait sur son argument de calcul (`runCommand`) : les
+	// commandes de données lisent des modalités
+	const input = written.startsWith('.') ? written : withDegreeUnits(written, 'detect');
+	if (!input.startsWith('.')) {
+		const stray = strayDegreeRefusal(input);
+		if (stray !== null) return { kind: 'refus', message: stray };
+		// `60°^2` : le parseur répondait en anglais (« Exponent after a unit… »)
+		if (DEGREE_POWER.test(input)) return { kind: 'refus', message: ANGLE_POWER_MESSAGE };
+	}
 
 	// Avant tout chemin — commande, définition, calcul : tous lisent `pi` p·i
 	if (PI_IN_LETTERS.test(input)) return { kind: 'refus', message: PI_IN_LETTERS_MESSAGE };
@@ -3021,6 +3857,10 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// de lettres, sans erreur. Une commande le vérifie sur son argument de
 	// CALCUL (`runCommand`) : les commandes de données lisent des modalités.
 	if (!input.startsWith('.')) {
+		// Géométrie, lot 2 : `d = (AB)`, `milieu(A, B)` — avant toute lecture de
+		// calcul, qui y voyait une fonction inconnue (`droite`) ou un produit A·B
+		const construction = constructionLine(session, input, provenance);
+		if (construction !== null) return construction;
 		// V59 : `ln x`, `sin x` se lisaient l·n·x, s·i·n·x, sans erreur — ligne
 		// de calcul comme définition. Une commande le vérifie sur son argument
 		// Sauf une liste de mots (`L = sin; cos; ln`), que la carte accepte aussi
@@ -3036,7 +3876,20 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		// moteur la recopiait sans la calculer, ou lisait « diane » (2026-10-15)
 		const gridCall = gridFunctionCalledIn(input);
 		if (gridCall !== null) return { kind: 'refus', message: gridCall };
-		const unknown = findUnknownFunctionCall(input);
+		// L3 : un mot du DSL hors catalogue (`2·aire(A, B, C)`), une construction
+		// prise dans un calcul (`2·milieu(A, B)`)
+		const later = laterWordIn(input);
+		if (later !== null) return { kind: 'refus', message: laterWordMessage(later) };
+		// Un argument d'une mesure peut être construit : `distance(A, milieu(B, C))`
+		const inCalculation = constructionWordIn(withoutMeasureCalls(input, provenance));
+		if (inCalculation !== null) {
+			return {
+				kind: 'refus',
+				message: `« ${inCalculation} » construit un objet de la figure : écris-le seul, ou nomme-le (I = milieu(A, B)).`
+			};
+		}
+		// Une mesure (`aire(…)`, lot 2) n'est pas une fonction inconnue
+		const unknown = findUnknownFunctionCall(withoutMeasureCalls(input, provenance));
 		if (unknown !== null) {
 			// Une fonction de la grille (SOMME, RACINE…) : dire où elle vit (Q-L4-6)
 			const grid = gridFunctionInCalcul(unknown);
@@ -3049,7 +3902,13 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// Entrée BRUTE : `runCommand` ne réécrit `π` qu'en argument d'une commande
 	// de calcul (`.filtrer L = π` lit une modalité), et l'écho reste ce qui a
 	// été tapé (revue #911)
-	if (input.startsWith('.')) return withListsByRow(session, input);
+	if (input.startsWith('.')) {
+		const done = withListsByRow(session, input);
+		// Un refus cite `u_3` tel que tapé, pas l'argument récrit `u(3)`
+		return done.kind === 'refus'
+			? { ...done, message: typedTermsIn(session.atelier, input, done.message) }
+			: done;
+	}
 
 	const conversion = naturalConversion(input);
 	if (conversion !== null) return convertNaturally(session, input, conversion, provenance);
@@ -3087,9 +3946,26 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 			: result;
 	}
 
+	// Géométrie : `d : y = 3x − 2` (G0, G5), avant d'y lire une division
+	const curve = defineCurve(session, input, provenance);
+	if (curve !== null) return curve;
+
 	const definition = DEFINITION.exec(input);
 	if (definition !== null) {
 		const [, name, parameter, typedBody] = definition;
+		const existingObject = session.atelier.get(name);
+		if (parameter === undefined) {
+			// Q1 (a) : `y` est réservé aux équations (G5) — sauf un couple, refusé comme tout nom réservé
+			if (name === 'y' && !looksLikePoint(typedBody)) {
+				return { kind: 'refus', message: reservedYDefinition(session.atelier, typedBody) };
+			}
+			// `A = (1 ; 2)` : un point (G3), plus le refus des couples (#983)
+			if (looksLikePoint(typedBody)) return definePoint(session, name, typedBody, provenance);
+			// Un point, une courbe gardent leur type (V62) : `A = 5` ne les change pas
+			if (existingObject?.kind === 'point' || existingObject?.kind === 'curve') {
+				return kindKeptRefusal(name, existingObject.kind);
+			}
+		}
 		// `f(x) = x^2 sur [0;+∞[` : l'ensemble est lu à part (`interval.ts`)
 		const { body, written } = splitInterval(typedBody, readingMode(provenance));
 		// Le type rangé ne change pas : `a = x^2 sur [0;1]` sur une valeur `a` perdait « sur » en silence
@@ -3132,6 +4008,57 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 		return result;
 	}
 
+	// `u_3` avec u une suite (ou une fonction) : le terme de rang 3, comme dans une
+	// définition (décision de David, 2026-10-19) — récrit `u(3)`, puis la ligne se
+	// calcule ; l'écho reste ce qui a été tapé
+	const withCalls = indexedTermsAsCalls(session.atelier, input);
+	if (withCalls !== input) {
+		const line = computeInput(session, withCalls, provenance);
+		// L'écho, et une réponse restée en lettres (`u_3 + w`), gardent `u_3`
+		if (line.kind === 'calcul') {
+			return {
+				...line,
+				input,
+				output: typedTermsIn(session.atelier, input, line.output)
+			};
+		}
+		// Un refus cite ce qui a été tapé (`u_3`), pas la ligne récrite (`u(3)`)
+		return line.kind === 'refus'
+			? { ...line, message: typedTermsIn(session.atelier, input, line.message) }
+			: line;
+	}
+
+	// Lot 2, L4 : une mesure dans un calcul (`AM`, `aire(A, B, C)`, `2AE + 1`) est
+	// remplacée par sa valeur exacte, puis la ligne se calcule ; l'écho reste ce
+	// qui a été tapé. Une valeur approchée (un angle non remarquable) se dit « ≈ »
+	const measured = measuredText(session.atelier, input, provenance);
+	if (!measured.ok) return { kind: 'refus', message: measured.message };
+	if (measured.changed) {
+		const line = computeInput(session, measured.text, provenance);
+		if (line.kind !== 'calcul') return line;
+		if (!measured.approximate) {
+			return { ...line, input, measure: { definition: input.trim(), provenance } };
+		}
+		// Un angle non remarquable : le moteur en ferait une fraction (368699/10000) —
+		// on montre le décimal, 4 décimales comme le mode décimal (`≈ 0,7071`)
+		const approximation = approximationOf(line.ast);
+		return {
+			...line,
+			input,
+			output: `≈ ${approximation?.text ?? line.output}`,
+			latex: `\\approx ${approximation?.latex ?? line.latex ?? line.output}`,
+			// « Garder » garde la MESURE, qui suit ses points (décision de David, 2026-10-18)
+			measure: { definition: input.trim(), provenance }
+		};
+	}
+
+	// P5 : `A(1 ; 2)` — l'aide, au lieu de « Il manque « ) » »
+	const pointCall = pointCallRefusal(session.atelier, input);
+	if (pointCall !== null) return { kind: 'refus', message: pointCall };
+	// P4, P9 : `A` répond ses coordonnées, `A + 1` est refusé
+	const figure = figureLine(session, input);
+	if (figure !== null) return figure;
+
 	// V58 : un objet en erreur cité (`f(2)`, `f'(2)`, `a+1`) — le moteur ne le
 	// connaît pas et disait « Fonction inconnue : f — définis-la d'abord ».
 	// `g(x) = f⁻¹(x)` en erreur (f plus bijective) : la carte g porte la raison
@@ -3162,6 +4089,14 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	// La règle de la virgule (décision de David, 2026-10-09) : `12,15,9`,
 	// `max(1,2)` et le couple `(1 ; 2)` sont refusés en français, plutôt que de
 	// montrer la réponse du moteur (« x\cdot .3 », une ligne jamais tapée)
+	// `(1 ; 2)` seul : un point à qui il manque un nom (G3) — un triplet, un
+	// couple dans un calcul gardent le refus des couples
+	if (looksLikePoint(input) && splitCoordinates(input).ok) {
+		return {
+			kind: 'refus',
+			message: `Pour définir un point, nomme-le : ${nextName('point', session.atelier.names)} = ${input.trim()}.`
+		};
+	}
 	const commaRefused = commaRefusal(withTerms.text, input, { couples: true });
 	if (commaRefused !== null) return { kind: 'refus', message: commaRefused };
 	const rank = decimalRankMessage(session.atelier, withTerms.text);
@@ -3178,7 +4113,11 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 	if (line.kind === 'division-by-zero') {
 		return { kind: 'calcul', input, output: 'Erreur de calcul : Division par zéro' };
 	}
-	const result = session.engine.execute(expandInput(session.atelier, line.text));
+	const expanded = expandInput(session.atelier, line.text);
+	const first = session.engine.execute(expanded);
+	// `(2\pi )[m]` : lue en LaTeX, la ligne refuse ses crochets — relue en `\unit{m}`
+	const rewritten = first.success ? expanded : latexUnitsWithPi(expanded);
+	const result = rewritten === expanded ? first : session.engine.execute(rewritten);
 	// Une cellule de la grille (`B2+1`) : Calcul ne la lit pas (tableur, Q1). Dit
 	// seulement quand le calcul échoue — « Nombre 2 écrit après un facteur »
 	// faisait chercher une faute de frappe
@@ -3229,7 +4168,7 @@ function tooLongNote(result: ReplExecutionResult): string | null {
  * Lu sur l'ARBRE, jamais sur le texte.
  */
 function kindOfNode(ast: MathNode): ObjectKind {
-	const variables = new Set(getVariables(ast));
+	const variables = variablesOf(ast, undefined);
 	if (variables.has('x')) return 'function';
 	if (variables.has('n')) return 'sequence';
 	return 'value';
@@ -3249,6 +4188,32 @@ export function promote(
 	name?: string
 ): Created | Refused {
 	const { atelier } = session;
+
+	// Une mesure tapée seule (L4) : gardée par sa définition, elle suit ses points
+	if (result.kind === 'calcul' && result.measure !== undefined) {
+		const chosen = name ?? nextName('value', atelier.names);
+		const rejection = validateName(chosen, atelier.names);
+		if (rejection !== null) {
+			return { ok: false, message: nameRejectionMessage(rejection, chosen) };
+		}
+		const created = atelier.create(
+			{ kind: 'value', name: chosen, definition: result.measure.definition },
+			result.measure.provenance
+		);
+		if (created.ok) syncEngine(atelier, session.engine);
+		return created.ok ? { ...created, object: atelier.get(chosen) ?? created.object } : created;
+	}
+
+	// Une construction tapée seule (L2, D5) : gardée par sa définition, telle qu'écrite
+	if (result.kind === 'calcul' && result.construction !== undefined) {
+		const { kind, definition, provenance } = result.construction;
+		const chosen = name ?? nextName(kind, atelier.names);
+		const rejection = validateName(chosen, atelier.names);
+		if (rejection !== null) {
+			return { ok: false, message: nameRejectionMessage(rejection, chosen) };
+		}
+		return atelier.create({ kind, name: chosen, definition }, provenance);
+	}
 
 	// ⚠️ **Seul un calcul se garde, et seulement par son ARBRE.**
 	//

@@ -1,0 +1,177 @@
+{
+	"template_id": "022130ca-f6c1-4c78-a147-6519a15f62cd",
+	"titre": "Trouver le double",
+	"sous_titre": "Nombres de $1$ à $15$ (sauf $10$), $25$, $30$, $40$, $50$ et $100$",
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Double et moitié",
+	"mis_a_jour": "2026-09-29T22:51:47.023899+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CE1-028",
+			"libelle_point": "Connaître des faits multiplicatifs usuels : les doubles (double de 25 = ?).",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > double et moitié",
+			"noeud_cible": "Nombres et calculs > Entiers : multiplication > double et moitié",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Connaitre des faits multiplicatifs usuels : les doubles et les moitiés. » → « Connaître des faits multiplicatifs usuels : les doubles (double de 25 = ?). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9|11..15|25|30|40|50|100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le double de ${{a}}$ ?\n\nLe double de ${{a}}$ est $?$.",
+				"reponses_brutes": ["{{eval:2*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 25, 30, 40, 50, 100]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 24, 26, 28, 30, 50, 60, 80, 100, 200]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 25, 30, 40, 50, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 200,
+				"nb_distinctes": 19,
+				"valeurs": [2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 24, 26, 28, 30, 50, 60, 80, 100, 200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 200,
+				"nb_distinctes": 29,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 18, 22, 24, 25, 26, 28, 30, 40, 50,
+					60, 80, 100, 200
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (200)",
+					"graine": 10,
+					"enonce": "Quel est le double de $100$ ?\n\nLe double de $100$ est $[?]$.",
+					"reponse": ["200"],
+					"variables": {
+						"a": "100"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 27,
+					"enonce": "Quel est le double de $1$ ?\n\nLe double de $1$ est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le double de $5$ ?\n\nLe double de $5$ est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le double de $25$ ?\n\nLe double de $25$ est $[?]$.",
+					"reponse": ["50"],
+					"variables": {
+						"a": "25"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le double de $50$ ?\n\nLe double de $50$ est $[?]$.",
+					"reponse": ["100"],
+					"variables": {
+						"a": "50"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,170 @@
+{
+	"template_id": "892540a1-af39-4f66-b9b0-3d6d930f5d48",
+	"titre": "Calculer le pourcentage d'une quantité",
+	"sous_titre": "$10\\%$ d'un nombre non multiple de $10$",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-141",
+			"libelle_point": "Appliquer un pourcentage à une grandeur ou à un nombre",
+			"noeud_actuel": "Proportionnalité > Pourcentages > calculs de pourcentages",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..100!m(10)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule $10\\%$ de ${{eval:a}}$.\n\n$10\\%$ de ${{a}}$ est égal à $?$.",
+				"reponses_brutes": ["{{eval:10%*a;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 86,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 86
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 0.1,
+						"max": 9.9,
+						"negatif_possible": false,
+						"nb_distinctes": 86
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 99,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0.1,
+				"max": 9.9,
+				"nb_distinctes": 86,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.1,
+				"max": 99,
+				"nb_distinctes": 173,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 127,
+					"enonce": "Calcule $10\\%$ de $99$.\n\n$10\\%$ de $99$ est égal à $[?]$.",
+					"reponse": ["9.9"],
+					"variables": {
+						"a": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.1)",
+					"graine": 1,
+					"enonce": "Calcule $10\\%$ de $1$.\n\n$10\\%$ de $1$ est égal à $[?]$.",
+					"reponse": ["0.1"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule $10\\%$ de $33$.\n\n$10\\%$ de $33$ est égal à $[?]$.",
+					"reponse": ["3.3"],
+					"variables": {
+						"a": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule $10\\%$ de $4$.\n\n$10\\%$ de $4$ est égal à $[?]$.",
+					"reponse": ["0.4"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule $10\\%$ de $34$.\n\n$10\\%$ de $34$ est égal à $[?]$.",
+					"reponse": ["3.4"],
+					"variables": {
+						"a": "34"
+					}
+				}
+			]
+		}
+	]
+}

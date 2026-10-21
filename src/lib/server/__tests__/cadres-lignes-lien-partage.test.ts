@@ -79,7 +79,6 @@ function rpcPayload(config: Record<string, unknown>) {
 		total_points: null,
 		estimated_duration_minutes: null,
 		style_id: null,
-		template_id: null,
 		template: null,
 		sections: [],
 		exercises: [

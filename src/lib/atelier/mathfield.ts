@@ -18,14 +18,24 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { AtelierObject, ObjectKind } from './types';
-import { astOf, parseDefinition, readingMode, readNumber } from './parse';
+import {
+	astOf,
+	parseDefinition,
+	pointCoordinatesOf,
+	readingMode,
+	readNumber,
+	type Provenance
+} from './parse';
 import { INTERNAL_LETTER, renameVariable } from './letter';
 import { intervalFieldLatex } from './interval';
 import { readNaturalQuantities } from './natural-quantities';
 import { argumentSeparatorsShown } from './decimal-comma';
+import { readArguments, readConstruction } from './construction-read';
+import { argumentLatex, constructionLatex } from './construction';
+import { hasMeasureCall, measureCalls } from './measures-read';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import { toLatex } from '$lib/mathAST/latex-generator';
-import { isAddition, isDelimiter, isNumber, isUnit } from '$lib/mathAST/guards';
+import { isAddition, isDelimiter, isJuxtaposedSum, isNumber, isUnit } from '$lib/mathAST/guards';
 import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
 
 // =============================================================================
@@ -74,16 +84,85 @@ function expressionFieldLatex(
 		if (composite !== null) return composite;
 	}
 	if (readingMode(provenance) === 'latex') return forMathlive(definition);
+	// Une construction tapée dans Calcul (`milieu(A, B)`, `(AB)`, lot 2) : en LaTeX
+	// que le champ montre et que la lecture des constructions relit
+	if (object.kind === 'point' || object.kind === 'curve') {
+		const construction = readConstruction(definition, provenance);
+		if (construction !== null && construction.ok) {
+			return forMathlive(constructionLatex(construction.call));
+		}
+	}
+	// Une mesure (`aire(A, B, C)`, lot 2) : `\operatorname{aire}`, pas a·i·r·e en
+	// italique — et une modification dans le champ relit bien la mesure (revue PR 2)
+	if (
+		(object.kind === 'value' || object.kind === 'function' || object.kind === 'sequence') &&
+		hasMeasureCall(definition, provenance)
+	) {
+		const shown = measureFieldLatex(definition, provenance, functionNames);
+		if (shown !== null) return shown;
+	}
+	// Un point par coordonnées (`(sqrt(2) ; 1)`) : chaque coordonnée en écriture
+	// mathématique, comme la carte repliée d'avant le lot 4b — sous la forme que
+	// MathLive écrit quand on tape `(1;2)`, que le champ relit tel quel
+	if (object.kind === 'point') {
+		const coordinates = pointCoordinatesOf(definition);
+		if (coordinates !== null) {
+			const [x, y] = coordinates.map((c) => astOf(c, provenance, functionNames));
+			if (x !== null && y !== null) {
+				return `\\left(${coordinateLatex(x)};${coordinateLatex(y)}\\right)`;
+			}
+		}
+	}
 	// Un nombre s'affiche comme l'élève l'écrit : `2,5`, pas le `2.5` que rendrait
 	// `toLatex` (revue du lot 4 : le curseur écrit `2,5`, le champ montrait `2.5`)
 	if (readNumber(definition) !== null) return definition.trim();
 
 	const ast = astOf(definition, provenance, functionNames);
 	if (ast === null) return definition;
-	// La virgule de l'élève : `2,5 km`, `2,5x`, pas le `2.5` de `toLatex` ; ses
-	// arguments séparés par « ; » : `max(2,5 ; x)`, pas `2,5, x`
+	return coordinateLatex(ast);
+}
+
+/**
+ * Une expression en LaTeX pour le champ. La virgule de l'élève : `2,5 km`,
+ * `2,5x`, pas le `2.5` de `toLatex` ; ses arguments séparés par « ; » :
+ * `max(2,5 ; x)`, pas `2,5, x`.
+ */
+function coordinateLatex(ast: MathNode): string {
 	return argumentSeparatorsShown(forMathlive(toLatex(ast))).replace(/(\d)\.(\d)/g, '$1{,}$2');
 }
+
+/**
+ * Le LaTeX d'une définition qui cite des mesures : chaque appel devient
+ * `\operatorname{aire}\left(A,B,C\right)` (régénéré depuis sa lecture), le
+ * reste est lu et réécrit comme toute définition. `null` si elle ne se lit pas.
+ */
+function measureFieldLatex(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[]
+): string | null {
+	const calls = measureCalls(definition, provenance);
+	const written: string[] = [];
+	let text = definition;
+	for (const call of [...calls].reverse()) {
+		const read = readArguments(call.content, call.word);
+		if (!read.ok) return null;
+		written.unshift(
+			`\\operatorname{${call.word}}\\left(${read.args.map(argumentLatex).join(',')}\\right)`
+		);
+		text = `${text.slice(0, call.start)} m_{${MARK + calls.indexOf(call)}} ${text.slice(call.end)}`;
+	}
+	const ast = astOf(text, provenance, functionNames);
+	if (ast === null) return null;
+	let latex = toLatex(ast);
+	written.forEach((call, i) => {
+		latex = latex.replace(`m_{${MARK + i}}`, call);
+	});
+	return forMathlive(latex);
+}
+
+/** La marque d'un appel de mesure dans `measureFieldLatex`. */
+const MARK = 90000;
 
 /**
  * Du LaTeX que MathLive sait afficher.
@@ -98,13 +177,14 @@ export function forMathlive(latex: string): string {
 }
 
 /**
- * Une durée composée rangée `(2[h]+30[min])`, montrée comme l'élève l'écrit :
- * `2 h 30 min`, sans le `+` ni les parenthèses du rangement (restes du lot C).
+ * Une durée composée rangée `2[h] 30[min]` (lecture-grandeurs, PR 5) ou, avant,
+ * `(2[h]+30[min])`, montrée comme l'élève l'écrit : `2 h 30 min`, sans le `+` ni
+ * les parenthèses du rangement (restes du lot C).
  */
 function compositeDurationField(ast: MathNode | null): string | null {
-	if (ast === null || !isDelimiter(ast)) return null;
+	if (ast === null || (!isDelimiter(ast) && !isJuxtaposedSum(ast))) return null;
 	const parts: MathNode[] = [];
-	let node = ast.content;
+	let node = isDelimiter(ast) ? ast.content : ast;
 	while (isAddition(node)) {
 		parts.unshift(node.right);
 		node = node.left;
@@ -153,11 +233,14 @@ function naturalQuantityLatex(latex: string): string | null {
 		.replace(/\\[,;: ]|~/g, ' ')
 		// `(1/2) m`, la forme que le champ montre pour `(1/2)[m]` : `1/2 m`
 		.replace(/\(\s*(\d+\/\d+)\s*\)(?=\s+[^\s\d(])/g, '$1');
-	const read = readNaturalQuantities(text, []).text;
+	const read = readNaturalQuantities(text, [], { afterTerms: false }).text;
 	const outside = read.replace(/\[[^\]]*\]|\\(?:d?frac|cdot)(?![A-Za-z])/g, '');
 	if (!read.includes('[') || /[A-Za-z\\]/.test(outside)) return null;
+	// Le × de l'élève, lu `\cdot` ci-dessus, lui est rendu : il revenait en ·
+	// après retouche (restes des grandeurs, 2026-10-18)
+	const times = /\\times(?![A-Za-z])/.test(latex) && !/\\cdot(?![A-Za-z])/.test(latex);
 	return (
-		read
+		(times ? read.replace(/\\cdot(?![A-Za-z])\s*/g, '\\times ') : read)
 			.replace(/\((\d+)\/(\d+)\)\[/g, '\\frac{$1}{$2}[')
 			.replace(/\[([^\]]*)\]/g, '\\unit{$1}')
 			// La virgule redevient celle de MathLive (`2{,}5`) : nue, le LaTeX la refuse

@@ -21,15 +21,22 @@ import type { ObjectKind } from './types';
  * `x` et `n` sont les variables des fonctions et des suites ; `e`, `pi` et `i`
  * sont des constantes. Repris de `RESERVED_PARAMETER_NAMES` du grapheur, qui
  * porte déjà exactement cet ensemble.
+ *
+ * `y` depuis la géométrie (G5, 2026-10-18) : c'est la seconde variable des
+ * équations de courbe (`d : y = 3x − 2`). Un atelier rangé avant, qui avait un
+ * objet `y`, le voit renommé à la relecture (Q2, `migrateReservedNames`).
  */
-export const RESERVED_NAMES: ReadonlySet<string> = new Set(['x', 'n', 'e', 'pi', 'i']);
+export const RESERVED_NAMES: ReadonlySet<string> = new Set(['x', 'y', 'n', 'e', 'pi', 'i']);
 
 /** Lettres proposées d'abord, par type, dans l'ordre des usages scolaires. */
 export const PREFERRED_NAMES: Readonly<Record<ObjectKind, readonly string[]>> = {
 	value: ['a', 'b', 'c', 'k', 'm', 'p', 'q', 'r'],
 	function: ['f', 'g', 'h'],
 	sequence: ['u', 'v', 'w'],
-	list: ['L', 'M', 'N']
+	list: ['L', 'M', 'N'],
+	// Géométrie (v2) : les lettres des manuels, majuscules pour les points
+	point: ['A', 'B', 'C', 'D', 'E', 'M', 'N', 'P'],
+	curve: ['d', 'C', 'D', 'T']
 };
 
 // =============================================================================
@@ -211,3 +218,77 @@ export const PI_IN_LETTERS = /(?<![\p{L}\\])pi(?!\p{L})/u;
 
 /** Ce qu'on répond à `pi` écrit en lettres. */
 export const PI_IN_LETTERS_MESSAGE = 'Écris π avec \\pi ou le symbole π.';
+
+/** Un objet tel que le lit `indexedNameClash` : son nom et son type. */
+interface NamedObject {
+	readonly name: string;
+	readonly kind: ObjectKind;
+}
+
+/** `u_3` : une lettre suivie d'un indice entier (la lettre, l'indice). */
+const INDEXED_NAME = /^([A-Za-z])_(\d+)$/;
+
+/** Une suite ou une fonction : `u_3` y désigne un terme, `u(3)`. */
+function hasTerms(kind: ObjectKind | undefined): boolean {
+	return kind === 'sequence' || kind === 'function';
+}
+
+/** Ce que `u_3` désigne quand u est une suite ou une fonction. */
+function termText(base: string, index: string, kind: ObjectKind): string {
+	return kind === 'sequence' ? `son terme de rang ${index}` : `${base}(${index})`;
+}
+
+/**
+ * Le refus d'un nom qui ferait désigner deux choses à `u_3`, ou `null`
+ * (décision de David, 2026-10-19) : avec une suite (ou une fonction) `u`, `u_3`
+ * est son terme de rang 3 — dans une définition comme dans Calcul. Une valeur
+ * (un point, une liste…) `u_3` ne peut donc pas cohabiter avec elle, dans un
+ * sens comme dans l'autre. Une fonction ou une suite `u_3` le peut : `f_1` à
+ * côté de `f` reste permise (fonctions à indice).
+ *
+ * @param name - Le nom voulu
+ * @param kind - Le type de l'objet qui le prendrait
+ * @param objects - Les AUTRES objets de l'atelier
+ */
+export function indexedNameClash(
+	name: string,
+	kind: ObjectKind,
+	objects: readonly NamedObject[]
+): string | null {
+	if (hasTerms(kind)) {
+		const clash = objects.find((o) => {
+			const match = INDEXED_NAME.exec(o.name);
+			return match !== null && match[1] === name && !hasTerms(o.kind);
+		});
+		if (clash === undefined) return null;
+		const index = INDEXED_NAME.exec(clash.name)![2];
+		const what = kind === 'sequence' ? 'une suite' : 'une fonction';
+		return `${clash.name} existe déjà : avec ${what} ${name}, ${clash.name} désignerait ${termText(name, index, kind)}. Renomme ${clash.name}, ou choisis un autre nom.`;
+	}
+	const match = INDEXED_NAME.exec(name);
+	if (match === null) return null;
+	const [, base, index] = match;
+	const owner = objects.find((o) => o.name === base && hasTerms(o.kind));
+	if (owner === undefined) return null;
+	const what = owner.kind === 'sequence' ? 'une suite' : 'une fonction';
+	return `${base} est ${what} : ${name} désigne ${termText(base, index, owner.kind)}. Choisis un autre nom.`;
+}
+
+/**
+ * `nextName`, sans jamais rendre un nom que `indexedNameClash` refuserait
+ * (`u_1` d'office à côté d'une suite u).
+ */
+export function nextClashFreeName(
+	kind: ObjectKind,
+	taken: readonly string[],
+	objects: readonly NamedObject[],
+	avoid: readonly string[] = []
+): string {
+	const avoided = [...avoid];
+	let name = nextName(kind, taken, avoided);
+	while (indexedNameClash(name, kind, objects) !== null) {
+		avoided.push(name);
+		name = nextName(kind, taken, avoided);
+	}
+	return name;
+}

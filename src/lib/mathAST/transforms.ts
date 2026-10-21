@@ -301,6 +301,7 @@ export function mapNode(node: MathNode, fn: (node: MathNode) => MathNode): MathN
 		// Binary operations
 		case 'addition':
 			transformedNode = add(mapNode(node.left, fn), mapNode(node.right, fn), {
+				displayStyle: node.displayStyle,
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			});
@@ -529,6 +530,7 @@ export function mapNodeTopDown(node: MathNode, fn: (node: MathNode) => MathNode)
 				mapNodeTopDown(transformedParent.left, fn),
 				mapNodeTopDown(transformedParent.right, fn),
 				{
+					displayStyle: transformedParent.displayStyle,
 					operatorMetadata: transformedParent.operatorMetadata,
 					metadata: transformedParent.metadata
 				}
@@ -857,6 +859,7 @@ export function cloneNode<T extends MathNode>(node: T): T {
 		// Binary operations
 		case 'addition':
 			return add(cloneNode(node.left), cloneNode(node.right), {
+				displayStyle: node.displayStyle,
 				operatorMetadata: node.operatorMetadata,
 				metadata: node.metadata
 			}) as T;
@@ -1323,6 +1326,7 @@ function stripBracketsInternal(node: MathNode, ctx: StripContext): MathNode {
 					isLeftOperand: false
 				}),
 				{
+					displayStyle: node.displayStyle,
 					operatorMetadata: node.operatorMetadata,
 					metadata: node.metadata
 				}

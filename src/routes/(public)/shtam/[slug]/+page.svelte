@@ -3,6 +3,7 @@
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import ShtamFooter from '../ShtamFooter.svelte';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import SeoHead from '$lib/seo/SeoHead.svelte';
 	import JsonLd from '$lib/seo/JsonLd.svelte';
 	import {
@@ -57,7 +58,10 @@
 		</div>
 		<h1 class="serif text-3xl leading-tight font-bold sm:text-4xl">{article.title}</h1>
 		<div class="text-lg text-muted-foreground"><InlineMarkdown content={article.lede} /></div>
-		<div class="text-sm italic">Par {article.byline}</div>
+		<div class="flex flex-wrap items-center justify-between gap-2">
+			<div class="text-sm italic">Par {article.byline}</div>
+			<QrCodeButton url="/shtam/{article.slug}" label={article.title} />
+		</div>
 	</header>
 
 	<MarkdownRenderer content={article.body} />

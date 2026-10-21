@@ -177,6 +177,7 @@ export const SITEMAP_EXCLUSIONS: SitemapExclusion[] = [
 		pattern: '/automaths/test',
 		reason: 'lance la série décrite par l’adresse ; sans elle, renvoie au panier'
 	},
+	{ pattern: '/l/[code]', reason: 'lien court d’un QR code : redirige vers sa cible, en noindex' },
 	{ pattern: '/cahier/[token]/**', reason: 'cahier de textes ouvert par le jeton du professeur' },
 	{ pattern: '/cours/[token]/**', reason: 'cours d’une classe ouvert par le jeton du professeur' },
 	{

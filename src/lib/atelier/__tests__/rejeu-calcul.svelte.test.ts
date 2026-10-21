@@ -100,7 +100,7 @@ describe('rejouer un historique', () => {
 		expect(report).toMatchObject({ ok: true, replayed: 2 });
 		expect(d.atelier.names).toEqual(['f']);
 		expect(d.entries.map((e) => e.text)).toEqual([
-			'« f » est dans tes objets.',
+			'f est correctement défini.',
 			expect.stringContaining('9')
 		]);
 	});

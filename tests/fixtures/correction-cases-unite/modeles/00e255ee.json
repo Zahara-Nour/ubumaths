@@ -1,0 +1,297 @@
+{
+	"id": "00e255ee-0b1f-4ace-8097-d744bedfde8d",
+	"title": "Trouver le côté d'un carré connaissant son périmètre.",
+	"description": "A partir d'une description.",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un carré",
+	"level": 2,
+	"delay": 15,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[mm]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[mm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[mm]}}$ est ${{eval:4*a;[mm]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[cm]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[cm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[cm]}}$ est ${{eval:4*a;[cm]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[dm]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[dm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[dm]}}$ est ${{eval:4*a;[dm]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[m]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[m]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[m]}}$ est ${{eval:4*a;[m]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[dam]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[dam]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[dam]}}$ est ${{eval:4*a;[dam]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[hm]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[hm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[hm]}}$ est ${{eval:4*a;[hm]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{a}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** de périmètre ${{eval:4*a;[km]}}$ ?\n\nLa longueur du côté est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[km]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré de périmètre ${{eval:4*a;[km]}}$ est ${{eval:4*a;[km]}} \\div 4 =$ {{solution:html}}."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 mm ÷ 4 = 7 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["14\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "÷2 au lieu de ÷4",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 cm ÷ 4 = 7 cm",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 dm ÷ 4 = 7 dm",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["7\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 m ÷ 4 = 7 m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["7\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 dam ÷ 4 = 7 dam",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["7\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 hm ÷ 4 = 7 hm",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["7\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "28 km ÷ 4 = 7 km",
+			"variationIndex": 6
+		}
+	]
+}

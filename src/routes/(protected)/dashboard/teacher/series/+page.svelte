@@ -146,7 +146,7 @@
 							Supprimer
 						</Button>
 						<!-- Lien de la série, avec ou sans forme (Q44, Q46) -->
-						<SeriesLinkShare categories={series.categories} compact />
+						<SeriesLinkShare categories={series.categories} compact canMakeQr />
 					</Card.Footer>
 				</Card.Root>
 			{/each}

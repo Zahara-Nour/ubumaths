@@ -67,6 +67,35 @@ function isNewPoint(row: ProgrammePointRow): row is ProgrammePoint & ProgrammePo
 	return row.node_id !== null && row.grade !== null;
 }
 
+/** Notion et branche d'un nœud où se pose un point (notion ou sous-notion). */
+export interface NodePlace {
+	notion: ClassificationNode;
+	branch: ClassificationNode;
+}
+
+/**
+ * Notion et branche du nœud d'un point, `null` si un maillon manque (nœud
+ * illisible, ou point posé sur une branche, interdit en base). Pour les
+ * lecteurs qui ne doivent pas échouer pour un point : ils l'écartent.
+ */
+export function placeOfNode(
+	nodeId: string | null,
+	nodeById: ReadonlyMap<string, ClassificationNode>
+): NodePlace | null {
+	const target = nodeId === null ? undefined : nodeById.get(nodeId);
+	if (!target) return null;
+	const notion =
+		target.kind === 'notion'
+			? target
+			: target.kind === 'subnotion' && target.parent_id !== null
+				? nodeById.get(target.parent_id)
+				: undefined;
+	if (!notion || notion.kind !== 'notion' || notion.parent_id === null) return null;
+	const branch = nodeById.get(notion.parent_id);
+	if (!branch || branch.kind !== 'branch') return null;
+	return { notion, branch };
+}
+
 /**
  * Range les points sous leur notion, les notions sous leur branche.
  *
@@ -162,19 +191,46 @@ export function countArchivedPoints(tree: ProgrammeBranch[]): number {
 }
 
 /**
- * L'arbre sans ses points archivés. Une notion (ou une branche) qui ne gardait
- * que des archivés disparaît : elle n'a plus de point visible pour ce niveau.
+ * L'arbre réduit aux points retenus par `keepPoint`. Une notion (ou une branche)
+ * qui n'en garde aucun disparaît : elle n'a plus de point à montrer.
  */
-export function hideArchivedPoints(tree: ProgrammeBranch[]): ProgrammeBranch[] {
+export function filterTreePoints(
+	tree: ProgrammeBranch[],
+	keepPoint: (point: ProgrammePointView) => boolean
+): ProgrammeBranch[] {
 	return tree
 		.map((branch) => ({
 			...branch,
 			notions: branch.notions
-				.map((notion) => ({
-					...notion,
-					points: notion.points.filter((p) => p.archived_at === null)
-				}))
+				.map((notion) => ({ ...notion, points: notion.points.filter(keepPoint) }))
 				.filter((notion) => notion.points.length > 0)
 		}))
 		.filter((branch) => branch.notions.length > 0);
+}
+
+/**
+ * L'arbre sans ses points archivés.
+ *
+ * `keep` : archivés à garder quand même — ceux déjà cochés ou tagués, qu'on
+ * doit pouvoir décocher (sinon ils resteraient invisibles et inamovibles).
+ */
+export function hideArchivedPoints(
+	tree: ProgrammeBranch[],
+	keep: ReadonlySet<string> = new Set()
+): ProgrammeBranch[] {
+	return filterTreePoints(tree, (p) => p.archived_at === null || keep.has(p.id));
+}
+
+/**
+ * Nœuds où un exercice peut prendre un point (règle 1 de la migration
+ * `20261013120000`) : ses nœuds de rangement, et la notion de chacun quand
+ * c'est une sous-notion.
+ */
+export function taggableNodeIds(placements: ClassificationNode[]): Set<string> {
+	const ids = new Set<string>();
+	for (const node of placements) {
+		ids.add(node.id);
+		if (node.kind === 'subnotion' && node.parent_id !== null) ids.add(node.parent_id);
+	}
+	return ids;
 }

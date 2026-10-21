@@ -38,7 +38,7 @@
 		instructionOf,
 		trainingStatus
 	} from '$lib/questions/correction-card-verdict';
-	import { computeBlankVerdicts } from './blank-verdicts';
+	import { computeBlankColors } from './blank-verdicts';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
@@ -132,6 +132,7 @@
 	let fillBlankValues = $state<string[]>([]);
 	let fillBlankValuesLatex = $state<string[]>([]);
 	let blankValidationResults = $state<(boolean | null)[]>([]);
+	let blankUnoptimalResults = $state<boolean[]>([]);
 	let blankFeedback = $state<(string | undefined)[]>([]);
 	// Réponse validée, rattachée à SON instance : une autre instance (aperçu
 	// régénéré) retrouve un verso sans réponse (R9). `raw` : comparée par identité
@@ -225,6 +226,7 @@
 				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled) : ''
 			);
 			blankValidationResults = instance.blanks.map(() => null);
+			blankUnoptimalResults = [];
 			blankFeedback = [];
 		}
 
@@ -343,7 +345,9 @@
 		onAnswerSubmit?.(answerData);
 
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
-			blankValidationResults = computeBlankVerdicts(fillBlankValues, instance);
+			const colors = computeBlankColors(fillBlankValues, instance, fillBlankValuesLatex);
+			blankValidationResults = colors.verdicts;
+			blankUnoptimalResults = colors.unoptimal;
 		}
 
 		if (!isCorrect && showCorrectionOnWrong) {
@@ -420,6 +424,7 @@
 										disabled={!interactive || isInputDisabled}
 										flashMode={!interactive}
 										validationResults={isSubmitted ? blankValidationResults : []}
+										unoptimalResults={isSubmitted ? blankUnoptimalResults : []}
 										blankFeedback={isSubmitted && showValidationFeedback ? blankFeedback : []}
 										onSubmit={handleSubmit}
 										mathModeSpace={(instance.options?.constraints?.spaces ?? 'warn') !== 'off'

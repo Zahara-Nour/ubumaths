@@ -51,7 +51,6 @@ const ORIGINAL = {
 	translations: null,
 	status: 'published',
 	version: 3,
-	template_id: null,
 	style_id: null,
 	estimated_duration_minutes: null,
 	total_points: null,

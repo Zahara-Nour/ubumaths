@@ -1,0 +1,167 @@
+{
+	"template_id": "906252f8-0104-4c9f-9eb9-3f70d80d7045",
+	"titre": "Ecrire un grand nombre entier avec des espaces",
+	"sous_titre": "Nombre à 4 chiffres",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-09-29T20:53:53.989799+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > écritures",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "décision « TAG » → « PAS_DE_TAG_R1 » ; code « CE2-004 » → « ∅ »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "expression",
+						"expression": "1000..9999"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"reponses_brutes": ["expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1001,
+						"max": 9973,
+						"negatif_possible": false,
+						"nb_distinctes": 296
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1001,
+						"max": 9973,
+						"negatif_possible": false,
+						"nb_distinctes": 296
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1001,
+				"max": 9973,
+				"nb_distinctes": 296,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1001,
+				"max": 9973,
+				"nb_distinctes": 296,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1001,
+				"max": 9973,
+				"nb_distinctes": 296,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 1,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9973)",
+					"graine": 37,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[9973]$$",
+					"reponse": ["9973"],
+					"variables": {
+						"expression": "9973"
+					}
+				},
+				{
+					"role": "plus petite valeur (1001)",
+					"graine": 98,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[1001]$$",
+					"reponse": ["1001"],
+					"variables": {
+						"expression": "1001"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[1024]$$",
+					"reponse": ["1024"],
+					"variables": {
+						"expression": "1024"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[3924]$$",
+					"reponse": ["3924"],
+					"variables": {
+						"expression": "3924"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[1347]$$",
+					"reponse": ["1347"],
+					"variables": {
+						"expression": "1347"
+					}
+				}
+			]
+		}
+	]
+}

@@ -10,6 +10,7 @@ import { requireRole } from '$lib/server/middleware/auth';
 import { redirect } from '@sveltejs/kit';
 import { z } from 'zod';
 import { createServerLogger } from '$lib/utils/logger';
+import { loadTextSize } from '$lib/server/worksheets/print-settings';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/student/worksheets/[assignmentId]/+page.server'
@@ -20,7 +21,7 @@ const assignmentIdSchema = z.string().uuid();
 
 export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	// Only students can view worksheets
-	await requireRole(locals, 'student');
+	const { user } = await requireRole(locals, 'student');
 
 	// Validate assignment ID
 	const validation = assignmentIdSchema.safeParse(params.assignmentId);
@@ -44,6 +45,8 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	const worksheet = await response.json();
 
 	return {
-		worksheet
+		worksheet,
+		// Taille du texte de ses PDF (accessibilité) ; normale par défaut
+		textSize: await loadTextSize(locals.supabase, user.id)
 	};
 };

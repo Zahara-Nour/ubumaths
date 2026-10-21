@@ -1,0 +1,286 @@
+{
+	"template_id": "953574d4-e345-4a5d-9435-7faecc3ff7ac",
+	"titre": "Écrire un nombre décimal à l'aide de la notation scientifique",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Apprivoiser > Notation scientifique",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Puissances : sens et écritures > notation scientifique",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:10^(b-1)}}..{{eval:10^b-1}}!m(10)"
+					},
+					{
+						"name": "d",
+						"expression": "2..4;±"
+					},
+					{
+						"name": "expression1",
+						"expression": "eval:(a*10^b+c)*10^(d-b);d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris ce nombre en notation scientifique.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{a}},{{c}}", "{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 994,
+						"negatif_possible": false,
+						"nb_distinctes": 171
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 7,
+						"min": 0.000116,
+						"max": 99000,
+						"negatif_possible": false,
+						"nb_distinctes": 291
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 255,
+						"exemples": [
+							"1,98",
+							"3,5",
+							"1,16",
+							"3,1",
+							"7,6",
+							"1,28",
+							"1,729",
+							"6,7",
+							"8,8",
+							"9,821",
+							"5,63",
+							"1,94"
+						],
+						"nombres_contenus": {
+							"min": 1.1,
+							"max": 9.98,
+							"nb_distinctes": 255,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -4,
+						"max": 4,
+						"negatif_possible": true,
+						"nb_distinctes": 6,
+						"valeurs": [-4, -3, -2, 2, 3, 4]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.000116,
+				"max": 99000,
+				"nb_distinctes": 292,
+				"nature": "décimal",
+				"decimales_max": 7,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": -4,
+				"max": 9.98,
+				"nb_distinctes": 261,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -4,
+				"max": 99000,
+				"nb_distinctes": 553,
+				"nature": "décimal",
+				"decimales_max": 7,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99000)",
+					"graine": 228,
+					"enonce": "Écris ce nombre en notation scientifique.\n\n$$99\\,000 = [?]*10^[?]$$",
+					"reponse": ["9,9", "4"],
+					"variables": {
+						"a": "9",
+						"b": "1",
+						"c": "9",
+						"d": "4",
+						"expression1": "99000"
+					}
+				},
+				{
+					"role": "plus petite valeur (-4)",
+					"graine": 5,
+					"enonce": "Écris ce nombre en notation scientifique.\n\n$$0{,}000\\,76 = [?]*10^[?]$$",
+					"reponse": ["7,6", "-4"],
+					"variables": {
+						"a": "7",
+						"b": "1",
+						"c": "6",
+						"d": "-4",
+						"expression1": "0.00076"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Écris ce nombre en notation scientifique.\n\n$$19\\,800 = [?]*10^[?]$$",
+					"reponse": ["1,98", "4"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "98",
+						"d": "4",
+						"expression1": "19800"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris ce nombre en notation scientifique.\n\n$$35\\,000 = [?]*10^[?]$$",
+					"reponse": ["3,5", "4"],
+					"variables": {
+						"a": "3",
+						"b": "1",
+						"c": "5",
+						"d": "4",
+						"expression1": "35000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Écris ce nombre en notation scientifique.\n\n$$1\\,160 = [?]*10^[?]$$",
+					"reponse": ["1,16", "3"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "16",
+						"d": "3",
+						"expression1": "1160"
+					}
+				}
+			]
+		}
+	]
+}

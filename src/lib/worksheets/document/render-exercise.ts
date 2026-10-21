@@ -60,7 +60,8 @@ export type ExerciseLayout = (typeof EXERCISE_LAYOUTS)[number];
  * - `inlineCorrections` : « Fiche + corrigé » du prof (demande de David,
  *   2026-10-14) — sur la fiche, la correction de chaque exercice juste sous son
  *   énoncé, sans cadre de réponse ;
- * - `correctionFonts` : ces corrections en police du corrigé (vrai par défaut).
+ * - `correctionFonts` : les corrections (corrigé ou fiche + corrigé) en police
+ *   du corrigé, chacune dans son bloc (vrai par défaut).
  */
 export interface RenderOptions {
 	inlineCorrections?: boolean;
@@ -148,12 +149,16 @@ export function renderMarkdownPreview(
  * Les exercices dans l'ordre du document, chacun avec le titre de section à
  * poser avant lui (ou `null`). Exercice hors section après des sections : sous
  * « Autres exercices » (D4). La consigne de section fait partie de l'énoncé :
- * les corrigés n'en gardent que le titre.
+ * le corrigé n'en garde que le titre ; les réponses, aucun titre.
  */
 function withSectionHeaders(
 	doc: WorksheetDocument,
 	form: DocumentForm
 ): Array<{ header: DocumentSection | null; exercise: DocumentExercise }> {
+	// Réponses (seules ou en fin de fiche) : aucun titre de section, de la place
+	// pour rien (David, 2026-10-17)
+	if (form === 'answers') return doc.exercises.map((exercise) => ({ header: null, exercise }));
+
 	const sections = new Map(doc.sections.map((section) => [section.id, section]));
 	const items: Array<{ header: DocumentSection | null; exercise: DocumentExercise }> = [];
 	let currentSection: string | null | undefined = undefined;
@@ -282,7 +287,10 @@ function renderTemplateExercise(
 	}
 	content += `\n]\n`;
 
-	if (form !== 'worksheet') return content + renderTeacherCorrection(exercise, doc, form);
+	// Réponses : la police du document ; corrigé : sa correction seule en police
+	// du corrigé, en-tête et titres de section dans celle du document
+	if (form === 'answers') return content + renderTeacherCorrection(exercise, doc, form);
+	if (form === 'correction') return content + correctionInFonts(exercise, doc, options);
 
 	// Bloc sécable de l'énoncé, collé à son titre au lieu d'hériter de
 	// l'espacement entre blocs du gabarit (souvent 1,8em). Exercice
@@ -293,7 +301,7 @@ function renderTemplateExercise(
 	// Fiche + corrigé : la correction remplace les cadres de réponse
 	if (options.inlineCorrections) {
 		content += indent(markdownTypst(exercise.statement, exercise, doc)) + '\n';
-		return content + '\n]\n' + inlineCorrection(exercise, doc, options);
+		return content + '\n]\n' + correctionInFonts(exercise, doc, options);
 	}
 	const frames = answerFrames(exercise, doc);
 	// Cadre unique à la fin : la fin de l'énoncé reste collée à lui (jamais seul
@@ -346,10 +354,11 @@ function answerFrames(
 }
 
 /**
- * La correction d'un exercice sous son énoncé (« Fiche + corrigé »), en
- * police du corrigé dans son seul bloc : les énoncés gardent la leur.
+ * La correction d'un exercice (corrigé, partie corrigé d'une fiche, « Fiche +
+ * corrigé »), en police du corrigé dans son seul bloc : titres, sections,
+ * bandeau et énoncés gardent celle du document (David, 2026-10-18).
  */
-function inlineCorrection(
+function correctionInFonts(
 	exercise: DocumentExercise,
 	doc: WorksheetDocument,
 	options: RenderOptions

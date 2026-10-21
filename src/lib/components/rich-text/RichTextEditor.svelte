@@ -74,8 +74,10 @@
 		CircleDot,
 		Ruler,
 		Table2,
-		Grid3x3
+		Grid3x3,
+		QrCode
 	} from '@lucide/svelte';
+	import { QR_TEMPLATE } from '$lib/ubumark/parser/qr-parser';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import ImageAttributePanel from '$lib/components/exercises/ImageAttributePanel.svelte';
 	import ImageGalleryModal from './ImageGalleryModal.svelte';
@@ -967,6 +969,23 @@
 		(editor?.commands as unknown as Record<string, () => boolean>).insertNumberLine?.();
 	}
 
+	/**
+	 * Bloc ```qr (lot 2 des QR codes) : pas de nœud TipTap dédié, un bloc de
+	 * code `qr` prérempli, comme ```courbe.
+	 */
+	function insertQrCode() {
+		if (disabled || !editor) return;
+		editor
+			.chain()
+			.focus()
+			.insertContent({
+				type: 'codeBlock',
+				attrs: { language: 'qr' },
+				content: [{ type: 'text', text: QR_TEMPLATE }]
+			})
+			.run();
+	}
+
 	function insertVariationTable() {
 		// Custom TipTap command from variation-table-extension
 		(editor?.commands as unknown as Record<string, () => boolean>).insertVariationTable?.();
@@ -1763,6 +1782,19 @@
 						aria-label="Insérer un cercle trigonométrique"
 					>
 						<CircleDot class="h-4 w-4" />
+					</Button>
+
+					<!-- QR Code Button -->
+					<Button
+						type="button"
+						variant="ghost"
+						size="sm"
+						onclick={insertQrCode}
+						{disabled}
+						title="Insérer un QR code"
+						aria-label="Insérer un QR code"
+					>
+						<QrCode class="h-4 w-4" />
 					</Button>
 				</div>
 			{/if}

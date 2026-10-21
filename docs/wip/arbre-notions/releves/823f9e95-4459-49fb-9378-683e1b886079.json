@@ -1,0 +1,279 @@
+{
+	"template_id": "823f9e95-4459-49fb-9378-683e1b886079",
+	"titre": "Décomposer l'écriture décimale un nombre",
+	"sous_titre": "En milliers, centaines, dizaines et unités, à l'aide de produits",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-09-29T20:25:47.142136+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE2-006",
+			"libelle_point": "Connaitre la valeur des chiffres en fonction de leur position dans un nombre.",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*1000 + b*100 + c*10+d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Décompose ce nombre comme dans cet exemple :\n$$2345 = (2 * 1000) + (3 * 100) +(4 * 10) + 5$$\n\n$${{expression}}$$",
+				"reponses_brutes": ["({{a}}*1000) + ({{b}}*100) + ({{c}}*10)+{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1128,
+						"max": 9936,
+						"negatif_possible": false,
+						"nb_distinctes": 291
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 291,
+						"exemples": [
+							"(1*1000) + (5*100) + (9*10)+9",
+							"(3*1000) + (3*100) + (5*10)+8",
+							"(1*1000) + (5*100) + (1*10)+7",
+							"(3*1000) + (2*100) + (1*10)+3",
+							"(7*1000) + (2*100) + (6*10)+1",
+							"(1*1000) + (6*100) + (2*10)+5",
+							"(1*1000) + (9*100) + (7*10)+5",
+							"(6*1000) + (3*100) + (7*10)+6",
+							"(8*1000) + (2*100) + (8*10)+7",
+							"(9*1000) + (7*100) + (8*10)+5",
+							"(5*1000) + (6*100) + (6*10)+8",
+							"(1*1000) + (6*100) + (9*10)+2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1000,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9936,
+				"nb_distinctes": 299,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 100, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9936,
+				"nb_distinctes": 304,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9936)",
+					"graine": 115,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = \\left( 2 \\times 1\\,000 \\right) + \\left( 3 \\times 100 \\right) + \\left( 4 \\times 10 \\right) + 5$$\n\n$$9\\,936 = [?]$$",
+					"reponse": ["(9*1000) + (9*100) + (3*10)+6"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"expression": "9936"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = \\left( 2 \\times 1\\,000 \\right) + \\left( 3 \\times 100 \\right) + \\left( 4 \\times 10 \\right) + 5$$\n\n$$1\\,599 = [?]$$",
+					"reponse": ["(1*1000) + (5*100) + (9*10)+9"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "9",
+						"expression": "1599"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = \\left( 2 \\times 1\\,000 \\right) + \\left( 3 \\times 100 \\right) + \\left( 4 \\times 10 \\right) + 5$$\n\n$$3\\,358 = [?]$$",
+					"reponse": ["(3*1000) + (3*100) + (5*10)+8"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "5",
+						"d": "8",
+						"expression": "3358"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = \\left( 2 \\times 1\\,000 \\right) + \\left( 3 \\times 100 \\right) + \\left( 4 \\times 10 \\right) + 5$$\n\n$$1\\,517 = [?]$$",
+					"reponse": ["(1*1000) + (5*100) + (1*10)+7"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "7",
+						"expression": "1517"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = \\left( 2 \\times 1\\,000 \\right) + \\left( 3 \\times 100 \\right) + \\left( 4 \\times 10 \\right) + 5$$\n\n$$3\\,213 = [?]$$",
+					"reponse": ["(3*1000) + (2*100) + (1*10)+3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "1",
+						"d": "3",
+						"expression": "3213"
+					}
+				}
+			]
+		}
+	]
+}

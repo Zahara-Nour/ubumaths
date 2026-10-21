@@ -11,7 +11,6 @@
  */
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
-import { isLegacyPoint } from '../../src/lib/server/curriculum-generation';
 import {
 	describeLinkPlan,
 	planPointLinks,
@@ -52,9 +51,10 @@ export async function resolvePoints(
  * Liens en base d'un modèle vers l'ancien référentiel (code lu par jointure, même si le point a
  * été archivé).
  *
- * Filtre provisoire jusqu'à la bascule du code (étape 3 de C5) : ces scripts rattachent les
- * points de l'ancien référentiel ; un tag de point neuf leur est invisible — `--remplacer`, qui
- * supprime les liens hors de la liste demandée, ne le supprime donc jamais.
+ * Ces scripts rattachent encore les points de l'ancien référentiel par leur code (abandonnés par
+ * la C5, Q8 ; scripts retirés avec l'éditeur, PR E de l'étape 3) : un tag de point neuf leur est
+ * invisible — `--remplacer`, qui supprime les liens hors de la liste demandée, ne le supprime
+ * donc jamais.
  */
 export async function readLinks(supabase: Client, templateId: string): Promise<ExistingLink[]> {
 	const { data, error } = await supabase
@@ -63,7 +63,7 @@ export async function readLinks(supabase: Client, templateId: string): Promise<E
 		.eq('template_id', templateId);
 	if (error) throw new Error(`lecture des liens de ${templateId} : ${error.message}`);
 	return (data ?? [])
-		.filter((l) => isLegacyPoint(l.curriculum_points))
+		.filter((l) => typeof l.curriculum_points?.objective_id === 'string')
 		.map((l) => ({
 			pointId: l.point_id,
 			code: l.curriculum_points?.code ?? `(point ${l.point_id})`

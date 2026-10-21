@@ -1,0 +1,217 @@
+{
+	"template_id": "5edc1514-51d0-4905-8982-2205086e9ae8",
+	"titre": "Trouver un nombre positif de carré donné",
+	"sous_titre": "Entier de $1$ à $12$",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Racines carrées > Apprivoiser > Définition",
+	"mis_a_jour": "2026-10-04T23:04:42.22884+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "5-029",
+			"libelle_point": "Connaitre les carrés des entiers de 0 à 12.",
+			"noeud_actuel": "Nombres et calculs > Racines carrées : sens et écritures > définition",
+			"noeud_cible": "Nombres et calculs > Entiers : multiplication > carrés",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..12"
+					},
+					{
+						"name": "expression1",
+						"expression": "?^2={{eval:a^2}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète avec un nombre **positif**.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"?^2=1",
+							"?^2=100",
+							"?^2=121",
+							"?^2=144",
+							"?^2=16",
+							"?^2=25",
+							"?^2=36",
+							"?^2=4",
+							"?^2=49",
+							"?^2=64",
+							"?^2=81",
+							"?^2=9"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 144,
+							"nb_distinctes": 13,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 12,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 13,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 12,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 144,
+				"nb_distinctes": 21,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 25, 36, 49, 64, 81, 100, 121, 144],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (144)",
+					"graine": 10,
+					"enonce": "Complète avec un nombre positif.\n\n$$[?]^2 = 144$$",
+					"reponse": ["12"],
+					"variables": {
+						"a": "12",
+						"expression1": "?^2=144"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Complète avec un nombre positif.\n\n$$[?]^2 = 1$$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"expression1": "?^2=1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète avec un nombre positif.\n\n$$[?]^2 = 16$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"expression1": "?^2=16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète avec un nombre positif.\n\n$$[?]^2 = 100$$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10",
+						"expression1": "?^2=100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Complète avec un nombre positif.\n\n$$[?]^2 = 64$$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "8",
+						"expression1": "?^2=64"
+					}
+				}
+			]
+		}
+	]
+}

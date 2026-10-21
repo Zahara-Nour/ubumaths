@@ -36,6 +36,7 @@
 	import Courbe from './Courbe.svelte';
 	import FigureBlock from './FigureBlock.svelte';
 	import StatChart from './StatChart.svelte';
+	import QrBlock from './QrBlock.svelte';
 	// Self-import for recursive rendering (Svelte 5 pattern)
 	import ListNode from './ListNode.svelte';
 	import type { VariationTableNode } from '$lib/ubumark/types/variation-table';
@@ -44,6 +45,7 @@
 	import type { CourbeNode } from '$lib/ubumark/types/courbe';
 	import type { FigureNode } from '$lib/ubumark/types/figure';
 	import type { StatChartNode } from '$lib/ubumark/types/stat-chart';
+	import type { QrNode } from '$lib/ubumark/types/qr';
 
 	interface Props {
 		ordered: boolean;
@@ -90,6 +92,12 @@
 		isGrid
 			? `display: grid; grid-template-columns: repeat(${columns}, minmax(0, 1fr)); column-gap: 1.5rem; row-gap: 1.5rem;`
 			: undefined
+	);
+	// Départ d'une liste numérotée (« 3. ») : le compteur CSS du schéma ignore
+	// l'attribut `start`, il reçoit le départ par `--list-start` (list-numbering.css)
+	const orderedStyle = $derived(
+		[gridStyle, start > 1 ? `--list-start: ${start - 1};` : undefined].filter(Boolean).join(' ') ||
+			undefined
 	);
 	const itemClass = $derived(isGrid ? 'text-foreground' : 'mt-6 text-foreground first:mt-0');
 
@@ -233,6 +241,13 @@
 	}
 
 	/**
+	 * Bloc ```qr en retrait dans un item de liste
+	 */
+	function isQrNode(node: ASTNode): node is QrNode {
+		return node.type === 'qr';
+	}
+
+	/**
 	 * Check if node is a block-level element (for hardbreak removal)
 	 */
 	function isBlockNode(node: ASTNode): boolean {
@@ -248,7 +263,8 @@
 			'trig-circle',
 			'courbe',
 			'figure',
-			'stat-chart'
+			'stat-chart',
+			'qr'
 		].includes(node.type);
 	}
 
@@ -298,7 +314,7 @@
 	<ol
 		class="{listClasses} my-1 text-foreground {className}"
 		start={start > 1 ? start : undefined}
-		style={gridStyle}
+		style={orderedStyle}
 	>
 		{#each items as item, itemIndex (itemIndex)}
 			{@const processedChildren = removeBlockBoundaryHardbreaks(item.children)}
@@ -373,6 +389,8 @@
 						<FigureBlock node={child} />
 					{:else if isStatChartNode(child)}
 						<StatChart node={child} />
+					{:else if isQrNode(child)}
+						<QrBlock node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}
@@ -455,6 +473,8 @@
 						<FigureBlock node={child} />
 					{:else if isStatChartNode(child)}
 						<StatChart node={child} />
+					{:else if isQrNode(child)}
+						<QrBlock node={child} />
 					{:else if child.type === 'horizontal-rule'}
 						<HorizontalRule />
 					{/if}

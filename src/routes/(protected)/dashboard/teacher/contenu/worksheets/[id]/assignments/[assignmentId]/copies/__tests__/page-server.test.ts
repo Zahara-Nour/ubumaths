@@ -9,6 +9,7 @@
  */
 import { describe, expect, it, vi } from 'vitest';
 import { load } from '../+page.server';
+import { tableMock } from '$lib/server/worksheets/__tests__/table-mock';
 
 const WORKSHEET_ID = '550e8400-e29b-41d4-a716-446655440011';
 const ASSIGNMENT_ID = '550e8400-e29b-41d4-a716-446655440010';
@@ -75,5 +76,25 @@ describe('copies par élève : chargement de la page', () => {
 			fetch: vi.fn()
 		} as never;
 		expect(await statusOf(() => load(e))).toBe(401);
+	});
+
+	it('chaque élève porte sa taille du texte ; sans réglage, la normale', async () => {
+		const students = [
+			{ id: S1, first_name: 'Ondine', last_name: 'Abricot', class_name: '3e Lune' },
+			{ id: S2, first_name: 'Élise', last_name: 'Écureuil', class_name: null }
+		];
+		const fetch = vi.fn(async () => new Response(JSON.stringify({ students })));
+		const supabase = tableMock({
+			student_print_settings: { data: [{ student_id: S2, text_size: 'x_large' }], error: null }
+		}).client;
+		const data = (await load({
+			params: { id: WORKSHEET_ID, assignmentId: ASSIGNMENT_ID },
+			locals: { safeGetSession: async () => ({ user: { id: 'prof' } }), supabase },
+			fetch
+		} as never)) as { students: { id: string; text_size: string }[] };
+		expect(data.students.map((s) => [s.id, s.text_size])).toEqual([
+			[S1, 'normal'],
+			[S2, 'x_large']
+		]);
 	});
 });

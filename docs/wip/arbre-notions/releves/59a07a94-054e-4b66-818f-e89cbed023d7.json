@@ -1,0 +1,485 @@
+{
+	"template_id": "59a07a94-054e-4b66-818f-e89cbed023d7",
+	"titre": "Est-ce bien un reste de division euclidienne ?",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "multiple_choice",
+	"theme": "Entiers > Diviser > Division euclidienne",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : division > division euclidienne",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10!a"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}!b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b+c}}=({{a}}* {{b}}) + {{c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "En regardant l'égalité ci-dessous, peut-on dire que ${{c}}$ est le reste de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{expression1}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 174,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 174,
+						"exemples": [
+							"20=(3* 6) + 2",
+							"23=(5* 4) + 3",
+							"19=(3* 6) + 1",
+							"16=(5* 3) + 1",
+							"29=(8* 3) + 5",
+							"22=(3* 7) + 1",
+							"32=(3* 10) + 2",
+							"33=(7* 4) + 5",
+							"30=(8* 3) + 6",
+							"79=(9* 8) + 7",
+							"45=(6* 7) + 3",
+							"23=(3* 7) + 2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 94,
+							"nb_distinctes": 81,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (94)",
+					"graine": 157,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $4$ est le reste de la division euclidienne de $94$ par $9$ ?\n\n$$94 = \\left( 9 \\times 10 \\right) + 4$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "9",
+						"b": "10",
+						"c": "4",
+						"expression1": "94=(9* 10) + 4"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $1$ est le reste de la division euclidienne de $19$ par $3$ ?\n\n$$19 = \\left( 3 \\times 6 \\right) + 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"c": "1",
+						"expression1": "19=(3* 6) + 1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $2$ est le reste de la division euclidienne de $20$ par $3$ ?\n\n$$20 = \\left( 3 \\times 6 \\right) + 2$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"c": "2",
+						"expression1": "20=(3* 6) + 2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $3$ est le reste de la division euclidienne de $23$ par $5$ ?\n\n$$23 = \\left( 5 \\times 4 \\right) + 3$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"c": "3",
+						"expression1": "23=(5* 4) + 3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $1$ est le reste de la division euclidienne de $16$ par $5$ ?\n\n$$16 = \\left( 5 \\times 3 \\right) + 1$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "5",
+						"b": "3",
+						"c": "1",
+						"expression1": "16=(5* 3) + 1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..10!a"
+					},
+					{
+						"name": "c",
+						"expression": "1..{{eval:a-1}}!b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "{{eval:a*b+c}}=({{a}}* {{eval:b-1}}) + {{eval:c+a}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "En regardant l'égalité ci-dessous, peut-on dire que ${{eval:c+a}}$ est le reste de la division euclidienne de ${{eval:a*b+c}}$ par ${{a}}$ ?\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 174,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 174,
+						"exemples": [
+							"20=(3* 5) + 5",
+							"23=(5* 3) + 8",
+							"19=(3* 5) + 4",
+							"16=(5* 2) + 6",
+							"29=(8* 2) + 13",
+							"22=(3* 6) + 4",
+							"32=(3* 9) + 5",
+							"33=(7* 3) + 12",
+							"30=(8* 2) + 14",
+							"79=(9* 7) + 16",
+							"45=(6* 6) + 9",
+							"23=(3* 6) + 5"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 94,
+							"nb_distinctes": 82,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 82,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 94,
+				"nb_distinctes": 82,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (94)",
+					"graine": 157,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $13$ est le reste de la division euclidienne de $94$ par $9$ ?\n\n$$94 = \\left( 9 \\times 9 \\right) + 13$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "9",
+						"b": "10",
+						"c": "4",
+						"expression2": "94=(9* 9) + 13"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $6$ est le reste de la division euclidienne de $11$ par $5$ ?\n\n$$11 = \\left( 5 \\times 1 \\right) + 6$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "5",
+						"b": "2",
+						"c": "1",
+						"expression2": "11=(5* 1) + 6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $5$ est le reste de la division euclidienne de $20$ par $3$ ?\n\n$$20 = \\left( 3 \\times 5 \\right) + 5$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"c": "2",
+						"expression2": "20=(3* 5) + 5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $8$ est le reste de la division euclidienne de $23$ par $5$ ?\n\n$$23 = \\left( 5 \\times 3 \\right) + 8$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "5",
+						"b": "4",
+						"c": "3",
+						"expression2": "23=(5* 3) + 8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "En regardant l'égalité ci-dessous, peut-on dire que $4$ est le reste de la division euclidienne de $19$ par $3$ ?\n\n$$19 = \\left( 3 \\times 5 \\right) + 4$$\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "3",
+						"b": "6",
+						"c": "1",
+						"expression2": "19=(3* 5) + 4"
+					}
+				}
+			]
+		}
+	]
+}

@@ -17,7 +17,8 @@ import type {
 import { ZERO_TOLERANCE } from '../common';
 import { subtract, divide } from '$lib/mathAST/factory';
 import { numericNode } from '../common/numeric';
-import type { IntervalDomain } from '$lib/math/intervals/types';
+import { tidyPeriodicMember } from '../common/periodic-member';
+import type { Endpoint, IntervalDomain } from '$lib/math/intervals/types';
 import {
 	isEmptyInterval as intervalsIsEmpty,
 	isUniversalInterval as intervalsIsUniversal,
@@ -522,11 +523,10 @@ export function intersect(a: Domain, b: Domain): Domain {
 		// PeriodicExclusion ∩ IntervalSet (b is non-periodic: the both-periodic
 		// case returned above).
 		// If b is universal (ℝ), the result is the PeriodicExclusion
-		// Otherwise, return the interval set (more restrictive)
 		if (b.kind !== 'periodic_exclusion' && intervalsIsUniversal(b)) {
 			return a;
 		}
-		return b;
+		return restrictPeriodicExclusion(a, b);
 	}
 	if (b.kind === 'periodic_exclusion') {
 		// Same logic: if a is universal, return the PeriodicExclusion
@@ -535,7 +535,7 @@ export function intersect(a: Domain, b: Domain): Domain {
 		if (intervalsIsUniversal(a)) {
 			return b;
 		}
-		return a;
+		return restrictPeriodicExclusion(b, a);
 	}
 
 	// Extract excludedPoints before delegating to intervals
@@ -545,6 +545,52 @@ export function intersect(a: Domain, b: Domain): Domain {
 
 	const result = intervalsIntersect(a, b);
 	return wrapWithExcludedPoints(result, allExcluded);
+}
+
+/** Au-delà, les valeurs interdites d'un ensemble borné ne sont pas énumérées. */
+const MAX_PERIODIC_EXCLUSIONS = 1000;
+
+/**
+ * Valeurs interdites périodiques (tan x : π/2 + kπ) ∩ un ensemble d'intervalles.
+ *
+ * ⚠️ Rendre l'ensemble tel quel PERDAIT les valeurs interdites : tan x sur
+ * [0 ; π] était étudiée sur [0 ; π] entier, « croissante » à travers π/2.
+ * Sur un ensemble BORNÉ, les a + kT qu'il contient deviennent des points
+ * exclus. Un ensemble non borné en contiendrait une infinité, que la forme
+ * `interval_set` ne sait pas écrire : il est rendu tel quel, comme avant
+ * (approximation connue ; l'étude des variations coupe elle-même aux valeurs
+ * interdites, voir `variations/compute.ts`).
+ */
+function restrictPeriodicExclusion(pe: PeriodicExclusion, other: Domain): Domain {
+	if (other.kind !== 'interval_set') return other;
+	const base = evaluateNodeToApproximatedNumber(pe.basePoint);
+	const period = evaluateNodeToApproximatedNumber(pe.period);
+	if (!isFinite(base) || !isFinite(period) || period <= 0) return other;
+
+	// Un membre sur une borne l'OUVRE (tan ∩ ]−π/2 ; π/2[ reste ]−π/2 ; π/2[,
+	// pas « \\ {−π/2 ; π/2} ») ; seuls les membres intérieurs sont exclus.
+	const members: MathNode[] = [];
+	const intervals: Interval[] = [];
+	const onMember = (x: number) => {
+		const k = (x - base) / period;
+		return Math.abs(k - Math.round(k)) < ZERO_TOLERANCE;
+	};
+	for (const int of other.intervals) {
+		const lo = endpointToNumber(int.lower.value);
+		const hi = endpointToNumber(int.upper.value);
+		if (!isFinite(lo) || !isFinite(hi)) return other;
+		const kMin = Math.floor((lo - base) / period + ZERO_TOLERANCE) + 1;
+		const kMax = Math.ceil((hi - base) / period - ZERO_TOLERANCE) - 1;
+		if (kMax - kMin > MAX_PERIODIC_EXCLUSIONS) return other;
+		for (let k = kMin; k <= kMax; k++) members.push(tidyPeriodicMember(pe.basePoint, k, pe.period));
+		const lower: Endpoint = onMember(lo) ? { ...int.lower, type: 'open' } : int.lower;
+		const upper: Endpoint = onMember(hi) ? { ...int.upper, type: 'open' } : int.upper;
+		if (lo === hi && (lower.type === 'open' || upper.type === 'open')) continue;
+		intervals.push({ ...int, lower, upper });
+	}
+	if (intervals.length === 0) return EMPTY_SET;
+	const restricted = intervalSet(intervals, other.excludedPoints ?? []);
+	return members.length === 0 ? restricted : excludePoints(restricted, members);
 }
 
 // =============================================================================

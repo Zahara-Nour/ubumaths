@@ -39,6 +39,7 @@ contourner en silence.
 | 0028 | [PDF de fiche : un seul générateur, des styles, une forme = un gabarit](0028-pdf-de-fiche-un-generateur-des-styles-et-des-formes.md)     | 2026-10-13 |
 | 0029 | [Le modèle de chapitre possède son contenu ; le chapitre lié le relie](0029-le-modele-possede-son-contenu-le-chapitre-le-relie.md)       | 2026-10-14 |
 | 0030 | [Le type de fiche décide de la forme du PDF ; les options d'affichage disparaissent](0030-type-de-fiche-decide-la-forme.md)              | 2026-10-15 |
+| 0031 | [Le parseur maison est une langue interne, lue comme le BIPM](0031-parseur-maison-langue-interne-bipm.md)                                | 2026-10-20 |
 
 ## Écrire un ADR
 

@@ -64,22 +64,23 @@ policies → [base-de-donnees.md](base-de-donnees.md) § Fiches, colonnes →
 
 ### `src/lib/typst/` — de la fiche au PDF
 
-| Fichier                                                                           | Rôle                                                                                                                                                                                                                                                                                           |
-| --------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/typst/index.ts`                                                          | Baril public (compilateur, service, générateurs, gabarits, ré-export du transpileur ubumark).                                                                                                                                                                                                  |
-| `src/lib/typst/compiler/typst-compiler.ts`                                        | Singleton du compilateur : charge `all-in-one-lite.bundle.js` de typst.ts depuis jsDelivr, **version épinglée** `TYPST_VERSION = '0.6.1-rc5'` (bundle + deux WASM). `getTypstCompiler`, `compileToPdf`, `compileToSvg`.                                                                        |
-| `src/lib/typst/service/typst-service.ts`                                          | `TypstService` / `getTypstService` : file à priorités (`PRIORITY` : `BATCH` < `NORMAL` < `PREVIEW` < `URGENT`), cache, délai maximal, état pour l'UI.                                                                                                                                          |
-| `src/lib/typst/cache/typst-cache.ts`                                              | `TypstCache` (LRU + TTL) du service.                                                                                                                                                                                                                                                           |
-| `src/lib/typst/generators/worksheet-generator.ts`                                 | `WorksheetGenerator` (classe) : tous les PDF de fiche, prof et élève, depuis `WorksheetRow` + `InstanceData` ou un document déjà construit (`document`), avec le gabarit du style. Fonction héritée `generateWorksheetTypst` (marquée `@deprecated`, mais c'est elle qu'appellent les écrans). |
-| `src/lib/typst/generators/base-generator.ts`                                      | `BaseTypstGenerator` : contexte (mode, nom d'élève, classe), config.                                                                                                                                                                                                                           |
-| `src/lib/typst/generators/notebook-generator.ts`, `src/lib/typst/notebook-pdf.ts` | Même chaîne pour les **carnets** Python (`generateNotebookPdf`) — hors fiches, voir [python/](python/).                                                                                                                                                                                        |
-| `src/lib/typst/templates/default-templates.ts`                                    | 12 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`), `renderTemplate`.                                                                                                                                          |
-| `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `BUILT_IN_STYLE_OPTIONS`, `DEFAULT_STYLE_ID`, `isBuiltInStyle`), style retenu (`styleIdOf`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                |
-| `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`.                                                                                                                                                                                                                     |
-| `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                                                  |
-| `src/lib/typst/image-loader.ts`                                                   | Le WASM ne lit pas d'URL : `fetchExternalImages`, `urlToVirtualPath` (→ `/virtual/images/…`, posé par `mapShadow`), conversion **WebP → PNG** par canvas.                                                                                                                                      |
-| `src/lib/typst/pdf-generator.ts`                                                  | `generatePdfFromTypst`, `generateAndDownloadPdf` : images suivies → chargées → compilées via le service → téléchargement.                                                                                                                                                                      |
-| `src/lib/typst/utils/typst-utils.ts`                                              | `formatNumber`, `toRoman`, `formatDateFR`, `getTypeLabel`.                                                                                                                                                                                                                                     |
+| Fichier                                                                           | Rôle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `src/lib/typst/index.ts`                                                          | Baril public (compilateur, service, générateurs, gabarits, ré-export du transpileur ubumark).                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `src/lib/typst/compiler/typst-compiler.ts`                                        | Singleton du compilateur : charge `all-in-one-lite.bundle.js` de typst.ts depuis jsDelivr, **version épinglée** `TYPST_VERSION = '0.6.1-rc5'` (bundle + deux WASM). `getTypstCompiler`, `compileToPdf`, `compileToSvg`.                                                                                                                                                                                                                                                                                                                                            |
+| `src/lib/typst/service/typst-service.ts`                                          | `TypstService` / `getTypstService` : file à priorités (`PRIORITY` : `BATCH` < `NORMAL` < `PREVIEW` < `URGENT`), cache, délai maximal, état pour l'UI.                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `src/lib/typst/cache/typst-cache.ts`                                              | `TypstCache` (LRU + TTL) du service.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `src/lib/typst/generators/worksheet-generator.ts`                                 | `WorksheetGenerator` (classe) : tous les PDF de fiche, prof et élève, depuis `WorksheetRow` + `InstanceData` ou un document déjà construit (`document`), avec le gabarit du style. Fonction héritée `generateWorksheetTypst` (marquée `@deprecated`, mais c'est elle qu'appellent les écrans).                                                                                                                                                                                                                                                                     |
+| `src/lib/typst/generators/base-generator.ts`                                      | `BaseTypstGenerator` : contexte (mode, nom d'élève, classe), config.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `src/lib/typst/generators/notebook-generator.ts`, `src/lib/typst/notebook-pdf.ts` | Même chaîne pour les **carnets** Python (`generateNotebookPdf`) — hors fiches, voir [python/](python/).                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `src/lib/typst/templates/default-templates.ts`                                    | 13 gabarits intégrés (ids `DEFAULT_TEMPLATE_IDS`), formes du style « Fiche élève » (`STUDENT_STYLE_FORMS`, `STUDENT_STYLE_COMMON`, et `STUDENT_LANDSCAPE_STYLE_COMMON` pour sa version paysage), `renderTemplate`.                                                                                                                                                                                                                                                                                                                                                 |
+| `src/lib/typst/templates/styles.ts`                                               | Styles (`BUILT_IN_STYLES`, `BUILT_IN_STYLE_OPTIONS`, `DEFAULT_STYLE_ID`, `isBuiltInStyle`), style retenu (`styleIdOf`) et `resolveTemplate` : le gabarit d'une forme dans le style de la fiche.                                                                                                                                                                                                                                                                                                                                                                    |
+| `src/lib/typst/text-size.ts`                                                      | **Taille du texte** (accessibilité) : `TEXT_SIZES` (`normal`, `large`, `x_large`), `TEXT_SIZE_OPTIONS` (menu), `textSizeOf` (inconnue → normale), `withTextSize` (gabarit transformé, voir « Taille du texte »).                                                                                                                                                                                                                                                                                                                                                   |
+| `src/lib/typst/labels.ts`                                                         | Habillage traduit : `documentLabels(locale)`, `labelPlaceholders(locale)`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `src/lib/typst/worksheet-palette.ts`                                              | Charte commune prof / élève : `BADGE_FILL`, `SECTION_COLOR`, `exerciseBadge`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| `src/lib/typst/image-loader.ts`                                                   | Le WASM ne lit pas d'URL : `fetchExternalImages`, `urlToVirtualPath` (→ `/virtual/images/…`, posé par `mapShadow`), conversion **WebP → PNG** par canvas. **Image introuvable** (2026-10-17) : cadre « Image indisponible » à sa place, au format de son chemin virtuel (`placeholderUrlFor` → `static/images/pdf/image-indisponible.{png,jpg,gif,svg}`, Typst décode d'après l'extension) — le PDF sort quand même ; avant, une seule image manquante faisait échouer tout le PDF (« failed to load file »). Test : `typst/__tests__/image-indisponible.test.ts`. |
+| `src/lib/typst/pdf-generator.ts`                                                  | `generatePdfFromTypst`, `generateAndDownloadPdf` : images suivies → chargées → compilées via le service → téléchargement.                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `src/lib/typst/utils/typst-utils.ts`                                              | `formatNumber`, `toRoman`, `formatDateFR`, `getTypeLabel`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         |
 
 Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/typst-generator.ts`
 (`generateTypst`, `escapeTypst`, `clearTrackedExternalImages` / `getTrackedExternalImages`) et
@@ -98,6 +99,7 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 | `src/lib/server/worksheets/assignment-recipients.ts` | `isStudentOfAssignment` : l'élève est-il destinataire (nommé ou membre actif d'une classe visée) ? Aperçu « vue élève » et corrigé d'après la copie d'un élève.                                                                                                                 |
 | `src/lib/server/worksheets/citations.ts`             | `fetchWorksheetCitations` : où la fiche est citée (cahier de texte, chapitres).                                                                                                                                                                                                 |
 | `src/lib/server/worksheets/worksheet-styles.ts`      | Styles d'une fiche (lot 3b), client du prof : `listWorksheetStyles` (menu « Style »), `loadStyleTemplate` (fiche d'un style du prof) ; gabarit et style liés (D10) : `insertTemplateWithStyle`, `syncTemplateStyle`, `countWorksheetsUsingTemplate`, `deleteTemplateWithStyle`. |
+| `src/lib/server/worksheets/print-settings.ts`        | Taille du texte d'un élève (`student_print_settings`), client de l'appelant : `loadTextSize`, `loadTextSizes` (par paquets de 200 ; lecture en échec → normale, jamais une erreur), `saveTextSize` (relit la ligne écrite : zéro ligne = refus de la RLS → faux).               |
 | `src/lib/server/validation/worksheets.ts`            | Zod des routes : `createWorksheetSchema`, `worksheetConfigSchema`, `createWorksheetExerciseSchema`, `reorderExercisesSchema`, `updateCorrectionSettingsSchema`…                                                                                                                 |
 | `src/lib/types/worksheets.ts`                        | Types de lignes et JSONB (`WorksheetConfig`, `VariantConfig`, `ResolvedExercise`, `InstanceData`), gardes `asWorksheetConfig`, `asInstanceData`, `toWorksheetRow`, langue `worksheetLocale`, `localizedText`.                                                                   |
 
@@ -113,7 +115,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
   une séance visible du cahier partagé (`resolveWorksheetByShareToken`, `security definer`) ; même
   404 pour tout refus.
 - API : `src/routes/api/worksheets/` (CRUD, `sections/`, `exercises/`, `duplicate/`,
-  `exercise-number/[number]/`, `assignments/`, `instances/`, `templates/`, `pdf/`),
+  `exercise-number/[number]/`, `assignments/`, `instances/`, `templates/`, `pdf/`,
+  `print-settings/` : taille du texte d'un élève, GET / PUT),
   `src/routes/api/student/worksheets/` (vue résolue, signalements),
   `src/routes/api/teacher/chapters/[id]/worksheets/` (fiche dans un chapitre).
 
@@ -121,8 +124,8 @@ Le Markdown → Typst lui-même vit dans ubumark : `src/lib/ubumark/generators/t
 
 `src/lib/components/worksheets/` : `PdfPreview.svelte` (aperçu, téléchargement, lot ZIP),
 `PdfSvgView.svelte` (la vue SVG d'un PDF compilé, partagée par `PdfPreview` et les copies par élève),
-`CorrectionManager.svelte` (libération par affectation), `SectionManager.svelte`,
-`ExerciseList.svelte`, `MetadataCards.svelte` (config, dont la langue),
+`CorrectionManager.svelte` (libération par affectation),
+`ExerciseList.svelte` (le plan de la fiche en édition, voir ci-dessous), `MetadataCards.svelte` (config, dont la langue),
 `WorksheetTypeOptions.svelte` (options du type choisi, à la création et sur la fiche, ADR 0030),
 `WorksheetAssignmentForm.svelte`, `UntranslatedExercisesNotice.svelte`, `StyleSelector.svelte` (style à la création),
 `TypstEditor.svelte` ; côté élève `src/lib/components/student/worksheets/WorksheetHeader.svelte`
@@ -132,12 +135,12 @@ est en consultation seule, `read_only` — [composants-ui.md § BackLink](../pra
 ## Le modèle d'une fiche
 
 ```
-worksheets (type, status, config jsonb, translations, template_id, style_id, school_id)
+worksheets (type, status, config jsonb, translations, style_id, school_id)
  ├── worksheet_sections (title, instructions, position, translations)
  ├── worksheet_exercises (exercise_id → exercises, section_id?, position, points,
  │                        custom_instructions, variation_index?, variant_mode/config (plus lus),
  │                        correction_visible, is_essential, translations)
- ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via template_id
+ ├── worksheet_templates (template_content Typst, placeholders, style_id, form)   ← via le style
  ├── worksheet_styles (name, description, owner_id vide = Chiphre, common_typst) ← via style_id
  ├── worksheet_assignments (status, available_from, closes_at, show_corrections,
  │    │                     correction_release_mode / _at, individualized, guidance_level)
@@ -167,6 +170,16 @@ worksheets (type, status, config jsonb, translations, template_id, style_id, sch
   est une étape à part, avec l'accord de David.
 - **Numéro affiché** ≠ `worksheet_exercises.position` : `position` redémarre à 1 dans chaque
   section ; le numéro est un ordinal continu calculé par `exercise-numbering.ts`.
+- **Édition : une seule liste** (`ExerciseList.svelte`, 2026-10-16) — la fiche telle qu'imprimée :
+  toutes les sections dans leur ordre, **vides comprises** (on y dépose), chacune avec titre,
+  instructions et nombre de corvées, puis « Sans section », toujours dernier et sans en-tête
+  quand la fiche n'a aucune section. Les sections s'y créent, se modifient, se suppriment (leurs
+  corvées passent dans « Sans section », APRÈS celles qui y sont déjà : l'API `DELETE sections/[sectionId]` leur donne les rangs suivants, sinon l'index unique `idx_worksheet_exercises_unique_position`, qui met tous les hors-section dans un même groupe, refusait la suppression) et se déplacent avec leurs corvées ; il
+  n'y a plus de carte « Sections » à part. Glisser-déposer `svelte-dnd-action` ; ce qu'une dépose
+  enregistre (rien si l'ordre de la zone n'a pas changé, sinon la zone renumérotée 1..n, et celle qu'une corvée a quittée) est
+  décidé par `worksheet-outline.ts`, qui compare aux **props** et jamais à l'état du geste (l'ombre
+  de la bibliothèque y porte déjà l'identifiant de l'élément tiré). Fiche publiée : même liste,
+  en lecture seule.
 - **Exercice ↔ variation** : le contenu vient de `exercises.variations` (énoncé, solution, indices),
   via `getExerciseContentSafe` / `generateExerciseInstance` (`src/lib/exercises/`) ;
   `worksheet_exercises.variation_index` force une variation. Les **fonctions déclarées**
@@ -343,22 +356,53 @@ Trois chemins d'appel, qui n'empruntent pas le même compilateur :
 gabarit. Chaque gabarit intégré est un **style** (`BUILT_IN_STYLES`) ; le style par défaut,
 **« Fiche élève »** (`DEFAULT_STYLE_ID`, D7), a ses quatre formes (`STUDENT_STYLE_FORMS` : fiche,
 réponses, corrigé, fiche + corrections) et un code commun (`STUDENT_STYLE_COMMON`, inséré à la
-place de `{{style_common}}`) ; les onze autres n'ont que leur fiche et prennent les autres formes
-du style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
+place de `{{style_common}}`). **« 2 colonnes - paysage »** (`studentStyleLandscape`, David,
+2026-10-16) reprend ces quatre formes avec un autre code commun
+(`STUDENT_LANDSCAPE_STYLE_COMMON` : la même page, `flipped: true`) : tout le document, corrigé
+compris, est en A4 paysage. Les onze autres n'ont que leur fiche et prennent les autres formes du
+style par défaut. Le style ne décide plus des **points** : le type de la fiche s'en charge,
 quel que soit le style (ADR 0030, qui remplace D8 : « Fiche élève » imprime les points d'une
 évaluation écrite qui les demande). `resolveTemplate(style, forme, gabarit lu en base)` : le style
-retenu est `styleIdOf(fiche)` = `style_id`, sinon `template_id` (fiches d'avant le lot 3), inconnu
+retenu est `styleIdOf(fiche)` = `style_id` (l'ancien `template_id` est retiré, #1529), inconnu
 ou vide → « Fiche élève » ; le gabarit lu en base ne sert qu'à la forme « fiche » d'un style du
 prof (ignoré pour un style de Chiphre : son Typst vient du code). **Plus de mise en page écrite dans le code** : une fiche sans
 gabarit prend la fiche « Fiche élève ». Le bandeau vert des corrigés (« CORRECTION », « RÉPONSES »,
 « SOLUTIONS » / « ANSWERS », placeholder `{{form_title}}`) et l'avertissement de la copie
 individuelle (`{{individual_copy_notice}}`) sont **écrits dans le gabarit**, dans le bloc
 d'en-tête pleine largeur, plus injectés. Fiche + corrections (`withCorrections: 'answers' |
-'correction'`) : la fiche, puis `{{corrections}}` sur une nouvelle page, polices du Corrigé
-(`{{correction_fonts}}`) sur cette partie seulement. Les opérateurs à limites
+'correction'`) : la fiche, puis `{{corrections}}` sur une nouvelle page, chaque correction dans
+les polices du Corrigé (bandeau et titres dans la police du document ; `{{correction_fonts}}`, vide,
+reste servi pour un gabarit enregistré qui le porterait). Les opérateurs à limites
 (`MATH_LIMITS_SETUP`) sont posés en tête de tout document produit par un gabarit. Un gabarit qui
 contient `{{exercises_badge}}` reçoit la numérotation en carré ambre (charte élève) ; sinon
 `{{exercises}}` en titres gras. Format : A4 partout, même en anglais (ADR 0030).
+
+**Taille du texte** (accessibilité, élèves malvoyants ; demande de David, 2026-10-16 ;
+`src/lib/typst/text-size.ts`) : trois paliers, **Normale** (le gabarit tel quel, 10 pt pour « Fiche
+élève »), **Grande** (× 1,4 : 14 pt) et **Très grande** (× 1,8 : 18 pt) — paliers confirmés par
+David le 2026-10-19. Option `textSize` du
+générateur (`WorksheetGeneratorOptions`, `GenerateTypstParams`, `StudentPdfOptions`). Le **gabarit**
+est transformé avant d'y placer les exercices (`withTextSize`) : chaque `size: Npt` est multiplié
+(titres, pied de page ; les tailles en `em` suivent seules). La **mise en page du style ne change
+pas** : ses colonnes restent (David n'a pas voulu de passage à une colonne, 2026-10-16). Les exercices n'ont aucune taille fixe : ils
+suivent le texte, maths comprises. Un gabarit écrit par un prof est transformé de la même façon.
+**« Fiche élève » en Grande ou Très grande passe en paysage** (David, 2026-10-17), toutes formes
+sauf Réponses (fiche, corrigé, fiche + réponses, fiche + corrigé) : `printedStyleId` (`styles.ts`)
+imprime alors son jumeau « 2 colonnes - paysage » (mêmes gabarits, page retournée, deux colonnes).
+Les autres styles, la taille normale et le style d'un prof ne changent pas d'orientation.
+Où la taille est choisie :
+
+- **réglage de l'élève** (`student_print_settings`, voir [base-de-donnees.md](base-de-donnees.md)) :
+  son PDF (menu « Taille du texte » à côté du bouton PDF, qu'il peut changer : enregistré pour
+  toutes ses fiches), sa copie nominative (`CopyRecipient.text_size`, lue par la page `copies/` ;
+  un lot mélangé garde la taille de chacun), l'aperçu « vue élève » du prof (`preview/`, où changer
+  la taille d'un élève prévisualisé **l'enregistre pour lui** ; c'est le seul endroit où le prof
+  règle la taille d'un élève, choix confirmé par David le 2026-10-19) ;
+- **au coup par coup** : `PdfPreview` (aperçu générique du prof, lecteur du cahier public compris)
+  et l'aperçu `preview/` en vue prof — normale à chaque ouverture, jamais enregistrée.
+  Tests : `typst/__tests__/text-size.test.ts`, `generators/__tests__/worksheet-generator.test.ts`
+  (« taille du texte »), `worksheets/__tests__/copies-par-eleve.test.ts`,
+  `server/worksheets/__tests__/print-settings.test.ts`, route `api/worksheets/print-settings/__tests__/`.
 
 **L'en-tête selon le type** (ADR 0030, lot 1) : le générateur appelle `worksheetHeader` et pose les
 conditions des gabarits : `show_title` (toujours), `show_identity` (bloc nom / classe / date),
@@ -377,8 +421,9 @@ Tests : `typst/generators/__tests__/en-tete-par-type.test.ts` (chaque type, FR e
 **Styles en base** (lot 3a, migration `20261016103200_worksheet_styles`) : table
 `worksheet_styles`, une ligne par style de Chiphre (mêmes identifiants que leur gabarit, propriétaire
 vide ; leur Typst reste dans le code, D9) et une par style d'un prof. `worksheet_templates` porte
-`style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = le style se déduit de
-`template_id`, comme avant ; style supprimé → vide). Accès (D9) : le prof et l'admin lisent les
+`style_id` et `form` (un gabarit par couple) ; `worksheets.style_id` (vide = « Fiche élève » ;
+style supprimé → vide). L'ancienne colonne `worksheets.template_id` a été recopiée dans `style_id`
+(`20261017090300`, #1529), puis retirée (`20261019221542`). Accès (D9) : le prof et l'admin lisent les
 styles de Chiphre et les leurs, ne modifient que les leurs (l'admin, tous) ; ni élève ni visiteur
 n'y accède (`tests/integration/styles-de-fiche.test.ts`).
 
@@ -387,9 +432,8 @@ n'y accède (`tests/integration/styles-de-fiche.test.ts`).
 (`BUILT_IN_STYLE_OPTIONS` : sans « Contrôle », « Examen », « Devoirs », « Quiz », qui imitaient
 un type ; retirés du menu, toujours résolus pour une fiche qui en désigne un — ADR 0030, lot 2)
 dans l'ordre du code, puis ceux du prof (`listWorksheetStyles`, client du prof). Fiche sans style
-→ « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid) ;
-pour un style de Chiphre, `template_id` prend le même identifiant (repli si le code revenait en
-arrière) ; un style d'un autre auteur est refusé par le trigger (`42501` → 403). Dupliquer recopie
+→ « Fiche élève (par défaut) » ; style illisible → idem. Choisir écrit `style_id` (Zod uuid), et
+lui seul : `POST`/`PUT /api/worksheets` refusent une clé `template_id` (400) ; un style d'un autre auteur est refusé par le trigger (`42501` → 403). Dupliquer recopie
 le style (sauf l'admin qui duplique la fiche du prof avec un style du prof : vide). `GET /api/worksheets/[id]` rend dans `template`
 la fiche d'un style du prof (`loadStyleTemplate`, avec son Typst) pour le PDF ; changer de style
 recharge la page. Le panneau « Options d'affichage » n'existe plus (ADR 0030) : la carte
@@ -397,11 +441,10 @@ recharge la page. Le panneau « Options d'affichage » n'existe plus (ADR 0030) 
 les exercices » ; à la création, seules les options du type choisi partent (`configForType`). **Gabarit et style liés** (D10) : la page « Gabarits » ne change pas à l'écran,
 mais créer un gabarit (nouveau, depuis un gabarit de Chiphre, duplication, API) crée son style au
 même identifiant et au même nom ; le renommer le renomme ; le supprimer supprime le style (cascade
-vers le gabarit), refusé tant qu'une fiche désigne le gabarit ou le style
+vers le gabarit), refusé tant qu'une fiche désigne son style (`style_id`)
 (`tests/integration/fiche-choix-du-style.test.ts`). Liens partagés
 (lot 4a, D11, migration `20261016103500_style_fiche_liens_partages`) : `get_worksheet_by_share_token`
-et `get_course_worksheet_by_share_token` rendent aussi `style_id`, `template_id` et `template`, la
-fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
+et `get_course_worksheet_by_share_token` rendent aussi `style_id` et `template`, la fiche du style retenu **seulement si ce style appartient à l'auteur de la fiche** (style de
 Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
 (`tests/integration/style-fiche-liens-partages.test.ts`). Les pages publiques les passent au PDF
 (`PdfPreview` → `generateWorksheetTypst`, lot 4b).
@@ -409,7 +452,7 @@ Chiphre : `null`, Typst dans le code ; style d'un autre compte : jamais)
 **PDF de l'élève par le générateur unique** (lot 4b) : `generateStudentWorksheetTypst` construit le
 document de la vue (`documentFromStudentView`) et le donne à `WorksheetGenerator` (entrée
 `document`), avec le gabarit du style retenu (`styleIdOf`). L'API élève et l'aperçu « vue élève »
-renvoient `style_id`, `template_id`, `template` (le Typst seul de la fiche d'un style de
+renvoient `style_id`, `template` (le Typst seul de la fiche d'un style de
 l'**auteur** de la fiche, lu en service-role après le contrôle d'accès,
 `loadAuthorStyleTemplate`), `total_points`, `estimated_duration_minutes` et les options du type
 (`viewTypeOptions` : `show_student_name`, `show_points`, `calculator`, `answers_on_sheet`,
@@ -422,7 +465,7 @@ Seulement ce que le PDF imprime (`resolveAnswerFrames`, audit S1) : les lignes p
 question, le cadre unique en mode exercice ou sans question ; entiers 0..25, au plus 200 (tronqué,
 jamais d'erreur ; schéma de réponse `.strict()`). Tests : `copie.test.ts` (API élève) et `preview/__tests__/cadres-de-reponse.test.ts`, correction masquée. Partie de fin (réponses ou corrigé) : forme « fiche + corrections » ; un style qui
 n'a que sa fiche garde sa fiche et reçoit après elle `CORRECTIONS_PART` (nouvelle page, bandeau
-vert, polices du corrigé ; décision de David). Seules les corrections visibles sont imprimées
+vert, polices du corrigé sur chaque correction ; décision de David). Seules les corrections visibles sont imprimées
 (`renderExercises` écarte `correction === null` hors fiche). Ce que seul l'élève reçoit
 (`renderDocumentPreamble`) : avertissement de la copie individuelle, consignes de l'affectation
 (dans la case `{{instructions}}` d'un gabarit qui en a une), légende ★ ; ★ et filet orange des
@@ -449,7 +492,9 @@ PDF : titre d'exercice avec ses formules (`processTableCellContent`), ordre et n
 (chiffres arabes, ADR 0030 ; `exercise_order` côté prof), points en « pt » / « pts » de
 `documentLabels` (aussi en anglais) quand le type les imprime (`display.showPoints`), cadres de
 réponse (ci-dessous), exercice hors section après des sections sous
-« Autres exercices », correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
+« Autres exercices » ; **les Réponses n'impriment aucun titre de section** (forme seule et fin
+de « fiche + réponses » de l'élève ; David, 2026-10-17 : de la place pour rien) — la fiche et le
+corrigé les gardent ; correction non écrite → « Correction non écrite. » sous le numéro (Corrigé,
 et Réponses quand il n'y a ni réponses ni corrigé), opérateurs à limites (`MATH_LIMITS_SETUP`). L'API élève (et celle d'aperçu de
 l'affectation) transmet les options du type ; l'ordre de la copie de l'élève est celui des positions, sauf fiche
 qui mélange ses exercices (voir « La copie d'un élève » : `shuffled`, suivi par
@@ -534,19 +579,22 @@ la lecture publique `variant="reader"` reste sur la fiche) :
   avec repli français) ; vide : « Réponses non rédigées : voir le corrigé. » en italique. Police
   standard ;
 - `correction` : numéro et titre puis la correction, toujours détaillée (`correctionForPrint`,
-  ADR 0017 et 0030), en
-  **Shantell Sans** (Light, Bold pour le gras) et **Chiphre Math** pour les formules.
+  ADR 0017 et 0030) ; **la correction seule** en **Shantell Sans** (Light, Bold pour le gras) et
+  **Chiphre Math** pour les formules — bandeau, titres d'exercice, titres de section, pied de page
+  dans la police du document (David, 2026-10-18).
 
 Réponses et Corrigé ne répètent **jamais l'énoncé** (ni consigne d'exercice, ni consigne de
 section, ni consignes d'épreuve). Noms de fichier distincts : `worksheetPdfFileName`
 (« … - Réponses.pdf », « … - Corrigé.pdf »). Côté élève, la boîte de téléchargement propose « avec
-réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », seule en Shantell /
-Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
+réponses » (partie « Réponses ») ou « avec corrigé » (partie « Corrections », dont seules les corrections sont en
+Shantell / Chiphre Math), pour les seuls exercices dont la correction est visible : l'API élève sert
 `answers` **exactement** sous la condition de `correction` (`correction_visible`).
 
 **Polices du Corrigé** (`src/lib/typst/correction-fonts.ts`) : des règles Typst encadrées de
-`// <polices-du-corrige>`, posées en tête (pied de page) et après le dernier `#set text(…)` du
-document (`withCorrectionFonts`) ; aucun gabarit n'est réécrit. `withoutCorrectionFonts` les retire.
+`// <polices-du-corrige>`, posées en tête de chaque correction dans un bloc `#[ … ]` qui les borne
+(`correctionInFonts` de `render-exercise.ts`, pour le Corrigé, la partie corrigé d'une fiche et la
+fiche + corrigé) ; aucun gabarit n'est réécrit. `withoutCorrectionFonts` les retire.
+`withCorrectionFonts` (tout le document) ne sert plus qu'à `/test-font`.
 Les trois fichiers (`static/fonts/chiphre-math-typst/`, 870 ko) ne sont chargés que par un
 compilateur à part (`src/lib/typst/compiler/correction-fonts-compiler.ts`, construit au premier
 Corrigé, partagé avec `/test-font`) : la fiche et les Réponses ne les téléchargent pas.
@@ -575,7 +623,9 @@ Une police sans un glyphe donne des carrés (cas de `n⃗`,
 **Figures** : courbes, figures géométriques et graphiques statistiques sont rendus en cetz depuis
 la **même scène** que l'écran ; tout module qui appelle `generateTypst` pour un PDF importe
 `src/lib/ubumark/generators/figure-typst-setup.ts` (c'est le cas des deux générateurs de fiche) →
-[ubumark.md](ubumark.md) § Invariants.
+[ubumark.md](ubumark.md) § Invariants. Un **QR code** placé par l'auteur (bloc ` ```qr `) est
+dessiné par Typst lui-même, sans cetz ni registre, et compte pour une figure dans la hauteur des
+cadres de réponse (`answer-frames.ts`) → [qr-codes.md](qr-codes.md).
 
 **Version anglaise** ([journal](../archive/wip/worksheet-english-progress.md)) : la langue est
 `worksheets.config.language` (`fr` par défaut), lue par `worksheetLocale`. Elle pilote **tout** le

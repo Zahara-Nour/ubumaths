@@ -6,10 +6,15 @@ import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { CALC_HISTORY_STORAGE_KEY } from '$lib/atelier/history-storage';
 
 const KEY = 'chiphre-atelier';
 
-afterEach(() => localStorage.removeItem(KEY));
+// La console est rangée aussi : « Repartir de zéro » y laisse sa ligne (lot 5, PR 3)
+afterEach(() => {
+	localStorage.removeItem(KEY);
+	localStorage.removeItem(CALC_HISTORY_STORAGE_KEY);
+});
 
 function currentView(container: HTMLElement): string {
 	return container.querySelector('.onglet[aria-current="page"]')?.textContent?.trim() ?? '';
@@ -69,7 +74,7 @@ describe('repartir de zéro (B7)', () => {
 		const { container } = await render(AtelierContainer, { atelier });
 
 		const reset = [...container.querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Repartir de zéro'
+			(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 		) as HTMLButtonElement;
 		reset.click();
 		// Rien n'est vidé avant la confirmation
@@ -94,7 +99,7 @@ describe('repartir de zéro (B7)', () => {
 		});
 
 		const reset = [...container.querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Repartir de zéro'
+			(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 		);
 		expect(reset).toBeUndefined();
 	});
@@ -114,8 +119,8 @@ describe('revues du lot 6', () => {
 		expect(localStorage.getItem(KEY)).toBeNull();
 	});
 
-	// C3 : l'historique de Calcul restait, sur des objets supprimés
-	it('« Repartir de zéro » vide aussi l’historique de Calcul', async () => {
+	// C3 (l'historique vidé) revu le 2026-10-19 : David garde la console, comme au chargement
+	it('« Repartir de zéro » garde l’historique de Calcul, et y écrit sa ligne', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
 		const { container } = await render(AtelierContainer, { atelier });
@@ -129,7 +134,7 @@ describe('revues du lot 6', () => {
 
 		(
 			[...container.querySelectorAll('button')].find(
-				(b) => b.textContent?.trim() === 'Repartir de zéro'
+				(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 			) as HTMLButtonElement
 		).click();
 		const confirm = await vi.waitFor(() => {
@@ -141,7 +146,10 @@ describe('revues du lot 6', () => {
 		});
 		confirm.click();
 
-		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(0));
+		await vi.waitFor(() => expect(container.querySelectorAll('.historique li').length).toBe(2));
+		const lines = [...container.querySelectorAll('.historique li')].map((li) => li.textContent);
+		expect(lines[0]).toContain('f(3)');
+		expect(lines[1]).toContain('Atelier vidé.');
 	});
 
 	// A11y : un titre de niveau 1, et un bouton qui ne sert à rien est désactivé
@@ -159,8 +167,8 @@ describe('revues du lot 6', () => {
 		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
 
 		const reset = [...container.querySelectorAll('button')].find(
-			(b) => b.textContent?.trim() === 'Repartir de zéro'
+			(b) => b.getAttribute('aria-label') === 'Repartir de zéro'
 		) as HTMLButtonElement;
-		expect(reset.disabled).toBe(true);
+		expect(reset.getAttribute('aria-disabled')).toBe('true');
 	});
 });

@@ -54,7 +54,6 @@ let exerciseId: string;
 
 interface StudentView {
 	style_id?: string | null;
-	template_id?: string | null;
 	template?: Record<string, unknown> | null;
 	exercises?: Array<{ printed_frame_lines?: unknown; correction?: string | null }>;
 }
@@ -104,11 +103,11 @@ async function seedStyle(ownerId: string, marker: string): Promise<string> {
 }
 
 /** Une fiche publiée du prof, distribuée à la classe ; rend l'identifiant de l'affectation. */
-async function assigned(ids: { style_id?: string | null; template_id?: string | null }) {
+async function assigned(ids: { style_id?: string | null }) {
 	const [{ id: worksheetId }] = await sql(
-		`insert into public.worksheets (title, type, status, created_by, style_id, template_id)
-		 values ($1, 'worksheet', 'published', $2, $3, $4) returning id`,
-		[`${RUN} fiche`, teacherId, ids.style_id ?? null, ids.template_id ?? null]
+		`insert into public.worksheets (title, type, status, created_by, style_id)
+		 values ($1, 'worksheet', 'published', $2, $3) returning id`,
+		[`${RUN} fiche`, teacherId, ids.style_id ?? null]
 	);
 	await sql(
 		'insert into public.worksheet_exercises (worksheet_id, exercise_id, position) values ($1, $2, 1)',
@@ -188,17 +187,15 @@ describe('la fiche de l’élève destinataire', () => {
 		});
 	});
 
-	it('fiche d’avant le lot 3 : le style se lit dans `template_id`', async () => {
-		const { body } = await viewOf(student, await assigned({ template_id: profStyleId }));
-		expect(body?.template_id).toBe(profStyleId);
-		expect(body?.template?.template_content).toContain('MISE-EN-PAGE-DU-PROF');
+	it('fiche sans style : « Fiche élève », et aucune clé `template_id` (#1529)', async () => {
+		const { body } = await viewOf(student, await assigned({}));
+		expect(body?.style_id).toBeNull();
+		expect(body?.template).toBeNull();
+		expect(body).not.toHaveProperty('template_id');
 	});
 
 	it('style de Chiphre : l’identifiant, aucune mise en page (elle est dans le code)', async () => {
-		const { body } = await viewOf(
-			student,
-			await assigned({ style_id: STANDARD, template_id: STANDARD })
-		);
+		const { body } = await viewOf(student, await assigned({ style_id: STANDARD }));
 		expect(body?.style_id).toBe(STANDARD);
 		expect(body?.template).toBeNull();
 	});

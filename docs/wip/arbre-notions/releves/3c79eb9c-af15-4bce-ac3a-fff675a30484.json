@@ -1,0 +1,183 @@
+{
+	"template_id": "3c79eb9c-af15-4bce-ac3a-fff675a30484",
+	"titre": "Trouver le quadruple",
+	"sous_titre": "Nombres de $1$ à $20$, $25$, $30$, $40$, $50$, $60$ et $100$",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Quadruple et quart",
+	"mis_a_jour": "2026-09-29T22:51:46.966328+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CM1-045",
+			"libelle_point": "Multiplier un nombre entier par 4 (4 × 45 = ?).",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > quadruple et quart",
+			"noeud_cible": "Nombres et calculs > Entiers : multiplication > calcul astucieux",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Multiplier un nombre entier par 4 ou par 8 » → « Multiplier un nombre entier par 4 (4 × 45 = ?). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..20|25|30|40|50|60|100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le quadruple de ${{a}}$ ?\n\nLe quadruple de ${{a}}$ est $?$.",
+				"reponses_brutes": ["{{eval:4*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 23,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							1, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50, 60, 100
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 400,
+						"negatif_possible": false,
+						"nb_distinctes": 23,
+						"valeurs": [
+							4, 12, 20, 24, 28, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 100, 120, 160, 200,
+							240, 400
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 23,
+				"valeurs": [
+					1, 3, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50, 60, 100
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 400,
+				"nb_distinctes": 23,
+				"valeurs": [
+					4, 12, 20, 24, 28, 36, 40, 44, 48, 52, 56, 60, 64, 68, 72, 76, 80, 100, 120, 160, 200,
+					240, 400
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 400,
+				"nb_distinctes": 41,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (400)",
+					"graine": 10,
+					"enonce": "Quel est le quadruple de $100$ ?\n\nLe quadruple de $100$ est $[?]$.",
+					"reponse": ["400"],
+					"variables": {
+						"a": "100"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 27,
+					"enonce": "Quel est le quadruple de $1$ ?\n\nLe quadruple de $1$ est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le quadruple de $11$ ?\n\nLe quadruple de $11$ est $[?]$.",
+					"reponse": ["44"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le quadruple de $30$ ?\n\nLe quadruple de $30$ est $[?]$.",
+					"reponse": ["120"],
+					"variables": {
+						"a": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le quadruple de $10$ ?\n\nLe quadruple de $10$ est $[?]$.",
+					"reponse": ["40"],
+					"variables": {
+						"a": "10"
+					}
+				}
+			]
+		}
+	]
+}

@@ -5,8 +5,9 @@
  * ADR 0028, décisions de David (docs/wip/generateur-pdf-fiches-progress.md) :
  *   - D9 : la fiche désigne un style ; le prof lit les styles de Chiphre et
  *     les siens, jamais ceux d'un autre ;
- *   - D10 : choisir un style écrit `style_id` (et `template_id` pour un style
- *     de Chiphre, qui porte le même identifiant) ; dupliquer recopie le style ;
+ *   - D10 : choisir un style écrit `style_id`, et lui seul — l'ancienne
+ *     colonne `template_id` est retirée, et l'envoyer est refusé (400,
+ *     #1529, David 2026-10-19) ; dupliquer recopie le style ;
  *     un gabarit créé sur la page « Gabarits » crée son style (même
  *     identifiant, même nom), le renommer le renomme, le supprimer le supprime.
  *
@@ -143,14 +144,9 @@ async function seedWorksheet(suffix: string, styleId: string | null = null): Pro
 	return rows[0].id;
 }
 
-async function worksheetInDb(
-	id: string
-): Promise<{ style_id: string | null; template_id: string | null }> {
+async function worksheetInDb(id: string): Promise<{ style_id: string | null }> {
 	const pg = await getPostgresClient();
-	const { rows } = await pg.query(
-		'select style_id, template_id from public.worksheets where id = $1',
-		[id]
-	);
+	const { rows } = await pg.query('select style_id from public.worksheets where id = $1', [id]);
 	return rows[0];
 }
 
@@ -255,35 +251,66 @@ describe('l’admin sur la fiche du prof', () => {
 });
 
 describe('enregistrer le style d’une fiche', () => {
-	it('un style de Chiphre écrit `style_id` et `template_id` (même identifiant)', async () => {
+	it('la colonne `worksheets.template_id` n’existe plus (#1529)', async () => {
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query(
+			`select column_name from information_schema.columns
+			 where table_schema = 'public' and table_name = 'worksheets' and column_name = 'template_id'`
+		);
+		expect(rows).toEqual([]);
+	});
+
+	it('un style de Chiphre n’écrit que `style_id`', async () => {
 		const id = await seedWorksheet('Chiphre');
 		const response = await put(id, { style_id: STANDARD });
 
 		expect(response.status).toBe(200);
 		expect((await response.json()).worksheet.style_id).toBe(STANDARD);
-		expect(await worksheetInDb(id)).toEqual({ style_id: STANDARD, template_id: STANDARD });
+		expect(await worksheetInDb(id)).toEqual({ style_id: STANDARD });
 	});
 
-	it('un style du prof écrit `style_id` et ne touche pas `template_id`', async () => {
+	it('un style du prof n’écrit que `style_id`', async () => {
 		const ownId = await seedStyle(teacherId, 'choisi');
 		const id = await seedWorksheet('style du prof');
 		await put(id, { style_id: STANDARD });
 
 		const response = await put(id, { style_id: ownId });
 		expect(response.status).toBe(200);
-		expect(await worksheetInDb(id)).toEqual({ style_id: ownId, template_id: STANDARD });
+		expect(await worksheetInDb(id)).toEqual({ style_id: ownId });
+	});
+
+	it('`template_id` envoyé à la modification : refusé (400), la fiche ne change pas', async () => {
+		const id = await seedWorksheet('template_id modifié');
+		expect(await statusOf(() => put(id, { template_id: STANDARD }))).toBe(400);
+		expect(await statusOf(() => put(id, { template_id: null }))).toBe(400);
+		expect(await statusOf(() => put(id, { style_id: STANDARD, template_id: STANDARD }))).toBe(400);
+		expect(await worksheetInDb(id)).toEqual({ style_id: null });
+	});
+
+	it('`template_id` envoyé à la création : refusé (400), aucune fiche créée', async () => {
+		const title = `${RUN} créée avec template_id`;
+		const status = await statusOf(() =>
+			createWorksheet({
+				locals,
+				request: jsonRequest({ title, style_id: STANDARD, template_id: STANDARD })
+			} as never)
+		);
+		expect(status).toBe(400);
+		const pg = await getPostgresClient();
+		const { rows } = await pg.query('select id from public.worksheets where title = $1', [title]);
+		expect(rows).toEqual([]);
 	});
 
 	it('un identifiant mal formé est refusé (400)', async () => {
 		const id = await seedWorksheet('mal formé');
 		expect(await statusOf(() => put(id, { style_id: 'pas-un-uuid' }))).toBe(400);
-		expect(await worksheetInDb(id)).toEqual({ style_id: null, template_id: null });
+		expect(await worksheetInDb(id)).toEqual({ style_id: null });
 	});
 
 	it('le style de l’admin est refusé (403), la fiche ne change pas', async () => {
 		const id = await seedWorksheet('style interdit');
 		expect(await statusOf(() => put(id, { style_id: adminStyleId }))).toBe(403);
-		expect(await worksheetInDb(id)).toEqual({ style_id: null, template_id: null });
+		expect(await worksheetInDb(id)).toEqual({ style_id: null });
 	});
 
 	it('la lecture de la fiche rend son style', async () => {
@@ -301,10 +328,7 @@ describe('enregistrer le style d’une fiche', () => {
 		const { worksheet } = await response.json();
 
 		expect(worksheet.style_id).toBe(STANDARD);
-		expect(await worksheetInDb(worksheet.id)).toEqual({
-			style_id: STANDARD,
-			template_id: STANDARD
-		});
+		expect(await worksheetInDb(worksheet.id)).toEqual({ style_id: STANDARD });
 	});
 
 	it('dupliquer une fiche recopie son style', async () => {
@@ -314,7 +338,7 @@ describe('enregistrer le style d’une fiche', () => {
 		const { worksheet } = await response.json();
 
 		// Titre « … (copie) » : il garde le préfixe du run, le nettoyage le trouve
-		expect((await worksheetInDb(worksheet.id)).style_id).toBe(ownId);
+		expect(await worksheetInDb(worksheet.id)).toEqual({ style_id: ownId });
 	});
 });
 
@@ -329,7 +353,6 @@ describe('le gabarit du style d’une fiche', () => {
 
 	it('style de Chiphre : rien à lire, le Typst vient du code', async () => {
 		expect(await loadStyleTemplate(teacherClient as never, { style_id: STANDARD })).toBeNull();
-		expect(await loadStyleTemplate(teacherClient as never, { template_id: STANDARD })).toBeNull();
 	});
 
 	it('style d’un autre (illisible) : rien, la fiche retombe sur le style par défaut', async () => {

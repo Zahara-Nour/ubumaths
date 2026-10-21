@@ -1,0 +1,549 @@
+{
+	"template_id": "9c0c47ef-72b0-4333-870d-06cdf0f4a2de",
+	"titre": "Comparer deux nombres décimaux",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "multiple_choice",
+	"theme": "Décimaux > Apprivoiser > Comparer",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-034",
+			"libelle_point": "Comparer deux nombres décimaux avec les symboles =, < et > (3,7 … 3,25).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > ordre",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Comparer, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > » → « Comparer deux nombres décimaux avec les symboles =, < et > (3,7 … 3,25). »"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "digits:a"
+					},
+					{
+						"name": "d",
+						"expression": "digits:b"
+					},
+					{
+						"name": "f",
+						"expression": "digits:b"
+					},
+					{
+						"name": "h",
+						"expression": "eval:(d+c*10^b)/10^b;d"
+					},
+					{
+						"name": "j",
+						"expression": "eval:(f+c*10^b)/10^b;d"
+					}
+				],
+				"conditions": ["h!=j"],
+				"enonce_brut": "Quel est le plus petit de ces deux nombres ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$${{h}}$$"
+					},
+					{
+						"content": "$${{j}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 98,
+						"negatif_possible": false,
+						"nb_distinctes": 77
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 76
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 87
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 1.1,
+						"max": 98.93,
+						"negatif_possible": false,
+						"nb_distinctes": 265
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 1.19,
+						"max": 98.91,
+						"negatif_possible": false,
+						"nb_distinctes": 261
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 1.1,
+						"max": 98.73,
+						"negatif_possible": false,
+						"nb_distinctes": 261
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1.1,
+				"max": 98.73,
+				"nb_distinctes": 261,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1.1,
+				"max": 98.93,
+				"nb_distinctes": 492,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1.1,
+				"max": 98.93,
+				"nb_distinctes": 492,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (98.93)",
+					"graine": 102,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$98{,}93$$\n- B. $$98{,}73$$",
+					"reponse": ["B. $$98{,}73$$"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "98",
+						"d": "93",
+						"f": "73",
+						"h": "98.93",
+						"j": "98.73"
+					}
+				},
+				{
+					"role": "plus petite valeur (1.1)",
+					"graine": 50,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$1{,}9$$\n- B. $$1{,}1$$",
+					"reponse": ["B. $$1{,}1$$"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"c": "1",
+						"d": "1",
+						"f": "9",
+						"h": "1.1",
+						"j": "1.9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$9{,}97$$\n- B. $$9{,}35$$",
+					"reponse": ["B. $$9{,}35$$"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "9",
+						"d": "97",
+						"f": "35",
+						"h": "9.97",
+						"j": "9.35"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$5{,}6$$\n- B. $$5{,}8$$",
+					"reponse": ["A. $$5{,}6$$"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"h": "5.8",
+						"j": "5.6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$1{,}5$$\n- B. $$1{,}7$$",
+					"reponse": ["A. $$1{,}5$$"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"c": "1",
+						"d": "7",
+						"f": "5",
+						"h": "1.7",
+						"j": "1.5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "c",
+						"expression": "digits:1"
+					},
+					{
+						"name": "d",
+						"expression": "10..99"
+					},
+					{
+						"name": "h",
+						"expression": "eval:(c+b*10)/10;d"
+					},
+					{
+						"name": "j",
+						"expression": "eval:(d+b*100)/100;d"
+					}
+				],
+				"conditions": ["h!=j"],
+				"enonce_brut": "Quel est le plus petit de ces deux nombres ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$${{h}}$$"
+					},
+					{
+						"content": "$${{j}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 81
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 85
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 1.1,
+						"max": 99.8,
+						"negatif_possible": false,
+						"nb_distinctes": 195
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 1.13,
+						"max": 99.89,
+						"negatif_possible": false,
+						"nb_distinctes": 282
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 1.1,
+						"max": 99.5,
+						"negatif_possible": false,
+						"nb_distinctes": 238
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": {
+				"min": 1.1,
+				"max": 99.5,
+				"nb_distinctes": 238,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 1.1,
+				"max": 99.89,
+				"nb_distinctes": 461,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 1.1,
+				"max": 99.89,
+				"nb_distinctes": 461,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99.89)",
+					"graine": 73,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$99{,}89$$\n- B. $$99{,}2$$",
+					"reponse": ["B. $$99{,}2$$"],
+					"variables": {
+						"a": "2",
+						"b": "99",
+						"c": "2",
+						"d": "89",
+						"h": "99.2",
+						"j": "99.89"
+					}
+				},
+				{
+					"role": "plus petite valeur (1.1)",
+					"graine": 13,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$1{,}13$$\n- B. $$1{,}1$$",
+					"reponse": ["B. $$1{,}1$$"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"c": "1",
+						"d": "13",
+						"h": "1.1",
+						"j": "1.13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$5{,}97$$\n- B. $$5{,}9$$",
+					"reponse": ["B. $$5{,}9$$"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "97",
+						"h": "5.9",
+						"j": "5.97"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$3{,}5$$\n- B. $$3{,}88$$",
+					"reponse": ["A. $$3{,}5$$"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "5",
+						"d": "88",
+						"h": "3.5",
+						"j": "3.88"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le plus petit de ces deux nombres ?\n\n- A. $$5{,}78$$\n- B. $$5{,}1$$",
+					"reponse": ["B. $$5{,}1$$"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "78",
+						"h": "5.1",
+						"j": "5.78"
+					}
+				}
+			]
+		}
+	]
+}

@@ -31,6 +31,7 @@ describe('les erreurs de lecture courantes, en français', () => {
 		['\\text{abc}', /« abc »/],
 		['@zz{2}', /Couleur inconnue : zz/],
 		['5[zz]', /Unité inconnue : zz/],
+		['2+.5[m]', /zéro avant le point décimal : écris 0\.5/],
 		['\\binom{2}', /\\binom/],
 		['\\lim_{x} x', /\\to/],
 		['log_(2)', /indice/],

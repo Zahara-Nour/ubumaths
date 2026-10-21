@@ -475,7 +475,8 @@ export function substituteVariable(
 		case 'addition':
 			return add(
 				substituteVariable(pattern.left, varName, replacement),
-				substituteVariable(pattern.right, varName, replacement)
+				substituteVariable(pattern.right, varName, replacement),
+				{ displayStyle: pattern.displayStyle }
 			);
 
 		case 'subtraction':

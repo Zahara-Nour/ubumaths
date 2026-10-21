@@ -15,8 +15,12 @@
 import type { Interval } from '$lib/math/intervals/types';
 import type { Sign, SignedInterval, SignAnalysisResult } from '../sign/types';
 import type { Monotonicity, MonotonicInterval } from './types';
+import type { MathNode } from '../types';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { interval as makeInterval } from '$lib/math/intervals/factory';
 import { tidyCriticalAbscissa } from './critical-points';
+import { tidyPeriodicMember } from '../common/periodic-member';
+import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
 // =============================================================================
 // Sign to Monotonicity Conversion
@@ -189,6 +193,104 @@ export function mergeMonotonicIntervals(
 	result.push(current);
 
 	return result;
+}
+
+/** Les valeurs interdites périodiques a + kT d'un domaine (`periodic_exclusion`). */
+export interface PeriodicCuts {
+	readonly basePoint: MathNode;
+	readonly period: MathNode;
+}
+
+/** Au-delà, un intervalle borné n'est pas découpé : son sens devient inconnu. */
+const MAX_PERIODIC_CUTS = 1000;
+
+/**
+ * Coupe les intervalles de monotonie aux valeurs interdites PÉRIODIQUES.
+ *
+ * ⚠️ Le signe de f′ se lit sur le domaine de f′ : 1/cos²x est positive
+ * partout où elle est définie, et le tableau de signes rendait « + » sur ℝ
+ * d'un seul tenant. Le sens de variation, lui, ne traverse pas une valeur
+ * interdite : tan x n'est PAS croissante sur ℝ (tan(1) > tan(2)), seulement
+ * sur chaque ]−π/2 + kπ ; π/2 + kπ[.
+ *
+ * - intervalle borné : coupé en chaque valeur interdite qu'il contient ;
+ * - intervalle non borné : il en contient une infinité, que le tableau ne
+ *   sait pas écrire. Le sens est gardé sur l'intervalle de définition voisin
+ *   de la borne finie (ou de 0 sur ℝ) ; au-delà, il devient inconnu.
+ *
+ * @returns Les intervalles coupés, et si un sens a été abandonné au-delà
+ */
+export function cutAtPeriodicExclusions(
+	intervals: readonly MonotonicInterval[],
+	cuts: PeriodicCuts
+): { readonly intervals: MonotonicInterval[]; readonly truncated: boolean } {
+	const base = evaluateNodeToApproximatedNumber(cuts.basePoint);
+	const period = evaluateNodeToApproximatedNumber(cuts.period);
+	if (!Number.isFinite(base) || !Number.isFinite(period) || period <= 0) {
+		return { intervals: [...intervals], truncated: false };
+	}
+	const at = (k: number) => ({
+		node: tidyPeriodicMember(cuts.basePoint, k, cuts.period),
+		value: base + k * period
+	});
+	const eps = 1e-9;
+	// k du premier membre > x (strictement, à eps près)
+	const firstAbove = (x: number) => Math.floor((x - base) / period + eps) + 1;
+	// k du dernier membre < x
+	const lastBelow = (x: number) => Math.ceil((x - base) / period - eps) - 1;
+
+	const result: MonotonicInterval[] = [];
+	let truncated = false;
+	for (const mi of intervals) {
+		const lo = endpointToNumber(mi.interval.lower.value);
+		const hi = endpointToNumber(mi.interval.upper.value);
+		if (mi.monotonicity !== 'increasing' && mi.monotonicity !== 'decreasing') {
+			result.push(mi);
+			continue;
+		}
+		const piece = (lower: Interval['lower'], upper: Interval['upper'], known: boolean) =>
+			result.push({
+				...mi,
+				interval: makeInterval(lower, upper),
+				...(!known && { monotonicity: 'unknown' as const })
+			});
+		const open = (k: number) => ({ type: 'open' as const, value: at(k).node });
+
+		if (Number.isFinite(lo) && Number.isFinite(hi)) {
+			const kMin = firstAbove(lo);
+			const kMax = lastBelow(hi);
+			if (kMax < kMin) {
+				result.push(mi);
+				continue;
+			}
+			if (kMax - kMin > MAX_PERIODIC_CUTS) {
+				piece(mi.interval.lower, mi.interval.upper, false);
+				continue;
+			}
+			piece(mi.interval.lower, open(kMin), true);
+			for (let k = kMin; k < kMax; k++) piece(open(k), open(k + 1), true);
+			piece(open(kMax), mi.interval.upper, true);
+			continue;
+		}
+
+		truncated = true;
+		if (Number.isFinite(lo)) {
+			const k = firstAbove(lo);
+			piece(mi.interval.lower, open(k), true);
+			piece(open(k), mi.interval.upper, false);
+		} else if (Number.isFinite(hi)) {
+			const k = lastBelow(hi);
+			piece(mi.interval.lower, open(k), false);
+			piece(open(k), mi.interval.upper, true);
+		} else {
+			// ℝ : l'intervalle de définition qui commence au dernier membre ≤ 0
+			const k = Math.floor((0 - base) / period + eps);
+			piece(mi.interval.lower, open(k), false);
+			piece(open(k), open(k + 1), true);
+			piece(open(k + 1), mi.interval.upper, false);
+		}
+	}
+	return { intervals: result, truncated };
 }
 
 // =============================================================================

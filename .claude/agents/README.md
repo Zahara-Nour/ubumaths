@@ -26,14 +26,14 @@
 
 | Agent                  | Quand                                                              |
 | ---------------------- | ------------------------------------------------------------------ |
-| `code-reviewer`        | **Proactif** après chaque morceau de code écrit (fin de phase)      |
+| `code-reviewer`        | Une fois **sur la PR**, selon le risque (`CLAUDE.md` § Planning, point 4) ; aucune pour doc, contenu, petit correctif d'UI |
 | `security-auditor`     | **Proactif** après auth, RLS, API sensible, upload, dépendance ; condition 3 de `db:migrate` |
 | `debugger`             | Erreur runtime, TS, build, test rouge — cause racine               |
 | `test-automator`       | Créer / réparer des tests vitest, intégration, Playwright          |
 | `performance-optimizer`| Lenteur prouvée, requêtes lourdes                                  |
 | `accessibility-tester` | Audit a11y formulaires / navigation / modales (dette SVG : ne pas re-signaler les `svelte-ignore` de [warning-svelte.md](../../docs/pratiques/warning-svelte.md)) |
 
-Modèles : Opus pour `code-reviewer`, `security-auditor`, `debugger`, `supabase-expert`, `mathast-expert`, `geometry-expert`, `pedagogy-expert` ; Sonnet pour les autres.
+Modèles (frontmatter, à ne pas surcharger sans raison — cf. `CLAUDE.md` § Quand utiliser un agent) : Opus pour `security-auditor`, `debugger`, `supabase-expert`, `mathast-expert`, `geometry-expert`, `pedagogy-expert` ; Sonnet pour les autres.
 
 ## Agents intégrés
 

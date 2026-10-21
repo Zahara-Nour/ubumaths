@@ -18,7 +18,7 @@
 
 import { reservedVariableRefusal } from '../common/reserved-letters';
 import type { MathNode } from '../types';
-import type { Domain } from '../domain/types';
+import type { Domain, PeriodicExclusion } from '../domain/types';
 import type {
 	VariationResult,
 	VariationStep,
@@ -32,14 +32,22 @@ import { DEFAULT_VARIATION_OPTIONS, VariationError } from './types';
 import { differentiate } from '../differentiation';
 import { expandOddRootPowers } from '../common/odd-root-power';
 import { tidyTerms } from '../tidy/terms';
-import { computeDomain } from '../domain/compute';
-import { containsValue, excludePoints } from '../domain/algebra';
+import { computeDomain, normalizeExcludedPoints } from '../domain/compute';
+import { formatCondition } from '../domain/format';
+import { containsValue, excludePoints, intersect, isEmpty } from '../domain/algebra';
 import { assertDomainResolved, DomainUnresolvedError } from '../domain/errors';
 import { analyzeSign } from '../sign';
 import { findCriticalPointsWithStatus, sortCriticalPoints } from './critical-points';
-import { buildMonotonicIntervals, mergeMonotonicIntervals } from './monotonicity';
+import {
+	buildMonotonicIntervals,
+	cutAtPeriodicExclusions,
+	mergeMonotonicIntervals
+} from './monotonicity';
 import { findExtrema, classifyGlobalExtrema } from './extrema';
 import { computeBoundaryLimits } from './boundary-limits';
+import { compile } from '../eval/compile';
+import { endpointToNumber } from '$lib/math/intervals/endpoint';
+import { interval, openEndpoint } from '$lib/math/intervals/factory';
 import { toCustom } from '../custom-generator';
 import { shouldIncludeStep } from '../common/verbosity';
 import type { Verbosity } from '../common/verbosity';
@@ -109,8 +117,17 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 
 	// Step 1: Compute domain
 	let domain: Domain;
+	// Les valeurs interdites périodiques de f (tan x : π/2 + kπ), où le sens de
+	// variation se coupe (voir `cutAtPeriodicExclusions`)
+	let periodicCuts: PeriodicExclusion | undefined;
+	// Domaine de f non déterminé (`ln(sin x)`) : le domaine fourni est gardé tel
+	// quel, et peut contenir des points où f n'est pas définie
+	let naturalDomainUndetermined = false;
 	if (opts.domain) {
-		domain = opts.domain;
+		const restricted = restrictToNaturalDomain(opts.domain, expr, variable);
+		domain = restricted.domain;
+		periodicCuts = restricted.periodicCuts;
+		naturalDomainUndetermined = restricted.undetermined === true;
 		stepId = recordStep(
 			steps,
 			stepId,
@@ -126,6 +143,7 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 			// Contrainte non résolue : on refuse (pas de tableau sur un domaine faux)
 			assertDomainResolved(domainResult);
 			domain = domainResult.domain;
+			if (domain.kind === 'periodic_exclusion') periodicCuts = domain;
 			stepId = recordStep(
 				steps,
 				stepId,
@@ -219,9 +237,12 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 		const undefinedAt = sortedCriticalPoints
 			.filter((p) => p.nature === 'derivative_undefined')
 			.map((p) => p.x);
+		const signDomain = naturalDomainUndetermined
+			? withinDerivativeDomain(domain, derivative, variable)
+			: domain;
 		derivativeSign = analyzeSign(derivative, {
 			variable,
-			domain: undefinedAt.length > 0 ? excludePoints(domain, undefinedAt) : domain,
+			domain: undefinedAt.length > 0 ? excludePoints(signDomain, undefinedAt) : signDomain,
 			numericFallback: opts.numericFallback,
 			verbosity: opts.verbosity
 		});
@@ -261,11 +282,24 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	// Step 5: Build monotonic intervals
 	// f'(x) = 0 non résolue : aucun intervalle — un signe tiré d'un ensemble de
 	// zéros incomplet serait une conclusion fausse.
-	const monotonicIntervals = unresolved
+	const merged = unresolved
 		? []
 		: mergeMonotonicIntervals(buildMonotonicIntervals(derivativeSign), (value) =>
 				isExcludedFrom(domain, value)
 			);
+	const cut =
+		periodicCuts === undefined
+			? { intervals: merged, truncated: false }
+			: cutAtPeriodicExclusions(merged, periodicCuts);
+	const monotonicIntervals = naturalDomainUndetermined
+		? withoutClaimsWhereUndefined(cut.intervals, expr, variable)
+		: cut.intervals;
+	if (cut.truncated && periodicCuts !== undefined) {
+		warnings.push(
+			`Valeurs interdites (${formatCondition(periodicCuts, variable)}) : le sens de ` +
+				'variation ne se conclut que sur chaque intervalle de définition, jamais sur leur réunion'
+		);
+	}
 	stepId = recordStep(
 		steps,
 		stepId,
@@ -318,9 +352,15 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 	}
 
 	// Step 8: Classify global extrema
+	// ⚠️ Un sens inconnu quelque part : les valeurs de f y sont inconnues, aucun
+	// extremum n'est global. Mesuré avant : e^{−x}·sin x sur [0 ; +∞[ annonçait
+	// f(0) = 0 « minimum global » ET « maximum global » (f(π/4) > 0 > f(5π/4)).
+	const someUnknown = monotonicIntervals.some((mi) => mi.monotonicity === 'unknown');
 	const extrema = unresolved
 		? []
-		: classifyGlobalExtrema(localExtrema, expr, variable, domain, boundaryLimits);
+		: someUnknown
+			? localExtrema
+			: classifyGlobalExtrema(localExtrema, expr, variable, domain, boundaryLimits);
 	recordStep(
 		steps,
 		stepId,
@@ -455,6 +495,123 @@ function resolveOptions(options?: VariationOptions): ResolvedOptions {
 		tolerance: options?.tolerance ?? DEFAULT_VARIATION_OPTIONS.tolerance,
 		strictMode: options?.strictMode ?? DEFAULT_VARIATION_OPTIONS.strictMode
 	};
+}
+
+/**
+ * Le domaine fourni, restreint au domaine de définition de f.
+ *
+ * ⚠️ Un domaine fourni n'est pas forcément contenu dans celui de f : tan x sur
+ * [0 ; π] (π/2 interdit), 1/x sur [−2 ; 3]. Étudié tel quel, le tableau
+ * affirmait « croissante sur [0 ; π] » et des extrema globaux d'une fonction
+ * non bornée. `studyDomain` faisait cette restriction pour l'atelier ; le
+ * moteur la fait lui-même, pour tous ses appelants. Domaine de f non résolu
+ * ou conditionnel : le domaine fourni est gardé, comme avant.
+ */
+function restrictToNaturalDomain(
+	given: Domain,
+	expr: MathNode,
+	variable: string
+): {
+	readonly domain: Domain;
+	readonly periodicCuts?: PeriodicExclusion;
+	readonly undetermined?: boolean;
+} {
+	let natural: Domain;
+	try {
+		const result = computeDomain(expr, variable);
+		if (result.unresolved !== undefined) return { domain: given, undetermined: true };
+		natural = result.domain;
+	} catch {
+		return { domain: given, undetermined: true };
+	}
+	if (natural.kind === 'condition_domain') return { domain: given, undetermined: true };
+	if (natural.kind === 'universal') return { domain: given };
+	const domain = normalizeExcludedPoints(intersect(given, natural));
+	// Intersection vide (ln x sur [−3 ; −1]) : f n'est définie nulle part sur
+	// l'intervalle, aucune étude ne s'y fait
+	if (isEmpty(domain) && !isEmpty(given)) {
+		throw new VariationError(
+			"f n'est pas définie sur l'intervalle d'étude",
+			expr,
+			'derivative',
+			"L'intervalle fourni ne rencontre pas le domaine de définition"
+		);
+	}
+	return natural.kind === 'periodic_exclusion' ? { domain, periodicCuts: natural } : { domain };
+}
+
+/**
+ * Domaine de f non déterminé : le signe de f′ s'étudie au moins sur le domaine
+ * de f′, quand lui est déterminé. `ln(sin x)` sur [−3 ; 3] : f′ = cos x/sin x
+ * n'est pas définie en 0, et ]−π/2 ; π/2[ d'un seul tenant restait de signe
+ * inconnu (« croissante sur ]0 ; π/2[ » perdu).
+ */
+function withinDerivativeDomain(domain: Domain, derivative: MathNode, variable: string): Domain {
+	try {
+		const result = computeDomain(derivative, variable);
+		if (result.unresolved !== undefined || result.domain.kind === 'condition_domain') return domain;
+		const restricted = normalizeExcludedPoints(intersect(domain, result.domain));
+		return isEmpty(restricted) ? domain : restricted;
+	} catch {
+		return domain;
+	}
+}
+
+/** Points de contrôle de la définition de f par intervalle (bornes infinies : ±200 autour). */
+const DEFINITION_SAMPLES = 400;
+
+/**
+ * Domaine de f non déterminé : un sens n'est affirmé que là où f est
+ * définie. `ln(sin x)` sur [0 ; 2π] : f′ = cos x/sin x est définie sur
+ * ]π ; 2π[, et le tableau y affirmait « décroissante » alors que f n'y existe
+ * pas. Un intervalle où f n'est pas finie en un point de contrôle devient
+ * inconnu ; un point stationnaire où elle n'est pas définie disparaît.
+ *
+ * Un contrôle numérique : il retire des affirmations, n'en ajoute jamais.
+ */
+function withoutClaimsWhereUndefined(
+	intervals: readonly MonotonicInterval[],
+	expr: MathNode,
+	variable: string
+): MonotonicInterval[] {
+	let f: (scope: Record<string, number>) => number;
+	try {
+		f = compile(expr);
+	} catch {
+		return intervals.map((mi) => ({ ...mi, monotonicity: 'unknown' }));
+	}
+	const definedAt = (x: number) => Number.isFinite(f({ [variable]: x }));
+	const result: MonotonicInterval[] = [];
+	for (const mi of intervals) {
+		let lo = endpointToNumber(mi.interval.lower.value);
+		let hi = endpointToNumber(mi.interval.upper.value);
+		if (lo === hi) {
+			if (definedAt(lo)) result.push(mi);
+			continue;
+		}
+		if (mi.monotonicity !== 'increasing' && mi.monotonicity !== 'decreasing') {
+			result.push(mi);
+			continue;
+		}
+		// Une borne fermée où f n'est pas définie (0 pour ln(sin x)) s'ouvre
+		const { lower, upper } = mi.interval;
+		const opened = interval(
+			lower.type === 'closed' && !definedAt(lo) ? openEndpoint(lower.value) : lower,
+			upper.type === 'closed' && !definedAt(hi) ? openEndpoint(upper.value) : upper
+		);
+		if (lo === -Infinity) lo = (Number.isFinite(hi) ? hi : 0) - 200;
+		if (hi === Infinity) hi = (Number.isFinite(lo) ? lo : 0) + 200;
+		const points: number[] = [];
+		for (let i = 1; i < DEFINITION_SAMPLES; i++) {
+			points.push(lo + ((hi - lo) * i) / DEFINITION_SAMPLES);
+		}
+		result.push(
+			points.every(definedAt)
+				? { ...mi, interval: opened }
+				: { ...mi, interval: opened, monotonicity: 'unknown' }
+		);
+	}
+	return result;
 }
 
 /**

@@ -1,0 +1,255 @@
+{
+	"template_id": "a73f55ba-fa9d-4946-ac94-a2606be8013c",
+	"titre": "Soustraction (2)",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Equations > Dans $$\\Q$$",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-045",
+			"libelle_point": "Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7).",
+			"noeud_actuel": "Algèbre > Équations : premier degré > ax + b = c",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses. » → « Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "5..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Résous cette équation.\n\n$${{eval:b+c}}/{{a}}-x={{b}}/{{a}}$$\n\n$x=?$",
+				"reponses_brutes": ["{{eval:c/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 174,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.10333333333333333,
+						"nb_distinctes": 44,
+						"exemples": [
+							"\\dfrac{9}{2}",
+							"\\dfrac{3}{2}",
+							"4",
+							"\\dfrac{1}{2}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{7}{2}",
+							"\\dfrac{6}{7}",
+							"\\dfrac{7}{8}",
+							"\\dfrac{8}{9}",
+							"\\dfrac{4}{3}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{3}{5}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 18,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 5,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 269,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 145,
+					"enonce": "Résous cette équation.\n\n$$\\dfrac{18}{6} - x = \\dfrac{9}{6}$$\n\n$x = [?]$",
+					"reponse": ["\\dfrac{3}{2}"],
+					"variables": {
+						"a": "6",
+						"b": "9",
+						"c": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 4,
+					"enonce": "Résous cette équation.\n\n$$\\dfrac{8}{4} - x = \\dfrac{6}{4}$$\n\n$x = [?]$",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Résous cette équation.\n\n$$\\dfrac{16}{2} - x = \\dfrac{7}{2}$$\n\n$x = [?]$",
+					"reponse": ["\\dfrac{9}{2}"],
+					"variables": {
+						"a": "2",
+						"b": "7",
+						"c": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Résous cette équation.\n\n$$\\dfrac{12}{4} - x = \\dfrac{6}{4}$$\n\n$x = [?]$",
+					"reponse": ["\\dfrac{3}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "6",
+						"c": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Résous cette équation.\n\n$$\\dfrac{15}{2} - x = \\dfrac{7}{2}$$\n\n$x = [?]$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "2",
+						"b": "7",
+						"c": "8"
+					}
+				}
+			]
+		}
+	]
+}

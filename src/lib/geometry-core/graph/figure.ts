@@ -46,6 +46,7 @@ import type {
 	GeoFunctionDomain,
 	GeoQuadraticCurve,
 	GeoImplicitCurve,
+	CurveParameter,
 	GeoParametricCurve,
 	GeoPointOnCurve,
 	GeoPointOnQuadraticCurve,
@@ -2307,14 +2308,23 @@ export class Figure {
 		return id;
 	}
 
+	/**
+	 * `parameterRecipe` (vue Figure de l'atelier) : des coefficients qui suivent
+	 * des curseurs. Ils dépendent alors de ces curseurs, et `coefficients` /
+	 * `conic` sont recalculés à chaque mouvement (`recomputeParametricConic`).
+	 */
 	createQuadraticCurve(
 		expression: MathNode,
 		equation: string,
 		coefficients: readonly [number, number, number, number, number, number],
 		conic: ConicParams,
-		options?: ElementOptions
+		options?: ElementOptions & { parameterRecipe?: GeoQuadraticCurve['parameterRecipe'] }
 	): string {
 		const id = this.generateId('qc');
+		const recipe = options?.parameterRecipe;
+		const deps = recipe
+			? this.parameterDependencies('createQuadraticCurve', recipe.parameters)
+			: [];
 		const element: GeoQuadraticCurve = {
 			type: 'quadraticCurve',
 			id,
@@ -2322,15 +2332,28 @@ export class Figure {
 			equation,
 			coefficients,
 			conic,
+			...(recipe && { parameterRecipe: recipe }),
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [] as const
+			dependsOn: deps
 		};
-		this.addElement(id, element, []);
+		this.addElement(id, element, deps);
+		if (recipe) this.computePosition(id);
 		return id;
+	}
+
+	/** Les curseurs cités par une courbe, vérifiés (un id inconnu ou d'un autre type est une erreur). */
+	private parameterDependencies(caller: string, parameters: readonly CurveParameter[]): string[] {
+		const deps: string[] = [];
+		for (const { sliderId } of parameters) {
+			const el = this.elements.get(sliderId);
+			if (!el || !isSlider(el)) throw new Error(`${caller}: "${sliderId}" is not a slider`);
+			if (!deps.includes(sliderId)) deps.push(sliderId);
+		}
+		return deps;
 	}
 
 	createTransformedQuadraticCurve(
@@ -2374,27 +2397,38 @@ export class Figure {
 		return id;
 	}
 
+	/**
+	 * `parameters` (vue Figure de l'atelier) : les curseurs que F cite par leur
+	 * nom. `compiledFn` est alors la fonction NON liée ; l'élément en garde une
+	 * fermeture liée aux valeurs courantes, refaite à chaque mouvement.
+	 */
 	createImplicitCurve(
 		expression: MathNode,
 		compiledFn: CompiledFn,
 		equation: string,
-		options?: ElementOptions
+		options?: ElementOptions & { parameters?: readonly CurveParameter[] }
 	): string {
 		const id = this.generateId('ic');
+		const parameters = options?.parameters ?? [];
+		const deps = this.parameterDependencies('createImplicitCurve', parameters);
 		const element: GeoImplicitCurve = {
 			type: 'implicitCurve',
 			id,
 			expression,
 			compiledFn,
 			equation,
+			...(parameters.length > 0 && {
+				parameterRecipe: { compiledSource: compiledFn, parameters }
+			}),
 			color: this.resolveColor(options),
 			visible: true,
 			label: options?.label,
 			labelOffset: options?.labelOffset,
 			style: this.resolveStyle(options),
-			dependsOn: [] as const
+			dependsOn: deps
 		};
-		this.addElement(id, element, []);
+		this.addElement(id, element, deps);
+		if (parameters.length > 0) this.computePosition(id);
 		return id;
 	}
 
@@ -4956,6 +4990,57 @@ export class Figure {
 		this.elements.set(id, { ...el, coefficients: newCoeffs, conic: newConic });
 	}
 
+	/** Les valeurs courantes des curseurs d'une courbe, par nom (une valeur absente vaut NaN). */
+	private parameterBindings(parameters: readonly CurveParameter[]): Record<string, number> {
+		const bindings: Record<string, number> = {};
+		for (const { sliderId, name } of parameters) {
+			bindings[name] = this.scalarValues.get(sliderId) ?? NaN;
+		}
+		return bindings;
+	}
+
+	/** Coefficients réévalués aux valeurs courantes des curseurs, puis la conique reclassée. */
+	private recomputeParametricConic(
+		id: string,
+		el: GeoQuadraticCurve,
+		recipe: NonNullable<GeoQuadraticCurve['parameterRecipe']>
+	): void {
+		const bindings = this.parameterBindings(recipe.parameters);
+		const values = recipe.coefficients.map((fn) => {
+			const value = fn(bindings);
+			return Number.isFinite(value) ? value : 0;
+		});
+		const coefficients: [number, number, number, number, number, number] = [
+			values[0] ?? 0,
+			values[1] ?? 0,
+			values[2] ?? 0,
+			values[3] ?? 0,
+			values[4] ?? 0,
+			values[5] ?? 0
+		];
+		this.elements.set(id, { ...el, coefficients, conic: classifyConic(...coefficients) });
+	}
+
+	/**
+	 * Une nouvelle fermeture de F liée aux valeurs courantes des curseurs. Un seul
+	 * `env` mutable par fermeture (CLAUDE.md, règle 8) : la boucle de
+	 * `marchingSquares` n'en recrée pas un par point.
+	 */
+	private rebindImplicitCurve(
+		id: string,
+		el: GeoImplicitCurve,
+		recipe: NonNullable<GeoImplicitCurve['parameterRecipe']>
+	): void {
+		const env = this.parameterBindings(recipe.parameters);
+		const source = recipe.compiledSource;
+		const compiledFn: CompiledFn = (vars) => {
+			env.x = vars.x;
+			env.y = vars.y;
+			return source(env);
+		};
+		this.elements.set(id, { ...el, compiledFn });
+	}
+
 	private computePosition(id: string): void {
 		const el = this.elements.get(id);
 		if (!el) return;
@@ -4963,6 +5048,13 @@ export class Figure {
 		// Recompute transformed conic coefficients when transformation moves
 		if (el.type === 'quadraticCurve' && el.transformRecipe) {
 			this.recomputeTransformedConic(id, el);
+		}
+		// Courbes qui suivent des curseurs (vue Figure de l'atelier)
+		if (el.type === 'quadraticCurve' && el.parameterRecipe) {
+			this.recomputeParametricConic(id, el, el.parameterRecipe);
+		}
+		if (el.type === 'implicitCurve' && el.parameterRecipe) {
+			this.rebindImplicitCurve(id, el, el.parameterRecipe);
 		}
 
 		const result = computeElementPosition(el, this.positions, this.elements, this.scalarValues);

@@ -14,7 +14,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\cos x={{eval:cos(n*pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :",
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\cos x={{eval:cos(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :",
 			"variables": [
 				{
 					"name": "a",
@@ -50,14 +50,14 @@
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$\\cos{{a}}={{eval:cos(n*pi/12)}}$ et $\\cos(-x)=\\cos x$ : sur un tour, les solutions sont ${{a}}$ et $-{{a}}$ (points du cercle de même abscisse).",
+					"$\\cos{{a}}={{eval:cos(n*\\pi/12)}}$ et $\\cos(-x)=\\cos x$ : sur un tour, les solutions sont ${{a}}$ et $-{{a}}$ (points du cercle de même abscisse).",
 					"```trig\npreset: custom\nangles: -{{n}}*pi/12, {{n}}*pi/12\nequation: cos(x) = cos({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
 					"$\\cos$ est $2\\pi$-périodique : $\\textcolor{{{color:primary.0}}}{x={{a}}+2k\\pi\\text{ ou }x=-{{a}}+2k\\pi}$, $k\\in\\mathbb{Z}$."
 				]
 			}
 		},
 		{
-			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\sin x={{eval:sin(n*pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :",
+			"statement": "Résous dans $\\mathbb{R}$ l'équation $\\sin x={{eval:sin(n*\\pi/12)}}$.\n\nL'ensemble des solutions est formé des réels :",
 			"variables": [
 				{
 					"name": "a",
@@ -93,7 +93,7 @@
 			"correctChoiceIndex": ["0"],
 			"correction": {
 				"steps": [
-					"$\\sin{{a}}={{eval:sin(n*pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : sur un tour, les solutions sont ${{a}}$ et $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$ (points du cercle de même ordonnée).",
+					"$\\sin{{a}}={{eval:sin(n*\\pi/12)}}$ et $\\sin(\\pi-x)=\\sin x$ : sur un tour, les solutions sont ${{a}}$ et $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$ (points du cercle de même ordonnée).",
 					"```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) = sin({{n}}*pi/12)\nmode: points\nmesures: principales\n```",
 					"$\\sin$ est $2\\pi$-périodique : $\\textcolor{{{color:primary.0}}}{x={{a}}+2k\\pi\\text{ ou }x={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}+2k\\pi}$, $k\\in\\mathbb{Z}$."
 				]

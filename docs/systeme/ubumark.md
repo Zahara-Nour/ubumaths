@@ -41,31 +41,31 @@ Hors périmètre : les **QCM** (choix, mélange) ne sont pas de la notation ubum
 
 ### `src/lib/ubumark/` (85 fichiers source, 146 fichiers de test)
 
-| Dossier / fichier   | Rôle                                                                                                                                                                                                                                                                                                      |
-| ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `index.ts`          | Baril public (`parseMarkdown`, `resolveText`, `generateTypst`…). ⚠️ Importé par toutes les pages Markdown : n'y rien brancher de lourd.                                                                                                                                                                   |
-| `types/`            | `ast.ts` (nœuds en ligne et de bloc, union `BlockNode`, `DocumentNode`), un fichier par bloc spécial (`variation-table.ts`, `probability-tree.ts`, `trig-circle.ts`, `number-line.ts`, `courbe.ts`, `figure.ts`, `stat-chart.ts`), `template.ts` (types marqués `TemplateMarkdown` / `ResolvedMarkdown`). |
-| `parser/`           | `markdown-parser.ts` (`parseMarkdown`, 3 000 lignes), `math-extractor.ts`, sous-parseurs Markdown (listes, tableaux, citations, code) et un parseur par bloc spécial (`*-parser.ts`).                                                                                                                     |
-| `parser/` (gardes)  | `indented-fences.ts`, `block-ranges.ts`, `block-closure.ts`, `unclosed-block.ts` : où commence et finit un bloc (voir Invariants).                                                                                                                                                                        |
-| `utils/`            | **Scènes** : `courbe-scene.ts`, `figure-scene.ts`, `stat-chart-scene.ts`, `simulation-scene.ts`, `comparison-scene.ts`, `number-line-render.ts`… — géométrie calculée une fois, dessinée par l'écran ET le PDF. Plus `detail-kinds.ts` (encadrés), `list-depth.ts`.                                       |
-| `generators/`       | `typst-generator.ts` (`generateTypst`, aiguillage par type de nœud) + un générateur Typst par bloc (`*-typst.ts`). `latex-generator.ts` (export `.tex`, sans appelant hors du module à ce jour).                                                                                                          |
-| `parameterization/` | `parser/` (tokenizer, `{{random}}`, `{{eval}}`), `resolver/` (`resolveVariables`, `resolveText`), `validator/` (dépendances circulaires), `display-options.ts`, `expression-transforms.ts`.                                                                                                               |
-| `builders/`         | `sign-table.ts` (`signTableNode`), `variation-table.ts` (`variationTableNode`) : traduisent une grille calculée par `mathAST` en `VariationTableNode`. **Ne calculent aucun signe.** La première borne n'est marquée ouverte que si le PREMIER intervalle l'est (x² sur [0 ; +∞[ commence par `[0 ; 0]`). |
-| `importers/latex/`  | `transpileLatexToMarkdown` : import d'un exercice LaTeX (dialogue `src/lib/components/exercises/LaTeXImportDialog.svelte`).                                                                                                                                                                               |
+| Dossier / fichier   | Rôle                                                                                                                                                                                                                                                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `index.ts`          | Baril public (`parseMarkdown`, `resolveText`, `generateTypst`…). ⚠️ Importé par toutes les pages Markdown : n'y rien brancher de lourd.                                                                                                                                                                            |
+| `types/`            | `ast.ts` (nœuds en ligne et de bloc, union `BlockNode`, `DocumentNode`), un fichier par bloc spécial (`variation-table.ts`, `probability-tree.ts`, `trig-circle.ts`, `number-line.ts`, `courbe.ts`, `figure.ts`, `stat-chart.ts`, `qr.ts`), `template.ts` (types marqués `TemplateMarkdown` / `ResolvedMarkdown`). |
+| `parser/`           | `markdown-parser.ts` (`parseMarkdown`, 3 000 lignes), `math-extractor.ts`, sous-parseurs Markdown (listes, tableaux, citations, code) et un parseur par bloc spécial (`*-parser.ts`).                                                                                                                              |
+| `parser/` (gardes)  | `indented-fences.ts`, `block-ranges.ts`, `block-closure.ts`, `unclosed-block.ts` : où commence et finit un bloc (voir Invariants).                                                                                                                                                                                 |
+| `utils/`            | **Scènes** : `courbe-scene.ts`, `figure-scene.ts`, `stat-chart-scene.ts`, `simulation-scene.ts`, `comparison-scene.ts`, `number-line-render.ts`… — géométrie calculée une fois, dessinée par l'écran ET le PDF. Plus `detail-kinds.ts` (encadrés), `list-depth.ts`.                                                |
+| `generators/`       | `typst-generator.ts` (`generateTypst`, aiguillage par type de nœud) + un générateur Typst par bloc (`*-typst.ts`). `latex-generator.ts` (export `.tex`, sans appelant hors du module à ce jour).                                                                                                                   |
+| `parameterization/` | `parser/` (tokenizer, `{{random}}`, `{{eval}}`), `resolver/` (`resolveVariables`, `resolveText`), `validator/` (dépendances circulaires), `display-options.ts`, `expression-transforms.ts`.                                                                                                                        |
+| `builders/`         | `sign-table.ts` (`signTableNode`), `variation-table.ts` (`variationTableNode`) : traduisent une grille calculée par `mathAST` en `VariationTableNode`. **Ne calculent aucun signe.** La première borne n'est marquée ouverte que si le PREMIER intervalle l'est (x² sur [0 ; +∞[ commence par `[0 ; 0]`).          |
+| `importers/latex/`  | `transpileLatexToMarkdown` : import d'un exercice LaTeX (dialogue `src/lib/components/exercises/LaTeXImportDialog.svelte`).                                                                                                                                                                                        |
 
 ### Rendu écran — `src/lib/components/markdown/`
 
-| Fichier                                                 | Rôle                                                                                                                                                                     |
-| ------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `MarkdownRenderer.svelte`                               | Orchestrateur : cache d'AST (`src/lib/utils/markdown-cache.ts`), mode restreint, mots cliquables, aiguillage par type.                                                   |
-| `nodes/*.svelte`                                        | Un composant par nœud : `VariationTable`, `ProbabilityTree`, `TrigCircle`, `NumberLine`, `Courbe`, `FigureBlock`, `StatChart`, `MathInline`, `MathPrompt`, `BlankInput`… |
-| `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** : chaque nouveau bloc doit y être aussi.                                                                                     |
-| `utils/math-utils.ts`                                   | `expressionToLatex` / `expressionToRawLatex` : `~…~` → LaTeX via `parseCustomSafe` de `mathAST` ; erreur → LaTeX rouge.                                                  |
-| `content-locale.ts`                                     | Langue du document (virgule FR / point EN des décimaux).                                                                                                                 |
-| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question ou d'un exercice ; `clearCapitalPairs` le coupe (chat).                         |
-| `authoring-errors.ts`                                   | Le prof voit le message d'erreur d'un bloc, l'élève un cadre neutre.                                                                                                     |
-| `render-budget.ts`                                      | `DOCUMENT_FIGURE_LIMITS` : plafond de figures/courbes par document.                                                                                                      |
-| `restricted-rendering.ts`                               | Mode restreint du chat élève (`restrictDocument`, `stripFenceLanguages`).                                                                                                |
+| Fichier                                                 | Rôle                                                                                                                                                                                |
+| ------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `MarkdownRenderer.svelte`                               | Orchestrateur : cache d'AST (`src/lib/utils/markdown-cache.ts`), mode restreint, mots cliquables, aiguillage par type.                                                              |
+| `nodes/*.svelte`                                        | Un composant par nœud : `VariationTable`, `ProbabilityTree`, `TrigCircle`, `NumberLine`, `Courbe`, `FigureBlock`, `StatChart`, `QrBlock`, `MathInline`, `MathPrompt`, `BlankInput`… |
+| `nodes/ListNode.svelte`, `nodes/StaticBlockNode.svelte` | Rendent les blocs **dans un item de liste** : chaque nouveau bloc doit y être aussi.                                                                                                |
+| `utils/math-utils.ts`                                   | `expressionToLatex` / `expressionToRawLatex` : `~…~` → LaTeX via `parseCustomSafe` de `mathAST` ; erreur → LaTeX rouge.                                                             |
+| `content-locale.ts`                                     | Langue du document (virgule FR / point EN des décimaux).                                                                                                                            |
+| `content-capital-pairs.ts`                              | Sens de `AB` (longueur ou produit) des formules maison, posé par la carte d'une question ou d'un exercice ; `clearCapitalPairs` le coupe (chat).                                    |
+| `authoring-errors.ts`                                   | Le prof voit le message d'erreur d'un bloc, l'élève un cadre neutre.                                                                                                                |
+| `render-budget.ts`                                      | `DOCUMENT_FIGURE_LIMITS` : plafond de figures/courbes par document.                                                                                                                 |
+| `restricted-rendering.ts`                               | Mode restreint du chat élève (`restrictDocument`, `stripFenceLanguages`).                                                                                                           |
 
 ### Ailleurs
 
@@ -177,6 +177,7 @@ en retrait sous un item de liste.
 | `courbe`                                                                                                                  | `courbe`                    | `courbe-parser.ts`                  | `Courbe.svelte`          | `courbe-typst.ts`                |
 | `figure`                                                                                                                  | `figure`                    | `figure-parser.ts`                  | `FigureBlock.svelte`     | `figure-typst.ts` (via registre) |
 | `barres`, `circulaire`, `histogramme`, `frequences-cumulees`, `tableau-croise`, `loi`, `simulation`, `effectifs`, `nuage` | `stat-chart` (champ `kind`) | `stat-chart-parser.ts`              | `StatChart.svelte`       | `stat-chart-typst.ts`            |
+| `qr`                                                                                                                      | `qr`                        | `qr-parser.ts`                      | `QrBlock.svelte`         | `qr-typst.ts`                    |
 
 La liste des genres statistiques est `STAT_CHART_KINDS` (`src/lib/ubumark/types/stat-chart.ts`).
 
@@ -260,6 +261,26 @@ Danse = 7            ```                                     ```
   (`src/lib/ubumark/__tests__/stat-chart/simulation-block.test.ts`) ; ou une loi nommée,
   `X ~ G(0,2)`, `U(1 ; 6)`, `U([0 ; 10])`, `E(0,5)`, `N(10 ; 4)` (σ² en 2ᵉ paramètre ; histogramme
   sur μ ± 3σ) — `src/lib/ubumark/__tests__/stat-chart/simulation-laws.test.ts`.
+
+**QR code** (lot 2 des QR codes, [qr-codes](qr-codes.md)) — `src/lib/ubumark/__tests__/qr/` :
+
+````text
+```qr
+/glossaire
+légende: Le glossaire en ligne
+taille: 3cm
+```
+````
+
+Ligne 1 : l'adresse — `/chemin` ou `chiph.re/…` deviennent `https://www.chiph.re/…`, une adresse
+`https://` extérieure est gardée telle quelle, tout le reste (`http://` extérieur, `javascript:`…)
+est refusé (`src/lib/qr/qr-target.ts`). Puis `légende:` (120 caractères au plus ; sans elle,
+l'adresse s'imprime sous le QR) et `taille:` (2,5 à 6 cm, `cm` obligatoire, virgule acceptée ;
+3 cm par défaut). Bloc en erreur : messages situés pour le prof, « QR code indisponible » pour
+l'élève et au PDF. La matrice est calculée au rendu, pas au parseur (`uqr` hors du parseur). Au
+PDF, le SVG du QR stylé ([QR codes](qr-codes.md#le-style-imposé)) est posé en image vectorielle
+(`#image(bytes(…), format: "svg")`), sans fichier ni paquet réseau ; compilation réelle testée (`qr-typst-compilation.test.ts`). Dans l'éditeur riche :
+bloc de code `qr`, bouton « Insérer un QR code ». Chat élève (rendu restreint) : jamais rendu.
 
 ### Cases à compléter
 

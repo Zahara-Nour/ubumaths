@@ -577,6 +577,10 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 		categorie: 'prof',
 		justification: 'is_teacher_or_admin, refus 42501'
 	},
+	'create_short_link(p_target text)': {
+		categorie: 'prof',
+		justification: 'is_teacher_or_admin, refus 42501 ; cible = chemin interne, refus 22023'
+	},
 
 	// ── Réservées admin ───────────────────────────────────────────────────────
 	'admin_compose_class(p_class_id uuid, p_student_ids uuid[])': {
@@ -784,6 +788,11 @@ export const FONCTIONS_DEFINER_VERIFIEES: Record<string, FonctionDefinerVerifiee
 	'exercise_has_valid_share_token(exercise_uuid uuid)': {
 		categorie: 'jeton',
 		justification: 'booléen sur un EXERCICE (jeton actif), aucune donnée de compte'
+	},
+	'resolve_short_link(p_code text)': {
+		categorie: 'jeton',
+		justification: 'code de lien court exact (8 caractères), ne rend que la cible',
+		anon: true
 	},
 
 	// ── Classements et annuaires bornés, voulus ───────────────────────────────

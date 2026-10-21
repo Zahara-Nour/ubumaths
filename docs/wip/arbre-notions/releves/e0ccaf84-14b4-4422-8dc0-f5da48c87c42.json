@@ -1,0 +1,1372 @@
+{
+	"template_id": "e0ccaf84-14b4-4422-8dc0-f5da48c87c42",
+	"titre": "Résoudre un petit exercice de proportionnalité",
+	"sous_titre": "petits nombres",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Tableaux de proportionnalité > Appliquer",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-191",
+			"libelle_point": "Résoudre un problème de proportionnalité en choisissant une procédure adaptée : propriété de linéarité pour la multiplication ou l'addition, retour à l'unité",
+			"noeud_actuel": "Proportionnalité > Situations de proportionnalité",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2,5|3,5"
+					},
+					{
+						"name": "b",
+						"expression": "2|4|6"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}$ shawarmas ?\n\n${{eval:c*b}}$ shawarmas coûtent $?$.",
+				"reponses_brutes": ["{{eval:(a*b*c)[€]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["2,5", "3,5"],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 3.5,
+							"nb_distinctes": 2,
+							"valeurs": [2.5, 3.5],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"105[€]",
+							"10[€]",
+							"14[€]",
+							"15[€]",
+							"20[€]",
+							"21[€]",
+							"25[€]",
+							"28[€]",
+							"30[€]",
+							"35[€]",
+							"40[€]",
+							"42[€]",
+							"45[€]",
+							"50[€]",
+							"56[€]",
+							"60[€]",
+							"63[€]",
+							"70[€]",
+							"75[€]",
+							"84[€]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 105,
+							"nb_distinctes": 20,
+							"valeurs": [
+								10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84, 105
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 30,
+				"nb_distinctes": 16,
+				"valeurs": [2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 105,
+				"nb_distinctes": 20,
+				"valeurs": [
+					10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 30,
+				"valeurs": [
+					2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 28, 30, 35, 40, 42, 45, 50, 56,
+					60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (105)",
+					"graine": 10,
+					"enonce": "$6$ shawarmas coûtent $21\\,€$. Combien coûtent $30$ shawarmas ?\n\n$30$ shawarmas coûtent $[?]$.",
+					"reponse": ["105[€]"],
+					"variables": {
+						"a": "3,5",
+						"b": "6",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "$2$ shawarmas coûtent $5\\,€$. Combien coûtent $8$ shawarmas ?\n\n$8$ shawarmas coûtent $[?]$.",
+					"reponse": ["20[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$4$ shawarmas coûtent $10\\,€$. Combien coûtent $20$ shawarmas ?\n\n$20$ shawarmas coûtent $[?]$.",
+					"reponse": ["50[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$4$ shawarmas coûtent $10\\,€$. Combien coûtent $8$ shawarmas ?\n\n$8$ shawarmas coûtent $[?]$.",
+					"reponse": ["20[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$2$ shawarmas coûtent $5\\,€$. Combien coûtent $4$ shawarmas ?\n\n$4$ shawarmas coûtent $[?]$.",
+					"reponse": ["10[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2,5|3,5"
+					},
+					{
+						"name": "b",
+						"expression": "2|4|6"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "${{b}}$ shawarmas coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de shawarmas avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ shawarmas pour ${{eval:a*b*c}}\\,€$.",
+				"reponses_brutes": ["{{eval:b*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["2,5", "3,5"],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 3.5,
+							"nb_distinctes": 2,
+							"valeurs": [2.5, 3.5],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 30,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [4, 6, 8, 10, 12, 16, 18, 20, 24, 30]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 25,
+				"valeurs": [
+					2, 4, 5, 6, 7, 10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84,
+					105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 30,
+				"nb_distinctes": 10,
+				"valeurs": [4, 6, 8, 10, 12, 16, 18, 20, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 30,
+				"valeurs": [
+					2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 28, 30, 35, 40, 42, 45, 50, 56,
+					60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (105)",
+					"graine": 10,
+					"enonce": "$6$ shawarmas coûtent $21\\,€$. Combien puis-je acheter de shawarmas avec $105\\,€$ ?\n\nJe peux acheter $[?]$ shawarmas pour $105\\,€$.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "3,5",
+						"b": "6",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "$2$ shawarmas coûtent $5\\,€$. Combien puis-je acheter de shawarmas avec $20\\,€$ ?\n\nJe peux acheter $[?]$ shawarmas pour $20\\,€$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$4$ shawarmas coûtent $10\\,€$. Combien puis-je acheter de shawarmas avec $50\\,€$ ?\n\nJe peux acheter $[?]$ shawarmas pour $50\\,€$.",
+					"reponse": ["20"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$4$ shawarmas coûtent $10\\,€$. Combien puis-je acheter de shawarmas avec $20\\,€$ ?\n\nJe peux acheter $[?]$ shawarmas pour $20\\,€$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$2$ shawarmas coûtent $5\\,€$. Combien puis-je acheter de shawarmas avec $10\\,€$ ?\n\nJe peux acheter $[?]$ shawarmas pour $10\\,€$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2,5|3,5"
+					},
+					{
+						"name": "b",
+						"expression": "2|4|6"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien coûtent ${{eval:c*b}}\\,\\text{kg}$ de tomates ?\n\n${{eval:c*b}}\\,\\text{kg}$ de tomates coûtent $?$.",
+				"reponses_brutes": ["{{eval:(a*b*c)[€]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["2,5", "3,5"],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 3.5,
+							"nb_distinctes": 2,
+							"valeurs": [2.5, 3.5],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"105[€]",
+							"10[€]",
+							"14[€]",
+							"15[€]",
+							"20[€]",
+							"21[€]",
+							"25[€]",
+							"28[€]",
+							"30[€]",
+							"35[€]",
+							"40[€]",
+							"42[€]",
+							"45[€]",
+							"50[€]",
+							"56[€]",
+							"60[€]",
+							"63[€]",
+							"70[€]",
+							"75[€]",
+							"84[€]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 105,
+							"nb_distinctes": 20,
+							"valeurs": [
+								10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84, 105
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 30,
+				"nb_distinctes": 16,
+				"valeurs": [2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 105,
+				"nb_distinctes": 20,
+				"valeurs": [
+					10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 30,
+				"valeurs": [
+					2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 28, 30, 35, 40, 42, 45, 50, 56,
+					60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (105)",
+					"graine": 10,
+					"enonce": "$6\\,\\text{kg}$ de tomates coûtent $21\\,€$. Combien coûtent $30\\,\\text{kg}$ de tomates ?\n\n$30\\,\\text{kg}$ de tomates coûtent $[?]$.",
+					"reponse": ["105[€]"],
+					"variables": {
+						"a": "3,5",
+						"b": "6",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "$2\\,\\text{kg}$ de tomates coûtent $5\\,€$. Combien coûtent $8\\,\\text{kg}$ de tomates ?\n\n$8\\,\\text{kg}$ de tomates coûtent $[?]$.",
+					"reponse": ["20[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$4\\,\\text{kg}$ de tomates coûtent $10\\,€$. Combien coûtent $20\\,\\text{kg}$ de tomates ?\n\n$20\\,\\text{kg}$ de tomates coûtent $[?]$.",
+					"reponse": ["50[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$4\\,\\text{kg}$ de tomates coûtent $10\\,€$. Combien coûtent $8\\,\\text{kg}$ de tomates ?\n\n$8\\,\\text{kg}$ de tomates coûtent $[?]$.",
+					"reponse": ["20[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$2\\,\\text{kg}$ de tomates coûtent $5\\,€$. Combien coûtent $4\\,\\text{kg}$ de tomates ?\n\n$4\\,\\text{kg}$ de tomates coûtent $[?]$.",
+					"reponse": ["10[€]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2,5|3,5"
+					},
+					{
+						"name": "b",
+						"expression": "2|4|6"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "${{b}}\\,\\text{kg}$ de tomates coûtent ${{eval:b*a}}\\,€$. Combien puis-je acheter de tomates avec ${{eval:c*b*a}}\\,€$ ?\n\nJe peux acheter $?$ de tomates pour ${{eval:c*b*a}}\\,€$.",
+				"reponses_brutes": ["{{eval:(b*c)[kg]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["2,5", "3,5"],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 3.5,
+							"nb_distinctes": 2,
+							"valeurs": [2.5, 3.5],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[kg]",
+							"12[kg]",
+							"16[kg]",
+							"18[kg]",
+							"20[kg]",
+							"24[kg]",
+							"30[kg]",
+							"4[kg]",
+							"6[kg]",
+							"8[kg]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 30,
+							"nb_distinctes": 10,
+							"valeurs": [4, 6, 8, 10, 12, 16, 18, 20, 24, 30],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 25,
+				"valeurs": [
+					2, 4, 5, 6, 7, 10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84,
+					105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 30,
+				"nb_distinctes": 10,
+				"valeurs": [4, 6, 8, 10, 12, 16, 18, 20, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 30,
+				"valeurs": [
+					2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 28, 30, 35, 40, 42, 45, 50, 56,
+					60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (105)",
+					"graine": 10,
+					"enonce": "$6\\,\\text{kg}$ de tomates coûtent $21\\,€$. Combien puis-je acheter de tomates avec $105\\,€$ ?\n\nJe peux acheter $[?]$ de tomates pour $105\\,€$.",
+					"reponse": ["30[kg]"],
+					"variables": {
+						"a": "3,5",
+						"b": "6",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "$2\\,\\text{kg}$ de tomates coûtent $5\\,€$. Combien puis-je acheter de tomates avec $20\\,€$ ?\n\nJe peux acheter $[?]$ de tomates pour $20\\,€$.",
+					"reponse": ["8[kg]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "$4\\,\\text{kg}$ de tomates coûtent $10\\,€$. Combien puis-je acheter de tomates avec $50\\,€$ ?\n\nJe peux acheter $[?]$ de tomates pour $50\\,€$.",
+					"reponse": ["20[kg]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$4\\,\\text{kg}$ de tomates coûtent $10\\,€$. Combien puis-je acheter de tomates avec $20\\,€$ ?\n\nJe peux acheter $[?]$ de tomates pour $20\\,€$.",
+					"reponse": ["8[kg]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$2\\,\\text{kg}$ de tomates coûtent $5\\,€$. Combien puis-je acheter de tomates avec $10\\,€$ ?\n\nJe peux acheter $[?]$ de tomates pour $10\\,€$.",
+					"reponse": ["4[kg]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2,5|3,5"
+					},
+					{
+						"name": "b",
+						"expression": "2|4|6"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. Combien de litres d'eau s'échappent en ${{eval:c*b}}\\,\\text{h}$ ?\n\nIl s'échappe $?$ d'eau en ${{eval:c*b}}\\,\\text{h}$.",
+				"reponses_brutes": ["{{eval:(a*b*c)[L]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["2,5", "3,5"],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 3.5,
+							"nb_distinctes": 2,
+							"valeurs": [2.5, 3.5],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 20,
+						"valeurs": [
+							"105[L]",
+							"10[L]",
+							"14[L]",
+							"15[L]",
+							"20[L]",
+							"21[L]",
+							"25[L]",
+							"28[L]",
+							"30[L]",
+							"35[L]",
+							"40[L]",
+							"42[L]",
+							"45[L]",
+							"50[L]",
+							"56[L]",
+							"60[L]",
+							"63[L]",
+							"70[L]",
+							"75[L]",
+							"84[L]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 105,
+							"nb_distinctes": 20,
+							"valeurs": [
+								10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84, 105
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 30,
+				"nb_distinctes": 16,
+				"valeurs": [2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 105,
+				"nb_distinctes": 20,
+				"valeurs": [
+					10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 30,
+				"valeurs": [
+					2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 28, 30, 35, 40, 42, 45, 50, 56,
+					60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 17,
+					"max": 17
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (105)",
+					"graine": 10,
+					"enonce": "Une fuite d'eau laisse s'échapper $21\\,\\text{L}$ d'eau en $6\\,\\text{h}$. Combien de litres d'eau s'échappent en $30\\,\\text{h}$ ?\n\nIl s'échappe $[?]$ d'eau en $30\\,\\text{h}$.",
+					"reponse": ["105[L]"],
+					"variables": {
+						"a": "3,5",
+						"b": "6",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "Une fuite d'eau laisse s'échapper $5\\,\\text{L}$ d'eau en $2\\,\\text{h}$. Combien de litres d'eau s'échappent en $8\\,\\text{h}$ ?\n\nIl s'échappe $[?]$ d'eau en $8\\,\\text{h}$.",
+					"reponse": ["20[L]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une fuite d'eau laisse s'échapper $10\\,\\text{L}$ d'eau en $4\\,\\text{h}$. Combien de litres d'eau s'échappent en $20\\,\\text{h}$ ?\n\nIl s'échappe $[?]$ d'eau en $20\\,\\text{h}$.",
+					"reponse": ["50[L]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une fuite d'eau laisse s'échapper $10\\,\\text{L}$ d'eau en $4\\,\\text{h}$. Combien de litres d'eau s'échappent en $8\\,\\text{h}$ ?\n\nIl s'échappe $[?]$ d'eau en $8\\,\\text{h}$.",
+					"reponse": ["20[L]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une fuite d'eau laisse s'échapper $5\\,\\text{L}$ d'eau en $2\\,\\text{h}$. Combien de litres d'eau s'échappent en $4\\,\\text{h}$ ?\n\nIl s'échappe $[?]$ d'eau en $4\\,\\text{h}$.",
+					"reponse": ["10[L]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2,5|3,5"
+					},
+					{
+						"name": "b",
+						"expression": "2|4|6"
+					},
+					{
+						"name": "c",
+						"expression": "2..5"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Une fuite d'eau laisse s'échapper ${{eval:b*a}}\\,\\text{L}$ d'eau en ${{b}}\\,\\text{h}$. En combien de temps s'échappe-t-il ${{eval:c*b*a}}\\,\\text{L}$ d'eau ?\n\nIl s'échappe ${{eval:c*b*a}}\\,\\text{L}$ d'eau en $?$.",
+				"reponses_brutes": ["{{eval:(b*c)[h]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 24,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["2,5", "3,5"],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 3.5,
+							"nb_distinctes": 2,
+							"valeurs": [2.5, 3.5],
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 4, 6]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[h]",
+							"12[h]",
+							"16[h]",
+							"18[h]",
+							"20[h]",
+							"24[h]",
+							"30[h]",
+							"4[h]",
+							"6[h]",
+							"8[h]"
+						],
+						"nombres_contenus": {
+							"min": 4,
+							"max": 30,
+							"nb_distinctes": 10,
+							"valeurs": [4, 6, 8, 10, 12, 16, 18, 20, 24, 30],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 25,
+				"valeurs": [
+					2, 4, 5, 6, 7, 10, 14, 15, 20, 21, 25, 28, 30, 35, 40, 42, 45, 50, 56, 60, 63, 70, 75, 84,
+					105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 30,
+				"nb_distinctes": 10,
+				"valeurs": [4, 6, 8, 10, 12, 16, 18, 20, 24, 30],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 105,
+				"nb_distinctes": 30,
+				"valeurs": [
+					2, 4, 5, 6, 7, 8, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 28, 30, 35, 40, 42, 45, 50, 56,
+					60, 63, 70, 75, 84, 105
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 18,
+					"max": 18
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (105)",
+					"graine": 10,
+					"enonce": "Une fuite d'eau laisse s'échapper $21\\,\\text{L}$ d'eau en $6\\,\\text{h}$. En combien de temps s'échappe-t-il $105\\,\\text{L}$ d'eau ?\n\nIl s'échappe $105\\,\\text{L}$ d'eau en $[?]$.",
+					"reponse": ["30[h]"],
+					"variables": {
+						"a": "3,5",
+						"b": "6",
+						"c": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 2,
+					"enonce": "Une fuite d'eau laisse s'échapper $5\\,\\text{L}$ d'eau en $2\\,\\text{h}$. En combien de temps s'échappe-t-il $20\\,\\text{L}$ d'eau ?\n\nIl s'échappe $20\\,\\text{L}$ d'eau en $[?]$.",
+					"reponse": ["8[h]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Une fuite d'eau laisse s'échapper $10\\,\\text{L}$ d'eau en $4\\,\\text{h}$. En combien de temps s'échappe-t-il $50\\,\\text{L}$ d'eau ?\n\nIl s'échappe $50\\,\\text{L}$ d'eau en $[?]$.",
+					"reponse": ["20[h]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Une fuite d'eau laisse s'échapper $10\\,\\text{L}$ d'eau en $4\\,\\text{h}$. En combien de temps s'échappe-t-il $20\\,\\text{L}$ d'eau ?\n\nIl s'échappe $20\\,\\text{L}$ d'eau en $[?]$.",
+					"reponse": ["8[h]"],
+					"variables": {
+						"a": "2,5",
+						"b": "4",
+						"c": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Une fuite d'eau laisse s'échapper $5\\,\\text{L}$ d'eau en $2\\,\\text{h}$. En combien de temps s'échappe-t-il $10\\,\\text{L}$ d'eau ?\n\nIl s'échappe $10\\,\\text{L}$ d'eau en $[?]$.",
+					"reponse": ["4[h]"],
+					"variables": {
+						"a": "2,5",
+						"b": "2",
+						"c": "2"
+					}
+				}
+			]
+		}
+	]
+}

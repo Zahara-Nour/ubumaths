@@ -55,14 +55,14 @@ beforeEach(() => localStorage.removeItem(CALC_HISTORY_STORAGE_KEY));
 // =============================================================================
 
 describe('rejouer un historique', () => {
-	it('le bouton est là', async () => {
+	it('il se charge par « Charger un atelier », dans la barre d’icônes (lot 1 de la refonte)', async () => {
 		localStorage.removeItem(KEY);
 		const { container } = await render(AtelierContainer, { atelier: new Atelier() });
 
-		const labels = [...container.querySelectorAll('.export button')].map((b) =>
-			b.textContent?.trim()
+		const labels = [...container.querySelectorAll('[role="toolbar"] button')].map((b) =>
+			b.getAttribute('aria-label')
 		);
-		expect(labels).toContain('Rejouer un historique…');
+		expect(labels).toContain('Charger un atelier');
 	});
 
 	it('atelier vide : rejoue tout de suite (R1)', async () => {
@@ -102,13 +102,28 @@ describe('rejouer un historique', () => {
 		expect(atelier.names).toEqual(['f']);
 	});
 
-	it('un fichier qui n’est pas un historique est refusé, rien ne change (E1)', async () => {
+	it('un fichier qui n’est ni un atelier ni un historique est refusé, rien ne change (E1)', async () => {
 		localStorage.removeItem(KEY);
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'g', definition: 'x+1' });
 		const { container } = await render(AtelierContainer, { atelier });
 
 		await choose(container, new File(['{"bonjour": 1}'], 'autre.json'));
+
+		expect(atelier.names).toEqual(['g']);
+		expect(container.textContent).toContain('Ce fichier n’est pas un atelier Chiphre.');
+	});
+
+	it('un historique abîmé est refusé avec le message de l’historique (E1)', async () => {
+		localStorage.removeItem(KEY);
+		const atelier = new Atelier();
+		atelier.create({ kind: 'function', name: 'g', definition: 'x+1' });
+		const { container } = await render(AtelierContainer, { atelier });
+
+		await choose(
+			container,
+			new File(['{"format": "chiphre-calcul", "version": 1, "entries": 3}'], 'abime.json')
+		);
 
 		expect(atelier.names).toEqual(['g']);
 		expect(container.textContent).toContain('Ce fichier n’est pas un historique de Calcul.');

@@ -1,5 +1,7 @@
 # Écarts de la doc système, triés en chantiers
 
+> **Journal du chantier (bloc « Reprendre ici »)** : [ecarts-a-trier-progress.md](ecarts-a-trier-progress.md).
+
 > **Date** : 2026-10-10. **Source** : les sections d'écarts de toutes les docs de
 > [docs/systeme/](../systeme/) (« Écarts connus », « Doutes », « Points ouverts », « Lacunes »,
 > « Limites », « Pièges », « État »), plus [atelier-progress.md](atelier-progress.md) §Dettes.
@@ -19,6 +21,45 @@
 Mise à jour du 2026-10-10 : K2 fait (V7, L5, L6, C8 retirés) ; V13 et L15 ajoutés (relevés en
 le faisant). 2026-10-11 : L20 ajouté (revue de la PR « LaTeX sans notation scientifique », #1085) ; V14, V15,
 C16, C17, D12-D15 ajoutés et K19 ouvert (inventaire de la [carte des fonctionnalités](../systeme/carte-des-fonctionnalites.md)) ; V16, V17, V18 ajoutés (chantier écriture des primitives, #1098) ; L21-L23 ajoutés et K20 ouvert (suite du moteur mathAST) ; L24-L25 (revue #1108) ; V19, V20, L26, L27, C18-C20 ajoutés et K21 ouvert (état des lieux de la factorisation, ADR 0024). V21, V22, L28, M21 ajoutés (relevés au lot 3a de l'ADR 0024). M21 retiré et M10 réduit (lot 3b de l'ADR 0024 : `isRootAt` et `transform/` supprimés). V18 retiré et V17 réduit (lot 4 de l'ADR 0024 : l'exponentielle commune d'une primitive mise en facteur).
+
+## Revérification du 2026-10-18 (main `ab1aeb7b2`)
+
+Chaque entrée encore ouverte a été revérifiée (sondes vitest hors dépôt pour mathAST et l'atelier, grep et lecture pour le reste). Les tableaux plus bas ne sont pas encore réécrits : **cette section fait foi** en cas de désaccord.
+
+**Corrigés depuis, à retirer** : V16, V33 (l'`it.todo` « V33 » de `limits/__tests__/valeur-ecrite.test.ts:44` est à passer en `it`), V54, V56, V57 (#1367), V58, V59, V60, L4 (#1405), L14 (page d'admin du dictionnaire), L24, L29, M17, C18. **Sans objet** : C2 (le singleton sert à l'atelier), V55 (`/calc` à supprimer).
+
+**Ont bougé** :
+
+- V13 : la console résout `x_1+1=3`, mais l'API `solve()` répond encore `no-solution`.
+- V40 : \|u\| = c a désormais ses étapes.
+- V41 : `Solution.condition` est rempli pour `ax^2=1`, `ae^x=1` et `\ln(ax)=1`, qui sont maintenant résolues. Il manque encore la condition pour `ax=1` et `a\ln x=1`.
+- V64 : `(x+1)^a` est désormais calculé.
+- L8 : il reste 19 appels dans 8 fichiers.
+- L12 : les références de ligne ont bougé.
+- L15 : plus de boucle visible, mais l'arrêt est toujours silencieux.
+- C19 : seul `questions/types.ts:1407` reste à corriger.
+- M4 : les routes `pdf*` ont disparu.
+- C10 : `programme-deck.ts` a disparu.
+- T12 : le code applique 30 jours glissants, alors que `conformite/README.md` annonce encore une date fixe.
+
+**Nouveaux ou aggravés** :
+
+- **V62 aggravé** : `a=3`, `f(x)=a x`, `a(x)=x^2` puis `.dériver f` affiche `3x^2`, une **dérivée fausse**.
+- **V65** : l'API `solve` répond `no-solution` (∅) au lieu d'un refus pour `|x|=a`, `|x^2-1|=3` et `a\cos x=1`. La console, elle, refuse correctement. ✅ **Corrigé le 2026-10-20 (fix/v62-v65)** : appelée sans `variable`, une équation à plusieurs lettres était jugée constante (« contradiction », sans `error`) ; elle rend un échec (`isSolverFailure`). En x, `|x|=a` et `a\cos x=1` rendaient déjà un échec conforme au contrat (`no-solution` + `error`, `types.ts`). Reste un manque à part : `|x^2-1|=3` n'est pas résolue (|A| = c avec A du second degré).
+
+### A. Faisables seul (technique, attendu clair)
+
+- **Réponses fausses** : V62, V65, V13 (API) + L22, V45 (vérifier la solution contre la contrainte non résolue), V42, L27.
+- **Écriture vue par l'élève** : V32, V34, V27, V17 (eˣ sin x), V52, V51, V46, V44, V39 (`toLatex` seul), V64 (coefficient de la règle arctan).
+- **Latents** : L15, L25, L17, L19, L18, L10, L23, L21, L28, L31, L16 (aucun cas en prod).
+- **Code mort** : M1, M3, M9, M10, M7, M15, M16 (exports), M18, M19, M4 (composant, 2 routes, générateur ; pas la table), M2 (composant seul).
+- **Commentaires et doc** : C1, C3, C4, C5, C9, C11, C12, C15, C19, C20, l'`it.todo` V33, L12 (provenance D10, mesure de `recomputeAll`), L8 (avec la doc des zones).
+
+### B. À David
+
+- **Décision ou spécification** : V4 (sort du tableur prof face à celui de l'atelier), V8 (ADR 0007, planning), V35 (`\dfrac{\sqrt3}{2}i` ou `i\dfrac{\sqrt3}{2}`), V39 (lecture de `\ln 5^2` par le parseur), V40 (périmètre), V41 (conditions), V48 (a), V49, V63 (ce que citent `u_n`, `u_0`), L9 (police STIX), L13 (palette d'unités), L20 (précision), M8 (sommeil ou mort), M22 (règles trigo à garder ?), M2 (retirer `'graphical'` du format), D6, D8 + V55 (supprimer `/calc`), D11 + C10 (renommage « capacité »), C14 (renommer `lexicon/`), D20, D21 (+ V31, L32, L33), D10 + L11 (Navadra), C13 (relecture des récits).
+- **Destructif** : M4 (table), M11, M20.
+- **RGPD / juridique** : T1, T2, T3, T6, T7, T8, T9, T12, T13, T14, T15 — jamais repris par `rgpd-securite-constats.md`.
 
 ## Chantiers proposés
 
@@ -126,7 +167,7 @@ décisions D attachées. K17-K18 se font en tâche de fond, par lots.
 | V59 | ✅ **corrigé par #1368 (2026-10-14)** — **`ln x` sans parenthèses lu l·n·x dans un calcul et dans `.évaluer`** : la ligne `ln x` rend `l n x`, `.évaluer ln x en x=1` réclame « les valeurs de l et n ». `.dériver`, `.domaine` et (depuis la PR du « Comment ? ») `.limite` refusent proprement (« Écris ln(x) avec des parenthèses. »). Relevé le 2026-10-14. | [atelier.md](../systeme/atelier.md) | Réponse absurde sur une saisie d'élève courante. | S | relevé (2026-10-14) |
 | V60 | ✅ **corrigé par #1371 (2026-10-14)** — **`.limite floor(x) en 1` répond 1** : la partie entière n'a pas de limite en 1 (0 à gauche, 1 à droite) ; `evaluateLimit` ne voit pas la discontinuité. Relevé par l'agent du « Comment ? » de `.limite` le 2026-10-14. | [mathast/README.md](../systeme/mathast/README.md) | Limite fausse, saisie rare au lycée. | S | corrigé (2026-10-14) |
 | ~~V61~~ | ✅ corrigé par #1373 (2026-10-14) — **Intégrales à paramètre, restes mineurs (#1367)** : refus à tort de `.intégrer 1/(x^2+a^2) de 1 à 2` (aucun pôle dans [1;2]) et de `1/(a x) de 1 à 2` (alors que la primitive est acceptée) ; messages du moteur en anglais (« Unable to factor denominator » pour `1/(x^2+a^2+1) de 0 à 1`) ; `1^{a+1}` non réduit (`x^a de 1 à 2`). Relevé par la contre-revue le 2026-10-14. | [atelier.md](../systeme/atelier.md) | Refus inutiles et message anglais, aucune réponse fausse. | S | sondé (2026-10-14) |
-| V62 | **Redéfinir un nom garde son type** : `a = 3` puis `a(x) = x^2` laisse une valeur `a = x^2` au statut « ok » ; `a(x) = x^2` puis `a = 2` laisse une fonction constante. Conséquence : `a = 3`, `f(x) = a x`, `a(x) = x^2` échappe au correctif de V58. Relevé par l'agent de V58 le 2026-10-14. | [atelier.md](../systeme/atelier.md) | Objet affiché sous un type qui n'est pas celui tapé, saisie rare. | S | relevé (2026-10-14) |
+| V62 | ✅ **corrigé le 2026-10-20 (fix/v62-v65)** : refus d'un changement de type entre nombre, fonction et suite ; `a = 2` sur une fonction reste une fonction constante (#905, `f = t + 1` dans sa lettre), à trancher par David — **Redéfinir un nom garde son type** : `a = 3` puis `a(x) = x^2` laisse une valeur `a = x^2` au statut « ok » ; `a(x) = x^2` puis `a = 2` laisse une fonction constante. Conséquence : `a = 3`, `f(x) = a x`, `a(x) = x^2` échappe au correctif de V58. Relevé par l'agent de V58 le 2026-10-14. | [atelier.md](../systeme/atelier.md) | Objet affiché sous un type qui n'est pas celui tapé, saisie rare. | S | relevé (2026-10-14) |
 | V63 | **Un nom indicé est lu comme sa base** : `referencesOf` (`parse.ts`) garde la base d'un nœud `subscript` (`getVariables`) : `h(x) = a_1 x` attend « a », même quand `a_1 = 3` existe, et `h(2)` rend `2a_1`. Déjà noté dans `fonction-autre-lettre.test.ts`. Correction à la source non faite pendant V58 : `u_n` et `u_0` (notation des suites) passent par le même chemin, il faut trancher ce qu'ils citent. V58 s'en protège par le texte (`bareNamesOf`). Relevé par la revue de V58 le 2026-10-14. | [atelier.md](../systeme/atelier.md) | Fonction à paramètre indicé en attente à tort, calcul non fait. | S | mesuré (2026-10-14) |
 | V64 | **Intégrales à paramètre : coefficient non extrait** (revue de V61) : `.intégrer 2/(x^2+a^2)`, `a/(x^2+a^2)`, `1/(x^2+a^4)`, `1/(x^2+2x+a^2)` (et `1/(x^2+a^2+1)`) sont refusés — la règle arctan (`isArctanPattern`, `integrators/basic.ts`) n'accepte qu'un numérateur 1 et un terme constant `k^2` ou numérique ; la décomposition en éléments simples ne lit pas de coefficient littéral. Aussi, relevé par la contre-revue : `(x+1)^a` et `1/(x+1)^a` de 0 à 1 refusés (la branche des exposants refuse dès que min(bornes) ⩽ 0, même si la base est positive) ; `sqrt(a) x` et `ln(a) x` de 0 à 1 rendus sans « (a ⩾ 0) » / « (a > 0) » (valeur juste là où elle existe). | [mathast/README.md](../systeme/mathast/README.md) | Refus honnêtes, en français ; aucune réponse fausse. | M | relevé par la revue (2026-10-14) |
 

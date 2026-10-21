@@ -9,7 +9,16 @@
  *
  * - l'unité porte sur la fraction de nombres qui la précède : `1/2 m` se lit
  *   `(1/2)[m]` (décision de David) — pas `x/2 m`, qui reste de l'algèbre ;
- * - deux grandeurs collées s'ajoutent : `2 h 30 min` → `2[h]+30[min]` ;
+ * - au-delà d'un nombre, l'unité porte sur TOUT le terme qui la précède
+ *   (décision de David du 2026-10-18) : `10^3 m` → `(10^3)[m]`, `(1+2) m`,
+ *   `sqrt(2) m`, `2π m`. Des NOMBRES seulement (décision de David du même
+ *   jour : une unité ne s'emploie qu'avec une grandeur numérique) : une lettre,
+ *   même une valeur du panneau, reste de l'algèbre (`x m`, `m g`, `2πr m`) ;
+ *   `2πr[m]` impose l'unité ;
+ * - une durée composée reste juxtaposée : `2 h 30 min` → `2[h] 30[min]`, que le
+ *   parseur lit comme UN bloc (lecture-grandeurs, PR 5) — collée à `*` ou `/`, il
+ *   la refuse (`2 * 1 h 30 min` : 2 h 30 min ou 3 h ?) ; d'autres grandeurs
+ *   collées s'ajoutent : `2 m 30 cm` → `(2[m]+30[cm])` ;
  * - une unité suivie d'une lettre (`3 a b`) ou d'une parenthèse (`2 h(3)`) reste
  *   de l'algèbre.
  *
@@ -53,14 +62,39 @@ const SYMBOL = String.raw`[A-Za-zµμΩ°€$]+(?:\^-?\d+)?`;
 /**
  * Un nombre (ou une fraction de nombres), AU MOINS UNE ESPACE, une écriture
  * d'unité (`km`, `km/h`, `m/s^2`, `kg.m`). Avant le nombre : rien qui l'attache
- * à un facteur (lettre, chiffre, `*`, `/`, `^`, crochet, antislash) ; après
+ * à un facteur (lettre, chiffre, `*`, `/`, `^`, `^-`, crochet, antislash) ; après
  * l'unité : ni lettre, ni chiffre, ni parenthèse, ni crochet — et pas une
  * lettre après des espaces (`3 a b` est un produit).
  */
 const SPACED_QUANTITY = new RegExp(
-	String.raw`(?<![\w.,\]\\*/^])(${NUMBER})(?:/(${NUMBER}))?([ \t]+)(${SYMBOL}(?:[./]${SYMBOL})*)(?![\w(\[])(?![ \t]+[A-Za-z(])`,
+	String.raw`(?<![\w.,\]\\*/^])(?<!\^[-+])(${NUMBER})(?:/(${NUMBER}))?([ \t]+)(${SYMBOL}(?:[./]${SYMBOL})*)(?![\w(\[])(?![ \t]+[A-Za-z(])`,
 	'g'
 );
+
+/**
+ * Une écriture d'unité précédée d'au moins une espace, après la fin d'un terme
+ * (chiffre, lettre, parenthèse fermante, π) ; les mêmes refus après l'unité
+ * que `SPACED_QUANTITY`. Le terme lui-même est lu par `termStart`.
+ */
+const UNIT_AFTER_TERM = new RegExp(
+	String.raw`(?<=[\w)}π²³])[ \t]+(${SYMBOL}(?:[./]${SYMBOL})*)(?![\w(\[])(?![ \t]+[A-Za-z(])`,
+	'g'
+);
+
+/** Les fonctions qu'un terme numérique peut appeler : `sqrt(2) m`. */
+const NUMERIC_FUNCTIONS: ReadonlySet<string> = new Set([
+	'sqrt',
+	'cos',
+	'sin',
+	'tan',
+	'ln',
+	'log',
+	'exp',
+	'abs'
+]);
+
+/** Les opérateurs à côté desquels une espace ne coupe pas le terme : `3 * 10^8`. */
+const TERM_OPERATORS = '*/^×÷·';
 
 /** Un nombre collé à des lettres (`5km`), pour l'aide. */
 const GLUED_QUANTITY = new RegExp(
@@ -72,11 +106,30 @@ const GLUED_QUANTITY = new RegExp(
 const QUANTITY_TOKEN = String.raw`(?:\(\d[\d.,]*\/\d[\d.,]*\)|\d[\d.,]*)\[[^\]]+\]`;
 
 /**
- * Des grandeurs séparées seulement par des espaces : `2[h] 30[min]`. Leur
- * somme est mise entre parenthèses — c'est UN nombre : `1 h 30 min * 2` vaut
- * 3 h, pas 2 h (revue du lot C).
+ * Des grandeurs séparées seulement par des espaces : `2[m] 30[cm]`. Leur
+ * somme est mise entre parenthèses — c'est UN nombre (revue du lot C). Une
+ * durée composée (`2[h] 30[min]`) reste telle quelle : le parseur la lit.
  */
 const JUXTAPOSED = new RegExp(`${QUANTITY_TOKEN}(?:[ \\t]+${QUANTITY_TOKEN})+`, 'g');
+
+/** Les unités d'une durée composée */
+const DURATION_SYMBOL = '(?:h|min|s)';
+
+/**
+ * Une durée composée écrite naturellement, même après `*` (`2*1 h 30 min`) :
+ * ses parties sont mises entre crochets pour que le parseur la refuse comme
+ * ambiguë, au lieu de lire `1 h` comme un produit (« « 30 » inattendu ici »).
+ */
+const DURATION_RUN = new RegExp(
+	String.raw`(?<![\w.,\]\\/^])(?<!\^[-+])${NUMBER}[ \t]+${DURATION_SYMBOL}(?:[ \t]+${NUMBER}[ \t]+${DURATION_SYMBOL})+(?![\w(\[])`,
+	'g'
+);
+
+/** Une partie d'une durée composée : `30 min` */
+const DURATION_PART = new RegExp(String.raw`(${NUMBER})[ \t]+(${DURATION_SYMBOL})`, 'g');
+
+/** Un nombre et une unité de durée entre crochets : `30[min]` (pas `(1/2)[h]`, sommée comme avant) */
+const DURATION_TOKEN = new RegExp(String.raw`^\d[\d.,]*\[${DURATION_SYMBOL}\]$`);
 
 // =============================================================================
 // Fonctions
@@ -88,33 +141,51 @@ const JUXTAPOSED = new RegExp(`${QUANTITY_TOKEN}(?:[ \\t]+${QUANTITY_TOKEN})+`, 
  *
  * @param objectNames - les noms des objets du panneau (une unité qui en est un
  *   reçoit une aide : `5 m` avec une valeur `m`)
+ * @param afterTerms - lire aussi une unité après un terme (`10^3 m`) ; le champ
+ *   de la carte s'en passe, il a ses propres lectures (`mathfield.ts`)
  */
 export function readNaturalQuantities(
 	text: string,
-	objectNames: readonly string[]
+	objectNames: readonly string[],
+	{ afterTerms = true }: { readonly afterTerms?: boolean } = {}
 ): NaturalReading {
 	const notes = new Set<string>();
 	const singleLetters: SingleLetterUnit[] = [];
 
-	const spaced = text.replace(
+	/** Les aides d'une grandeur lue « nombre, espace, unité » : nom du panneau, unité d'une lettre */
+	const noteQuantity = (whole: string, numerator: string, writing: string) => {
+		if (objectNames.includes(writing)) {
+			notes.add(
+				`${writing} est aussi un nom du panneau : pour ${numerator} × ${writing}, écris ${numerator}${writing}.`
+			);
+		}
+		if (/^[A-Za-z]$/.test(writing)) {
+			singleLetters.push({ written: whole.trim(), letter: writing });
+		}
+	};
+
+	const runs = text.replace(DURATION_RUN, (run) =>
+		run.replace(DURATION_PART, (whole, numerator: string, writing: string) => {
+			noteQuantity(whole, numerator, writing);
+			return `${numerator}[${writing}]`;
+		})
+	);
+	const spaced = runs.replace(
 		SPACED_QUANTITY,
 		(whole, numerator: string, denominator: string | undefined, _space, writing: string) => {
 			if (parseUnit(writing) === null) return whole;
-			if (objectNames.includes(writing)) {
-				notes.add(
-					`${writing} est aussi un nom du panneau : pour ${numerator} × ${writing}, écris ${numerator}${writing}.`
-				);
-			}
-			if (/^[A-Za-z]$/.test(writing)) {
-				singleLetters.push({ written: whole.trim(), letter: writing });
-			}
+			noteQuantity(whole, numerator, writing);
 			const value = denominator === undefined ? numerator : `(${numerator}/${denominator})`;
 			return `${value}[${writing}]`;
 		}
 	);
 
+	const extended = afterTerms
+		? quantitiesAfterTerms(spaced, objectNames, notes, singleLetters)
+		: spaced;
+
 	const glued = new Set<string>();
-	for (const [, number, letters] of spaced.matchAll(GLUED_QUANTITY)) {
+	for (const [, number, letters] of extended.matchAll(GLUED_QUANTITY)) {
 		if (parseUnit(letters) === null) continue;
 		// Une aide par unité : `5km + 3km` ne la répète pas (revue)
 		if (glued.has(letters)) continue;
@@ -124,8 +195,160 @@ export function readNaturalQuantities(
 		notes.add(`Pour une grandeur, écris ${number} ${letters} (avec une espace).`);
 	}
 
-	const summed = spaced.replace(JUXTAPOSED, (run) => `(${run.split(/[ \t]+/).join('+')})`);
+	const summed = extended.replace(JUXTAPOSED, (run) => {
+		const parts = run.split(/[ \t]+/);
+		return parts.every((part) => DURATION_TOKEN.test(part))
+			? parts.join(' ')
+			: `(${parts.join('+')})`;
+	});
 	return { text: summed, notes: [...notes], singleLetters };
+}
+
+/**
+ * Chaque unité écrite après une espace derrière un terme numérique : `10^3 m`
+ * → `(10^3)[m]`. Après la lecture des nombres (`spaced`) : ce qu'elle a déjà
+ * mis entre crochets n'est plus lu ici.
+ */
+function quantitiesAfterTerms(
+	text: string,
+	objectNames: readonly string[],
+	notes: Set<string>,
+	singleLetters: SingleLetterUnit[]
+): string {
+	let result = text;
+	let from = 0;
+	for (;;) {
+		UNIT_AFTER_TERM.lastIndex = from;
+		const match = UNIT_AFTER_TERM.exec(result);
+		if (match === null) return result;
+		const [whole, writing] = match;
+		const end = match.index;
+		const start = termStart(result, end);
+		const term = result.slice(start, end);
+		if (parseUnit(writing) === null || !isNumericTerm(term)) {
+			from = end + whole.length;
+			continue;
+		}
+		// Comme `5 m` : l'unité l'emporte sur le nom du panneau, une note le dit
+		if (objectNames.includes(writing)) {
+			notes.add(
+				`${writing} est aussi un nom du panneau : pour ${term} × ${writing}, écris ${term}${writing}.`
+			);
+		}
+		if (/^[A-Za-z]$/.test(writing)) {
+			singleLetters.push({ written: `${term} ${writing}`, letter: writing });
+		}
+		// Un nombre seul (`2[m]*3 m`) n'a pas besoin de parenthèses
+		const bare = isWrapped(term) || new RegExp(`^${NUMBER}$`).test(term);
+		const value = bare ? term : `(${term})`;
+		const quantity = `${value}[${writing}]`;
+		result = result.slice(0, start) + quantity + result.slice(end + whole.length);
+		from = start + quantity.length;
+	}
+}
+
+/**
+ * Le début du terme qui finit en `end` : on remonte jusqu'à un `+`, un `-`, un
+ * `=`, un séparateur ou une parenthèse ouvrante du niveau du terme. Une espace
+ * entre deux facteurs sans opérateur (`3 a 10^3`) le coupe aussi.
+ *
+ * Une grandeur déjà lue (`2[m]`, `(2[m])`) clôt le terme : `2[m]*3 m` est
+ * (2 m) × (3 m), comme mathAST lit `2\unit{m}\times3\unit{m}`. Le terme commence
+ * après l'opérateur qui la suit ; sans `*` ni `/` (`2[m]^3 m`), il est vide.
+ */
+function termStart(text: string, end: number): number {
+	const afterQuantity = quantityBefore(text, end);
+	if (afterQuantity !== null) {
+		const operator = /^\s*[*/×÷·]\s*/.exec(text.slice(afterQuantity, end));
+		return operator === null ? end : afterQuantity + operator[0].length;
+	}
+	let depth = 0;
+	let i = end;
+	for (; i > 0; i--) {
+		const char = text[i - 1];
+		if (char === ')' || char === '}') depth++;
+		else if (char === '(' || char === '{') {
+			if (depth === 0) break;
+			depth--;
+		} else if (depth > 0) continue;
+		// `10^-3` : le signe d'un exposant appartient au terme
+		else if (char === '+' || char === '-') {
+			if (text[i - 2] !== '^') break;
+		}
+		// `2,5` : une virgule entre deux chiffres est décimale
+		else if (char === ',') {
+			if (!/\d/.test(text[i - 2] ?? '') || !/\d/.test(text[i] ?? '')) break;
+		} else if ('=;<>'.includes(char)) break;
+		else if (/\s/.test(char)) {
+			const before = text.slice(0, i).trimEnd().at(-1) ?? '';
+			const after = text.slice(i).trimStart()[0] ?? '';
+			if (!TERM_OPERATORS.includes(before) && !TERM_OPERATORS.includes(after)) break;
+		}
+	}
+	while (/\s/.test(text[i] ?? '')) i++;
+	return i;
+}
+
+/**
+ * La fin de la dernière grandeur déjà lue (`2[m]`, `(2[m])`) du terme qui finit
+ * en `end`, au niveau du terme ; null s'il n'y en a pas. Mêmes coupures que
+ * `termStart`, pour ne pas chercher au-delà du terme (`2[m] + 3 m`).
+ */
+function quantityBefore(text: string, end: number): number | null {
+	let depth = 0;
+	for (let i = end; i > 0; i--) {
+		const char = text[i - 1];
+		if (depth === 0 && char === ']') return i;
+		if (char === ')' || char === '}') {
+			if (depth === 0 && text.slice(matchingOpen(text, i - 1), i).includes('[')) return i;
+			depth++;
+		} else if (char === '(' || char === '{') {
+			if (depth === 0) return null;
+			depth--;
+		} else if (depth > 0) continue;
+		else if ('+-=;<>'.includes(char) && text[i - 2] !== '^') return null;
+	}
+	return null;
+}
+
+/** L'indice de la parenthèse (ou accolade) ouvrante de celle qui ferme en `close` */
+function matchingOpen(text: string, close: number): number {
+	let depth = 0;
+	for (let i = close; i >= 0; i--) {
+		if (text[i] === ')' || text[i] === '}') depth++;
+		else if (text[i] === '(' || text[i] === '{') {
+			depth--;
+			if (depth === 0) return i;
+		}
+	}
+	return 0;
+}
+
+/**
+ * Un terme de nombres : chiffres, opérateurs, parenthèses, π, des fonctions
+ * usuelles (`sqrt(2)`). Toute autre lettre, même une valeur du panneau, en
+ * fait de l'algèbre : `m g` avec m = 70 est m × g, pas 70 grammes (revue).
+ */
+function isNumericTerm(term: string): boolean {
+	if (term === '' || /[[\]\\]/.test(term)) return false;
+	for (const identifier of term.matchAll(/[A-Za-z]+/g)) {
+		const [name] = identifier;
+		const isCall = /^\s*\(/.test(term.slice(identifier.index + name.length));
+		if (!isCall || !NUMERIC_FUNCTIONS.has(name)) return false;
+	}
+	return true;
+}
+
+/** `(1+2)` : un terme déjà entre parenthèses, d'un bout à l'autre. */
+function isWrapped(term: string): boolean {
+	if (!term.startsWith('(') || !term.endsWith(')')) return false;
+	let depth = 0;
+	for (let i = 0; i < term.length; i++) {
+		if (term[i] === '(') depth++;
+		else if (term[i] === ')') depth--;
+		if (depth === 0 && i < term.length - 1) return false;
+	}
+	return true;
 }
 
 /** L'aide d'un refus de dimension où une lettre a été lue comme unité. */
@@ -134,4 +357,24 @@ export function singleLetterHint(units: readonly SingleLetterUnit[]): string | n
 	const [{ written, letter }] = units;
 	const number = written.slice(0, written.lastIndexOf(letter)).trim();
 	return `« ${written} » se lit comme une grandeur (${letter} est une unité) : pour ${number} × ${letter}, écris ${number}${letter}.`;
+}
+
+/**
+ * Le texte avec son ancien sens, d'avant la lecture des grandeurs : chaque
+ * lettre lue comme unité collée à son nombre, comme le dit l'aide (`5 s + 1` →
+ * `5s + 1`), ou `null` s'il n'y en a pas. Sert au rejeu d'un vieil historique.
+ */
+export function withSingleLettersGlued(text: string): string | null {
+	const { singleLetters } = readNaturalQuantities(text, []);
+	if (singleLetters.length === 0) return null;
+	let glued = text;
+	for (const { written, letter } of singleLetters) {
+		const number = written.slice(0, written.lastIndexOf(letter)).trim();
+		// `10^3 s` → `(10^3)s`, pas `10^3s` (= 10^(3s))
+		const factor = /^[\d.,]+$/.test(number) ? number : `(${number})`;
+		// L'occurrence qui commence un terme : le `5 s` de `2^5 s + 5 s` est le second (revue)
+		const escaped = written.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+		glued = glued.replace(new RegExp(`(?<![\\w^.,/)])${escaped}`), `${factor}${letter}`);
+	}
+	return glued;
 }

@@ -1,0 +1,1208 @@
+{
+	"template_id": "9f33998e-af2a-4109-b664-10e5c9469d44",
+	"titre": "Trouver le côté d'un carré connaissant son aire.",
+	"sous_titre": "A partir d'une description.",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Aires > Aire d'un carré",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-151",
+			"libelle_point": "Connaître la formule de l'aire d'un carré",
+			"noeud_actuel": "Grandeurs et mesures > Aires > carré",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{mm^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[mm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[mm]",
+							"11[mm]",
+							"1[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["mm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{mm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[mm]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{mm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[mm]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{mm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[mm]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{mm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[mm]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{mm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[mm]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{cm^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[cm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[cm]",
+							"11[cm]",
+							"1[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{cm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[cm]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{cm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[cm]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{cm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[cm]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{cm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[cm]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{cm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[cm]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{dm^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[dm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[dm]",
+							"11[dm]",
+							"1[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["dm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{dm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[dm]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{dm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[dm]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{dm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[dm]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{dm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[dm]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{dm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[dm]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{m^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[m]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[m]",
+							"11[m]",
+							"1[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["m^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{m}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[m]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{m}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[m]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{m}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[m]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{m}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[m]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{m}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[m]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{dam^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[dam]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[dam]",
+							"11[dam]",
+							"1[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["dam^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{dam}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[dam]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{dam}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[dam]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{dam}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[dam]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{dam}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[dam]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{dam}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[dam]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{hm^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[hm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[hm]",
+							"11[hm]",
+							"1[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["hm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{hm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[hm]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{hm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[hm]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{hm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[hm]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{hm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[hm]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{hm}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[hm]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{km^2}$ ?\n\nLa longueur du côté est $?$.",
+				"reponses_brutes": ["{{eval:a[km]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[km]",
+							"11[km]",
+							"1[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["km^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $121~\\mathrm{km}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["11[km]"],
+					"variables": {
+						"a": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $1~\\mathrm{km}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["1[km]"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $16~\\mathrm{km}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["4[km]"],
+					"variables": {
+						"a": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $81~\\mathrm{km}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["9[km]"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la longueur du côté d'un carré d'aire $49~\\mathrm{km}^{2}$ ?\n\nLa longueur du côté est $[?]$.",
+					"reponse": ["7[km]"],
+					"variables": {
+						"a": "7"
+					}
+				}
+			]
+		}
+	]
+}

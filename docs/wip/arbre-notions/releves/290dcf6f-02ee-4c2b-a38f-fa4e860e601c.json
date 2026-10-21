@@ -1,0 +1,1028 @@
+{
+	"template_id": "290dcf6f-02ee-4c2b-a38f-fa4e860e601c",
+	"titre": "Augmentation",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Variations",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-141",
+			"libelle_point": "Appliquer un pourcentage à une grandeur ou à un nombre",
+			"noeud_actuel": "Proportionnalité > Pourcentages > calculs de pourcentages",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"reponses_brutes": ["{{eval:a*(1+b/100)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 22,
+						"max": 220,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 165, 176, 187, 198, 209, 220
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 200,
+				"nb_distinctes": 20,
+				"valeurs": [
+					10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 22,
+				"max": 220,
+				"nb_distinctes": 19,
+				"valeurs": [
+					22, 33, 44, 55, 66, 77, 88, 99, 110, 121, 132, 143, 154, 165, 176, 187, 198, 209, 220
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 10,
+				"max": 220,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (220)",
+					"graine": 24,
+					"enonce": "Un article qui coûtait initialement $200$ Qr voit son prix augmenter de $10\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["220"],
+					"variables": {
+						"a1": "20",
+						"a": "200",
+						"b": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (10)",
+					"graine": 1,
+					"enonce": "Un article qui coûtait initialement $20$ Qr voit son prix augmenter de $10\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["22"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un article qui coûtait initialement $80$ Qr voit son prix augmenter de $10\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["88"],
+					"variables": {
+						"a1": "8",
+						"a": "80",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un article qui coûtait initialement $160$ Qr voit son prix augmenter de $10\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["176"],
+					"variables": {
+						"a1": "16",
+						"a": "160",
+						"b": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Un article qui coûtait initialement $30$ Qr voit son prix augmenter de $10\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["33"],
+					"variables": {
+						"a1": "3",
+						"a": "30",
+						"b": "10"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "20"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"reponses_brutes": ["{{eval:a*(1+b/100)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 24,
+						"max": 240,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180, 192, 204, 216, 228, 240
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 20,
+				"max": 200,
+				"nb_distinctes": 19,
+				"valeurs": [
+					20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 24,
+				"max": 240,
+				"nb_distinctes": 19,
+				"valeurs": [
+					24, 36, 48, 60, 72, 84, 96, 108, 120, 132, 144, 156, 168, 180, 192, 204, 216, 228, 240
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 20,
+				"max": 240,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (240)",
+					"graine": 24,
+					"enonce": "Un article qui coûtait initialement $200$ Qr voit son prix augmenter de $20\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["240"],
+					"variables": {
+						"a1": "20",
+						"a": "200",
+						"b": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (20)",
+					"graine": 1,
+					"enonce": "Un article qui coûtait initialement $20$ Qr voit son prix augmenter de $20\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["24"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un article qui coûtait initialement $80$ Qr voit son prix augmenter de $20\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["96"],
+					"variables": {
+						"a1": "8",
+						"a": "80",
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un article qui coûtait initialement $160$ Qr voit son prix augmenter de $20\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["192"],
+					"variables": {
+						"a1": "16",
+						"a": "160",
+						"b": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Un article qui coûtait initialement $30$ Qr voit son prix augmenter de $20\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["36"],
+					"variables": {
+						"a1": "3",
+						"a": "30",
+						"b": "20"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "50"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"reponses_brutes": ["{{eval:a*(1+b/100)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 50,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [50]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 300,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285,
+							300
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 20,
+				"max": 200,
+				"nb_distinctes": 19,
+				"valeurs": [
+					20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 30,
+				"max": 300,
+				"nb_distinctes": 19,
+				"valeurs": [
+					30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180, 195, 210, 225, 240, 255, 270, 285, 300
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 20,
+				"max": 300,
+				"nb_distinctes": 32,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (300)",
+					"graine": 24,
+					"enonce": "Un article qui coûtait initialement $200$ Qr voit son prix augmenter de $50\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["300"],
+					"variables": {
+						"a1": "20",
+						"a": "200",
+						"b": "50"
+					}
+				},
+				{
+					"role": "plus petite valeur (20)",
+					"graine": 1,
+					"enonce": "Un article qui coûtait initialement $20$ Qr voit son prix augmenter de $50\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["30"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un article qui coûtait initialement $80$ Qr voit son prix augmenter de $50\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["120"],
+					"variables": {
+						"a1": "8",
+						"a": "80",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un article qui coûtait initialement $160$ Qr voit son prix augmenter de $50\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["240"],
+					"variables": {
+						"a1": "16",
+						"a": "160",
+						"b": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Un article qui coûtait initialement $30$ Qr voit son prix augmenter de $50\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["45"],
+					"variables": {
+						"a1": "3",
+						"a": "30",
+						"b": "50"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "100"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"reponses_brutes": ["{{eval:a*(1+b/100)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 40,
+						"max": 400,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380,
+							400
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 20,
+				"max": 200,
+				"nb_distinctes": 19,
+				"valeurs": [
+					20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 40,
+				"max": 400,
+				"nb_distinctes": 19,
+				"valeurs": [
+					40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380, 400
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 20,
+				"max": 400,
+				"nb_distinctes": 29,
+				"valeurs": [
+					20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200,
+					220, 240, 260, 280, 300, 320, 340, 360, 380, 400
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (400)",
+					"graine": 24,
+					"enonce": "Un article qui coûtait initialement $200$ Qr voit son prix augmenter de $100\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["400"],
+					"variables": {
+						"a1": "20",
+						"a": "200",
+						"b": "100"
+					}
+				},
+				{
+					"role": "plus petite valeur (20)",
+					"graine": 1,
+					"enonce": "Un article qui coûtait initialement $20$ Qr voit son prix augmenter de $100\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["40"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un article qui coûtait initialement $80$ Qr voit son prix augmenter de $100\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["160"],
+					"variables": {
+						"a1": "8",
+						"a": "80",
+						"b": "100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un article qui coûtait initialement $160$ Qr voit son prix augmenter de $100\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["320"],
+					"variables": {
+						"a1": "16",
+						"a": "160",
+						"b": "100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Un article qui coûtait initialement $30$ Qr voit son prix augmenter de $100\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["60"],
+					"variables": {
+						"a1": "3",
+						"a": "30",
+						"b": "100"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..20"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10"
+					},
+					{
+						"name": "b",
+						"expression": "200"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Un article qui coûtait initialement ${{eval:a}}$ Qr voit son prix augmenter de ${{b}}\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $?$ Qr.",
+				"reponses_brutes": ["{{eval:a*(1+b/100)}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 19,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+						]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 200,
+						"max": 200,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [200]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 60,
+						"max": 600,
+						"negatif_possible": false,
+						"nb_distinctes": 19,
+						"valeurs": [
+							60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540,
+							570, 600
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 20,
+				"max": 200,
+				"nb_distinctes": 19,
+				"valeurs": [
+					20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 60,
+				"max": 600,
+				"nb_distinctes": 19,
+				"valeurs": [
+					60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360, 390, 420, 450, 480, 510, 540, 570,
+					600
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 20,
+				"max": 600,
+				"nb_distinctes": 33,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (600)",
+					"graine": 24,
+					"enonce": "Un article qui coûtait initialement $200$ Qr voit son prix augmenter de $200\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["600"],
+					"variables": {
+						"a1": "20",
+						"a": "200",
+						"b": "200"
+					}
+				},
+				{
+					"role": "plus petite valeur (20)",
+					"graine": 1,
+					"enonce": "Un article qui coûtait initialement $20$ Qr voit son prix augmenter de $200\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["60"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "200"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Un article qui coûtait initialement $80$ Qr voit son prix augmenter de $200\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["240"],
+					"variables": {
+						"a1": "8",
+						"a": "80",
+						"b": "200"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Un article qui coûtait initialement $160$ Qr voit son prix augmenter de $200\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["480"],
+					"variables": {
+						"a1": "16",
+						"a": "160",
+						"b": "200"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Un article qui coûtait initialement $30$ Qr voit son prix augmenter de $200\\%$. Calcule son nouveau prix.\n\nLe nouveau prix est de $[?]$ Qr.",
+					"reponse": ["90"],
+					"variables": {
+						"a1": "3",
+						"a": "30",
+						"b": "200"
+					}
+				}
+			]
+		}
+	]
+}

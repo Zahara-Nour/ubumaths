@@ -1,0 +1,276 @@
+{
+	"template_id": "3d6def48-eefd-4015-9090-ec2396ec3483",
+	"titre": "Compléter une soustraction à trou",
+	"sous_titre": "Soustraire des centaines entières à un nombre",
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Soustraire > A trou",
+	"mis_a_jour": "2026-09-29T19:27:25.819364+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "décision « TAG » → « PAS_DE_TAG_R1 » ; code « CE1-084 » → « ∅ »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval: a*100 + b*10 + c }} - ? =  {{eval:a*100 + b*10 + c - d*100}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:d*100}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 277,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 277,
+						"exemples": [
+							"259 - ? =  159",
+							"435 - ? =  135",
+							"251 - ? =  151",
+							"421 - ? =  321",
+							"826 - ? =  726",
+							"262 - ? =  162",
+							"297 - ? =  197",
+							"737 - ? =  337",
+							"828 - ? =  228",
+							"978 - ? =  578",
+							"666 - ? =  166",
+							"269 - ? =  169"
+						],
+						"nombres_contenus": {
+							"min": 111,
+							"max": 993,
+							"nb_distinctes": 401,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 800,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [100, 200, 300, 400, 500, 600, 700, 800]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 111,
+				"max": 993,
+				"nb_distinctes": 401,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 100,
+				"max": 800,
+				"nb_distinctes": 8,
+				"valeurs": [100, 200, 300, 400, 500, 600, 700, 800],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 100,
+				"max": 993,
+				"nb_distinctes": 409,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (993)",
+					"graine": 115,
+					"enonce": "Complète.\n\n$$993 - [?] = 493$$",
+					"reponse": ["500"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "5",
+						"expression1": "993 - ? =  493"
+					}
+				},
+				{
+					"role": "plus petite valeur (100)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$$259 - [?] = 159$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "1",
+						"expression1": "259 - ? =  159"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète.\n\n$$435 - [?] = 135$$",
+					"reponse": ["300"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "3",
+						"expression1": "435 - ? =  135"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète.\n\n$$251 - [?] = 151$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "1",
+						"expression1": "251 - ? =  151"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète.\n\n$$421 - [?] = 321$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "1",
+						"d": "1",
+						"expression1": "421 - ? =  321"
+					}
+				}
+			]
+		}
+	]
+}

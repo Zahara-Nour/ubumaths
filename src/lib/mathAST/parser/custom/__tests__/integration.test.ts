@@ -18,7 +18,6 @@ describe('Custom Parser Integration', () => {
 			// Literals
 			'42',
 			'3.14',
-			'3,14',
 			'x',
 			'y',
 			'\\pi',
@@ -197,7 +196,8 @@ describe('Custom Parser Integration', () => {
 	describe('Error handling parity', () => {
 		const ERROR_CASES = [
 			{ input: 'x^ab', desc: 'multi-letter exponent without braces' },
-			{ input: 'x^-2', desc: 'negative exponent without braces' },
+			{ input: 'x^2^3', desc: 'stacked exponents' },
+			{ input: 'x^-(2)', desc: 'negative exponent before a group' },
 			{ input: 'sin x', desc: 'function without parentheses' },
 			{ input: '()', desc: 'empty parentheses' }
 		];

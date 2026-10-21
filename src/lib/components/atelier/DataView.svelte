@@ -20,9 +20,14 @@
 		cellName,
 		columnLetter,
 		csvText,
+		CSV_TOO_BIG,
+		csvCellRefusal,
 		GRID_COLUMNS,
 		GRID_ROWS,
+		hasTitleRow,
+		MAX_CSV_BYTES,
 		MAX_TITLE_LENGTH,
+		readCsvFile,
 		readTable,
 		tableText
 	} from '$lib/atelier/grid';
@@ -37,9 +42,29 @@
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { ConfirmDialog } from '$lib/components/ui/confirm-dialog';
 	import StatChart from '$lib/components/markdown/nodes/StatChart.svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
+	import { AlignCenter, AlignLeft, AlignRight, Bold, Eraser, Italic } from '@lucide/svelte';
+	import type { Component } from 'svelte';
+	import {
+		MAX_FORMAT_DECIMALS,
+		THEME_COLORS,
+		applyPatch,
+		formatRounds,
+		formatShown,
+		stylePatchSchema,
+		type Alignment,
+		type CellStyle,
+		type NumberFormat,
+		type StylePatch,
+		type ThemeColor
+	} from '$lib/atelier/cell-format';
+	import { COLOR_LABELS, fillColorCss, textColorCss } from '$lib/atelier/cell-colors';
 
 	/** Où va la frappe en cours : dans la cellule, ou dans la barre au-dessus. */
 	type Editing = 'cell' | 'bar' | null;
+
+	/** Le format de nombre choisi dans la barre d'outils : `exact` = pas de format. */
+	type NumberKind = NumberFormat['kind'] | 'exact';
 
 	/** Au moins 10 lignes et 5 colonnes, même vide ; la zone utilisée plus sa marge (§2). */
 	/** Le format propre à la grille dans le presse-papiers : les textes exacts. */
@@ -55,6 +80,45 @@
 		row: z.number().int().min(1).max(GRID_ROWS)
 	});
 	const EMPTY_GRID = 'La grille est vide : rien à télécharger.';
+
+	/** Au plus une grille entière de styles copiés (un presse-papiers peut être forgé). */
+	const clipboardStylesSchema = z
+		.array(z.array(stylePatchSchema).max(GRID_COLUMNS))
+		.max(GRID_ROWS + 1);
+
+	const NO_COLOR = 'aucune';
+	/** Les choix de la barre, plus bas que ceux d'un formulaire (44 px au doigt, par `select-trigger`). */
+	const COMPACT_TRIGGER =
+		'select-trigger h-8 w-auto gap-1 rounded-md border border-input bg-background px-2 text-sm inline-flex items-center justify-between';
+	const COLOR_ITEMS = [
+		{ value: NO_COLOR, label: 'Aucune' },
+		...THEME_COLORS.map((color) => ({ value: color, label: COLOR_LABELS[color] }))
+	];
+	const NUMBER_KIND_LABELS: Readonly<Record<NumberKind, string>> = {
+		exact: 'Écriture exacte',
+		decimals: 'Nombre',
+		percent: 'Pourcentage',
+		currency: 'Monnaie (€)'
+	};
+	const NUMBER_KIND_ITEMS = (Object.keys(NUMBER_KIND_LABELS) as NumberKind[]).map((kind) => ({
+		value: kind,
+		label: NUMBER_KIND_LABELS[kind]
+	}));
+	/** Les décimales d'un format qu'on vient de choisir : celles de V4 (pourcentage sans décimale). */
+	const DEFAULT_DECIMALS: Readonly<Record<NumberFormat['kind'], number>> = {
+		decimals: 2,
+		percent: 0,
+		currency: 2
+	};
+	const DECIMALS_ITEMS = Array.from({ length: MAX_FORMAT_DECIMALS + 1 }, (_, n) => ({
+		value: String(n),
+		label: `${n} décimale${n > 1 ? 's' : ''}`
+	}));
+	const ALIGNMENTS: readonly { value: Alignment; label: string; icon: Component }[] = [
+		{ value: 'left', label: 'Aligner à gauche', icon: AlignLeft },
+		{ value: 'center', label: 'Centrer', icon: AlignCenter },
+		{ value: 'right', label: 'Aligner à droite', icon: AlignRight }
+	];
 
 	const MIN_ROWS = 10;
 	const MIN_COLUMNS = 5;
@@ -199,8 +263,12 @@
 		// Aussi pour `√2`, `π` : la case les écrit, mais leur texte (lu par un lecteur
 		// d'écran) est `≈ 1,4142` — la valeur exacte doit pouvoir se lire (revue).
 		// Et pour `509/128`, que la case écrit `3,9765625` (Q-L3-2, lot 3). Pas pour
-		// ce que la case écrit déjà exact (`1/3`, `0,25`, `2`)
-		if (value.shownExact === true) return null;
+		// ce que la case écrit déjà exact (`1/3`, `0,25`, `2`) — sauf sous un format
+		// de nombre qui l'arrondit : `0,33` garde « Valeur exacte : 1/3 » (Q-MF-1)
+		// — et seulement si l'arrondi perd quelque chose (`2` → `2,00` : rien à dire, revue)
+		const rounds =
+			activeStyle.number !== undefined && formatRounds(value.value, activeStyle.number);
+		if (value.shownExact === true && !rounds) return null;
 		return composed(value.exactLatex);
 	});
 
@@ -217,6 +285,76 @@
 				return '';
 		}
 	}
+	// -------------------------------------------------------------------------
+	// Mise en forme (Q-MF-1 à Q-MF-3)
+	// -------------------------------------------------------------------------
+
+	/** Le style de la case active : la barre d'outils le montre (`aria-pressed`). */
+	const activeStyle = $derived(atelier.styleAt(selected.column, selected.row));
+	const activeNumberKind = $derived<NumberKind>(activeStyle.number?.kind ?? 'exact');
+
+	/**
+	 * Mettre en forme la zone sélectionnée : un geste de la grille (T6). Le focus
+	 * revient à la grille, pour que Ctrl+Z y défasse le geste (leçon de « Relancer »).
+	 * Les choix de la barre sont liés par fonctions (`bind:value={get, set}`) : un
+	 * geste refusé (plafond) ne laisse pas un choix affiché qui n'a pas été posé (revue).
+	 */
+	function restyle(patch: StylePatch) {
+		// Une frappe refusée reste en cours (le clic a validé, sans succès) : on ne
+		// pose rien et le refus reste affiché (revue)
+		if (editing !== null) return;
+		const done = atelier.applyStyle(zone, patch);
+		refusal = done.ok ? '' : done.message;
+		focusSelected();
+	}
+
+	function clearFormatting() {
+		if (editing !== null) return;
+		const done = atelier.clearStyle(zone);
+		refusal = done.ok ? '' : done.message;
+		focusSelected();
+	}
+
+	/** Gras, italique, alignement : un bouton enfoncé ramène la zone au défaut. */
+	const toggleBold = () => restyle({ bold: !activeStyle.bold });
+	const toggleItalic = () => restyle({ italic: !activeStyle.italic });
+	const toggleAlign = (align: Alignment) =>
+		restyle({ align: activeStyle.align === align ? null : align });
+
+	const colorOf = (value: string): ThemeColor | null =>
+		value === NO_COLOR ? null : (THEME_COLORS.find((color) => color === value) ?? null);
+	const colorLabel = (color: ThemeColor | undefined) =>
+		color === undefined ? 'aucune' : COLOR_LABELS[color].toLowerCase();
+
+	function chooseNumberKind(value: string) {
+		const kind = NUMBER_KIND_ITEMS.find((item) => item.value === value)?.value;
+		if (kind === undefined) return;
+		if (kind === 'exact') {
+			restyle({ number: null });
+			return;
+		}
+		// Changer de format garde les décimales choisies (Q-MF-1)
+		const decimals = activeStyle.number?.decimals ?? DEFAULT_DECIMALS[kind];
+		restyle({ number: { kind, decimals } });
+	}
+
+	function chooseDecimals(value: string) {
+		const decimals = Number(value);
+		const current = activeStyle.number;
+		if (current === undefined || !Number.isInteger(decimals)) return;
+		restyle({ number: { kind: current.kind, decimals } });
+	}
+
+	/** Le style posé sur une case, en variables CSS : un fond reste visible sous la sélection. */
+	function cellCss(style: CellStyle): string | undefined {
+		const parts = [
+			style.color && `--texte: ${textColorCss(style.color)}`,
+			style.fill && `--fond: ${fillColorCss(style.fill)}`,
+			style.align && `text-align: ${style.align}`
+		].filter((part) => typeof part === 'string');
+		return parts.length === 0 ? undefined : parts.join('; ');
+	}
+
 	/** La zone sélectionnée : la cellule seule, ou le rectangle jusqu'à l'ancre. */
 	const zone = $derived({
 		left: Math.min(selected.column, anchor?.column ?? selected.column),
@@ -406,21 +544,9 @@
 			focusSelected();
 			return;
 		}
-		// Ctrl/⌘+Z annule, Ctrl/⌘+Maj+Z (ou Ctrl+Y) rétablit, dans la grille (T6).
-		// ⚠️ Arrêté ici : l'atelier écoute Ctrl+Z sur la fenêtre pour annuler une
-		// suppression de carte, qui n'est pas un geste de la grille
-		// Seulement s'il y a de quoi : sinon le geste remonte, et Ctrl+Z annule la
-		// dernière suppression de carte, comme avant la grille (revue de la PR 3a)
+		// Ctrl/⌘+Z et Ctrl+Y ne sont pas traités ici : ils remontent à l'atelier,
+		// dont la pile commune contient les gestes de la grille (lot 5, Q3)
 		const key = event.key.toLowerCase();
-		if ((event.ctrlKey || event.metaKey) && (key === 'z' || key === 'y')) {
-			const direction = key === 'y' || event.shiftKey ? 'redo' : 'undo';
-			if (atelier.gridHistory[direction] > 0) {
-				event.preventDefault();
-				event.stopPropagation();
-				replayGrid(direction);
-			}
-			return;
-		}
 		// Ctrl/⌘+D recopie la première ligne de la zone vers le bas (§5) ; une case
 		// seule reçoit celle du dessus, comme dans un tableur
 		if ((event.ctrlKey || event.metaKey) && key === 'd') {
@@ -428,6 +554,21 @@
 			const single = zone.top === zone.bottom;
 			if (single && zone.top === 1) return;
 			fill(single ? { ...zone, top: zone.top - 1 } : zone);
+			return;
+		}
+		// Ctrl/⌘+B et +I : gras, italique (Q-MF-2), sur toute la zone
+		// (ni Maj : Ctrl+Maj+B reste au navigateur ; ni répétition : maintenue, la
+		// touche alternait et remplissait l'historique, comme F9 — revue)
+		if (
+			(event.ctrlKey || event.metaKey) &&
+			!event.altKey &&
+			!event.shiftKey &&
+			(key === 'b' || key === 'i')
+		) {
+			event.preventDefault();
+			if (event.repeat) return;
+			if (key === 'b') toggleBold();
+			else toggleItalic();
 			return;
 		}
 		// Ctrl/⌘ + C ou V : le geste passe par le relais (voir `relay`). Une touche
@@ -545,8 +686,8 @@
 		event.preventDefault();
 		editing = null;
 		draft = '';
-		const { table, origin } = pastedTable(event, text);
-		const pasted = atelier.pasteTable(zone.left, zone.top, table, origin);
+		const { table, origin, styles } = pastedTable(event, text);
+		const pasted = atelier.pasteTable(zone.left, zone.top, table, origin, styles);
 		refusal = pasted.ok ? '' : pasted.message;
 		backToCell();
 	}
@@ -558,14 +699,21 @@
 	function pastedTable(
 		event: ClipboardEvent,
 		text: string
-	): { table: string[][]; origin?: { column: number; row: number } } {
+	): {
+		table: string[][];
+		origin?: { column: number; row: number };
+		styles?: CellStyle[][];
+	} {
 		const own = event.clipboardData?.getData(GRID_CLIPBOARD_TYPE) ?? '';
 		if (own !== '') {
 			try {
 				const copied: unknown = JSON.parse(own);
-				const { cells, origin } = (Array.isArray(copied) ? { cells: copied } : (copied ?? {})) as {
+				const { cells, origin, styles } = (
+					Array.isArray(copied) ? { cells: copied } : (copied ?? {})
+				) as {
 					cells?: unknown;
 					origin?: unknown;
+					styles?: unknown;
 				};
 				const table = Array.isArray(cells) ? cells : null;
 				if (
@@ -574,7 +722,22 @@
 				) {
 					// Q-L2-4 : les formules se décalent depuis la case d'où elles ont été copiées
 					const from = clipboardOriginSchema.safeParse(origin);
-					return { table: table as string[][], ...(from.success && { origin: from.data }) };
+					// Q-MF-4 : la mise en forme suit, si elle a la forme du tableau copié
+					const shaped = clipboardStylesSchema.safeParse(styles);
+					const fits =
+						shaped.success &&
+						shaped.data.length === table.length &&
+						shaped.data.every((line, i) => line.length === table[i].length);
+					return {
+						table: table as string[][],
+						...(from.success && { origin: from.data }),
+						// Sans origine valable, une ligne de titres peut être devinée : les
+						// styles se décaleraient d'une ligne (revue) — on les laisse
+						...(fits &&
+							from.success && {
+								styles: shaped.data.map((line) => line.map((p) => applyPatch({}, p)))
+							})
+					};
 				}
 			} catch {
 				// Illisible : on relit le texte, comme un collage venu d'ailleurs
@@ -592,11 +755,71 @@
 		const texts = zoneTexts();
 		// Pour les tableurs : des décimaux à virgule ; pour la grille : les textes exacts
 		event.clipboardData?.setData('text/plain', tableText(zoneExported()));
+		// Q-MF-4 : la mise en forme part avec (`{}` : la case collée revient au défaut)
+		const styles = texts.map((line, i) =>
+			line.map((_, j) => atelier.styleAt(zone.left + j, zone.top + i))
+		);
 		event.clipboardData?.setData(
 			GRID_CLIPBOARD_TYPE,
-			JSON.stringify({ origin: { column: zone.left, row: zone.top }, cells: texts })
+			JSON.stringify({ origin: { column: zone.left, row: zone.top }, cells: texts, styles })
 		);
 		backToCell();
+	}
+
+	/** Le champ de fichier, caché : « Ouvrir un CSV… » le déclenche. */
+	let csvInput: HTMLInputElement | undefined = $state();
+
+	/**
+	 * « Ouvrir un CSV… » (phase 0 §3, Q-RE-4) : le fichier, lu dans le navigateur
+	 * (rien n'est envoyé), se pose comme un collage à partir de la case choisie —
+	 * tout ou rien, titres devinés, un geste que Ctrl+Z défait.
+	 */
+	async function openCsv(event: Event & { currentTarget: HTMLInputElement }) {
+		const input = event.currentTarget;
+		const file = input.files?.[0];
+		// Vidé : rouvrir le même fichier redonne un `change`
+		input.value = '';
+		if (file === undefined) return;
+		// La taille d'abord : un fichier énorme n'est jamais lu en mémoire
+		if (file.size > MAX_CSV_BYTES) {
+			refusal = CSV_TOO_BIG;
+			return;
+		}
+		const read = readCsvFile(new Uint8Array(await file.arrayBuffer()));
+		if (!read.ok) {
+			refusal = read.message;
+			return;
+		}
+		// Ce qu'une case du fichier ne peut pas être, dit avec sa ligne (revue)
+		const unfit = csvCellRefusal(read.table);
+		if (unfit !== null) {
+			refusal = unfit;
+			return;
+		}
+		editing = null;
+		draft = '';
+		const at = cellName(zone.left, zone.top);
+		const pasted = atelier.pasteTable(zone.left, zone.top, read.table);
+		if (!pasted.ok) {
+			refusal = pasted.message;
+			return;
+		}
+		refusal = '';
+		toaster.success(openedMessage(read.table, at));
+		focusSelected();
+	}
+
+	/** « 12 lignes et 3 colonnes posées à partir de A1. » */
+	function openedMessage(table: readonly (readonly string[])[], at: string): string {
+		const titled = hasTitleRow(table);
+		const rowCount = table.length - (titled ? 1 : 0);
+		// Les cases vides en fin de ligne (`1,5;40;;`) ne font pas des colonnes (revue)
+		const columnCount = Math.max(
+			...table.map((line) => line.findLastIndex((cell) => cell.trim() !== '') + 1)
+		);
+		const plural = (n: number, word: string) => `${n} ${word}${n > 1 ? 's' : ''}`;
+		const titles = titled ? ', avec leurs titres,' : '';
+		return `${plural(rowCount, 'ligne')} et ${plural(columnCount, 'colonne')}${titles} posées à partir de ${at}.`;
 	}
 
 	/** Les cellules de la zone utilisée, et la ligne des titres s'il y en a un. */
@@ -671,12 +894,6 @@
 		fill({ ...zone, bottom });
 		fillAsk = false;
 		focusSelected();
-	}
-
-	/** Annuler ou rétablir un geste de la grille ; un refus se dit. */
-	function replayGrid(direction: 'undo' | 'redo') {
-		const done = direction === 'undo' ? atelier.undoGrid() : atelier.redoGrid();
-		refusal = done.ok ? '' : done.message;
 	}
 
 	/** Un champ qui apparaît prend le focus, curseur en fin de texte. */
@@ -771,6 +988,93 @@
 				title="Nouveaux tirages (F9)">Relancer</button
 			>
 		{/if}
+	</div>
+	<!-- La mise en forme de la zone sélectionnée (Q-MF-2) ; sur téléphone, elle passe à la ligne -->
+	<div class="mise-en-forme" role="group" aria-label="Mise en forme">
+		<button
+			type="button"
+			class="forme"
+			aria-pressed={activeStyle.bold === true}
+			aria-label="Gras"
+			aria-keyshortcuts="Control+B Meta+B"
+			title="Gras (Ctrl/⌘+B)"
+			onclick={toggleBold}><Bold size={16} aria-hidden="true" /></button
+		>
+		<button
+			type="button"
+			class="forme"
+			aria-pressed={activeStyle.italic === true}
+			aria-label="Italique"
+			aria-keyshortcuts="Control+I Meta+I"
+			title="Italique (Ctrl/⌘+I)"
+			onclick={toggleItalic}><Italic size={16} aria-hidden="true" /></button
+		>
+		{#each ALIGNMENTS as alignment (alignment.value)}
+			<button
+				type="button"
+				class="forme"
+				aria-pressed={activeStyle.align === alignment.value}
+				aria-label={alignment.label}
+				title={alignment.label}
+				onclick={() => toggleAlign(alignment.value)}
+				><alignment.icon size={16} aria-hidden="true" /></button
+			>
+		{/each}
+		<!-- Le nom visible de chaque choix ; le lecteur d'écran entend « Couleur du texte : … » -->
+		<span class="choix">
+			<span class="etiquette" aria-hidden="true">Texte</span>
+			<MySelect
+				type="single"
+				fitContent
+				triggerClass={COMPACT_TRIGGER}
+				items={COLOR_ITEMS}
+				bind:value={
+					() => activeStyle.color ?? NO_COLOR, (value) => restyle({ color: colorOf(value) })
+				}
+				triggerAriaLabel="Couleur du texte : {colorLabel(activeStyle.color)}"
+			/>
+		</span>
+		<span class="choix">
+			<span class="etiquette" aria-hidden="true">Fond</span>
+			<MySelect
+				type="single"
+				fitContent
+				triggerClass={COMPACT_TRIGGER}
+				items={COLOR_ITEMS}
+				bind:value={
+					() => activeStyle.fill ?? NO_COLOR, (value) => restyle({ fill: colorOf(value) })
+				}
+				triggerAriaLabel="Couleur du fond : {colorLabel(activeStyle.fill)}"
+			/>
+		</span>
+		<span class="choix">
+			<span class="etiquette" aria-hidden="true">Format</span>
+			<MySelect
+				type="single"
+				fitContent
+				triggerClass={COMPACT_TRIGGER}
+				items={NUMBER_KIND_ITEMS}
+				bind:value={() => activeNumberKind, chooseNumberKind}
+				triggerAriaLabel="Format de nombre : {NUMBER_KIND_LABELS[activeNumberKind].toLowerCase()}"
+			/>
+			{#if activeStyle.number}
+				<MySelect
+					type="single"
+					fitContent
+					triggerClass={COMPACT_TRIGGER}
+					items={DECIMALS_ITEMS}
+					bind:value={() => String(activeStyle.number?.decimals ?? 0), chooseDecimals}
+					triggerAriaLabel="Décimales : {activeStyle.number.decimals}"
+				/>
+			{/if}
+		</span>
+		<button
+			type="button"
+			class="forme effacer"
+			title="Effacer la mise en forme de la zone"
+			onclick={clearFormatting}
+			><Eraser size={16} aria-hidden="true" /> Effacer la mise en forme</button
+		>
 	</div>
 	<p class="annonce-tirage sr-only" role="status">{drawAnnouncement}</p>
 	<p class="refus" role="status">{refusal}</p>
@@ -898,9 +1202,13 @@
 							{@const isSelected = selected.column === column && selected.row === row}
 							{@const selectedZone = inZone(column, row)}
 							{@const value = atelier.cellValue(column, row)}
-							{@const text = isSelected && editing === 'bar' ? draft : shownOf(value)}
+							{@const style = atelier.styleAt(column, row)}
+							<!-- Q-MF-1 : un format de nombre arrondit l'affichage, jamais la valeur -->
+							{@const formatted = formatShown(value, style)}
+							{@const text =
+								isSelected && editing === 'bar' ? draft : (formatted ?? shownOf(value))}
 							{@const math =
-								isSelected && editing !== null
+								(isSelected && editing !== null) || formatted !== null
 									? null
 									: value.kind === 'number'
 										? composed(value.latex)
@@ -913,6 +1221,9 @@
 								aria-label="{address} : {text || 'vide'}"
 								class:nombre={value.kind === 'number'}
 								class:en-erreur={value.kind === 'error'}
+								class:gras={style.bold === true}
+								class:italique={style.italic === true}
+								style={cellCss(style)}
 								class:zone={selectedZone && !isSelected}
 								class:active={isSelected}
 								class:a-recopier={filling !== null &&
@@ -992,28 +1303,25 @@
 		<button
 			type="button"
 			class="telecharger"
-			disabled={atelier.gridHistory.undo === 0}
-			title={atelier.gridHistory.undo === 0
-				? 'Rien à annuler dans la grille.'
-				: 'Annuler le dernier geste de la grille (Ctrl/⌘+Z)'}
-			onclick={() => replayGrid('undo')}>Annuler</button
-		>
-		<button
-			type="button"
-			class="telecharger"
-			disabled={atelier.gridHistory.redo === 0}
-			title={atelier.gridHistory.redo === 0
-				? 'Rien à rétablir dans la grille.'
-				: 'Rétablir le geste annulé (Ctrl/⌘+Maj+Z)'}
-			onclick={() => replayGrid('redo')}>Rétablir</button
-		>
-		<button
-			type="button"
-			class="telecharger"
 			disabled={empty}
 			title={empty ? EMPTY_GRID : ''}
 			onclick={downloadCsv}>Télécharger en CSV</button
 		>
+		<button
+			type="button"
+			class="telecharger"
+			title="Poser un fichier CSV à partir de la case {cellName(zone.left, zone.top)}"
+			onclick={() => csvInput?.click()}>Ouvrir un CSV…</button
+		>
+		<input
+			bind:this={csvInput}
+			type="file"
+			accept=".csv,.txt,text/csv,text/plain"
+			class="fichier-csv"
+			tabindex="-1"
+			aria-hidden="true"
+			onchange={openCsv}
+		/>
 	</div>
 
 	<p class="aide">
@@ -1086,6 +1394,52 @@
 		background: var(--color-background);
 		color: var(--color-foreground);
 		font-family: var(--font-mono, monospace);
+	}
+
+	.mise-en-forme {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.25rem;
+		align-items: center;
+	}
+
+	.forme {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+		min-width: 2rem;
+		min-height: 2rem;
+		justify-content: center;
+		padding: 0 0.375rem;
+		border: 1px solid var(--color-border);
+		border-radius: 0.25rem;
+		background: var(--color-background);
+		color: var(--color-foreground);
+		font-size: 0.8125rem;
+		cursor: pointer;
+	}
+
+	.forme[aria-pressed='true'] {
+		border-color: var(--color-primary);
+		background: color-mix(in srgb, var(--color-primary) 22%, var(--color-background));
+	}
+
+	.forme:focus-visible {
+		outline: 2px solid var(--color-ring);
+		outline-offset: 1px;
+	}
+
+	/* Une étiquette ne se sépare pas de son choix quand la barre passe à la ligne */
+	.choix {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.25rem;
+	}
+
+	.etiquette {
+		margin-left: 0.375rem;
+		font-size: 0.8125rem;
+		color: var(--color-muted-foreground);
 	}
 
 	.refus {
@@ -1208,11 +1562,20 @@
 		color: var(--color-destructive);
 	}
 
+	/* `--fond` et `--texte` : la mise en forme de la case (cell-colors.ts, contrastes mesurés) */
 	td {
 		min-width: 5.5rem;
 		cursor: cell;
-		background: var(--color-card);
-		color: var(--color-foreground);
+		background: var(--fond, var(--color-card));
+		color: var(--texte, var(--color-foreground));
+	}
+
+	td.gras {
+		font-weight: 700;
+	}
+
+	td.italique {
+		font-style: italic;
 	}
 
 	/* Q-L2-1 : le mot court d'une erreur, en rouge ; la phrase est sous la barre */
@@ -1302,7 +1665,7 @@
 	}
 
 	td.a-recopier {
-		background: color-mix(in srgb, var(--color-primary) 8%, var(--color-card));
+		background: color-mix(in srgb, var(--color-primary) 8%, var(--fond, var(--color-card)));
 		outline: 1px dashed var(--color-primary);
 		outline-offset: -1px;
 	}
@@ -1325,7 +1688,7 @@
 
 	/* Une teinte légère : le texte de la zone doit rester lisible */
 	td.zone {
-		background: color-mix(in srgb, var(--color-primary) 14%, var(--color-card));
+		background: color-mix(in srgb, var(--color-primary) 14%, var(--fond, var(--color-card)));
 	}
 
 	.outils {
@@ -1341,6 +1704,10 @@
 		color: var(--color-foreground);
 		font-size: 0.8125rem;
 		cursor: pointer;
+	}
+
+	.fichier-csv {
+		display: none;
 	}
 
 	.telecharger:disabled {

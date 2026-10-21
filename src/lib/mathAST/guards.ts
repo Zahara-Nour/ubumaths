@@ -173,6 +173,13 @@ export function isAddition(node: MathNode): node is AdditionNode {
 }
 
 /**
+ * Une durée composée écrite sans `+` (`2[h] 30[min]`) : somme marquée « juxtaposée »
+ */
+export function isJuxtaposedSum(node: MathNode): node is AdditionNode {
+	return node.type === 'addition' && node.displayStyle === 'juxtaposed';
+}
+
+/**
  * Type guard for SubtractionNode
  */
 export function isSubtraction(node: MathNode): node is SubtractionNode {

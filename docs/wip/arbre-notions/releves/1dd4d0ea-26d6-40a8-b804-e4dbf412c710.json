@@ -1,0 +1,933 @@
+{
+	"template_id": "1dd4d0ea-26d6-40a8-b804-e4dbf412c710",
+	"titre": "Convertir des vitesses",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Vitesses > Convertir",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-052",
+			"libelle_point": "Utiliser des grandeurs quotients, avec ou sans unités.",
+			"noeud_actuel": "Proportionnalité > Vitesse",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n${{a}}~\\unit{km.h^{-1}} = ?~\\unit{m.h^{-1}}$",
+				"reponses_brutes": ["{{eval:a*1000}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 9000,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1000,
+				"max": 9000,
+				"nb_distinctes": 9,
+				"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 9000,
+				"nb_distinctes": 19,
+				"valeurs": [
+					-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9000)",
+					"graine": 10,
+					"enonce": "Complète.\n\n$9~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["9000"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$1~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["1000"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète.\n\n$3~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["3000"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète.\n\n$7~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["7000"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Complète.\n\n$6~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["6000"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3600|7200"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n${{a}}~\\unit{km.h^{-1}} = ?~\\unit{km.s^{-1}}$",
+				"reponses_brutes": ["{{eval:a/3600}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3600,
+						"max": 7200,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3600, 7200]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 7200,
+				"nb_distinctes": 3,
+				"valeurs": [-1, 3600, 7200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 2,
+				"nb_distinctes": 2,
+				"valeurs": [1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 7200,
+				"nb_distinctes": 5,
+				"valeurs": [-1, 1, 2, 3600, 7200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7200)",
+					"graine": 5,
+					"enonce": "Complète.\n\n$7\\,200~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "7200"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$3\\,600~\\mathrm{km}\\cdot\\mathrm{h}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "3600"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*1000"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n${{a}}~\\unit{m.s^{-1}} = ?~\\unit{km.s^{-1}}$",
+				"reponses_brutes": ["{{a1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 9000,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 9000,
+				"nb_distinctes": 10,
+				"valeurs": [-1, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 9000,
+				"nb_distinctes": 19,
+				"valeurs": [
+					-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9000)",
+					"graine": 10,
+					"enonce": "Complète.\n\n$9\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["9"],
+					"variables": {
+						"a1": "9",
+						"a": "9000"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$1\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["1"],
+					"variables": {
+						"a1": "1",
+						"a": "1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète.\n\n$3\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["3"],
+					"variables": {
+						"a1": "3",
+						"a": "3000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète.\n\n$7\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["7"],
+					"variables": {
+						"a1": "7",
+						"a": "7000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Complète.\n\n$6\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{km}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["6"],
+					"variables": {
+						"a1": "6",
+						"a": "6000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n${{a}}~\\unit{m.s^{-1}} = ?~\\unit{m.h^{-1}}$",
+				"reponses_brutes": ["{{eval:a*3600}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 2,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3600,
+						"max": 7200,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [3600, 7200]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 2,
+				"nb_distinctes": 3,
+				"valeurs": [-1, 1, 2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 3600,
+				"max": 7200,
+				"nb_distinctes": 2,
+				"valeurs": [3600, 7200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 7200,
+				"nb_distinctes": 5,
+				"valeurs": [-1, 1, 2, 3600, 7200],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (7200)",
+					"graine": 5,
+					"enonce": "Complète.\n\n$2~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["7200"],
+					"variables": {
+						"a": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$1~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{h}^{-1}$",
+					"reponse": ["3600"],
+					"variables": {
+						"a": "1"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*1000"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n${{a}}~\\unit{m.s^{-1}} = ?~\\unit{m.ms^{-1}}$",
+				"reponses_brutes": ["{{a1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 9000,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 9000,
+				"nb_distinctes": 10,
+				"valeurs": [-1, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 9000,
+				"nb_distinctes": 19,
+				"valeurs": [
+					-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9000)",
+					"graine": 10,
+					"enonce": "Complète.\n\n$9\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{ms}^{-1}$",
+					"reponse": ["9"],
+					"variables": {
+						"a1": "9",
+						"a": "9000"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$1\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{ms}^{-1}$",
+					"reponse": ["1"],
+					"variables": {
+						"a1": "1",
+						"a": "1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète.\n\n$3\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{ms}^{-1}$",
+					"reponse": ["3"],
+					"variables": {
+						"a1": "3",
+						"a": "3000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète.\n\n$7\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{ms}^{-1}$",
+					"reponse": ["7"],
+					"variables": {
+						"a1": "7",
+						"a": "7000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Complète.\n\n$6\\,000~\\mathrm{m}\\cdot\\mathrm{s}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{ms}^{-1}$",
+					"reponse": ["6"],
+					"variables": {
+						"a1": "6",
+						"a": "6000"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n${{a}}~\\unit{m.ms^{-1}} = ?~\\unit{m.s^{-1}}$",
+				"reponses_brutes": ["{{eval:a*1000}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 9000,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -1,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [-1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1000,
+				"max": 9000,
+				"nb_distinctes": 9,
+				"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 9000,
+				"nb_distinctes": 19,
+				"valeurs": [
+					-1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9000)",
+					"graine": 10,
+					"enonce": "Complète.\n\n$9~\\mathrm{m}\\cdot\\mathrm{ms}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["9000"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Complète.\n\n$1~\\mathrm{m}\\cdot\\mathrm{ms}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["1000"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète.\n\n$3~\\mathrm{m}\\cdot\\mathrm{ms}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["3000"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète.\n\n$7~\\mathrm{m}\\cdot\\mathrm{ms}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["7000"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Complète.\n\n$6~\\mathrm{m}\\cdot\\mathrm{ms}^{-1} = [?]~\\mathrm{m}\\cdot\\mathrm{s}^{-1}$",
+					"reponse": ["6000"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

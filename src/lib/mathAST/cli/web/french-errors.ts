@@ -58,6 +58,43 @@ const TRANSLATIONS: readonly (readonly [RegExp, string])[] = [
 	],
 	[/Invalid color: (\S+)/, 'Couleur inconnue : $1'],
 	[/Invalid unit: (\S+)/, 'Unité inconnue : $1'],
+	[
+		/Missing zero before the decimal point \(write (\S+)\)/,
+		'Il manque le zéro avant le point décimal : écris $1'
+	],
+	// lecture-grandeurs, PR 6 : textes de la page virgule (validée le 2026-10-20)
+	[
+		/Decimal comma: the decimal separator is '\.' \(write (\S+)\)/,
+		'Le séparateur décimal est le point : écris $1'
+	],
+	[
+		/Unexpected comma: ',' only separates function arguments/,
+		'Virgule inattendue : elle ne sépare que les arguments d’une fonction'
+	],
+	[
+		/';' is not a separator: use ',' between arguments/,
+		'Sépare les arguments par une virgule : max(2,5)'
+	],
+	[
+		/A unit needs a number before it \(write (\S+)\)/,
+		'Une unité a besoin d’un nombre devant elle : écris $1'
+	],
+	[
+		/Ambiguous term before a unit after a quantity: .*/,
+		'Plusieurs nombres devant l’unité, après une grandeur : écris 6[m]/(2*3[s]) ou (6[m]/2)*3[s]'
+	],
+	[
+		/Ambiguous compound duration next to \* or \/: .*/,
+		'Durée composée collée à × ou ÷ : écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour 2 h 30 min'
+	],
+	[
+		/Only durations can be written side by side.*/,
+		'Seules les durées s’écrivent côte à côte, chacune un nombre et son unité (2 h 30 min) : entre deux autres grandeurs, écris + ou ×'
+	],
+	[
+		/Each part of a compound duration needs its unit.*/,
+		'Chaque partie d’une durée composée a besoin de son unité : écris 2 h 30 min'
+	],
 	[/Invalid mode '([^']*)'/, 'Mode inconnu : « $1 »'],
 	[/Too many values \(max: (\d+)\)/, 'Trop de valeurs (au plus $1)'],
 	[/X and Y must have same length/, 'Les séries X et Y doivent avoir la même longueur'],

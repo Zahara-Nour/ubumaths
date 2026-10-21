@@ -11,6 +11,7 @@ import { exerciseHintSchema, exerciseTranslationsSchema } from './exercises';
 import { gradeCodeSchema } from './grades';
 import { CONTENT_LOCALES } from '$lib/types/locale';
 import { capitalPairsSchema } from '$lib/questions/capital-pairs';
+import { TEXT_SIZES } from '$lib/typst/text-size';
 import {
 	ANSWER_FRAME_MAX_LINES,
 	ANSWER_FRAME_MAX_QUESTIONS,
@@ -227,6 +228,15 @@ export const variantConfigSchema = z
 // ============================================================================
 
 /**
+ * `worksheets.template_id` est retiré (#1529) : le style de la fiche ne passe
+ * plus que par `style_id`. Un client qui envoie encore la clé reçoit un 400,
+ * plutôt qu'un réglage ignoré sans le dire (décision de David, 2026-10-19).
+ */
+const retiredTemplateIdSchema = z
+	.never({ error: '`template_id` est retiré : utiliser `style_id`' })
+	.optional();
+
+/**
  * Schema for creating a new worksheet (POST /api/worksheets)
  */
 export const createWorksheetSchema = z.object({
@@ -235,7 +245,7 @@ export const createWorksheetSchema = z.object({
 	translations: rowTranslationsSchema.optional().nullable(),
 	type: worksheetTypeSchema.default('worksheet'),
 	config: worksheetConfigSchema,
-	template_id: uuidSchema.optional().nullable(),
+	template_id: retiredTemplateIdSchema,
 	// Le style de la fiche (lot 3) ; son accès est vérifié en base (trigger)
 	style_id: uuidSchema.optional().nullable(),
 	estimated_duration_minutes: z
@@ -275,7 +285,7 @@ export const updateWorksheetSchema = z.object({
 	description: z.string().trim().max(5000, 'Description trop longue').optional().nullable(),
 	type: worksheetTypeSchema.optional(),
 	config: worksheetConfigSchemaForUpdate, // No default - won't be set if not in request
-	template_id: uuidSchema.optional().nullable(),
+	template_id: retiredTemplateIdSchema,
 	// Le style de la fiche (lot 3) ; son accès est vérifié en base (trigger)
 	style_id: uuidSchema.optional().nullable(),
 	estimated_duration_minutes: z
@@ -716,7 +726,6 @@ export const worksheetResponseSchema = z.object({
 	version: z.number().int(),
 	published_at: timestampSchema.nullable(),
 	archived_at: timestampSchema.nullable(),
-	template_id: z.string().uuid().nullable(),
 	// Optionnel : une route qui choisit ses colonnes peut ne pas le lire
 	style_id: z.string().uuid().nullable().optional(),
 	estimated_duration_minutes: z.number().int().nullable(),
@@ -1142,7 +1151,6 @@ export const studentWorksheetDetailResponseSchema = z.object({
 	sections: z.array(studentSectionViewSchema),
 	/** Le style de la fiche (lot 4b) : sans ces clés, le schéma les retire */
 	style_id: z.string().uuid().nullable().optional(),
-	template_id: z.string().uuid().nullable().optional(),
 	/** La mise en page d'un style de l'auteur de la fiche (D11) : son Typst seul */
 	template: z.object({ template_content: z.string() }).nullable().optional(),
 	/** Cartouche du gabarit (lot 4b) : sans ces clés, le schéma les retire */
@@ -1655,3 +1663,21 @@ export function validateStudentReportsQuery(params: URLSearchParams) {
 export function validateStudentReportIdParam(params: Record<string, string>) {
 	return studentReportIdParamSchema.safeParse(params);
 }
+
+// ============================================================================
+// TAILLE DU TEXTE DES FICHES (par élève)
+// ============================================================================
+
+/**
+ * PUT /api/worksheets/print-settings : la taille du texte d'un élève. L'élève
+ * omet `studentId` (c'est le sien) ; le prof et l'admin le donnent.
+ */
+export const printSettingsUpdateSchema = z.object({
+	studentId: uuidSchema.optional(),
+	textSize: z.enum(TEXT_SIZES)
+});
+
+/** GET /api/worksheets/print-settings?studentId= */
+export const printSettingsQuerySchema = z.object({
+	studentId: uuidSchema.optional()
+});

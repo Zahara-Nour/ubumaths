@@ -1,0 +1,226 @@
+{
+	"template_id": "62590cd3-c811-4acc-9b0d-0ff9e19c4c55",
+	"titre": "Définition d'un pourcentage",
+	"sous_titre": "Convertir un pourcentage en une fraction de dénominateur $100$.",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Définition",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-105",
+			"libelle_point": "Connaître la définition d'un pourcentage",
+			"noeud_actuel": "Proportionnalité > Pourcentages > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..100"
+					},
+					{
+						"name": "expression1",
+						"expression": "a%"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$${{expression1}}$$",
+				"reponses_brutes": ["\\dfrac{{{a}}}{100}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 95,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 95
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 95,
+						"exemples": [
+							"1%",
+							"33%",
+							"4%",
+							"34%",
+							"78%",
+							"7%",
+							"63%",
+							"86%",
+							"92%",
+							"53%",
+							"8%",
+							"37%"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 100,
+							"nb_distinctes": 95,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 1,
+						"negatif_possible": false,
+						"denominateurs": [100],
+						"denominateur_min": 100,
+						"denominateur_max": 100,
+						"nb_distinctes": 95
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 95,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 95,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 95,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [100],
+				"denominateur_min": 100,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 100,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [
+					{
+						"pattern": "u/100",
+						"acceptable": "u/v"
+					}
+				],
+				"symboles_affiches": {
+					"=": "300/300",
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$$1\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{1}{100}"],
+					"variables": {
+						"a": "1",
+						"expression1": "1%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$$33\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{33}{100}"],
+					"variables": {
+						"a": "33",
+						"expression1": "33%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$$4\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{4}{100}"],
+					"variables": {
+						"a": "4",
+						"expression1": "4%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$$34\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{34}{100}"],
+					"variables": {
+						"a": "34",
+						"expression1": "34%"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris sous la forme d'une fraction de dénominateur $100$ :\n\n$$78\\,\\% = [?]$$",
+					"reponse": ["\\dfrac{78}{100}"],
+					"variables": {
+						"a": "78",
+						"expression1": "78%"
+					}
+				}
+			]
+		}
+	]
+}

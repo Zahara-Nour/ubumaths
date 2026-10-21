@@ -1,0 +1,214 @@
+{
+	"template_id": "aeb86af9-7bf1-440a-be17-735a41b5ce46",
+	"titre": "Déterminer l'opposé d'une expression",
+	"sous_titre": "Expression simple",
+	"consigne": null,
+	"grades": ["3"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Opposé d'une expression",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-011",
+			"libelle_point": "Prendre l'opposé d'une expression : savoir que −(5 − 4x) = −5 + 4x.",
+			"noeud_actuel": "Algèbre > Calcul littéral > opposé d'une expression",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "p",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|x|y"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est l'opposé de cette expression ?\n\n$${{eval:pq}}$$\n\nL'opposé est $?$.",
+				"reponses_brutes": ["{{eval:-(p)q}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 72,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["a", "b", "x", "y"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 72,
+						"exemples": [
+							"9x",
+							"4b",
+							"9b",
+							"4a",
+							"-5a",
+							"8y",
+							"-3b",
+							"-7a",
+							"-8x",
+							"-x",
+							"8x",
+							"3a"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Quel est l'opposé de cette expression ?\n\n$$-9 x$$\n\nL'opposé est $[?]$.",
+					"reponse": ["9x"],
+					"variables": {
+						"p": "-9",
+						"q": "x"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 24,
+					"enonce": "Quel est l'opposé de cette expression ?\n\n$$9 b$$\n\nL'opposé est $[?]$.",
+					"reponse": ["-9b"],
+					"variables": {
+						"p": "9",
+						"q": "b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est l'opposé de cette expression ?\n\n$$-4 b$$\n\nL'opposé est $[?]$.",
+					"reponse": ["4b"],
+					"variables": {
+						"p": "-4",
+						"q": "b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est l'opposé de cette expression ?\n\n$$-9 b$$\n\nL'opposé est $[?]$.",
+					"reponse": ["9b"],
+					"variables": {
+						"p": "-9",
+						"q": "b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est l'opposé de cette expression ?\n\n$$-4 a$$\n\nL'opposé est $[?]$.",
+					"reponse": ["4a"],
+					"variables": {
+						"p": "-4",
+						"q": "a"
+					}
+				}
+			]
+		}
+	]
+}

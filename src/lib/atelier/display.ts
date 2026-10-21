@@ -14,7 +14,13 @@
 import { z } from 'zod';
 import { CURVE_COLORS, getNextSlot } from '$lib/grapheur/colors';
 import { COORDINATE_LIMIT, LINE_STYLES, LINE_WIDTHS } from '$lib/grapheur/types';
-import type { CurveDisplay, SequenceDisplay } from './types';
+import {
+	POINT_SIZES,
+	type CurveDisplay,
+	type PointDisplay,
+	type SequenceDisplay,
+	type StrokeDisplay
+} from './types';
 import { DEFAULT_COBWEB_STEPS } from '$lib/grapheur/sequence';
 
 // =============================================================================
@@ -39,7 +45,8 @@ export const curveDisplaySchema = z.object({
 	tangentAt: finite.nullable(),
 	integral: z.object({ from: finite, to: finite }).nullable(),
 	showOsculating: z.boolean(),
-	showArcLength: z.boolean()
+	showArcLength: z.boolean(),
+	showReading: z.boolean()
 });
 
 /** Ce qu'une modification peut changer : n'importe quel sous-ensemble. */
@@ -66,7 +73,8 @@ const DEFAULTS: Omit<CurveDisplay, 'color' | 'lineStyle'> = {
 	tangentAt: null,
 	integral: null,
 	showOsculating: false,
-	showArcLength: false
+	showArcLength: false,
+	showReading: false
 };
 
 // =============================================================================
@@ -142,7 +150,8 @@ export function plainDisplay(display: CurveDisplay): CurveDisplay {
 		integral:
 			display.integral === null ? null : { from: display.integral.from, to: display.integral.to },
 		showOsculating: display.showOsculating,
-		showArcLength: display.showArcLength
+		showArcLength: display.showArcLength,
+		showReading: display.showReading
 	};
 }
 
@@ -188,6 +197,89 @@ export function readSequenceDisplayPatch(
 		Object.entries(parsed.data).filter(([, value]) => value !== undefined)
 	) as Partial<SequenceDisplay>;
 	return { ok: true, patch: patchOut };
+}
+
+// =============================================================================
+// Points et courbes de la figure (lot 4b de la refonte)
+// =============================================================================
+
+/** Le trait d'une courbe de la figure : couleur, style, épaisseur. */
+export const strokeDisplaySchema = curveDisplaySchema
+	.pick({ color: true, lineStyle: true, lineWidth: true })
+	.partial({ color: true });
+
+/** Couleur, taille et étiquette d'un point. */
+export const pointDisplaySchema = z.object({
+	color: z.enum(CURVE_COLORS).optional(),
+	size: z.enum(POINT_SIZES),
+	showLabel: z.boolean()
+});
+
+/**
+ * Ce qu'un réglage de la figure peut changer. `.strict()` : un réglage qui
+ * n'est pas celui de l'objet (`size` pour une courbe) est REFUSÉ, pas ignoré —
+ * l'élève saurait sinon que son geste n'a rien fait.
+ */
+const strokePatchSchema = strokeDisplaySchema.partial().strict();
+const pointPatchSchema = pointDisplaySchema.partial().strict();
+
+/**
+ * Ce qu'une courbe jamais réglée montre : le premier réglage part de ce qui est
+ * DESSINÉ — trait continu, épaisseur par défaut, couleur de la figure (absente).
+ */
+export function newStrokeDisplay(): StrokeDisplay {
+	return { lineStyle: 'solid', lineWidth: DEFAULT_LINE_WIDTH };
+}
+
+/** Ce qu'un point jamais réglé montre : taille moyenne, nom affiché, couleur de la figure. */
+export function newPointDisplay(): PointDisplay {
+	return { size: 'medium', showLabel: true };
+}
+
+/** Deux réglages de la figure identiques, champ par champ (couleur absente comprise). */
+export function sameFigureDisplay(
+	a: PointDisplay | StrokeDisplay,
+	b: PointDisplay | StrokeDisplay
+): boolean {
+	if (a.color !== b.color) return false;
+	if ('size' in a) return 'size' in b && a.size === b.size && a.showLabel === b.showLabel;
+	return !('size' in b) && a.lineStyle === b.lineStyle && a.lineWidth === b.lineWidth;
+}
+
+/**
+ * Lire une modification du réglage d'un point ou d'une courbe (même règle que
+ * `readDisplayPatch` : `undefined` veut dire « pas de changement »).
+ */
+export function readFigureDisplayPatch(
+	kind: 'point' | 'curve',
+	patch: unknown
+):
+	| { ok: true; patch: Partial<PointDisplay> | Partial<StrokeDisplay> }
+	| { ok: false; message: string } {
+	const parsed = (kind === 'point' ? pointPatchSchema : strokePatchSchema).safeParse(patch);
+	if (!parsed.success) {
+		return {
+			ok: false,
+			message:
+				kind === 'point'
+					? 'Ce réglage du point n’est pas valable.'
+					: 'Ce réglage de la courbe n’est pas valable.'
+		};
+	}
+	const patchOut = Object.fromEntries(
+		Object.entries(parsed.data).filter(([, value]) => value !== undefined)
+	);
+	return { ok: true, patch: patchOut };
+}
+
+/** Une copie faite de valeurs ordinaires (clonable), pour ranger le réglage. */
+export function plainFigureDisplay(
+	display: PointDisplay | StrokeDisplay
+): PointDisplay | StrokeDisplay {
+	const color = display.color === undefined ? {} : { color: display.color };
+	return 'size' in display
+		? { ...color, size: display.size, showLabel: display.showLabel }
+		: { ...color, lineStyle: display.lineStyle, lineWidth: display.lineWidth };
 }
 
 /** Une copie faite de valeurs ordinaires (clonable). */

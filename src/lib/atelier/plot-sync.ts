@@ -15,13 +15,18 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject, CurveDisplay, SequenceDisplay, SequenceMode } from './types';
 import type { GrapheurStore } from '$lib/stores/grapheur.svelte';
-import { isExplicitFunction, isScatter, type ExplicitFunction } from '$lib/grapheur/types';
+import {
+	isExplicitFunction,
+	isScatter,
+	type CurveReading,
+	type ExplicitFunction
+} from '$lib/grapheur/types';
 import { firstTermValue, graphLatexOf } from './engine';
 import { plainDisplay } from './display';
 import { isFunction, isList, isSequence } from './types';
 import { allowedDisplay, plotRestrictionOf } from './interval';
 import { sameRestriction, type Restriction } from '$lib/grapheur/restriction';
-import { reciprocalOf } from './names';
+import { displayName, reciprocalOf } from './names';
 import { commonRows, valuesOn } from './pairs';
 
 /**
@@ -114,7 +119,11 @@ type CurveSettings = Pick<
 function settingsDiff(current: ExplicitFunction, display: CurveDisplay): Partial<CurveSettings> {
 	// `plainDisplay` : `integral` est un proxy `$state` de l'atelier ; tel quel,
 	// le grapheur garderait un objet partagé avec lui.
-	const wanted: CurveSettings = { ...plainDisplay(display), showDerivative: false };
+	// `showReading` n'est pas un réglage du grapheur : il devient `reading`,
+	// posé à part avec les abscisses lues dans la console (`wantedReading`)
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars -- retiré du reste
+	const { showReading, ...settings } = plainDisplay(display);
+	const wanted: CurveSettings = { ...settings, showDerivative: false };
 	const diff: Partial<CurveSettings> = {};
 	for (const key of Object.keys(wanted) as (keyof CurveSettings)[]) {
 		const a = current[key];
@@ -203,13 +212,44 @@ function sameSeries(a: readonly number[], b: readonly number[]): boolean {
 	return a.length === b.length && a.every((value, i) => value === b[i]);
 }
 
+/** Deux lectures identiques ? Par le contenu : la synchronisation pose des copies. */
+function sameReading(a: CurveReading | undefined, b: CurveReading | undefined): boolean {
+	if (a === undefined || b === undefined) return a === b;
+	return a.name === b.name && sameSeries(a.at, b.at);
+}
+
+/**
+ * La lecture graphique que la courbe doit montrer : absente si l'option est
+ * éteinte. Sans `readings` (synchronisation venue d'ailleurs que de la
+ * console), les abscisses déjà posées restent.
+ */
+function wantedReading(
+	object: AtelierObject | undefined,
+	current: ExplicitFunction,
+	readings: ReadonlyMap<string, readonly number[]> | undefined
+): CurveReading | undefined {
+	if (object === undefined || !isFunction(object) || object.display?.showReading !== true) {
+		return undefined;
+	}
+	const at =
+		readings === undefined ? (current.reading?.at ?? []) : (readings.get(object.name) ?? []);
+	return { name: displayName(object.name), at: [...at] };
+}
+
 /**
  * Mettre le grapheur en accord avec l'atelier.
+ *
+ * `readings` : les abscisses lues dans la console, par fonction (`consoleReadings`),
+ * pour la lecture graphique de l'image ; absent, celles déjà posées restent.
  *
  * ⚠️ **Idempotente** : appelée deux fois sans changement, elle ne fait rien.
  * Sans cela, chaque frappe recréerait les courbes et le graphe clignoterait.
  */
-export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
+export function syncPlots(
+	atelier: Atelier,
+	graph: GrapheurStore,
+	readings?: ReadonlyMap<string, readonly number[]>
+): void {
 	const perGraph = posted.get(atelier) ?? new WeakMap<GrapheurStore, Map<string, string>>();
 	posted.set(atelier, perGraph);
 	const mine = perGraph.get(graph) ?? new Map<string, string>();
@@ -280,6 +320,7 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 			latex?: string;
 			visible?: boolean;
 			restriction?: Restriction;
+			reading?: CurveReading;
 		} = {};
 		if (isExplicitFunction(curve)) {
 			if (curve.latex !== target.definition) changes.latex = target.definition;
@@ -288,6 +329,8 @@ export function syncPlots(atelier: Atelier, graph: GrapheurStore): void {
 				changes.restriction = target.restriction;
 			}
 			if (target.display) Object.assign(changes, settingsDiff(curve, target.display));
+			const reading = wantedReading(atelier.get(name), curve, readings);
+			if (!sameReading(curve.reading, reading)) changes.reading = reading;
 		}
 		if (curve.visible !== target.visible) changes.visible = target.visible;
 		if (Object.keys(changes).length > 0) graph.updateFunction(curveId, changes);

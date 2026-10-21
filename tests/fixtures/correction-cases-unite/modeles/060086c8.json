@@ -1,0 +1,281 @@
+{
+	"id": "060086c8-2576-4b6f-a2c1-5994b83530db",
+	"title": "Calcul du périmètre d'un carré.",
+	"description": "A partir d'une description",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un carré",
+	"level": 1,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+		"correction": {
+			"steps": [
+				"Le périmètre d'un carré de côté ${{a}}$ est $4 \\times {{a}} =$ {{solution:html}}."
+			]
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[mm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[mm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[cm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[cm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[dm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[dm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[m]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[m]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[dam]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[dam]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[hm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[hm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:4*a;[km]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **carré** de côté ${{a}}$ ?\n\nLe périmètre du carré est $?$.",
+			"variables": [
+				{
+					"name": "a1",
+					"expression": "1..11"
+				},
+				{
+					"name": "a",
+					"expression": "a1[km]"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["28\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 mm = 28 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["2{,}8\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "unité équivalente 2,8 cm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["28"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["49\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "confusion avec l'aire (49)",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["28\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 cm = 28 cm",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["28\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 dm = 28 dm",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["28\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 m = 28 m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["28\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 dam = 28 dam",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["28\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 hm = 28 hm",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["28\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a1": "7"
+			},
+			"description": "4 × 7 km = 28 km",
+			"variationIndex": 6
+		}
+	]
+}

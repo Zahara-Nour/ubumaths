@@ -16,6 +16,7 @@
 	import { enhance } from '$app/forms';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { Check, Copy, Link2 } from '@lucide/svelte';
 
@@ -72,6 +73,7 @@
 						<Copy class="mr-2 h-4 w-4" />Copier
 					{/if}
 				</Button>
+				<QrCodeButton url={shareUrl} label="le cours" containsToken />
 			</div>
 			<p class="text-xs text-muted-foreground">
 				{#if expiresAt}

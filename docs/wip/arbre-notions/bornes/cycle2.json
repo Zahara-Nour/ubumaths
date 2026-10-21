@@ -1,0 +1,5139 @@
+{
+	"_meta": {
+		"genere_le": "2026-10-18",
+		"pages": "Numéros de page = pages du PDF (le BO c2 est docs/ref/programmes/Programme de mathématiques du cycle 2.pdf).",
+		"heritage": "Chaque point hérite des bornes « general » de son niveau dont la « portee » le couvre ; bornes: [] = aucune borne propre.",
+		"sources_ecartees": {
+			"ra16c2mathsgrandeuretmesuresdocmaitre587695pdf-76011.pdf": "Éduscol mars 2016, anciens programmes (ra16) : non utilisé comme source de borne.",
+			"guide-pour-enseigner-les-nombres...-au-cp-68664.pdf": "Guide CP antérieur au programme 2024 (se réfère aux attendus 2019) : cité seulement en appui, jamais seul."
+		}
+	},
+	"CP": {
+		"general": [
+			{
+				"borne": "Nombres entiers naturels jusqu'à cent (0 à 100) ; aucun décimal, aucune fraction, aucun négatif.",
+				"portee": "tout le niveau",
+				"detail": {
+					"min": 0,
+					"max": 100,
+					"ensemble": "entiers naturels"
+				},
+				"source": "BO c2 p.3, texte d'introduction de la rubrique « Les nombres entiers »"
+			},
+			{
+				"borne": "Progression dans l'année : au plus tard en période 2 jusqu'à 59, au plus tard en période 3 jusqu'à 100 (période 1 : 1 à 20 selon le livret).",
+				"portee": "tout le niveau",
+				"detail": {
+					"periode_2_max": 59,
+					"periode_3_max": 100,
+					"periode_1_max_livret": 20
+				},
+				"source": "BO c2 p.4, texte d'introduction de la rubrique ; Livret CP 2025 p.7"
+			},
+			{
+				"borne": "Calcul mental : les nombres en jeu ET les résultats cherchés sont tous ≤ 100.",
+				"portee": "Le calcul mental",
+				"detail": {
+					"max_operandes": 100,
+					"max_resultat": 100
+				},
+				"source": "BO c2 p.6, texte d'introduction de la rubrique « Le calcul mental »"
+			},
+			{
+				"borne": "Résolution de problèmes : données numériques entières jusqu'à 100.",
+				"portee": "La résolution de problèmes",
+				"detail": {
+					"max": 100,
+					"ensemble": "entiers naturels"
+				},
+				"source": "BO c2 p.9, texte d'introduction de la rubrique « La résolution de problèmes »"
+			},
+			{
+				"borne": "Monnaie : montants en nombres entiers d'euros, toujours ≤ 100 ; pas de centimes.",
+				"portee": "Grandeurs et mesures > La monnaie",
+				"detail": {
+					"max": 100,
+					"unite": "€",
+					"ensemble": "entiers naturels"
+				},
+				"source": "BO c2 p.26, texte d'introduction de la rubrique « La monnaie »"
+			},
+			{
+				"borne": "Repérage dans le temps : limité aux heures entières.",
+				"portee": "Grandeurs et mesures > Le repérage dans le temps",
+				"detail": {
+					"liste": ["heures entières"]
+				},
+				"source": "BO c2 p.26, texte d'introduction de la rubrique « Le repérage dans le temps »"
+			},
+			{
+				"borne": "Pas de calculatrice au cycle 2.",
+				"portee": "tout le niveau",
+				"detail": {},
+				"source": "BO c2 p.3, Principes"
+			},
+			{
+				"borne": "Fluence (indicateur, pas une borne de contenu) : 9 résultats en 3 min (procédures) ; 8 égalités en 1 min (tables, doubles/moitiés).",
+				"portee": "Le calcul mental",
+				"detail": {
+					"procedures": "9 en 3 min",
+					"faits": "8 en 1 min"
+				},
+				"source": "BO c2 p.6, texte d'introduction de la rubrique et BO c2 p.6, colonne Exemples de réussite"
+			}
+		],
+		"points": {
+			"CP-001": {
+				"libelle": "Dénombrer des collections en les organisant.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Collections non organisées, totalement organisées en dizaines et unités, ou partiellement groupées (ex. 3 dizaines et 15 unités) ; d'abord objets déplaçables, puis collections fixes dessinées.",
+						"detail": {
+							"exemple": "3 dizaines + 15 unités",
+							"groupements": [10]
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Cardinal ≤ 100 (général)."
+			},
+			"CP-002": {
+				"libelle": "Construire des collections de cardinal donné.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Collections non organisées, totalement organisées en dizaines et unités, ou partiellement groupées (ex. 3 dizaines et 15 unités) ; d'abord objets déplaçables, puis collections fixes dessinées.",
+						"detail": {
+							"exemple": "3 dizaines + 15 unités",
+							"groupements": [10]
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Cardinal ≤ 100 (général)."
+			},
+			"CP-003": {
+				"libelle": "Connaître la suite écrite des nombres jusqu'à cent (écris le nombre qui suit 99).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suite écrite jusqu'à 100.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Compter de 1 en 1, de 2 en 2 et de 10 en 10 en partant de n'importe quel nombre ; à rebours seulement de 1 en 1.",
+						"detail": {
+							"pas_avant": [1, 2, 10],
+							"pas_arriere": [1]
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-004": {
+				"libelle": "Connaitre et utiliser diverses représentations d'un nombre et passer de l'une à l'autre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Représentations attendues : matériel (barres et cubes), écriture en chiffres, nom oral, unités de numération (3 dizaines et 5 unités ou 35 unités), décomposition additive 30 + 5, écriture en lettres.",
+						"detail": {
+							"liste": [
+								"matériel",
+								"chiffres",
+								"oral",
+								"unités de numération",
+								"décomposition additive dizaines + unités",
+								"lettres"
+							]
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Écriture en lettres maîtrisée seulement jusqu'à 50 en fin de CP.",
+						"detail": {
+							"max_lettres": 50
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Au-delà de 50, l'écriture en lettres n'est pas exigible au CP."
+			},
+			"CP-005": {
+				"libelle": "Connaitre la valeur des chiffres en fonction de leur position (unités, dizaines).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Deux rangs seulement : unités et dizaines (ex. 23 ≠ 32).",
+						"detail": {
+							"liste": ["unités", "dizaines"]
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": "100 est le seul nombre à trois chiffres ; le mot « centaine » n'est pas un attendu du CP (déduit : la centaine est introduite au CE1)."
+			},
+			"CP-006": {
+				"libelle": "Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Deux nombres ≤ 100 (ex. 49 et 53).",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-007": {
+				"libelle": "Ordonner des nombres dans l'ordre croissant ou décroissant.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Ordonner au plus cinq nombres (croissant et décroissant).",
+						"detail": {
+							"max_effectif": 5
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-008": {
+				"libelle": "Savoir placer des nombres sur une demi-droite graduée de un en un.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Demi-droite (ou bande numérique) graduée de un en un uniquement.",
+						"detail": {
+							"pas": [1]
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-009": {
+				"libelle": "Connaitre les nombres ordinaux jusqu'à « vingtième ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Ordinaux jusqu'à « vingtième ».",
+						"detail": {
+							"max": 20
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-010": {
+				"libelle": "Utiliser les nombres ordinaux pour indiquer une position dans une liste ou dans une suite.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au vingtième (borne de l'objectif « ordinaux jusqu'à vingtième »).",
+						"detail": {
+							"max": 20
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-011": {
+				"libelle": "Repérer un rang ou une position dans une file orientée ou dans une liste d'objets ou de personnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au vingtième (borne de l'objectif « ordinaux jusqu'à vingtième »).",
+						"detail": {
+							"max": 20
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					},
+					{
+						"aspect": "format",
+						"borne": "Listes courtes de nombres ou d'objets (ex. liste 2, 6, 10, 14, 18 : rang de 10, quatrième nombre).",
+						"detail": {
+							"exemple": [2, 6, 10, 14, 18]
+						},
+						"source": "BO c2 p.5, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-012": {
+				"libelle": "Faire le lien entre le rang d'un objet dans une liste et le nombre d'éléments qui le précèdent.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au vingtième (borne de l'objectif « ordinaux jusqu'à vingtième »).",
+						"detail": {
+							"max": 20
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					},
+					{
+						"aspect": "format",
+						"borne": "Ex. : six personnes dans la file, je suis le troisième, combien devant moi ?",
+						"detail": {},
+						"source": "BO c2 p.5, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-013": {
+				"libelle": "Utiliser les nombres ordinaux dans le cadre de l'étude de suites de symboles, de formes, de lettres ou de nombres.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au vingtième (borne de l'objectif « ordinaux jusqu'à vingtième »).",
+						"detail": {
+							"max": 20
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					},
+					{
+						"aspect": "format",
+						"borne": "Suites RÉPÉTITIVES seulement (ABAB…, motifs de 2 à 4 symboles, 1, 3, 5, 7, 9…).",
+						"detail": {
+							"liste": ["ABAB…", "△▢O…", "△✕▢O…", "ABGF…", "1, 3, 5, 7, 9…"]
+						},
+						"source": "BO c2 p.5, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Tous les exemples du CP sont des suites répétitives ; les suites évolutives n'apparaissent qu'au CE1 (BO p.11) : lecture déduite."
+			},
+			"CP-014": {
+				"libelle": "Comprendre le sens de l'addition (choisir l'addition pour une situation de réunion, d'ajout).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [],
+				"remarque": "Données des problèmes ≤ 100 (général)."
+			},
+			"CP-015": {
+				"libelle": "Comprendre et utiliser le symbole « + » (5 + 3 : que veut dire ce signe ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CP-016": {
+				"libelle": "Poser et effectuer des additions en colonnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Addition de deux ou trois nombres à un ou deux chiffres (ex. 45 + 37 ; 28 + 8 + 56).",
+						"detail": {
+							"nb_termes": [2, 3],
+							"chiffres_par_terme": [1, 2]
+						},
+						"source": "BO c2 p.5, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Somme ≤ 100 (borne générale du CP) : 45 + 37 + 56 est hors point.",
+						"detail": {
+							"max_resultat": 100
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-4) ; d'après BO c2 p.3, texte d'introduction de la rubrique ; guide CP p.146 en appui",
+						"force": "décision"
+					}
+				],
+				"remarque": "Les deux exemples du BO restent sous 100. Addition posée introduite en période 4 ou 5."
+			},
+			"CP-017": {
+				"libelle": "Comprendre le sens de la multiplication.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Addition itérée et mot « fois » (ex. « trois fois vingt » écrit 20 + 20 + 20) ; pas de symbole × au CP.",
+						"detail": {},
+						"source": "BO c2 p.5, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Le symbole × est un objectif du CE1 (CE1-023) ; le guide CP le prévoit au plus tôt en période 5 « ou début de CE1 »."
+			},
+			"CP-018": {
+				"libelle": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Égalités A + B = C ou C = A + B avec A et B entiers de 0 à 10 (donc C ≤ 20).",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 20
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-019": {
+				"libelle": "Connaître les doubles de nombres usuels (double de 8 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Doubles des nombres de 1 à 10 et des dizaines 20, 30, 40, 50 ; dans les deux sens (double de … = 12).",
+						"detail": {
+							"liste": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50]
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "« Nombres usuels » = exactement cette liste."
+			},
+			"CP-020": {
+				"libelle": "Ajouter 1 ou 2 à un nombre (37 + 2 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute 1 ou 2.",
+						"detail": {
+							"liste": [1, 2]
+						},
+						"source": "BO c2 p.6, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": "Résultat ≤ 100 (général)."
+			},
+			"CP-021": {
+				"libelle": "Ajouter 10 à un nombre (34 + 10 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute 10 (une dizaine) ; résultat ≤ 100.",
+						"detail": {
+							"liste": [10]
+						},
+						"source": "BO c2 p.6, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-022": {
+				"libelle": "Ajouter 20, 30, …, 90 à un nombre (14 + 30 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute 20, 30, 40, 50, 60, 70, 80 ou 90 ; résultat ≤ 100.",
+						"detail": {
+							"liste": [20, 30, 40, 50, 60, 70, 80, 90]
+						},
+						"source": "BO c2 p.6, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-023": {
+				"libelle": "Trouver le complément d'un nombre à la dizaine supérieure.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombre ≤ 99 dont le chiffre des unités n'est pas 0 (ex. 74 → 6) ; complément de 1 à 9.",
+						"detail": {
+							"min": 1,
+							"max": 99,
+							"unites_non_nulles": true,
+							"resultat": {
+								"min": 1,
+								"max": 9
+							}
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Le cas « unités = 0 » n'est pas évoqué ; déduit de l'exemple et du sens « dizaine supérieure »."
+			},
+			"CP-024": {
+				"libelle": "Ajouter un nombre inférieur à 9 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute un nombre de 1 à 8 (« inférieur à 9 » ; 9 a son propre point CP-025), avec ou sans changement de dizaine (32 + 4 ; 47 + 8).",
+						"detail": {
+							"min": 1,
+							"max": 8
+						},
+						"source": "BO c2 p.7, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Résultat ≤ 100 (général)."
+			},
+			"CP-025": {
+				"libelle": "Ajouter 9 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute 9 (procédure +10 −1, inutile si les unités valent 0 ou 1).",
+						"detail": {
+							"liste": [9]
+						},
+						"source": "BO c2 p.7, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Résultat ≤ 100."
+			},
+			"CP-026": {
+				"libelle": "Ajouter deux nombres inférieurs à 100.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Deux nombres < 100 et somme ≤ 100 (ex. 47 + 28).",
+						"detail": {
+							"max": 99,
+							"max_resultat": 100
+						},
+						"source": "BO c2 p.7, colonne Exemples de réussite ; BO c2 p.6, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Deux nombres à deux chiffres non multiples de 10 : la séquence n'expose pas 47 + 20 ou 47 + 9 (relevant d'autres procédures).",
+						"detail": {
+							"chiffres": 2,
+							"unites_non_nulles": true
+						},
+						"source": "Livret CP 2025 p.17",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Le livret CP (p.16) précise que les sommes > 100 relèvent du CE1/CE2. Le livret autorise de rester jusqu'à 59 ou 69 si besoin."
+			},
+			"CP-027": {
+				"libelle": "Déterminer la moitié d'un nombre pair.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombre pair ≤ 100, décomposé en dizaines et unités pour retrouver des moitiés mémorisées (ex. 46 = 40 + 6 → 23).",
+						"detail": {
+							"max": 100,
+							"pair": true
+						},
+						"source": "BO c2 p.7, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-028": {
+				"libelle": "Soustraire un nombre inférieur à 10 à un nombre entier de dizaines.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Nombre entier de dizaines (10 à 100) moins un nombre de 1 à 9 (ex. 50 − 6).",
+						"detail": {
+							"depart": [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+							"soustrait": {
+								"min": 1,
+								"max": 9
+							}
+						},
+						"source": "BO c2 p.8, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-029": {
+				"libelle": "Résoudre des problèmes additifs en une étape du type parties-tout.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Parties-tout et transformations (ajout, retrait) traitées comme parties-tout, recherche du tout ou d'une partie ; jusqu'à trois parties (ex. trois wagons 25, 32, 18).",
+						"detail": {
+							"max_parties": 3
+						},
+						"source": "BO c2 p.9, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Livret CP p.25 : en début d'année jusqu'à 20, puis jusqu'à 100 en fin de période 3 / période 4."
+			},
+			"CP-030": {
+				"libelle": "Résoudre des problèmes additifs en deux étapes (champ numérique inférieur ou égal à 30).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Champ numérique ≤ 30 (ex. 29 − 12 + 7 ; 24 − 7 − 6).",
+						"detail": {
+							"max": 30
+						},
+						"source": "BO c2 p.9, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-031": {
+				"libelle": "Résoudre des problèmes multiplicatifs en une étape (champ numérique inférieur ou égal à 30).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Champ numérique ≤ 30.",
+						"detail": {
+							"max": 30
+						},
+						"source": "BO c2 p.9, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Trois types : valeur du tout (3 paquets de 7), nombre de parts (24 élèves en équipes de 4), valeur d'une part (18 images pour 3).",
+						"detail": {
+							"liste": ["recherche du tout", "nombre de parts", "valeur d'une part"]
+						},
+						"source": "BO c2 p.10, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Partages exacts seulement (sans reste) : 25 élèves en équipes de 4 est hors point.",
+						"detail": {
+							"reste": 0
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-12) ; d'après BO c2 p.10, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": "Les partages avec reste arrivent au CE1 (75 œufs par boîtes de 6)."
+			},
+			"CP-032": {
+				"libelle": "Utiliser le lexique spécifique associé aux longueurs : long, court, près, loin.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lexique : long, court, près, loin.",
+						"detail": {
+							"liste": ["long", "court", "près", "loin"]
+						},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-033": {
+				"libelle": "Comparer des objets selon leur longueur.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Comparaison perceptive quand il n'y a aucun doute ; ordonner jusqu'à cinq baguettes ou bandelettes.",
+						"detail": {
+							"max_effectif": 5
+						},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-034": {
+				"libelle": "Comparer des segments selon leur longueur.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Par superposition, report (ficelle, bandelette), report d'un étalon ou règle graduée.",
+						"detail": {},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-035": {
+				"libelle": "Savoir mesurer la longueur d'un segment en utilisant une règle graduée.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Règle graduée en centimètres.",
+						"detail": {
+							"liste": ["cm"]
+						},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Longueurs entières en cm.",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "L'encadrement entre deux entiers de cm n'apparaît qu'au CE1 (BO p.27) : au CP on lit une longueur entière (lecture déduite)."
+			},
+			"CP-036": {
+				"libelle": "Connaitre et utiliser les unités mètre et centimètre et les symboles associés (m et cm).",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Seulement mètre et centimètre (m, cm).",
+						"detail": {
+							"liste": ["m", "cm"]
+						},
+						"source": "BO c2 p.25, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-037": {
+				"libelle": "Connaitre quelques longueurs de référence.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ex. : trousse plutôt 2 cm, 20 cm ou 1 m ; hauteur de la porte, largeur de la classe, longueur du couloir.",
+						"detail": {},
+						"source": "BO c2 p.25, colonne Exemples de réussite et p.26",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-038": {
+				"libelle": "Savoir qu'un mètre est égal à cent centimètres.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Seule relation : 1 m = 100 cm.",
+						"detail": {
+							"liste": ["1 m = 100 cm"]
+						},
+						"source": "BO c2 p.26, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": "Les conversions composées (1 m + 46 cm = 146 cm) sont un exemple du CE1."
+			},
+			"CP-039": {
+				"libelle": "Utiliser le lexique associé aux masses : lourd, léger.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lexique : lourd, léger.",
+						"detail": {
+							"liste": ["lourd", "léger"]
+						},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-040": {
+				"libelle": "Comparer des objets selon leur masse.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Deux ou trois objets d'apparence identique et de masses clairement différentes ; soupeser ou balance de Roberval.",
+						"detail": {
+							"max_effectif": 3
+						},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "unites",
+						"borne": "Aucune unité de masse au CP.",
+						"detail": {},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "g et kg sont des objectifs du CE1."
+			},
+			"CP-041": {
+				"libelle": "Utiliser le lexique spécifique lié à la monnaie : plus cher, moins cher, rendre la monnaie, billet, pièce, somme, reste, euros.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lexique : plus cher, moins cher, rendre la monnaie, billet, pièce, somme, reste, euros.",
+						"detail": {},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-042": {
+				"libelle": "Comparer les valeurs de deux ensembles constitués de pièces de monnaie ou de deux ensembles constitués de pièces et de billets.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Montants entiers d'euros ≤ 100 ; pièces et billets fictifs (au moins pièces de 1 € et billets de 10 €).",
+						"detail": {
+							"max": 100,
+							"unite": "€"
+						},
+						"source": "BO c2 p.26, texte d'introduction de la rubrique ; BO c2 p.4, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Comparer la valeur, pas le nombre de pièces (10 pièces de 1 € = 1 billet de 10 €).",
+						"detail": {},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-043": {
+				"libelle": "Déterminer la valeur en euro d'un ensemble constitué de pièces et de billets.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Montants entiers d'euros ≤ 100 ; pièces et billets fictifs (au moins pièces de 1 € et billets de 10 €).",
+						"detail": {
+							"max": 100,
+							"unite": "€"
+						},
+						"source": "BO c2 p.26, texte d'introduction de la rubrique ; BO c2 p.4, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-044": {
+				"libelle": "Constituer une somme d'argent donnée avec des pièces et des billets.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Montants entiers d'euros ≤ 100 ; pièces et billets fictifs (au moins pièces de 1 € et billets de 10 €).",
+						"detail": {
+							"max": 100,
+							"unite": "€"
+						},
+						"source": "BO c2 p.26, texte d'introduction de la rubrique ; BO c2 p.4, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Contraintes possibles : le moins de pièces et de billets, sans pièce de 1 € (ex. 48 €, 56 €).",
+						"detail": {},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-045": {
+				"libelle": "Simuler des achats en manipulant des pièces et des billets fictifs.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Montants entiers d'euros ≤ 100 ; pièces et billets fictifs (au moins pièces de 1 € et billets de 10 €).",
+						"detail": {
+							"max": 100,
+							"unite": "€"
+						},
+						"source": "BO c2 p.26, texte d'introduction de la rubrique ; BO c2 p.4, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-046": {
+				"libelle": "Lire sur une horloge à aiguilles une heure donnée en heures entières.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Heures entières sur cadran à aiguilles (trois heures, neuf heures, midi).",
+						"detail": {
+							"liste": ["heures entières"]
+						},
+						"source": "BO c2 p.26, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-047": {
+				"libelle": "Positionner les aiguilles d'une horloge correspondant à une heure donnée (uniquement des heures entières inférieures ou égales à douze).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Heures entières ≤ 12 (une heure du matin ou de l'après-midi se place sur le cadran de 12).",
+						"detail": {
+							"min": 1,
+							"max": 12
+						},
+						"source": "BO c2 p.26, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-048": {
+				"libelle": "Associer une heure à un moment de la journée.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps",
+				"bornes": [],
+				"remarque": "Actions familières (se lever, aller à l'école, déjeuner) associées à des heures entières."
+			},
+			"CP-049": {
+				"libelle": "Reconnaitre les solides usuels suivants : cube, boule, cône, cylindre, pavé.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube, boule, cône, cylindre, pavé ; au CP le cube n'est pas un pavé (critère visuel).",
+						"detail": {
+							"liste": ["cube", "boule", "cône", "cylindre", "pavé"]
+						},
+						"source": "BO c2 p.31, texte d'introduction de la rubrique et p.32",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-050": {
+				"libelle": "Nommer un cube, un pavé et une boule.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Nommer seulement cube, pavé et boule.",
+						"detail": {
+							"liste": ["cube", "pavé", "boule"]
+						},
+						"source": "BO c2 p.32, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-051": {
+				"libelle": "Décrire un cube ou un pavé en utilisant le terme « face ».",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube et pavé, terme « face » seulement (pas sommet ni arête).",
+						"detail": {
+							"liste": ["cube", "pavé"]
+						},
+						"source": "BO c2 p.32, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-052": {
+				"libelle": "Connaitre le nombre et la nature des faces d'un cube et d'un pavé.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Nombre de faces et nature (carré ou rectangle) du cube et du pavé.",
+						"detail": {
+							"liste": ["carré", "rectangle"]
+						},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-053": {
+				"libelle": "Construire des cubes et des pavés.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "À partir d'un modèle, assembler les faces d'un cube ou d'un pavé.",
+						"detail": {},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-054": {
+				"libelle": "Reconnaitre des formes planes (disque, carré, rectangle et triangle) dans un assemblage et dans son environnement proche.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Disque, carré, rectangle, triangle.",
+						"detail": {
+							"liste": ["disque", "carré", "rectangle", "triangle"]
+						},
+						"source": "BO c2 p.32, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-055": {
+				"libelle": "Nommer le disque, le carré, le rectangle et le triangle.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Disque, carré, rectangle, triangle.",
+						"detail": {
+							"liste": ["disque", "carré", "rectangle", "triangle"]
+						},
+						"source": "BO c2 p.32, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-056": {
+				"libelle": "Donner une première description du carré, du rectangle, du triangle en utilisant les termes « sommet » et « côté ».",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Carré, rectangle, triangle ; termes « sommet » et « côté » ; nombre de côtés et égalités de longueurs (carré, rectangle).",
+						"detail": {
+							"liste": ["carré", "rectangle", "triangle"]
+						},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-057": {
+				"libelle": "Repérer visuellement des alignements.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Objets réels puis points (petites croix) sur papier.",
+						"detail": {},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-058": {
+				"libelle": "Utiliser la règle pour repérer ou vérifier des alignements.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Dire si trois points sont alignés quand ce n'est pas évident à l'œil.",
+						"detail": {
+							"nb_points": 3
+						},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-059": {
+				"libelle": "Utiliser la règle comme instrument de tracé.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tracer une droite passant par deux points ; horizontale, verticale ou oblique.",
+						"detail": {},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-060": {
+				"libelle": "Construire un carré, un rectangle, un triangle ou un assemblage de ces figures sur du papier quadrillé ou pointé.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Sur quadrillage ou papier pointé, côtés suivant les lignes ; compléter un rectangle (deux côtés consécutifs tracés) ou un carré (un côté tracé) ; gabarits et pochoirs.",
+						"detail": {},
+						"source": "BO c2 p.32, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-061": {
+				"libelle": "Connaitre et utiliser le vocabulaire lié aux positions relatives : gauche, droite ; sur, sous, entre, devant, derrière, au-dessus, en dessous.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Vocabulaire : gauche, droite ; sur, sous, entre, devant, derrière, au-dessus, en dessous.",
+						"detail": {
+							"liste": [
+								"gauche",
+								"droite",
+								"sur",
+								"sous",
+								"entre",
+								"devant",
+								"derrière",
+								"au-dessus",
+								"en dessous"
+							]
+						},
+						"source": "BO c2 p.33, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-062": {
+				"libelle": "Situer des personnes ou des objets les uns par rapport aux autres ou par rapport à d'autres repères dans la classe.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espace limité à la classe.",
+						"detail": {},
+						"source": "BO c2 p.32, texte d'introduction de la rubrique « Le repérage dans l'espace »",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-063": {
+				"libelle": "Construire et utiliser des représentations de la classe pour localiser, mémoriser ou communiquer un emplacement.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espace limité à la classe.",
+						"detail": {},
+						"source": "BO c2 p.32, texte d'introduction de la rubrique « Le repérage dans l'espace »",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-064": {
+				"libelle": "Construire et reproduire des assemblages de solides à partir d'un modèle en trois dimensions ou de représentations planes.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Assemblages de cubes et de pavés à partir d'un modèle physique ou d'une photographie.",
+						"detail": {
+							"liste": ["cube", "pavé"]
+						},
+						"source": "BO c2 p.33, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-065": {
+				"libelle": "Se déplacer et décrire des déplacements dans la classe en s'orientant et en utilisant des repères.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espace limité à la classe.",
+						"detail": {},
+						"source": "BO c2 p.32, texte d'introduction de la rubrique « Le repérage dans l'espace »",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Instructions : avancer, reculer, tourner à droite, tourner à gauche, monter, descendre.",
+						"detail": {},
+						"source": "BO c2 p.33, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-066": {
+				"libelle": "Construire et utiliser un plan de la classe pour communiquer un déplacement.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espace limité à la classe.",
+						"detail": {},
+						"source": "BO c2 p.32, texte d'introduction de la rubrique « Le repérage dans l'espace »",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-067": {
+				"libelle": "Utiliser et produire une suite d'instructions qui codent un déplacement en utilisant un vocabulaire spatial précis.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Au maximum dix instructions dont deux virages ; « avancer d'une case », « pivoter d'un quart de tour à droite/gauche ».",
+						"detail": {
+							"max_instructions": 10,
+							"max_virages": 2
+						},
+						"source": "BO c2 p.33, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-068": {
+				"libelle": "Collecter des données et présenter ces données sous forme d'un tableau.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Caractère qualitatif à 2 à 5 valeurs ; population de moins de 40 individus.",
+						"detail": {
+							"valeurs": {
+								"min": 2,
+								"max": 5
+							},
+							"effectif_total_max": 39
+						},
+						"source": "BO c2 p.37, texte d'introduction de la rubrique et BO c2 p.37, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-069": {
+				"libelle": "Compléter un tableau à double entrée.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tableau croisant deux critères (ex. forme et couleur) ; case à l'intersection d'une ligne et d'une colonne.",
+						"detail": {},
+						"source": "BO c2 p.37, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-070": {
+				"libelle": "Comparer des collections en les organisant.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Collections non organisées, totalement organisées en dizaines et unités, ou partiellement groupées (ex. 3 dizaines et 15 unités) ; d'abord objets déplaçables, puis collections fixes dessinées.",
+						"detail": {
+							"exemple": "3 dizaines + 15 unités",
+							"groupements": [10]
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Cardinal ≤ 100 (général)."
+			},
+			"CP-071": {
+				"libelle": "Rendre la monnaie.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Montants entiers d'euros ≤ 100 ; pièces et billets fictifs (au moins pièces de 1 € et billets de 10 €).",
+						"detail": {
+							"max": 100,
+							"unite": "€"
+						},
+						"source": "BO c2 p.26, texte d'introduction de la rubrique ; BO c2 p.4, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-072": {
+				"libelle": "Présenter des données collectées sous forme d'un diagramme en barres.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Caractère qualitatif à 2 à 5 valeurs ; population de moins de 40 individus.",
+						"detail": {
+							"valeurs": {
+								"min": 2,
+								"max": 5
+							},
+							"effectif_total_max": 39
+						},
+						"source": "BO c2 p.37, texte d'introduction de la rubrique et BO c2 p.37, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-073": {
+				"libelle": "Connaître les tables d'addition dans l'autre sens : trouver le terme manquant d'une addition (3 + ? = 7).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Égalités A + B = C ou C = A + B avec A et B entiers de 0 à 10 (donc C ≤ 20).",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 20
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Égalités à trou du type 4 + … = 12 ; 10 = 7 + … ; les égalités avec « − » (13 − 7 = …) ne vont pas dans un test de fluence des tables.",
+						"detail": {},
+						"source": "BO c2 p.6, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-074": {
+				"libelle": "Connaître la suite orale des nombres jusqu'à cent (récite la suite de 90 à 100, en classe).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suite orale jusqu'à 100.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.4, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Compter de 1 en 1, de 2 en 2 et de 10 en 10 en partant de n'importe quel nombre ; à rebours seulement de 1 en 1.",
+						"detail": {
+							"pas_avant": [1, 2, 10],
+							"pas_arriere": [1]
+						},
+						"source": "BO c2 p.4, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-075": {
+				"libelle": "Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": "Pas de borne propre : toute précision d'encadrement (unité, dizaine, centaine…) dans le champ du niveau."
+			},
+			"CP-076": {
+				"libelle": "Intercaler un nombre entier entre deux nombres donnés (47 < … < 52).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": "Ex. du libellé : 47 < … < 52. Écart entre les bornes non précisé."
+			},
+			"CP-077": {
+				"libelle": "Comprendre le sens de la soustraction (choisir la soustraction pour une situation de retrait, d'écart).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [],
+				"remarque": "Soustraction comprise comme inverse de l'addition (ex. 32 + 15 = 47 donc 47 − 32 = 15)."
+			},
+			"CP-078": {
+				"libelle": "Comprendre et utiliser le symbole « − » (8 − 3 : que veut dire ce signe ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CP-079": {
+				"libelle": "Comprendre et utiliser le symbole « = » (complète : 5 + 3 … 8).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "« = » seulement entre deux termes égaux ; « 47 + 3 = 50 + 5 = 55 » est incorrect.",
+						"detail": {},
+						"source": "BO c2 p.5, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-080": {
+				"libelle": "Connaître les moitiés de nombres usuels (moitié de 16 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Moitiés des nombres pairs de 2 à 20 et des dizaines 40, 60, 80, 100 ; dans les deux sens (moitié de … = 8).",
+						"detail": {
+							"liste": [2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 40, 60, 80, 100]
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-081": {
+				"libelle": "Soustraire 1 ou 2 à un nombre (37 − 2 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On soustrait 1 ou 2 ; résultat ≥ 0.",
+						"detail": {
+							"liste": [1, 2]
+						},
+						"source": "BO c2 p.6, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-082": {
+				"libelle": "Soustraire 10 à un nombre (34 − 10 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On soustrait 10 ; nombre de départ ≥ 10.",
+						"detail": {
+							"liste": [10]
+						},
+						"source": "BO c2 p.6, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-083": {
+				"libelle": "Soustraire 20, 30, …, 90 à un nombre (74 − 30 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On soustrait 20, 30, …, 90 ; résultat ≥ 0.",
+						"detail": {
+							"liste": [20, 30, 40, 50, 60, 70, 80, 90]
+						},
+						"source": "BO c2 p.6, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CP-084": {
+				"libelle": "Construire un tableau à double entrée.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tableau croisant deux critères (ex. forme et couleur) ; case à l'intersection d'une ligne et d'une colonne.",
+						"detail": {},
+						"source": "BO c2 p.37, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			}
+		}
+	},
+	"CE1": {
+		"general": [
+			{
+				"borne": "Nombres entiers naturels jusqu'à mille (0 à 1 000) ; centaine abordée dès la période 1, jusqu'à 1 000 au plus tard en période 2.",
+				"portee": "tout le niveau",
+				"detail": {
+					"min": 0,
+					"max": 1000,
+					"ensemble": "entiers naturels"
+				},
+				"source": "BO c2 p.10, texte d'introduction de la rubrique « Les nombres entiers »"
+			},
+			{
+				"borne": "Calcul mental : nombres en jeu et résultats cherchés tous ≤ 1 000.",
+				"portee": "Le calcul mental",
+				"detail": {
+					"max_operandes": 1000,
+					"max_resultat": 1000
+				},
+				"source": "BO c2 p.14, texte d'introduction de la rubrique « Le calcul mental »"
+			},
+			{
+				"borne": "Résolution de problèmes : données numériques entières jusqu'à 1 000 ; prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €).",
+				"portee": "La résolution de problèmes",
+				"detail": {
+					"max": 1000,
+					"ensemble": "entiers naturels",
+					"prix_a_virgule": {
+						"unite": "€",
+						"decimales": 2,
+						"max": 1000
+					},
+					"decimaux_hors_monnaie": false
+				},
+				"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, texte d'introduction de la rubrique et colonne Exemples de réussite p.17-19",
+				"force": "décision"
+			},
+			{
+				"borne": "Fractions : fractions d'un tout, toutes ≤ 1, de dénominateur 2, 3, 4, 5, 6, 8 ou 10.",
+				"portee": "Les fractions",
+				"detail": {
+					"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+					"max": 1
+				},
+				"source": "BO c2 p.12, texte d'introduction de la rubrique « Les fractions »"
+			},
+			{
+				"borne": "Longueurs et masses : pas d'écriture à virgule.",
+				"portee": "Grandeurs et mesures > Les longueurs / Les masses",
+				"detail": {},
+				"source": "BO c2 p.27, texte d'introduction de la rubrique"
+			},
+			{
+				"borne": "Monnaie : euros et centimes ; écriture à virgule utilisée à partir de la période 3 ; 100 centimes = 1 €.",
+				"portee": "Grandeurs et mesures > La monnaie",
+				"detail": {
+					"unites": ["€", "centime"],
+					"decimales": 2
+				},
+				"source": "BO c2 p.27, texte d'introduction de la rubrique « La monnaie » et p.28"
+			},
+			{
+				"borne": "Temps : temps courts en heures et minutes ; heures entières (y compris > 12), demi-heures, quarts d'heure.",
+				"portee": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"detail": {
+					"liste": ["heures entières", "demi-heures", "quarts d'heure"]
+				},
+				"source": "BO c2 p.28, texte d'introduction de la rubrique"
+			},
+			{
+				"borne": "Pas de calculatrice au cycle 2.",
+				"portee": "tout le niveau",
+				"detail": {},
+				"source": "BO c2 p.13, texte d'introduction de la rubrique « Les quatre opérations »"
+			},
+			{
+				"borne": "Fluence (indicateur) : 12 résultats en 3 min (procédures) ; tables d'addition 12 en 1 min ; tables de multiplication et faits usuels 8 en 1 min.",
+				"portee": "Le calcul mental",
+				"detail": {},
+				"source": "BO c2 p.14, texte d'introduction de la rubrique et BO c2 p.14, colonne Exemples de réussite"
+			}
+		],
+		"points": {
+			"CE1-001": {
+				"libelle": "Dénombrer des collections en les organisant.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Groupes de dix et de cent ; collections avec plus de dix éléments d'une unité de numération (17 u, 8 d et 2 c ; 2 c, 27 d et 14 u).",
+						"detail": {
+							"groupements": [10, 100]
+						},
+						"source": "BO c2 p.10, colonne Exemples de réussite et p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-002": {
+				"libelle": "Construire des collections de cardinal donné.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Groupes de dix et de cent ; collections avec plus de dix éléments d'une unité de numération (17 u, 8 d et 2 c ; 2 c, 27 d et 14 u).",
+						"detail": {
+							"groupements": [10, 100]
+						},
+						"source": "BO c2 p.10, colonne Exemples de réussite et p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-003": {
+				"libelle": "Connaitre et utiliser la relation entre unités et dizaines, entre dizaines et centaines, entre unités et centaines.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Groupes de dix et de cent ; collections avec plus de dix éléments d'une unité de numération (17 u, 8 d et 2 c ; 2 c, 27 d et 14 u).",
+						"detail": {
+							"groupements": [10, 100]
+						},
+						"source": "BO c2 p.10, colonne Exemples de réussite et p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Ex. : 235 timbres par plaques de 100, carnets de 10 ou à l'unité, quatre commandes différentes.",
+						"detail": {},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-004": {
+				"libelle": "Connaître la suite écrite des nombres jusqu'à mille (écris le nombre qui suit 999).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suite écrite jusqu'à 1 000 ; écrire en chiffres un nombre dicté, lire, écrire en lettres.",
+						"detail": {
+							"max": 1000
+						},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Pas de borne propre à l'écriture en lettres au CE1 (contrairement au CP)."
+			},
+			"CE1-005": {
+				"libelle": "Connaitre et utiliser diverses représentations d'un nombre et passer de l'une à l'autre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Matériel, chiffres, oral, unités de numération y compris non canoniques (63 d et 5 u ; 5 u, 5 c et 13 d), (6 × 100) + (3 × 10) + (5 × 1), 600 + 30 + 5, lettres.",
+						"detail": {},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-006": {
+				"libelle": "Connaitre la valeur des chiffres en fonction de leur position dans un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Rangs : unités, dizaines, centaines.",
+						"detail": {
+							"liste": ["unités", "dizaines", "centaines"]
+						},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-007": {
+				"libelle": "Comparer deux nombres entiers avec les symboles =, < et > (239 … 243).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE1-008": {
+				"libelle": "Ordonner des nombres dans l'ordre croissant ou décroissant.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Ordonner jusqu'à cinq nombres (ex. 234, 243, 239, 300, 229).",
+						"detail": {
+							"max_effectif": 5
+						},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-009": {
+				"libelle": "Comprendre et savoir utiliser les expressions « égal à », « supérieur à », « inférieur à », « compris entre … et … ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE1-010": {
+				"libelle": "Savoir placer des nombres sur une demi-droite graduée.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Demi-droite graduée de 1 en 1, de 10 en 10 ou de 100 en 100.",
+						"detail": {
+							"pas": [1, 10, 100]
+						},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-011": {
+				"libelle": "Connaitre les nombres ordinaux jusqu'à cent.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Ordinaux jusqu'à cent.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.11, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": "Exemple de contexte : 167 cyclistes, avant le 48ᵉ."
+			},
+			"CE1-012": {
+				"libelle": "Utiliser les nombres ordinaux pour indiquer une position dans une liste ou dans une suite.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au centième.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.11, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-013": {
+				"libelle": "Repérer un rang ou une position dans une file orientée ou dans une liste d'objets ou de personnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au centième.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.11, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-014": {
+				"libelle": "Faire le lien entre le rang d'un objet dans une liste et le nombre d'éléments qui le précèdent.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au centième.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.11, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-015": {
+				"libelle": "Utiliser les nombres ordinaux dans le cadre de l'étude de suites de symboles, de formes, de lettres ou de nombres.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Rangs jusqu'au centième.",
+						"detail": {
+							"max": 100
+						},
+						"source": "BO c2 p.11, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					},
+					{
+						"aspect": "format",
+						"borne": "Suites répétitives ET évolutives (1, 2, 4, 7, 11, 16… ; 1, 2, 4, 8, 16… ; △✕△✕✕…).",
+						"detail": {
+							"liste": ["répétitives", "évolutives"]
+						},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-016": {
+				"libelle": "Lire et écrire les fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10 en chiffres et en lettres (un quart ↔ 1/4).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions unitaires 1/2, 1/3, 1/4, 1/5, 1/6, 1/8, 1/10.",
+						"detail": {
+							"numerateur": 1,
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10]
+						},
+						"source": "BO c2 p.12, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-017": {
+				"libelle": "Lire et écrire une fraction inférieure ou égale à 1 en chiffres et en lettres (trois quarts ↔ 3/4).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-018": {
+				"libelle": "Connaitre et utiliser les mots « dénominateur » et « numérateur ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-019": {
+				"libelle": "Comparer des fractions ayant le même dénominateur.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Même dénominateur, appui sur les parts d'un tout (2/5 < 3/5).",
+						"detail": {},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-020": {
+				"libelle": "Comparer des fractions dont le numérateur est 1.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions unitaires de dénominateur dans {2, 3, 4, 5, 6, 8, 10} (1/5 < 1/3).",
+						"detail": {
+							"numerateur": 1,
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10]
+						},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Livret CE1 p.6 : comparaison « dans des cas simples » dès la période 4."
+			},
+			"CE1-021": {
+				"libelle": "Additionner des fractions de même dénominateur (2/5 + 1/5 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Même dénominateur ; somme ≤ 1 (2/5 + 3/5 = 1).",
+						"detail": {
+							"max_resultat": 1
+						},
+						"source": "BO c2 p.13, colonne Exemples de réussite ; BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Fractions d'un tout, « par nature ≤ 1 » : une somme > 1 sort du programme (lecture déduite du texte p.12)."
+			},
+			"CE1-022": {
+				"libelle": "Poser et effectuer une addition en colonnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Deux ou trois nombres à un, deux ou trois chiffres (245 + 437 ; 218 + 48 ; 76 + 7 + 568).",
+						"detail": {
+							"nb_termes": [2, 3],
+							"chiffres_par_terme": [1, 2, 3]
+						},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Somme ≤ 1 000 (champ du CE1).",
+						"detail": {
+							"max_resultat": 1000
+						},
+						"source": "BO c2 p.10, texte d'introduction de la rubrique",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-023": {
+				"libelle": "Comprendre et utiliser le symbole « × ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "« × » lu « fois » ; ex. 7 × 20 biscuits = 140 biscuits (unités dans les calculs encouragées).",
+						"detail": {},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-024": {
+				"libelle": "Comprendre et savoir que la multiplication est commutative.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. potager 8 × 4 = 4 × 8.",
+						"detail": {},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-025": {
+				"libelle": "Connaitre la notion de parité d'un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombres ≤ 1 000 (ex. nombres pairs entre 767 et 778).",
+						"detail": {
+							"max": 1000
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-026": {
+				"libelle": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A + B avec A, B de 0 à 10.",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 20
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite (définition CP) ; BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-027": {
+				"libelle": "Connaître les tables de multiplication : donner le produit de deux nombres (3 × 4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A × B avec A, B entiers de 0 à 10.",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 100
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Livret CE1 p.28 : tables 1, 2, 3, 4, 5, 6, 10 en périodes 1-2 ; 7 en période 3 ; 8 en période 4 ; toutes en période 5. Mémorisation encore imparfaite en fin de CE1 (BO p.14)."
+			},
+			"CE1-028": {
+				"libelle": "Connaître des faits multiplicatifs usuels : les doubles (double de 25 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Doubles : 1 à 15 ; 20, 25, 30, 35, 40, 45, 50 ; 100, 150, 200, 250, 300, 500 (dans les deux sens).",
+						"detail": {
+							"liste": [
+								1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 20, 25, 30, 35, 40, 45, 50, 100,
+								150, 200, 250, 300, 500
+							]
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-029": {
+				"libelle": "Ajouter un nombre entier de dizaines à un nombre (246 + 30 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Nombre entier de dizaines de 10 à 90 seulement (ex. 60, 80 ; 120 exclu) ; sans retenue (234 + 60) et avec retenue (746 + 80).",
+						"detail": {
+							"liste": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": "Résultat ≤ 1 000."
+			},
+			"CE1-030": {
+				"libelle": "Multiplier par 10 un nombre inférieur à 100.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombre de 0 à 99, multiplié par 10 (ex. 72 × 10 = 720).",
+						"detail": {
+							"min": 0,
+							"max": 99,
+							"max_resultat": 990
+						},
+						"source": "BO c2 p.15, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-031": {
+				"libelle": "Ajouter 9, 19 ou 29 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute 9, 19 ou 29 ; nombres jusqu'à 999 selon la progression en numération (ex. 58 + 19, 115 + 19, 60 + 29).",
+						"detail": {
+							"liste": [9, 19, 29],
+							"max_depart": 999,
+							"max_resultat": 1000
+						},
+						"source": "BO c2 p.15, colonne Exemples de réussite ; Livret CE1 2025 p.23",
+						"force": "BO"
+					}
+				],
+				"remarque": "Le livret commence par +19, puis mélange 9 et 19, puis 29."
+			},
+			"CE1-032": {
+				"libelle": "Soustraire 9 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On soustrait 9 (−10 puis +1).",
+						"detail": {
+							"liste": [9]
+						},
+						"source": "BO c2 p.15, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-033": {
+				"libelle": "Soustraire un nombre inférieur à 9 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On soustrait un nombre de 1 à 8, avec ou sans changement de dizaine (157 − 5 ; 523 − 7).",
+						"detail": {
+							"min": 1,
+							"max": 8
+						},
+						"source": "BO c2 p.15, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-034": {
+				"libelle": "Déterminer la moitié d'un nombre pair.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombre pair ≤ 1 000 décomposé en centaines, dizaines, unités (moitié de 470 = 235).",
+						"detail": {
+							"max": 1000,
+							"pair": true
+						},
+						"source": "BO c2 p.16, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-035": {
+				"libelle": "Calculer le produit d'un nombre compris entre 11 et 19 par un nombre inférieur à 10 en décomposant le plus grand des deux facteurs en la somme de deux nombres (propriété de distributivité de la multiplication par rapport à l'addition).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Un facteur de 11 à 19, l'autre de 0 à 9 (« inférieur à 10 ») ; ex. 13 × 7.",
+						"detail": {
+							"facteur1": {
+								"min": 11,
+								"max": 19
+							},
+							"facteur2": {
+								"min": 0,
+								"max": 9
+							}
+						},
+						"source": "BO c2 p.16, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-036": {
+				"libelle": "Résoudre des problèmes additifs en une étape de type parties-tout.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Données entières ≤ 1 000.",
+						"detail": {
+							"max": 1000,
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
+					}
+				],
+				"remarque": "Transformations traitées comme parties-tout ; schéma en barre. Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
+			},
+			"CE1-037": {
+				"libelle": "Résoudre des problèmes additifs de comparaison en une étape.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Données entières ≤ 1 000.",
+						"detail": {
+							"max": 1000,
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Deux des trois éléments (deux valeurs, écart) donnés, le troisième cherché.",
+						"detail": {},
+						"source": "BO c2 p.17, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
+			},
+			"CE1-038": {
+				"libelle": "Résoudre des problèmes additifs en deux étapes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Données entières ≤ 1 000.",
+						"detail": {
+							"max": 1000,
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
+					}
+				],
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
+			},
+			"CE1-039": {
+				"libelle": "Résoudre des problèmes multiplicatifs en une étape.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Données entières ≤ 1 000.",
+						"detail": {
+							"max": 1000,
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Recherche du tout, du nombre de parts, de la valeur d'une part ; partages AVEC reste possibles (189 photos par 10 → 19 pages ; 75 œufs par 6).",
+						"detail": {},
+						"source": "BO c2 p.18, colonne Exemples de réussite et p.19",
+						"force": "BO"
+					}
+				],
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
+			},
+			"CE1-040": {
+				"libelle": "Résoudre des problèmes mixtes en deux étapes (une étape additive et une étape multiplicative).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Données entières ≤ 1 000.",
+						"detail": {
+							"max": 1000,
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.17, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Prix à virgule admis, uniquement en euros et centimes (≤ 1 000 €) ; aucun décimal hors monnaie (ni 2,5 kg, ni 1,5 m).",
+						"detail": {
+							"prix_a_virgule": {
+								"unite": "€",
+								"decimales": 2,
+								"max": 1000
+							},
+							"decimaux_hors_monnaie": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-1) ; d'après BO c2 p.17, colonne Exemples de réussite et p.18-19",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Une étape additive et une étape multiplicative (7 L à 2 € puis rendu sur 20 €).",
+						"detail": {},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Prix à virgule des exemples du BO (1,20 € ; 15,30 € ; 9,60 €) admis, cantonnés à la monnaie."
+			},
+			"CE1-041": {
+				"libelle": "Connaitre et utiliser les unités mètre, centimètre, kilomètre et les symboles associés (m, cm et km).",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "m, cm, km ; 1 m = 100 cm, 1 km = 1 000 m.",
+						"detail": {
+							"liste": ["m", "cm", "km"]
+						},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-042": {
+				"libelle": "Choisir l'unité la mieux adaptée pour exprimer une longueur.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Choix parmi m, cm, km.",
+						"detail": {
+							"liste": ["m", "cm", "km"]
+						},
+						"source": "BO c2 p.27, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-043": {
+				"libelle": "Connaitre les relations entre les unités de longueur usuelles.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Relations m–cm et km–m (ex. 1 m + 46 cm = 146 cm) ; pas d'écriture à virgule.",
+						"detail": {
+							"liste": ["1 m = 100 cm", "1 km = 1 000 m"]
+						},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-044": {
+				"libelle": "Savoir mesurer la longueur d'un segment en utilisant une règle graduée.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Encadrer la longueur entre deux nombres entiers de centimètres (entre 8 et 9 cm).",
+						"detail": {
+							"ensemble": "entiers naturels",
+							"unite": "cm"
+						},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-045": {
+				"libelle": "Comparer des longueurs.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE1-046": {
+				"libelle": "Connaitre quelques longueurs de référence.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Objets familiers et distances locales (école-mairie, école-piscine…).",
+						"detail": {},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-047": {
+				"libelle": "Estimer la longueur d'un objet du quotidien.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ex. : trousse plutôt 2 cm, 20 cm ou 2 m.",
+						"detail": {},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-048": {
+				"libelle": "Savoir identifier l'objet le plus léger (ou le plus lourd) parmi deux ou trois objets de volumes proches en les soupesant ou en utilisant une balance pour les peser.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "De deux à quatre objets de volumes proches (libellé : deux ou trois ; exemple du BO : trois ou quatre).",
+						"detail": {
+							"min_effectif": 2,
+							"max_effectif": 4
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-2) ; d'après BO c2 p.27, colonne Objectifs d'apprentissage / BO c2 p.27, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": "Les deux colonnes du BO sont réunies : libellé « deux ou trois objets », exemple « trois ou quatre objets »."
+			},
+			"CE1-049": {
+				"libelle": "Connaitre et utiliser les unités gramme et kilogramme et les symboles associés (g, kg).",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Gramme et kilogramme (g, kg).",
+						"detail": {
+							"liste": ["g", "kg"]
+						},
+						"source": "BO c2 p.27, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-050": {
+				"libelle": "Savoir que 1 kg est égal à 1 000 g.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "1 kg = 1 000 g.",
+						"detail": {
+							"liste": ["1 kg = 1 000 g"]
+						},
+						"source": "BO c2 p.27, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-051": {
+				"libelle": "Comparer des masses.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ordonner quatre masses en g ou kg (1 kg et 300 g ; 1 000 g ; 50 kg ; 2 kg et 100 g).",
+						"detail": {
+							"max_effectif": 4
+						},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-052": {
+				"libelle": "Disposer de quelques masses de référence.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ex. : paquet de sucre 1 kg, sachet de levure environ 10 g.",
+						"detail": {},
+						"source": "BO c2 p.27, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-053": {
+				"libelle": "Connaitre le lien entre les euros et les centimes.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "1 € = 100 centimes.",
+						"detail": {},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-054": {
+				"libelle": "Comparer les valeurs en euro de deux ensembles constitués de pièces et de billets.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur en euros et centimes avec un nombre final de centimes < 100, ou écriture à virgule.",
+						"detail": {
+							"centimes_max": 99,
+							"decimales": 2
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Ordonner quatre prix quelles que soient leurs écritures ; 12 € > 60 centimes.",
+						"detail": {
+							"max_effectif": 4
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-055": {
+				"libelle": "Déterminer la valeur en euro et centime d'euro d'un ensemble constitué de pièces et de billets.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur en euros et centimes avec un nombre final de centimes < 100, ou écriture à virgule.",
+						"detail": {
+							"centimes_max": 99,
+							"decimales": 2
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-056": {
+				"libelle": "Constituer avec des euros et des centimes d'euro une somme d'argent d'une valeur donnée.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur en euros et centimes avec un nombre final de centimes < 100, ou écriture à virgule.",
+						"detail": {
+							"centimes_max": 99,
+							"decimales": 2
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Contraintes possibles : pas de pièce de 1 € (pièces de 10, 20, 50 c).",
+						"detail": {},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-057": {
+				"libelle": "Simuler des achats en manipulant des pièces et des billets fictifs.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur en euros et centimes avec un nombre final de centimes < 100, ou écriture à virgule.",
+						"detail": {
+							"centimes_max": 99,
+							"decimales": 2
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-058": {
+				"libelle": "Connaitre le sens de l'écriture à virgule d'une somme d'argent.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Conversions centimes ↔ euros (200 c = 2 € ; 2 € et 5 c = 2,05 € ; 85 c = 0,85 € ; 17 € = 17,00 € ; 1 € et 120 c = 2,20 €) ; sans les mots dixième/centième.",
+						"detail": {
+							"decimales": 2
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-059": {
+				"libelle": "Lire l'heure sur une horloge à aiguilles (lorsque l'heure est donnée en heures entières, en heures et demi-heure ou en heures et quarts d'heure).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Heures entières, et demie, et quart (ex. « 2 heures et quart » = 14 h 15 l'après-midi ; affichage digital 14 : 15).",
+						"detail": {
+							"minutes": [0, 15, 30, 45]
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-060": {
+				"libelle": "Positionner les aiguilles d'une horloge correspondant à une heure donnée en heures entières, en heures et demi-heure ou en heures et quart d'heure.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Heures entières < 24, demi-heures et quarts d'heure.",
+						"detail": {
+							"heures_max": 23,
+							"minutes": [0, 15, 30, 45]
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-061": {
+				"libelle": "Connaitre, utiliser et distinguer les heures du matin et celles de l'après-midi.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "« trois heures du matin », « trois heures de l'après-midi ».",
+						"detail": {},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-062": {
+				"libelle": "Connaitre les unités de mesure de durée, heure et minute, et les symboles associés (h et min).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "h et min ; 1 h = 60 min, 1 demi-heure = 30 min, 1 quart d'heure = 15 min.",
+						"detail": {
+							"liste": ["h", "min"]
+						},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-063": {
+				"libelle": "Mesurer la durée écoulée entre deux instants affichés sur une horloge (même journée ; heures entières, demi-heures ou quarts d'heure).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Même journée ; instants en heures entières, demi-heures ou quarts d'heure (8 h 30 → 8 h 45 ; 15 h 45 → 16 h 15 ; midi → 20 h).",
+						"detail": {
+							"minutes": [0, 15, 30, 45]
+						},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-064": {
+				"libelle": "Reconnaitre les solides usuels suivants : cube, boule, cône, pyramide, cylindre, pavé.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube, boule, cône, pyramide, cylindre, pavé.",
+						"detail": {
+							"liste": ["cube", "boule", "cône", "pyramide", "cylindre", "pavé"]
+						},
+						"source": "BO c2 p.33, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-065": {
+				"libelle": "Nommer un cube, une boule, un pavé, un cône ou une pyramide.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Nommer cube, boule, pavé, cône, pyramide (le cylindre n'est pas dans la liste à nommer au CE1).",
+						"detail": {
+							"liste": ["cube", "boule", "pavé", "cône", "pyramide"]
+						},
+						"source": "BO c2 p.33, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-066": {
+				"libelle": "Décrire un cube, un pavé ou une pyramide en utilisant les termes « face », « sommet » et « arête ».",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pavé, cube, pyramide à base carrée ; faces (carrés, rectangles, triangles), nombre d'arêtes et de sommets.",
+						"detail": {
+							"liste": ["cube", "pavé", "pyramide à base carrée"]
+						},
+						"source": "BO c2 p.33, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-067": {
+				"libelle": "Connaitre le nombre et la nature des faces d'un cube ou d'un pavé.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube ou pavé : faces carrés ou rectangles.",
+						"detail": {
+							"liste": ["cube", "pavé"]
+						},
+						"source": "BO c2 p.33, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-068": {
+				"libelle": "Construire un cube, un pavé droit ou une pyramide.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube, pavé droit, pyramide, à partir d'un modèle (faces ou arêtes et sommets).",
+						"detail": {
+							"liste": ["cube", "pavé", "pyramide"]
+						},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-069": {
+				"libelle": "Utiliser le vocabulaire géométrique usuel : carré, rectangle, triangle, triangle rectangle, côté, sommet, angle, disque, cercle, centre ; point, droite, segment, milieu d'un segment ; angle droit, angle aigu, angle obtus.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Vocabulaire : carré, rectangle, triangle, triangle rectangle, côté, sommet, angle, disque, cercle, centre ; point, droite, segment, milieu ; angle droit, aigu, obtus.",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Ni losange, ni rayon, ni diamètre, ni polygone nommés (CE2)."
+			},
+			"CE1-070": {
+				"libelle": "Reconnaître et nommer un cercle, un carré, un rectangle, un triangle ou un triangle rectangle (quelle est cette figure ?).",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cercle (ou disque), carré, rectangle, triangle, triangle rectangle.",
+						"detail": {
+							"liste": ["cercle", "disque", "carré", "rectangle", "triangle", "triangle rectangle"]
+						},
+						"source": "BO c2 p.34, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-071": {
+				"libelle": "Connaitre les propriétés des angles et des égalités de longueur pour les carrés et les rectangles.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Carré et rectangle : quatre angles droits, côtés opposés de même longueur (carré : quatre côtés égaux).",
+						"detail": {
+							"liste": ["carré", "rectangle"]
+						},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-072": {
+				"libelle": "Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle et un cercle ou un assemblage de ces figures.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cercle (ou disque), carré, rectangle, triangle, triangle rectangle.",
+						"detail": {
+							"liste": ["cercle", "disque", "carré", "rectangle", "triangle", "triangle rectangle"]
+						},
+						"source": "BO c2 p.34, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Papier quadrillé, pointé ou uni ; côtés sur les lignes ou obliques ; cercle de centre donné passant par un point donné.",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-073": {
+				"libelle": "Utiliser la règle pour vérifier des alignements.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Repérer et tracer des points alignés.",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-074": {
+				"libelle": "Utiliser la règle graduée, l'équerre et le compas comme instruments de tracé.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Règle graduée, équerre, compas ; milieu d'un segment par pliage.",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-075": {
+				"libelle": "Connaitre et utiliser le code pour les angles droits.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE1-076": {
+				"libelle": "Connaitre et utiliser le vocabulaire lié aux positions relatives : à gauche, à droite ; sur, sous, entre, devant, derrière, au-dessus, en dessous ; près, loin.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Vocabulaire : à gauche, à droite ; sur, sous, entre, devant, derrière, au-dessus, en dessous ; près, loin.",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-077": {
+				"libelle": "Situer des personnes ou des objets les uns par rapport aux autres ou par rapport à d'autres repères dans un espace familier.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espaces familiers : classe, école, quartier, village ou ville (plan, photo aérienne).",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite et p.35",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-078": {
+				"libelle": "Construire et utiliser des représentations d'un espace familier pour localiser, mémoriser ou communiquer un emplacement.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espaces familiers : classe, école, quartier, village ou ville (plan, photo aérienne).",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite et p.35",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-079": {
+				"libelle": "Construire des assemblages de cubes et de pavés.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cubes et pavés, à partir d'un modèle 3D ou d'une représentation plane (photo, perspective cavalière).",
+						"detail": {
+							"liste": ["cube", "pavé"]
+						},
+						"source": "BO c2 p.35, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-080": {
+				"libelle": "Comprendre, utiliser et produire une suite d'instructions qui codent un déplacement en utilisant un vocabulaire spatial précis.",
+				"rubrique": "Espace et géométrie > Le repérage dans l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Au maximum quinze instructions dont quatre virages ; « avancer de », « pivoter d'un quart de tour ».",
+						"detail": {
+							"max_instructions": 15,
+							"max_virages": 4
+						},
+						"source": "BO c2 p.35, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-081": {
+				"libelle": "Produire un tableau pour présenter des données recueillies.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Caractère qualitatif à 2 à 5 valeurs ; population de moins de 100 individus ; axe vertical gradué de un en un.",
+						"detail": {
+							"valeurs": {
+								"min": 2,
+								"max": 5
+							},
+							"effectif_total_max": 99,
+							"pas_axe": 1
+						},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-082": {
+				"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont choisi le foot ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Caractère qualitatif à 2 à 5 valeurs ; population de moins de 100 individus ; axe vertical gradué de un en un.",
+						"detail": {
+							"valeurs": {
+								"min": 2,
+								"max": 5
+							},
+							"effectif_total_max": 99,
+							"pas_axe": 1
+						},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-083": {
+				"libelle": "Connaitre des faits multiplicatifs usuels : les multiples de 25 (1 × 25, 2 × 25, 3 × 25, 4 × 25).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "1 × 25, 2 × 25, 3 × 25, 4 × 25 seulement.",
+						"detail": {
+							"liste": [25, 50, 75, 100]
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-084": {
+				"libelle": "Ajouter un nombre entier de centaines à un nombre (346 + 200 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Nombre entier de centaines de 100 à 900 seulement (ex. 354 + 500) ; résultat ≤ 1 000.",
+						"detail": {
+							"liste": [100, 200, 300, 400, 500, 600, 700, 800, 900],
+							"max_resultat": 1000
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-085": {
+				"libelle": "Estimer la masse d'objets du quotidien en gramme ou en kilogramme.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "En gramme ou en kilogramme.",
+						"detail": {
+							"liste": ["g", "kg"]
+						},
+						"source": "BO c2 p.27, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-086": {
+				"libelle": "Rendre la monnaie.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur en euros et centimes avec un nombre final de centimes < 100, ou écriture à virgule.",
+						"detail": {
+							"centimes_max": 99,
+							"decimales": 2
+						},
+						"source": "BO c2 p.28, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-087": {
+				"libelle": "Utiliser l'équerre pour vérifier qu'un angle est droit.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Angle droit ou non ; si non droit sans doute : aigu ou obtus.",
+						"detail": {},
+						"source": "BO c2 p.34, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-088": {
+				"libelle": "Produire un diagramme en barres pour présenter des données recueillies.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Caractère qualitatif à 2 à 5 valeurs ; population de moins de 100 individus ; axe vertical gradué de un en un.",
+						"detail": {
+							"valeurs": {
+								"min": 2,
+								"max": 5
+							},
+							"effectif_total_max": 99,
+							"pas_axe": 1
+						},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-089": {
+				"libelle": "Lire une donnée dans un tableau à double entrée (combien de filles mangent à la cantine le lundi ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tableau à double entrée avec totaux (ex. filles/garçons × 4 modes de transport, total 282).",
+						"detail": {},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-090": {
+				"libelle": "Connaître les tables d'addition dans l'autre sens : trouver le terme manquant d'une addition (3 + ? = 7).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A + B avec A, B de 0 à 10.",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 20
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite (définition CP) ; BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-091": {
+				"libelle": "Connaître les tables de multiplication dans l'autre sens : trouver le facteur manquant d'un produit (3 × ? = 12).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A × B avec A, B entiers de 0 à 10.",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 100
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Égalités à trou 4 × … = 12 ; 10 = 2 × …",
+						"detail": {},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-092": {
+				"libelle": "Connaître la suite orale des nombres jusqu'à mille (récite la suite de 990 à 1 000, en classe).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suite orale jusqu'à 1 000.",
+						"detail": {
+							"max": 1000
+						},
+						"source": "BO c2 p.11, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-093": {
+				"libelle": "Encadrer un nombre entier avec les symboles < et > (… < 239 < …).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": "Pas de borne propre : toute précision d'encadrement (unité, dizaine, centaine…) dans le champ du niveau."
+			},
+			"CE1-094": {
+				"libelle": "Intercaler un nombre entier entre deux nombres donnés (391 < … < 396).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. : bande lacunaire 391, 392, 393, …, 396 ; demi-droite incomplète.",
+						"detail": {},
+						"source": "BO c2 p.11, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-095": {
+				"libelle": "Représenter l'une des fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ ou 1/10 par un partage (colorier les parts d'une figure).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions unitaires de la liste.",
+						"detail": {
+							"numerateur": 1,
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10]
+						},
+						"source": "BO c2 p.12, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Partages de figures (disques, hexagones, carrés, bandes), de ficelles, de bouteilles d'eau.",
+						"detail": {},
+						"source": "BO c2 p.12, colonne Exemples de réussite ; Livret CE1 2025 annexes séquence 1",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-096": {
+				"libelle": "Interpréter un partage par l'une des fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ ou 1/10 (quelle part de la figure est coloriée ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions unitaires de la liste.",
+						"detail": {
+							"numerateur": 1,
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10]
+						},
+						"source": "BO c2 p.12, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Partages de figures (disques, hexagones, carrés, bandes), de ficelles, de bouteilles d'eau.",
+						"detail": {},
+						"source": "BO c2 p.12, colonne Exemples de réussite ; Livret CE1 2025 annexes séquence 1",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-097": {
+				"libelle": "Représenter une fraction inférieure ou égale à 1 par un partage (colorier les parts d'une figure).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Partages de figures (disques, hexagones, carrés, bandes), de ficelles, de bouteilles d'eau.",
+						"detail": {},
+						"source": "BO c2 p.12, colonne Exemples de réussite ; Livret CE1 2025 annexes séquence 1",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-098": {
+				"libelle": "Interpréter un partage par une fraction inférieure ou égale à 1 (quelle part de la figure est coloriée ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Partages de figures (disques, hexagones, carrés, bandes), de ficelles, de bouteilles d'eau.",
+						"detail": {},
+						"source": "BO c2 p.12, colonne Exemples de réussite ; Livret CE1 2025 annexes séquence 1",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-099": {
+				"libelle": "Soustraire des fractions de même dénominateur (4/5 − 1/5 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Numérateur ≤ dénominateur, dénominateur dans {2, 3, 4, 5, 6, 8, 10}.",
+						"detail": {
+							"denominateurs": [2, 3, 4, 5, 6, 8, 10],
+							"max": 1
+						},
+						"source": "BO c2 p.12, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Même dénominateur ; inclut le complément à 1 (3/10 colorié en bleu, le reste en rouge).",
+						"detail": {},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-100": {
+				"libelle": "Poser et effectuer une soustraction en colonnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers ≤ 1 000 ; algorithme « par cassage » ou « par compensation ».",
+						"detail": {
+							"max": 1000
+						},
+						"source": "BO c2 p.13, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Introduite en période 3 au plus tard."
+			},
+			"CE1-101": {
+				"libelle": "Connaître des faits multiplicatifs usuels : les moitiés (moitié de 50 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Moitiés : nombres pairs de 2 à 30 ; 40, 50, 60, 70, 80, 90, 100 ; 200, 300, 400, 500, 600, 1 000.",
+						"detail": {
+							"liste": [
+								2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 40, 50, 60, 70, 80, 90, 100,
+								200, 300, 400, 500, 600, 1000
+							]
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-102": {
+				"libelle": "Soustraire un nombre entier de dizaines à un nombre (246 − 30 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Nombre entier de dizaines de 10 à 90 seulement (ex. 541 − 20).",
+						"detail": {
+							"liste": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Sans retenue seulement : 523 − 40 (passage sous la centaine) est hors point.",
+						"detail": {
+							"retenue": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-6) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO ne montre une retenue que pour l'addition (746 + 80)."
+			},
+			"CE1-103": {
+				"libelle": "Soustraire un nombre entier de centaines à un nombre (346 − 200 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Nombre entier de centaines de 100 à 900 seulement (ex. 765 − 200).",
+						"detail": {
+							"liste": [100, 200, 300, 400, 500, 600, 700, 800, 900]
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.15, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-104": {
+				"libelle": "Comparer deux durées écoulées entre des instants affichés sur une horloge (même journée ; heures entières, demi-heures ou quarts d'heure).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Même journée ; instants en heures entières, demi-heures ou quarts d'heure (8 h 30 → 8 h 45 ; 15 h 45 → 16 h 15 ; midi → 20 h).",
+						"detail": {
+							"minutes": [0, 15, 30, 45]
+						},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Comparer aussi des durées d'écritures différentes (2 heures et 130 minutes).",
+						"detail": {},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-105": {
+				"libelle": "Décrire un cercle, un carré, un rectangle, un triangle ou un triangle rectangle avec le vocabulaire approprié (côtés, sommets, angles droits).",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cercle (ou disque), carré, rectangle, triangle, triangle rectangle.",
+						"detail": {
+							"liste": ["cercle", "disque", "carré", "rectangle", "triangle", "triangle rectangle"]
+						},
+						"source": "BO c2 p.34, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-106": {
+				"libelle": "Interpréter les données d'un diagramme en barres (quel sport est le plus choisi ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Caractère qualitatif à 2 à 5 valeurs ; population de moins de 100 individus ; axe vertical gradué de un en un.",
+						"detail": {
+							"valeurs": {
+								"min": 2,
+								"max": 5
+							},
+							"effectif_total_max": 99,
+							"pas_axe": 1
+						},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE1-107": {
+				"libelle": "Interpréter les données d'un tableau à double entrée (quel jour y a-t-il le plus d'élèves à la cantine ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tableau à double entrée avec totaux (ex. filles/garçons × 4 modes de transport, total 282).",
+						"detail": {},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			}
+		}
+	},
+	"CE2": {
+		"general": [
+			{
+				"borne": "Nombres entiers naturels jusqu'à 10 000 ; au plus tard en période 2.",
+				"portee": "tout le niveau",
+				"detail": {
+					"min": 0,
+					"max": 10000,
+					"ensemble": "entiers naturels"
+				},
+				"source": "BO c2 p.19, texte d'introduction de la rubrique « Les nombres entiers »"
+			},
+			{
+				"borne": "Calcul mental : nombres en jeu et résultats cherchés ≤ 10 000.",
+				"portee": "Le calcul mental",
+				"detail": {
+					"max_operandes": 10000,
+					"max_resultat": 10000
+				},
+				"source": "BO c2 p.22, texte d'introduction de la rubrique « Le calcul mental »"
+			},
+			{
+				"borne": "Résolution de problèmes : entiers jusqu'à 10 000 ; plus la structure est complexe, plus le champ est réduit : problèmes à plus de deux étapes ou atypiques sur un champ < 100.",
+				"portee": "La résolution de problèmes",
+				"detail": {
+					"max": 10000,
+					"max_si_plus_de_2_etapes_ou_atypique": 99
+				},
+				"source": "BO c2 p.24, texte d'introduction de la rubrique"
+			},
+			{
+				"borne": "Fractions : toutes ≤ 1, dénominateur ≤ 12.",
+				"portee": "Les fractions",
+				"detail": {
+					"denominateur_max": 12,
+					"max": 1
+				},
+				"source": "BO c2 p.20, texte d'introduction de la rubrique « Les fractions »"
+			},
+			{
+				"borne": "Longueurs, masses, contenances : pas d'écriture à virgule ; pas de tableau de conversion (conversions par les relations connues).",
+				"portee": "Grandeurs et mesures > Longueurs / Masses / Contenances",
+				"detail": {},
+				"source": "BO c2 p.29, texte d'introduction de la rubrique"
+			},
+			{
+				"borne": "Monnaie : écriture à virgule (euros et centimes) ; addition posée au plus tard en période 2, soustraction posée au plus tard en période 4.",
+				"portee": "Grandeurs et mesures > La monnaie",
+				"detail": {
+					"decimales": 2
+				},
+				"source": "BO c2 p.30, texte d'introduction de la rubrique « La monnaie »"
+			},
+			{
+				"borne": "Temps : temps courts, en heures et minutes.",
+				"portee": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"detail": {},
+				"source": "BO c2 p.31, texte d'introduction de la rubrique"
+			},
+			{
+				"borne": "Pas de calculatrice au cycle 2.",
+				"portee": "tout le niveau",
+				"detail": {},
+				"source": "BO c2 p.21, texte d'introduction de la rubrique « Les quatre opérations »"
+			},
+			{
+				"borne": "Fluence (indicateur) : 15 résultats en 3 min (procédures) ; tables d'addition 15 en 1 min ; tables de multiplication et faits usuels 12 en 1 min.",
+				"portee": "Le calcul mental",
+				"detail": {},
+				"source": "BO c2 p.22, texte d'introduction de la rubrique et BO c2 p.22, colonne Exemples de réussite"
+			}
+		],
+		"points": {
+			"CE2-001": {
+				"libelle": "Dénombrer des collections.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et 2 milliers).",
+						"detail": {
+							"groupements": [10, 100, 1000]
+						},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-002": {
+				"libelle": "Construire des collections de cardinal donné.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et 2 milliers).",
+						"detail": {
+							"groupements": [10, 100, 1000]
+						},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-003": {
+				"libelle": "Connaitre et utiliser les relations entre les unités de numération.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Groupes de dix, cent ou mille ; plus de dix éléments d'une unité (17 u, 8 d, 32 c et 2 milliers).",
+						"detail": {
+							"groupements": [10, 100, 1000]
+						},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Ex. : 1 235 filtres par lots de 100 (arrondi au lot supérieur).",
+						"detail": {},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-004": {
+				"libelle": "Connaître la suite écrite des nombres jusqu'à dix mille (écris le nombre qui suit 9 999).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Jusqu'à 10 000 ; dictée, lecture, écriture en lettres.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-005": {
+				"libelle": "Connaitre et utiliser diverses représentations d'un nombre et passer de l'une à l'autre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Matériel (gros cubes, plaques, barres, petits cubes), chiffres, oral, unités de numération non canoniques (3 d et 46 c et 5 u), (4 × 1 000) + (6 × 100) + …, 4 000 + 600 + 30 + 5, lettres.",
+						"detail": {},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-006": {
+				"libelle": "Connaitre la valeur des chiffres en fonction de leur position dans un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Rangs : unités, dizaines, centaines, milliers.",
+						"detail": {
+							"liste": ["unités", "dizaines", "centaines", "milliers"]
+						},
+						"source": "BO c2 p.19, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-007": {
+				"libelle": "Comparer deux nombres entiers avec les symboles =, < et > (6 239 … 6 243).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-008": {
+				"libelle": "Ordonner des nombres dans l'ordre croissant ou décroissant.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Jusqu'à cinq nombres (6 234, 6 243, 6 239, 6 300, 5 229).",
+						"detail": {
+							"max_effectif": 5
+						},
+						"source": "BO c2 p.20, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-009": {
+				"libelle": "Comprendre et savoir utiliser les expressions « égal à », « supérieur à », « inférieur à », « compris entre … et … ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-010": {
+				"libelle": "Savoir placer des nombres sur une demi-droite graduée.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Portion de demi-droite graduée de 1 en 1, 10 en 10, 100 en 100 ou 1 000 en 1 000.",
+						"detail": {
+							"pas": [1, 10, 100, 1000]
+						},
+						"source": "BO c2 p.20, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-011": {
+				"libelle": "Savoir établir des égalités de fractions inférieures ou égales à 1.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions ≤ 1 de dénominateur ≤ 12.",
+						"detail": {
+							"denominateur_max": 12,
+							"max": 1
+						},
+						"source": "BO c2 p.20, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Ex. 6/8 = 3/4 ; parmi 1/3, 2/4, 3/4, 2/6, 3/6 lesquelles valent 1/2 ; ?/8 = 1/2.",
+						"detail": {},
+						"source": "BO c2 p.20, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-012": {
+				"libelle": "Partager une unité de longueur en fractions d'unité et mesurer des longueurs non entières par rapport à cette unité.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Règle en quarts (pliage) et en dixièmes (quadrillage) d'une unité donnée ; longueurs exprimées « 2 unités + 1/4 d'unité », ou encadrées entre deux dixièmes.",
+						"detail": {
+							"denominateurs": [4, 10]
+						},
+						"source": "BO c2 p.20, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Le livret ajoute des règles en huitièmes (7/8 u ; 2 u + 5/8 u).",
+						"detail": {
+							"denominateurs": [8]
+						},
+						"source": "Livret CE2 2025 p.8 et annexes séance 6",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "La longueur peut dépasser 1 unité (entier + fraction) ; la fraction elle-même reste ≤ 1."
+			},
+			"CE2-013": {
+				"libelle": "Comparer des fractions inférieures à 1.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions de dénominateur ≤ 12.",
+						"detail": {
+							"denominateur_max": 12
+						},
+						"source": "BO c2 p.20, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Fractions strictement inférieures à 1 (le libellé du point) : n/n exclu (12/12 et 7/12 hors point).",
+						"detail": {
+							"max": 1,
+							"max_inclus": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-11) ; d'après libellé du point (BO c2 p.20-21)",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Trois cas seulement : même dénominateur (5/12, 7/12), même numérateur (5/12, 5/8), un dénominateur multiple de l'autre (7/12, 5/6).",
+						"detail": {
+							"liste": ["même dénominateur", "même numérateur", "dénominateur multiple"]
+						},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Le texte général du CE2 dit « inférieures ou égales à un » ; le libellé du point, plus précis, l'emporte."
+			},
+			"CE2-014": {
+				"libelle": "Additionner des fractions (3/4 + 1/4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions ≤ 1 de dénominateur ≤ 12.",
+						"detail": {
+							"denominateur_max": 12,
+							"max": 1
+						},
+						"source": "BO c2 p.20, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Même dénominateur, ou un dénominateur multiple de l'autre ; résultat ≤ 1.",
+						"detail": {
+							"liste": ["même dénominateur", "dénominateur multiple"]
+						},
+						"source": "BO c2 p.21, colonne Exemples de réussite ; BO c2 p.20, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-015": {
+				"libelle": "Comprendre et utiliser les mots « terme », « somme » et « différence ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. « la somme de 12 et de 25 est 37 », « la différence entre 60 et 37 est 23 ».",
+						"detail": {},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-016": {
+				"libelle": "Poser et effectuer une addition en colonnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers ≤ 10 000 ; montants décimaux en euros pour les problèmes de monnaie.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-017": {
+				"libelle": "Comprendre et utiliser les mots « facteur » et « produit » (dans 4 × 6 = 24, quel est le produit ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. « le produit de 3 et de 25 est 75 », « 3 et 25 sont les facteurs ».",
+						"detail": {},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-018": {
+				"libelle": "Comprendre le sens de la division et utiliser le symbole « ÷ ».",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Division comme inverse de la multiplication (7 × 13 = 91 donc 91 ÷ 7 = 13) ; divisions exactes.",
+						"detail": {},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Pas de division posée au CE2 (déduit : seul le sens et le symbole sont au programme)."
+			},
+			"CE2-019": {
+				"libelle": "Poser et effectuer des multiplications d'un nombre à deux ou trois chiffres par un nombre à un ou deux chiffres.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Nombre à 2 ou 3 chiffres × nombre à 1 ou 2 chiffres (16 × 548 ; le moins de chiffres en 2ᵉ ligne).",
+						"detail": {
+							"facteur1_chiffres": [2, 3],
+							"facteur2_chiffres": [1, 2]
+						},
+						"source": "BO c2 p.21, colonne Objectifs d'apprentissage ; BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Produit ≤ 10 000 (borne générale du CE2) : 999 × 99 ou 875 × 64 sont hors point.",
+						"detail": {
+							"max_resultat": 10000
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-3) ; d'après BO c2 p.19, texte d'introduction de la rubrique « Les nombres entiers »",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le libellé fixe la taille des facteurs, la borne générale du CE2 celle du produit. L'exemple du BO donne 8 768."
+			},
+			"CE2-020": {
+				"libelle": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A + B avec A, B de 0 à 10.",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 20
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite (définition CP) ; BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-021": {
+				"libelle": "Connaître les tables de multiplication : donner le produit de deux nombres (3 × 4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A × B avec A, B de 0 à 10 (ex. 7 × … = 42 ; 70 = 7 × …).",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 100
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite (définition CE1) ; BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-022": {
+				"libelle": "Connaître des faits multiplicatifs usuels : les doubles (double de 35 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Doubles : 1 à 20 ; 20, 25, 30, 35, 40, 45, 50, 60, 75 ; 100, 150, 200, 250, 300, 400, 500, 600.",
+						"detail": {
+							"liste": [
+								1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 35,
+								40, 45, 50, 60, 75, 100, 150, 200, 250, 300, 400, 500, 600
+							]
+						},
+						"source": "BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Le livret CE2 p.22 parle de doubles « d'un nombre inférieur à 99 » calculés par numération (procédure, pas fait mémorisé)."
+			},
+			"CE2-023": {
+				"libelle": "Multiplier un nombre entier par 10 ou 100.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Résultat ≤ 10 000 : n ≤ 1 000 pour × 10, n ≤ 100 pour × 100 (ex. 724 × 10).",
+						"detail": {
+							"max_x10": 1000,
+							"max_x100": 100,
+							"max_resultat": 10000
+						},
+						"source": "BO c2 p.22, texte d'introduction de la rubrique",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-024": {
+				"libelle": "Ajouter 8, 9, 18, 19, 28, 29, 38 ou 39 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On ajoute 8, 9, 18, 19, 28, 29, 38 ou 39 (ex. +38 = +40 −2).",
+						"detail": {
+							"liste": [8, 9, 18, 19, 28, 29, 38, 39]
+						},
+						"source": "BO c2 p.23, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Nombre de départ < 100, comme le livret (ex. 37 + 19, 47 + 29) : 4 527 + 29 est hors point.",
+						"detail": {
+							"depart_max": 99
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-7) ; d'après Livret CE2 2025 p.24 et p.30",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO borne ce qu'on ajoute ; la taille du nombre de départ vient du livret CE2."
+			},
+			"CE2-025": {
+				"libelle": "Soustraire 9, 19, 29 ou 39 à un nombre.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "On soustrait 9, 19, 29 ou 39 (ex. −29 = −30 +1).",
+						"detail": {
+							"liste": [9, 19, 29, 39]
+						},
+						"source": "BO c2 p.23, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Nombre de départ < 100, comme le livret (ex. 37 + 19, 47 + 29) : 4 527 + 29 est hors point.",
+						"detail": {
+							"depart_max": 99
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-7) ; d'après Livret CE2 2025 p.24 et p.30",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO borne ce qu'on soustrait ; la taille du nombre de départ vient du livret CE2."
+			},
+			"CE2-026": {
+				"libelle": "Multiplier un nombre entier par 4 (4 × 37 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n × 4 avec n < 100 (séance de découverte du livret ; ex. 4 × 37).",
+						"detail": {
+							"max": 99
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-8) ; d'après Livret CE2 2025 p.23 ; BO c2 p.23, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": "L'entraînement du livret (p.25) monte jusqu'à 2 500 × 4 : hors point, la borne retenue est celle de la séance de découverte."
+			},
+			"CE2-027": {
+				"libelle": "Multiplier un nombre inférieur à 10 par un nombre entier de dizaines.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Un facteur < 10, l'autre un nombre entier de dizaines de 10 à 90 seulement (ex. 9 × 40 = 360 ; 120 exclu).",
+						"detail": {
+							"facteur1": {
+								"min": 0,
+								"max": 9
+							},
+							"facteur2": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-5) ; d'après BO c2 p.23, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-028": {
+				"libelle": "Calculer le produit d'un nombre compris entre 11 et 99 par un nombre inférieur à 10 en décomposant le plus grand des deux facteurs en la somme de deux nombres (propriété de distributivité de la multiplication par rapport à l'addition).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Un facteur de 11 à 99, l'autre de 0 à 9 (ex. 23 × 7).",
+						"detail": {
+							"facteur1": {
+								"min": 11,
+								"max": 99
+							},
+							"facteur2": {
+								"min": 0,
+								"max": 9
+							}
+						},
+						"source": "BO c2 p.23, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-029": {
+				"libelle": "Résoudre des problèmes additifs en une étape de type parties-tout.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers jusqu'à 10 000 (y compris > 1 000), prix à virgule, fractions de même dénominateur.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.24, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-030": {
+				"libelle": "Résoudre des problèmes additifs en deux étapes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers jusqu'à 10 000 (y compris > 1 000), prix à virgule, fractions de même dénominateur.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.24, colonne Exemples de réussite",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Inclut les comparaisons en deux étapes (188 billes, 75 de plus, combien en tout ?).",
+						"detail": {},
+						"source": "BO c2 p.24, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Le livret CE2 p.30 reste sous 1 000 (majorité de données < 100 au début) : choix de séquence, pas une borne ; la borne est celle du BO (≤ 10 000)."
+			},
+			"CE2-031": {
+				"libelle": "Résoudre des problèmes multiplicatifs en une étape.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur du tout : champ étendu ; nombre de parts : champ « réduit » (non chiffré) ; valeur d'une part : appui sur les tables (72 € pour 6 dictionnaires).",
+						"detail": {},
+						"source": "BO c2 p.24, colonne Exemples de réussite et p.25",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Recherche du nombre de parts : quantité totale ≤ 1 000 (« continuent de » : le champ du CE1).",
+						"detail": {
+							"nombre_de_parts": {
+								"max_total": 1000
+							}
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-9) ; d'après BO c2 p.24, colonne Exemples de réussite et p.25",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le « champ réduit » du BO est chiffré au champ du CE1 ; les problèmes « valeur du tout » et « valeur d'une part » gardent le champ du CE2."
+			},
+			"CE2-032": {
+				"libelle": "Résoudre des problèmes mixtes en deux ou trois étapes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Si plus de deux étapes : champ numérique < 100 (ex. 4 tables de 6 et 7 tables de 4).",
+						"detail": {
+							"max_si_3_etapes": 99
+						},
+						"source": "BO c2 p.24, texte d'introduction de la rubrique ; BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-033": {
+				"libelle": "Résoudre des problèmes de comparaison multiplicative en une étape.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "« fois plus », « fois moins » (trottinette 4 fois plus chère qu'un casque à 32 €).",
+						"detail": {},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-034": {
+				"libelle": "Résoudre des problèmes mettant en jeu des produits cartésiens.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Deux ensembles : tableau (3 pantalons × 7 tee-shirts = 21) ; plus de deux ensembles : arbre (2 × 3 × 2 = 12).",
+						"detail": {},
+						"source": "BO c2 p.25, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Tailles des ensembles non bornées ; les exemples restent ≤ 7 éléments par ensemble."
+			},
+			"CE2-035": {
+				"libelle": "Connaitre et utiliser les unités mètre, décimètre, centimètre, millimètre, kilomètre et les symboles associés (m, dm, cm, mm, km).",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "m, dm, cm, mm, km.",
+						"detail": {
+							"liste": ["m", "dm", "cm", "mm", "km"]
+						},
+						"source": "BO c2 p.29, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-036": {
+				"libelle": "Connaitre les relations entre les unités de longueur.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Conversions cm–mm, m–dm–cm, km–m ; 1 cm = 10 mm, 1 m = 1 000 mm (ex. 16 m = 1 600 cm = 160 dm ; 5 km + 750 m = 5 750 m) ; sans tableau ni virgule.",
+						"detail": {
+							"liste": ["cm-mm", "m-dm-cm", "km-m", "m-mm"]
+						},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-037": {
+				"libelle": "Choisir l'unité la mieux adaptée pour exprimer une longueur.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Choix parmi m, dm, cm, mm, km.",
+						"detail": {
+							"liste": ["m", "dm", "cm", "mm", "km"]
+						},
+						"source": "BO c2 p.29, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-038": {
+				"libelle": "Comparer des longueurs.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-039": {
+				"libelle": "Tracer un segment de longueur donnée.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Longueurs données sous différentes formes : 6 cm ; 5 cm et 3 mm ; 72 mm (précision au mm).",
+						"detail": {
+							"unites": ["cm", "mm"]
+						},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-040": {
+				"libelle": "Disposer de quelques longueurs de référence.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Objets familiers et distances (vers une ville proche, vers Paris).",
+						"detail": {},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-041": {
+				"libelle": "Estimer la longueur d'un objet ou une distance.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-042": {
+				"libelle": "Savoir ce qu'est le périmètre d'une figure plane.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-043": {
+				"libelle": "Comparer le périmètre de plusieurs polygones sans règle graduée, en utilisant un compas.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Report des côtés au compas sur une droite.",
+						"detail": {},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-044": {
+				"libelle": "Déterminer le périmètre d'un polygone en utilisant une règle graduée.",
+				"rubrique": "Grandeurs et mesures > Les longueurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Mesurer chaque côté ; aucune formule pour carré et rectangle.",
+						"detail": {},
+						"source": "BO c2 p.29, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-045": {
+				"libelle": "Connaitre et utiliser les unités gramme, kilogramme et tonne et les symboles associés (g, kg, t).",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "g, kg, t.",
+						"detail": {
+							"liste": ["g", "kg", "t"]
+						},
+						"source": "BO c2 p.30, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-046": {
+				"libelle": "Choisir l'unité la mieux adaptée pour exprimer une masse.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Choix parmi g, kg, t.",
+						"detail": {
+							"liste": ["g", "kg", "t"]
+						},
+						"source": "BO c2 p.30, colonne Objectifs d'apprentissage",
+						"force": "déduite"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-047": {
+				"libelle": "Connaitre les relations entre les unités de masse usuelles.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "g–kg et kg–t (5 462 g = 5 kg + 462 g ; 5 350 kg = 5 t 350 kg) ; pas de conversion g–t citée.",
+						"detail": {
+							"liste": ["1 kg = 1 000 g", "1 t = 1 000 kg"]
+						},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-048": {
+				"libelle": "Comparer des masses.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Trois ou quatre objets, balance ou masses données en kg, g ou t.",
+						"detail": {
+							"max_effectif": 4
+						},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-049": {
+				"libelle": "Disposer de quelques masses de référence.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-050": {
+				"libelle": "Estimer la masse d'un objet.",
+				"rubrique": "Grandeurs et mesures > Les masses",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ex. : feuille, pomme, dictionnaire, seau d'eau, voiture ; en g ou kg.",
+						"detail": {
+							"liste": ["g", "kg"]
+						},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-051": {
+				"libelle": "Comparer les contenances de différents objets.",
+				"rubrique": "Grandeurs et mesures > Les contenances",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Perceptivement si nettement distinctes ; deux ou trois récipients par transvasement ; étalon (nombre de verres).",
+						"detail": {
+							"max_effectif": 3
+						},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-052": {
+				"libelle": "Connaitre et utiliser les unités litre, décilitre et centilitre et les symboles associés (L, dL et cL).",
+				"rubrique": "Grandeurs et mesures > Les contenances",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "L, dL, cL.",
+						"detail": {
+							"liste": ["L", "dL", "cL"]
+						},
+						"source": "BO c2 p.30, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-053": {
+				"libelle": "Savoir que 1 L est égal à 10 dL et également à 100 cL.",
+				"rubrique": "Grandeurs et mesures > Les contenances",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "1 L = 10 dL = 100 cL (ex. 780 cL = 7 L + 80 cL).",
+						"detail": {
+							"liste": ["1 L = 10 dL", "1 L = 100 cL"]
+						},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-054": {
+				"libelle": "Simuler des achats en manipulant des pièces et des billets fictifs.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Écriture à virgule, centimes (2 décimales).",
+						"detail": {
+							"decimales": 2
+						},
+						"source": "BO c2 p.30, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-055": {
+				"libelle": "Poser et effectuer des additions de montants en euro.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Écriture à virgule, centimes (2 décimales).",
+						"detail": {
+							"decimales": 2
+						},
+						"source": "BO c2 p.30, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Ex. : 4,56 € + 15,30 € ; 43,45 € + 68 € ; 43,45 € + 68 centimes ; 143 € + 3,67 € + 54 centimes (jusqu'à 3 termes, unités mêlées).",
+						"detail": {
+							"nb_termes": [2, 3]
+						},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-056": {
+				"libelle": "Poser et effectuer des soustractions de montants en euro.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Écriture à virgule, centimes (2 décimales).",
+						"detail": {
+							"decimales": 2
+						},
+						"source": "BO c2 p.30, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Ex. : 74,56 € − 15,30 € ; 143,45 € − 68 € ; 74,36 € − 12,50 €.",
+						"detail": {},
+						"source": "BO c2 p.31, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-057": {
+				"libelle": "Lire l'heure sur une horloge à aiguilles.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Heures et minutes, cadran ou digital (huit heures et demie, dix heures trente-cinq, sept heures moins le quart, quatre heures moins vingt, quinze heures quarante-deux, midi).",
+						"detail": {
+							"minutes": "0 à 59"
+						},
+						"source": "BO c2 p.31, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-058": {
+				"libelle": "Positionner les aiguilles d'une horloge correspondant à une heure donnée en heures entières ou en heures et minutes.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Heures entières ou heures et minutes (cinq heures et quart, treize heures vingt, six heures dix-huit).",
+						"detail": {
+							"minutes": "0 à 59"
+						},
+						"source": "BO c2 p.31, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-059": {
+				"libelle": "Mesurer la durée écoulée entre deux instants affichés sur une horloge (dans une même journée).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Même journée (8 h 30 → 8 h 50 ; 15 h 40 → 16 h 05) ; minutes dans 2 h 20.",
+						"detail": {},
+						"source": "BO c2 p.31, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-060": {
+				"libelle": "Résoudre des problèmes à une ou deux étapes impliquant des durées.",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Une ou deux étapes, axe chronologique (8 h 30 → 12 h 30 ; départ 7 h 10 + 1 h 30 + 40 min).",
+						"detail": {
+							"max_etapes": 2
+						},
+						"source": "BO c2 p.31, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-061": {
+				"libelle": "Nommer un cube, une boule, un pavé, un cône, une pyramide ou un cylindre.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube, boule, pavé, cône, pyramide, cylindre.",
+						"detail": {
+							"liste": ["cube", "boule", "pavé", "cône", "pyramide", "cylindre"]
+						},
+						"source": "BO c2 p.35, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-062": {
+				"libelle": "Décrire un cube, un pavé ou une pyramide en utilisant les termes « face », « sommet » et « arête ».",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pavé, cube ou pyramide à base polygonale ; nombre et nature des faces, sommets, arêtes ; représentations en perspective (arêtes cachées en pointillés) à identifier, pas à construire.",
+						"detail": {
+							"liste": ["cube", "pavé", "pyramide à base polygonale"]
+						},
+						"source": "BO c2 p.35, colonne Exemples de réussite ; BO c2 p.35, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-063": {
+				"libelle": "Connaitre le nombre et la nature des faces d'un cube ou d'un pavé.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube ou pavé.",
+						"detail": {
+							"liste": ["cube", "pavé"]
+						},
+						"source": "BO c2 p.35, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-064": {
+				"libelle": "Connaitre la nature des faces d'une pyramide.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Faces latérales triangulaires de sommet commun, base polygone à 3 côtés ou plus.",
+						"detail": {},
+						"source": "BO c2 p.35, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-065": {
+				"libelle": "Construire un cube, un pavé ou une pyramide.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "À partir d'un modèle 3D ou d'une représentation plane ; faces ou tiges à assembler.",
+						"detail": {},
+						"source": "BO c2 p.35, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-066": {
+				"libelle": "Construire un cube à partir d'un patron.",
+				"rubrique": "Espace et géométrie > Les solides",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Dire si un assemblage de polygones manipulables est un patron de cube (nombre, nature, position des faces), vérifiable par pliage.",
+						"detail": {},
+						"source": "BO c2 p.35, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-067": {
+				"libelle": "Utiliser le vocabulaire géométrique usuel : polygone, triangle, quadrilatère, pentagone et hexagone ; carré, rectangle, losange, triangle, triangle rectangle, côté, sommet, angle ; diagonale (pour un quadrilatère), longueur du rectangle, largeur du rectangle ; disque, cercle, centre, rayon, diamètre ; point, droite, segment, milieu d'un segment ; angle droit, angle aigu, angle obtus.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Vocabulaire du libellé (polygone, quadrilatère, pentagone, hexagone, losange, diagonale, rayon, diamètre…).",
+						"detail": {},
+						"source": "BO c2 p.36, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": "Ni parallélogramme, ni trapèze, ni triangle isocèle/équilatéral (hors liste)."
+			},
+			"CE2-068": {
+				"libelle": "Reconnaître et nommer le carré, le rectangle, le triangle, le triangle rectangle et le losange (quelle est cette figure ?).",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Carré, rectangle, triangle, triangle rectangle, losange.",
+						"detail": {
+							"liste": ["carré", "rectangle", "triangle", "triangle rectangle", "losange"]
+						},
+						"source": "BO c2 p.36, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-069": {
+				"libelle": "Connaitre les propriétés des angles et les égalités de longueur pour les carrés, les rectangles et les losanges.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Carrés, rectangles, losanges (losange : quatre côtés de même longueur).",
+						"detail": {
+							"liste": ["carré", "rectangle", "losange"]
+						},
+						"source": "BO c2 p.36, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-070": {
+				"libelle": "Reproduire ou construire un carré, un rectangle, un triangle, un triangle rectangle et un cercle ou des assemblages de ces figures sur tout support (papier quadrillé ou pointé ou papier uni), avec une règle graduée, une équerre ou un compas.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Ex. : rectangle 7 cm × 3 cm ; carré de 6 cm + cercle de rayon 4 cm ; triangle rectangle de côtés 10 cm et 4 cm (entiers de cm).",
+						"detail": {
+							"unite": "cm",
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c2 p.36, colonne Exemples de réussite",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Le losange n'est pas dans la liste des figures à construire (seulement à reconnaître)."
+			},
+			"CE2-071": {
+				"libelle": "Connaitre et utiliser le codage d'un angle droit.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-072": {
+				"libelle": "Reconnaitre si une figure possède un ou plusieurs axes de symétrie en utilisant des pliages ou du papier calque.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cœur, carreau, pique, trèfle, cerf-volant, rectangle, panneaux routiers, lettres majuscules, etc. ; un ou plusieurs axes.",
+						"detail": {},
+						"source": "BO c2 p.36, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-073": {
+				"libelle": "Compléter, sur une feuille quadrillée ou pointée, une figure simple pour la rendre symétrique par rapport à un axe donné.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Quadrillage ou papier pointé ; axe vertical ou horizontal seulement.",
+						"detail": {
+							"axes": ["vertical", "horizontal"]
+						},
+						"source": "BO c2 p.36, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-074": {
+				"libelle": "Produire un tableau pour présenter des données recueillies.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Caractères qualitatifs ou quantitatifs discrets (nombre de frères et sœurs, âge) ; échelle de l'axe adaptée aux données.",
+						"detail": {},
+						"source": "BO c2 p.38, texte d'introduction de la rubrique ; BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-075": {
+				"libelle": "Lire une donnée dans un tableau à double entrée (combien de filles mangent à la cantine le lundi ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-076": {
+				"libelle": "Résoudre des problèmes en utilisant les données d'un tableau à double entrée ou d'un diagramme en barre.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Compléter un tableau à double entrée avec totaux ; compléter une barre à partir d'un effectif total (175 élèves).",
+						"detail": {},
+						"source": "BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-077": {
+				"libelle": "Connaitre des faits multiplicatifs usuels : les multiples de 25 (1 × 25, 2 × 25, 3 × 25, 4 × 25).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "1 × 25, 2 × 25, 3 × 25, 4 × 25 seulement.",
+						"detail": {
+							"liste": [25, 50, 75, 100]
+						},
+						"source": "BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-078": {
+				"libelle": "Connaitre des faits multiplicatifs usuels : les décompositions multiplicatives de 60.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "1 × 60, 2 × 30, 3 × 20, 4 × 15, 5 × 12, 6 × 10.",
+						"detail": {
+							"liste": ["1×60", "2×30", "3×20", "4×15", "5×12", "6×10"]
+						},
+						"source": "BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-079": {
+				"libelle": "Résoudre des problèmes additifs de comparaison en une étape.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > La résolution de problèmes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers jusqu'à 10 000 (y compris > 1 000), prix à virgule, fractions de même dénominateur.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.24, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-080": {
+				"libelle": "Rendre la monnaie.",
+				"rubrique": "Grandeurs et mesures > La monnaie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Écriture à virgule, centimes (2 décimales).",
+						"detail": {
+							"decimales": 2
+						},
+						"source": "BO c2 p.30, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Rendre par ajouts successifs (5 € pour 3,68 € : 32 c puis 1 €).",
+						"detail": {},
+						"source": "BO c2 p.30, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-081": {
+				"libelle": "Connaitre et utiliser le codage qui indique que des segments ont la même longueur.",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. : codes des côtés opposés égaux d'un rectangle.",
+						"detail": {},
+						"source": "BO c2 p.36, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-082": {
+				"libelle": "Produire un diagramme en barres pour présenter des données recueillies.",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Caractères qualitatifs ou quantitatifs discrets (nombre de frères et sœurs, âge) ; échelle de l'axe adaptée aux données.",
+						"detail": {},
+						"source": "BO c2 p.38, texte d'introduction de la rubrique ; BO c2 p.38, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-083": {
+				"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont choisi le foot ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-084": {
+				"libelle": "Connaître les tables d'addition dans l'autre sens : trouver le terme manquant d'une addition (3 + ? = 7).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A + B avec A, B de 0 à 10.",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 20
+						},
+						"source": "BO c2 p.6, colonne Exemples de réussite (définition CP) ; BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-085": {
+				"libelle": "Connaître les tables de multiplication dans l'autre sens : trouver le facteur manquant d'un produit (3 × ? = 12).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "A × B avec A, B de 0 à 10 (ex. 7 × … = 42 ; 70 = 7 × …).",
+						"detail": {
+							"min": 0,
+							"max": 10,
+							"max_resultat": 100
+						},
+						"source": "BO c2 p.14, colonne Exemples de réussite (définition CE1) ; BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-086": {
+				"libelle": "Connaître la suite orale des nombres jusqu'à dix mille (récite la suite de 9 990 à 10 000, en classe).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suite orale jusqu'à 10 000.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.19, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-087": {
+				"libelle": "Encadrer un nombre entier avec les symboles < et > (… < 6 239 < …).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [],
+				"remarque": "Pas de borne propre : toute précision d'encadrement (unité, dizaine, centaine…) dans le champ du niveau."
+			},
+			"CE2-088": {
+				"libelle": "Intercaler un nombre entier entre deux nombres donnés (2 393 < … < 2 396).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les nombres entiers",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. : bande lacunaire 2 391 … 2 398.",
+						"detail": {},
+						"source": "BO c2 p.20, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-089": {
+				"libelle": "Soustraire des fractions (3/4 − 1/4 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les fractions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions ≤ 1 de dénominateur ≤ 12.",
+						"detail": {
+							"denominateur_max": 12,
+							"max": 1
+						},
+						"source": "BO c2 p.20, texte d'introduction de la rubrique",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Même dénominateur, ou un dénominateur multiple de l'autre ; résultat ≤ 1.",
+						"detail": {
+							"liste": ["même dénominateur", "dénominateur multiple"]
+						},
+						"source": "BO c2 p.21, colonne Exemples de réussite ; BO c2 p.20, texte d'introduction de la rubrique",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-090": {
+				"libelle": "Poser et effectuer une soustraction en colonnes.",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers ≤ 10 000 ; montants décimaux en euros pour les problèmes de monnaie.",
+						"detail": {
+							"max": 10000
+						},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-091": {
+				"libelle": "Comprendre et utiliser le mot « multiple » (24 est-il un multiple de 6 ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Les quatre opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Ex. « 75 est un multiple de 25 », pairs = multiples de 2, impairs non.",
+						"detail": {},
+						"source": "BO c2 p.21, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-092": {
+				"libelle": "Connaître des faits multiplicatifs usuels : les moitiés (moitié de 70 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Moitiés : pairs de 2 à 40 ; 40, 50, 60, 70, 80, 90, 100, 120, 150 ; 200, 300, 400, 500, 600, 800, 1 000, 1 200.",
+						"detail": {
+							"liste": [
+								2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 50, 60,
+								70, 80, 90, 100, 120, 150, 200, 300, 400, 500, 600, 800, 1000, 1200
+							]
+						},
+						"source": "BO c2 p.22, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-093": {
+				"libelle": "Multiplier un nombre entier par 8 (8 × 27 = ?).",
+				"rubrique": "Nombres, calcul et résolution de problèmes > Le calcul mental",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n × 8 avec n < 100 (comme la séance de découverte du livret pour × 4 ; ex. 8 × 27).",
+						"detail": {
+							"max": 99
+						},
+						"source": "Décision de David, 2026-10-18 (question c2-8) ; d'après Livret CE2 2025 p.23 ; BO c2 p.23, colonne Exemples de réussite",
+						"force": "décision"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-094": {
+				"libelle": "Comparer deux durées écoulées entre des instants affichés sur une horloge (dans une même journée).",
+				"rubrique": "Grandeurs et mesures > Le repérage dans le temps et les durées",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Même journée (8 h 30 → 8 h 50 ; 15 h 40 → 16 h 05) ; minutes dans 2 h 20.",
+						"detail": {},
+						"source": "BO c2 p.31, colonne Exemples de réussite",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-095": {
+				"libelle": "Décrire le carré, le rectangle, le triangle, le triangle rectangle et le losange avec le vocabulaire approprié (côtés, sommets, angles droits).",
+				"rubrique": "Espace et géométrie > La géométrie plane",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Carré, rectangle, triangle, triangle rectangle, losange.",
+						"detail": {
+							"liste": ["carré", "rectangle", "triangle", "triangle rectangle", "losange"]
+						},
+						"source": "BO c2 p.36, colonne Objectifs d'apprentissage",
+						"force": "BO"
+					}
+				],
+				"remarque": ""
+			},
+			"CE2-096": {
+				"libelle": "Interpréter les données d'un tableau à double entrée (quel jour y a-t-il le plus d'élèves à la cantine ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [],
+				"remarque": ""
+			},
+			"CE2-097": {
+				"libelle": "Interpréter les données d'un diagramme en barres (combien d'élèves de plus pour le foot que pour le basket ?).",
+				"rubrique": "Organisation et gestion de données",
+				"bornes": [],
+				"remarque": ""
+			}
+		}
+	}
+}

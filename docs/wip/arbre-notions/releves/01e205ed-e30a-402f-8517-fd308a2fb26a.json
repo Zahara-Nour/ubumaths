@@ -1,0 +1,1481 @@
+{
+	"template_id": "01e205ed-e30a-402f-8517-fd308a2fb26a",
+	"titre": "Calcul de l'aire d'un carré.",
+	"sous_titre": "A partir d'une description",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Aires > Aire d'un carré",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-152",
+			"libelle_point": "Calculer l'aire d'un carré",
+			"noeud_actuel": "Grandeurs et mesures > Aires > carré",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[mm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[mm^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[mm]",
+							"11[mm]",
+							"1[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[mm^2]",
+							"121[mm^2]",
+							"16[mm^2]",
+							"1[mm^2]",
+							"25[mm^2]",
+							"36[mm^2]",
+							"49[mm^2]",
+							"4[mm^2]",
+							"64[mm^2]",
+							"81[mm^2]",
+							"9[mm^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["mm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{mm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[mm^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[mm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{mm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[mm^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{mm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[mm^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{mm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[mm^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{mm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[mm^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[mm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[cm^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[cm]",
+							"11[cm]",
+							"1[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[cm^2]",
+							"121[cm^2]",
+							"16[cm^2]",
+							"1[cm^2]",
+							"25[cm^2]",
+							"36[cm^2]",
+							"49[cm^2]",
+							"4[cm^2]",
+							"64[cm^2]",
+							"81[cm^2]",
+							"9[cm^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{cm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[cm^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[cm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{cm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[cm^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{cm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[cm^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{cm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[cm^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{cm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[cm^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[dm^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[dm]",
+							"11[dm]",
+							"1[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[dm^2]",
+							"121[dm^2]",
+							"16[dm^2]",
+							"1[dm^2]",
+							"25[dm^2]",
+							"36[dm^2]",
+							"49[dm^2]",
+							"4[dm^2]",
+							"64[dm^2]",
+							"81[dm^2]",
+							"9[dm^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["dm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{dm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[dm^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[dm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{dm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[dm^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{dm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[dm^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{dm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[dm^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{dm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[dm^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[dm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[m]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[m^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[m]",
+							"11[m]",
+							"1[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[m^2]",
+							"121[m^2]",
+							"16[m^2]",
+							"1[m^2]",
+							"25[m^2]",
+							"36[m^2]",
+							"49[m^2]",
+							"4[m^2]",
+							"64[m^2]",
+							"81[m^2]",
+							"9[m^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["m"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{m}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[m^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[m]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{m}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[m^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{m}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[m^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{m}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[m^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{m}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[m^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[m]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dam]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[dam^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[dam]",
+							"11[dam]",
+							"1[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[dam^2]",
+							"121[dam^2]",
+							"16[dam^2]",
+							"1[dam^2]",
+							"25[dam^2]",
+							"36[dam^2]",
+							"49[dam^2]",
+							"4[dam^2]",
+							"64[dam^2]",
+							"81[dam^2]",
+							"9[dam^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["dam"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{dam}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[dam^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[dam]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{dam}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[dam^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{dam}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[dam^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{dam}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[dam^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{dam}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[dam^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[dam]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[hm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[hm^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[hm]",
+							"11[hm]",
+							"1[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[hm^2]",
+							"121[hm^2]",
+							"16[hm^2]",
+							"1[hm^2]",
+							"25[hm^2]",
+							"36[hm^2]",
+							"49[hm^2]",
+							"4[hm^2]",
+							"64[hm^2]",
+							"81[hm^2]",
+							"9[hm^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["hm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{hm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[hm^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[hm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{hm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[hm^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{hm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[hm^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{hm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[hm^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{hm}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[hm^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[hm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "1..11"
+					},
+					{
+						"name": "a",
+						"expression": "a1[km]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est l'aire d'un **carré** de côté ${{a}}$ ?\n\nL'aire du carré est $?$.",
+				"reponses_brutes": ["{{eval:a*a;[km^2]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"10[km]",
+							"11[km]",
+							"1[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 11,
+							"nb_distinctes": 11,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 11,
+						"valeurs": [
+							"100[km^2]",
+							"121[km^2]",
+							"16[km^2]",
+							"1[km^2]",
+							"25[km^2]",
+							"36[km^2]",
+							"49[km^2]",
+							"4[km^2]",
+							"64[km^2]",
+							"81[km^2]",
+							"9[km^2]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 121,
+							"nb_distinctes": 12,
+							"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 12,
+				"valeurs": [1, 2, 4, 9, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 121,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 16, 25, 36, 49, 64, 81, 100, 121],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["km"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (121)",
+					"graine": 10,
+					"enonce": "Quelle est l'aire d'un carré de côté $11~\\mathrm{km}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["121[km^2]"],
+					"variables": {
+						"a1": "11",
+						"a": "11[km]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quelle est l'aire d'un carré de côté $1~\\mathrm{km}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["1[km^2]"],
+					"variables": {
+						"a1": "1",
+						"a": "1[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est l'aire d'un carré de côté $4~\\mathrm{km}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["16[km^2]"],
+					"variables": {
+						"a1": "4",
+						"a": "4[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est l'aire d'un carré de côté $9~\\mathrm{km}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["81[km^2]"],
+					"variables": {
+						"a1": "9",
+						"a": "9[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est l'aire d'un carré de côté $7~\\mathrm{km}$ ?\n\nL'aire du carré est $[?]$.",
+					"reponse": ["49[km^2]"],
+					"variables": {
+						"a1": "7",
+						"a": "7[km]"
+					}
+				}
+			]
+		}
+	]
+}

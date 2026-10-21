@@ -7,7 +7,7 @@
  * Features:
  * - Extract value and unit from LaTeX using \unit{} wrapper
  * - Parse composite unit expressions (km/h, m.s^-2)
- * - Handle fractions, decimals, scientific notation
+ * - Read the value as a tree (mathAST): fractions, decimals, scientific notation
  *
  * @module questions/units/parser
  */
@@ -15,6 +15,13 @@
 import type { Unit, Quantity } from './types';
 import { dimensionlessUnit } from './operations';
 import { parse as parseUnit } from '$lib/mathAST/units/parser';
+import { parseLatex } from '$lib/mathAST/parser';
+import { tidy } from '$lib/mathAST/tidy';
+import { rationalOf } from '$lib/mathAST/eval/evaluate-with-modifiers';
+import { evaluateExpression, stripLatexSpacing } from '$lib/math';
+import type { Rational } from '$lib/mathAST/normal/types';
+import { addRational, mulRational } from '$lib/mathAST/normal/rational';
+import { exactConversion } from '$lib/mathAST/units/exact';
 
 // ============================================================================
 // LATEX PATTERNS
@@ -34,27 +41,6 @@ import { parse as parseUnit } from '$lib/mathAST/units/parser';
  * \unit{kg.m^{-2}} → 'kg.m^{-2}'
  */
 const UNIT_PATTERN = /\\unit\{((?:[^{}]|\{[^{}]*\})+)\}/;
-
-/**
- * Pattern for extracting numeric values from LaTeX
- *
- * Matches:
- * - Integers: 5, -10
- * - Decimals: 3.14, -0.5
- * - Fractions: \frac{3}{2}
- * - Scientific notation: 1.5 \times 10^{3}
- */
-const VALUE_PATTERNS = {
-	// Standard decimal/integer (with optional sign and LaTeX spacing)
-	decimal: /(-?\d+(?:[.,]\d+)?)/,
-
-	// LaTeX fraction: \frac{a}{b}, signe compris. ANCRÉE : non ancrée, elle lisait
-	// `-\frac{1}{2}` comme +½ et `2+\frac{1}{2}` comme ½.
-	fraction: /^([+-])?\s*\\d?frac\{([^{}]+)\}\{([^{}]+)\}$/,
-
-	// Scientific notation: a \times 10^{b} or a \cdot 10^{b} — ancrée elle aussi
-	scientific: /^([+-]?\d+(?:[.,]\d+)?)\s*(?:\\times|\\cdot)\s*10\^?\{?([+-]?\d+)\}?$/
-};
 
 // ============================================================================
 // UNICODE SUPERSCRIPT CONVERSION
@@ -103,75 +89,57 @@ function normalizeSuperscripts(str: string): string {
 }
 
 // ============================================================================
-// LATEX VALUE EXTRACTION
+// LECTURE DE LA VALEUR
 // ============================================================================
 
 /**
- * Extract numeric value from a LaTeX string
+ * Valeur exacte de la partie numérique d'une grandeur, lue en arbre par mathAST
+ * (`parseLatex` → `tidy` → `rationalOf`) : nombre, fraction, notation scientifique,
+ * calcul de nombres (`3+2`). `null` si ce n'est pas un nombre rationnel :
+ * `2\sqrt{2}`, `\pi`, `5x` — jamais leur premier nombre — ou une division par zéro.
  *
- * Handles various formats:
- * - Plain numbers: "5", "3.14", "-10"
- * - Fractions: "\frac{3}{2}"
- * - Scientific: "1.5 \times 10^{3}"
- * - Arithmetic expressions: "3+2", "5*3" (returned as string for CE evaluation)
- *
- * @param latex - LaTeX string containing a numeric value
- * @returns Extracted value as number or string (for unevaluated expressions), or null
+ * Virgule décimale : `{,}` (écriture de l'application) ou `,` entre chiffres ;
+ * espace fine de groupement entre chiffres (`12\,500`) retirée.
  */
-function extractValue(latex: string): number | string | null {
-	// Trim and normalize
-	let str = latex.trim();
-
-	// Virgule décimale (`{,}` tel que l'application l'écrit, ou `,` tapée) → point ;
-	// espace fine de groupement entre chiffres (`12\,500`) retirée
-	str = str
-		.replace(/\{,\}/g, '.')
-		.replace(/(\d)\\,\s?(?=\d)/g, '$1')
-		.replace(/,/g, '.');
-
-	// Try scientific notation first
-	const scientificMatch = str.match(VALUE_PATTERNS.scientific);
-	if (scientificMatch) {
-		const base = parseFloat(scientificMatch[1]);
-		const exp = parseInt(scientificMatch[2], 10);
-		return base * Math.pow(10, exp);
+function readExactValue(latex: string): Rational | null {
+	try {
+		return rationalOf(tidy(parseLatex(treeLatex(latex))));
+	} catch {
+		return null;
 	}
+}
 
-	// Try fraction
-	const fractionMatch = str.match(VALUE_PATTERNS.fraction);
-	if (fractionMatch) {
-		const sign = fractionMatch[1] === '-' ? -1 : 1;
-		const numerator = extractValue(fractionMatch[2]);
-		const denominator = extractValue(fractionMatch[3]);
+/**
+ * Écriture lisible par mathAST : habillages sans sens retirés (`\num{5}`, `\text{ }`, `~`),
+ * espacements, groupement (`12\,500`) et virgule décimale ramenés par `stripLatexSpacing`
+ */
+function treeLatex(latex: string): string {
+	return stripLatexSpacing(
+		latex
+			.replace(/\\num\{([^{}]*)\}/g, '$1')
+			.replace(/\\text\{\s*\}/g, '')
+			.replace(/~/g, ' ')
+			.trim()
+	);
+}
 
-		if (typeof numerator === 'number' && typeof denominator === 'number' && denominator !== 0) {
-			return (sign * numerator) / denominator;
-		}
+/** Valeur numérique de la partie numérique d'une grandeur ; `null` si illisible */
+function readValue(latex: string): number | null {
+	const exact = readExactValue(latex);
+	return exact === null ? null : Number(exact.n) / Number(exact.d);
+}
 
-		// Return as string if we can't evaluate
-		return `${fractionMatch[1] === '-' ? '-' : ''}\\frac{${fractionMatch[2]}}{${fractionMatch[3]}}`;
+/**
+ * Écriture d'un nombre réel, même non rationnel (`\sqrt{2}`, `\pi`) : mathAST
+ * l'évalue en un nombre fini. `abc`, `5x`, `\infty` : non.
+ */
+export function readsAsNumber(latex: string): boolean {
+	try {
+		const value = evaluateExpression(treeLatex(latex));
+		return typeof value === 'number' && Number.isFinite(value);
+	} catch {
+		return false;
 	}
-
-	// Check if string contains arithmetic operators (but not at the start for negative)
-	// This includes expressions like "3+2", "5*3", "10-2"
-	if (/[+\-*/]/.test(str.slice(1)) || str.includes('\\times') || str.includes('\\cdot')) {
-		// Return as string for ComputeEngine to evaluate
-		return str;
-	}
-
-	// Try decimal/integer
-	const decimalMatch = str.match(VALUE_PATTERNS.decimal);
-	if (decimalMatch) {
-		return parseFloat(decimalMatch[1]);
-	}
-
-	// Check for just a number directly
-	const num = parseFloat(str);
-	if (!isNaN(num)) {
-		return num;
-	}
-
-	return null;
 }
 
 // ============================================================================
@@ -207,10 +175,12 @@ export function parseUnitExpression(unitStr: string): Unit | null {
 		return null;
 	}
 
-	// Exposants Unicode → ^n, `·` → `*` ; `×` → `*` (inconnu de mathAST)
-	const normalized = normalizeSuperscripts(unitStr.trim()).replace(/\u00d7/g, '*');
+	return parseUnit(unitWriting(unitStr));
+}
 
-	return parseUnit(normalized);
+/** Exposants Unicode → ^n, `·` → `*` ; `×` → `*` (inconnu de mathAST) */
+function unitWriting(unitStr: string): string {
+	return normalizeSuperscripts(unitStr.trim()).replace(/\u00d7/g, '*');
 }
 
 // ============================================================================
@@ -275,7 +245,7 @@ export function parseLatexQuantity(latex: string): Quantity | null {
 	const valueStr = str.replace(UNIT_PATTERN, '').trim();
 
 	// Extract numeric value
-	const value = valueStr ? extractValue(valueStr) : null;
+	const value = valueStr ? readValue(valueStr) : null;
 
 	if (value === null) {
 		return null;
@@ -292,6 +262,41 @@ export function parseLatexQuantity(latex: string): Quantity | null {
 
 	// No unit = dimensionless quantity
 	return { value, unit: dimensionlessUnit() };
+}
+
+// ============================================================================
+// VALEUR EXACTE EN UNITÉS DE BASE
+// ============================================================================
+
+/**
+ * Grandeur exprimée exactement en unités de base : `(valeur + décalage) × coefficient`,
+ * fois `π^piPower` (angles en degrés : 1° = π/180 rad).
+ */
+export interface ExactBaseValue {
+	value: Rational;
+	piPower: number;
+}
+
+/**
+ * Valeur exacte d'une grandeur `valeur\unit{…}` en unités de base, par les conversions
+ * exactes de mathAST (`exactConversion`), températures comprises : `20\unit{°C}` →
+ * 5863/20 (K), `68\unit{°F}` → 5863/20 aussi. Sans unité : la valeur elle-même.
+ *
+ * `null` si la valeur n'est pas un rationnel ou si l'unité n'a pas de conversion
+ * exacte (aucune unité lisible n'en manque : test d'invariant).
+ */
+export function exactBaseValue(latex: string): ExactBaseValue | null {
+	const str = latex.trim();
+	const unitStr = extractUnitFromLatex(str);
+	const valueStr = str.replace(UNIT_PATTERN, '').trim();
+	const value = valueStr ? readExactValue(valueStr) : null;
+	if (value === null) return null;
+	if (!unitStr) return { value, piPower: 0 };
+
+	const conversion = exactConversion(unitWriting(unitStr));
+	if (conversion === null) return null;
+	const shifted = conversion.offset === null ? value : addRational(value, conversion.offset);
+	return { value: mulRational(shifted, conversion.coefficient), piPower: conversion.piPower };
 }
 
 // ============================================================================

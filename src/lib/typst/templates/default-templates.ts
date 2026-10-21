@@ -86,7 +86,8 @@ export const DEFAULT_TEMPLATE_IDS = {
 	landscape: '00000000-0000-4000-8000-000000000009',
 	magazine: '00000000-0000-4000-8000-000000000010',
 	scientific: '00000000-0000-4000-8000-000000000011',
-	studentStyle: '00000000-0000-4000-8000-000000000012'
+	studentStyle: '00000000-0000-4000-8000-000000000012',
+	studentStyleLandscape: '00000000-0000-4000-8000-000000000013'
 } as const;
 
 /**
@@ -1556,13 +1557,15 @@ export const SCIENTIFIC_TEMPLATE: DefaultTemplate = {
  * numbering via {{exercises_badge}}.
  */
 /**
- * Style « Fiche élève » (style par défaut, ADR 0028 D7) : code commun à ses
- * gabarits, importé par chacun via `{{style_common}}` — page A4 sur deux
- * colonnes avec filet, police, espacements.
+ * Code commun aux gabarits de « Fiche élève » et de « 2 colonnes - paysage »,
+ * importé par chacun via `{{style_common}}` — page A4 sur deux colonnes avec
+ * filet, police, espacements. Seule l'orientation de la page les distingue.
  */
-export const STUDENT_STYLE_COMMON = `// Mise en page proche du PDF de l'élève : A4 sur deux colonnes
+const studentStyleCommon = (
+	landscape: boolean
+) => `// Mise en page proche du PDF de l'élève : A4${landscape ? ' paysage' : ''} sur deux colonnes
 #set page(
-  paper: "a4",
+  paper: "a4",${landscape ? '\n  flipped: true,' : ''}
   margin: (x: 1cm, y: 1.5cm),
   columns: 2,
   // Filet vertical entre les deux colonnes (hauteur = zone de texte)
@@ -1588,6 +1591,12 @@ export const STUDENT_STYLE_COMMON = `// Mise en page proche du PDF de l'élève 
 #set block(spacing: 1.8em)
 
 `;
+
+/** Style « Fiche élève » (style par défaut, ADR 0028 D7) : A4 portrait */
+export const STUDENT_STYLE_COMMON = studentStyleCommon(false);
+
+/** Style « 2 colonnes - paysage » : « Fiche élève » en A4 paysage */
+export const STUDENT_LANDSCAPE_STYLE_COMMON = studentStyleCommon(true);
 
 /**
  * En-tête pleine largeur des gabarits « Fiche élève » : titre, puis selon le
@@ -1638,14 +1647,14 @@ const STUDENT_STYLE_CORRECTION_BANNER = `#place(top + center, scope: "parent", f
 `;
 
 /**
- * La partie de fin d'une fiche + corrections : sur une nouvelle page, les
- * polices du corrigé, le bandeau vert, puis les réponses ou le corrigé. Écrite
+ * La partie de fin d'une fiche + corrections : sur une nouvelle page, le
+ * bandeau vert, puis les réponses ou le corrigé (chaque correction dans la
+ * police du corrigé, posée par le rendu des exercices). Écrite
  * une fois : « Fiche élève » la place dans sa forme, et un style qui n'a que sa
  * fiche la reçoit après elle (`resolveTemplate`).
  */
 export const CORRECTIONS_PART = `{{#if corrections}}
 #pagebreak()
-{{correction_fonts}}
 ${STUDENT_STYLE_CORRECTION_BANNER}
 {{corrections}}
 {{/if}}`;
@@ -1688,6 +1697,22 @@ export const STUDENT_STYLE_TEMPLATE: DefaultTemplate = {
 };
 
 /**
+ * Style « 2 colonnes - paysage » : les gabarits de « Fiche élève », sur une
+ * page A4 paysage (David, 2026-10-16).
+ */
+export const STUDENT_LANDSCAPE_STYLE_TEMPLATE: DefaultTemplate = {
+	id: DEFAULT_TEMPLATE_IDS.studentStyleLandscape,
+	name: '2 colonnes - paysage',
+	description:
+		"Comme « Fiche élève », en A4 paysage : deux colonnes avec filet, en-tête pleine largeur, numéro d'exercice sur carré ambre, sections soulignées",
+	type: 'worksheet',
+	is_system: true,
+	placeholders: COMMON_PLACEHOLDERS,
+	template_content:
+		STUDENT_LANDSCAPE_STYLE_COMMON + STUDENT_STYLE_FORMS.worksheet.slice('{{style_common}}'.length)
+};
+
+/**
  * All default templates
  */
 export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
@@ -1702,7 +1727,8 @@ export const DEFAULT_TEMPLATES: DefaultTemplate[] = [
 	LANDSCAPE_TEMPLATE,
 	MAGAZINE_TEMPLATE,
 	SCIENTIFIC_TEMPLATE,
-	STUDENT_STYLE_TEMPLATE
+	STUDENT_STYLE_TEMPLATE,
+	STUDENT_LANDSCAPE_STYLE_TEMPLATE
 ];
 
 /**

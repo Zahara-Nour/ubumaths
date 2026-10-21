@@ -80,10 +80,15 @@ export function downloadHistory(entries: readonly Entry[], format: ExportFormat)
 	const now = new Date();
 	const content = format === 'json' ? historyToJson(entries, now) : historyToUbumark(entries, now);
 	const type = format === 'json' ? 'application/json' : 'text/markdown';
+	downloadText(content, type, exportFileName(format, now));
+}
+
+/** Télécharger un texte dans un fichier : l'historique, ou l'atelier entier (`atelier-file.ts`). */
+export function downloadText(content: string, type: string, fileName: string): void {
 	const url = URL.createObjectURL(new Blob([content], { type: `${type};charset=utf-8` }));
 	const link = document.createElement('a');
 	link.href = url;
-	link.download = exportFileName(format, now);
+	link.download = fileName;
 	// Dans la page, et l'adresse libérée plus tard : Firefox et Safari ont
 	// annulé des téléchargements dont l'adresse disparaissait aussitôt (revue)
 	document.body.append(link);

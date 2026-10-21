@@ -1,0 +1,235 @@
+{
+	"id": "9f33998e-af2a-4109-b664-10e5c9469d44",
+	"title": "Trouver le côté d'un carré connaissant son aire.",
+	"description": "A partir d'une description.",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Aires",
+	"subdomain": "Aire d'un carré",
+	"level": 2,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"variables": [
+			{
+				"name": "a",
+				"expression": "1..11"
+			}
+		]
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[mm]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{mm^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{mm^2}$ est {{solution:html}} car ${{solution:0}}\\times {{solution:0}} = {{eval:a*a}}~\\unit{mm^2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[cm]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{cm^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{cm^2}$ est {{solution:html}} car ${{solution:0}} \\times {{solution:0}} = {{eval:a*a}}~\\unit{cm^2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[dm]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{dm^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{dm^2}$ est {{solution:html}} car ${{solution:0}} \\times {{solution:0}} = {{eval:a*a}}~\\unit{dm^2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[m]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{m^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{m^2}$ est {{solution:html}} car ${{solution:0}} \\times {{solution:0}} = {{eval:a*a}}~\\unit{m^2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[dam]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{dam^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{dam^2}$ est {{solution:html}} car ${{solution:0}} \\times {{solution:0}} = {{eval:a*a}}~\\unit{dam^2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[hm]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{hm^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{hm^2}$ est {{solution:html}} car ${{solution:0}} \\times {{solution:0}} = {{eval:a*a}}~\\unit{hm^2}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:a[km]}}"
+				}
+			],
+			"statement": "Quelle est la longueur du côté d'un **carré** d'aire ${{eval:a*a;d}}~\\unit{km^2}$ ?\n\nLa longueur du côté est $?$.",
+			"correction": {
+				"steps": [
+					"La longueur du côté d'un carré d'aire ${{eval:a*a;d}}~\\unit{km^2}$ est {{solution:html}} car ${{solution:0}} \\times {{solution:0}} = {{eval:a*a}}~\\unit{km^2}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["7\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 mm² = 7 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["24{,}5\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "moitié de l'aire",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["7\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 cm² = 7 cm",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["7\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 dm² = 7 dm",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["7\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 m² = 7 m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["7\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 dam² = 7 dam",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["7\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 hm² = 7 hm",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["7\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "7"
+			},
+			"description": "côté de 49 km² = 7 km",
+			"variationIndex": 6
+		}
+	]
+}

@@ -1,0 +1,401 @@
+{
+	"template_id": "5bd4b19a-0416-4fcf-b55a-59f4ceb733e3",
+	"titre": "Connaître la position décimale",
+	"sous_titre": "Jusqu'aux dizaines.",
+	"consigne": null,
+	"grades": ["CP"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-09-29T22:51:47.207223+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CP-005",
+			"libelle_point": "Connaitre la valeur des chiffres en fonction de leur position (unités, dizaines).",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > écritures",
+			"noeud_cible": "Nombres et calculs > Entiers : numération > décomposition",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*10+b"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans le nombre ${{c}}$, le chiffre des **dizaines** est $?$.",
+				"reponses_brutes": ["a"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 81,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 98,
+						"negatif_possible": false,
+						"nb_distinctes": 81
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 98,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 98,
+				"nb_distinctes": 90,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (98)",
+					"graine": 127,
+					"enonce": "Dans le nombre $98$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"c": "98"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Dans le nombre $15$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le nombre $32$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "32"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le nombre $14$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Dans le nombre $72$, le chiffre des dizaines est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "72"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a*10+b"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Dans le nombre ${{c}}$, le chiffre des **unités** est $?$.",
+				"reponses_brutes": ["b"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 81,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 98,
+						"negatif_possible": false,
+						"nb_distinctes": 81
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 98,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 98,
+				"nb_distinctes": 91,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (98)",
+					"graine": 127,
+					"enonce": "Dans le nombre $98$, le chiffre des unités est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"c": "98"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 13,
+					"enonce": "Dans le nombre $40$, le chiffre des unités est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "4",
+						"b": "0",
+						"c": "40"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans le nombre $15$, le chiffre des unités est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "15"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans le nombre $32$, le chiffre des unités est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "32"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans le nombre $14$, le chiffre des unités est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "14"
+					}
+				}
+			]
+		}
+	]
+}

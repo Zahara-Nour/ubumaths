@@ -1,0 +1,1752 @@
+{
+	"template_id": "33b1b496-0de3-47bb-b19a-ff016fd08ef5",
+	"titre": "Simplifier le symbole de multiplication",
+	"sous_titre": "Devant une parenthèse",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Simplification d'écriture",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Algèbre > Calcul littéral > écriture simplifiée",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "s",
+						"expression": "2..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "expression1",
+						"expression": "r*(p+q)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie l'écriture de cette expression.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{r}}({{p}}+{{q}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 78,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 78,
+						"exemples": [
+							"c*(a+x)",
+							"x*(b+c)",
+							"c*(a+c)",
+							"x*(b+a)",
+							"c*(x+a)",
+							"b*(a+x)",
+							"c*(a+y)",
+							"b*(x+b)",
+							"c*(y+a)",
+							"b*(y+c)",
+							"x*(c+x)",
+							"a*(b+a)"
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 78,
+						"exemples": [
+							"c(a+x)",
+							"x(b+c)",
+							"c(a+c)",
+							"x(b+a)",
+							"c(x+a)",
+							"b(a+x)",
+							"c(a+y)",
+							"b(x+b)",
+							"c(y+a)",
+							"b(y+c)",
+							"x(c+x)",
+							"a(b+a)"
+						],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": null,
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": null,
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$c \\times \\left( a + x \\right) = [?]$$",
+					"reponse": ["c(a+x)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"s": "9",
+						"t": "9",
+						"r": "c",
+						"expression1": "c*(a+x)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$x \\times \\left( b + c \\right) = [?]$$",
+					"reponse": ["x(b+c)"],
+					"variables": {
+						"p": "b",
+						"q": "c",
+						"s": "6",
+						"t": "9",
+						"r": "x",
+						"expression1": "x*(b+c)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$c \\times \\left( a + c \\right) = [?]$$",
+					"reponse": ["c(a+c)"],
+					"variables": {
+						"p": "a",
+						"q": "c",
+						"s": "2",
+						"t": "8",
+						"r": "c",
+						"expression1": "c*(a+c)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$x \\times \\left( b + a \\right) = [?]$$",
+					"reponse": ["x(b+a)"],
+					"variables": {
+						"p": "b",
+						"q": "a",
+						"s": "2",
+						"t": "3",
+						"r": "x",
+						"expression1": "x*(b+a)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$c \\times \\left( x + a \\right) = [?]$$",
+					"reponse": ["c(x+a)"],
+					"variables": {
+						"p": "x",
+						"q": "a",
+						"s": "6",
+						"t": "2",
+						"r": "c",
+						"expression1": "c*(x+a)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "s",
+						"expression": "2..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "expression2",
+						"expression": "r*(p+s)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie l'écriture de cette expression.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{r}}({{p}}+{{s}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 146,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 146,
+						"exemples": [
+							"c*(a+9)",
+							"x*(b+6)",
+							"c*(a+2)",
+							"x*(b+2)",
+							"c*(x+6)",
+							"b*(a+3)",
+							"c*(a+7)",
+							"b*(x+7)",
+							"c*(y+8)",
+							"b*(y+8)",
+							"x*(c+6)",
+							"b*(a+9)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 146,
+						"exemples": [
+							"c(a+9)",
+							"x(b+6)",
+							"c(a+2)",
+							"x(b+2)",
+							"c(x+6)",
+							"b(a+3)",
+							"c(a+7)",
+							"b(x+7)",
+							"c(y+8)",
+							"b(y+8)",
+							"x(c+6)",
+							"b(a+9)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$c \\times \\left( a + 9 \\right) = [?]$$",
+					"reponse": ["c(a+9)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"s": "9",
+						"t": "9",
+						"r": "c",
+						"expression2": "c*(a+9)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 3,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$c \\times \\left( a + 2 \\right) = [?]$$",
+					"reponse": ["c(a+2)"],
+					"variables": {
+						"p": "a",
+						"q": "c",
+						"s": "2",
+						"t": "8",
+						"r": "c",
+						"expression2": "c*(a+2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$x \\times \\left( b + 6 \\right) = [?]$$",
+					"reponse": ["x(b+6)"],
+					"variables": {
+						"p": "b",
+						"q": "c",
+						"s": "6",
+						"t": "9",
+						"r": "x",
+						"expression2": "x*(b+6)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$x \\times \\left( b + 2 \\right) = [?]$$",
+					"reponse": ["x(b+2)"],
+					"variables": {
+						"p": "b",
+						"q": "a",
+						"s": "2",
+						"t": "3",
+						"r": "x",
+						"expression2": "x*(b+2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$c \\times \\left( x + 6 \\right) = [?]$$",
+					"reponse": ["c(x+6)"],
+					"variables": {
+						"p": "x",
+						"q": "a",
+						"s": "6",
+						"t": "2",
+						"r": "c",
+						"expression2": "c*(x+6)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "s",
+						"expression": "2..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "t*(p+q)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie l'écriture de cette expression.\n\n$${{expression3}}$$",
+				"reponses_brutes": ["{{t}}({{p}}+{{q}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 128,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 128,
+						"exemples": [
+							"4*(a+x)",
+							"7*(b+c)",
+							"5*(a+c)",
+							"6*(b+a)",
+							"6*(x+a)",
+							"2*(a+x)",
+							"5*(a+y)",
+							"5*(x+b)",
+							"7*(y+a)",
+							"5*(y+c)",
+							"6*(c+x)",
+							"2*(b+a)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 128,
+						"exemples": [
+							"4(a+x)",
+							"7(b+c)",
+							"5(a+c)",
+							"6(b+a)",
+							"6(x+a)",
+							"2(a+x)",
+							"5(a+y)",
+							"5(x+b)",
+							"7(y+a)",
+							"5(y+c)",
+							"6(c+x)",
+							"2(b+a)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 21,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$9 \\times \\left( c + b \\right) = [?]$$",
+					"reponse": ["9(c+b)"],
+					"variables": {
+						"p": "c",
+						"q": "b",
+						"r": "b",
+						"s": "5",
+						"t": "9",
+						"expression3": "9*(c+b)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 6,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$2 \\times \\left( a + x \\right) = [?]$$",
+					"reponse": ["2(a+x)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"r": "b",
+						"s": "6",
+						"t": "2",
+						"expression3": "2*(a+x)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$4 \\times \\left( a + x \\right) = [?]$$",
+					"reponse": ["4(a+x)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"r": "y",
+						"s": "9",
+						"t": "4",
+						"expression3": "4*(a+x)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$7 \\times \\left( b + c \\right) = [?]$$",
+					"reponse": ["7(b+c)"],
+					"variables": {
+						"p": "b",
+						"q": "c",
+						"r": "c",
+						"s": "9",
+						"t": "7",
+						"expression3": "7*(b+c)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$5 \\times \\left( a + c \\right) = [?]$$",
+					"reponse": ["5(a+c)"],
+					"variables": {
+						"p": "a",
+						"q": "c",
+						"r": "a",
+						"s": "8",
+						"t": "5",
+						"expression3": "5*(a+c)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "s",
+						"expression": "2..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "t*(p+s)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie l'écriture de cette expression.\n\n$${{expression4}}$$",
+				"reponses_brutes": ["{{t}}({{p}}+{{s}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 189,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 189,
+						"exemples": [
+							"4*(a+9)",
+							"7*(b+9)",
+							"5*(a+8)",
+							"6*(b+3)",
+							"6*(x+2)",
+							"2*(a+6)",
+							"5*(a+6)",
+							"5*(x+6)",
+							"7*(y+7)",
+							"5*(y+5)",
+							"6*(c+8)",
+							"2*(a+3)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 189,
+						"exemples": [
+							"4(a+9)",
+							"7(b+9)",
+							"5(a+8)",
+							"6(b+3)",
+							"6(x+2)",
+							"2(a+6)",
+							"5(a+6)",
+							"5(x+6)",
+							"7(y+7)",
+							"5(y+5)",
+							"6(c+8)",
+							"2(a+3)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$4 \\times \\left( a + 9 \\right) = [?]$$",
+					"reponse": ["4(a+9)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"r": "y",
+						"s": "9",
+						"t": "4",
+						"expression4": "4*(a+9)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 5,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$6 \\times \\left( x + 2 \\right) = [?]$$",
+					"reponse": ["6(x+2)"],
+					"variables": {
+						"p": "x",
+						"q": "a",
+						"r": "x",
+						"s": "2",
+						"t": "6",
+						"expression4": "6*(x+2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$7 \\times \\left( b + 9 \\right) = [?]$$",
+					"reponse": ["7(b+9)"],
+					"variables": {
+						"p": "b",
+						"q": "c",
+						"r": "c",
+						"s": "9",
+						"t": "7",
+						"expression4": "7*(b+9)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$5 \\times \\left( a + 8 \\right) = [?]$$",
+					"reponse": ["5(a+8)"],
+					"variables": {
+						"p": "a",
+						"q": "c",
+						"r": "a",
+						"s": "8",
+						"t": "5",
+						"expression4": "5*(a+8)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$6 \\times \\left( b + 3 \\right) = [?]$$",
+					"reponse": ["6(b+3)"],
+					"variables": {
+						"p": "b",
+						"q": "a",
+						"r": "a",
+						"s": "3",
+						"t": "6",
+						"expression4": "6*(b+3)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "s",
+						"expression": "2..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression5",
+						"expression": "(p+q)*t"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie l'écriture de cette expression.\n\n$${{expression5}}$$",
+				"reponses_brutes": ["{{t}}({{p}}+{{q}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 128,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 128,
+						"exemples": [
+							"(a+x)*4",
+							"(b+c)*7",
+							"(a+c)*5",
+							"(b+a)*6",
+							"(x+a)*6",
+							"(a+x)*2",
+							"(a+y)*5",
+							"(x+b)*5",
+							"(y+a)*7",
+							"(y+c)*5",
+							"(c+x)*6",
+							"(b+a)*2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 128,
+						"exemples": [
+							"4(a+x)",
+							"7(b+c)",
+							"5(a+c)",
+							"6(b+a)",
+							"6(x+a)",
+							"2(a+x)",
+							"5(a+y)",
+							"5(x+b)",
+							"7(y+a)",
+							"5(y+c)",
+							"6(c+x)",
+							"2(b+a)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 21,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( c + b \\right) \\times 9 = [?]$$",
+					"reponse": ["9(c+b)"],
+					"variables": {
+						"p": "c",
+						"q": "b",
+						"r": "b",
+						"s": "5",
+						"t": "9",
+						"expression5": "(c+b)*9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 6,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( a + x \\right) \\times 2 = [?]$$",
+					"reponse": ["2(a+x)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"r": "b",
+						"s": "6",
+						"t": "2",
+						"expression5": "(a+x)*2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( a + x \\right) \\times 4 = [?]$$",
+					"reponse": ["4(a+x)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"r": "y",
+						"s": "9",
+						"t": "4",
+						"expression5": "(a+x)*4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( b + c \\right) \\times 7 = [?]$$",
+					"reponse": ["7(b+c)"],
+					"variables": {
+						"p": "b",
+						"q": "c",
+						"r": "c",
+						"s": "9",
+						"t": "7",
+						"expression5": "(b+c)*7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( a + c \\right) \\times 5 = [?]$$",
+					"reponse": ["5(a+c)"],
+					"variables": {
+						"p": "a",
+						"q": "c",
+						"r": "a",
+						"s": "8",
+						"t": "5",
+						"expression5": "(a+c)*5"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "a|b|c|x|y!p"
+					},
+					{
+						"name": "r",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "s",
+						"expression": "2..9"
+					},
+					{
+						"name": "t",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression6",
+						"expression": "(p+s)*t"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie l'écriture de cette expression.\n\n$${{expression6}}$$",
+				"reponses_brutes": ["{{t}}({{p}}+{{s}})"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 189,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "s",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "t",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 189,
+						"exemples": [
+							"(a+9)*4",
+							"(b+9)*7",
+							"(a+8)*5",
+							"(b+3)*6",
+							"(x+2)*6",
+							"(a+6)*2",
+							"(a+6)*5",
+							"(x+6)*5",
+							"(y+7)*7",
+							"(y+5)*5",
+							"(c+8)*6",
+							"(a+3)*2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 189,
+						"exemples": [
+							"4(a+9)",
+							"7(b+9)",
+							"5(a+8)",
+							"6(b+3)",
+							"6(x+2)",
+							"2(a+6)",
+							"5(a+6)",
+							"5(x+6)",
+							"7(y+7)",
+							"5(y+5)",
+							"6(c+8)",
+							"2(a+3)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( a + 9 \\right) \\times 4 = [?]$$",
+					"reponse": ["4(a+9)"],
+					"variables": {
+						"p": "a",
+						"q": "x",
+						"r": "y",
+						"s": "9",
+						"t": "4",
+						"expression6": "(a+9)*4"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 5,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( x + 2 \\right) \\times 6 = [?]$$",
+					"reponse": ["6(x+2)"],
+					"variables": {
+						"p": "x",
+						"q": "a",
+						"r": "x",
+						"s": "2",
+						"t": "6",
+						"expression6": "(x+2)*6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( b + 9 \\right) \\times 7 = [?]$$",
+					"reponse": ["7(b+9)"],
+					"variables": {
+						"p": "b",
+						"q": "c",
+						"r": "c",
+						"s": "9",
+						"t": "7",
+						"expression6": "(b+9)*7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( a + 8 \\right) \\times 5 = [?]$$",
+					"reponse": ["5(a+8)"],
+					"variables": {
+						"p": "a",
+						"q": "c",
+						"r": "a",
+						"s": "8",
+						"t": "5",
+						"expression6": "(a+8)*5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Simplifie l'écriture de cette expression.\n\n$$\\left( b + 3 \\right) \\times 6 = [?]$$",
+					"reponse": ["6(b+3)"],
+					"variables": {
+						"p": "b",
+						"q": "a",
+						"r": "a",
+						"s": "3",
+						"t": "6",
+						"expression6": "(b+3)*6"
+					}
+				}
+			]
+		}
+	]
+}

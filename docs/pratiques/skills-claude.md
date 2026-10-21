@@ -76,6 +76,33 @@ Un goût nouveau ou un refus qui se répète → le dire (« note-le dans le ski
 
 ---
 
+## `fiches-exercices` — créer les fiches d'un thème pour un niveau
+
+Se déclenche dès qu'on demande une fiche d'exercices (technique, applications, ou un thème pour un
+niveau) ; il refuse de travailler sans **grade** et **thème** précisés.
+
+- **Avant tout travail**, il interroge la base de production en lecture seule : si les deux fiches
+  (technique et applications) existent déjà pour ce niveau et ce thème, il s'arrête et te demande
+  quoi faire.
+- Il suit la démarche de [fiches-exercices.md](fiches-exercices.md), modèle par tâche compris.
+- Rien n'est écrit en production sans ton accord (`--publier`).
+
+## `reprendre` — repartir d'un chantier après un `/clear`
+
+`/reprendre <sujet>` (ou « reprends », « on en était où ? ») : la session retrouve le journal
+`docs/wip/<sujet>-progress.md` (d'après l'argument, sinon le worktree ou la branche, sinon elle te
+liste les chantiers actifs) et n'en lit **que le bloc « Reprendre ici »**, puis te dit en 5 lignes
+l'état, la prochaine action et ce qui t'attend. Un journal sans bloc en reçoit un au passage.
+Elle tourne en **Sonnet** (`model: sonnet` dans son en-tête) : le changement ne vaut que pour
+ce tour, ton message suivant repart sur le modèle de la session. C'est pourquoi elle attend
+toujours ton go au lieu d'enchaîner sur la prochaine action.
+
+Le but est d'économiser des tokens : une session qui s'étire sur plusieurs PR relit tout son
+historique à chaque message. Après chaque merge, la session met le bloc à jour et te propose
+`/clear` + `/reprendre <sujet>` (règle de `CLAUDE.md` § Worktrees, 2026-10-19).
+
+---
+
 ## Les commandes du projet : retirées le 2026-10-10
 
 Les quatorze commandes de `.claude/commands/` (`/feature`, `/fix`, `/pr`, `/check`…) ont été retirées.
@@ -90,3 +117,14 @@ devait revenir.
 ---
 
 Vérifié contre le code le 2026-10-10.
+
+## `menage-contexte` — alléger `CLAUDE.md` et la mémoire
+
+`/menage-contexte` (ou « fais le ménage dans CLAUDE.md / la mémoire ») : la session traite
+**toujours les deux ensemble**, pour voir aussi les doublons entre eux. Elle mesure (plafonds :
+`CLAUDE.md` 15 Ko, `MEMORY.md` 10 Ko), repère les liens morts, les mémoires non indexées, les
+projets marqués clos, les chemins cités qui ont disparu, puis lit les deux fichiers et te propose
+une liste numérotée : archiver, fusionner, raccourcir, déplacer. **Elle ne touche à rien avant ta
+réponse**, ne supprime jamais une mémoire sans ton « oui » sur ce fichier, et ne retire jamais une
+règle de `CLAUDE.md` (elle en déplace seulement le détail ou le pourquoi). Comme `reprendre`, elle
+tourne en **Sonnet** pour ce tour ; l'application se fait au tour suivant.

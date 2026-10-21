@@ -31,21 +31,22 @@ L'expression s'arrête au **premier mot-clé**. Un mot-clé est un mot entier, e
 
 Une fonction usuelle sans parenthèses dans l'expression (`.évaluer ln x en x=1`) est refusée avant toute lecture, avec le fragment tapé : « « ln x » : écris ln(x) avec des parenthèses. » (`bareFunctionRefusal`, détail : [atelier.md](atelier.md)). Collée à son argument aussi : `lnx`, `sinx`, `cost`, `ln2x` → « « ln2x » : écris ln(2x) avec des parenthèses. » ; `sinus`, `lnxy`, `sinh` ne sont pas visés.
 
-| Commande                          | Nouvelle écriture                                 | Exemple                                                 |
-| --------------------------------- | ------------------------------------------------- | ------------------------------------------------------- |
-| dériver                           | `.dériver EXPR [pour VAR]`                        | `.dériver f` · `.dériver a t^2 pour t`                  |
-| intégrer (primitive)              | `.intégrer EXPR [pour VAR]`                       | `.intégrer x^2`                                         |
-| intégrer (définie)                | `.intégrer EXPR de A à B [pour VAR]`              | `.intégrer x de 3 à a` · `.intégrer sqrt(x) de 0 à 1/2` |
-| résoudre                          | `.résoudre ÉQUATION [pour VAR] [dans INTERVALLE]` | `.résoudre sin(x)=0 dans [0;2\pi]`                      |
-| évaluer                           | `.évaluer EXPR en VAR=VALEUR [; VAR=VALEUR…]`     | `.évaluer x^2 en x=3` · `.évaluer 2a+3b en a=1,5 ; b=2` |
-| équivalent                        | `.équivalent EXPR et EXPR`                        | `.équivalent (x+1)^2 et x^2+2x+1`                       |
-| limite                            | `.limite EXPR en POINT[+\|-]`                     | `.limite (x^2-1)/(x-1) en 1` · `.limite 1/x en 0+`      |
-| taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`          | `.taylor e^x ordre 3 en 1`                              |
-| variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`     | `.variations x^2 dans [0;+∞[`                           |
-| réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`           | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`          |
-| tabuler (ordre fixe, lot 3)       | `.tabuler FONCTION [de A à B pas P]`              | `.tabuler f de -2 à 3 pas 0,5` · `.tabuler f`           |
-| domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                       | inchangé (un seul argument)                             |
-| développer                        | `.développer EXPR`                                | `.développer (2x-1)(x+3)` · `.développer f`             |
+| Commande                          | Nouvelle écriture                                         | Exemple                                                   |
+| --------------------------------- | --------------------------------------------------------- | --------------------------------------------------------- |
+| dériver                           | `.dériver EXPR [pour VAR]`                                | `.dériver f` · `.dériver a t^2 pour t`                    |
+| intégrer (primitive)              | `.intégrer EXPR [pour VAR]`                               | `.intégrer x^2`                                           |
+| intégrer (définie)                | `.intégrer EXPR de A à B [pour VAR]`                      | `.intégrer x de 3 à a` · `.intégrer sqrt(x) de 0 à 1/2`   |
+| résoudre                          | `.résoudre ÉQUATION [pour VAR] [dans INTERVALLE]`         | `.résoudre sin(x)=0 dans [0;2\pi]`                        |
+| évaluer                           | `.évaluer EXPR en VAR=VALEUR [; VAR=VALEUR…]`             | `.évaluer x^2 en x=3` · `.évaluer 2a+3b en a=1,5 ; b=2`   |
+| équivalent                        | `.équivalent EXPR et EXPR`                                | `.équivalent (x+1)^2 et x^2+2x+1`                         |
+| limite                            | `.limite EXPR en POINT[+\|-]`                             | `.limite (x^2-1)/(x-1) en 1` · `.limite 1/x en 0+`        |
+| taylor                            | `.taylor EXPR ordre N [en A] [pour VAR]`                  | `.taylor e^x ordre 3 en 1`                                |
+| variations                        | `.variations EXPR [pour VAR] [dans ENSEMBLE]`             | `.variations x^2 dans [0;+∞[`                             |
+| réciproque                        | `.réciproque FONCTION [sur INTERVALLE]`                   | `.réciproque f` · `.réciproque x^2 sur [0;+∞[`            |
+| tabuler (ordre fixe, lot 3)       | `.tabuler FONCTION [de A à B pas P]`                      | `.tabuler f de -2 à 3 pas 0,5` · `.tabuler f`             |
+| relever (ordre fixe, géométrie)   | `.relever E1 ; E2 quand T va de A à B pas P [dans X ; Y]` | `.relever AM ; S quand M va de 0 à 1 pas 0,05 dans X ; Y` |
+| domaine / simplifier / factoriser | `.commande EXPR [pour VAR]`                               | inchangé (un seul argument)                               |
+| développer                        | `.développer EXPR`                                        | `.développer (2x-1)(x+3)` · `.développer f`               |
 
 - `[…]` = facultatif. Ordre des mots-clés libre (`en 1 ordre 3` accepté).
 - **`dans`** (`.résoudre`, `.variations`, lot 2 de l'intervalle, 2026-10-13) : un intervalle borné
@@ -76,6 +77,21 @@ x=…` et `.intégrer f de a à b` hors de cet ensemble sont refusés comme `f(5
   fonction de l'atelier, désigne sa réciproque, calculée à la volée (sans carte) : `f⁻¹(5)`,
   `.variations f⁻¹`, `.dériver f⁻¹`, `.résoudre f⁻¹(x)=2`, `g(x) = f⁻¹(x)`. L'inverse 1/f s'écrit
   `1/f(x)` ou `f(x)^-1` ; `x^-1`, `2^-1`, `a^-1` (a une valeur) sont des puissances.
+- **`quand … va de … à … pas …`** (`.relever`, géométrie lot 2, PR 4, 2026-10-19) : ordre fixe,
+  comme `.tabuler`. E1 et E2, séparées par le « ; » de premier niveau (celui de `aire(A ; M ; N ; P)`
+  ne compte pas), sont des expressions de l'atelier, mesures comprises (`AM`, `aire(…)`, `S`,
+  `f(t)`) ; T est une valeur à curseur ou un `point_sur` à position écrite ; A, B, P sont des
+  nombres en un seul bloc, décimaux ou fractions (`-1,5`, `0.05`, `1/3`), `à` s'écrit aussi `a`,
+  les mots-clés aussi en majuscule (`Quand`, `Pas`) ; T doit être un nom.
+  Le pas est obligatoire (pas de pas par défaut : le refus donne un exemple complet). `dans X ; Y`,
+  facultatif et en dernier, nomme les deux listes (décision de David du 2026-10-19). La commande lit des NOMS (ce qui varie, les
+  points d'une mesure) : elle sort avec les commandes de données (`SIMULATIONS`, `calcul.ts`),
+  avant la substitution des noms, donc hors de `COMMAND_KEYWORDS` / `COMMAND_LABELS` (lecture du
+  moteur, que `.relever` n'emprunte pas — même choix que `.tabuler`). Détail :
+  [atelier.md](atelier.md), « `.relever` en détail ».
+- **Degrés** (2026-10-19) : l'argument d'une commande de calcul lit `60°`, `60^\circ` comme `60[°]`
+  (`degrees.ts`), et un angle pris par un sin, cos, tan y devient un nombre de radians
+  (`.évaluer cos(60°)*x en x=2` → 1). Les commandes de données gardent leurs modalités telles quelles.
 - **Variable** : voir la question 1 ci-dessous.
 
 ### Commandes de probabilités et de statistiques

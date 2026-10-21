@@ -12,8 +12,13 @@ import { tick } from 'svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
 import { commandCatalog } from '$lib/atelier/commands';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 /** Laisser Svelte appliquer ses effets ET le DOM se mettre à jour. */
 async function settle() {
@@ -151,20 +156,8 @@ describe('les actions du panneau répondent vraiment', () => {
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2-3x+1' });
 		const view = await open(atelier);
 
-		// Les actions n'apparaissent que sur l'objet SÉLECTIONNÉ : il faut donc
-		// d'abord cliquer la carte, comme le ferait l'élève.
-		const carte = [...view.container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
-		) as HTMLElement | undefined;
-		expect(carte, 'carte de f').toBeTruthy();
-		carte!.querySelector('button')?.click();
-		await settle();
-
-		const bouton = [...carte!.querySelectorAll('button')].find((b) =>
-			b.textContent?.trim().startsWith(label)
-		) as HTMLButtonElement | undefined;
-		expect(bouton, `bouton « ${label} »`).toBeTruthy();
-		bouton!.click();
+		// Lot 3 de la refonte : les actions d'une fonction sont dans le menu de sa carte
+		await chooseCardAction(view.container, 'f', label);
 		await settle();
 		return view;
 	}
@@ -178,15 +171,8 @@ describe('les actions du panneau répondent vraiment', () => {
 	// Même défaut par le bouton : la note était collée au texte, invisible
 	it('« Dériver » une seconde fois dit, à l’écran, que f′ existe déjà', async () => {
 		const { container } = await clickAction('Dériver');
-		const carte = [...container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'f'
-		) as HTMLElement;
-		// La carte de f est restée sélectionnée : son bouton est toujours là
-		const bouton = [...carte.querySelectorAll('button')].find((b) =>
-			b.textContent?.trim().startsWith('Dériver')
-		) as HTMLButtonElement | undefined;
-		expect(bouton, 'bouton « Dériver »').toBeTruthy();
-		bouton!.click();
+		// Une seconde fois, par le même menu
+		await chooseCardAction(container, 'f', 'Dériver');
 		await settle();
 
 		const lignes = [...container.querySelectorAll('.historique li .reponse')];
@@ -195,10 +181,12 @@ describe('les actions du panneau répondent vraiment', () => {
 		expect(ligne?.querySelector('.math')).toBeTruthy();
 	});
 
-	it('et bascule sur la vue Calcul pour qu’on voie la réponse', async () => {
+	it('et la réponse reste sous les yeux : la console ouverte ne se ferme pas', async () => {
 		const { container } = await clickAction('Dériver');
 
-		expect(container.querySelector('[aria-current="page"]')?.textContent?.trim()).toBe('Calcul');
+		const console = container.querySelector('[role="region"][aria-label="Console"]');
+		expect(console?.hasAttribute('inert')).toBe(false);
+		expect(console?.querySelectorAll('.historique li').length).toBeGreaterThan(0);
 	});
 
 	it('« Variations » parle de la fonction, pas de son nom', async () => {
@@ -224,17 +212,8 @@ describe('les actions du panneau répondent vraiment', () => {
 		atelier.create({ kind: 'list', name: 'L', definition: '12 ; 15 ; 9' });
 		const view = await open(atelier);
 
-		const carte = [...view.container.querySelectorAll('.objet')].find(
-			(el) => el.querySelector('.nom')?.textContent?.trim() === 'L'
-		) as HTMLElement;
-		carte.querySelector('button')?.click();
-		await settle();
-		const bouton = [...carte.querySelectorAll('button')].find((b) =>
-			b.textContent?.trim().startsWith('Statistiques')
-		) as HTMLButtonElement;
-		expect(bouton, 'bouton Statistiques').toBeTruthy();
-		expect(bouton.disabled).toBe(false);
-		bouton.click();
+		// Lot 4a de la refonte : l'action est dans le menu de la carte
+		await chooseCardAction(view.container, 'L', 'Statistiques');
 		await settle();
 
 		expect(view.container.querySelector('.historique')?.textContent).toMatch(/Médiane/);
@@ -376,28 +355,56 @@ describe('les lois dans l’historique (manche 13, PR c)', () => {
 // =============================================================================
 
 describe('exporter l’historique', () => {
-	function exportButtons(container: HTMLElement): HTMLButtonElement[] {
-		return [...container.querySelectorAll('.export button')] as HTMLButtonElement[];
+	/**
+	 * L'historique en ubumark, seul reste de la barre « Exporter l'historique »,
+	 * est dans le menu de la console (lot 2 de `atelier-refonte-interface-phase0.md`) :
+	 * l'atelier s'enregistre par la barre d'icônes.
+	 */
+	async function sheetLink(container: HTMLElement): Promise<HTMLElement> {
+		const trigger = container.querySelector(
+			'button[aria-label="Menu de la console"]'
+		) as HTMLButtonElement;
+		await userEvent.click(trigger);
+		return vi.waitFor(() => {
+			const item = [...document.querySelectorAll<HTMLElement>('[role="menuitem"]')].find((i) =>
+				i.textContent?.includes('Télécharger l’historique (ubumark)')
+			);
+			expect(item).toBeTruthy();
+			return item!;
+		});
 	}
 
-	it('historique vide : boutons désactivés, avec leur raison (X1)', async () => {
-		const { container } = await open();
-
-		expect(exportButtons(container).map((b) => b.disabled)).toEqual([true, true]);
-		expect(container.querySelector('.export')?.textContent).toContain('Rien à exporter');
-	});
-
-	it('après une saisie, on peut exporter dans les deux formats', async () => {
+	it('plus de barre « Exporter l’historique » : ni JSON, ni rejeu dans la vue', async () => {
 		const { container, submit } = await open();
 
 		await submit('f(x)=x^2');
 
-		const buttons = exportButtons(container);
-		expect(buttons.map((b) => b.disabled)).toEqual([false, false]);
-		expect(buttons.map((b) => b.textContent?.trim())).toEqual([
-			'JSON (pour rejouer)',
-			'ubumark (pour lire)'
-		]);
+		expect(container.querySelector('.export')).toBeNull();
+		expect(container.textContent).not.toContain('JSON (pour rejouer)');
+		expect(container.textContent).not.toContain('Rejouer un historique');
+	});
+
+	it('historique vide : l’historique ubumark est indisponible dans le menu', async () => {
+		const { container } = await open();
+
+		const item = await sheetLink(container);
+		expect(item.getAttribute('aria-disabled') ?? item.getAttribute('data-disabled')).not.toBeNull();
+	});
+
+	it('après une saisie, le menu télécharge l’historique en ubumark', async () => {
+		const { container, submit } = await open();
+		const downloads = watchDownloads();
+		try {
+			await submit('2+3');
+
+			(await sheetLink(container)).click();
+
+			await vi.waitFor(() => expect(downloads.files).toHaveLength(1));
+			expect(downloads.files[0].name).toMatch(/^calcul-\d{4}-\d{2}-\d{2}\.md$/);
+			expect(await downloads.files[0].blob.text()).toContain('2+3');
+		} finally {
+			downloads.restore();
+		}
 	});
 
 	/** Les fichiers que la page a lancés en téléchargement, sans rien enregistrer. */
@@ -438,18 +445,13 @@ describe('exporter l’historique', () => {
 			const content = JSON.parse(await file.blob.text());
 			expect(content.format).toBe('chiphre-calcul');
 			expect(content.entries.map((e: { label: string }) => e.label)).toEqual(['2+3', 'a = 5']);
-			// Le bouton JSON donne le même contenu
-			exportButtons(container)[0].click();
-			expect(downloads.files).toHaveLength(2);
-			const fromButton = JSON.parse(await downloads.files[1].blob.text());
-			expect(fromButton.entries).toEqual(content.entries);
 			expect(container.querySelector('.retour')?.textContent).toContain('Historique exporté');
 		} finally {
 			downloads.restore();
 		}
 	});
 
-	it('`.exporter` sur un historique vide : la raison du bouton désactivé', async () => {
+	it('`.exporter` sur un historique vide : rien à exporter, et on le dit', async () => {
 		const { container, submit } = await open();
 		const downloads = watchDownloads();
 		try {

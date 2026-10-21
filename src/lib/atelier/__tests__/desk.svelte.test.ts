@@ -56,9 +56,9 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(d.entries[0].text).toMatch(/5/);
 	});
 
-	// « Image d'un nombre » n'est plus une action du panneau : c'est un champ de
-	// la carte (phase 0 `/grapheur` §3 A4), qui ne touche pas au brouillon
-	it('image calcule depuis la carte sans toucher au brouillon de Calcul', () => {
+	// `image` (le chemin du rejeu des anciens historiques, A4) calcule sans
+	// toucher au brouillon de la console
+	it('image calcule sans toucher au brouillon de la console', () => {
 		const d = desk();
 		d.draft = '2+';
 
@@ -67,7 +67,17 @@ describe('une action du panneau produit quelque chose', () => {
 		expect(result.failed).toBe(false);
 		expect(d.draft).toBe('2+');
 		expect(d.entries).toHaveLength(1);
-		expect(d.runFromPanel('image', 'f')).toBe('unsupported');
+	});
+
+	// « Image d'un nombre » a quitté le panneau (David, 2026-10-18) : le brouillon
+	// n'est plus touché (`carte-sans-image.test.ts`)
+	it('« image » depuis le panneau ne touche plus au brouillon', () => {
+		const d = desk();
+		d.draft = 'g(2)+';
+
+		d.runFromPanel('image', 'f');
+
+		expect(d.draft).toBe('g(2)+');
 	});
 
 	// En attente d'une FONCTION : `a*x`, à paramètre, se dérive depuis Q4
@@ -310,7 +320,7 @@ describe('le rappel des saisies', () => {
 		expect(d.draft).toBe('');
 	});
 
-	it('« Repartir de zéro » vide aussi ce qu’on peut rappeler', () => {
+	it('vider la console vide aussi ce qu’on peut rappeler', () => {
 		const d = typed('1+1');
 		d.clear();
 		d.draft = '';

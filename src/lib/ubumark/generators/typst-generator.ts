@@ -61,6 +61,7 @@ import { generateTrigCircleTypst } from './trig-circle-typst';
 import { generateNumberLineTypst } from './number-line-typst';
 import { generateCourbeTypst } from './courbe-typst';
 import { generateStatChartTypst } from './stat-chart-typst';
+import { generateQrTypst } from './qr-typst';
 // Registre LÉGER : pas d'import de geometry-core ici (voir figure-typst-registry.ts)
 import { renderFigureTypst } from './figure-typst-registry';
 import type { VariationTableNode } from '../types/variation-table';
@@ -387,6 +388,9 @@ function generateBlock(node: BlockNode, options: ResolvedTypstTranspilerOptions)
 		case 'stat-chart':
 			return generateStatChartTypst(node, { language: options.language });
 
+		case 'qr':
+			return generateQrTypst(node);
+
 		default:
 			return '';
 	}
@@ -522,10 +526,10 @@ function generateHeading(node: HeadingNode, options: ResolvedTypstTranspilerOpti
 // ============================================================================
 
 /**
- * Numbering patterns by depth: a) then 1) then i). Same hierarchy as the
- * screen's default scheme for nested lists (`a-1-i` in types/list-numbering).
+ * Numbering patterns by depth: 1) then a) then i). Same hierarchy as the
+ * screen's default scheme (`1-a-i` in types/list-numbering).
  */
-const ENUM_NUMBERING_PATTERNS = ['a)', '1)', 'i)'];
+const ENUM_NUMBERING_PATTERNS = ['1)', 'a)', 'i)'];
 
 /**
  * Get numbering pattern for a given enumerate depth
@@ -589,7 +593,7 @@ function widestLabel(pattern: string, first: number, last: number): string {
  * Generate list node with depth tracking for proper numbering
  *
  * Uses numbered lists for ordered, bullet lists for unordered.
- * Ordered lists are numbered a) 1) i)
+ * Ordered lists are numbered 1) a) i)
  *
  * @param node - List node
  * @param options - Generator options

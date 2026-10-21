@@ -1,0 +1,174 @@
+{
+	"template_id": "55b0f4b7-e9eb-4f43-9307-ad8d0193cab5",
+	"titre": "Trouver la moitié",
+	"sous_titre": "Nombre pair inférieur à $20$",
+	"consigne": null,
+	"grades": ["CP"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Double et moitié",
+	"mis_a_jour": "2026-09-29T18:05:36.097742+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CP-027",
+			"libelle_point": "Déterminer la moitié d'un nombre pair.",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > double et moitié",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la moitié de ${{eval:2*a}}$ ?\n\nLa moitié de ${{eval:2*a}}$ est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 20,
+				"nb_distinctes": 11,
+				"valeurs": [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 20,
+				"nb_distinctes": 16,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 10,
+					"enonce": "Quelle est la moitié de $20$ ?\n\nLa moitié de $20$ est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Quelle est la moitié de $0$ ?\n\nLa moitié de $0$ est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la moitié de $6$ ?\n\nLa moitié de $6$ est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quelle est la moitié de $16$ ?\n\nLa moitié de $16$ est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quelle est la moitié de $12$ ?\n\nLa moitié de $12$ est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

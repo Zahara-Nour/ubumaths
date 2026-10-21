@@ -57,10 +57,10 @@ describe('une définition en attente', () => {
 });
 
 describe('une définition réussie', () => {
-	it('f(x) = x^2 : inchangée', () => {
+	it('f(x) = x^2 : « f est correctement défini » (demande de David, 2026-10-18)', () => {
 		expect(last(deskWith('f(x) = x^2'))).toMatchObject({
 			failed: false,
-			text: '« f » est dans tes objets.'
+			text: 'f est correctement défini.'
 		});
 	});
 });

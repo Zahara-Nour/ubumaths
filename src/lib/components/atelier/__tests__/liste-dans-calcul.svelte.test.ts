@@ -9,12 +9,11 @@ import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput } from '$lib/atelier/calcul';
+import { menuItemOf, openCardMenu } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
 
-function cardFor(container: HTMLElement, name: string): HTMLElement | undefined {
-	return [...container.querySelectorAll('.objet')].find(
-		(el) => el.querySelector('.nom')?.textContent?.trim() === name
-	) as HTMLElement | undefined;
-}
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 describe('une liste tapée dans Calcul, vue dans le panneau', () => {
 	it('sa carte propose l’action Statistiques', async () => {
@@ -22,12 +21,9 @@ describe('une liste tapée dans Calcul, vue dans le panneau', () => {
 		runInput({ atelier, engine: new WebReplEngine(), seed: () => 1 }, 'L = 1,5 ; 2 ; 3,5');
 		const { container } = await render(WithAtelier, { atelier });
 
-		cardFor(container, 'L')?.querySelector('button')?.click();
-		await new Promise((r) => setTimeout(r, 0));
+		// Dans le menu de sa carte (lot 4a de la refonte)
+		const menu = await openCardMenu(container, 'L');
 
-		const labels = [...container.querySelectorAll('.action')].map(
-			(b) => b.textContent?.trim() ?? ''
-		);
-		expect(labels).toContain('Statistiques');
+		expect(menuItemOf(menu, 'Statistiques')).toBeTruthy();
 	});
 });

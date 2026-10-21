@@ -90,17 +90,22 @@ export const DELETE: RequestHandler = async ({ url, locals }) => {
 		return json({ error: 'template_id et point_id requis (UUID)' }, { status: 400 });
 	}
 
-	const { error: dbErr } = await locals.supabase
+	// `.select()` : un refus RLS rend zéro ligne sans erreur, il ne doit pas passer pour un succès.
+	const { data: deleted, error: dbErr } = await locals.supabase
 		.from('question_template_points')
 		.delete()
 		.eq('template_id', parsed.data.template_id)
-		.eq('point_id', parsed.data.point_id);
+		.eq('point_id', parsed.data.point_id)
+		.select('point_id');
 
 	if (dbErr) {
 		const mapped = curriculumDbError(dbErr);
 		if (mapped) return mapped;
 		logger.error('[curriculum] template-tags DELETE failed:', dbErr);
 		return json({ error: dbErr.message }, { status: 500 });
+	}
+	if (!deleted || deleted.length === 0) {
+		return json({ error: 'Tag introuvable ou non modifiable' }, { status: 404 });
 	}
 
 	return json({ success: true });

@@ -1,0 +1,517 @@
+{
+	"template_id": "9c03423a-38ce-44e3-ab44-20b4e90659b7",
+	"titre": "Utiliser un critère de divisibilité",
+	"sous_titre": "Par $9$",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "multiple_choice",
+	"theme": "Entiers > Diviser > Divisibilité",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CM2-008",
+			"libelle_point": "Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?).",
+			"noeud_actuel": "Arithmétique > Divisibilité > critères de divisibilité",
+			"noeud_cible": "Arithmétique > Divisibilité > multiples et diviseurs",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "libellé « Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné ou si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10 » → « Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?). »"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0"
+					},
+					{
+						"name": "d",
+						"expression": "c+9-mod(a+b+c, 9)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $9$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 80,
+						"exemples": [
+							"0+9-mod(1+5+0, 9)",
+							"0+9-mod(3+3+0, 9)",
+							"0+9-mod(3+2+0, 9)",
+							"0+9-mod(7+2+0, 9)",
+							"0+9-mod(1+6+0, 9)",
+							"0+9-mod(1+9+0, 9)",
+							"0+9-mod(6+3+0, 9)",
+							"0+9-mod(8+2+0, 9)",
+							"0+9-mod(9+7+0, 9)",
+							"0+9-mod(5+6+0, 9)",
+							"0+9-mod(4+1+0, 9)",
+							"0+9-mod(4+5+0, 9)"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Oui"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 9,
+				"max": 999,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 9,
+				"max": 999,
+				"nb_distinctes": 81,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (999)",
+					"graine": 115,
+					"enonce": "Le nombre $999$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "0",
+						"d": "0+9-mod(9+9+0, 9)",
+						"f": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (9)",
+					"graine": 1,
+					"enonce": "Le nombre $153$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "0",
+						"d": "0+9-mod(1+5+0, 9)",
+						"f": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nombre $333$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "0",
+						"d": "0+9-mod(3+3+0, 9)",
+						"f": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le nombre $324$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "0+9-mod(3+2+0, 9)",
+						"f": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le nombre $729$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["A. Oui"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "0",
+						"d": "0+9-mod(7+2+0, 9)",
+						"f": "9"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0..1"
+					},
+					{
+						"name": "d",
+						"expression": "c+8-mod(a+b+c, 9)"
+					},
+					{
+						"name": "f",
+						"expression": "eval:d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Le nombre ${{a}}{{b}}{{f}}$ est-il divisible par $9$ ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "Oui"
+					},
+					{
+						"content": "Non"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 86,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 1,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 1]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 143,
+						"exemples": [
+							"1+8-mod(1+5+1, 9)",
+							"1+8-mod(3+3+1, 9)",
+							"0+8-mod(1+5+0, 9)",
+							"0+8-mod(3+2+0, 9)",
+							"1+8-mod(7+2+1, 9)",
+							"0+8-mod(1+6+0, 9)",
+							"1+8-mod(1+9+1, 9)",
+							"1+8-mod(6+3+1, 9)",
+							"1+8-mod(8+2+1, 9)",
+							"1+8-mod(9+7+1, 9)",
+							"1+8-mod(5+6+1, 9)",
+							"1+8-mod(1+6+1, 9)"
+						],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["Non"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 9,
+				"max": 998,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 9,
+				"max": 998,
+				"nb_distinctes": 87,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (998)",
+					"graine": 115,
+					"enonce": "Le nombre $998$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "0",
+						"d": "0+8-mod(9+9+0, 9)",
+						"f": "8"
+					}
+				},
+				{
+					"role": "plus petite valeur (9)",
+					"graine": 1,
+					"enonce": "Le nombre $152$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "1+8-mod(1+5+1, 9)",
+						"f": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Le nombre $332$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "1",
+						"d": "1+8-mod(3+3+1, 9)",
+						"f": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Le nombre $323$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "0+8-mod(3+2+0, 9)",
+						"f": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Le nombre $728$ est-il divisible par $9$ ?\n\n- A. Oui\n- B. Non",
+					"reponse": ["B. Non"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "1",
+						"d": "1+8-mod(7+2+1, 9)",
+						"f": "8"
+					}
+				}
+			]
+		}
+	]
+}

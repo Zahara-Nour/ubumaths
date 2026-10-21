@@ -1,0 +1,257 @@
+{
+	"template_id": "d14fe0cf-cbbf-4349-a32d-4fd30de05c7f",
+	"titre": "Simplifier une fraction",
+	"sous_titre": "Simplifier par $2$, $3$ ou $5$",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Simplification",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > simplification",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2|3|5"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!cd(a)"
+					},
+					{
+						"name": "c",
+						"expression": "2..9!cd(a),cd(b)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b}}/{{eval:a*c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["\\dfrac{{{b}}}{{{c}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 60,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 5]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.1111111111111111,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateurs": [6, 10, 12, 14, 15, 18, 20, 21, 24, 30, 35, 40, 45],
+						"denominateur_min": 6,
+						"denominateur_max": 45,
+						"nb_distinctes": 60
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1111111111111111,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 43
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 45,
+				"nb_distinctes": 16,
+				"valeurs": [2, 3, 5, 6, 10, 12, 14, 15, 18, 20, 21, 24, 30, 35, 40, 45],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 45,
+				"nb_distinctes": 21,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 18, 20, 21, 24, 30, 35, 40, 45],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [6, 10, 12, 14, 15, 18, 20, 21, 24, 30, 35, 40, 45],
+				"denominateur_min": 6,
+				"denominateur_max": 45,
+				"numerateur_min": 2,
+				"numerateur_max": 45,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (45)",
+					"graine": 53,
+					"enonce": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$$\\dfrac{5}{45} = [?]$$",
+					"reponse": ["\\dfrac{1}{9}"],
+					"variables": {
+						"a": "5",
+						"b": "1",
+						"c": "9",
+						"expression1": "5/45"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 4,
+					"enonce": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$$\\dfrac{2}{6} = [?]$$",
+					"reponse": ["\\dfrac{1}{3}"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "3",
+						"expression1": "2/6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$$\\dfrac{10}{18} = [?]$$",
+					"reponse": ["\\dfrac{5}{9}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"expression1": "10/18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$$\\dfrac{6}{14} = [?]$$",
+					"reponse": ["\\dfrac{3}{7}"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"c": "7",
+						"expression1": "6/14"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Simplifie cette fraction par $2$ ; $3$ ou $5$.\n\n$$\\dfrac{10}{6} = [?]$$",
+					"reponse": ["\\dfrac{5}{3}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "3",
+						"expression1": "10/6"
+					}
+				}
+			]
+		}
+	]
+}

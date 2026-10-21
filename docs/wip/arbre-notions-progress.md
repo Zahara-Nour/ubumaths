@@ -3,6 +3,27 @@
 Décisions : [ADR 0019](../adr/0019-classement-branche-notion-sous-notion.md). Page de travail (privée) :
 https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchpad de la session du 2026-10-06).
 
+## Reprendre ici
+
+_Mis à jour le 2026-10-21, après #1581 (étape 3, B2 mergée)._
+
+- **État** : C5 étape 3 (bascule du code). Fait : #1060 (page Programme), #1577 (B1) et #1581 (B2 : cahier de
+  texte, Avancement et tags d'exercice sur branche > notion > points ; `getCurriculumTree` supprimé ; tags d'exercice
+  limités aux notions de rangement, règle 1). Pas encore en prod (aucun `deploy:prod` depuis B1).
+- **Prochaine action** : **B3** (petite PR, worktree neuf, tests d'abord), validée par David le 2026-10-21 :
+  (1) POST `coverage` / `exercise-tags` et création de séance refusent un point neuf ARCHIVÉ (400 « Point
+  archivé » ; décocher / retirer reste permis) ; (2) commentaire dans les deux DELETE : 404 = « déjà retiré », la
+  RLS (`is_teacher_or_admin`, toutes lignes) ne peut pas refuser le professeur ; (3) Avancement : archivés travaillés
+  affichés (« archivé ») mais hors « vus / total » et du pourcentage. Puis **D** (élève : progression,
+  `COVERED_GRADES`, `/student/objectifs`), F, E, étape 4 (destructive : arrêt).
+- **En attente de David** : rien sur B3. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
+  correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
+- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud ou sa notion (trigger) →
+  décors d'intégration : `makeTaggedExercise` range l'exercice ; un test qui pose des points ANCIENS asserte l'ancien
+  comportement ; une PR en conflit ne lance PAS la CI `pull_request` (fusionner `origin/main`) ; MySelect affiche le
+  LaTeX en brut.
+- **Worktree / branche** : aucun (B2 nettoyé).
+
 ## Tranché avec David (2026-10-06)
 
 - Arbre branche > notion > sous-notion, commun exercices + modèles de questions ; type d'activité et
@@ -1002,3 +1023,177 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
     (73550ee8, fa57c725) passent en R1.
   - Les 13 modèles dont les variations relèvent de plusieurs points sont sortis des parties 1 à 3 de la page à cocher :
     choix « Scinder » / « Un seul tag » en partie 4.
+- **2026-10-17 — Principes validés par David, consignés dans l'ADR 0020 (§7, précisions du 2026-10-17).**
+  - Le BO est immuable : pas de point « entraînement » ou « approfondissement ». Un modèle qu'aucun point ne décrit
+    reste sur son nœud, jouable, hors progression du programme (progression par nœud possible plus tard).
+  - Un savoir-faire répété d'une année à l'autre garde un point par année ; un modèle porte un tag par programme
+    (déjà la règle en base : « au plus un point par programme »).
+  - Une scission vaut pour toute la famille de points répétés (ex. tables CP → CE2 et répertoires CM1, CM2).
+- **2026-10-17 — Scissions : réponses de David sur la page à cocher.**
+  - Les 20 familles de la page sont à scinder (101 points). Q1 : opérations à trou hors tables → pas de tag (R1).
+    Q2 : répertoires du CM scindés comme les tables. Q3 : garder « connaître les moitiés » et « déterminer la moitié ».
+    Q4 : **trois** points comparer / encadrer / intercaler. Q6 : « lire et interpréter » à revoir → familles M19
+    (18 points lire / interpréter) et M20 (moyenne, médiane, étendue : calculer / interpréter) ajoutées à la page.
+  - Q5 : 3-001 et 3-002 sont un doublon du BO lui-même (cycle 4, 3e, Nombres rationnels, lignes consécutives).
+    David : « je ne veux pas de deux points qui disent la même chose » → 3-002 archivé dans la migration des
+    scissions ; exception consignée dans l'ADR 0020 (§7).
+  - Programmes du BO des cycles 2, 3 et 4 (PDF) commités sous `docs/ref/programmes/`.
+- **2026-10-17 — Critère de scission de David, consigné dans l'ADR 0020 (§7).** On scinde quand la scission donne au
+  moins un point évaluable par un modèle de question, avec nos outils actuels ou à venir ; l'autre partie peut relever
+  du cours (démonstration, oral, collecte). 5-058 se scinde (connaître / démontrer). Pas de retour sur les familles
+  déjà tranchées. Recos de la partie 3 de la page mises à jour en conséquence : suite écrite / orale, 5-058,
+  représentations des solides (5-048, 4-028), recueillir / présenter des données → scinder.
+- **2026-10-17 — Vérifications avant migration (page « Vérifications des scissions »).** David : CM1-019 et CM2-018
+  scindés comme leurs jumeaux ; 3-038 archivé (quasi-doublon du BO avec 3-041) ; les 25 corrections de libellés prises ;
+  automatismes revus ligne par ligne (52 lignes). Principe nouveau, consigné dans l'ADR 0020 §7 : une partie de ligne
+  d'automatisme sans référence → d'abord scinder un point antérieur (avec sa famille), sinon point ⚙ dans le programme
+  de la ligne. 11 mots à reprendre ainsi (quadruple, quart, tiers en 6e ; perspective cavalière en 5e ; somme des
+  opposés, triple / prédécesseur / successeur en 4e ; pourcentage sans coefficient en 3e ; périmètre d'un polygone,
+  interpréter les quartiles au lycée).
+- **2026-10-17 — Scissions en prod (#1463, migration `20261017090000_scission_points_programme`, appliquée par David).**
+  149 points scindés en 168 moitiés neuves (tables comprises), 7 points ⚙ (6-211, 5-144, 4-082, 3-068, 3-069, 2-401,
+  2-402), 3-002 et 3-038 archivés, références d'automatismes 814 → 969. Vérifié en prod : comptes par niveau (CP 84,
+  CE1 107, CE2 97, CM1 171, CM2 158, 6e 111, 5e 143, 4e 82, 3e 68, 2de 201), ordre 1..N sans trou, archivages.
+  Suite : refaire le lot de tags du primaire et du collège (étape 2 bis) sur les points scindés, puis la page à cocher.
+- **2026-10-18 — Relecture du lot 2 bis : analyse jugée insuffisante par David, méthode revue.** Exemples : 9710ae96 /
+  bcd7e907 (« Trouver le double », sous-titres « dizaines jusqu'à 50 » / « nombre inférieur à 10 », bornes du CP non
+  vérifiées) ; 943151d0 (QCM « le plus petit » proposé sur « comparer avec les symboles », sans symbole) ; 73258d60
+  (+ 9 et + 19 seulement, proposé sur CE2-024 « 8, 9, 18, 19, 28, 29, 38 ou 39 »). Décisions de David (« je suis tes
+  recos ») :
+  - **Inclusion stricte** : un tag n'est accepté que si TOUTES les questions générées (toutes variations, plages
+    réelles) restent dans le point (forme, notations, bornes). Sinon : pas de tag, modification du modèle proposée, ou
+    modèle hors programme.
+  - **Couverture partielle acceptée** : un modèle peut ne couvrir qu'une partie du point ; la couverture de chaque point
+    par l'ensemble de ses modèles est suivie à part (liste de modèles à créer ou à élargir).
+  - **Document de référence des bornes, par point** (bornes générales par programme, héritées), sourcé BO et documents
+    d'accompagnement — la « passe des bornes » du chantier. Validé par David avant l'analyse des modèles.
+  - Lecture des documents d'accompagnement autorisée ; un index de référence de ces documents est produit
+    (le dossier, 332 Mo, reste hors git).
+  - Page à cocher : afficher titre, sous-titre (`description`), consigne, exemples générés, plages réelles, verdict.
+- **2026-10-18 — Bornes validées, modèles relevés et jugés.**
+  - Page « Bornes des programmes » (https://claude.ai/artifact/6H9uF1gjrdg7cr7eo5Mf1w) : 36 incertitudes tranchées
+    (6 écarts à la reco : c2-5, c2-6, c2-7, c2-8, c2-12, c3-5, toutes vers l'option stricte), 9 niveaux validés sans
+    commentaire. Appliqué dans `arbre-notions/bornes/` (58 bornes de force « décision »), commit a7ba5b118. Reste :
+    exemple faux de c4-3 (médiane de 3, 7, 8, 12 : 7 et 8 acceptés ?) et contrôle visuel de c4-8.
+  - Relevé : `arbre-notions/releves/releve.ts` (`pnpm exec tsx … --rafraichir`), 573 modèles × 300 tirages par
+    variation, 0 échec. Les 573 JSON (12 Mo) restent non suivis, régénérables ; `index.csv` et `templates.json` suivis.
+  - Verdicts (consigne `analyse/CONSIGNE.md`, CSV par lot) : 282 TAG, 48 MODIFIER, 7 TAG_PAR_VARIATION, 20 A_TRANCHER,
+    216 HORS_PROGRAMME. 16 questions dans `analyse/questions-modeles.json` (dont Q1 opérations à trou face à CM1-061
+    « 748 + … = 1 200 », QCM « le plus petit » incohérent entre lots, trou vs équation au cycle 4).
+  - Page « Verdicts des modèles » (https://claude.ai/artifact/F9FLrWzCSE72E7zeEyCyH5, générateur
+    `analyse/page/gen.mjs`, collections `questions`, `niveaux`, `modeles`). **Reprendre ici** : lire les réponses de
+    David (ArtifactData list des 3 collections), appliquer aux CSV, puis lister les modifications de modèles et préparer
+    la migration des tags (lot 2 bis).
+- **2026-10-20 — Réponses de David aux 14 questions des modèles** (page raccourcie : exemple, question, choix courts,
+  dossier replié ; champ `court` de `questions-modeles.json`). 12 suivent la reco : m-cycle2-1 tag CE1-024 ;
+  m-cm-2 modifier (un seul rang, puis CM1-039 / CM1-133) ; m-sixieme-1 refuser 1/n (2 réécrits, 2 sans tag) ;
+  m-sixieme-2 hors (3-068) ; m-cycle4-2 reclasser en 4e, 4-073 ; m-cycle4-3 entiers ; m-cycle4-4 tag 3-012 ;
+  m-cycle4-5 stricte (6 MODIFIER) ; m-transversal-1 point-trou (CM1-061 / CM2-065 au CM) ; m-transversal-2
+  comme-equations ; m-transversal-3 symboles (5 MODIFIER) ; m-transversal-4 règle (retirer si le point a d'autres
+  modèles, scinder sinon). **Écarts** : m-cm-1 → **hors** (pas de tag au CM2 pour les critères par 3 et 9, pas de
+  modification) ; m-cycle4-1 → **avis** : « il faut trouver dans quels programmes on a ce genre d'équation ».
+  - Recherche m-cycle4-1 (textes) : **a/x = b** est nommé en 2de, automatismes (« Résoudre une équation du type x² = a,
+    ax + b = cx + d ou a/x = b », programme 2de p.5) ; équation quotient A(x)/B(x) = k en 2de. **a − x = b** : c'est
+    ax + b = c avec a = −1, donc 4-024 en 4e (entiers relatifs) ; rien en 5e (« x + b = c », exemples x/3 = 1, x/2 = 0).
+    En trou, au CM : « 178 – … = 6 × 8 » (BO c3), « 5 760 − … = 5 360 » (CM1-061), « 20 ÷ … = 4 » (livret CM2 2026).
+    Niveaux des 4 modèles (5e) non modifiés (R3) : question reposée à David.
+  - m-cycle4-1 tranché par David (après explication) : **18 − x = 9** → modèles reclassés en 4e, tag 4-024
+    (6bc8108f, d80e2e02 ; a73f55ba, fractions, sans tag) ; **a/x = b** → aucun tag au collège (c0c8920a ; et
+    b0ef6947, 419887ff en 4e). Effets : trous « a − ? = b » de 5e (24331791, 84755a7b, b1550840) → MODIFIER 5-045 en
+    retirant v2-v3 ; trou au diviseur 0b6d749f → MODIFIER 4-024 en retirant v1-v3.
+  - Égalités à trous au CM, vérifiées modèle par modèle sur les relevés : 19 TAG (12 CM1-061, 7 CM2-065), 4 refusés
+    sur leurs nombres (aa788ca7, ac2dae38, a5d5a7a0, et 45e06ece : 0,000 1 et 9,954 5 tirés, quatre décimales ; le
+    relevé annonce `decimales_max` 3 à tort — à vérifier dans `releve.ts`).
+  - **Appliqué aux CSV** (60 lignes, justification « Décision de David (2026-10-20, …) », `variations_hors` remis à
+    jour) : 306 TAG, 65 MODIFIER, 202 HORS_PROGRAMME, plus aucun A_TRANCHER ni TAG_PAR_VARIATION. 3 modèles changent
+    de niveau (78feafed, 6bc8108f, d80e2e02 : 5e → 4e ; colonne `grade`). Page régénérée (version 3).
+  - **Division à trou du CM2 (45e06ece) vérifiée** : le modèle tire b (au plus trois décimales) et affiche b : 10^a,
+    soit jusqu'à **quatre décimales** (q ≤ 4 − a) : « ? : 100 = 9,954 5 », « ? : 1 000 = 0,000 1 », environ un tirage
+    sur trois (4 des 12 exemples relevés). Verdict → **MODIFIER CM2-065** (condition q ≤ 3 − a), au lieu de
+    HORS_PROGRAMME. Cause du faux `decimales_max` 3 : `extractNumbers` de `releve.ts` coupait la partie décimale à
+    l'espace fine (`9{,}954\,5` lu 9,954 et 5) ; corrigé, relevé relancé (50 s) : seuls 8 modèles changent
+    (45e06ece, 819df2a9, 953574d4, 99c4ab73, 9f380957, def797c6, e1b540fa, f9a3333d), aucun autre verdict touché
+    (6e sans borne générale de décimales, c3-11 ; 4e déjà hors programme pour d'autres raisons).
+  - Médiane (c4-3), relu dans les textes : définition « toute valeur qui partage la série ordonnée en deux sous-séries
+    de même effectif » (Exemples c4 2026 p.36) ; reste à trancher : bornes 7 et 8 acceptées pour 3, 7, 8, 12 ?
+  - **c4-3 tranché** : médiane d'effectif pair, bornes comprises (3, 7, 8, 12 : toute valeur de 7 à 8). Écrit dans
+    `bornes/cycle4.{md,json}` (4-040) et `bornes/questions.json` (champ `precision`). Aucun modèle de médiane dans
+    le lot : aucun verdict touché.
+- **2026-10-20 — Niveaux validés, liste des modifications du lot 2 bis.** Partie 2 de la page : les 9 niveaux « ok »,
+  sans note ; collection `modeles` vide (aucun verdict contesté). `analyse/lot-2bis-liste.py` croise les CSV avec la
+  prod (points et nœuds par l'API REST anonyme) → `analyse/lot-2bis-modifications.md`. 92 des 372 tags (TAG +
+  MODIFIER) ont leur point hors du nœud du modèle et de sa notion : le trigger les refuserait. Plusieurs justifications
+  disaient « déplacement inutile pour le tag » : c'est faux sous la règle (a) du 2026-10-09. 84 vont sans choix sur la
+  sous-notion du point (R2) ; 8 ont un point sur une notion à sous-notions (6-106 ×2, 6-149, 5-045 ×4, 4-073) → choix
+  à faire. 3 changements de niveau (5e → 4e). Les 66 MODIFIER : 39 nombres resserrés, 7 retraits de variations, 17
+  consignes ou affichages, 3 scissions (5-026 / 5-123). Aucun tag en prod sur les 573 modèles (vérifié par MCP).
+- **2026-10-20 — Réponses de David (« oui » aux trois propositions) et migration du lot 2 bis.** Sous-notions :
+  6-106 → Décimaux : numération > forme fractionnaire ; 5-045 → Équations : premier degré > ax + b = c ; 6-149 →
+  Longueurs > comparaison et mesure ; 4-073 rattaché à Entiers : priorités opératoires > écriture d'une expression,
+  **avec 4-004** dont il est la moitié (question posée, reco suivie). Ordre : cette migration (déplacements, niveaux,
+  tags des TAG), puis les 66 MODIFIER par lots. Accès : aucune règle ne change (tags lisibles par tout connecté) ;
+  l'élève voit son programme dans « Ma progression » dès qu'un modèle de son niveau est tagué. Migration générée
+  (`analyse/lot-2bis-migration.py`, fixture `tests/integration/fixtures/tags-lot-2bis.json`) : gardes tout ou rien
+  (321 modèles), nœud et niveaux relevés, aucun tag déjà posé ; rollback exécutable, éprouvé par le test ; fixture du
+  seed cycle 4 mise à jour (4-004, 4-073).
+- **2026-10-21 — #1563 mergée, migration `20261020233600` appliquée (db:migrate, 4 conditions réunies).** Revues :
+  code-reviewer (lot recalculé depuis les CSV, 0 écart) et security-auditor sans bloquant ; rollback rendu strict
+  (chemin d'origine introuvable → échec). Vérifié en prod : 306 tags aux comptes attendus par niveau, 4-004 / 4-073
+  rattachés, 3 modèles en 4e, trigger de date actif, aucun `updated_at` modifié.
+- **2026-10-21 — Lot B « retirer des variations » (7 modèles).** Relu en prod (anon) :
+  `etat-prod-2026-10-21/modeles-variations.json`. 716d5c68 garde V1-4 (sous-titre : « deux nombres à 2 chiffres ») ;
+  24331791, 84755a7b, b1550840 gardent V1 (b1550840 perd la variable commune c, qui ne servait qu'à V3) ; b2af6f39
+  garde V1-2 ; 0b6d749f garde V4-6 ; 6a60ed10 garde V5-6. Specs réindexées : 32/32 vertes (`question:specs`),
+  2 800 tirages sans étape vide (`audit-question-draws`). Données d'élèves : 0 tentative d'évaluation, 0 carte SRS,
+  aucune fiche ni exercice ni deck ; 2 tentatives de compétence (sans indice de variation) et 2 réponses de test sur
+  716d5c68 (instance figée, indice affiché seulement). Migration `20261021100000` ; preuve rouge (migration
+  neutralisée : 5 échecs + suite nominale en échec), puis 22/22 verts avec le lot A refactorisé.
+- **2026-10-21 — #1566 mergée, migration `20261021100000` appliquée (db:migrate, 4 conditions réunies).** David :
+  « oui » à la question d'accès, garde le sous-titre de 716d5c68. Revues : code-reviewer et security-auditor sans
+  bloquant. Vérifié en prod : variations 3/1/2/4/1/1/2, specs et tags attendus (CP-026, 5-045 ×3, 4-007, 4-024 ×2),
+  variable `c` retirée de b1550840, `updated_at` avancé.
+- **2026-10-21 — Lot D en prod (#1570 puis #1572).** Premier `db:migrate` en échec SANS effet (transaction annulée) :
+  les neufs copiaient la catégorie de leur origine, interdit entre modèles publiés ; le test posait les origines en
+  brouillon, catégorie bidon, d'où le trou. Correctif : niveaux 8, 9, 10 (tranché par David), garde « catégories des
+  modèles neufs déjà prises », décor de test aligné sur la prod (rouge sur l'ancienne migration avec l'erreur de la
+  prod, 18/18 sur la nouvelle). security-auditor sans bloquant (0 série, session de test ni tentative ne vise ces
+  niveaux). Vérifié en prod : 3 origines (titres, sous-titres, 2/1/1 variations, `off` pour f92d63a6), 3 neufs
+  publiés aux niveaux 8-10, 6 tags (3 × 5-026, 3 × 5-123).
+- **2026-10-21 — État de l'étape 3 relevé (absent du journal).** #1060 (2026-10-10) : page Programme en consultation
+  (branche > notion > points), PATCH réduit à `{ name?, archived? }`, routes thèmes / objectifs et réordonnancement
+  supprimés. Prod : 1 007 anciens points, 2 126 neufs. Les 8 fonctions SQL qui lisent l'objectif sont sans appelant
+  (`reorder_*`, `curriculum_referenced_points`) ou des triggers inertes pour les points neufs (code et ordre posés par
+  migration) : la PR A tombe, tout part à l'étape 4. Lisent encore l'ancien monde : `getCurriculumTree` (cahier de
+  texte, avancement, exercices, édition admin), `curriculum-coverage`, `buddy-themes`, decks programme,
+  `student-progression` + `/student/objectifs/[id]`, analytique (`class-knowledge`, page analytics), `skills.objective_id`.
+- **2026-10-21 — Étape 3, PR B1 (worktree `ubumaths-wt-arbre-bascule-b`).** David : « je suis tes recos » (découpage
+  B1 / B2, clé du Palotin = branche). B1 bascule sur les points neufs : couverture auto du cahier de texte (niveau lu
+  sur le point), deck « Programme » (notion sous chaque carte, sans lien jusqu'à la PR D), bonus « nouveau thème »
+  du Palotin (branche, `placeOfNode`), édition admin des tags d'un modèle (un MySelect par programme, Q7 ;
+  `programme-tags.ts`), DELETE de `template-tags` qui relit ses lignes (404 sinon). `isLegacyPoint` →
+  `isProgrammePoint` ; code mort de `skills.ts` retiré (la table `skills` n'existe plus) ; les scripts de
+  rattachement par code gardent leur propre filtre (Q8, retirés en PR E). Prod mesurée : 0 tag d'exercice, 0 point
+  coché au cahier de texte, 0 Palotin avec thème exploré, 325 libellés de points neufs en LaTeX (le menu les montre
+  en texte brut, le point choisi est rendu dessous). Correction de la phase 0 : le deck n'excluait aucune carte, seul
+  le libellé dépendait de l'objectif.
+- **2026-10-21 — Étape 3, PR B2, phase 0 validée par David** (worktree `ubumaths-wt-arbre-notions`). Cahier de
+  texte (« Programme travaillé »), Avancement et tags d'un exercice passent sur branche > notion > points (sous-notion
+  nommée à côté du point, compteurs par branche et par notion) ; `getCurriculumTree` disparaît ; DELETE couverture et
+  tag d'exercice relisent leurs lignes (404 sinon). **Q1** : un point archivé déjà coché / tagué reste affiché, marqué
+  « archivé », pour pouvoir le décocher ; non coché, il reste masqué. **Q2** : POST couverture / tag d'exercice
+  refuse un ancien point (400 « Point hors programme », `isProgrammePoint`). Accès : rien ne change.
+- **2026-10-21 — B2 : tags d'un exercice, point 3 révisé avec David** (« je suis tes recos »). Découvert aux tests
+  d'intégration : la règle 1 de `20261013120000` vaut aussi pour les exercices (point sur un nœud de rangement de
+  l'exercice ou sur sa notion ; exercice non rangé → aucun point neuf). Aucun écran ne range un exercice (rangements
+  posés par migration). Prod : 328 / 379 exercices rangés, 446 rangements, 0 tag. Décidé : l'écran ne propose que
+  les points compatibles, des **niveaux de l'exercice** (298 exercices ont des points, 5 en moyenne ; tous
+  programmes : 326, 10) ; non rangé (51) → « Cet exercice n'est rangé dans aucune notion : aucun point du programme
+  ne peut lui être associé. » ; rangé sans point compatible → « Aucun point du programme de ses niveaux sur les
+  notions où il est rangé. » ; Q1 tient. 📌 Futur chantier, non décidé : un écran de rangement des exercices.
+- **2026-10-21 — #1581 mergée (B2).** Revues : code-reviewer (0 bloquant ; corrigés : panne de lecture journalisée,
+  test du chemin d'erreur de la création, tags d'un niveau retiré visibles) et security-auditor (0 bloquant ni
+  important ; corrigés : lecture par lots de 100, message générique au DELETE). Intégration : 5 cas nouveaux rouges
+  sur `origin/main`, 67/67 sur la branche. 3 points laissés à David (cf. « Reprendre ici »).
+- **2026-10-21 — Trois points de revue de B2 tranchés par David** (« je suis tes recos ») : refuser l'archivé à
+  l'API ; 404 au DELETE laissé tel quel (commentaire) ; archivés hors du « vus / total » de l'Avancement. À faire en
+  B3, à la reprise.

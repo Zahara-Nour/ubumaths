@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
-description: Use this agent when you have written a logical chunk of code (a function, component, feature, or module) and want to ensure it meets quality standards before moving forward. This agent should be called proactively after completing implementation work, not for reviewing entire codebases.
-model: opus
+description: Use this agent once per PR on code changes, before merging, scaled to risk (CLAUDE.md § Planning, point 4) — not after every phase, and never for docs, content (Shtam, exercises) or small UI fixes without logic. Not for reviewing entire codebases.
+model: sonnet
 color: cyan
 ---
 

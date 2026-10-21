@@ -23,9 +23,11 @@ async function open(options: Record<string, unknown> = {}) {
 	return { ...(await render(AtelierContainer, { atelier, ephemeral: true, ...options })), atelier };
 }
 
+/** Par son nom : l'icône Partager de la barre n'a que son `aria-label` (lot 1 de la refonte). */
 const buttonNamed = (container: HTMLElement, label: string) =>
-	[...container.querySelectorAll('button')].find((b) => b.textContent?.includes(label)) as
-		HTMLButtonElement | undefined;
+	[...container.querySelectorAll('button')].find((b) =>
+		(b.getAttribute('aria-label') ?? b.textContent ?? '').includes(label)
+	) as HTMLButtonElement | undefined;
 
 describe('partager', () => {
 	it('propose le partage quand on est chez soi', async () => {
@@ -36,11 +38,16 @@ describe('partager', () => {
 
 	it('refuse de partager un atelier vide, en disant pourquoi', async () => {
 		const { container } = await open();
+		const share = buttonNamed(container, 'Partager')!;
 
-		buttonNamed(container, 'Partager')!.click();
+		share.click();
 		await settle();
 
-		expect(container.querySelector('.retour-partage')?.textContent).toMatch(/vide/i);
+		// Indisponible, et sa raison lui est reliée : aucun lien n'est produit
+		expect(share.getAttribute('aria-disabled')).toBe('true');
+		const reason = document.getElementById(share.getAttribute('aria-describedby') ?? '');
+		expect(reason?.textContent).toMatch(/vide/i);
+		expect(container.querySelector('.lien')).toBeNull();
 	});
 
 	it('produit un lien quand il y a quelque chose à partager', async () => {
@@ -116,6 +123,26 @@ describe('recevoir', () => {
 		await settle();
 
 		expect(container.querySelector('.retour-partage')?.textContent).toMatch(/gardé sous/);
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+	});
+
+	it('Q2 : l’objet y de l’atelier personnel renommé en gardant : le message le dit', async () => {
+		localStorage.removeItem(ATELIER_STORAGE_KEY);
+		// Un atelier rangé en version 2, d'avant la géométrie
+		localStorage.setItem(
+			ATELIER_STORAGE_KEY,
+			JSON.stringify({ version: 2, objects: [{ name: 'y', kind: 'value', definition: '5' }] })
+		);
+		const { container } = await open({
+			received: { version: 3, objects: [{ name: 'b', kind: 'value', definition: '1' }] }
+		});
+
+		buttonNamed(container, 'Garder dans mon atelier')!.click();
+		await settle();
+
+		expect(container.querySelector('.retour-partage')?.textContent).toContain(
+			'« y » est désormais réservé aux équations : ton objet s’appelle maintenant a.'
+		);
 		localStorage.removeItem(ATELIER_STORAGE_KEY);
 	});
 

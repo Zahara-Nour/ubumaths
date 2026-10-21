@@ -62,6 +62,9 @@ import {
 	needsParenthesesUnderSign
 } from './common/sign-parentheses';
 import { isGroupingBracketContent } from './parser/custom/unit-writing';
+import { needsClosedRightOperand } from './parser/custom/unit-term';
+import { juxtaposedTerms } from './parser/juxtaposed-quantities';
+import { isAffine } from './units/conversion';
 
 // =============================================================================
 // Types
@@ -414,19 +417,25 @@ function startsWithUnarySign(s: string): boolean {
 // =============================================================================
 
 /**
- * Parenthèse l'expression d'une grandeur quand le crochet d'unité, qui est un
- * **postfixe**, se rattacherait au mauvais opérande à la relecture :
- * `1/3[km]` se relit `1/(3 km)`, une autre grandeur. Sommes, différences,
- * quotients et signes sont concernés ; un atome, une puissance ou un produit
- * se relisent à l'identique.
+ * L'opposé d'une température s'écrit `-(20[°C])` : `-20[°C]` se relit la température
+ * −20 °C (lecture-grandeurs PR 4, Q-T2), une autre valeur pour une unité affine.
+ */
+function isTemperature(node: MathNode): boolean {
+	return node.type === 'unit' && isAffine(node.unit);
+}
+
+/**
+ * Parenthèse l'expression d'une grandeur quand l'unité ne la couvrirait pas toute
+ * à la relecture : une somme ou une différence (`(2+3)[m]`). L'unité multiplie
+ * tout le terme qui la précède (lecture-grandeurs, PR 4) : un produit ou un signe
+ * se relisent à l'identique (`2*3[m]`, `-5[m]`). Les quotients gardent leurs
+ * parenthèses (`(1/2)[m]`), l'écriture d'avant la règle, qui se relit de même.
  */
 function wrapQuantityExpression(expression: MathNode, written: string): string {
 	switch (expression.type) {
 		case 'addition':
 		case 'subtraction':
 		case 'division':
-		case 'opposite':
-		case 'positive':
 			return `(${written})`;
 		default:
 			return written;
@@ -519,6 +528,15 @@ export class CustomGenerator {
 
 			case 'addition':
 			case 'subtraction': {
+				// Durée composée : `2[h] 30[min]`, sans `+`
+				const juxtaposed = node.type === 'addition' ? juxtaposedTerms(node) : null;
+				if (juxtaposed) {
+					juxtaposed.forEach((term, i) => {
+						if (i > 0) this.emit(' ', node.operatorMetadata ?? node.metadata);
+						this.visitWithSpans(term);
+					});
+					break;
+				}
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				this.visitWithSpans(node.left);
@@ -568,8 +586,11 @@ export class CustomGenerator {
 				// Peek RHS via a throw-away generator with metadata disabled — otherwise a
 				// colored RHS would be wrapped in `@color{...}` (e.g. `@red{2}`), defeating
 				// the leading-character check.
+				// Une grandeur à droite que la lecture changerait : fermée par des accolades, qui
+				// ouvrent le texte (pas de filet à poser, comme generateMultiplication)
+				const closeRight = !groupRight && needsClosedRightOperand(node.left, node.right, false);
 				const rhsPlain =
-					node.displayStyle === 'implicit' && !groupRight
+					node.displayStyle === 'implicit' && !groupRight && !closeRight
 						? new CustomGenerator().generate(node.right)
 						: '';
 				const safetyA = node.displayStyle === 'implicit' && startsWithNumberToken(rhsPlain);
@@ -594,7 +615,9 @@ export class CustomGenerator {
 						this.emit(' ', meta);
 					}
 					if (groupRight) this.emit('(', meta);
+					if (closeRight) this.emit('{', meta);
 					this.visitWithSpans(node.right);
+					if (closeRight) this.emit('}', meta);
 					if (groupRight) this.emit(')', meta);
 				}
 				break;
@@ -606,7 +629,7 @@ export class CustomGenerator {
 
 			case 'opposite': {
 				// Même parenthésage que generateOpposite : `-(x+2)`, pas `-x+2`.
-				const wrap = needsParenthesesUnderOpposite(node.operand);
+				const wrap = needsParenthesesUnderOpposite(node.operand) || isTemperature(node.operand);
 				this.emit('-', node.operatorMetadata ?? node.metadata);
 				if (wrap) this.emit('(', node.metadata);
 				this.visitWithSpans(node.operand);
@@ -852,15 +875,15 @@ export class CustomGenerator {
 				break;
 			}
 			case 'inline':
+			case 'ratio': {
+				const closeRight = needsClosedRightOperand(node.numerator, node.denominator, true);
 				this.visitWithSpans(node.numerator);
-				this.emit(':/', opMeta);
+				this.emit(node.displayStyle === 'inline' ? ':/' : ':', opMeta);
+				if (closeRight) this.emit('{', opMeta);
 				this.visitWithSpans(node.denominator);
+				if (closeRight) this.emit('}', opMeta);
 				break;
-			case 'ratio':
-				this.visitWithSpans(node.numerator);
-				this.emit(':', opMeta);
-				this.visitWithSpans(node.denominator);
-				break;
+			}
 			default: {
 				const exhaustive: never = node.displayStyle;
 				throw new Error(`Unknown division style: ${exhaustive}`);
@@ -1306,6 +1329,9 @@ export class CustomGenerator {
 	}
 
 	private generateAddition(node: AdditionNode): string {
+		// Durée composée : `2[h] 30[min]`, relue comme la même somme marquée
+		const juxtaposed = juxtaposedTerms(node);
+		if (juxtaposed) return juxtaposed.map((term) => this.generateNode(term)).join(' ');
 		const left = this.generateNode(node.left);
 		// `a+-b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
 		const renderedRight = this.generateNode(node.right);
@@ -1344,7 +1370,9 @@ export class CustomGenerator {
 
 	private generateMultiplication(node: MultiplicationNode): string {
 		const left = this.groupIfSum(node.left);
-		const right = this.groupIfSum(node.right);
+		const grouped = this.groupIfSum(node.right);
+		// Une grandeur à droite que la lecture changerait : fermée par des accolades
+		const right = needsClosedRightOperand(node.left, node.right, false) ? `{${grouped}}` : grouped;
 
 		switch (node.displayStyle) {
 			case 'implicit': {
@@ -1383,7 +1411,14 @@ export class CustomGenerator {
 		// fraction, si.
 		const grouped = node.displayStyle !== 'fraction';
 		const num = grouped ? this.groupIfSum(node.numerator) : this.generateNode(node.numerator);
-		const denom = grouped ? this.groupIfSum(node.denominator) : this.generateNode(node.denominator);
+		const written = grouped
+			? this.groupIfSum(node.denominator)
+			: this.generateNode(node.denominator);
+		// `x:/{2[m]}` : sans accolades, l'unité passerait sur tout le quotient
+		const denom =
+			grouped && needsClosedRightOperand(node.numerator, node.denominator, true)
+				? `{${written}}`
+				: written;
 
 		switch (node.displayStyle) {
 			case 'fraction': {
@@ -1414,7 +1449,8 @@ export class CustomGenerator {
 	 */
 	private generateOpposite(node: OppositeNode): string {
 		const operand = this.generateNode(node.operand);
-		return needsParenthesesUnderOpposite(node.operand) ? `-(${operand})` : `-${operand}`;
+		const wrap = needsParenthesesUnderOpposite(node.operand) || isTemperature(node.operand);
+		return wrap ? `-(${operand})` : `-${operand}`;
 	}
 
 	private generatePositive(node: PositiveNode): string {

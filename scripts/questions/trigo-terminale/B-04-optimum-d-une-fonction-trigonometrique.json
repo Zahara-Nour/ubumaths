@@ -11,7 +11,7 @@
 	"delay": 120,
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*pi/12)}}}}x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **minimum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*\\pi/12)}}}}x-2\\sin x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **minimum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -29,13 +29,13 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'(x)={{eval:2*cos(n*pi/12)}}-2\\cos x$ : $f'(x)\\leqslant0$ sur $\\left[0\\,;{{a}}\\right]$ et $f'(x)\\geqslant0$ sur $\\left[{{a}}\\,;\\pi\\right]$ ($\\cos{{a}}={{eval:cos(n*pi/12)}}$).",
+					"$f'(x)={{eval:2*cos(n*\\pi/12)}}-2\\cos x$ : $f'(x)\\leqslant0$ sur $\\left[0\\,;{{a}}\\right]$ et $f'(x)\\geqslant0$ sur $\\left[{{a}}\\,;\\pi\\right]$ ($\\cos{{a}}={{eval:cos(n*\\pi/12)}}$).",
 					"$f$ décroît puis croît : son minimum est atteint en $x=\\textcolor{{{color:primary.0}}}{{{a}}}$."
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*pi/12)}}}}x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **maximum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*\\pi/12)}}}}x$.\n\nEn quelle valeur de $x$ la fonction $f$ atteint-elle son **maximum** sur $\\left[0\\,;\\pi\\right]$ ?\n\n$x=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -53,7 +53,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'(x)=2\\cos x-{{eval:2*cos(n*pi/12)}}$ : $f'(x)\\geqslant0\\iff\\cos x\\geqslant{{eval:cos(n*pi/12)}}\\iff x\\in\\left[0\\,;{{a}}\\right]$.",
+					"$f'(x)=2\\cos x-{{eval:2*cos(n*\\pi/12)}}$ : $f'(x)\\geqslant0\\iff\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}\\iff x\\in\\left[0\\,;{{a}}\\right]$.",
 					"$f$ croît puis décroît : son maximum est atteint en $x=\\textcolor{{{color:primary.0}}}{{{a}}}$."
 				]
 			}

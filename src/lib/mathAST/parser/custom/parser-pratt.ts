@@ -41,15 +41,34 @@ import {
 	type CustomTokenType
 } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
+import {
+	NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
+	STACKED_EXPONENTS_MESSAGE
+} from '../exponent-rules';
 import { MathAST, compose, matrix, euler, complex } from '../../factory';
 import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { expectCode, preciseUnexpectedToken, unitErrorCode } from '../refusal-codes';
+import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
 import {
 	isGroupingBracket,
 	readUnitWriting,
+	unitWritingAhead,
 	UNIT_EXPONENT_MESSAGE,
 	UNIT_SPACE_MESSAGE
 } from './unit-writing';
+import {
+	AMBIGUOUS_TERM_MESSAGE,
+	missingNumberBeforeUnitMessage,
+	UnitTermReader
+} from './unit-term';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -90,6 +109,7 @@ const enum BP {
 	RELATION = 10, // =, <, >, <=, >=, !=, <=>, =>
 	ADDITION = 20, // +, -
 	COMPOSITION = 25, // @ (composition operator, between + and *)
+	JUXTAPOSE = 27, // durée composée : `2[h] 30[min]`, un bloc face à + et - (au-dessus de la composition)
 	MULTIPLY = 30, // *, :/, :, implicit multiplication
 	UNARY = 40, // prefix -, +, !
 	POWER = 50 // ^, _ (right-associative)
@@ -184,6 +204,8 @@ class CustomPrattParser {
 	private holeCounter: number = 0;
 	/** Profondeur d'indice : un `i` en indice (x_i, u_{i+1}) est un nom d'indice, pas l'unité imaginaire */
 	private subscriptDepth: number = 0;
+	/** L'unité multiplie tout le terme qui la précède (`1/2[m]` = (1/2) m) */
+	private readonly unitTerm = new UnitTermReader(() => this.refuseAmbiguousTerm());
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new CustomTokenizer(input);
@@ -241,11 +263,15 @@ class CustomPrattParser {
 	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
 	private previousToken: CustomToken | undefined;
 
+	/** Le jeton d'avant `previousToken` : `1.2.3` n'est pas `.3` */
+	private tokenBeforePrevious: CustomToken | undefined;
+
 	/**
 	 * Advance to the next token
 	 */
 	private advance(): CustomToken {
 		const prev = this.currentToken;
+		this.tokenBeforePrevious = this.previousToken;
 		this.previousToken = prev;
 		this.currentToken = this.tokenizer.nextToken();
 		return prev;
@@ -267,7 +293,7 @@ class CustomPrattParser {
 				message ?? `Expected ${type} but got ${this.currentToken.type}`,
 				this.currentToken.position,
 				this.currentToken.length,
-				'UNEXPECTED_TOKEN'
+				expectCode(type, this.currentToken)
 			);
 		}
 		return this.advance();
@@ -277,6 +303,24 @@ class CustomPrattParser {
 	 * Report an error
 	 */
 	private error(message: string, position: number, length: number, code: ParseErrorCode): never {
+		// Un jeton refusé sans code précis : `x2`, `(1+x)2`, `.5` disent ce qui manque
+		const precise =
+			code === 'UNEXPECTED_TOKEN' && position === this.currentToken.position
+				? preciseUnexpectedToken(
+						this.currentToken,
+						this.previousToken,
+						this.tokenBeforePrevious,
+						this.tokenizer.peek()
+					)
+				: null;
+		if (precise) {
+			throw new ParseException(
+				precise.message ?? message,
+				precise.position ?? position,
+				precise.length ?? length,
+				precise.code
+			);
+		}
 		throw new ParseException(message, position, length, code);
 	}
 
@@ -307,13 +351,16 @@ class CustomPrattParser {
 				continue;
 			}
 
-			const bp = this.getLeftBindingPower();
+			// Un nombre après une grandeur : durée composée (`2[h] 30[min]`)
+			const juxtaposes = this.check('NUMBER') && endsWithQuantity(left);
+			const bp = juxtaposes ? BP.JUXTAPOSE : this.getLeftBindingPower();
 			if (bp <= minBp) {
 				break;
 			}
 
-			// Check for implicit multiplication
-			if (this.shouldInsertImplicitMultiply()) {
+			if (juxtaposes) {
+				left = this.parseJuxtaposition(left);
+			} else if (this.shouldInsertImplicitMultiply()) {
 				left = this.parseImplicitMultiply(left);
 			} else {
 				left = this.led(left);
@@ -591,7 +638,9 @@ class CustomPrattParser {
 		while (this.check('SLASH')) {
 			this.advance(); // consume /
 			const right = this.parseFractionOperand(); // Parse ONLY next operand
-			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
+			left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+				this.applyColor(MathAST.divide(numerator, denominator, 'fraction'))
+			);
 		}
 
 		return left;
@@ -606,7 +655,7 @@ class CustomPrattParser {
 	 * pas sa place) et `x/x^2` était lu `(x/x)^2` — relevé du 2026-09-20, §6.9.
 	 *
 	 * Même chaînage que partout ailleurs dans ce parseur : les postfixes
-	 * s'appliquent de gauche à droite (`x^2^3` est `(x²)³`).
+	 * s'appliquent de gauche à droite (`x^2_1` est `(x²)₁` ; `x^2^3` est refusé depuis le 2026-10-20).
 	 */
 	private parseFractionOperand(): MathNode {
 		let operand = this.parseAtom();
@@ -763,6 +812,13 @@ class CustomPrattParser {
 					: complex(MathAST.number('0'), MathAST.number('1'))
 			);
 		}
+		// `π` tapé tel quel : la constante, comme `\pi` (Q11) ; `π_1` reste une variable
+		if (letter === 'π') {
+			this.advance();
+			return this.applyColor(
+				this.check('UNDERSCORE') ? MathAST.variable('π') : MathAST.piConstant()
+			);
+		}
 
 		// Check if this is a generic function name
 		if (this.isGenericFunctionName(letter)) {
@@ -881,7 +937,19 @@ class CustomPrattParser {
 		if (this.check('CARET')) {
 			// Peek to see if we have {-1} or {(n)} pattern
 			const afterCaret = this.peekNextToken();
-			if (afterCaret.type === 'LBRACE') {
+			// `f^-1(x)` = `f^{-1}(x)`, la réciproque : sans ça, la puissance des
+			// exposants signés (2026-10-20) le lisait f⁻¹·(x)
+			if (
+				allowInverse &&
+				afterCaret.type === 'MINUS' &&
+				this.tokenizer.peekAt(1).type === 'NUMBER' &&
+				this.tokenizer.peekAt(1).value === '1'
+			) {
+				this.advance(); // consume ^
+				this.advance(); // consume -
+				this.advance(); // consume 1
+				isInverse = true;
+			} else if (afterCaret.type === 'LBRACE') {
 				const result = this.tryParseInverseOrHigherDerivative(allowInverse, allowDerivatives);
 				if (result.type === 'inverse') {
 					isInverse = true;
@@ -1078,6 +1146,7 @@ class CustomPrattParser {
 	 * Crochet de calcul : `[x-1]` — des parenthèses de forme `square`.
 	 */
 	private parseSquareBrackets(): MathNode {
+		this.refuseUnitWithoutNumber();
 		this.advance(); // consume [
 
 		if (this.check('RBRACKET')) {
@@ -1109,6 +1178,30 @@ class CustomPrattParser {
 	}
 
 	/**
+	 * `[m]` en tête de terme : une unité sans nombre devant (K2), refusée. Un contenu
+	 * qui n'est pas une unité connue (`[x]`, `[x-1]`) reste un crochet de calcul.
+	 */
+	private refuseUnitWithoutNumber(): void {
+		const tokenAt = (offset: number) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1);
+		if (isGroupingBracket(tokenAt)) return;
+		const writing = unitWritingAhead(tokenAt);
+		if (writing === null || !parseUnit(writing)) return;
+		this.error(
+			missingNumberBeforeUnitMessage(writing),
+			this.currentToken.position,
+			writing.length + 2,
+			'MISSING_NUMBER_BEFORE_UNIT'
+		);
+	}
+
+	/** Refus E7 : après une grandeur, le terme qui porte l'unité compte plusieurs nombres */
+	private refuseAmbiguousTerm(): never {
+		const token = this.previousToken ?? this.currentToken;
+		this.error(AMBIGUOUS_TERM_MESSAGE, token.position, token.length, 'AMBIGUOUS_TERM');
+	}
+
+	/**
 	 * Parse brace group: {...}
 	 * Braces are TRANSPARENT - return content directly, no wrapper node
 	 */
@@ -1122,8 +1215,8 @@ class CustomPrattParser {
 		const content = this.parseExpression(BP.NONE);
 		this.expect('RBRACE', "Expected '}' after expression");
 
-		// Braces are TRANSPARENT - return content directly
-		return content;
+		// Braces are TRANSPARENT - return content directly ; une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**
@@ -1282,7 +1375,7 @@ class CustomPrattParser {
 		}
 
 		const operand = this.parseExpression(BP.UNARY);
-		return this.applyColor(MathAST.opposite(operand));
+		return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.opposite(value)));
 	}
 
 	/**
@@ -1291,7 +1384,7 @@ class CustomPrattParser {
 	private parsePrefixPlus(): MathNode {
 		this.advance(); // consume +
 		const operand = this.parseExpression(BP.UNARY);
-		return this.applyColor(MathAST.positive(operand));
+		return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.positive(value)));
 	}
 
 	// =========================================================================
@@ -1323,9 +1416,12 @@ class CustomPrattParser {
 	 */
 	private parseMultiplication(left: MathNode, style: 'cross'): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColorWithOperator(MathAST.multiply(left, right, style), operatorColor);
+		return this.unitTerm.binary(left, right, (factor, value) =>
+			this.applyColorWithOperator(MathAST.multiply(factor, value, style), operatorColor)
+		);
 	}
 
 	/**
@@ -1334,9 +1430,12 @@ class CustomPrattParser {
 	 */
 	private parseDivision(left: MathNode, style: 'inline' | 'ratio'): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume operator
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColorWithOperator(MathAST.divide(left, right, style), operatorColor);
+		return this.unitTerm.binary(left, right, (numerator, denominator) =>
+			this.applyColorWithOperator(MathAST.divide(numerator, denominator, style), operatorColor)
+		);
 	}
 
 	/**
@@ -1392,8 +1491,19 @@ class CustomPrattParser {
 	 */
 	private parseComposition(left: MathNode): MathNode {
 		const operatorColor = this.colorStack.current();
+		this.refuseCompoundDurationOperand(left);
 		this.advance(); // consume @
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.COMPOSITION);
+		// `f\circ 2~\unit{h}~30~\unit{min}` : une durée composée ne se compose pas
+		if (isCompoundDurationOperand(right)) {
+			this.error(
+				JUXTAPOSITION_MESSAGES.operator,
+				start.position,
+				start.length,
+				'JUXTAPOSED_QUANTITIES'
+			);
+		}
 
 		// Convert variables to functions if they are generic function names
 		const leftFunc = this.variableToFunctionIfGeneric(left);
@@ -1443,6 +1553,7 @@ class CustomPrattParser {
 			token.type === 'RBRACKET' ||
 			token.type === 'DOUBLE_RBRACKET' ||
 			token.type === 'COMMA' ||
+			token.type === 'SEMICOLON' ||
 			this.isRelationToken(token.type)
 		) {
 			return false;
@@ -1496,8 +1607,52 @@ class CustomPrattParser {
 	 */
 	private parseImplicitMultiply(left: MathNode): MathNode {
 		// Don't advance - nud will consume the next token
+		const start = this.currentToken;
 		const right = this.parseExpression(BP.MULTIPLY);
-		return this.applyColor(MathAST.multiply(left, right, 'implicit'));
+		return this.unitTerm.binary(left, right, (factor, value) => {
+			// `{2[h]}{30[min]}` : une durée composée, pas un produit
+			const juxtaposed = juxtaposeImplicit(factor, value);
+			if (juxtaposed === null) return this.applyColor(MathAST.multiply(factor, value, 'implicit'));
+			return this.juxtaposed(juxtaposed, start);
+		});
+	}
+
+	/**
+	 * Un nombre après une grandeur : `2[h] 30[min]`. Le terme qui suit est lu
+	 * avec ses opérateurs (`30[min]*2`, refusé) ; le bloc s'arrête à `+` et `-`.
+	 */
+	private parseJuxtaposition(left: MathNode): MathNode {
+		const number = this.currentToken;
+		const right = this.parseExpression(BP.JUXTAPOSE);
+		const juxtaposed = juxtaposeAfterNumber(left, right);
+		if (juxtaposed === null) {
+			// `2[m] 30` : le refus habituel d'un nombre après un facteur
+			throw new ParseException(
+				`Unexpected token: ${number.value}`,
+				number.position,
+				number.length,
+				'MISSING_OPERATOR'
+			);
+		}
+		return this.juxtaposed(juxtaposed, number);
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: CustomToken): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `1[h] 30[min]*2` : une durée composée collée à `*`, `:/` ou `:` est ambiguë */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
+		);
 	}
 
 	/**
@@ -1534,7 +1689,7 @@ class CustomPrattParser {
 	// =========================================================================
 
 	/**
-	 * Parse superscript: base^exponent (right-associative)
+	 * Parse superscript: base^exponent (a second `^` right after it is refused)
 	 */
 	private parseSuperscript(left: MathNode): MathNode {
 		this.advance(); // consume ^
@@ -1552,9 +1707,26 @@ class CustomPrattParser {
 	}
 
 	/**
-	 * Parse the operand of a superscript (handles braces and single tokens)
+	 * Parse the operand of a superscript, then refuse a second `^` right after it
 	 */
 	private parsePowerOperand(): MathNode {
+		const exponent = this.parsePowerOperandContent();
+		// `2^3^2` : lu (2³)² ici et 2^(3²) en LaTeX, refusé dans les deux
+		if (this.check('CARET')) {
+			this.error(
+				STACKED_EXPONENTS_MESSAGE,
+				this.currentToken.position,
+				this.currentToken.length,
+				'STACKED_EXPONENTS'
+			);
+		}
+		return exponent;
+	}
+
+	/**
+	 * Parse the operand of a superscript (handles braces and single tokens)
+	 */
+	private parsePowerOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}
@@ -1579,16 +1751,55 @@ class CustomPrattParser {
 			return content;
 		}
 
-		// CRITICAL: Minus REQUIRES braces for exponent
-		if (this.check('MINUS')) {
+		// `10^-3` = `10^{-3}`, `10^+3` = `10^{+3}` : un signe, puis UN nombre ou
+		// UNE lettre ; devant un groupe, on ne sait pas jusqu'où va l'exposant
+		if (this.check('MINUS') || this.check('PLUS')) {
+			const sign = this.advance();
+			if (this.checkGroupStart()) {
+				this.error(
+					NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
+					sign.position,
+					sign.length,
+					'NEGATIVE_EXPONENT_BEFORE_GROUP'
+				);
+			}
+			if (this.check('NUMBER') || this.check('LETTER') || this.check('SYMBOL')) {
+				const operand = this.parseSinglePowerOperand();
+				return this.applyColor(
+					sign.type === 'MINUS' ? MathAST.opposite(operand) : MathAST.positive(operand)
+				);
+			}
 			this.error(
-				'Negative exponent requires braces: use x^{-2}',
+				'Expected exponent',
 				this.currentToken.position,
 				this.currentToken.length,
 				'INVALID_SUPERSCRIPT'
 			);
 		}
 
+		return this.parseSinglePowerOperand();
+	}
+
+	/** Un `(`, `{`, `|`, `[` ou une fonction (`sin`, `f(x)` d'une fonction générique) : le début d'un groupe */
+	private checkGroupStart(): boolean {
+		const genericCall =
+			this.check('LETTER') &&
+			this.isGenericFunctionName(this.currentToken.value) &&
+			['LPAREN', 'PRIME'].includes(this.peekNextToken().type);
+		return (
+			genericCall ||
+			this.check('LPAREN') ||
+			this.check('LBRACE') ||
+			this.check('PIPE') ||
+			this.check('LBRACKET') ||
+			this.check('DOUBLE_LBRACKET') ||
+			this.check('FUNC') ||
+			this.check('BACKSLASH')
+		);
+	}
+
+	/** Un exposant sans accolades : un nombre, une lettre ou un symbole */
+	private parseSinglePowerOperand(): MathNode {
 		// Number: auto-grouped (entire number, e.g., x^12 is fine)
 		if (this.check('NUMBER')) {
 			return this.parseNumber();
@@ -1867,7 +2078,8 @@ class CustomPrattParser {
 		this.expect('RBRACE', "Expected '}' after colored content");
 		this.colorStack.pop();
 
-		return content; // Color already applied via applyColor() during parsing
+		// Color already applied via applyColor() during parsing ; des accolades : une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**
@@ -1919,12 +2131,12 @@ class CustomPrattParser {
 			(token) => token.type === 'RBRACKET' || token.type === 'EOF'
 		);
 		if (spaceAt !== null) {
-			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'INVALID_UNIT');
+			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'SPACE_IN_UNIT');
 		}
 
 		this.expect('RBRACKET', "Expected ']' after unit");
 		if (this.check('CARET')) {
-			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'INVALID_UNIT');
+			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'UNIT_EXPONENT_OUTSIDE');
 		}
 
 		const unit = parseUnit(unitStr);
@@ -1933,7 +2145,7 @@ class CustomPrattParser {
 				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
-				'INVALID_UNIT'
+				unitErrorCode(unitStr)
 			);
 		}
 

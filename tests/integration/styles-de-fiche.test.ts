@@ -6,7 +6,7 @@
  *   - D9 : le prof et l'admin lisent tous les styles (ceux de Chiphre et les
  *     leurs), ne modifient que les leurs ; les élèves n'ont AUCUN accès direct
  *     (le serveur leur fournira le gabarit, lot 4) ;
- *   - les 12 styles de Chiphre ont une ligne en base (id, nom, description),
+ *   - les styles de Chiphre ont une ligne en base (id, nom, description),
  *     leur Typst reste dans le code ;
  *   - un gabarit porte son style et sa forme, un seul par (style, forme) ;
  *   - la fiche pointe vers un style ; style supprimé → style par défaut.
@@ -23,6 +23,7 @@ import { DEFAULT_TEST_PASSWORD } from '../helpers/database/supabase-client';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import { BUILT_IN_STYLES, DEFAULT_STYLE_ID } from '../../src/lib/typst/templates/styles';
+import { DEFAULT_TEMPLATE_IDS } from '../../src/lib/typst/templates/default-templates';
 
 // ============================================================================
 // CONSTANTES
@@ -144,7 +145,7 @@ describe('Styles de fiche : accès (D9)', () => {
 			expect(error?.code).toBe('42501');
 		});
 
-		it('le prof lit les 12 styles de Chiphre et les siens, pas ceux de l’admin', async () => {
+		it('le prof lit tous les styles de Chiphre et les siens, pas ceux de l’admin', async () => {
 			const ownId = await seedStyle(teacherId, 'du prof');
 			const { data, error } = await teacherClient.from('worksheet_styles').select('id');
 			expect(error).toBeNull();
@@ -403,10 +404,23 @@ describe('Styles de fiche : rattachement par le prof', () => {
 			expect(await worksheetStyle(worksheetId)).toBe(styleId);
 		}
 	});
+
+	it('sa fiche prend « 2 colonnes - paysage », par son style', async () => {
+		const worksheetId = await teacherWorksheet();
+		const styleId = DEFAULT_TEMPLATE_IDS.studentStyleLandscape;
+		const { data, error } = await teacherClient
+			.from('worksheets')
+			.update({ style_id: styleId })
+			.eq('id', worksheetId)
+			.select('id');
+		expect(error).toBeNull();
+		expect(data).toHaveLength(1);
+		expect(await worksheetStyle(worksheetId)).toBe(styleId);
+	});
 });
 
 describe('Styles de fiche : données', () => {
-	it('les 12 styles de Chiphre en base : mêmes identifiants, mêmes noms que dans le code', async () => {
+	it('les styles de Chiphre en base : mêmes identifiants, mêmes noms que dans le code', async () => {
 		const pg = await getPostgresClient();
 		const { rows } = await pg.query(
 			'select id, name, description from public.worksheet_styles where owner_id is null order by id'

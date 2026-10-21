@@ -15,7 +15,7 @@
  * @module atelier/desk
  */
 
-import type { Atelier, Refused, RemovedWithDependents } from './atelier.svelte';
+import type { Atelier, MovedStep, Refused, RemovedWithDependents } from './atelier.svelte';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import {
 	runInput,
@@ -46,7 +46,9 @@ import { STAT_TEXT } from '$lib/ubumark/utils/stat-chart-text';
 import { syncPlots } from './plot-sync';
 import { removedLine, restoredLine } from './removal';
 import { stepOf, type ImportedHistory } from './history-import';
+import { withSingleLettersGlued } from './natural-quantities';
 import type { KeptHistory } from './history-storage';
+import { ATELIER_STATE_VERSION } from './persistence';
 import {
 	NOTHING_TO_EXPORT,
 	downloadHistory,
@@ -54,7 +56,7 @@ import {
 	type ExportFormat
 } from './history-export';
 import { termsOf } from './engine';
-import { isList, isQualitative, type AtelierObject, type ListObject } from './types';
+import { isFunction, isList, isQualitative, type AtelierObject, type ListObject } from './types';
 import { wordsReason } from './actions';
 import { lawFractions } from './simulate';
 import { nextName, displayName } from './names';
@@ -130,6 +132,14 @@ export interface Entry {
 	 * Absent d'une ligne secondaire : un geste n'est rejoué qu'une fois.
 	 */
 	readonly replay?: ReplayStep;
+	/**
+	 * L'étape d'Annuler / Rétablir que cette ligne a produite (lot 5, PR 2) :
+	 * Annuler la barre, Rétablir la débarre. Absente d'une ligne qui n'a rien
+	 * changé (un calcul). Jamais rangée : la pile ne survit pas au rechargement.
+	 */
+	readonly stepId?: number;
+	/** L'étape de la ligne est annulée : la ligne est barrée (décision de David). */
+	readonly undone?: true;
 }
 
 /**
@@ -147,10 +157,23 @@ export type ReplayStep =
 	  }
 	/** Supprimer un objet et ses dépendants (lot B) */
 	| { readonly kind: 'supprimer'; readonly name: string }
-	/** Annuler la dernière suppression */
+	/**
+	 * Annuler la dernière étape (lot 5, PR 2). Dans un fichier d'avant, il suit
+	 * toujours la suppression qu'il défait : c'était alors la dernière étape.
+	 */
 	| { readonly kind: 'annuler' }
+	/** Rétablir la dernière étape annulée (lot 5, PR 2) */
+	| { readonly kind: 'rétablir' }
 	/** `line` : l'indice, dans l'historique, de la ligne gardée */
-	| { readonly kind: 'garder'; readonly line: number };
+	| { readonly kind: 'garder'; readonly line: number }
+	/** « Repartir de zéro » (lot 5, PR 3) : l'atelier vidé, la suite rejouée dessus */
+	| { readonly kind: 'vider' }
+	/**
+	 * Ce que l'historique ne sait pas refaire (lot 5, PR 3) : un fichier chargé,
+	 * dont le contenu n'y est pas. Le rejeu s'arrête là et dit `reason` (un
+	 * historique d'avant la revue de #1524 en a aussi sur « Repartir de zéro »).
+	 */
+	| { readonly kind: 'rupture'; readonly reason: string };
 
 /** Ce qu'un rejeu a donné : tout, ou l'arrêt à une ligne (R3). */
 export type ReplayReport =
@@ -232,6 +255,51 @@ const PANEL_ACTIONS: Readonly<Record<string, string>> = {
 /** Combien de termes « Premiers termes » écrit. */
 const TERMS_SHOWN = 10;
 
+/** Le nom d'une ligne de console dans l'infobulle d'Annuler : sa saisie, raccourcie. */
+const STEP_LABEL_LENGTH = 40;
+
+/** Le nom de l'étape de « Repartir de zéro » (infobulle d'Annuler, annonces). */
+export const RESET_STEP = 'repartir de zéro';
+
+/**
+ * Ce qu'un `annuler` / `rétablir` rejoué a donné : rien à redire, ou pourquoi
+ * le rejeu s'arrête. Après un `vider`, l'étape déplacée doit être la sienne :
+ * en défaire une autre détruirait des objets sans rapport.
+ */
+function movedOrWhy(
+	moved: MovedStep | null,
+	previous: ReplayStep | null,
+	kind: 'annuler' | 'rétablir'
+): string | null {
+	if (moved === null) return `il n’y avait rien à ${kind}.`;
+	if (previous?.kind === 'vider' && moved.label !== RESET_STEP) {
+		return `le « Repartir de zéro » à ${kind} ne s’est pas rejoué.`;
+	}
+	return null;
+}
+
+/** « Annuler : « f(x)=x^2 » » — la saisie telle que tapée, raccourcie au besoin. */
+function lineStepLabel(text: string): string {
+	const shown = text.length > STEP_LABEL_LENGTH ? `${text.slice(0, STEP_LABEL_LENGTH - 1)}…` : text;
+	return `« ${shown} »`;
+}
+
+/** « dériver f », « tracer g »… : le nom d'une action de carte comme étape (lot 5). */
+function actionStepLabel(actionId: string, name: string): string {
+	const shown = displayName(name);
+	const verbs: Readonly<Record<string, string>> = {
+		plot: 'tracer',
+		figure: 'Géométrie :',
+		derive: 'dériver',
+		reciprocal: 'réciproque de',
+		table: 'tabuler',
+		terms: 'premiers termes de',
+		data: 'données de'
+	};
+	const root = actionId.split(':')[0];
+	return `${verbs[root] ?? 'action sur'} ${shown}`;
+}
+
 /** Six chiffres significatifs, la virgule (comme le reste de l'atelier). */
 const TERM_FORMAT = new Intl.NumberFormat('fr-FR', {
 	maximumSignificantDigits: 6,
@@ -250,6 +318,12 @@ export class CalcDesk {
 
 	/** Le geste en cours : attaché à la PREMIÈRE ligne qu'il écrit, puis oublié. */
 	#gesture: ReplayStep | null = null;
+
+	/** L'étape d'Annuler en attente de sa ligne (`#step`), comme `#gesture`. */
+	#pendingStep: number | null = null;
+
+	/** L'étape de chaque suppression : le toast « Annuler » barre sa ligne. */
+	#removalSteps = new WeakMap<RemovedWithDependents, number>();
 
 	/** La dernière suppression, pour rejouer une annulation. */
 	#lastRemoval: RemovedWithDependents | null = null;
@@ -281,14 +355,107 @@ export class CalcDesk {
 	#push(entry: Omit<Entry, 'id'>): void {
 		const replay = this.#gesture;
 		this.#gesture = null;
+		const stepId = this.#pendingStep;
+		this.#pendingStep = null;
 		this.entries = [
 			...this.entries,
-			{ id: this.#nextId++, ...entry, ...(replay !== null && { replay }) }
+			{
+				id: this.#nextId++,
+				...entry,
+				...(replay !== null && { replay }),
+				...(stepId !== null && { stepId })
+			}
 		];
 	}
 
 	/**
+	 * Une étape d'Annuler faite depuis la console : son identifiant va à la
+	 * ligne qu'elle écrit — pendant l'étape (une action de carte) ou juste après
+	 * (une saisie). Une étape emboîtée n'a pas d'identifiant à elle.
+	 */
+	#step<T>(label: string, run: () => T): T {
+		if (this.atelier.inStep) return this.atelier.step(label, run);
+		this.#pendingStep = null;
+		const from = this.entries.length;
+		const result = this.atelier.step(label, run);
+		const id = this.atelier.lastStepId;
+		if (id === null) return result;
+		const written = this.entries[from];
+		if (written === undefined) this.#pendingStep = id;
+		else this.#withStep(written.id, id);
+		return result;
+	}
+
+	/** Poser l'étape `stepId` sur la ligne `entryId`. */
+	#withStep(entryId: number, stepId: number): void {
+		this.entries = this.entries.map((e) => (e.id === entryId ? { ...e, stepId } : e));
+	}
+
+	/** Barrer (Annuler) ou débarrer (Rétablir) la ligne de cette étape. */
+	#strike(stepId: number, undone: boolean): void {
+		this.entries = this.entries.map((e) => {
+			if (e.stepId !== stepId) return e;
+			if (undone) return { ...e, undone: true as const };
+			const { undone: _was, ...rest } = e;
+			return rest;
+		});
+	}
+
+	/**
+	 * L'étape `stepId` vient-elle d'une ligne rejouable de la console ?
+	 *
+	 * ⚠️ Seules ces étapes existent au rejeu d'un export : une étape sans ligne
+	 * (curseur glissé, réglage d'affichage, carte, tableur) n'y est pas. Un
+	 * `annuler` rejoué déferait alors l'étape de console d'avant et détruirait
+	 * des objets (revue de #1518 : `a`, puis `f`, disparaissaient du rejeu).
+	 */
+	#replayable(stepId: number): boolean {
+		return this.entries.some(
+			(e) => e.stepId === stepId && e.replay !== undefined && e.replay.kind !== 'rupture'
+		);
+	}
+
+	/**
+	 * Le geste de la ligne « Annuler » ou « Rétablir » de l'étape `stepId`.
+	 * « Repartir de zéro » en est : la console garde les lignes de l'atelier
+	 * d'avant, le rejeu le refait (décision de David du 2026-10-19).
+	 */
+	#moveGesture(stepId: number, kind: 'annuler' | 'rétablir'): ReplayStep | null {
+		return this.#replayable(stepId) ? { kind } : null;
+	}
+
+	/**
+	 * Annuler la dernière étape (barre, Ctrl/Cmd+Z), et le dire dans la console :
+	 * la ligne de l'étape est barrée, et une ligne « Annuler » s'écrit. Elle est
+	 * rejouable si l'étape l'est (sinon le rejeu d'un export referait ce qui a
+	 * été annulé, revue de #1517) — et seulement dans ce cas (revue de #1518).
+	 */
+	undo(): MovedStep | null {
+		const moved = this.atelier.undoStep();
+		if (moved === null) return null;
+		this.#strike(moved.id, true);
+		this.#gesture = this.#moveGesture(moved.id, 'annuler');
+		this.#pendingStep = null;
+		this.#push({ label: 'Annuler', text: `Annulé : ${moved.label}.`, failed: false });
+		return moved;
+	}
+
+	/** Rétablir la dernière étape annulée, et le dire : la ligne est débarrée. */
+	redo(): MovedStep | null {
+		const moved = this.atelier.redoStep();
+		if (moved === null) return null;
+		this.#strike(moved.id, false);
+		this.#gesture = this.#moveGesture(moved.id, 'rétablir');
+		this.#pendingStep = null;
+		this.#push({ label: 'Rétablir', text: `Rétabli : ${moved.label}.`, failed: false });
+		return moved;
+	}
+
+	/**
 	 * L'image d'un nombre, calculée depuis la CARTE (phase 0 `/grapheur` §3 A4).
+	 *
+	 * La carte ne la propose plus (2026-10-18) : ce chemin sert au rejeu des
+	 * historiques exportés avant, qui contiennent le geste `image`.
 	 *
 	 * ⚠️ Ne passe PAS par `submit`, qui vide le brouillon de Calcul : l'élève
 	 * pouvait y être en train de taper autre chose. La ligne va dans
@@ -296,7 +463,9 @@ export class CalcDesk {
 	 */
 	image(name: string, value: string): { readonly text: string; readonly failed: boolean } {
 		this.#gesture = { kind: 'action', action: 'image', name, value: value.trim() };
-		const outcome = runAction(this.session, 'image', name, value.trim());
+		const outcome = this.#step(`image par ${displayName(name)}`, () =>
+			runAction(this.session, 'image', name, value.trim())
+		);
 		const text = outcome.ok ? outcome.output : outcome.message;
 		this.#push({
 			label: `${displayName(name)}(${value.trim()})`,
@@ -329,7 +498,7 @@ export class CalcDesk {
 		this.#typed = [...history.typed];
 	}
 
-	/** Vider l'historique (« Repartir de zéro ») ; le brouillon est laissé. */
+	/** Vider l'historique (rejeu d'un export, retour d'un lien reçu) ; le brouillon est laissé. */
 	clear(): void {
 		this.#gesture = null;
 		this.#lastRemoval = null;
@@ -337,6 +506,49 @@ export class CalcDesk {
 		this.notice = null;
 		this.#typed = [];
 		this.#recalled = null;
+	}
+
+	/**
+	 * Un fichier vient d'être chargé (`atelier.replaceWith`, juste avant) : le
+	 * dire, puis ajouter ses lignes À LA SUITE — la console n'est pas remplacée,
+	 * ce sont les calculs de l'élève (décision de David du 2026-10-19, comme R4).
+	 *
+	 * La ligne « Atelier chargé depuis … » porte l'étape du chargement : Annuler
+	 * la barre. Au rejeu, elle arrête tout : le contenu du fichier n'est pas dans
+	 * l'historique. Rien des lignes ajoutées n'est refait.
+	 */
+	loaded(fileName: string, history: KeptHistory): void {
+		this.#gesture = {
+			kind: 'rupture',
+			reason: `l’atelier a été chargé depuis « ${fileName} », dont cet historique ne contient pas le contenu.`
+		};
+		this.#pendingStep = this.atelier.lastStepId;
+		this.#push({ label: 'Charger', text: `Atelier chargé depuis ${fileName}.`, failed: false });
+		// « Garder » vise une ligne du fichier : son indice suit le décalage
+		const offset = this.entries.length;
+		const appended = history.lines.map(({ replay, ...line }): Entry => ({
+			id: this.#nextId++,
+			...line,
+			...(replay !== undefined && {
+				replay: replay.kind === 'garder' ? { ...replay, line: replay.line + offset } : replay
+			})
+		}));
+		this.entries = [...this.entries, ...appended];
+		this.#typed = [...this.#typed, ...history.typed];
+		this.#recalled = null;
+	}
+
+	/**
+	 * « Repartir de zéro » : l'atelier vidé en UNE étape, que Ctrl+Z défait
+	 * (lot 5, PR 3), et sa ligne. La console reste, comme au chargement d'un
+	 * fichier (décision de David du 2026-10-19, R4) : Annuler rend alors tout.
+	 */
+	reset(): void {
+		this.#gesture = { kind: 'vider' };
+		this.#step(RESET_STEP, () =>
+			this.atelier.replaceWith({ version: ATELIER_STATE_VERSION, objects: [] }, RESET_STEP)
+		);
+		this.#push({ label: 'Repartir de zéro', text: 'Atelier vidé.', failed: false });
 	}
 
 	/**
@@ -381,6 +593,20 @@ export class CalcDesk {
 		this.#submit(text, true, inputLatex);
 	}
 
+	/**
+	 * Une ligne ÉCRITE par un outil de la vue Géométrie (lot 3, PR 2, G2) : la
+	 * même ligne que si l'élève l'avait tapée — une étape, rejouable —, mais
+	 * jamais rappelée par ↑, et le brouillon de la console reste intact. Rend
+	 * la ligne écrite, ou `null` si rien ne s'est écrit.
+	 */
+	write(text: string): Entry | null {
+		const draft = this.draft;
+		const before = this.entries.length;
+		this.#submit(text, false);
+		this.draft = draft;
+		return this.entries.length > before ? (this.entries.at(-1) ?? null) : null;
+	}
+
 	/** `typed` : tapée par l'élève (rappelable par ↑), ou écrite par un bouton. */
 	#submit(text: string, typed: boolean, inputLatex?: string): void {
 		// `.exporter` : le pupitre tient l'historique, le moteur ne l'a jamais eu.
@@ -389,8 +615,16 @@ export class CalcDesk {
 			if (typed) this.#exportTyped(text);
 			return;
 		}
-		const result = runInput(this.session, text, 'text');
-		if (result.kind === 'vide') return;
+		// Une ligne = une étape (lot 5) ; un calcul qui ne change rien n'en fait pas
+		const result = this.#step(lineStepLabel(text), () => runInput(this.session, text, 'text'));
+		// La carte d'une mesure dit ce que dit la console : elle en recopie le mode
+		this.session.atelier.setCalcMode(
+			this.session.engine.getState().mode === 'decimal' ? 'decimal' : 'exact'
+		);
+		if (result.kind === 'vide') {
+			this.#pendingStep = null;
+			return;
+		}
 		this.#gesture = { kind: 'saisie', input: text };
 		// Seule une saisie tapée clôt le rappel : « Comparer » rend le brouillon
 		// intact, ↓ doit encore pouvoir revenir à celui d'avant ↑ (revue)
@@ -443,6 +677,8 @@ export class CalcDesk {
 		const rows: number[] = [];
 		let replayed = 0;
 		let stop: { line: number; message: string } | null = null;
+		// Le geste rejoué juste avant : « annuler » qui suit une suppression vise elle
+		let previous: ReplayStep | null = null;
 		for (const [index, entry] of history.entries.entries()) {
 			const step = stepOf(entry);
 			if (step === null) continue;
@@ -451,7 +687,9 @@ export class CalcDesk {
 			if (step.kind === 'saisie' && isExportCommand(this.session.engine, step.input)) continue;
 			const before = this.entries.length;
 			this.notice = null;
-			const missed = this.#replayStep(step, rows, graph);
+			const missed = this.#replayStep(step, rows, graph, previous);
+			previous = step;
+			if (missed === null && !entry.failed) this.#replayWithOldReading(step, before);
 			const first = this.entries[before];
 			if (first !== undefined) rows[index] = before;
 			// R3 : on ne s'arrête que si la ligne AVAIT réussi. Une définition
@@ -481,8 +719,29 @@ export class CalcDesk {
 		return { ok: true, replayed };
 	}
 
+	/**
+	 * Une saisie réussie dans le fichier, refusée parce qu'une lettre y est
+	 * désormais lue comme unité (`5 s + 1`, historique d'avant le lot C), est
+	 * refaite avec son ancien sens (`5s + 1`) : le refus ne reste pas à l'écran.
+	 */
+	#replayWithOldReading(step: ReplayStep, before: number): void {
+		if (step.kind !== 'saisie') return;
+		const refused = this.entries[before];
+		if (refused === undefined || !refused.failed || refused.result?.kind !== 'refus') return;
+		const glued = withSingleLettersGlued(step.input);
+		if (glued === null) return;
+		this.entries.splice(before);
+		this.notice = null;
+		this.#submit(glued, false);
+	}
+
 	/** Refaire un geste ; rend la raison d'un échec que la ligne ne dirait pas, sinon null. */
-	#replayStep(step: ReplayStep, rows: readonly number[], graph?: GrapheurStore): string | null {
+	#replayStep(
+		step: ReplayStep,
+		rows: readonly number[],
+		graph: GrapheurStore | undefined,
+		previous: ReplayStep | null
+	): string | null {
 		switch (step.kind) {
 			case 'saisie':
 				// Un rejeu est un chargement : comme au rechargement, rien à rappeler
@@ -497,10 +756,26 @@ export class CalcDesk {
 				const removed = this.remove(step.name);
 				return removed.ok ? null : removed.message;
 			}
+			// Juste après une suppression, c'est elle qu'on annule, avec la même ligne
+			// qu'au toast (un fichier d'avant le lot 5 PR 2 n'a que ce cas) — et elle
+			// seule : si elle ne s'annule pas, on s'arrête plutôt que de défaire une
+			// étape sans rapport (revue de #1518). Sinon la dernière étape, comme Ctrl+Z
 			case 'annuler':
-				return this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)
-					? null
-					: 'la suppression ne s’est pas annulée.';
+				if (previous?.kind === 'supprimer') {
+					if (this.#lastRemoval !== null && this.undoRemoval(this.#lastRemoval)) return null;
+					return 'la suppression à annuler ne s’est pas rejouée.';
+				}
+				// Juste après « Repartir de zéro », c'est lui qu'on défait — et lui seul,
+				// comme une suppression (revue de la PR de suivi de #1524)
+				return movedOrWhy(this.undo(), previous, 'annuler');
+			case 'rétablir':
+				return movedOrWhy(this.redo(), previous, 'rétablir');
+			case 'vider':
+				this.reset();
+				return null;
+			// Le rejeu ne sait pas refaire ce qui suit : il s'arrête, et dit pourquoi
+			case 'rupture':
+				return step.reason;
 			case 'garder': {
 				const row = rows[step.line];
 				const kept = row === undefined ? undefined : this.entries[row];
@@ -517,10 +792,15 @@ export class CalcDesk {
 	 * La confirmation est l'affaire de la vue.
 	 */
 	remove(name: string): RemovedWithDependents | Refused {
+		const outer = !this.atelier.inStep;
 		const result = this.atelier.removeWithDependents(name);
 		if (!result.ok) return result;
 		this.#lastRemoval = result;
 		this.#gesture = { kind: 'supprimer', name };
+		// Une suppression est une étape : sa ligne se barre quand on l'annule
+		const stepId = outer ? this.atelier.lastStepId : null;
+		this.#pendingStep = stepId;
+		if (stepId !== null) this.#removalSteps.set(result, stepId);
 		this.#push({
 			label: `Supprimer ${displayName(name)}`,
 			text: removedLine(result.removed),
@@ -535,8 +815,11 @@ export class CalcDesk {
 	 */
 	undoRemoval(result: RemovedWithDependents): boolean {
 		if (!this.atelier.undoRemoval(result)) return false;
+		// La ligne « Supprimer » de cette suppression est barrée, comme par Annuler
+		const removedStep = this.#removalSteps.get(result);
+		if (removedStep !== undefined) this.#strike(removedStep, true);
 		// Rejouable seulement si la suppression est dans CET historique : après
-		// « Repartir de zéro », le fichier n'aurait qu'un `annuler` orphelin (revue)
+		// une console vidée, le fichier n'aurait qu'un `annuler` orphelin (revue)
 		this.#gesture = result === this.#lastRemoval ? { kind: 'annuler' } : null;
 		this.#lastRemoval = null;
 		this.#push({
@@ -553,12 +836,13 @@ export class CalcDesk {
 			this.notice = "Il n'y a rien à garder dans cette ligne.";
 			return;
 		}
-		const kept = promote(this.session, entry.result);
+		const result = entry.result;
+		const kept = this.#step('garder une ligne', () => promote(this.session, result));
 		this.notice = kept.ok ? `Gardé sous le nom « ${kept.object.name} ».` : kept.message;
 		// Une ligne aussi (toute action laisse sa trace dans Calcul, G7) : sans
 		// elle, le rejeu perdrait l'objet gardé et les lignes qui le citent
 		const line = this.entries.indexOf(entry);
-		// Une ligne qui n'est plus dans l'historique (« Repartir de zéro ») ne se
+		// Une ligne qui n'est plus dans l'historique (console vidée) ne se
 		// rejouerait pas : l'objet est gardé, mais sans geste à rejouer
 		if (kept.ok) {
 			this.#gesture = line >= 0 ? { kind: 'garder', line } : null;
@@ -817,36 +1101,71 @@ export class CalcDesk {
 		});
 	}
 
+	/** Montrer ou retirer 𝒞f de la vue Géométrie, et l'écrire (K1). */
+	#toggleInFigure(name: string): void {
+		const object = this.atelier.get(name);
+		if (object === undefined || !isFunction(object)) {
+			this.#push({ label: name, text: `« ${name} » n'est pas une fonction.`, failed: true });
+			return;
+		}
+		const shown = object.inFigure !== true;
+		this.atelier.setInFigure(name, shown);
+		const shownName = displayName(name);
+		this.#push({
+			label: `${shown ? 'Afficher dans Géométrie' : 'Retirer de Géométrie'} ${shownName}`,
+			text: shown
+				? `La courbe de ${shownName} est affichée dans Géométrie.`
+				: `La courbe de ${shownName} est retirée de Géométrie.`,
+			failed: false
+		});
+		this.notice = null;
+	}
+
 	/**
 	 * Exécuter une action cliquée dans le panneau.
 	 *
-	 * « Image d'un nombre » n'en est plus une : c'est un champ de la carte
-	 * (`image`, phase 0 `/grapheur` §3 A4).
+	 * « Image d'un nombre » n'en est plus une : `f(2)` s'écrit dans la console
+	 * (décision de David du 2026-10-18). `image` ne sert plus qu'au rejeu.
 	 */
 	runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		// Posé avant tout : « Comparer » passe par `submit`, qui le remplace par
 		// la commande tapée — c'est elle qu'on rejouera
 		this.#gesture = { kind: 'action', action: actionId, name };
 		try {
-			return this.#runFromPanel(actionId, name, graph);
+			// Une action de carte = une étape (lot 5) ; « Comparer » passe par une
+			// ligne de console, étape emboîtée qui se fond dans celle-ci
+			return this.#step(actionStepLabel(actionId, name), () =>
+				this.#runFromPanel(actionId, name, graph)
+			);
 		} finally {
 			// Une action sans ligne (diagramme, commande préparée) ne doit pas
-			// léguer son geste à la ligne d'un autre (revue du lot C1)
+			// léguer son geste à la ligne d'un autre (revue du lot C1), ni son étape
 			this.#gesture = null;
+			this.#pendingStep = null;
 		}
+	}
+
+	/**
+	 * Préparer une commande dans la console : elle s'AJOUTE à ce que l'élève a
+	 * déjà tapé, jamais à sa place (décision de David du 2026-10-18).
+	 */
+	#prepare(command: string) {
+		const draft = this.draft;
+		if (draft.trim() === '') this.draft = command;
+		else this.draft = draft.endsWith(' ') ? draft + command : `${draft} ${command}`;
 	}
 
 	#runFromPanel(actionId: string, name: string, graph?: GrapheurStore): PanelOutcome {
 		// « Tableau croisé avec M » (Q89) : la commande est préparée, l'élève peut
 		// ajouter `lignes`, `colonnes` ou `fréquences` avant de valider
 		if (actionId.startsWith('cross:')) {
-			this.draft = `.croiser ${name} ${actionId.slice('cross:'.length)}`;
+			this.#prepare(`.croiser ${name} ${actionId.slice('cross:'.length)}`);
 			return 'needs-argument';
 		}
 		// « Simuler » a besoin de n : la commande est préparée, 100 par défaut
 		// (Q77), l'élève valide ou change le nombre
 		if (actionId.startsWith('simulate:')) {
-			this.draft = `.simuler ${name} ${actionId.slice('simulate:'.length)} 100`;
+			this.#prepare(`.simuler ${name} ${actionId.slice('simulate:'.length)} 100`);
 			return 'needs-argument';
 		}
 
@@ -913,6 +1232,14 @@ export class CalcDesk {
 		}
 		if (root === 'fit') {
 			this.#fit(name, partner);
+			return 'ok';
+		}
+
+		// « Afficher dans Géométrie » (géométrie v2, K1) : bascule l'état
+		// d'affichage, et le dit dans Calcul (G2) — la ligne porte le geste, que
+		// le rejeu refait par ce même chemin
+		if (actionId === 'figure') {
+			this.#toggleInFigure(name);
 			return 'ok';
 		}
 
@@ -1006,11 +1333,28 @@ function textOf(result: CalcResult): string {
  * message de la carte au lieu d'annoncer un objet prêt.
  */
 function definitionText(name: string, object: AtelierObject): string {
+	// Réussie : « f est correctement défini » (demande de David, 2026-10-18 :
+	// « est dans tes objets » ne disait pas si tout allait bien). La console
+	// colore le nom (`definedName`).
+	const defined = `${name}${DEFINED_SUFFIX}`;
 	const placed = `« ${name} » est dans tes objets`;
-	if (object.message === undefined) return `${placed}.`;
+	if (object.message === undefined) return defined;
 	if (object.status === 'error') return `${placed}, mais elle est en erreur : ${object.message}`;
 	if (object.status === 'pending') {
 		return `${placed}, ${object.message.charAt(0).toLowerCase()}${object.message.slice(1)}`;
 	}
-	return `${placed}.`;
+	return defined;
+}
+
+/** La fin de la ligne d'une définition réussie, après le nom. */
+const DEFINED_SUFFIX = ' est correctement défini.';
+
+/**
+ * Le nom d'une ligne « f est correctement défini », pour que la console le
+ * colore — ou `null` : une autre ligne.
+ */
+export function definedName(entry: Pick<Entry, 'result' | 'text' | 'failed'>): string | null {
+	if (entry.failed || entry.result?.kind !== 'definition') return null;
+	const name = entry.result.name;
+	return entry.text === `${name}${DEFINED_SUFFIX}` ? name : null;
 }

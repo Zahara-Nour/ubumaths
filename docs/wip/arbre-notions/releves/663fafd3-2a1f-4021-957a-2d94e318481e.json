@@ -1,0 +1,231 @@
+{
+	"template_id": "663fafd3-2a1f-4021-957a-2d94e318481e",
+	"titre": "Soustraire des durées",
+	"sous_titre": "en HMS",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Durées > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-158",
+			"libelle_point": "Résoudre des problèmes impliquant des horaires et des durées",
+			"noeud_actuel": "Grandeurs et mesures > Durées > calcul de durées",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "J'ai commencé à regarder un épisode d'une série à ${{eval:(a[h]+b[min]);hms}}$, et je l'ai terminé à ${{eval:(a[h]+b[min]) + c[min];hms}}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$?$",
+				"reponses_brutes": ["{{eval:c[min]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 59,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 59,
+						"negatif_possible": false,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 59,
+						"exemples": [
+							"58[min]",
+							"32[min]",
+							"5[min]",
+							"37[min]",
+							"12[min]",
+							"42[min]",
+							"49[min]",
+							"48[min]",
+							"35[min]",
+							"56[min]",
+							"3[min]",
+							"21[min]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 59,
+							"nb_distinctes": 59,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 59,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 59,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 59,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["h", "min"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 21,
+					"max": 21
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (59)",
+					"graine": 64,
+					"enonce": "J'ai commencé à regarder un épisode d'une série à $2~\\mathrm{h}~40~\\mathrm{min}$, et je l'ai terminé à $2~\\mathrm{h}~59~\\mathrm{min}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["19[min]"],
+					"variables": {
+						"a": "2",
+						"b": "40",
+						"c": "19"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "J'ai commencé à regarder un épisode d'une série à $1~\\mathrm{h}~32~\\mathrm{min}$, et je l'ai terminé à $2~\\mathrm{h}~30~\\mathrm{min}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["58[min]"],
+					"variables": {
+						"a": "1",
+						"b": "32",
+						"c": "58"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "J'ai commencé à regarder un épisode d'une série à $2~\\mathrm{h}~17~\\mathrm{min}$, et je l'ai terminé à $2~\\mathrm{h}~49~\\mathrm{min}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["32[min]"],
+					"variables": {
+						"a": "2",
+						"b": "17",
+						"c": "32"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "J'ai commencé à regarder un épisode d'une série à $1~\\mathrm{h}~27~\\mathrm{min}$, et je l'ai terminé à $1~\\mathrm{h}~32~\\mathrm{min}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["5[min]"],
+					"variables": {
+						"a": "1",
+						"b": "27",
+						"c": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "J'ai commencé à regarder un épisode d'une série à $2~\\mathrm{h}~14~\\mathrm{min}$, et je l'ai terminé à $2~\\mathrm{h}~19~\\mathrm{min}$. Quelle était la durée de cet épisode ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["5[min]"],
+					"variables": {
+						"a": "2",
+						"b": "14",
+						"c": "5"
+					}
+				}
+			]
+		}
+	]
+}

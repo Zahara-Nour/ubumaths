@@ -1,0 +1,178 @@
+{
+	"template_id": "625ef069-3001-497b-b373-fd32df017044",
+	"titre": "Calculer le pourcentage d'une quantité",
+	"sous_titre": "$$25\\%$$",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-141",
+			"libelle_point": "Appliquer un pourcentage à une grandeur ou à un nombre",
+			"noeud_actuel": "Proportionnalité > Pourcentages > calculs de pourcentages",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..15"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule $25\\%$ de ${{eval:a*4}}$.\n\n$25\\%$ de ${{eval:a*4}}$ est égal à $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 15,
+						"negatif_possible": false,
+						"nb_distinctes": 15,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 4,
+				"max": 60,
+				"nb_distinctes": 16,
+				"valeurs": [4, 8, 12, 16, 20, 24, 25, 28, 32, 36, 40, 44, 48, 52, 56, 60],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 15,
+				"nb_distinctes": 15,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 60,
+				"nb_distinctes": 28,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 20, 24, 25, 28, 32, 36, 40, 44, 48,
+					52, 56, 60
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (60)",
+					"graine": 24,
+					"enonce": "Calcule $25\\%$ de $60$.\n\n$25\\%$ de $60$ est égal à $[?]$.",
+					"reponse": ["15"],
+					"variables": {
+						"a": "15"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule $25\\%$ de $4$.\n\n$25\\%$ de $4$ est égal à $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule $25\\%$ de $20$.\n\n$25\\%$ de $20$ est égal à $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule $25\\%$ de $48$.\n\n$25\\%$ de $48$ est égal à $[?]$.",
+					"reponse": ["12"],
+					"variables": {
+						"a": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Calcule $25\\%$ de $40$.\n\n$25\\%$ de $40$ est égal à $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10"
+					}
+				}
+			]
+		}
+	]
+}

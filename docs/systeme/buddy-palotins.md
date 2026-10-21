@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/server/buddy-*.ts'
   - src/lib/server/validation/buddy.ts
   - src/lib/types/buddy.ts
+  - src/lib/utils/buddy-constance.ts
   - src/lib/utils/buddy-xp.ts
   - 'src/routes/api/student/buddy/**'
 ---
@@ -94,23 +95,53 @@ L'XP buddy est le **reflet de l'investissement de l'eleve dans la duree**. Pas d
 
 ### Sources d'XP
 
-| Action                                        | XP  | Pourquoi                             |
-| --------------------------------------------- | --- | ------------------------------------ |
-| Exercice complete (bonne reponse)             | 10  | Recompense de base                   |
-| Exercice complete (mauvaise reponse)          | 3   | L'effort compte, pas que le resultat |
-| Exercice corrige apres erreur                 | 7   | Encourage a reessayer                |
-| Premier exercice du jour                      | 5   | Juste se connecter et commencer      |
-| Streak journalier (connexion + 1 exo minimum) | 15  | Regularite                           |
-| Bonus streak x7 jours                         | 50  | Milestone hebdomadaire (hors cap)    |
-| Bonus streak x14 jours                        | 100 | Milestone bi-hebdomadaire (hors cap) |
-| Bonus streak x30 jours                        | 300 | Milestone mensuel (hors cap)         |
-| Nouvelle thematique exploree                  | 25  | Curiosite                            |
+| Action                                           | XP  | Pourquoi                             |
+| ------------------------------------------------ | --- | ------------------------------------ |
+| Exercice complete (bonne reponse)                | 10  | Recompense de base                   |
+| Exercice complete (mauvaise reponse)             | 3   | L'effort compte, pas que le resultat |
+| Exercice corrige apres erreur                    | 7   | Encourage a reessayer                |
+| Premier exercice du jour                         | 5   | Juste se connecter et commencer      |
+| Semaine tenue (3e jour travaille de la semaine)  | 30  | Regularite (dans le cap)             |
+| Palier Constance 4 semaines                      | 50  | A la place des 30 (hors cap)         |
+| Palier Constance 8 semaines                      | 100 | A la place des 30 (hors cap)         |
+| Palier Constance 16 semaines                     | 300 | A la place des 30 (hors cap)         |
+| Nouvelle thematique exploree                     | 25  | Curiosite                            |
+| Revision espacee du jour (1/jour, voir plus bas) | 20  | L'effort (cartes auto-evaluees)      |
+
+Le bonus quotidien de serie (+15) et les paliers 7 / 14 / 30 jours ont disparu le 2026-10-18
+(Constance Royale hebdomadaire, voir [Systeme de streak](#systeme-de-streak)). Le « premier exercice
+du jour » (+5) reste reserve aux reponses (Entrainement, Course, evaluation, enigme) : il tombe si le
+jour n'est pas encore compte dans la Constance (`last_activity_date`), donc plus apres un forfait de
+revision le meme jour.
+
+**Thematique** = la branche de l'arbre des notions (`classification_nodes.id`) ou se range le point
+que valide la question (`question_template_points` → `curriculum_points.node_id` → notion → branche,
+`placeOfNode`), lue par `fetchTemplateThemeIds` (`src/lib/server/buddy-themes.ts`) en deux lectures
+par seance (les tags, puis les noeuds et leurs ancetres). Une question sans point neuf n'a pas de
+theme (les tags des anciens points, theme → objectif, ne comptent plus depuis la bascule de la C5) ;
+une question rattachee a plusieurs branches recoit toujours le plus petit identifiant. Une panne de
+lecture rend « aucun theme », jamais une erreur. Les themes candidats au bonus (absents de `themes_explored`, bonus non tronque par le
+plafond dans le calcul local) sont RESERVES avant le credit (`addExploredThemes`, une ecriture sous
+verrou optimiste) : seul un theme reserve par CET envoi porte le bonus, donc de deux seances
+simultanees une seule le touche. Credit partiel : le credit couvre les reponses dans l'ordre ; un
+theme est paye si l'XP cumulee jusqu'a la reponse qui porte son bonus est creditee en entier. Theme
+reserve mais non paye (credit tronque par la base, ou credit en echec) → retire
+(`removeExploredThemes`), il restera nouveau. Si un theme candidat a ete reserve par un envoi
+simultane, l'XP est recalculee et seuls les themes reserves par CET envoi portent un bonus. Une
+reponse isolee (`addBuddyXpFromExercise`, enigmes) suit la meme regle : theme reserve avant le
+credit, retire si le bonus n'est pas paye en entier (plafond local, credit tronque, credit en
+echec).
+
+**Revision espacee** (decision de David, 2026-10-18) : forfait `XP_SOURCES.review_session`, au plus
+une fois par jour, quand l'eleve a revise au moins 10 cartes dans la journee (tous paquets), ou qu'il
+vide un paquet (plus aucune carte due) apres au moins 3 cartes. Detail dans [srs.md](srs.md)
+(`rewardFinishedReviewSession`). Une seance flash et une carte de cours ne rapportent rien.
 
 **Principe fondamental** : l'XP ne s'achete PAS avec des gidouilles. Elle se merite par le travail.
 
 ### Anti-gaming
 
-- **Cap d'XP journalier : 100 XP** (les bonus streak milestone ne comptent PAS dans le cap)
+- **Cap d'XP journalier : 100 XP** (les paliers de Constance 4 / 8 / 16 semaines ne comptent PAS dans le cap ; les +30 de la semaine tenue, si)
 - **Pas d'XP pour les exercices repetes** identiques dans la meme session
 - **L'XP ne s'achete pas** avec des gidouilles
 - **Pas de perte d'XP** possible : evite la frustration et les hacks defensifs
@@ -188,12 +219,54 @@ L'XP buddy est le **reflet de l'investissement de l'eleve dans la duree**. Pas d
 
 ## Systeme de streak
 
+### Constance Royale hebdomadaire (specification validee par David le 2026-10-18)
+
+Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`). Elle se compte en
+**semaines**, pas en jours.
+
+- **Semaine** : du lundi au dimanche, jour UTC (celui du plafond de `add_buddy_xp`).
+- **Jour travaille** : un jour ou l'eleve a gagne des pansees par le travail, c'est-a-dire ou un
+  credit de pansees > 0 a eu lieu par `addBuddyXpFromTest` (Entrainement, Course aux nombres,
+  evaluation), `addBuddyXpFromExercise` (enigme) ou `addBuddyXpFromReviewSession` (forfait de
+  revision espacee). Une carte revisee seule ne credite rien (seul le forfait le fait), une seance
+  flash non plus : elles ne comptent pas. Un credit nul (plafond du jour deja atteint) ne compte pas
+  le jour.
+- **Semaine tenue** au 3e jour travaille (`CONSTANCE_DAYS_PER_WEEK`). Ce jour-la : +30 dans le
+  plafond, ou, si la Constance atteint 4 / 8 / 16 semaines, le palier +50 / +100 / +300 hors plafond
+  a la place (`calculateConstanceBonus`). Les 4e a 7e jours se comptent sans nouvelle recompense.
+- **Constance** = semaines tenues d'affilee (`current_streak`, record `longest_streak`). La semaine
+  en cours ne casse rien avant sa fin ; une semaine finie sous 3 jours (ou sautee) remet la
+  Constance a 0, avec une replique (`streak_lost`, « la semaine n'a pas eu ses trois jours »).
+- **Affichage** (`BuddyStatusPanel`) : « Constance Royale : N semaines », « Cette semaine : x jours
+  sur 3 » (x plafonne a 3) et « Record : N semaines ». Le badge du widget montre N. La valeur
+  affichee est recalculee pour le jour courant (`displayedConstance`) : une Constance perdue mais
+  pas encore remise a zero s'affiche 0. Le tableau de bord prof affiche la meme valeur (`displayedConstance`), en « sem. ».
+
 ### Mecanisme
 
-- **Condition** : connexion + au moins 1 exercice complete dans la journee
-- **Le Palotin porte le streak** visuellement (compteur, flamme, etc.)
-- **Perte du streak** : le Palotin est triste 1 jour, puis repart. Pas de punition mecanique, juste emotionnelle. Le compteur streak remet a zero mais l'XP acquise reste.
-- **Le streak est un bonus d'XP**, pas une condition. Un eleve sans streak progresse quand meme, juste moins vite.
+- Logique pure : `src/lib/utils/buddy-constance.ts` (`weekStartOf`, `applyWorkedDay`,
+  `constanceReset`, `displayedConstance`, `displayedDaysThisWeek`), testee dans
+  `src/lib/utils/__tests__/buddy-constance.test.ts` (changement d'annee, semaine sautee, semaine en
+  cours non finie, dimanche → lundi, 3e jour le meme jour que deux credits).
+- Apres un credit > 0, si la ligne lue ne dit pas le jour deja compte, `recordWorkedDay`
+  (`buddy-queries.ts`) ecrit en UNE fois `constance_week_start`, `constance_days_this_week`,
+  `current_streak`, `longest_streak` et `last_activity_date` (dernier jour compte), sous verrou
+  optimiste : de deux credits simultanes, un seul compte le jour et touche la recompense.
+- Au chargement du tableau de bord eleve, `resetLostConstance` remet la Constance a 0 si la derniere
+  semaine enregistree est finie sans etre tenue (`streakLost` → replique).
+- **Ancienne serie en jours** (ligne sans `constance_week_start`, tout Palotin d'avant le
+  2026-10-18) : `current_streak` et `longest_streak` comptaient des jours. Ils sont remis a 0 (record
+  compris) au premier chargement du tableau de bord ou au premier jour travaille, sans replique ; le
+  jour meme est compte meme si l'ancienne serie l'avait deja marque.
+- Une panne de la Constance APRES le credit (`recordWorkedDay`, ou credit de la recompense) est
+  journalisee et ne remonte jamais : le gain rendu est celui du credit, sans recompense. Sinon le
+  forfait de revision relacherait sa seance et deviendrait repayable.
+- Gain renvoye aux routes (`buddy_xp`, meme forme qu'avant) : `streakUpdated` = ce credit a compte
+  le jour ; `newStreak` = la Constance apres lui ; `streakBonusXp` = la recompense de la semaine
+  tenue ; `constanceWeekStart` / `constanceDaysThisWeek` en plus, quand le jour a ete compte, pour
+  mettre le widget a jour sans rechargement (`updateBuddyConstanceOptimistic`).
+- **Perte** : le Palotin est determine (« on repart »), jamais triste. Pas de punition mecanique : l'XP acquise reste.
+- **La Constance est un bonus d'XP**, pas une condition.
 
 ### Protection du streak
 
@@ -248,6 +321,62 @@ Le buddy ne remplace pas les cartes VIP, il les **enrichit** :
 - Indices contextuels (debloques par niveau)
 - Encouragements adaptes a la personnalite du Palotin
 - Remarques entre Palotins (dans des contextes speciaux)
+
+### Gain visible en fin de seance (2026-10-18)
+
+`api/tests/save` et `api/srs/review/submit` renvoient `buddy_xp` (meme forme, ou `null`).
+`parseBuddyGain` (`src/lib/components/buddy/buddy-gain.ts`) le valide avec Zod : absent, `null`,
+mal forme ou `xp_gained` = 0 → rien n'est affiche. `BuddyGainCard.svelte` montre l'avatar (`happy`,
+`excited` si montee), « Giron a gagne 12 pansees », une replique (`session_gain`, ou `daily_cap`
+quand le plafond du jour est atteint) et « Nouveau tour de panse : N ! ». Ou il apparait :
+
+- `/automaths/test` (Entrainement, Course aux nombres) : sous la carte du score de `TestResults` ;
+- revision espacee : ecran « Session terminee » de `ReviewSession` (dernier gain non nul de la
+  seance).
+
+`receiveBuddyGain` met ensuite le widget a jour sans rechargement (`updateBuddyXpOptimistic` si le
+Palotin est en cache, sinon relecture de `GET /api/student/buddy`, qui contient deja le gain).
+
+### Mots affiches
+
+Le Compendium interdit d'afficher « XP » et « niveau ». Mots choisis par David le 2026-10-18
+(double sens panse / pensee), dans `src/lib/config/lore.ts` (`buddy`) : **Pansees** pour l'XP
+(« 1 pansee » au singulier) et **Tour de panse** pour le niveau. Les identifiants de code restent
+`xp` et `level`.
+
+### Gardien de la Chatterie
+
+Au montage, `BuddyWidget` demande `GET /api/student/mathoux` (après l'affichage, pas dans le
+layout : environ 39 requêtes pour un parcours de Tle spé). S'il y a une nouveauté (naissance,
+croissance, étoile qu'aucun écran de fin de séance n'a montrée), la bulle l'annonce d'abord, avec
+le même lien. Sinon, si au moins un Mathou fait la sieste,
+la bulle dit « 2 Mathoux font la sieste. » avec le lien « Aller à la Chatterie »
+(`BuddySpeechBubble`, prop `link`), pendant 20 s, dans une zone `aria-live="polite"` ; sinon le
+Palotin salue. La salutation attend la réponse, pour ne jamais précéder l'annonce. Sur la Chatterie
+elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux.md](mathoux.md).
+
+### Images
+
+`BuddyAvatar` charge `/images/buddies/<palotin>-<expression>.svg` (`static/images/buddies/`).
+Style « affiche de cabaret » (Steinlen 1896), piece heraldique portee sur le vetement (ecusson
+gironne, pile d'or, cotice en echarpe). Generes par `scripts/palotins-svg/` (`node gen.mjs`, puis
+copier `final/*.svg`) ; journal : `docs/wip/palotins-svg-progress.md`.
+
+- **7 expressions** : `neutral`, `happy`, `sad`, `thinking`, `excited`, `encouraging`,
+  `determined`. Apres une erreur (`incorrect`) et une Constance perdue (`streak_lost`), le Palotin
+  est **determine** (sourire en coin ; Giron leve le poing, Pile rebat ses cartes, Cotice tourne la
+  page), jamais triste. `sad` est garde pour une longue absence de l'eleve (contexte pas encore
+  cree).
+- **Animation au repos dans le SVG** : respiration, clignement, chapeau, geste propre a chacun,
+  rythmes differents par Palotin.
+- **Reaction quand l'expression arrive** (CSS du composant, rejouee par `{#key}`) : bond
+  (`happy`), tressaut (`excited`), affaissement puis retour (`determined`).
+- **Moins d'animations** : `<picture><source media="(prefers-reduced-motion: reduce)">` →
+  version `<palotin>-<expression>-fixe.svg` ; la regle CSS `@media` coupe aussi la reaction. Une
+  `<img>` ne transmet pas la preference au SVG (Chromium : le SVG anime continue de bouger), d'ou
+  les 21 versions fixes. Choix laisse au navigateur, pas a `prefersReducedMotion` : cote serveur il
+  vaut `false`, et Svelte ne corrige pas `src` a l'hydratation.
+- Repli en cercle colore si l'image manque.
 
 ---
 
@@ -357,13 +486,44 @@ student_buddies
 ├── palotin_type (enum: giron, pile, cotice)
 ├── xp (integer, never decreases)
 ├── level (integer, cached from xp)
-├── current_streak (integer, days)
-├── longest_streak (integer, record)
-├── last_activity_date (date, for streak calc)
+├── current_streak (integer, Constance Royale en semaines tenues d'affilee)
+├── longest_streak (integer, record, en semaines)
+├── last_activity_date (date, dernier jour travaille compte)
 ├── equipped_skin_id (FK buddy_skins, nullable)
+├── constance_week_start (date, nullable : lundi de la derniere semaine comptee, NULL = ancienne serie en jours)
+├── constance_days_this_week (smallint, defaut 0, contrainte 0..7 : jours travailles de cette semaine)
 ├── created_at (timestamptz)
 └── updated_at (timestamptz)
 ```
+
+### Ecritures : serveur seul (2026-10-18)
+
+Toutes les ecritures de `student_buddies` passent par le client service (`src/lib/server/buddy-queries.ts`),
+avec l'identifiant de l'eleve tire de la SESSION, jamais du corps de la requete : choix
+(`createStudentBuddy`), changement (`changeStudentPalotin`), Constance Royale (`recordWorkedDay`,
+`resetLostConstance` depuis le layout du tableau de bord eleve), themes (`addExploredThemes`,
+`removeExploredThemes`), XP (`add_buddy_xp`). Les fonctions d'ecriture ne recoivent pas le client de
+l'eleve ; la lecture (`getStudentBuddy`) reste sur son client (sa RLS).
+
+RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'eleve n'a plus
+AUCUNE policy d'ecriture sur `student_buddies` (« Students can create their own buddy » et
+« Students can update their own buddy » retirees ; il n'y a jamais eu de DELETE). Restent les trois
+SELECT : l'eleve sa ligne, le prof ses eleves (`is_my_student`), l'admin (`is_teacher_or_admin`).
+Une ecriture faite au client de l'eleve rend donc 42501 (INSERT) ou 0 ligne sans erreur (UPDATE) :
+toute nouvelle ecriture passe par le client service. Preuve :
+`tests/integration/palotin-ecritures-eleve.test.ts`.
+
+Constance Royale hebdomadaire : `constance_week_start` et `constance_days_this_week` (meme
+migration), remplies par `recordWorkedDay` (voir [Systeme de streak](#systeme-de-streak)).
+
+Lire-modifier-ecrire sans transaction : verrou optimiste sur `updated_at` (trigger
+`student_buddies_updated_at_trigger`). L'ecriture porte `.eq('updated_at', lu)` et `.select()` ;
+0 ligne → relecture et nouvel essai, 3 au plus (`MAX_WRITE_ATTEMPTS`), puis abandon journalise
+(jamais un succes silencieux). Deux envois simultanes ne perdent donc aucun theme, ne comptent le
+jour travaille qu'une fois (une seule recompense de semaine tenue), et la remise a zero d'une
+Constance perdue est reevaluee sur la ligne relue (un jour travaille arrive entre-temps n'est pas
+efface). Jour « aujourd'hui » : jour UTC,
+celui du plafond.
 
 ### Table `buddy_skins`
 
@@ -532,8 +692,20 @@ A la **premiere connexion**, avant d'acceder au dashboard. Le choix du buddy est
 ### Changement de Palotin
 
 - **Premier changement gratuit** (droit a l'erreur)
-- Ensuite : coute des gidouilles (ex: 50)
+- Ensuite : coute 50 gidouilles (`PALOTIN_CHANGE_COST`)
 - **L'XP est toujours conservee** — on ne punit pas la progression
+
+Mise en oeuvre (`changeStudentPalotin`, client service) : le prix est celui de la ligne
+effectivement ecrite. Le changement (type + `change_count` + 1, en une ecriture) porte le verrou
+optimiste sur `updated_at` : deux changements simultanes ne passent pas tous deux au prix du premier,
+gratuit. Le debit vient ensuite, verrou optimiste sur le solde lu (`.eq('gidouilles', lu)`). Si le
+debit echoue (solde insuffisant ou modifie a chaque essai, erreur), le changement est annule
+(ecriture conditionnee sur le type et le compteur qu'il a poses) : jamais de debit sans changement.
+Ce n'est pas une transaction : une coupure entre l'ecriture et le debit, ou une annulation qui
+echoue (requete concurrente qui a relu et reecrit la ligne changee), peut laisser UN changement non
+paye, journalise. Choix assume : un changement gratuit est moins grave qu'un eleve debite sans
+changement. Reponses de `POST /api/student/buddy/change` : 404 sans Palotin, 400
+meme Palotin ou solde insuffisant, 409 conflit repete.
 
 ---
 
@@ -672,7 +844,7 @@ Bribes de lore qui apparaissent aleatoirement en idle a partir du niveau 5. Them
 | Buddy visible        | Bas-droite desktop (80-100px), icone mobile (60px)                                            |
 | Messages pre-ecrits  | Correct, incorrect, idle, streak, level up, themes, onboarding                                |
 | Systeme XP           | Sources d'XP, cap journalier, table de niveaux 1-20                                           |
-| Streak               | Compteur, bonus XP, perte emotionnelle (Palotin triste)                                       |
+| Streak               | Compteur, bonus XP, perte : Palotin determine (« on repart »)                                 |
 | Niveaux 1-10         | Deblocages : bulles idle, streaks, hints basiques (niv 5), bonus gidouille quotidien (niv 10) |
 | Apparence base       | 1 image par Palotin (6 expressions du character sheet)                                        |
 | DB                   | Tables `student_buddies` + `buddy_skins`                                                      |

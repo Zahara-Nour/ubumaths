@@ -36,6 +36,8 @@ import type { StudentProfile, ClassMembership, StudentRewards } from '$lib/types
 import { asStudentVipCards } from '$lib/types/vip-card';
 import { error } from '@sveltejs/kit';
 import { toBuddyState } from '$lib/types/buddy';
+import { resetLostConstance } from '$lib/server/buddy-queries';
+import { constanceReset, utcDay } from '$lib/utils/buddy-constance';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('(protected)/dashboard/student/+layout.server');
@@ -136,23 +138,22 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			logger.error('Contexte illisible :', buddyDataError);
 		}
 
-		// Check for streak loss (last activity > 1 day ago with active streak)
+		// Constance Royale perdue (dernière semaine enregistrée finie sous 3 jours
+		// travaillés, ou semaine sautée) : remise à zéro au client service, règle
+		// réévaluée sur la ligne relue, écriture vérifiée. Une ancienne série en
+		// jours est remise à zéro sans réplique (ce n'est pas une semaine manquée).
 		let streakLost = false;
-		if (buddyData && buddyData.current_streak > 0 && buddyData.last_activity_date) {
-			const lastActivity = new Date(buddyData.last_activity_date);
-			const today = new Date();
-			// Reset time parts for clean day comparison
-			lastActivity.setHours(0, 0, 0, 0);
-			today.setHours(0, 0, 0, 0);
-			const daysDiff = Math.floor((today.getTime() - lastActivity.getTime()) / 86400000);
-			if (daysDiff > 1) {
-				// Reset streak server-side
-				await supabase
-					.from('student_buddies')
-					.update({ current_streak: 0 })
-					.eq('student_id', user.id);
-				buddyData.current_streak = 0;
-				streakLost = true;
+		let buddyRow = buddyData;
+		if (buddyData && constanceReset(buddyData, utcDay())) {
+			try {
+				const reset = await resetLostConstance(user.id);
+				if (reset) {
+					buddyRow = reset.buddy;
+					streakLost = reset.kind === 'lost';
+				}
+			} catch (resetError) {
+				// Non bloquant : la Constance sera remise à zéro au prochain chargement
+				logger.error('[Layout] Constance perdue non remise à zéro :', resetError);
 			}
 		}
 
@@ -163,7 +164,7 @@ export const load: LayoutServerLoad = async ({ locals }) => {
 			rewards,
 			// `palotin_type` est du texte simple en base : le rétrécir ici évite que
 			// chaque consommateur ait à le faire, et garantit un compagnon parlant.
-			buddy: buddyData ? toBuddyState(buddyData) : null,
+			buddy: buddyRow ? toBuddyState(buddyRow) : null,
 			streakLost
 		};
 	} catch (err) {

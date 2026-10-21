@@ -14,6 +14,10 @@ import type { MathfieldElement } from 'mathlive';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { intervalLabelOf } from '$lib/atelier/interval';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 // =============================================================================
 // Décor
@@ -27,8 +31,10 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
+/** Le champ d'une carte : celle d'une fonction l'a d'emblée (lot 3 de la refonte). */
 async function open(container: HTMLElement, name: string): Promise<HTMLElement> {
 	const card = cardFor(container, name);
+	if (card.querySelector('math-field')) return card;
 	(card.querySelector('.entete') as HTMLButtonElement).click();
 	await vi.waitFor(() => expect(cardFor(container, name).querySelector('math-field')).toBeTruthy());
 	return cardFor(container, name);
@@ -81,7 +87,7 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'f');
 
-		await typeAtEnd(fieldOf(card), ' sur [[0;+oo[[');
+		await typeAtEnd(fieldOf(card), ' sur [[0;+oo[[{Enter}');
 
 		await vi.waitFor(() => expect(intervalLabelOf(atelier.get('f')!)).toBe('[0 ; +∞['));
 		expect(atelier.get('f')?.definition).toBe('x^2');
@@ -90,11 +96,13 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		expect(fieldOf(card).value).not.toContain('\\left');
 	});
 
-	it('l’en-tête de la carte montre « sur [0 ; +∞[ »', async () => {
+	// Lot 3 de la refonte : une seule ligne — l'ensemble est dans le champ, pas répété à côté
+	it('la carte ne répète pas « sur [0 ; +∞[ » à côté du champ', async () => {
 		const atelier = withF('x^2', '[0;+\\infty[');
 		const { container } = await render(WithAtelier, { atelier });
 
-		expect(cardFor(container, 'f').querySelector('.intervalle')?.textContent).toBe('sur [0 ; +∞[');
+		expect(cardFor(container, 'f').querySelector('.intervalle')).toBeNull();
+		expect(fieldOf(cardFor(container, 'f')).value).toContain('\\text{ sur }');
 	});
 
 	it('le champ montre la définition puis « sur » et l’ensemble', async () => {
@@ -114,7 +122,7 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		await userEvent.click(field);
 		await vi.waitFor(() => expect(document.activeElement).toBe(field));
 		field.executeCommand('selectAll');
-		await userEvent.keyboard('x^2');
+		await userEvent.keyboard('x^2{Enter}');
 
 		await vi.waitFor(() => expect(intervalLabelOf(atelier.get('f')!)).toBeNull());
 		expect(atelier.get('f')?.definition).toBe('x^2');
@@ -126,7 +134,7 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'f');
 
-		await typeAtEnd(fieldOf(card), ' sur [[-1;2]');
+		await typeAtEnd(fieldOf(card), ' sur [[-1;2]{Enter}');
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'f').querySelector('[role="alert"]')?.textContent).toContain(
@@ -152,7 +160,7 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'f');
 
-		await typeAtEnd(fieldOf(card), 'sur{Backspace}{Backspace}{Backspace}(x+1)/(x-1)');
+		await typeAtEnd(fieldOf(card), 'sur{Backspace}{Backspace}{Backspace}(x+1)/(x-1){Enter}');
 
 		expect(fieldOf(card).value).toContain('\\left(');
 		await vi.waitFor(() => expect(atelier.get('f')?.status).toBe('ok'));
@@ -165,7 +173,8 @@ describe('carte : f(x) = x² sur [0 ; +∞[', () => {
 		const { container } = await render(WithAtelier, { atelier });
 		const card = await open(container, 'a');
 
-		await typeAtEnd(fieldOf(card), ' sur [[0;1]');
+		// Lot 4a : une valeur est rangée à Entrée, comme une fonction
+		await typeAtEnd(fieldOf(card), ' sur [[0;1]{Enter}');
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'a').querySelector('[role="alert"]')?.textContent).toBe(

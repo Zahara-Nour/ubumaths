@@ -97,17 +97,17 @@ describe('numéros de liste dans la première ligne', () => {
 	it('liste numérotée : chaque item appelle l’aide `ubu-item` avec son numéro', () => {
 		const code = typst('1. alpha\n2. beta');
 		expect(code).not.toContain('#enum(');
-		expect(code).toContain('#ubu-item(numbering("a)", 1), w: "a)")[alpha]');
-		expect(code).toContain('#ubu-item(numbering("a)", 2), w: "a)")[beta]');
+		expect(code).toContain('#ubu-item(numbering("1)", 1), w: "1)")[alpha]');
+		expect(code).toContain('#ubu-item(numbering("1)", 2), w: "1)")[beta]');
 	});
 
 	it('le numéro de départ est respecté', () => {
-		expect(typst('3. alpha\n4. beta')).toContain('#ubu-item(numbering("a)", 3), w: "c)")[alpha]');
+		expect(typst('3. alpha\n4. beta')).toContain('#ubu-item(numbering("1)", 3), w: "3)")[alpha]');
 	});
 
 	it('sous-liste : style de sa profondeur', () => {
 		expect(typst('1. Calculer :\n   a. x\n2. Fin.')).toContain(
-			'#ubu-item(numbering("1)", 1), w: "1)")[x]'
+			'#ubu-item(numbering("a)", 1), w: "a)")[x]'
 		);
 	});
 
@@ -116,20 +116,20 @@ describe('numéros de liste dans la première ligne', () => {
 	});
 
 	it('item qui commence par un bloc : numéro à côté du bloc (grille)', () => {
-		expect(typst('1. $$x^2=4$$\n2. b')).toContain('#ubu-item-bloc(numbering("a)", 1), w: "a)")[');
+		expect(typst('1. $$x^2=4$$\n2. b')).toContain('#ubu-item-bloc(numbering("1)", 1), w: "1)")[');
 	});
 
 	// Relecture 2026-09-25 : la largeur du numéro était fixe (1,1 em) — `10)`, `m)`,
 	// `viii)` débordaient. Comme `enum`, la liste réserve la place de son PLUS LARGE numéro.
 	it.each([
 		[
-			'11 items de profondeur 2 : « 10) » (même largeur que « 11) », le premier est gardé)',
-			'1. p\n' + Array.from({ length: 11 }, (_, i) => `   ${i + 1}. x`).join('\n'),
+			'11 items de profondeur 1 : « 10) » (même largeur que « 11) », le premier est gardé)',
+			Array.from({ length: 11 }, (_, i) => `${i + 1}. x`).join('\n'),
 			'"10)"'
 		],
 		[
-			'13 items de profondeur 1 : « m) »',
-			Array.from({ length: 13 }, (_, i) => `${i + 1}. x`).join('\n'),
+			'13 items de profondeur 2 : « m) »',
+			'1. p\n' + Array.from({ length: 13 }, (_, i) => `   ${i + 1}. x`).join('\n'),
 			'"m)"'
 		],
 		[

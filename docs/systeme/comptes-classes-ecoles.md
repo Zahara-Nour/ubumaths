@@ -164,6 +164,8 @@ de 2nde de répondre une fois à la question d'âge.
   (`sendWelcomeEmail` dans `src/lib/server/email/brevo.ts`). Texte unique :
   `src/lib/email-templates/welcome.ts`. Chaque envoi est noté dans `welcome_emails_sent`.
 - Journal d'un élève : `src/routes/(protected)/dashboard/teacher/students/[studentId]/journal/+page.server.ts`.
+- Chatterie d'un élève (lecture seule) : `src/routes/(protected)/dashboard/teacher/students/[studentId]/chatterie/`,
+  même garde que le journal (`verifyTeacherStudentWithRole`) ; voir [mathoux.md](mathoux.md#vue-du-professeur).
 
 ### Élève et tous les comptes
 

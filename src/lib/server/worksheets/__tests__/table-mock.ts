@@ -28,8 +28,8 @@ export interface TableResponse {
 export interface TableMock {
 	client: SupabaseClient<Database>;
 	tablesRead: string[];
-	/** Arguments de `.insert()` / `.update()`, par table */
-	writes: Array<{ table: string; kind: 'insert' | 'update'; values: unknown }>;
+	/** Arguments de `.insert()` / `.update()` / `.upsert()`, par table */
+	writes: Array<{ table: string; kind: 'insert' | 'update' | 'upsert'; values: unknown }>;
 	rpcCalls: string[];
 	/** Colonnes demandées à chaque `.select()`, par table (avant ou après écriture) */
 	selects: Array<{ table: string; columns: string }>;
@@ -61,6 +61,10 @@ export function tableMock(
 		};
 		query.update = (values: unknown) => {
 			writes.push({ table, kind: 'update', values });
+			return query;
+		};
+		query.upsert = (values: unknown) => {
+			writes.push({ table, kind: 'upsert', values });
 			return query;
 		};
 		const singleResponse = (): TableResponse => response().single ?? response();

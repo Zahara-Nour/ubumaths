@@ -35,13 +35,12 @@ import {
 } from '$lib/mathAST';
 import type { MathNode, CompiledFn } from '$lib/mathAST';
 import {
-	extractAffineCombination,
-	extractQuadraticCombination,
 	findCriticalZeros,
 	findCriticalExtrema,
 	findCriticalInflections
 } from '$lib/mathAST/analysis';
 import { classifyConic } from '../geometry/conic-classify';
+import { curveShapeOf } from '../geometry/curve-nature';
 import {
 	asymptoteLines,
 	axisLines as computeAxisLines,
@@ -49,6 +48,7 @@ import {
 	fociPoints as computeFociPoints,
 	eccentricity as computeEccentricity
 } from '../geometry/conic-properties';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { isZeroExpression } from '$lib/mathAST/normal';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { numeric } from '../types/geo-value';
@@ -2172,6 +2172,7 @@ const CERCLE_FORMS = [
 		syntax: 'cercle(centre, passant=P)',
 		description: 'cercle de centre `centre` passant par le point `P`'
 	},
+	{ syntax: 'cercle(centre, r)', description: 'cercle de centre `centre` et de rayon `r`' },
 	{ syntax: 'cercle(A, B, C)', description: 'cercle circonscrit aux 3 points A, B, C' }
 ];
 
@@ -2205,14 +2206,60 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 		return { figureId: id, symbolType: 'cercle' };
 	}
 	if (pos.length === 2) {
-		throw new DslRuntimeError(
-			{
-				summary: '`cercle()` ne peut pas être appelé avec 2 arguments positionnels.',
-				hint: 'Pour un cercle de centre `A` passant par `B`, utilisez la syntaxe nommée : `cercle(A, passant=B)`.',
-				forms: CERCLE_FORMS
-			},
-			line
-		);
+		// `cercle(O, 3)` (atelier, lot 2 de la géométrie) : le rayon en second — un
+		// nombre, une valeur ou un curseur. Un POINT en second reste refusé : centre
+		// O passant par A, ou diamètre [OA] ? L'auteur le dit (`passant=`).
+		const second = pos[1];
+		if (second.type === 'element' && second.elementType === 'point') {
+			throw new DslRuntimeError(
+				{
+					summary: '`cercle()` ne peut pas recevoir deux points en arguments positionnels.',
+					hint: 'Pour un cercle de centre `A` passant par `B`, utilisez la syntaxe nommée : `cercle(A, passant=B)`.',
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		if (second.type === 'element' && second.elementType !== 'scalar') {
+			throw new DslRuntimeError(
+				{
+					summary: `\`cercle(O, r)\` : le second argument est le rayon, un nombre (reçu : ${second.elementType}).`,
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		if (named.size > 0) {
+			throw new DslRuntimeError(
+				{
+					summary: `\`cercle(O, r)\` : le rayon est déjà donné, l'argument nommé \`${[...named.keys()][0]}=\` est de trop.`,
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		const center = pos[0];
+		if (center.type !== 'element' || center.elementType !== 'point') {
+			throw new DslRuntimeError(
+				{ summary: '`cercle(O, r)` : le centre `O` doit être un point.', forms: CERCLE_FORMS },
+				line
+			);
+		}
+		const radius = toScalarParam(second, toGeoValue, line);
+		// Un rayon FIXÉ nul ou négatif n'a pas de sens ; un curseur, lui, est jugé
+		// par la figure à chaque valeur. `rayon=` garde son comportement (une figure
+		// de test s'appuie sur `rayon=0`, locus.test.ts)
+		if (!('scalarRef' in radius) && !(geoToNumber(radius) > 0)) {
+			throw new DslRuntimeError(
+				{
+					summary: '`cercle(O, r)` : le rayon doit être strictement positif.',
+					forms: CERCLE_FORMS
+				},
+				line
+			);
+		}
+		const id = figure.createCircleByRadius(center.figureId, radius, { label });
+		return { figureId: id, symbolType: 'cercle' };
 	}
 	if (pos.length === 0) {
 		throw new DslRuntimeError(
@@ -2226,7 +2273,7 @@ function handleCercle(ctx: BuiltinCtx): BuiltinResult {
 	if (pos.length !== 1) {
 		throw new DslRuntimeError(
 			{
-				summary: `\`cercle()\` a reçu ${pos.length} arguments positionnels, attendu 1 (centre) ou 3 (A, B, C).`,
+				summary: `\`cercle()\` a reçu ${pos.length} arguments positionnels, attendu 1 (centre), 2 (centre, rayon) ou 3 (A, B, C).`,
 				forms: CERCLE_FORMS
 			},
 			line
@@ -5522,10 +5569,69 @@ function handleMediatrice(ctx: BuiltinCtx): BuiltinResult {
 }
 HANDLERS.set('mediatrice', handleMediatrice);
 
+/**
+ * `parallele(P, d)`, `perpendiculaire(P, d)` (atelier, lot 2 de la géométrie) :
+ * deux arguments, le point P puis une droite, un segment ou une demi-droite —
+ * dont on prend les deux points qui la portent. `null` pour toute autre arité
+ * (la forme `(P, A, B)` suit son chemin, inchangée).
+ */
+function lineArgument(
+	ctx: BuiltinCtx,
+	macroName: 'parallele' | 'perpendiculaire'
+): { through: string; p1: string; p2: string } | null {
+	const { pos, figure, line } = ctx;
+	if (pos.length !== 2) return null;
+	const first = pos[0];
+	if (first.type !== 'element' || first.elementType !== 'point') {
+		throw new DslRuntimeError(
+			{
+				summary: `\`${macroName}(P, d)\` : le premier argument doit être un point (la droite passe par lui).`
+			},
+			line
+		);
+	}
+	const through = first.figureId;
+	const target = pos[1];
+	const isLineLike =
+		target.type === 'element' &&
+		(target.elementType === 'droite' ||
+			target.elementType === 'segment' ||
+			target.elementType === 'demidroite');
+	if (!isLineLike) {
+		throw new DslRuntimeError(
+			{
+				summary: `\`${macroName}(P, d)\` : le second argument doit être une droite, un segment ou une demi-droite.`,
+				forms: [
+					{ syntax: `${macroName}(P, d)`, description: 'par `P`, relativement à la droite `d`' },
+					{ syntax: `${macroName}(P, A, B)`, description: 'par `P`, relativement à `(AB)`' }
+				]
+			},
+			line
+		);
+	}
+	const el = figure.getElementById(target.figureId);
+	const points = el === undefined ? null : resolveLinePoints(el);
+	if (points === null) {
+		throw new DslRuntimeError(
+			{ summary: `\`${macroName}(P, d)\` : impossible de résoudre les points de la droite.` },
+			line
+		);
+	}
+	return { through, ...points };
+}
+
 // ─── 2. perpendiculaire(P, A, B) → droite ───────────────────────────
 
 function handlePerpendiculaire(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
+	// `perpendiculaire(P, d)` (atelier, lot 2) : par P, perpendiculaire à la droite d
+	const toLine = lineArgument(ctx, 'perpendiculaire');
+	if (toLine !== null) {
+		const Q = createHiddenTranslatedPoint(figure, toLine.through, toLine.p1, toLine.p2);
+		const R = createHiddenRotatedPoint(figure, Q, toLine.through, PI_OVER_2);
+		const id = figure.createLine(toLine.through, R, { label });
+		return { figureId: id, symbolType: 'droite' };
+	}
 	const { ids, coords } = requireNPoints(ctx, 3, ['P', 'A', 'B'], 'perpendiculaire', {
 		syntax: 'perpendiculaire(P, A, B)',
 		description: 'droite passant par `P`, perpendiculaire à la droite `(AB)`'
@@ -5551,6 +5657,13 @@ HANDLERS.set('perpendiculaire', handlePerpendiculaire);
 
 function handleParallele(ctx: BuiltinCtx): BuiltinResult {
 	const { figure, line, label } = ctx;
+	// `parallele(P, d)` (atelier, lot 2) : par P, parallèle à la droite d
+	const toLine = lineArgument(ctx, 'parallele');
+	if (toLine !== null) {
+		const Q = createHiddenTranslatedPoint(figure, toLine.through, toLine.p1, toLine.p2);
+		const id = figure.createLine(toLine.through, Q, { label });
+		return { figureId: id, symbolType: 'droite' };
+	}
 	const { ids, coords } = requireNPoints(ctx, 3, ['P', 'A', 'B'], 'parallele', {
 		syntax: 'parallele(P, A, B)',
 		description: 'droite passant par `P`, parallèle à la droite `(AB)`'
@@ -6516,7 +6629,8 @@ function createCurveFromEquation(
 	// Parse the equation string with mathAST
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(coreEquation);
+		// Chaîne d'auteur : virgule décimale lue comme avant la PR 6 (`legacyDecimalCommas`)
+		parsed = parseCustom(legacyDecimalCommas(coreEquation));
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${coreEquation}"`, line);
 	}
@@ -6547,41 +6661,31 @@ function createCurveFromEquation(
 		F = parsed;
 	}
 
+	// La forme se lit par `curveShapeOf` (`geometry/curve-nature.ts`), partagée
+	// avec l'atelier : droite, puis y = f(x), puis conique, puis implicite.
+	// Pas de droite avec une restriction de domaine : `y = 2x sur [-1 ; 1]` est
+	// une courbe y = f(x) restreinte, pas une droite entière.
+	const shape = curveShapeOf(F, { allowLine: !domainResult });
+
 	// --- Try 1: Line (affine in both x and y) ---
-	// Skip when a domain restriction is present: an affine function with a
-	// restricted domain (e.g. `y = 2x sur [-1 ; 1]`) should be plotted as a
-	// function curve, not a full line — let it fall through to Try 2.
-	if (!domainResult) {
-		const affineXY = extractAffineCombination(F, ['x', 'y']);
-		if (affineXY.isAffine) {
-			const a = affineXY.coefficients.get('x')!;
-			const b = affineXY.coefficients.get('y')!;
-			const c = affineXY.constant;
-
-			if (isZeroExpression(a) && isZeroExpression(b)) {
-				throw new DslRuntimeError(
-					'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
-					line
-				);
-			}
-
-			return createLineFromCoefficients(a, b, c, equation, figure, label);
+	if (shape.kind === 'line') {
+		if (isZeroExpression(shape.a) && isZeroExpression(shape.b)) {
+			throw new DslRuntimeError(
+				'courbe(): équation dégénérée (0 = 0 ou constante non nulle)',
+				line
+			);
 		}
+		return createLineFromCoefficients(shape.a, shape.b, shape.c, equation, figure, label);
 	}
 
 	// --- Try 2: y = f(x) (affine in y alone) ---
-	const affineY = extractAffineCombination(F, ['y']);
-	if (affineY.isAffine) {
-		const g = affineY.coefficients.get('y')!; // coefficient of y
-		const h = affineY.constant; // constant term (function of x)
-
-		if (isZeroExpression(g)) {
+	if (shape.kind === 'function') {
+		if (isZeroExpression(shape.g)) {
 			throw new DslRuntimeError("courbe(): la variable y est absente de l'expression", line);
 		}
-
 		return createFunctionFromCoefficients(
-			g,
-			h,
+			shape.g,
+			shape.h,
 			equation,
 			figure,
 			line,
@@ -6599,9 +6703,8 @@ function createCurveFromEquation(
 	}
 
 	// --- Try 3: Quadratic curve (conic section) ---
-	const quadratic = extractQuadraticCombination(F, ['x', 'y']);
-	if (quadratic.isQuadratic) {
-		return createQuadraticCurveFromCoefficients(F, quadratic, equation, figure, line, label);
+	if (shape.kind === 'quadratic') {
+		return createQuadraticCurveFromCoefficients(F, shape, equation, figure, line, label);
 	}
 
 	// --- Try 4: General implicit curve F(x,y) = 0 ---
@@ -6838,7 +6941,7 @@ function parseParametricEquation(
 ): { lhs: string; rhs: MathNode } {
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(eq);
+		parsed = parseCustom(legacyDecimalCommas(eq));
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${eq}"`, line);
 	}
@@ -7259,7 +7362,7 @@ function parsePolarEquation(eq: string, line: number): { rhs: MathNode; rhsStrin
 	const normalized = normalizeThetaToLatex(eq);
 	let parsed: MathNode;
 	try {
-		parsed = parseCustom(normalized);
+		parsed = parseCustom(legacyDecimalCommas(normalized));
 	} catch {
 		throw new DslRuntimeError(`courbe(): erreur de syntaxe dans "${eq}"`, line);
 	}

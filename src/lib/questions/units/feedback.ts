@@ -17,10 +17,16 @@
 
 /** Messages fixes (apostrophe typographique ’, point médian ·) */
 export const UNIT_FEEDBACK = {
-	wrongMagnitude:
-		'Cette unité ne mesure pas la bonne grandeur. Pour un produit d’unités, écris m·s.',
+	wrongMagnitude: 'Cette unité ne mesure pas la bonne grandeur.',
 	missingUnit: 'N’oublie pas l’unité.'
 } as const;
+
+/**
+ * Conseil ajouté au refus de grandeur quand l'élève a collé des symboles qui,
+ * lus comme un produit, donnent la grandeur attendue (`5ms` pour des m·s :
+ * lu milliseconde). Pas ailleurs : « 5 kg » pour une longueur n'en a que faire.
+ */
+const PRODUCT_HINT = 'Pour un produit d’unités, écris m·s.';
 
 /** Chiffres et signe moins en exposant Unicode */
 const SUPERSCRIPTS: Record<string, string> = {
@@ -116,4 +122,11 @@ export function ambiguousUnitMessage(writing: string): string {
 		.join('·');
 
 	return `Écris ${fractionForm} ou ${negativeForm}.`;
+}
+
+/** Refus de grandeur, avec le conseil du produit quand il aide (cf. PRODUCT_HINT) */
+export function wrongMagnitudeMessage(withProductHint: boolean): string {
+	return withProductHint
+		? `${UNIT_FEEDBACK.wrongMagnitude} ${PRODUCT_HINT}`
+		: UNIT_FEEDBACK.wrongMagnitude;
 }

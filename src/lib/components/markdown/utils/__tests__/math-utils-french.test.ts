@@ -14,10 +14,10 @@ describe('expressionToLatex - French decimal formatting', () => {
 			expect(result).toBe('3{,}14');
 		});
 
-		it('convertit les entrées avec virgule française (3,14) en 3{,}14', () => {
-			// Le tokenizer normalise la virgule en point, puis toFrenchDecimal reconvertit
+		// lecture-grandeurs, PR 6 : une formule maison s'écrit au point (affichée à la virgule)
+		it('refuse la virgule décimale dans une formule maison (3,14)', () => {
 			const result = expressionToLatex('3,14', 'custom');
-			expect(result).toBe('3{,}14');
+			expect(result).toContain("Decimal comma: the decimal separator is '.' (write 3.14)");
 		});
 
 		it('formate les grands nombres avec espaces', () => {

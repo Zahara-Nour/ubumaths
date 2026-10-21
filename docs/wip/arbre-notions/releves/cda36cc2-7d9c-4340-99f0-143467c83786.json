@@ -1,0 +1,706 @@
+{
+	"template_id": "cda36cc2-7d9c-4340-99f0-143467c83786",
+	"titre": "Ecrire un grand nombre entier sans les zéros inutiles",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-09-29T20:53:54.120748+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-006",
+			"libelle_point": "Connaître et utiliser diverses représentations d'un nombre et passer de l'une à l'autre",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > écritures",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0|1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0|1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 277,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1001,
+						"max": 9904,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1001,
+						"max": 9904,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1001,
+				"max": 9904,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1001,
+				"max": 9904,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1001,
+				"max": 9904,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 1,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9904)",
+					"graine": 157,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[009904]$$",
+					"reponse": ["9904"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "0",
+						"d": "4",
+						"expression": "009904"
+					}
+				},
+				{
+					"role": "plus petite valeur (1001)",
+					"graine": 50,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[001001]$$",
+					"reponse": ["1001"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "1",
+						"expression": "001001"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[001936]$$",
+					"reponse": ["1936"],
+					"variables": {
+						"a": "1",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"expression": "001936"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[003086]$$",
+					"reponse": ["3086"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "8",
+						"d": "6",
+						"expression": "003086"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[001007]$$",
+					"reponse": ["1007"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "7",
+						"expression": "001007"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0|1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0|1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}0"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 277,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10010,
+						"max": 99040,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10010,
+						"max": 99040,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10010,
+				"max": 99040,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": 10010,
+				"max": 99040,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 10010,
+				"max": 99040,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 1,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99040)",
+					"graine": 157,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[0099040]$$",
+					"reponse": ["99040"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "0",
+						"d": "4",
+						"expression": "0099040"
+					}
+				},
+				{
+					"role": "plus petite valeur (10010)",
+					"graine": 50,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[0010010]$$",
+					"reponse": ["10010"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "1",
+						"expression": "0010010"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[0019360]$$",
+					"reponse": ["19360"],
+					"variables": {
+						"a": "1",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"expression": "0019360"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[0030860]$$",
+					"reponse": ["30860"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "8",
+						"d": "6",
+						"expression": "0030860"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[0010070]$$",
+					"reponse": ["10070"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "7",
+						"expression": "0010070"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0|1..9"
+					},
+					{
+						"name": "c",
+						"expression": "0|1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression",
+						"expression": "00{{a}}{{b}}{{c}}{{d}}00"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$?$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 277,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100100,
+						"max": 990400,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100100,
+						"max": 990400,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 100100,
+				"max": 990400,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_reponse": {
+				"min": 100100,
+				"max": 990400,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 100100,
+				"max": 990400,
+				"nb_distinctes": 277,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 1,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (990400)",
+					"graine": 157,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[00990400]$$",
+					"reponse": ["990400"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "0",
+						"d": "4",
+						"expression": "00990400"
+					}
+				},
+				{
+					"role": "plus petite valeur (100100)",
+					"graine": 50,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[00100100]$$",
+					"reponse": ["100100"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "1",
+						"expression": "00100100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[00193600]$$",
+					"reponse": ["193600"],
+					"variables": {
+						"a": "1",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"expression": "00193600"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[00308600]$$",
+					"reponse": ["308600"],
+					"variables": {
+						"a": "3",
+						"b": "0",
+						"c": "8",
+						"d": "6",
+						"expression": "00308600"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris ce nombre entier en enlevant les zéros inutiles.\n\n$$[00100700]$$",
+					"reponse": ["100700"],
+					"variables": {
+						"a": "1",
+						"b": "0",
+						"c": "0",
+						"d": "7",
+						"expression": "00100700"
+					}
+				}
+			]
+		}
+	]
+}

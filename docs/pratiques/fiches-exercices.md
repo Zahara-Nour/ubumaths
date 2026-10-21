@@ -14,6 +14,35 @@ gardé. On ne passe par l'éditeur qu'ensuite, pour retoucher.
 
 ---
 
+## 0. Quel modèle pour quelle tâche
+
+À régler **avant de commencer** : la session principale tourne sous Opus (`/model`), et **on ne
+change pas de modèle en cours de chantier**. Chaque bascule relit tout l'historique au tarif plein,
+car le cache de prompt est propre à chaque modèle. Haiku n'est pas recommandé : une erreur de contenu
+part en production.
+
+Une tâche qui n'a pas besoin de l'historique du chantier se confie à un **sous-agent** (`Agent` avec
+`model`) : il démarre avec un contexte vide et ne reçoit que son brief. Ne jamais utiliser `fork` pour
+une tâche mécanique : il hérite de tout le contexte et tourne sur le modèle courant.
+
+| Tâche                                                                                 | Lancée par                            | Modèle | Pourquoi                                                          |
+| ------------------------------------------------------------------------------------- | ------------------------------------- | ------ | ----------------------------------------------------------------- |
+| Cadrage, inventaire en base, `CONVENTIONS.md`, plan des fiches (§ 1, § 2)             | Session principale                    | Opus   | Décisions de contenu et de programme                              |
+| Rédaction des énoncés et corrigés (agents `pedagogy-expert`, § 2.3)                   | Sous-agent, brief précis              | Opus   | Une erreur de calcul ou un corrigé faux part vite en production   |
+| `assert_all.py` et `pnpm check:ubumark` (§ 2.3)                                       | Sous-agent, brief précis              | Opus   | Vérification mathématique : c'est elle qui rattrape les erreurs   |
+| Relecture des pages PDF (§ 2.4)                                                       | Session principale                    | Opus   | Les détecteurs ne voient pas les défauts de sens                  |
+| Correctif du générateur PDF et test rouge (§ 2.7)                                     | Session principale ou sous-agent Opus | Opus   | Code critique du rendu ; le test doit prouver le défaut           |
+| Modèles d'automatismes en JSON, `genericFunctions`, `points` (§ 2 bis)                | Session principale ou sous-agent Opus | Opus   | Contenu mathématique paramétré, formules vérifiées par le système |
+| Script de création copié et adapté (`create-*-1spe.ts`, § 2.5)                        | Sous-agent, brief court               | Sonnet | Travail mécanique : titres, identifiants, constantes              |
+| Simulation puis `--publier`, `regen-depuis-base`, compilation, débords (§ 2.5, § 2.6) | Sous-agent, brief court               | Sonnet | Commandes et lecture de sorties ; à arrêter au premier doute      |
+| Lecture des écarts de la simulation vers le plan                                      | Session principale                    | Opus   | Une décision de contenu, pas une commande                         |
+
+Un sous-agent de rédaction sans modèle indiqué doit être lancé en Opus. Ne jamais déléguer à un
+modèle plus petit la décision d'un contenu mathématique.
+
+**Sessions courtes** : une session par fiche ou par phase, avec le document de progression dans
+`docs/wip/` (crash-recovery), pour reprendre sans relire tout l'historique.
+
 ## 1. Ce qui existe (1re spécialité, brouillons FR + EN)
 
 Deux fiches par thème : **Entraînement technique** (catégorie `automatisme`, exercices numérotés,
@@ -34,6 +63,14 @@ ainsi (voir la ligne du tableau) et sert de modèle.
 | Variables aléatoires       | `0ef45afb` (8 sections, 18 ex. dont « Rappels »)            | `d720d039` (5 sections, 11 ex.)  | `create-variables-aleatoires-1spe.ts` puis `refonte-variables-aleatoires-1spe.ts` |
 | Géométrie repérée          | `6ee9c178` (10 neufs + 2 existants)                         | `bb53d116`                       | `create-geometrie-reperee-1spe.ts`                                                |
 | Automatismes (évolutions)  | `9217dfaa` « Automatismes : évolutions (1) », 2 séries de 8 | —                                | `create-automatismes-evolutions-1spe.ts`                                          |
+
+Terminale maths complémentaires : **« Loi binomiale »** (thème `Loi binomiale`, 2026-10-16) — technique
+`f054c015` (7 sections, 14 ex.), applications `19848611` (4 sections, 8 ex., 3 illustrations) —
+`create-loi-binomiale-tcomp.ts` (les deux fiches lues depuis un `plan.json`, sections comprises).
+Coefficients binomiaux donnés dans l'énoncé : la formule avec factorielles est hors programme.
+**« Loi géométrique »** (thème `Loi géométrique`, 2026-10-16) — technique `69187540` (6 sections,
+10 ex.), applications `7e4ade83` (3 sections, 6 ex., 3 illustrations) — `create-loi-geometrique-tcomp.ts`
+(copie du script binomial). Variance de la loi géométrique hors programme ; espérance $1/p$ admise.
 
 Seconde : **« Fonctions : généralités »** `41737393` (thème `Fonctions`, 1 fiche, 3 sections : images,
 antécédents par le calcul, lectures graphiques ; 14 neufs + « Calcul d'images » `5b233301`) —
@@ -328,7 +365,7 @@ condition ; `{{b;+}}` / `{{b;()}}` sur une variable déclarée (= `{{eval:b;+}}`
 
 Corrigé dans le moteur le 2026-10-05 (branche `fix/trig-moins-eval-pi-ensembles`), ne plus
 contourner : un multiple rationnel de π calculé par `eval` s'écrit comme au tableau —
-`{{eval:m*pi/12}}` donne `\dfrac{\pi}{6}` (m = 2), `\dfrac{5 \pi}{6}`, `-\dfrac{2 \pi}{3}`, `\pi`,
+`{{eval:m*\pi/12}}` donne `\dfrac{\pi}{6}` (m = 2), `\dfrac{5 \pi}{6}`, `-\dfrac{2 \pi}{3}`, `\pi`,
 `2 \pi`, `0` (plus `\dfrac{1}{6} \pi`). Les variables `gcd` et les `{{if:u==1|…}}` des cartes de
 trigonométrie ne sont plus nécessaires (elles restent justes). Une somme (`\dfrac{3}{2} \pi + 1`)
 ou `π²` gardent leur écriture.
@@ -336,7 +373,7 @@ ou `π²` gardent leur écriture.
 Corrigés dans le moteur le 2026-10-02 (branche `fix/pieges-generation-2`), ne plus contourner :
 dans une condition, `a % 10 != 0` (= `mod(a, 10)`, l'opérande gauche est le produit qui précède),
 `and` / `or` / `not` (= `&&` / `||` / `!(…)`, `not a = 1` nie toute la comparaison ; `!a = 1` est
-désormais une erreur explicite) et `pi` (= π, comme dans `{{eval:…}}`) ; `sign()` dans `eval` et
+désormais une erreur explicite) et `\pi` (`pi` nu y est refusé, comme dans `{{eval:…}}`) ; `sign()` dans `eval` et
 dans une condition (−1, 0 ou 1) ; modificateurs enchaînés en plusieurs `;` (`{{eval:E;();d}}` =
 `{{eval:E;d;()}}` = `{{eval:E;d,()}}`) ; tirage dont une variable ne se calcule pas (division par
 zéro, `arccos(3/2)`) relancé comme une condition fausse, échec explicite après 100 essais ; variable
@@ -425,8 +462,11 @@ Détail : `docs/systeme/mathast/convention-equivalence.md` (§ Notation combinat
 Toujours vrai :
 
 - **`{{eval:…}}` ne calcule que des NOMBRES** : une expression en x (`{{eval:a*cos(x)}}`) sort en
-  texte brut (`-cos(x)+2sin(x)`) et les bonnes réponses sont refusées ; `{{eval:cos(p*pi/d)}}`
-  n'est pas calculé. Écrire l'expression avec des coefficients tirés, ou une variation par valeur.
+  texte brut (`-cos(x)+2sin(x)`) et les bonnes réponses sont refusées. Écrire l'expression avec
+  des coefficients tirés, ou une variation par valeur.
+- **π s'écrit `\pi` dans un calcul** (`{{eval:cos(p*\pi/d)}}`, `conditions`, variable `eval:…`) :
+  `pi` nu se lirait p × i, il est refusé (« écris \pi »). `pnpm tsx scripts/inventaire-pi-nu.ts
+<dossier>` les repère dans des modèles JSON.
 - **Pas d'opérateur ternaire** dans `eval` (`a>0?1:3` → « Unexpected token ») : `2-a/abs(a)`.
 - **Bloc ```trig** : les étiquettes sont écrites dans [0 ; 2π[ par défaut (−π/6 devient
   « 11π/6 ») ; pour un intervalle d'étude ]−π ; π], ajouter `mesures: principales` (preset,
@@ -665,7 +705,9 @@ repérée`…). Les titres d'exercices sont uniques par thème (« Bilan techniq
   décide du séparateur décimal : point en anglais, virgule en français (#448).
 - **Lisibilité PDF** (« variante E ») : fraction et vecteur en colonne de premier niveau d'une
   formule du texte en taille normale (#436, #451).
-- Numérotation affichée : **a) 1) i)** (le markdown s'écrit `1.` puis `   a.`).
+- Numérotation affichée : **1) a) i)** (le markdown s'écrit `1.` puis `   a.`) ; une liste plate : 1) 2) 3)
+  (2026-10-18 ; a) 1) i) du 2026-09-23 au 2026-10-18 : les renvois « question b) 2) » écrits
+  dans cette période se lisent désormais « question 2) b) »).
 
 ---
 

@@ -3,7 +3,7 @@
  *
  * `columns()` de Typst ne se répartit pas dans une page déjà en deux colonnes
  * (mesuré avec le compilateur de prod) : la liste devient une GRILLE, lue en
- * lignes (a) b) / c) d)), chaque cellule étant un item d'un seul numéro portant
+ * lignes (1) 2) / 3) 4)), chaque cellule étant un item d'un seul numéro portant
  * son propre numéro — la numérotation (style par profondeur, départ) est donc
  * celle de la liste normale. Depuis la lisibilité des PDF, la cellule est un
  * `ubu-item` (numéro dans la première ligne), comme un item hors colonnes.
@@ -32,9 +32,9 @@ describe('Typst — liste numérotée en colonnes', () => {
 		const code = typst(':colonnes 2\n1. ~cos(\\pi)~\n2. ~sin(\\pi)~\n3. ~cos(0)~');
 		expect(code).toContain('grid(columns: (1fr, 1fr)');
 		expect(cellules(code)).toEqual([
-			{ start: 1, numbering: 'a)' },
-			{ start: 2, numbering: 'a)' },
-			{ start: 3, numbering: 'a)' }
+			{ start: 1, numbering: '1)' },
+			{ start: 2, numbering: '1)' },
+			{ start: 3, numbering: '1)' }
 		]);
 		expect(code).not.toContain('colonnes');
 	});
@@ -54,13 +54,13 @@ describe('Typst — liste numérotée en colonnes', () => {
 		expect(cellules(typst(':colonnes 2\n3. a\n4. b')).map((c) => c.start)).toEqual([3, 4]);
 	});
 
-	it('sous-liste en colonnes : style de sa profondeur (1)), liste principale normale', () => {
+	it('sous-liste en colonnes : style de sa profondeur (a)), liste principale normale', () => {
 		const code = typst('1. Calculer :\n   :colonnes 3\n   a. x\n   b. y\n   c. z\n2. Fin.');
-		expect(code).toContain('#ubu-item(numbering("a)", 1), w: "a)")[Calculer');
+		expect(code).toContain('#ubu-item(numbering("1)", 1), w: "1)")[Calculer');
 		expect(cellules(code)).toEqual([
-			{ start: 1, numbering: '1)' },
-			{ start: 2, numbering: '1)' },
-			{ start: 3, numbering: '1)' }
+			{ start: 1, numbering: 'a)' },
+			{ start: 2, numbering: 'a)' },
+			{ start: 3, numbering: 'a)' }
 		]);
 	});
 

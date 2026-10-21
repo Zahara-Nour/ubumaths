@@ -1,0 +1,284 @@
+{
+	"template_id": "32724446-558b-4eea-ad4a-13d7c6afe435",
+	"titre": "Encadrer un nombre décimal au dixième près",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Encadrer",
+	"mis_a_jour": "2026-10-01T06:18:06.264111+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-132",
+			"libelle_point": "Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > encadrement",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > » → « Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a+b*0.1+c*0.01;d"
+					},
+					{
+						"name": "expression1",
+						"expression": "?<d<?"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Encadre ce nombre décimal au dixième près.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:a+b*0.1;d}}", "{{eval:a+(b+1)*0.1;d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 257,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 2,
+						"min": 0.02,
+						"max": 9.93,
+						"negatif_possible": false,
+						"nb_distinctes": 257
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 257,
+						"exemples": [
+							"?<0.59<?",
+							"?<3.25<?",
+							"?<0.41<?",
+							"?<3.21<?",
+							"?<7.26<?",
+							"?<0.62<?",
+							"?<0.97<?",
+							"?<6.37<?",
+							"?<8.18<?",
+							"?<9.68<?",
+							"?<5.66<?",
+							"?<3.01<?"
+						],
+						"nombres_contenus": {
+							"min": 0.02,
+							"max": 9.93,
+							"nb_distinctes": 257,
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 0,
+						"max": 9.9,
+						"negatif_possible": false,
+						"nb_distinctes": 94
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 0.1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 94
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.02,
+				"max": 9.93,
+				"nb_distinctes": 257,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 101,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 358,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"<": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 115,
+					"enonce": "Encadre ce nombre décimal au dixième près.\n\n$$[?] < 9{,}93 < [?]$$",
+					"reponse": ["9.9", "10"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "9.93",
+						"expression1": "?<9.93<?"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 27,
+					"enonce": "Encadre ce nombre décimal au dixième près.\n\n$$[?] < 0{,}02 < [?]$$",
+					"reponse": ["0", "0.1"],
+					"variables": {
+						"a": "0",
+						"b": "0",
+						"c": "2",
+						"d": "0.02",
+						"expression1": "?<0.02<?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Encadre ce nombre décimal au dixième près.\n\n$$[?] < 0{,}59 < [?]$$",
+					"reponse": ["0.5", "0.6"],
+					"variables": {
+						"a": "0",
+						"b": "5",
+						"c": "9",
+						"d": "0.59",
+						"expression1": "?<0.59<?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Encadre ce nombre décimal au dixième près.\n\n$$[?] < 3{,}25 < [?]$$",
+					"reponse": ["3.2", "3.3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "3.25",
+						"expression1": "?<3.25<?"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Encadre ce nombre décimal au dixième près.\n\n$$[?] < 0{,}41 < [?]$$",
+					"reponse": ["0.4", "0.5"],
+					"variables": {
+						"a": "0",
+						"b": "4",
+						"c": "1",
+						"d": "0.41",
+						"expression1": "?<0.41<?"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1,0 +1,191 @@
+{
+	"template_id": "75b46e1c-a819-40c0-9774-69b64ec45719",
+	"titre": "Calculer le pourcentage d'une quantité",
+	"sous_titre": "$20\\%$-$40\\%$ d'un multiple de $10$",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Pourcentages > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-141",
+			"libelle_point": "Appliquer un pourcentage à une grandeur ou à un nombre",
+			"noeud_actuel": "Proportionnalité > Pourcentages > calculs de pourcentages",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "20|30|40"
+					},
+					{
+						"name": "b",
+						"expression": "1..40"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule ${{a}}\\%$ de ${{eval:b*10}}$.\n\n${{a}}\\%$ de ${{eval:b*10}}$ est égal à $?$.",
+				"reponses_brutes": ["{{eval:a%*b*10}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 106,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [20, 30, 40]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 40,
+						"negatif_possible": false,
+						"nb_distinctes": 40
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 160,
+						"negatif_possible": false,
+						"nb_distinctes": 78
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 400,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 160,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 400,
+				"nb_distinctes": 106,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"%": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (400)",
+					"graine": 7,
+					"enonce": "Calcule $20\\%$ de $400$.\n\n$20\\%$ de $400$ est égal à $[?]$.",
+					"reponse": ["80"],
+					"variables": {
+						"a": "20",
+						"b": "40"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 27,
+					"enonce": "Calcule $20\\%$ de $10$.\n\n$20\\%$ de $10$ est égal à $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "20",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule $20\\%$ de $220$.\n\n$20\\%$ de $220$ est égal à $[?]$.",
+					"reponse": ["44"],
+					"variables": {
+						"a": "20",
+						"b": "22"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule $20\\%$ de $120$.\n\n$20\\%$ de $120$ est égal à $[?]$.",
+					"reponse": ["24"],
+					"variables": {
+						"a": "20",
+						"b": "12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule $20\\%$ de $190$.\n\n$20\\%$ de $190$ est égal à $[?]$.",
+					"reponse": ["38"],
+					"variables": {
+						"a": "20",
+						"b": "19"
+					}
+				}
+			]
+		}
+	]
+}

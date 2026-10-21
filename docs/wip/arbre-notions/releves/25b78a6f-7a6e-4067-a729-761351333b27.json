@@ -1,0 +1,334 @@
+{
+	"template_id": "25b78a6f-7a6e-4067-a729-761351333b27",
+	"titre": "Calculer un produit",
+	"sous_titre": "avec peut-être une simplification simple",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Calculer > Multiplication",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-008",
+			"libelle_point": "Calculer le produit de nombres rationnels.",
+			"noeud_actuel": "Nombres et calculs > Fractions : calculs > multiplication",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "2..9"
+					},
+					{
+						"name": "f",
+						"expression": "gcd(a*b,c*d)"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a/c}*{b/d}"
+					}
+				],
+				"conditions": ["gcd(a*b,c*d)<c*d"],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["\\frac{{{eval:a*b/gcd(a*b,c*d)}}}{{{eval:c*d/gcd(a*b,c*d)}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 285,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 285,
+						"exemples": [
+							"gcd(2*6,9*9)",
+							"gcd(4*4,6*9)",
+							"gcd(2*5,2*8)",
+							"gcd(6*2,9*6)",
+							"gcd(6*7,5*9)",
+							"gcd(2*7,3*6)",
+							"gcd(2*9,7*6)",
+							"gcd(7*4,7*6)",
+							"gcd(8*3,8*7)",
+							"gcd(9*7,8*5)",
+							"gcd(6*6,6*8)",
+							"gcd(2*6,9*3)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9.9,
+							"nb_distinctes": 72,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 285,
+						"exemples": [
+							"{2/9}*{6/9}",
+							"{4/6}*{4/9}",
+							"{2/2}*{5/8}",
+							"{6/9}*{2/6}",
+							"{6/5}*{7/9}",
+							"{2/3}*{7/6}",
+							"{2/7}*{9/6}",
+							"{7/7}*{4/6}",
+							"{8/8}*{3/7}",
+							"{9/8}*{7/5}",
+							"{6/6}*{6/8}",
+							"{2/9}*{6/3}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.07407407407407407,
+						"max": 13.5,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 81,
+						"nb_distinctes": 133
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 81,
+				"nb_distinctes": 34,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 2,
+				"numerateur_max": 9,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateur_min": 2,
+				"denominateur_max": 81,
+				"numerateur_min": 1,
+				"numerateur_max": 72,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 197,
+					"enonce": "Calcule.\n\n$$\\dfrac{4}{9} \\times \\dfrac{8}{9} = [?]$$",
+					"reponse": ["\\frac{32}{81}"],
+					"variables": {
+						"a": "4",
+						"b": "8",
+						"c": "9",
+						"d": "9",
+						"f": "gcd(4*8,9*9)",
+						"expression1": "{4/9}*{8/9}"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 13,
+					"enonce": "Calcule.\n\n$$\\dfrac{2}{4} \\times \\dfrac{2}{6} = [?]$$",
+					"reponse": ["\\frac{1}{6}"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "4",
+						"d": "6",
+						"f": "gcd(2*2,4*6)",
+						"expression1": "{2/4}*{2/6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\dfrac{2}{9} \\times \\dfrac{6}{9} = [?]$$",
+					"reponse": ["\\frac{4}{27}"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "9",
+						"d": "9",
+						"f": "gcd(2*6,9*9)",
+						"expression1": "{2/9}*{6/9}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\dfrac{4}{6} \\times \\dfrac{4}{9} = [?]$$",
+					"reponse": ["\\frac{8}{27}"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "6",
+						"d": "9",
+						"f": "gcd(4*4,6*9)",
+						"expression1": "{4/6}*{4/9}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$\\dfrac{2}{2} \\times \\dfrac{5}{8} = [?]$$",
+					"reponse": ["\\frac{5}{8}"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2",
+						"d": "8",
+						"f": "gcd(2*5,2*8)",
+						"expression1": "{2/2}*{5/8}"
+					}
+				}
+			]
+		}
+	]
+}

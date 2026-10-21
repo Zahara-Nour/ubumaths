@@ -11,19 +11,27 @@
  * @module questions/units/validator
  */
 
-import { parseLatexQuantity, extractUnitFromLatex, parseUnitExpression } from './parser';
+import {
+	parseLatexQuantity,
+	extractUnitFromLatex,
+	parseUnitExpression,
+	readsAsNumber
+} from './parser';
 import { unitWritingProblem } from '$lib/mathAST/units/parser';
 import {
 	UNIT_FEEDBACK,
 	ambiguousUnitMessage,
 	requiredUnitMessage,
-	unknownUnitMessage
+	unknownUnitMessage,
+	wrongMagnitudeMessage
 } from './feedback';
 import { normalizeStudentQuantity, studentNumericLatex } from './student-input';
+import { readStudentCalculation, type StudentCalculation } from './student-calculation';
 import { readCompositeDuration, type DurationFormIssue } from './composite-duration';
-import { compareQuantities, type Tolerance } from './ce-integration';
+import { compareQuantities, type Tolerance } from './quantity-comparison';
 import { isDuration, unitsAreCompatible } from './operations';
 import type { PrecisionType } from '$lib/questions/types';
+import type { Unit } from './types';
 import { convertAffine } from '$lib/mathAST/units/conversion';
 import {
 	judgeRounding,
@@ -271,7 +279,7 @@ export function validateQuantityAnswer(
 			: null;
 	const expectedDisplay = expectedQuantity
 		? {
-				value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+				value: expectedQuantity.value,
 				unit: formatUnitForDisplay(expectedQuantity.unit.components)
 			}
 		: null;
@@ -317,6 +325,34 @@ export function validateQuantityAnswer(
 
 	// Check for parse failures
 	if (!userQuantity) {
+		// Un calcul avec des unités (`2\times3\,m`, `3m+2m`) : seconde lecture en arbre,
+		// la grandeur calculée est jugée comme une réponse (la forme l'est à part)
+		// Une écriture d'unité ambiguë (`kg/m.s`) garde son message : rien n'y est deviné
+		const writing = extractUnitFromLatex(normalizedUser);
+		const ambiguous = writing !== null && unitWritingProblem(writing) !== null;
+		const calculation = duration === null && !ambiguous ? readStudentCalculation(userAnswer) : null;
+		if (calculation?.kind === 'quantity') {
+			return validateQuantityAnswer(calculation.latex, expectedAnswer, precision, requiredUnit);
+		}
+		if (calculation?.kind === 'refused') {
+			return refusedCalculationResult(calculation, expectedDisplay);
+		}
+		// Nombre sans unité, même illisible en valeur (`\sqrt{2}`) : l'unité est oubliée
+		if (
+			expectedQuantity &&
+			expectedQuantity.unit.components.size > 0 &&
+			extractUnitFromLatex(normalizedUser) === null &&
+			readsAsNumber(normalizedUser)
+		) {
+			return {
+				isCorrect: false,
+				feedback: UNIT_FEEDBACK.missingUnit,
+				errorType: 'incompatible_units',
+				unitAtFault: true,
+				parsed: null,
+				expected: expectedDisplay
+			};
+		}
 		const unitMessage = unitWritingFeedback(normalizedUser);
 		return {
 			isCorrect: false,
@@ -324,12 +360,7 @@ export function validateQuantityAnswer(
 			errorType: 'invalid_input',
 			...(unitMessage ? { unitAtFault: true } : {}),
 			parsed: null,
-			expected: expectedQuantity
-				? {
-						value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
-						unit: formatUnitForDisplay(expectedQuantity.unit.components)
-					}
-				: null
+			expected: expectedDisplay
 		};
 	}
 
@@ -339,7 +370,7 @@ export function validateQuantityAnswer(
 			feedback: 'Erreur de configuration : réponse attendue invalide.',
 			errorType: 'invalid_input',
 			parsed: {
-				value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
+				value: userQuantity.value,
 				unit: formatUnitForDisplay(userQuantity.unit.components)
 			},
 			expected: null
@@ -357,15 +388,19 @@ export function validateQuantityAnswer(
 			userQuantity.unit.components.size === 0 && expectedQuantity.unit.components.size > 0;
 		return {
 			isCorrect: false,
-			feedback: missingUnit ? UNIT_FEEDBACK.missingUnit : UNIT_FEEDBACK.wrongMagnitude,
+			feedback: missingUnit
+				? UNIT_FEEDBACK.missingUnit
+				: wrongMagnitudeMessage(
+						gluedProductMatches(extractUnitFromLatex(normalizedUser), expectedQuantity.unit)
+					),
 			errorType: 'incompatible_units',
 			unitAtFault: true,
 			parsed: {
-				value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
+				value: userQuantity.value,
 				unit: userUnitStr
 			},
 			expected: {
-				value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+				value: expectedQuantity.value,
 				unit: expectedUnitStr
 			}
 		};
@@ -382,11 +417,11 @@ export function validateQuantityAnswer(
 				errorType: 'wrong_unit',
 				unitAtFault: true,
 				parsed: {
-					value: typeof userQuantity.value === 'number' ? userQuantity.value : null,
+					value: userQuantity.value,
 					unit: userUnitStr
 				},
 				expected: {
-					value: typeof expectedQuantity.value === 'number' ? expectedQuantity.value : null,
+					value: expectedQuantity.value,
 					unit: expectedUnitStr
 				}
 			};
@@ -409,17 +444,6 @@ export function validateQuantityAnswer(
 		value: comparisonResult.expectedValue,
 		unit: comparisonResult.expectedUnit
 	};
-
-	// Check comparison result
-	if (comparisonResult.error === 'evaluation_failed') {
-		return {
-			isCorrect: false,
-			feedback: DEFAULT_MESSAGES.invalidInput,
-			errorType: 'invalid_input',
-			parsed,
-			expected
-		};
-	}
 
 	// Arrondi demandé : la comparaison exacte ne dit rien, on juge l'arrondi
 	if (
@@ -500,6 +524,41 @@ export function validateQuantityAnswer(
 // HELPER FUNCTIONS
 // ============================================================================
 
+/** Verdict d'un calcul d'élève qui ne donne pas une grandeur lisible */
+function refusedCalculationResult(
+	calculation: Extract<StudentCalculation, { kind: 'refused' }>,
+	expected: ValidationResult['expected']
+): ValidationResult {
+	// `3+2\,m` : les grandeurs du calcul sont en cause, l'élève lit pourquoi
+	if (calculation.reason === 'dimensions') {
+		return {
+			isCorrect: false,
+			feedback: calculation.feedback,
+			errorType: 'incompatible_units',
+			unitAtFault: true,
+			parsed: null,
+			expected
+		};
+	}
+	// `2\sqrt{2}\,m` : une grandeur, mais pas la valeur attendue
+	if (calculation.reason === 'irrational') {
+		return {
+			isCorrect: false,
+			feedback: DEFAULT_MESSAGES.incorrectValue,
+			errorType: 'wrong_value',
+			parsed: null,
+			expected
+		};
+	}
+	return {
+		isCorrect: false,
+		feedback: DEFAULT_MESSAGES.invalidInput,
+		errorType: 'invalid_input',
+		parsed: null,
+		expected
+	};
+}
+
 /**
  * Message élève quand la saisie normalisée porte une écriture d'unité que le
  * parseur refuse : ambiguë (`kg/m.s`) ou inconnue (`xyz`). Null si la saisie
@@ -511,6 +570,40 @@ function unitWritingFeedback(normalizedUser: string): string | null {
 	if (unitWritingProblem(writing) !== null) return ambiguousUnitMessage(writing);
 	if (parseUnitExpression(writing) === null) return unknownUnitMessage(writing);
 	return null;
+}
+
+/**
+ * Symboles collés : des lettres seulement (`ms`, pas `m.s` ni `m^2`), 8 au plus.
+ * Défense : seule une écriture déjà lue comme UNE unité arrive ici (la plus
+ * longue, `semaine`, a 7 lettres), mais les découpes croissent exponentiellement.
+ */
+const GLUED_LETTERS = /^[A-Za-z]{2,8}$/;
+
+/**
+ * Vrai quand l'écriture de l'élève est faite de symboles d'unités collés qui,
+ * lus comme un produit, mesurent la grandeur attendue : `ms` (lu milliseconde)
+ * quand des m·s sont attendus. Toutes les découpes en deux symboles ou plus
+ * sont essayées.
+ */
+function gluedProductMatches(writing: string | null, expectedUnit: Unit): boolean {
+	if (writing === null || !GLUED_LETTERS.test(writing)) return false;
+	return productSplits(writing).some((symbols) => {
+		const product = parseUnitExpression(symbols.join('.'));
+		return product !== null && unitsAreCompatible(product, expectedUnit);
+	});
+}
+
+/** Les découpes de `writing` en deux symboles d'unités connus ou plus */
+function productSplits(writing: string): string[][] {
+	const splits: string[][] = [];
+	for (let end = 1; end < writing.length; end++) {
+		const head = writing.slice(0, end);
+		if (parseUnitExpression(head) === null) continue;
+		const tail = writing.slice(end);
+		if (parseUnitExpression(tail) !== null) splits.push([head, tail]);
+		for (const rest of productSplits(tail)) splits.push([head, ...rest]);
+	}
+	return splits;
 }
 
 /**

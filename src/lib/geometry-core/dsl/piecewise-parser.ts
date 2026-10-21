@@ -23,6 +23,7 @@
 
 import type { MathNode } from '$lib/mathAST/types';
 import type { PiecewisePiece } from '$lib/mathAST/types';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { parseCustom, piecewise, logicalAnd, relation, getVariables } from '$lib/mathAST';
 import type { SymbolTable } from './symbol-table';
 import { DslRuntimeError } from './errors';
@@ -222,7 +223,7 @@ function parseExpression(s: string, line: number): MathNode {
 		throw new DslRuntimeError(`Piecewise imbriqué non supporté: "${s}"`, line);
 	}
 	try {
-		return parseCustom(trimmed);
+		return parseCustom(legacyDecimalCommas(trimmed));
 	} catch (e) {
 		throw new DslRuntimeError(
 			`Expression piecewise invalide "${s}": ${e instanceof Error ? e.message : ''}`,

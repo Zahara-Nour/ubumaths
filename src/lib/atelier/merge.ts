@@ -13,8 +13,22 @@
  */
 
 import { Atelier, sequenceInputOf } from './atelier.svelte';
-import { loadAtelier, saveAtelier, type AtelierState } from './persistence';
-import { nextName, derivativeOf, displayName, reciprocalName, reciprocalOf } from './names';
+import {
+	loadAtelier,
+	migrateReservedNames,
+	saveAtelier,
+	type AtelierState,
+	type StoredObject
+} from './persistence';
+import { renameInObject } from './rename';
+import {
+	indexedNameClash,
+	nextClashFreeName,
+	derivativeOf,
+	displayName,
+	reciprocalName,
+	reciprocalOf
+} from './names';
 import {
 	cellTextFromStored,
 	columnLetter,
@@ -22,9 +36,11 @@ import {
 	definitionFrom,
 	entriesOf,
 	readCellName,
+	renameInFormula,
 	type CellEdit
 } from './grid';
-import { isFormula, remapColumns } from './formula';
+import { remapColumns } from './formula';
+import { formatOf, normalizeFormats, type FormatZone } from './cell-format';
 
 // =============================================================================
 // Types
@@ -43,17 +59,13 @@ export interface MergeReport {
 	 * leurs tirages sont donc refaits — à dire (phase 0 §4).
 	 */
 	readonly redrawn: boolean;
+	/**
+	 * Les objets de l'atelier PERSONNEL renommés à sa relecture (`y` devenu
+	 * réservé, Q2 de la géométrie) : enregistrés sous leur nouveau nom, donc à
+	 * dire — sans quoi l'élève retrouverait `a` à la place de son `y`, en silence.
+	 */
+	readonly migrated?: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 }
-
-// =============================================================================
-// Constantes
-// =============================================================================
-
-/**
- * Un nom d'objet dans une formule : jamais une référence de cellule (`L2`,
- * `L$2`), qu'une liste `L` renommée en `M` ne doit pas déplacer.
- */
-const OBJECT_NAME = /(?<![A-Za-z$])[A-Za-z]+(?:_\d+)?(?![A-Za-z\d$])/g;
 
 // =============================================================================
 // Fonctions
@@ -91,6 +103,32 @@ function arrivingColumns(state: AtelierState): string[] {
 	return slots.sort((a, b) => columnRank(a) - columnRank(b));
 }
 
+/** La mise en forme reçue, sous sa forme canonique (seulement ce qui se voit). */
+function receivedFormats(state: AtelierState): FormatZone[] {
+	return normalizeFormats(
+		(state.grid?.formats ?? []).flatMap((stored) => {
+			const format = formatOf(stored);
+			return format === null ? [] : [format];
+		})
+	);
+}
+
+/**
+ * Les colonnes reçues qui n'ont QUE de la mise en forme (une colonne « Monnaie »
+ * préparée, une ligne d'en-tête en gras qui déborde) : elles arrivent s'il reste
+ * des colonnes libres, sans jamais faire refuser l'atelier reçu (revue).
+ */
+function formatOnlyColumns(state: AtelierState, arriving: readonly string[]): string[] {
+	const letters = new Set<string>();
+	for (const { zone } of receivedFormats(state)) {
+		for (let column = zone.left; column <= zone.right; column++) {
+			const letter = columnLetter(column);
+			if (!arriving.includes(letter)) letters.add(letter);
+		}
+	}
+	return [...letters].sort();
+}
+
 /** Une lettre de colonne, puis les listes de version 1 dans leur ordre. */
 function columnRank(slot: string): number {
 	const letter = columnOfLetter(slot);
@@ -109,12 +147,114 @@ export function mergeRefusal(atelier: Atelier, state: AtelierState): string | nu
 	return `Cet atelier a besoin de ${needed} colonnes libres dans ta grille, il en reste ${free} : rien n’a été versé.`;
 }
 
-export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
+/** Un arrivant et sa place dans l'état reçu. */
+interface Arrival {
+	readonly stored: StoredObject;
+	readonly index: number;
+}
+
+/** Une dérivée `f′` ou une réciproque `f⁻¹` : son nom suit celui de sa fonction. */
+const followsItsBase = (name: string) => derivativeOf(name) !== null || reciprocalOf(name) !== null;
+
+/**
+ * Le nom de chaque arrivant ordinaire, par sa place : le sien s'il est libre,
+ * sinon une lettre libre.
+ *
+ * ⚠️ La lettre libre évite AUSSI les noms des autres arrivants (B9) : reçu `a`,
+ * `b`, `c = a + b` dans un atelier qui a déjà `a`, le `a` reçu devenait `b` et le
+ * `b` reçu `c` — un renommage en chaîne, que personne ne peut réécrire sans
+ * confondre l'un et l'autre.
+ */
+function planNames(atelier: Atelier, arrivals: readonly Arrival[]): Map<number, string> {
+	const local = atelier.names;
+	const reserved = new Set([...local, ...arrivals.map(({ stored }) => stored.name)]);
+	const used = new Set<string>();
+	const planned = new Map<number, string>();
+	// Les objets déjà là, puis les arrivants nommés : une suite `u` reçue à côté
+	// d'une valeur `u_3` locale (ou l'inverse) prend un autre nom (2026-10-19)
+	const present: { name: string; kind: StoredObject['kind'] }[] = [...atelier.objects];
+	for (const { stored, index } of arrivals) {
+		if (followsItsBase(stored.name)) continue;
+		const clash =
+			local.includes(stored.name) ||
+			used.has(stored.name) ||
+			indexedNameClash(stored.name, stored.kind, present) !== null;
+		const chosen = clash ? nextClashFreeName(stored.kind, [...reserved], present) : stored.name;
+		reserved.add(chosen);
+		used.add(chosen);
+		present.push({ name: chosen, kind: stored.kind });
+		planned.set(index, chosen);
+	}
+	return planned;
+}
+
+/**
+ * Les arrivants, leurs définitions réécrites pour citer les renommés sous leur
+ * nouveau nom (B9) — par la même règle que `Atelier.rename` (`renameInObject` :
+ * texte et LaTeX de carte, noms indicés, longueurs `AM`, constructions), et le
+ * premier terme d'une suite. Sans risque de chaîne : un nouveau nom n'est jamais
+ * celui d'un autre arrivant (`planNames`).
+ */
+function rewriteCitations(
+	atelier: Atelier,
+	arrivals: readonly Arrival[],
+	planned: ReadonlyMap<number, string>
+): Arrival[] {
+	const renames: [string, string][] = [];
+	const kinds = new Map<string, StoredObject['kind']>();
+	for (const { stored, index } of arrivals) {
+		const chosen = planned.get(index);
+		if (chosen === undefined) continue;
+		kinds.set(chosen, stored.kind);
+		// Le premier qui porte un nom le garde (un nom en double vient d'un lien forgé)
+		if (chosen !== stored.name && !renames.some(([from]) => from === stored.name)) {
+			renames.push([stored.name, chosen]);
+		}
+	}
+	if (renames.length === 0) return [...arrivals];
+	const kindOf = (name: string) => kinds.get(name) ?? atelier.get(name)?.kind;
+	return arrivals.map(({ stored, index }) => {
+		if (followsItsBase(stored.name)) return { stored, index };
+		let definition = stored.definition;
+		let firstTerm = stored.firstTerm;
+		for (const [from, to] of renames) {
+			const isPoint = (name: string) => kindOf(name === from ? to : name) === 'point';
+			// Une suite (ou une fonction) renommée emmène ses termes reçus : `u_3` → `v_3`,
+			// sinon `b = u_3 + 1` lirait une valeur locale `u_3` sans rien dire
+			const fromKind = kindOf(to);
+			const isTerm =
+				fromKind === 'sequence' || fromKind === 'function'
+					? (name: string) => !arrivals.some((a) => a.stored.name === name)
+					: undefined;
+			definition = renameInObject({ kind: stored.kind, definition }, from, to, isPoint, isTerm);
+			if (firstTerm === from) firstTerm = to;
+		}
+		return {
+			stored: { ...stored, definition, ...(firstTerm !== undefined && { firstTerm }) },
+			index
+		};
+	});
+}
+
+export function mergeInto(atelier: Atelier, received: AtelierState): MergeReport {
+	// Q2 de la géométrie : un objet `y` reçu (nom réservé depuis) prend une lettre
+	// libre ICI comme là-bas — sinon un second renommage laisserait ceux qui le
+	// citent sur l'ancien nom
+	const migration = migrateReservedNames(received, atelier.names);
+	const state = migration.state;
+	const migratedFrom = new Map(migration.renamed.map((r) => [r.to, r.from]));
 	const randomBefore = atelier.randomCells;
 	let added = 0;
 	// Chaque colonne reçue va dans une colonne libre, de gauche à droite (T7)
 	const free = atelier.freeColumns;
-	const placed = new Map(arrivingColumns(state).map((slot, index) => [slot, free[index]]));
+	const arriving = arrivingColumns(state);
+	// Les colonnes qui n'ont que de la mise en forme : autant qu'il reste de place
+	// (les plus à droite cèdent d'abord), puis TOUTES rangées ensemble de gauche à
+	// droite — la grille reçue garde son ordre (contre-revue)
+	const room = Math.max(0, free.length - arriving.length);
+	const decorative = formatOnlyColumns(state, arriving).slice(0, room);
+	const columns = [...arriving, ...decorative].sort((a, b) => columnRank(a) - columnRank(b));
+	const placed = new Map(columns.map((slot, index) => [slot, free[index]]));
 	// Les colonnes reçues → leur place : les références des formules les suivent (T7)
 	const moved = new Map<number, number>();
 	for (const [slot, column] of placed) {
@@ -137,9 +277,13 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 	// (et avant leur réciproque `f⁻¹`, qui suit f de la même façon)
 	const order = (name: string) =>
 		derivativeOf(name)?.order ?? (reciprocalOf(name) !== null ? 1 : 0);
-	const ordered = [...state.objects]
+	const sorted = [...state.objects]
 		.map((stored, index) => ({ stored, index }))
 		.sort((a, b) => order(a.stored.name) - order(b.stored.name));
+	// B9 : les noms sont choisis AVANT toute création, puis chaque arrivant qui
+	// cite un renommé est réécrit — sinon `f(x) = a x` reçu suivait le `a` LOCAL
+	const planned = planNames(atelier, sorted);
+	const ordered = rewriteCitations(atelier, sorted, planned);
 
 	for (const { stored, index } of ordered) {
 		const taken = atelier.names;
@@ -169,7 +313,7 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 				continue;
 			}
 		} else {
-			chosen = taken.includes(wanted) ? nextName(stored.kind, taken) : wanted;
+			chosen = planned.get(index) ?? wanted;
 		}
 		arrivedAs.set(wanted, chosen);
 
@@ -209,24 +353,27 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 		if (column !== undefined) {
 			landedLists.push({ column, entries: entriesOf(input.definition) });
 		}
-		if (chosen === wanted) added++;
-		else renamed.push({ from: wanted, to: chosen });
+		const typed = migratedFrom.get(wanted) ?? wanted;
+		if (chosen === typed) added++;
+		else renamed.push({ from: typed, to: chosen });
 
 		// L'état d'affichage suit l'objet : un atelier reçu avec ses courbes
 		// tracées s'ouvre avec ses courbes tracées, et de leurs couleurs. Les
 		// réglages AVANT le tracé, sinon `setPlotted` en attribuerait de neufs.
 		if (stored.display) atelier.adoptDisplay(chosen, stored.display);
 		if (stored.sequenceDisplay) atelier.adoptSequenceDisplay(chosen, stored.sequenceDisplay);
+		if (stored.figureDisplay) atelier.adoptFigureDisplay(chosen, stored.figureDisplay);
 		if (stored.slider) atelier.adoptSlider(chosen, stored.slider);
+		if (stored.sliderShown) atelier.setSliderShown(chosen, true);
 		if (stored.plotted) atelier.setPlotted(chosen, true);
+		if (stored.inFigure) atelier.setInFigure(chosen, true);
 	}
 
 	// Un objet renommé à l'arrivée (`f` → `g`) : les formules reçues l'appellent
 	// sous son nouveau nom, sinon `=f(3)` calculerait avec la f locale, sans rien
 	// dire (revue). Après la boucle : une liste peut arriver avant sa fonction.
 	const renames = new Map(renamed.map((r) => [r.from, r.to]));
-	const renameIn = (text: string) =>
-		!isFormula(text) ? text : text.replace(OBJECT_NAME, (name) => renames.get(name) ?? name);
+	const renameIn = (text: string) => renameInFormula(text, renames);
 	const cells: CellEdit[] = landedLists.flatMap(({ column, entries }) =>
 		entries.flatMap((text, i) => {
 			const after = renameIn(text);
@@ -242,14 +389,39 @@ export function mergeInto(atelier: Atelier, state: AtelierState): MergeReport {
 			cells.push({ column, row: at.row, text: renameIn(follow(cellTextFromStored(text))) });
 		}
 	}
-	for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
-		const column = placed.get(letter);
-		if (column !== undefined) atelier.setTitle(column, title);
+	// La mise en forme reçue suit ses colonnes, comme ses cases (T7) : chaque zone,
+	// colonne par colonne, va là où sa colonne a été placée
+	let unplaced = 0;
+	const formats: FormatZone[] = receivedFormats(state).flatMap(({ zone, patch }) => {
+		const moved: FormatZone[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const target = placed.get(columnLetter(column));
+			if (target === undefined) unplaced++;
+			else moved.push({ zone: { ...zone, left: target, right: target }, patch });
+		}
+		return moved;
+	});
+	if (unplaced > 0) {
+		refused.push({
+			name: 'mise en forme',
+			reason: 'Une partie de la mise en forme n’a pas trouvé de colonne libre.'
+		});
 	}
 
-	// Un refus se dit dans le rapport, jamais en silence (revue)
-	const written = cells.length > 0 ? atelier.editCells(cells) : null;
-	if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+	// Titres, cases et mise en forme : UN geste, qu'un seul Ctrl+Z défait (revue)
+	atelier.asOneGesture(() => {
+		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
+			const column = placed.get(letter);
+			if (column !== undefined) atelier.setTitle(column, title);
+		}
+		// Un refus se dit dans le rapport, jamais en silence (revue)
+		const written = cells.length > 0 ? atelier.editCells(cells) : null;
+		if (written !== null && !written.ok) refused.push({ name: 'grille', reason: written.message });
+		const styled = atelier.adoptFormats(formats);
+		// Un seul refus « mise en forme » dans le rapport (contre-revue)
+		if (!styled.ok && unplaced === 0)
+			refused.push({ name: 'mise en forme', reason: styled.message });
+	});
 
 	// Tout ce qui est arrivé : cases sans nom ET entrées des listes nommées
 	// Ce qui a vraiment été écrit (une grille refusée n'a rien tiré : revue)
@@ -271,7 +443,8 @@ export function keepReceived(
 ): { ok: true; report: MergeReport } | { ok: false; message: string } {
 	const personal = new Atelier();
 	const loaded = loadAtelier(storage);
-	if (loaded.kind === 'loaded') personal.restore(loaded.state);
+	let migrated: MergeReport['migrated'] = [];
+	if (loaded.kind === 'loaded') migrated = personal.restore(loaded.state).renamed;
 	else if (
 		loaded.kind === 'too-recent' ||
 		loaded.kind === 'corrupt' ||
@@ -289,5 +462,5 @@ export function keepReceived(
 	if (saved.kind !== 'saved') {
 		return { ok: false, message: 'Ton atelier n’a pas pu être enregistré : rien n’a été versé.' };
 	}
-	return { ok: true, report };
+	return { ok: true, report: migrated.length > 0 ? { ...report, migrated } : report };
 }

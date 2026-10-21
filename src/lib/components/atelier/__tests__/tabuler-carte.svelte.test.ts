@@ -5,6 +5,9 @@
  * « de / à / pas » dans la carte, pré-rempli (Q-L3-3) ; valider écrit le
  * tableau dans la grille et passe sur Données, colonnes sélectionnées
  * (Q-L3-1) ; un refus se dit sous le formulaire, rien n'est écrit.
+ *
+ * Lot 3 de la refonte de l'atelier : le formulaire s'ouvre dans une petite
+ * fenêtre, depuis le menu de la carte (« Options de f » → « Tabuler »).
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -12,6 +15,11 @@ import { render } from 'vitest-browser-svelte';
 import { userEvent } from 'vitest/browser';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { chooseCardAction } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 function cardFor(container: HTMLElement, name: string): HTMLElement {
 	const card = [...container.querySelectorAll('.objet')].find(
@@ -25,26 +33,26 @@ function currentView(container: HTMLElement): string {
 	return container.querySelector('.onglet[aria-current="page"]')?.textContent?.trim() ?? '';
 }
 
-function field(card: HTMLElement, label: string): HTMLInputElement {
-	const input = card.querySelector(`form.tabuler input[aria-label^="${label}"]`);
+function field(dialog: HTMLElement, label: string): HTMLInputElement {
+	const input = dialog.querySelector(`form.tabuler input[aria-label^="${label}"]`);
 	if (!input) throw new Error(`pas de champ ${label}`);
 	return input as HTMLInputElement;
 }
 
-/** `f` dans un atelier ouvert sur Calcul, sa carte ouverte, « Tabuler » cliqué. */
+/** La fenêtre de Tabuler ouverte, ou `null`. */
+function tabulateDialog(): HTMLElement | null {
+	return document.querySelector<HTMLElement>('[role="dialog"]:has(form.tabuler)');
+}
+
+/** `f` dans un atelier, « Tabuler » choisi dans le menu de sa carte. */
 async function openForm(atelier = withF()) {
 	const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-	(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
-	const button = await vi.waitFor(() => {
-		const found = [...cardFor(container, 'f').querySelectorAll('.action')].find(
-			(b) => b.textContent?.trim() === 'Tabuler'
-		) as HTMLButtonElement | undefined;
-		expect(found).toBeTruthy();
-		return found!;
+	await chooseCardAction(container, 'f', 'Tabuler');
+	const card = await vi.waitFor(() => {
+		const dialog = tabulateDialog();
+		expect(dialog).toBeTruthy();
+		return dialog!;
 	});
-	await userEvent.click(button);
-	const card = cardFor(container, 'f');
-	await vi.waitFor(() => expect(card.querySelector('form.tabuler')).toBeTruthy());
 	return { atelier, container, card };
 }
 
@@ -100,31 +108,28 @@ describe('Tabuler depuis la carte', () => {
 		await vi.waitFor(() => expect(atelier.cell(0, 1)).toBe('-5'));
 	});
 
-	it('un refus se dit dans la carte : rien n’est écrit, on reste dans Calcul', async () => {
+	it('un refus se dit dans la carte : rien n’est écrit, on reste sur la vue de départ', async () => {
 		const { atelier, container, card } = await openForm();
 
 		await userEvent.fill(field(card, 'Pas'), '0');
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 
+		// Le refus se dit dans la fenêtre, qui reste ouverte
 		await vi.waitFor(() =>
-			expect(card.querySelector('.tabuler-resultat')?.textContent).toContain(
-				'Le pas doit être positif.'
-			)
+			expect(card.querySelector('.refus')?.textContent).toContain('Le pas doit être positif.')
 		);
+		expect(tabulateDialog()).toBeTruthy();
 		expect(atelier.cell(0, 1)).toBe('');
-		expect(currentView(container)).toBe('Calcul');
+		expect(currentView(container)).toBe('Graphe');
 	});
 
-	it('Tabuler n’écrit aucune ligne dans Calcul', async () => {
+	it('Tabuler n’écrit aucune ligne dans la console', async () => {
 		const { container, card } = await openForm();
 
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 
 		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
-		const calcul = [...container.querySelectorAll('.onglet')].find((t) =>
-			t.textContent?.trim().startsWith('Calcul')
-		);
-		expect(calcul?.textContent?.trim()).toBe('Calcul');
+		expect(container.querySelectorAll('.historique li')).toHaveLength(0);
 	});
 
 	// Revue de la PR 2
@@ -139,7 +144,7 @@ describe('Tabuler depuis la carte', () => {
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
 
-		await userEvent.click(tab(container, 'Calcul'));
+		await userEvent.click(tab(container, 'Graphe'));
 		await userEvent.click(tab(container, 'Données'));
 
 		await vi.waitFor(() => expect(currentView(container)).toBe('Données'));
@@ -156,7 +161,7 @@ describe('Tabuler depuis la carte', () => {
 		await vi.waitFor(() =>
 			expect((document.activeElement as HTMLElement | null)?.dataset.cell).toBe('A1')
 		);
-		expect(cardFor(container, 'f').querySelector('form.tabuler')).toBeNull();
+		expect(tabulateDialog()).toBeNull();
 		expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toContain(
 			'colonnes A et B'
 		);
@@ -164,17 +169,23 @@ describe('Tabuler depuis la carte', () => {
 		expect(atelier.cell(2, 1)).toBe('');
 	});
 
-	it('refermer puis rouvrir la carte : le formulaire repart fermé', async () => {
+	it('refermer puis rouvrir la fenêtre : le refus s’efface, les champs repartent pré-remplis', async () => {
 		const { container, card } = await openForm();
 		await userEvent.fill(field(card, 'Début'), 'zz');
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
+		await vi.waitFor(() => expect(card.querySelector('.refus')?.textContent).not.toBe(''));
 
-		const header = cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement;
-		await userEvent.click(header);
-		await userEvent.click(header);
+		await userEvent.keyboard('{Escape}');
+		await vi.waitFor(() => expect(tabulateDialog()).toBeNull());
+		await chooseCardAction(container, 'f', 'Tabuler');
 
-		await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('.action')).toBeTruthy());
-		expect(cardFor(container, 'f').querySelector('form.tabuler')).toBeNull();
+		const dialog = await vi.waitFor(() => {
+			const found = tabulateDialog();
+			expect(found).toBeTruthy();
+			return found!;
+		});
+		expect(field(dialog, 'Début').value).toBe('-5');
+		expect(dialog.querySelector('.refus')?.textContent).toBe('');
 		expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toBe('');
 	});
 
@@ -183,7 +194,7 @@ describe('Tabuler depuis la carte', () => {
 		await userEvent.click(card.querySelector('form.tabuler button[type="submit"]')!);
 		await vi.waitFor(() => expect(atelier.cell(0, 1)).toBe('-5'));
 
-		atelier.undoGrid();
+		atelier.undo();
 
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'f').querySelector('.tabuler-resultat')?.textContent).toBe('')

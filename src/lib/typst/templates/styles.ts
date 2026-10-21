@@ -11,15 +11,16 @@
  * Les styles fournis par Chiphre vivent ici, un par gabarit intégré ; ils ont
  * aussi une ligne en base (`worksheet_styles`, même identifiant) pour qu'une
  * fiche puisse les désigner, mais leur Typst se prend toujours dans le code
- * (D9). La fiche désigne son style par `style_id`, ou, avant le lot 3, par
- * `template_id` (`styleIdOf`).
+ * (D9). La fiche désigne son style par `style_id` (`styleIdOf`).
  */
 
 import type { DocumentForm } from '$lib/worksheets/document/types';
+import type { TextSize } from '../text-size';
 import {
 	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
 	DEFAULT_TEMPLATE_IDS,
+	STUDENT_LANDSCAPE_STYLE_COMMON,
 	STUDENT_STYLE_COMMON,
 	STUDENT_STYLE_FORMS
 } from './default-templates';
@@ -58,14 +59,23 @@ const STYLE_COMMON = '{{style_common}}';
 /** Le style d'une fiche qui n'en a pas choisi (D7) */
 export const DEFAULT_STYLE_ID: string = DEFAULT_TEMPLATE_IDS.studentStyle;
 
+/**
+ * Code commun des styles qui ont leurs quatre formes : « Fiche élève » et sa
+ * version paysage partagent les gabarits, pas l'orientation de la page.
+ */
+const STUDENT_STYLE_COMMONS: Record<string, string> = {
+	[DEFAULT_TEMPLATE_IDS.studentStyle]: STUDENT_STYLE_COMMON,
+	[DEFAULT_TEMPLATE_IDS.studentStyleLandscape]: STUDENT_LANDSCAPE_STYLE_COMMON
+};
+
 /** Les styles fournis par Chiphre : un par gabarit intégré */
 export const BUILT_IN_STYLES: WorksheetStyle[] = DEFAULT_TEMPLATES.map((template) =>
-	template.id === DEFAULT_STYLE_ID
+	template.id in STUDENT_STYLE_COMMONS
 		? {
 				id: template.id,
 				name: template.name,
 				description: template.description,
-				common: STUDENT_STYLE_COMMON,
+				common: STUDENT_STYLE_COMMONS[template.id],
 				templates: STUDENT_STYLE_FORMS
 			}
 		: {
@@ -108,15 +118,30 @@ export function isBuiltInStyle(id: string | null | undefined): boolean {
 }
 
 /**
- * Le style retenu pour une fiche : `style_id`, sinon `template_id` (fiches
- * d'avant le lot 3, même identifiant pour un style de Chiphre), sinon aucun —
- * `resolveTemplate` prend alors le style par défaut.
+ * Le style retenu pour une fiche : `style_id`, sinon aucun — `resolveTemplate`
+ * prend alors le style par défaut. Les fiches d'avant le lot 3 ont reçu leur
+ * `style_id` de l'ancien `template_id` (migration du 2026-10-17, #1529).
  */
-export function styleIdOf(worksheet: {
-	style_id?: string | null;
-	template_id?: string | null;
-}): string | null {
-	return worksheet.style_id ?? worksheet.template_id ?? null;
+export function styleIdOf(worksheet: { style_id?: string | null }): string | null {
+	return worksheet.style_id ?? null;
+}
+
+/**
+ * Le style imprimé : « Fiche élève » en Grande ou Très grande taille du texte
+ * passe en paysage (son jumeau « 2 colonnes - paysage » : mêmes gabarits, page
+ * retournée), sauf la forme Réponses (David, 2026-10-17). Les autres styles, la
+ * taille normale et le style d'un prof (`custom`) ne changent pas.
+ */
+export function printedStyleId(
+	styleId: string | null | undefined,
+	form: TemplateForm,
+	textSize: TextSize,
+	custom?: string | null
+): string | null | undefined {
+	if (textSize === 'normal' || form === 'answers') return styleId;
+	// Sans style de Chiphre reconnu ni gabarit du prof : « Fiche élève » (par défaut)
+	const isStudentStyle = styleId === DEFAULT_STYLE_ID || (!isBuiltInStyle(styleId) && !custom);
+	return isStudentStyle ? DEFAULT_TEMPLATE_IDS.studentStyleLandscape : styleId;
 }
 
 /**

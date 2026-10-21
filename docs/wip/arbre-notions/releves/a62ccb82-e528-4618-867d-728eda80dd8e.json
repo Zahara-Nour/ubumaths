@@ -1,0 +1,243 @@
+{
+	"template_id": "a62ccb82-e528-4618-867d-728eda80dd8e",
+	"titre": "Forme décimale d'une fraction",
+	"sous_titre": "Fraction décimale jusqu'au millième",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Forme décimale",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-039",
+			"libelle_point": "Connaître l'écriture décimale de fractions usuelles",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > forme décimale",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "digits:a"
+					},
+					{
+						"name": "c",
+						"expression": "10|100|1000"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{b}}/{{eval:c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 282,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 9957,
+						"negatif_possible": false,
+						"nb_distinctes": 256
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [10, 100, 1000]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.011,
+						"max": 991,
+						"negatif_possible": false,
+						"denominateurs": [10, 100, 1000],
+						"denominateur_min": 10,
+						"denominateur_max": 1000,
+						"nb_distinctes": 282
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.011,
+						"max": 991,
+						"negatif_possible": false,
+						"nb_distinctes": 277
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 10,
+				"max": 9957,
+				"nb_distinctes": 257,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0.011,
+				"max": 991,
+				"nb_distinctes": 277,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.011,
+				"max": 9957,
+				"nb_distinctes": 530,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": {
+				"nb": 137,
+				"denominateurs": [10, 100],
+				"denominateur_min": 10,
+				"denominateur_max": 100,
+				"numerateur_min": 10,
+				"numerateur_max": 976,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9957)",
+					"graine": 74,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{9\\,957}{100} = [?]$$",
+					"reponse": ["99.57"],
+					"variables": {
+						"a": "4",
+						"b": "9957",
+						"c": "100",
+						"expression1": "9957/100"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.011)",
+					"graine": 278,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{11}{1\\,000} = [?]$$",
+					"reponse": ["0.011"],
+					"variables": {
+						"a": "2",
+						"b": "11",
+						"c": "1000",
+						"expression1": "11/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{57}{1\\,000} = [?]$$",
+					"reponse": ["0.057"],
+					"variables": {
+						"a": "2",
+						"b": "57",
+						"c": "1000",
+						"expression1": "57/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{35}{100} = [?]$$",
+					"reponse": ["0.35"],
+					"variables": {
+						"a": "2",
+						"b": "35",
+						"c": "100",
+						"expression1": "35/100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{51}{10} = [?]$$",
+					"reponse": ["5.1"],
+					"variables": {
+						"a": "2",
+						"b": "51",
+						"c": "10",
+						"expression1": "51/10"
+					}
+				}
+			]
+		}
+	]
+}

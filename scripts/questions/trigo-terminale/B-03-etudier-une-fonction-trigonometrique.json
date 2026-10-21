@@ -17,7 +17,7 @@
 	},
 	"variations": [
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*pi/12)}}}}x-2\\sin x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==4||{{eval:2*cos(n*\\pi/12)}}}}x-2\\sin x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -35,14 +35,14 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'(x)={{eval:2*cos(n*pi/12)}}-2\\cos x$, et $f'(x)\\geqslant0\\iff\\cos x\\leqslant{{eval:cos(n*pi/12)}}$.",
-					"Sur $\\left[0\\,;\\pi\\right]$, $\\cos$ est décroissante et $\\cos{{a}}={{eval:cos(n*pi/12)}}$ : $\\cos x\\leqslant{{eval:cos(n*pi/12)}}\\iff x\\in\\left[{{a}}\\,;\\pi\\right]$.",
+					"$f'(x)={{eval:2*cos(n*\\pi/12)}}-2\\cos x$, et $f'(x)\\geqslant0\\iff\\cos x\\leqslant{{eval:cos(n*\\pi/12)}}$.",
+					"Sur $\\left[0\\,;\\pi\\right]$, $\\cos$ est décroissante et $\\cos{{a}}={{eval:cos(n*\\pi/12)}}$ : $\\cos x\\leqslant{{eval:cos(n*\\pi/12)}}\\iff x\\in\\left[{{a}}\\,;\\pi\\right]$.",
 					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;\\pi\\right]}$ (et décroissante sur $\\left[0\\,;{{a}}\\right]$)."
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==2||{{eval:2*sin(n*pi/12)}}}}x+2\\cos x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **décroissante**.\n\n$I=?$",
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)={{if:n==2||{{eval:2*sin(n*\\pi/12)}}}}x+2\\cos x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **décroissante**.\n\n$I=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -68,15 +68,15 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'(x)={{eval:2*sin(n*pi/12)}}-2\\sin x$, et $f'(x)\\leqslant0\\iff\\sin x\\geqslant{{eval:sin(n*pi/12)}}$.",
-					"Sur $\\left[0\\,;\\pi\\right]$ : $\\sin x\\geqslant{{eval:sin(n*pi/12)}}\\iff x\\in\\left[{{a}}\\,;\\pi-{{a}}\\right]$, avec $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$.",
+					"$f'(x)={{eval:2*sin(n*\\pi/12)}}-2\\sin x$, et $f'(x)\\leqslant0\\iff\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}$.",
+					"Sur $\\left[0\\,;\\pi\\right]$ : $\\sin x\\geqslant{{eval:sin(n*\\pi/12)}}\\iff x\\in\\left[{{a}}\\,;\\pi-{{a}}\\right]$, avec $\\pi-{{a}}={{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}$.",
 					"```trig\npreset: custom\nangles: {{n}}*pi/12, {{eval:12-n}}*pi/12\nequation: sin(x) >= sin({{n}}*pi/12)\nmode: arc\nmesures: principales\n```",
 					"$f$ est décroissante sur $\\textcolor{{{color:primary.0}}}{\\left[{{a}}\\,;{{if:u==1|\\frac{\\pi}{ {{w}} }|\\frac{ {{u}}\\pi}{ {{w}} }}}\\right]}$."
 				]
 			}
 		},
 		{
-			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*pi/12)}}}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
+			"statement": "Soit $f$ la fonction définie sur $\\left[0\\,;\\pi\\right]$ par $f(x)=2\\sin x-{{if:n==4||{{eval:2*cos(n*\\pi/12)}}}}x$.\n\nDétermine le plus grand intervalle sur lequel $f$ est **croissante**.\n\n$I=?$",
 			"variables": [
 				{
 					"name": "a",
@@ -94,7 +94,7 @@
 			],
 			"correction": {
 				"steps": [
-					"$f'(x)=2\\cos x-{{eval:2*cos(n*pi/12)}}$, et $f'(x)\\geqslant0\\iff\\cos x\\geqslant{{eval:cos(n*pi/12)}}$.",
+					"$f'(x)=2\\cos x-{{eval:2*cos(n*\\pi/12)}}$, et $f'(x)\\geqslant0\\iff\\cos x\\geqslant{{eval:cos(n*\\pi/12)}}$.",
 					"Sur $\\left[0\\,;\\pi\\right]$, $\\cos$ est décroissante : $\\cos x\\geqslant\\cos{{a}}\\iff x\\in\\left[0\\,;{{a}}\\right]$.",
 					"$f$ est croissante sur $\\textcolor{{{color:primary.0}}}{\\left[0\\,;{{a}}\\right]}$."
 				]

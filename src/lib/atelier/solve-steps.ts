@@ -35,8 +35,7 @@ import {
 	splitVariableArgument,
 	variableNameOf
 } from '$lib/mathAST/cli/core/variable-argument';
-import { getVariables } from '$lib/mathAST/eval/substitute';
-import { astOf } from './parse';
+import { astOf, variablesOf } from './parse';
 import { concludedSolutions, conclusionAgrees } from './solve-steps-check';
 import { summaryOf } from './steps-summary';
 import { approximateSolutionsLatex } from '$lib/mathAST/cli/approximation';
@@ -220,7 +219,8 @@ export function solveSteps(argument: string, within?: Domain): SolvedSteps | nul
 		if (variable === null) return null;
 		// Une autre lettre que l'inconnue (`b*x+5=14`, ou `3 = 2t` résolue en x) :
 		// équation à paramètre, repli sur le moteur (L3)
-		const others = [...getVariables(node)].filter(
+		// `x_1` est une autre lettre que x (`variablesOf`) : une équation à paramètre
+		const others = [...variablesOf(node, undefined)].filter(
 			(name) => name !== variable && !CONSTANT_NAMES.has(name)
 		);
 		if (others.length > 0) return null;

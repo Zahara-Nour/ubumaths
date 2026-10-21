@@ -1,0 +1,1341 @@
+{
+	"template_id": "ace89247-0194-4049-b365-76c3a644069b",
+	"titre": "Déterminer le signe d'un facteur",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "multiple_choice",
+	"theme": "Relatifs > Multiplier et Diviser > Produit",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-001",
+			"libelle_point": "Multiplier deux nombres relatifs : d'abord dans le cas où un seul des facteurs est négatif, puis, grâce à la distributivité, dans le cas où les deux facteurs sont négatifs.",
+			"noeud_actuel": "Nombres et calculs > Relatifs : calculs > produit",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 8,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?={{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["négatif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 73,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -92 \\right) \\times ? = 99$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "92",
+						"b": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -99 \\right) \\times ? = 31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -30 \\right) \\times ? = 66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -52 \\right) \\times ? = 49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -32 \\right) \\times ? = 61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$$(-{{a}})*?=-{{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": -30,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": -30,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-30)",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -30 \\right) \\times ? = -66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -99 \\right) \\times ? = -31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -52 \\right) \\times ? = -49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -32 \\right) \\times ? = -61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$\\left( -53 \\right) \\times ? = -45$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "53",
+						"b": "45"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?=-{{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["négatif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$99 \\times ? = -31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 73,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$92 \\times ? = -99$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "92",
+						"b": "99"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$30 \\times ? = -66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$52 \\times ? = -49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$32 \\times ? = -61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$${{a}}*?={{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 30,
+				"max": 99,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 30,
+				"max": 99,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$99 \\times ? = 31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "plus petite valeur (30)",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$30 \\times ? = 66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$52 \\times ? = 49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$32 \\times ? = 61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$53 \\times ? = 45$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "53",
+						"b": "45"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})={{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["négatif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 73,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -92 \\right) = 99$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "92",
+						"b": "99"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -99 \\right) = 31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -30 \\right) = 66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -52 \\right) = 49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -32 \\right) = 61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$$?*(-{{a}})=-{{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": -30,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": -30,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (-30)",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -30 \\right) = -66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -99 \\right) = -31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -52 \\right) = -49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -32 \\right) = -61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times \\left( -53 \\right) = -45$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "53",
+						"b": "45"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}=-{{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["négatif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 135,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 99 = -31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 73,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 92 = -99$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "92",
+						"b": "99"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 30 = -66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 52 = -49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 32 = -61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["A. négatif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				}
+			]
+		},
+		{
+			"variation": 8,
+			"graines": "1..300 (modèle réduit à la variation 8)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "30..99"
+					},
+					{
+						"name": "b",
+						"expression": "30..99"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le signe du facteur manquant ?\n\n$$?*{{a}}={{b}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 68
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 99,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 30,
+				"max": 99,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 30,
+				"max": 99,
+				"nb_distinctes": 70,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 99 = 31$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "99",
+						"b": "31"
+					}
+				},
+				{
+					"role": "plus petite valeur (30)",
+					"graine": 1,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 30 = 66$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "30",
+						"b": "66"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 52 = 49$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "52",
+						"b": "49"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 32 = 61$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "32",
+						"b": "61"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe du facteur manquant ?\n\n$$? \\times 53 = 45$$\n\n- A. négatif\n- B. positif",
+					"reponse": ["B. positif"],
+					"variables": {
+						"a": "53",
+						"b": "45"
+					}
+				}
+			]
+		}
+	]
+}

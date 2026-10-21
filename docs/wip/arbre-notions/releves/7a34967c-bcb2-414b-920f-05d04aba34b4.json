@@ -1,0 +1,275 @@
+{
+	"template_id": "7a34967c-bcb2-414b-920f-05d04aba34b4",
+	"titre": "Décomposer l'écriture décimale un nombre",
+	"sous_titre": "En milliers, centaines, dizaines et unités",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-09-29T20:25:47.099285+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE2-006",
+			"libelle_point": "Connaitre la valeur des chiffres en fonction de leur position dans un nombre.",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*1000+b*100+c*10+d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Décompose ce nombre comme dans cet exemple :\n$$2345 = 2000+ 300 + 40 + 5$$\n\n$${{expression}}$$",
+				"reponses_brutes": ["{{eval:a*1000}}+{{eval:b*100}}+{{eval:c*10}}+{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1128,
+						"max": 9936,
+						"negatif_possible": false,
+						"nb_distinctes": 291
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 291,
+						"exemples": [
+							"1000+500+90+9",
+							"3000+300+50+8",
+							"1000+500+10+7",
+							"3000+200+10+3",
+							"7000+200+60+1",
+							"1000+600+20+5",
+							"1000+900+70+5",
+							"6000+300+70+6",
+							"8000+200+80+7",
+							"9000+700+80+5",
+							"5000+600+60+8",
+							"1000+600+90+2"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9000,
+							"nb_distinctes": 36,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 5,
+				"max": 9936,
+				"nb_distinctes": 296,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9000,
+				"nb_distinctes": 36,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9936,
+				"nb_distinctes": 328,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9936)",
+					"graine": 115,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = 2\\,000 + 300 + 40 + 5$$\n\n$$9\\,936 = [?]$$",
+					"reponse": ["9000+900+30+6"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"expression": "9936"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 5,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = 2\\,000 + 300 + 40 + 5$$\n\n$$7\\,261 = [?]$$",
+					"reponse": ["7000+200+60+1"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "6",
+						"d": "1",
+						"expression": "7261"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = 2\\,000 + 300 + 40 + 5$$\n\n$$1\\,599 = [?]$$",
+					"reponse": ["1000+500+90+9"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "9",
+						"expression": "1599"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = 2\\,000 + 300 + 40 + 5$$\n\n$$3\\,358 = [?]$$",
+					"reponse": ["3000+300+50+8"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "5",
+						"d": "8",
+						"expression": "3358"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Décompose ce nombre comme dans cet exemple :\n\n$$2\\,345 = 2\\,000 + 300 + 40 + 5$$\n\n$$1\\,517 = [?]$$",
+					"reponse": ["1000+500+10+7"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "7",
+						"expression": "1517"
+					}
+				}
+			]
+		}
+	]
+}

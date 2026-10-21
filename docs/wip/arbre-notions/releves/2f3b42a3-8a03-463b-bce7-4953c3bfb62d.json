@@ -1,0 +1,256 @@
+{
+	"template_id": "2f3b42a3-8a03-463b-bce7-4953c3bfb62d",
+	"titre": "Ajouter des durées (2)",
+	"sous_titre": "L'utilisateur choisit l'unité.",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Durées > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-206",
+			"libelle_point": "Calculer sur des durées (1 h 40 min + 2 h 35 min = ?).",
+			"noeud_actuel": "Grandeurs et mesures > Durées > calcul de durées",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "code « 6-157 » → « 6-206 »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "1..5!{{eval:6-c}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule et écris la réponse sous la forme que tu veux.\n\n${{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} = ?$",
+				"reponses_brutes": ["{{eval:a[h]+b[h]+(c*10)[min]+(d*10)[min]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 195,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 36,
+						"exemples": [
+							"340[min]",
+							"320[min]",
+							"230[min]",
+							"3.5[h]",
+							"350[min]",
+							"290[min]",
+							"370[min]",
+							"6.5[h]",
+							"500[min]",
+							"440[min]",
+							"5.5[h]",
+							"200[min]"
+						],
+						"nombres_contenus": {
+							"min": 2.5,
+							"max": 580,
+							"nb_distinctes": 36,
+							"nature": "décimal",
+							"decimales_max": 1,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 10, 20, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2.5,
+				"max": 580,
+				"nb_distinctes": 36,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 580,
+				"nb_distinctes": 45,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["h", "min"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (580)",
+					"graine": 133,
+					"enonce": "Calcule et écris la réponse sous la forme que tu veux.\n\n$4~\\mathrm{h}~50~\\mathrm{min} + 4~\\mathrm{h}~50~\\mathrm{min} = [?]$",
+					"reponse": ["580[min]"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "5",
+						"d": "5"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule et écris la réponse sous la forme que tu veux.\n\n$1~\\mathrm{h}~50~\\mathrm{min} + 3~\\mathrm{h}~50~\\mathrm{min} = [?]$",
+					"reponse": ["340[min]"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "5",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule et écris la réponse sous la forme que tu veux.\n\n$2~\\mathrm{h}~30~\\mathrm{min} + 2~\\mathrm{h}~50~\\mathrm{min} = [?]$",
+					"reponse": ["320[min]"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "3",
+						"d": "5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule et écris la réponse sous la forme que tu veux.\n\n$1~\\mathrm{h}~10~\\mathrm{min} + 2~\\mathrm{h}~40~\\mathrm{min} = [?]$",
+					"reponse": ["230[min]"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "1",
+						"d": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule et écris la réponse sous la forme que tu veux.\n\n$2~\\mathrm{h}~10~\\mathrm{min} + 1~\\mathrm{h}~20~\\mathrm{min} = [?]$",
+					"reponse": ["3.5[h]"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "1",
+						"d": "2"
+					}
+				}
+			]
+		}
+	]
+}

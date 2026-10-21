@@ -36,6 +36,15 @@ export const XP_TABLE = [
 export const MAX_LEVEL = 20;
 export const DAILY_XP_CAP = 100;
 
+/**
+ * Forfait de révision espacée (revue du 2026-10-18) : il tombe quand l'élève a
+ * révisé au moins `REVIEW_REWARD_CARDS_ANY_DECK` cartes dans la journée, tous
+ * paquets confondus, ou qu'il a vidé le paquet (plus aucune carte due) après au
+ * moins `REVIEW_REWARD_CARDS_EMPTIED_DECK` cartes.
+ */
+export const REVIEW_REWARD_CARDS_ANY_DECK = 10;
+export const REVIEW_REWARD_CARDS_EMPTIED_DECK = 3;
+
 /** XP awarded per action */
 export const XP_SOURCES = {
 	correct: 10,
@@ -43,10 +52,17 @@ export const XP_SOURCES = {
 	corrected_retry: 7,
 	first_of_day: 5,
 	new_theme: 25,
-	daily_streak: 15,
-	streak_7: 50,
-	streak_14: 100,
-	streak_30: 300
+	// Forfait d'une séance de révision espacée terminée, une fois par jour
+	// (décision de David, 2026-10-18 : l'effort, pas la réussite — les cartes
+	// sont auto-évaluées). Soumis au plafond du jour.
+	review_session: 20,
+	// Constance Royale (spécification du 2026-10-18) : +30 le jour où la
+	// semaine est tenue (3e jour travaillé), dans le plafond du jour ; paliers
+	// de 4 / 8 / 16 semaines d'affilée hors plafond, à la place des +30.
+	week_held: 30,
+	constance_4: 50,
+	constance_8: 100,
+	constance_16: 300
 } as const;
 
 /**
@@ -125,21 +141,18 @@ export function calculateXpGain(params: {
 }
 
 /**
- * Calculate streak bonus XP.
- * Returns the XP bonus and whether it's a milestone (exempt from daily cap).
+ * Récompense d'une semaine tenue, d'après la Constance atteinte (en semaines).
+ * Un palier (4, 8, 16 semaines) remplace les +30 et sort du plafond du jour
+ * (`isMilestone`), comme les anciens paliers de série.
  */
-export function calculateStreakBonus(streakDays: number): { xp: number; isMilestone: boolean } {
-	if (streakDays === 30 || (streakDays > 30 && streakDays % 30 === 0)) {
-		return { xp: XP_SOURCES.streak_30, isMilestone: true };
-	}
-	if (streakDays === 14) {
-		return { xp: XP_SOURCES.streak_14, isMilestone: true };
-	}
-	if (streakDays === 7) {
-		return { xp: XP_SOURCES.streak_7, isMilestone: true };
-	}
-	// Daily streak bonus (not a milestone, counts toward cap)
-	return { xp: XP_SOURCES.daily_streak, isMilestone: false };
+export function calculateConstanceBonus(constanceWeeks: number): {
+	xp: number;
+	isMilestone: boolean;
+} {
+	if (constanceWeeks === 16) return { xp: XP_SOURCES.constance_16, isMilestone: true };
+	if (constanceWeeks === 8) return { xp: XP_SOURCES.constance_8, isMilestone: true };
+	if (constanceWeeks === 4) return { xp: XP_SOURCES.constance_4, isMilestone: true };
+	return { xp: XP_SOURCES.week_held, isMilestone: false };
 }
 
 /**

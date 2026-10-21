@@ -1,0 +1,275 @@
+{
+	"template_id": "4d94ec28-27a9-4af5-8b11-42dc9d9aa103",
+	"titre": "Calculer une différence (résultat positif)",
+	"sous_titre": "  Soustraire des centaines entières à un nombre",
+	"consigne": "Calcule.",
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Soustraire > Différence",
+	"mis_a_jour": "2026-09-29T20:53:22.487557+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE1-103",
+			"libelle_point": "Soustraire un nombre entier de centaines à un nombre (346 − 200 = ?).",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "code « CE1-084 » → « CE1-103 »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:a-1}}"
+					},
+					{
+						"name": "expression",
+						"expression": "{{eval: a*100 + b*10 + c}}  - {{eval:d*100}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$${{expression}}$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 277,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 277,
+						"exemples": [
+							"259  - 100",
+							"435  - 300",
+							"251  - 100",
+							"421  - 100",
+							"826  - 100",
+							"262  - 100",
+							"297  - 100",
+							"737  - 400",
+							"828  - 600",
+							"978  - 400",
+							"666  - 500",
+							"269  - 100"
+						],
+						"nombres_contenus": {
+							"min": 100,
+							"max": 993,
+							"nb_distinctes": 248,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 111,
+						"max": 861,
+						"negatif_possible": false,
+						"nb_distinctes": 219
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 100,
+				"max": 993,
+				"nb_distinctes": 248,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 111,
+				"max": 861,
+				"nb_distinctes": 219,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 100,
+				"max": 993,
+				"nb_distinctes": 409,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 0,
+					"max": 0
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (993)",
+					"graine": 115,
+					"enonce": "$$993 - 500 = [?]$$",
+					"reponse": ["493"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "5",
+						"expression": "993  - 500"
+					}
+				},
+				{
+					"role": "plus petite valeur (100)",
+					"graine": 1,
+					"enonce": "$$259 - 100 = [?]$$",
+					"reponse": ["159"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "1",
+						"expression": "259  - 100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$$435 - 300 = [?]$$",
+					"reponse": ["135"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "5",
+						"d": "3",
+						"expression": "435  - 300"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "$$251 - 100 = [?]$$",
+					"reponse": ["151"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "1",
+						"d": "1",
+						"expression": "251  - 100"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "$$421 - 100 = [?]$$",
+					"reponse": ["321"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "1",
+						"d": "1",
+						"expression": "421  - 100"
+					}
+				}
+			]
+		}
+	]
+}

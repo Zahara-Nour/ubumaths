@@ -24,6 +24,8 @@
 	  serveur corrige à l'envoi, ADR 0015)
 	- showResults: false → pas d'écran de résultats à la fin (la page affiche
 	  la correction du serveur) ; « Envoi de ta copie… » en attendant
+	- buddyGain: gain du Palotin, affiché sur l'écran de résultats (`null` → rien)
+	- mathouNews: nouveautés de la Chatterie, affichées sur l'écran de résultats (`null` → rien)
 -->
 
 <script lang="ts">
@@ -32,6 +34,8 @@
 	import type { AnswerData } from '$lib/types/question-display';
 	import QuestionCard from '$lib/components/questions/QuestionCard.svelte';
 	import TestResults from './TestResults.svelte';
+	import type { BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	import type { MathouNews } from '$lib/mathoux/news';
 	import TestTimer from './TestTimer.svelte';
 	import { Progress } from '$lib/components/ui/progress';
 	import { Button } from '$lib/components/ui/button';
@@ -53,6 +57,8 @@
 		assessmentTitle?: string;
 		collectOnly?: boolean;
 		showResults?: boolean;
+		buddyGain?: BuddyGainView | null;
+		mathouNews?: MathouNews | null;
 	}
 
 	// Constants
@@ -68,7 +74,9 @@
 		assessmentTitle,
 		inEvaluation = false,
 		collectOnly = false,
-		showResults = true
+		showResults = true,
+		buddyGain = null,
+		mathouNews = null
 	}: Props = $props();
 
 	let backLabel = $derived(inEvaluation ? 'Mes contrôles' : 'Retour au panier');
@@ -197,7 +205,14 @@
 			</Card.Content>
 		</Card.Root>
 	{:else if testResult}
-		<TestResults result={testResult} {onRestart} onBackToCart={onBack} {inEvaluation} />
+		<TestResults
+			result={testResult}
+			{onRestart}
+			onBackToCart={onBack}
+			{inEvaluation}
+			{buddyGain}
+			{mathouNews}
+		/>
 	{:else if currentItem}
 		<!-- Header with progress -->
 		<div class="space-y-3">

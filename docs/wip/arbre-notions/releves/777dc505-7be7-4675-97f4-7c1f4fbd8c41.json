@@ -1,0 +1,275 @@
+{
+	"template_id": "777dc505-7be7-4675-97f4-7c1f4fbd8c41",
+	"titre": "Compléter une addition à trou",
+	"sous_titre": "Nombres entiers à 2 chiffres (sans retenue entre les unités et les dizaines)",
+	"consigne": null,
+	"grades": ["CE1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > A trou",
+	"mis_a_jour": "2026-09-29T19:27:24.912968+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "1..{{eval:9-b}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10 + b}} + ? = {{eval:a*10 + b + c*10+d}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Complète.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:c*10+d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 281,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 281,
+						"exemples": [
+							"18 + ? = 69",
+							"35 + ? = 69",
+							"11 + ? = 68",
+							"31 + ? = 53",
+							"75 + ? = 96",
+							"12 + ? = 76",
+							"16 + ? = 108",
+							"66 + ? = 98",
+							"87 + ? = 109",
+							"97 + ? = 168",
+							"55 + ? = 119",
+							"18 + ? = 79"
+						],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 187,
+							"nb_distinctes": 127,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 97,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 187,
+				"nb_distinctes": 127,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 11,
+				"max": 97,
+				"nb_distinctes": 57,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 11,
+				"max": 187,
+				"nb_distinctes": 127,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (187)",
+					"graine": 115,
+					"enonce": "Complète.\n\n$$93 + [?] = 187$$",
+					"reponse": ["94"],
+					"variables": {
+						"a": "9",
+						"c": "9",
+						"b": "3",
+						"d": "4",
+						"expression1": "93 + ? = 187"
+					}
+				},
+				{
+					"role": "plus petite valeur (11)",
+					"graine": 3,
+					"enonce": "Complète.\n\n$$11 + [?] = 68$$",
+					"reponse": ["57"],
+					"variables": {
+						"a": "1",
+						"c": "5",
+						"b": "1",
+						"d": "7",
+						"expression1": "11 + ? = 68"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Complète.\n\n$$18 + [?] = 69$$",
+					"reponse": ["51"],
+					"variables": {
+						"a": "1",
+						"c": "5",
+						"b": "8",
+						"d": "1",
+						"expression1": "18 + ? = 69"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète.\n\n$$35 + [?] = 69$$",
+					"reponse": ["34"],
+					"variables": {
+						"a": "3",
+						"c": "3",
+						"b": "5",
+						"d": "4",
+						"expression1": "35 + ? = 69"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète.\n\n$$31 + [?] = 53$$",
+					"reponse": ["22"],
+					"variables": {
+						"a": "3",
+						"c": "2",
+						"b": "1",
+						"d": "2",
+						"expression1": "31 + ? = 53"
+					}
+				}
+			]
+		}
+	]
+}

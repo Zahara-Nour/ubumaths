@@ -1,12 +1,38 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getExercise } from '$lib/server/exercises';
-import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
+import { getProgrammeTreeKeeping, loadNodesWithAncestors } from '$lib/server/programme-tree';
+import { filterTreePoints, taggableNodeIds, type ProgrammeBranch } from '$lib/utils/programme-tree';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger(
 	'(protected)/dashboard/teacher/contenu/exercices/[id]/+page.server'
 );
+
+/**
+ * Niveaux dont on montre les points : ceux de l'exercice, puis ceux de ses
+ * points déjà tagués (un niveau retiré de l'exercice garde ses tags, qu'il
+ * faut pouvoir retirer).
+ */
+async function gradesToShow(
+	supabase: App.Locals['supabase'],
+	exerciseGrades: string[],
+	taggedPointIds: string[]
+): Promise<string[]> {
+	if (taggedPointIds.length === 0) return exerciseGrades;
+	const { data, error: pointsError } = await supabase
+		.from('curriculum_points')
+		.select('id, grade')
+		.in('id', taggedPointIds);
+	if (pointsError) {
+		logger.error('Lecture impossible :', pointsError);
+		throw error(500, 'Impossible de charger les données');
+	}
+	const extra = (data ?? [])
+		.map((p) => p.grade)
+		.filter((g): g is string => g !== null && !exerciseGrades.includes(g));
+	return [...exerciseGrades, ...[...new Set(extra)].sort()];
+}
 
 /**
  * Load exercise for editing and view assignments
@@ -40,14 +66,6 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		assignmentCount = assignments.length;
 	}
 
-	// Curriculum trees for the exercise's grades + its existing tags (for tagging UI)
-	const grades = (result.data.grades ?? []) as string[];
-	const curriculumByGrade: { grade: string; tree: CurriculumTreeTheme[] }[] = [];
-	for (const g of grades) {
-		const tree = await getCurriculumTree(locals.supabase, g);
-		if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
-	}
-
 	const { data: tagRows, error: tagRowsError } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.select('point_id')
@@ -59,10 +77,44 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 	}
 	const taggedPointIds = (tagRows ?? []).map((r) => r.point_id);
 
+	// Rangement de l'exercice : la base n'accepte que les points posés sur l'un
+	// de ses nœuds ou sur leur notion (règle 1) ; non rangé, il n'en reçoit aucun.
+	const { data: placementRows, error: placementError } = await locals.supabase
+		.from('exercise_classifications')
+		.select('node_id')
+		.eq('exercise_id', id);
+
+	if (placementError) {
+		logger.error('Lecture impossible :', placementError);
+		throw error(500, 'Impossible de charger les données');
+	}
+	const placementIds = (placementRows ?? []).map((r) => r.node_id);
+	const exerciseUnranked = placementIds.length === 0;
+
+	// Arbre du programme de chaque niveau de l'exercice, réduit aux points qu'il
+	// peut prendre ; un archivé déjà tagué reste visible pour pouvoir le retirer.
+	const curriculumByGrade: { grade: string; tree: ProgrammeBranch[] }[] = [];
+	if (!exerciseUnranked) {
+		const grades = await gradesToShow(
+			locals.supabase,
+			(result.data.grades ?? []) as string[],
+			taggedPointIds
+		);
+		const nodes = await loadNodesWithAncestors(locals.supabase, placementIds);
+		const allowed = taggableNodeIds(nodes.filter((n) => placementIds.includes(n.id)));
+		const tagged = new Set(taggedPointIds);
+		for (const g of grades) {
+			const full = await getProgrammeTreeKeeping(locals.supabase, g, taggedPointIds);
+			const tree = filterTreePoints(full, (p) => allowed.has(p.node_id) || tagged.has(p.id));
+			if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
+		}
+	}
+
 	return {
 		exercise: result.data,
 		assignmentCount,
 		curriculumByGrade,
+		exerciseUnranked,
 		taggedPointIds
 	};
 };

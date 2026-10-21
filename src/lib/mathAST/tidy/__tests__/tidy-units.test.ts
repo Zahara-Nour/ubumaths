@@ -196,7 +196,8 @@ describe('F1/F2 — signes autour d’une température : la valeur est conservé
 
 	it('2*(-20[°C]) : le signe reste dans la grandeur opaque', () => {
 		// `-20[°C]` contient `-2` : on pinne l'écriture exacte, sans facteur -2 sorti.
-		expect(t('2*(-20[°C])')).toBe('2(-20[°C])');
+		// `*` explicite depuis que `-20[°C]` est la valeur −20 (lecture-grandeurs PR 4)
+		expect(t('2*(-20[°C])')).toBe('2*(-20[°C])');
 	});
 });
 

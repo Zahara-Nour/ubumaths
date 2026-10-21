@@ -45,7 +45,6 @@ function worksheetRow(
 		version: 1,
 		published_at: null,
 		archived_at: null,
-		template_id: null,
 		style_id: styleId,
 		estimated_duration_minutes: 55,
 		total_points: null,

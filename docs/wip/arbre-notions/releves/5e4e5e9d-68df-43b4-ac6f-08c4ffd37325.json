@@ -1,0 +1,1799 @@
+{
+	"template_id": "5e4e5e9d-68df-43b4-ac6f-08c4ffd37325",
+	"titre": "Calculer la longueur sur une carte",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Echelle d'une carte > Utiliser l'échelle",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-193",
+			"libelle_point": "S'initier à la résolution de problèmes d'échelles",
+			"noeud_actuel": "Proportionnalité > Échelle d'une carte",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "10"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c;[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+				"reponses_brutes": ["{{eval:f/(a[cm])}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [10]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"10[dm]",
+							"20[dm]",
+							"30[dm]",
+							"40[dm]",
+							"50[dm]",
+							"60[dm]",
+							"70[dm]",
+							"80[dm]",
+							"90[dm]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.1,
+						"max": 0.1,
+						"negatif_possible": false,
+						"denominateurs": [10],
+						"denominateur_min": 10,
+						"denominateur_max": 10,
+						"nb_distinctes": 1,
+						"valeurs": ["1/10"]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"100[cm]",
+							"200[cm]",
+							"300[cm]",
+							"400[cm]",
+							"500[cm]",
+							"600[cm]",
+							"700[cm]",
+							"800[cm]",
+							"900[cm]"
+						],
+						"nombres_contenus": {
+							"min": 100,
+							"max": 900,
+							"nb_distinctes": 9,
+							"valeurs": [100, 200, 300, 400, 500, 600, 700, 800, 900],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 10,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 90,
+				"nb_distinctes": 9,
+				"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 10,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [10],
+				"denominateur_min": 10,
+				"denominateur_max": 10,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["dm"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 10,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on veut représenter une longueur réelle de $90~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["90"],
+					"variables": {
+						"a": "10",
+						"b1": "9",
+						"b": "90",
+						"c": "90[dm]",
+						"d": "1/10",
+						"f": "900[cm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on veut représenter une longueur réelle de $10~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10",
+						"b1": "1",
+						"b": "10",
+						"c": "10[dm]",
+						"d": "1/10",
+						"f": "100[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on veut représenter une longueur réelle de $30~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "10",
+						"b1": "3",
+						"b": "30",
+						"c": "30[dm]",
+						"d": "1/10",
+						"f": "300[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on veut représenter une longueur réelle de $70~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["70"],
+					"variables": {
+						"a": "10",
+						"b1": "7",
+						"b": "70",
+						"c": "70[dm]",
+						"d": "1/10",
+						"f": "700[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{10}$, on veut représenter une longueur réelle de $60~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["60"],
+					"variables": {
+						"a": "10",
+						"b1": "6",
+						"b": "60",
+						"c": "60[dm]",
+						"d": "1/10",
+						"f": "600[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "100"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c;[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+				"reponses_brutes": ["{{eval:f/(a[cm])}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"10[dm]",
+							"20[dm]",
+							"30[dm]",
+							"40[dm]",
+							"50[dm]",
+							"60[dm]",
+							"70[dm]",
+							"80[dm]",
+							"90[dm]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 0.01,
+						"negatif_possible": false,
+						"denominateurs": [100],
+						"denominateur_min": 100,
+						"denominateur_max": 100,
+						"nb_distinctes": 1,
+						"valeurs": ["1/100"]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"100[cm]",
+							"200[cm]",
+							"300[cm]",
+							"400[cm]",
+							"500[cm]",
+							"600[cm]",
+							"700[cm]",
+							"800[cm]",
+							"900[cm]"
+						],
+						"nombres_contenus": {
+							"min": 100,
+							"max": 900,
+							"nb_distinctes": 9,
+							"valeurs": [100, 200, 300, 400, 500, 600, 700, 800, 900],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [100],
+				"denominateur_min": 100,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["dm"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $10~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "100",
+						"b1": "1",
+						"b": "10",
+						"c": "10[dm]",
+						"d": "1/100",
+						"f": "100[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $30~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "100",
+						"b1": "3",
+						"b": "30",
+						"c": "30[dm]",
+						"d": "1/100",
+						"f": "300[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $70~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "100",
+						"b1": "7",
+						"b": "70",
+						"c": "70[dm]",
+						"d": "1/100",
+						"f": "700[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $60~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "100",
+						"b1": "6",
+						"b": "60",
+						"c": "60[dm]",
+						"d": "1/100",
+						"f": "600[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $80~\\mathrm{dm}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "100",
+						"b1": "8",
+						"b": "80",
+						"c": "80[dm]",
+						"d": "1/100",
+						"f": "800[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "100"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[m]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c;[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+				"reponses_brutes": ["{{eval:f/(a[cm])}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"10[m]",
+							"20[m]",
+							"30[m]",
+							"40[m]",
+							"50[m]",
+							"60[m]",
+							"70[m]",
+							"80[m]",
+							"90[m]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.01,
+						"max": 0.01,
+						"negatif_possible": false,
+						"denominateurs": [100],
+						"denominateur_min": 100,
+						"denominateur_max": 100,
+						"nb_distinctes": 1,
+						"valeurs": ["1/100"]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"1000[cm]",
+							"2000[cm]",
+							"3000[cm]",
+							"4000[cm]",
+							"5000[cm]",
+							"6000[cm]",
+							"7000[cm]",
+							"8000[cm]",
+							"9000[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1000,
+							"max": 9000,
+							"nb_distinctes": 9,
+							"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 90,
+				"nb_distinctes": 9,
+				"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": {
+				"nb": 300,
+				"denominateurs": [100],
+				"denominateur_min": 100,
+				"denominateur_max": 100,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["m"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $10~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "100",
+						"b1": "1",
+						"b": "10",
+						"c": "10[m]",
+						"d": "1/100",
+						"f": "1000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $30~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "100",
+						"b1": "3",
+						"b": "30",
+						"c": "30[m]",
+						"d": "1/100",
+						"f": "3000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $70~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["70"],
+					"variables": {
+						"a": "100",
+						"b1": "7",
+						"b": "70",
+						"c": "70[m]",
+						"d": "1/100",
+						"f": "7000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $60~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["60"],
+					"variables": {
+						"a": "100",
+						"b1": "6",
+						"b": "60",
+						"c": "60[m]",
+						"d": "1/100",
+						"f": "6000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100}$, on veut représenter une longueur réelle de $80~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["80"],
+					"variables": {
+						"a": "100",
+						"b1": "8",
+						"b": "80",
+						"c": "80[m]",
+						"d": "1/100",
+						"f": "8000[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1000"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[m]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c;[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+				"reponses_brutes": ["{{eval:f/(a[cm])}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1000]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"10[m]",
+							"20[m]",
+							"30[m]",
+							"40[m]",
+							"50[m]",
+							"60[m]",
+							"70[m]",
+							"80[m]",
+							"90[m]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.001,
+						"max": 0.001,
+						"negatif_possible": false,
+						"denominateurs": [1000],
+						"denominateur_min": 1000,
+						"denominateur_max": 1000,
+						"nb_distinctes": 1,
+						"valeurs": ["1/1000"]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"1000[cm]",
+							"2000[cm]",
+							"3000[cm]",
+							"4000[cm]",
+							"5000[cm]",
+							"6000[cm]",
+							"7000[cm]",
+							"8000[cm]",
+							"9000[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1000,
+							"max": 9000,
+							"nb_distinctes": 9,
+							"valeurs": [1000, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["m"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on veut représenter une longueur réelle de $10~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1000",
+						"b1": "1",
+						"b": "10",
+						"c": "10[m]",
+						"d": "1/1000",
+						"f": "1000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on veut représenter une longueur réelle de $30~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "1000",
+						"b1": "3",
+						"b": "30",
+						"c": "30[m]",
+						"d": "1/1000",
+						"f": "3000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on veut représenter une longueur réelle de $70~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "1000",
+						"b1": "7",
+						"b": "70",
+						"c": "70[m]",
+						"d": "1/1000",
+						"f": "7000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on veut représenter une longueur réelle de $60~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "1000",
+						"b1": "6",
+						"b": "60",
+						"c": "60[m]",
+						"d": "1/1000",
+						"f": "6000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000}$, on veut représenter une longueur réelle de $80~\\mathrm{m}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "1000",
+						"b1": "8",
+						"b": "80",
+						"c": "80[m]",
+						"d": "1/1000",
+						"f": "8000[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "100000"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[km]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c;[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+				"reponses_brutes": ["{{eval:f/(a[cm])}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100000,
+						"max": 100000,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100000]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"10[km]",
+							"20[km]",
+							"30[km]",
+							"40[km]",
+							"50[km]",
+							"60[km]",
+							"70[km]",
+							"80[km]",
+							"90[km]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.00001,
+						"max": 0.00001,
+						"negatif_possible": false,
+						"denominateurs": [100000],
+						"denominateur_min": 100000,
+						"denominateur_max": 100000,
+						"nb_distinctes": 1,
+						"valeurs": ["1/100000"]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"1000000[cm]",
+							"2000000[cm]",
+							"3000000[cm]",
+							"4000000[cm]",
+							"5000000[cm]",
+							"6000000[cm]",
+							"7000000[cm]",
+							"8000000[cm]",
+							"9000000[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1000000,
+							"max": 9000000,
+							"nb_distinctes": 9,
+							"valeurs": [
+								1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 7
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 100000,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_reponse": {
+				"min": 10,
+				"max": 90,
+				"nb_distinctes": 9,
+				"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 100000,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["km"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100000)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on veut représenter une longueur réelle de $10~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "100000",
+						"b1": "1",
+						"b": "10",
+						"c": "10[km]",
+						"d": "1/100000",
+						"f": "1000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on veut représenter une longueur réelle de $30~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "100000",
+						"b1": "3",
+						"b": "30",
+						"c": "30[km]",
+						"d": "1/100000",
+						"f": "3000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on veut représenter une longueur réelle de $70~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["70"],
+					"variables": {
+						"a": "100000",
+						"b1": "7",
+						"b": "70",
+						"c": "70[km]",
+						"d": "1/100000",
+						"f": "7000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on veut représenter une longueur réelle de $60~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["60"],
+					"variables": {
+						"a": "100000",
+						"b1": "6",
+						"b": "60",
+						"c": "60[km]",
+						"d": "1/100000",
+						"f": "6000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{100\\,000}$, on veut représenter une longueur réelle de $80~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["80"],
+					"variables": {
+						"a": "100000",
+						"b1": "8",
+						"b": "80",
+						"c": "80[km]",
+						"d": "1/100000",
+						"f": "8000000[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1000000"
+					},
+					{
+						"name": "b1",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "eval:b1*10"
+					},
+					{
+						"name": "c",
+						"expression": "eval:(b)[km]"
+					},
+					{
+						"name": "d",
+						"expression": "1/a"
+					},
+					{
+						"name": "f",
+						"expression": "eval:c;[cm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+				"reponses_brutes": ["{{eval:f/(a[cm])}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1000000,
+						"max": 1000000,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [1000000]
+					}
+				},
+				{
+					"nom": "b1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"10[km]",
+							"20[km]",
+							"30[km]",
+							"40[km]",
+							"50[km]",
+							"60[km]",
+							"70[km]",
+							"80[km]",
+							"90[km]"
+						],
+						"nombres_contenus": {
+							"min": 10,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [10, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.000001,
+						"max": 0.000001,
+						"negatif_possible": false,
+						"denominateurs": [1000000],
+						"denominateur_min": 1000000,
+						"denominateur_max": 1000000,
+						"nb_distinctes": 1,
+						"valeurs": ["1/1000000"]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"1000000[cm]",
+							"2000000[cm]",
+							"3000000[cm]",
+							"4000000[cm]",
+							"5000000[cm]",
+							"6000000[cm]",
+							"7000000[cm]",
+							"8000000[cm]",
+							"9000000[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1000000,
+							"max": 9000000,
+							"nb_distinctes": 9,
+							"valeurs": [
+								1000000, 2000000, 3000000, 4000000, 5000000, 6000000, 7000000, 8000000, 9000000
+							],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 7
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000000,
+				"nb_distinctes": 11,
+				"valeurs": [1, 10, 20, 30, 40, 50, 60, 70, 80, 90, 1000000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000000,
+				"nb_distinctes": 19,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50, 60, 70, 80, 90, 1000000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["km"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 26,
+					"max": 26
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000000)",
+					"graine": 1,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on veut représenter une longueur réelle de $10~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1000000",
+						"b1": "1",
+						"b": "10",
+						"c": "10[km]",
+						"d": "1/1000000",
+						"f": "1000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on veut représenter une longueur réelle de $30~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "1000000",
+						"b1": "3",
+						"b": "30",
+						"c": "30[km]",
+						"d": "1/1000000",
+						"f": "3000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on veut représenter une longueur réelle de $70~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "1000000",
+						"b1": "7",
+						"b": "70",
+						"c": "70[km]",
+						"d": "1/1000000",
+						"f": "7000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on veut représenter une longueur réelle de $60~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "1000000",
+						"b1": "6",
+						"b": "60",
+						"c": "60[km]",
+						"d": "1/1000000",
+						"f": "6000000[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Sur une carte à l'échelle $\\dfrac{1}{1\\,000\\,000}$, on veut représenter une longueur réelle de $80~\\mathrm{km}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $[?]$ cm.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "1000000",
+						"b1": "8",
+						"b": "80",
+						"c": "80[km]",
+						"d": "1/1000000",
+						"f": "8000000[cm]"
+					}
+				}
+			]
+		}
+	]
+}

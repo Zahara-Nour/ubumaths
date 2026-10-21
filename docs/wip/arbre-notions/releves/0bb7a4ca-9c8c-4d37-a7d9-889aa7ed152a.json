@@ -1,0 +1,293 @@
+{
+	"template_id": "0bb7a4ca-9c8c-4d37-a7d9-889aa7ed152a",
+	"titre": "Soustraire des durées (2)",
+	"sous_titre": "en HMS",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Durées > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-158",
+			"libelle_point": "Résoudre des problèmes impliquant des horaires et des durées",
+			"noeud_actuel": "Grandeurs et mesures > Durées > calcul de durées",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "1..59"
+					},
+					{
+						"name": "d",
+						"expression": "1..59!{{eval:60-c}}"
+					},
+					{
+						"name": "q",
+						"expression": "eval:a+b+floor((c+d)/60)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:c+d-60*floor((c+d)/60)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "J'ai commencé à regarder un film à ${{a}}~\\unit{h}~{{c}}~\\unit{min}$, et je l'ai terminé à ${{q}}~\\unit{h}~{{r}}~\\unit{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$?$",
+				"reponses_brutes": ["{{eval:b[h]+d[min]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 59,
+						"negatif_possible": false,
+						"nb_distinctes": 59
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 59,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [2, 3, 4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 59,
+						"negatif_possible": false,
+						"nb_distinctes": 59
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 108,
+						"exemples": [
+							"178[min]",
+							"112[min]",
+							"106[min]",
+							"74[min]",
+							"1.1[h]",
+							"152[min]",
+							"151[min]",
+							"95[min]",
+							"103[min]",
+							"2.45[h]",
+							"2.85[h]",
+							"130[min]"
+						],
+						"nombres_contenus": {
+							"min": 1.05,
+							"max": 179,
+							"nb_distinctes": 108,
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 59,
+				"nb_distinctes": 59,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1.05,
+				"max": 179,
+				"nb_distinctes": 108,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 179,
+				"nb_distinctes": 167,
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["h", "min"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 19,
+					"max": 19
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (179)",
+					"graine": 208,
+					"enonce": "J'ai commencé à regarder un film à $3~\\mathrm{h}~49~\\mathrm{min}$, et je l'ai terminé à $6~\\mathrm{h}~48~\\mathrm{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["179[min]"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "49",
+						"d": "59",
+						"q": "6",
+						"r": "48"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "J'ai commencé à regarder un film à $1~\\mathrm{h}~58~\\mathrm{min}$, et je l'ai terminé à $4~\\mathrm{h}~56~\\mathrm{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["178[min]"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "58",
+						"d": "58",
+						"q": "4",
+						"r": "56"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "J'ai commencé à regarder un film à $2~\\mathrm{h}~32~\\mathrm{min}$, et je l'ai terminé à $4~\\mathrm{h}~24~\\mathrm{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["112[min]"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "32",
+						"d": "52",
+						"q": "4",
+						"r": "24"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "J'ai commencé à regarder un film à $1~\\mathrm{h}~5~\\mathrm{min}$, et je l'ai terminé à $2~\\mathrm{h}~51~\\mathrm{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["106[min]"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"c": "5",
+						"d": "46",
+						"q": "2",
+						"r": "51"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "J'ai commencé à regarder un film à $2~\\mathrm{h}~5~\\mathrm{min}$, et je l'ai terminé à $3~\\mathrm{h}~19~\\mathrm{min}$. Quelle était la durée de ce film ? (n'oublie pas l'unité)\n\n$[?]$",
+					"reponse": ["74[min]"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "5",
+						"d": "14",
+						"q": "3",
+						"r": "19"
+					}
+				}
+			]
+		}
+	]
+}

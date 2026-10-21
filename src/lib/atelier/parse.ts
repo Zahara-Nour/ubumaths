@@ -9,12 +9,15 @@
  */
 
 import { parseCustomSafe } from '$lib/mathAST/parser/custom';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { parseLatexSafe } from '$lib/mathAST/parser';
 import { detectInputFormat, hasBareFunctionCall } from '$lib/mathAST/cli/core/input-detector';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { bareFunctionRefusal } from '$lib/mathAST/cli/core/variable-argument';
 import { getVariables } from '$lib/mathAST/eval/substitute';
+import { hideIndexedNames, indexedNameOf } from '$lib/mathAST/common/indexed-names';
 import { format as formatUnit } from '$lib/mathAST/units';
+import { parse as parseUnit } from '$lib/mathAST/units/parser';
 import type { MathNode } from '$lib/mathAST/types';
 import {
 	MAX_CATEGORIES,
@@ -26,6 +29,19 @@ import type { MissingReference, ObjectKind } from './types';
 import { readListValue, readNumber } from '$lib/statistics/read-value';
 import { hasObjectNameShape } from './names';
 import { argumentSemicolonsLatex, coupleOrSetRefusal, decimalCommaInput } from './decimal-comma';
+import { objectKindOf, partsOf, specOf } from './construction-spec';
+import { hasMeasureCall, measureShapeRefusal, withoutMeasureCalls } from './measures-read';
+import { perfSwitches } from './perf-switches';
+import { strayDegreeRefusal, withDegreeUnits } from './degrees';
+import {
+	CURVE_NEEDS_XY,
+	CURVE_UNIT,
+	POINT_NO_XY,
+	POINT_UNIT,
+	equationShapeRefusal,
+	reservedYMessage,
+	splitCoordinates
+} from './geometry';
 
 /**
  * D'où vient une définition. Décision D10 : c'est la provenance qui décide du
@@ -114,12 +130,28 @@ function genericFunctionsFor(extraNames: readonly string[] | undefined) {
  * `f(x) = 2sin(π x)` ne s'évaluait pas, et sa dérivée l'affichait comme une
  * lettre. L'atelier conseille pourtant « \pi ou le symbole π » (#896).
  *
- * ⚠️ Propre à l'atelier : ailleurs (le DSL de géométrie), `π` est un nom comme
- * un autre, décision prise. L'espace qui suit évite de coller la commande à
- * une lettre (`πx` → `\pi x`, pas `\pix`).
+ * Le parseur maison lit lui aussi `π` comme la constante depuis le 2026-10-20
+ * (lecture-grandeurs PR 4) ; la réécriture reste pour le parseur LaTeX. L'espace
+ * qui suit évite de coller la commande à une lettre (`πx` → `\pi x`, pas `\pix`).
  */
 export function withPiCommand(text: string): string {
 	return text.replace(/π/g, '\\pi ');
+}
+
+/**
+ * `(2\pi )[m]` : un texte où `π` est devenu `\pi` est lu en LaTeX, qui ne
+ * connaît pas les crochets d'une grandeur (« « [ » inattendu ici ») ; ses
+ * unités y sont écrites `\unit{m}` (grandeur après une expression, 2026-10-18).
+ * `withPiCommand` laisse une espace : `2\pi [m]`.
+ *
+ * ⚠️ En repli seulement dans Calcul : une ligne en texte (`sqrt(\pi )*3[m]`)
+ * est lue par le parseur maison, qui connaît les crochets mais pas `\unit`.
+ */
+export function latexUnitsWithPi(text: string): string {
+	if (!text.includes('\\pi')) return text;
+	return text.replace(/(?<=[\w)}]\s*)\[([^\]]+)\]/g, (whole, writing: string) =>
+		parseUnit(writing) === null ? whole : `\\unit{${writing}}`
+	);
 }
 
 /**
@@ -159,16 +191,61 @@ export function mixedNotationMessage(text: string): string | null {
 /** Les provenances qui sont la saisie de l'élève, virgule décimale et « ; » compris. */
 const STUDENT_TYPED: ReadonlySet<Provenance> = new Set(['text', 'paste', 'command']);
 
-/** Un exposant négatif sans accolades : `^-1`, `^-12`, `^-x` (un nombre ou UNE lettre, pas `^-sin(x)`) ;
- * jamais suivi d'un autre `^` : `e^-x^2` se lirait (e^{-x})² ici et e^{-x²} dans Calcul. */
-const NEGATIVE_EXPONENT = /\^\s*-\s*(\d+(?:\.\d+)?|[A-Za-z](?![A-Za-z(]))(?!\s*\^)/g;
+/**
+ * Les lectures déjà faites (chantier perf du 2026-10-19). La lecture est une
+ * fonction PURE du texte, de la provenance et des noms de fonctions : la même
+ * entrée rend le même arbre. Sans ce mémo, un cran de curseur relisait chaque
+ * définition des dizaines de fois (une fois par coordonnée citée, via
+ * `bindingsOf`) — 1/3 du temps passait à fabriquer les exceptions du parseur.
+ *
+ * ⚠️ RÈGLE : un arbre rendu par la lecture est PARTAGÉ et ne doit JAMAIS être
+ * modifié en place — ni ici, ni par qui le reçoit, y compris à travers ce que
+ * rendent `definitionAst`, `substitutedAstOf` / `substitutedTextOf` et
+ * `expandDerivatives` (qui rendent l'arbre lu TEL QUEL quand il n'y a rien à
+ * remplacer ou à développer). Toute transformation fabrique un arbre neuf (même
+ * règle que `PARSE_CACHE` de `geometry-core`). Le gel n'a lieu qu'en
+ * développement et en test, pour qu'une écriture y jette au lieu d'abîmer le
+ * mémo en silence ; en production, rien ne l'empêche.
+ * Plafond et `clear()` au site d'insertion, comme `PARSE_CACHE`.
+ */
+const READ_CACHE = new Map<string, ReturnType<typeof readByProvenance>>();
+const READ_CACHE_MAX = 5_000;
 
 function parseByProvenance(
 	rawDefinition: string,
 	provenance: Provenance,
 	functionNames?: readonly string[]
+): ReturnType<typeof readByProvenance> {
+	if (!perfSwitches.readCache) return readByProvenance(rawDefinition, provenance, functionNames);
+	const key = `${provenance}\u0000${functionNames?.join(',') ?? ''}\u0000${rawDefinition}`;
+	const known = READ_CACHE.get(key);
+	if (known !== undefined) return known;
+	const read = readByProvenance(rawDefinition, provenance, functionNames);
+	if (import.meta.env.DEV) deepFreeze(read);
+	if (READ_CACHE.size >= READ_CACHE_MAX) READ_CACHE.clear();
+	READ_CACHE.set(key, read);
+	return read;
+}
+
+/** Geler un résultat de lecture partagé (développement et tests seulement). */
+function deepFreeze(value: unknown): void {
+	if (value === null || typeof value !== 'object' || Object.isFrozen(value)) return;
+	Object.freeze(value);
+	for (const child of Object.values(value)) deepFreeze(child);
+}
+
+function readByProvenance(
+	rawDefinition: string,
+	provenance: Provenance,
+	functionNames?: readonly string[]
 ) {
-	const typed = withPiCommand(withLatexFunctionNames(rawDefinition));
+	// `60°`, `60^{\circ}`, `60\degree` (MathLive) : l'unité degré (`degrees.ts`)
+	const typed = withPiCommand(
+		withDegreeUnits(
+			withLatexFunctionNames(rawDefinition),
+			readingMode(provenance) === 'latex' ? 'latex' : 'detect'
+		)
+	);
 	// Les mêmes noms de fonctions dans les deux lectures : en LaTeX, l'atelier ne
 	// les transmettait pas, et `k(x)` tapé dans la carte se lisait k·x
 	const genericFunctions = genericFunctionsFor(functionNames);
@@ -180,22 +257,19 @@ function parseByProvenance(
 	}
 	// ⚠️ La saisie de l'élève seulement : `'url'` relit aussi le texte du moteur
 	// (`toCustom` écrit `max(2,3)`), dont la virgule n'est pas décimale (revue)
-	const definition = STUDENT_TYPED.has(provenance) ? decimalCommaInput(typed) : typed;
+	const studentTyped = STUDENT_TYPED.has(provenance);
+	const definition = studentTyped ? decimalCommaInput(typed) : typed;
 
 	const detected = detectInputFormat(definition);
 	if (detected.format === 'latex' && detected.confidence > 0.5) {
-		return parseLatexSafe(definition, { genericFunctions });
+		return parseLatexSafe(latexUnitsWithPi(definition), { genericFunctions });
 	}
-	const read = parseCustomSafe(definition, { genericFunctions });
-	// `x^-1`, `f(x)^-1`, `e^-x` : le parseur maison exige `x^{-1}`, alors qu'une
-	// ligne de Calcul les lit. `g(x) = f(x)^-1` créait une g en erreur, et `g(2)`
-	// répondait « Fonction inconnue : g » (constat du lot 3 de la réciproque).
-	// Relu avec l'exposant entre parenthèses, seulement après ce refus-là.
-	if (read.ast === null && read.errors.some((e) => e.code === 'INVALID_SUPERSCRIPT')) {
-		const bracketed = definition.replace(NEGATIVE_EXPONENT, '^(-$1)');
-		if (bracketed !== definition) return parseCustomSafe(bracketed, { genericFunctions });
-	}
-	return read;
+	// `x^-1`, `f(x)^-1`, `e^-x` : lus par le parseur maison depuis le 2026-10-20
+	// (lecture-grandeurs) ; l'atelier n'a plus à les réécrire `^(-1)`.
+	// Un texte rangé (`0,3` d'un curseur, sans provenance) : relu comme avant la PR 6
+	return parseCustomSafe(studentTyped ? definition : legacyDecimalCommas(definition), {
+		genericFunctions
+	});
 }
 
 /**
@@ -258,9 +332,6 @@ export interface ParsedDefinition {
 
 /** Une valeur purement numérique, sans unité ni expression. */
 const PLAIN_NUMBER = /^\s*-?\d+(?:[.,]\d+)?\s*$/;
-
-/** Les identifiants du TEXTE — pour la réécriture au renommage, pas pour lire les dépendances. */
-const IDENTIFIERS = /[A-Za-z]+(?:_\d+)?/g;
 
 // `readNumber` et `readListValue` vivent dans le module statistique : le bloc
 // ubumark `données:` lit une série comme l'atelier (Q92, v2 lot 4)
@@ -452,12 +523,41 @@ export function parseDefinition(
 		return { values, skipped, rows };
 	}
 
+	if (kind === 'point' || kind === 'curve') {
+		// Géométrie, lot 2 : `milieu(A, B)`, `(AB)`… une construction (L2, L3)
+		const construction = parseConstruction(kind, definition, provenance, functionNames);
+		if (construction !== null) return construction;
+	}
+	if (kind === 'point') return parsePoint(definition, provenance, functionNames);
+	if (kind === 'curve') return parseCurve(definition, provenance, functionNames);
+
+	// Une mesure (`aire(A, B, C)`, lot 2, L4) se lit comme un nombre : sa forme
+	// ici, sa valeur avec l'atelier (`measures.ts`)
+	if (
+		(kind === 'value' || kind === 'function' || kind === 'sequence') &&
+		hasMeasureCall(definition, provenance)
+	) {
+		const shape = measureShapeRefusal(definition, provenance);
+		if (shape !== null) return { error: shape };
+		return parseDefinition(
+			kind,
+			withoutMeasureCalls(definition, provenance),
+			provenance,
+			functionNames
+		);
+	}
+
 	if (kind === 'value' && PLAIN_NUMBER.test(definition)) return {};
 
 	// V59 : la carte refuse `ln x` comme la ligne de calcul — sans quoi un
 	// `ln x` sans antislash venu de MathLive se lisait l·n·x
 	const bare = bareFunctionRefusal(definition);
 	if (bare !== null) return { error: bare };
+	// Un ° qui ne suit rien (`a = ° + 1`) : lu, ce serait une lettre « ° »
+	const stray = strayDegreeRefusal(
+		withDegreeUnits(definition, readingMode(provenance) === 'latex' ? 'latex' : 'detect')
+	);
+	if (stray !== null) return { error: stray };
 
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) {
@@ -469,6 +569,10 @@ export function parseDefinition(
 		};
 	}
 
+	// G5 : `y` est la variable des équations de courbe. Ailleurs, aucun objet ne
+	// peut s'appeler ainsi : sans ce refus, `f(x) = x + y` attendait un `y` à jamais
+	if (variablesOf(result.ast, functionNames).has('y')) return { error: reservedYMessage(kind) };
+
 	if (kind === 'value') {
 		// Décision D4 : la grandeur est acceptée, mais elle ne prendra pas de
 		// curseur — c'est au modèle d'en décider, pas ici.
@@ -476,6 +580,102 @@ export function parseDefinition(
 		if (symbol) return { unit: symbol };
 	}
 	return {};
+}
+
+/**
+ * Une construction (géométrie, lot 2) : sa forme (`construction-read.ts`), le
+ * type qu'elle crée — un point ou une courbe, selon le mot —, et ses nombres
+ * (coordonnées, rayon) lus comme des valeurs, sans unité, sans x ni y. Les
+ * TYPES des objets cités se contrôlent avec l'atelier (`recomputeAll`).
+ * `null` si la définition n'est pas une construction.
+ */
+function parseConstruction(
+	kind: 'point' | 'curve',
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition | null {
+	const read = specOf(definition, provenance);
+	if (read === null) return null;
+	if (!read.ok) return { error: read.message };
+	const made = objectKindOf(read.spec);
+	if (made !== kind) {
+		const what = made === 'point' ? 'un point' : 'une ligne ou un cercle';
+		const wanted = kind === 'point' ? 'pas un point' : 'pas une courbe';
+		return { error: `${read.call.text} construit ${what}, ${wanted}.` };
+	}
+	for (const scalar of partsOf(read.spec).scalars) {
+		const ast = astOf(scalar, 'text', functionNames);
+		const variables = ast === null ? new Set<string>() : variablesOf(ast, functionNames);
+		if (variables.has('x') || variables.has('y')) {
+			return { error: `« ${scalar} » : les nombres d’une construction ne contiennent ni x ni y.` };
+		}
+		const value = parseDefinition('value', scalar, 'text', functionNames);
+		if (value.error !== undefined) return { error: value.error };
+		if (value.unit !== undefined) {
+			return { error: `« ${scalar} » : les nombres d’une construction sont sans unité.` };
+		}
+	}
+	return {};
+}
+
+/**
+ * Un point (`(a ; 2a)`, G3) : deux coordonnées, chacune lue comme une valeur —
+ * virgule décimale et fractions comprises (P3) —, sans unité (P8), sans x ni y.
+ */
+function parsePoint(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition {
+	const split = splitCoordinates(definition);
+	if (!split.ok) return { error: split.message };
+	for (const coordinate of split.coordinates) {
+		// x et y d'abord : la lecture d'une valeur refuserait y avec un autre message
+		const ast = astOf(coordinate, provenance, functionNames);
+		const variables = ast === null ? new Set<string>() : variablesOf(ast, functionNames);
+		if (variables.has('x') || variables.has('y')) return { error: POINT_NO_XY };
+		const read = parseDefinition('value', coordinate, provenance, functionNames);
+		if (read.error !== undefined) return { error: read.error };
+		if (read.unit !== undefined) return { error: POINT_UNIT };
+	}
+	return {};
+}
+
+/**
+ * Une courbe (`y = 3x - 2`, G0) : une équation à un seul « = » (C9, C10), qui
+ * contient x ou y (C8), sans unité (C11, D4). Gardée telle qu'écrite (C7).
+ */
+function parseCurve(
+	definition: string,
+	provenance: Provenance,
+	functionNames: readonly string[] | undefined
+): ParsedDefinition {
+	const shape = equationShapeRefusal(definition);
+	if (shape !== null) return { error: shape };
+	const bare = bareFunctionRefusal(definition);
+	if (bare !== null) return { error: bare };
+	const result = parseByProvenance(definition, provenance, functionNames);
+	if (!result.ast) {
+		return {
+			error:
+				mixedNotationMessage(definition) ??
+				`« ${definition.trim()} » n'est pas une équation valide.`
+		};
+	}
+	if (unitSymbolOf(result.ast) !== null) return { error: CURVE_UNIT };
+	const variables = variablesOf(result.ast, functionNames);
+	if (!variables.has('x') && !variables.has('y')) return { error: CURVE_NEEDS_XY };
+	return {};
+}
+
+/**
+ * Les deux coordonnées d'un point telles qu'écrites, ou `null` si la définition
+ * n'a pas la forme d'un point (`(1 ; 2)`).
+ */
+export function pointCoordinatesOf(definition: string): readonly [string, string] | null {
+	const split = splitCoordinates(definition);
+	return split.ok ? split.coordinates : null;
 }
 
 /**
@@ -491,6 +691,8 @@ export function parseDefinition(
  * lettres : aucun objet ne portera jamais ces noms, donc ils ne manquent
  * jamais — et l'atelier n'a aucune liste de fonctions à tenir à jour.
  *
+ * Un nom indicé (`a_1`) est UN nom, jamais sa base (`indexedObjectName`).
+ *
  * ⚠️ En syntaxe custom, `pi` n'est PAS une constante : il se lit `p·i`.
  */
 export function referencesOf(
@@ -503,7 +705,7 @@ export function referencesOf(
 
 	const found = new Map<string, MissingReference>();
 
-	for (const name of getVariables(result.ast)) {
+	for (const name of variablesOf(result.ast, functionNames)) {
 		if (!hasObjectNameShape(name)) continue;
 		found.set(name, { name, as: 'value' });
 	}
@@ -524,8 +726,8 @@ export function referencesOf(
  *
  * Lus dans l'ARBRE, jamais dans le texte (`ax` est `a·x`) : une variable
  * seule. Ne comptent pas :
- * - la base d'un indice (`a_1`, `u_n`) : `a_1` est un autre nom, `u_n` la
- *   notation d'une suite ;
+ * - la base d'un indice (`a_1`, `u_n`) : `a_1` est un autre nom — cité, lui,
+ *   comme un nombre —, `u_n` la notation d'une suite ;
  * - la base d'une puissance −1 (`f^(-1)`, ce que devient `f^-1`) : la
  *   réciproque. `f'(x)`, `f^{-1}(x)` sont déjà des appels dans l'arbre.
  */
@@ -537,8 +739,52 @@ export function bareNamesOf(
 	const result = parseByProvenance(definition, provenance, functionNames);
 	if (!result.ast) return [];
 	const found = new Set<string>();
-	collectBareNames(result.ast, found);
+	collectBareNames(withIndexedNames(result.ast, functionNames), found);
 	return [...found].filter(hasObjectNameShape);
+}
+
+/**
+ * Le nom qu'un nœud indicé désigne dans l'atelier : `a_1` est un AUTRE nom que
+ * `a` (relevé du 2026-10-19 : `referencesOf` lisait `a_1 x` comme `a`, et
+ * `b = a_1 + 1` attendait « a »). `null` quand ce n'est pas un nom :
+ * - un indice qui n'est pas un entier (`u_n`, `u_{n+1}`) : la notation d'une suite ;
+ * - `u_3` avec u une suite ou une fonction de l'atelier, quand `u_3` n'en est
+ *   pas une : le terme de rang 3, que la lecture des liaisons appelle `u(3)`
+ *   (`subscriptsAsCalls`, `engine.ts`).
+ */
+function indexedObjectName(
+	node: MathNode,
+	functionNames: readonly string[] | undefined
+): string | null {
+	const name = indexedNameOf(node);
+	if (name === null || node.type !== 'subscript' || node.base.type !== 'variable') return null;
+	const known = functionNames ?? [];
+	if (known.includes(node.base.name) && !known.includes(name)) return null;
+	return name;
+}
+
+/**
+ * Les variables d'un arbre lu, noms indicés compris sous leur nom entier
+ * (`a_1 x` → a_1, x) : `getVariables` de `mathAST`, qui rend la base `a`.
+ */
+export function variablesOf(
+	ast: MathNode,
+	functionNames: readonly string[] | undefined
+): Set<string> {
+	return getVariables(withIndexedNames(ast, functionNames));
+}
+
+/**
+ * L'arbre où chaque nom indicé d'objet (`a_1`) devient une variable du même nom
+ * (`hideIndexedNames`) : un arbre NEUF, l'arbre lu est partagé (`parseByProvenance`).
+ * Seuls les noms qu'un objet peut porter (`hasObjectNameShape` : ni `alpha_1`, ni
+ * les marques `ω_1` de la grille), hors terme d'une suite (`indexedObjectName`).
+ */
+function withIndexedNames(ast: MathNode, functionNames: readonly string[] | undefined): MathNode {
+	return hideIndexedNames(
+		ast,
+		(name, node) => hasObjectNameShape(name) && indexedObjectName(node, functionNames) !== null
+	).node;
 }
 
 /** Une puissance −1 : `-1` ou `-(1)`, tels que les parseurs les rendent. */
@@ -565,7 +811,8 @@ function collectBareNames(node: unknown, into: Set<string>): void {
 		into.add(o.name);
 		return;
 	}
-	// `a_1`, `u_n` : ni la base ni l'indice ne sont un nombre de l'atelier
+	// `u_n` : ni la base ni l'indice ne sont un nombre de l'atelier (`a_1`, lui,
+	// est déjà une variable, `withIndexedNames`)
 	if (o.type === 'subscript') return;
 	if (o.type === 'superscript' && isMinusOne(o.superscript)) {
 		const base = o.base as Record<string, unknown> | undefined;
@@ -631,11 +878,44 @@ function calledFunctions(node: MathNode): string[] {
 }
 
 /**
+ * Les noms d'une définition, pour la réécriture au renommage (pas pour lire les
+ * dépendances) : lettres et indice, écrit `a_1` ou par MathLive `a_{1}`, et
+ * jamais une commande LaTeX (`\cdot`).
+ */
+const RENAMABLE = /(?<![\\A-Za-z])[A-Za-z]+(?:_\d+|_\{\d+\})?/g;
+
+/**
  * Réécrire une définition après le renommage d'un objet.
  *
  * Remplace le nom entier seulement : renommer `f` ne doit pas toucher au `f`
- * de `f_1`, ni à celui de `sin`.
+ * de `f_1`, ni à celui de `sin`. Le LaTeX d'une carte compte aussi : `a_{1}`
+ * est le nom `a_1`, réécrit dans son écriture (B9 de `atelier-remplacer-phase0.md`
+ * — renommer `a` changeait la base de `a_{1}`).
  */
+/**
+ * Réécrire les TERMES d'une suite (ou d'une fonction) renommée : `u_3` (le terme
+ * de rang 3 de u) devient `v_3` quand u devient v — sinon il citerait un autre
+ * objet, ou rien (2026-10-19). `isTerm` écarte un `u_3` qui est un objet à lui
+ * (une fonction `f_1` à côté de `f`). L'écriture de l'indice est gardée.
+ */
+export function renameTermsInDefinition(
+	definition: string,
+	from: string,
+	to: string,
+	isTerm: (indexedName: string) => boolean
+): string {
+	return definition.replace(RENAMABLE, (id) => {
+		const match = /^([A-Za-z])_(?:(\d+)|\{(\d+)\})$/.exec(id);
+		if (match === null || match[1] !== from) return id;
+		const index = match[2] ?? match[3];
+		if (!isTerm(`${from}_${index}`)) return id;
+		return match[2] !== undefined ? `${to}_${index}` : `${to}_{${index}}`;
+	});
+}
+
 export function renameInDefinition(definition: string, from: string, to: string): string {
-	return definition.replace(IDENTIFIERS, (id) => (id === from ? to : id));
+	return definition.replace(RENAMABLE, (id) => {
+		if (id.replace(/_\{(\d+)\}$/, '_$1') !== from) return id;
+		return id.includes('{') ? to.replace(/_(\d+)$/, '_{$1}') : to;
+	});
 }

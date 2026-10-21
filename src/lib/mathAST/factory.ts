@@ -6,6 +6,7 @@
  */
 
 import type {
+	AdditionDisplayStyle,
 	AdditionNode,
 	BooleanNode,
 	ComplexNode,
@@ -73,6 +74,13 @@ export interface BinaryOpOptions {
 }
 
 /**
+ * Options of `add`: a rebuilt sum keeps its display style (`juxtaposed` : `2[h] 30[min]`)
+ */
+export interface AdditionOptions extends BinaryOpOptions {
+	displayStyle?: AdditionDisplayStyle;
+}
+
+/**
  * Options for unary operations (opposite, positive)
  */
 export interface UnaryOpOptions {
@@ -136,7 +144,9 @@ export interface CompositionOptions {
  */
 function isBinaryOpOptions(opt: unknown): opt is BinaryOpOptions {
 	return (
-		typeof opt === 'object' && opt !== null && ('operatorMetadata' in opt || 'metadata' in opt)
+		typeof opt === 'object' &&
+		opt !== null &&
+		('operatorMetadata' in opt || 'metadata' in opt || 'displayStyle' in opt)
 	);
 }
 
@@ -430,16 +440,25 @@ export function piConstant(metadata?: NodeMetadata): MathConstantNode {
 export function add(
 	left: MathNode,
 	right: MathNode,
-	options?: BinaryOpOptions | NodeMetadata
+	options?: AdditionOptions | NodeMetadata
 ): AdditionNode {
-	const opts = normalizeBinaryOpOptions(options);
+	const opts: AdditionOptions = normalizeBinaryOpOptions(options);
 	return {
 		type: 'addition',
 		left,
 		right,
+		...(opts.displayStyle && { displayStyle: opts.displayStyle }),
 		...(opts.operatorMetadata && { operatorMetadata: opts.operatorMetadata }),
 		...(opts.metadata && { metadata: opts.metadata })
 	} as const;
+}
+
+/**
+ * Une durée composée écrite sans `+` : `2[h] 30[min]` (« 2 h 30 min »). Une somme,
+ * marquée pour l'affichage — chantier lecture-grandeurs, PR 5.
+ */
+export function juxtaposedSum(left: MathNode, right: MathNode): AdditionNode {
+	return { type: 'addition', left, right, displayStyle: 'juxtaposed' } as const;
 }
 
 /**
@@ -2008,6 +2027,7 @@ export const MathAST = {
 
 	// Binary operations
 	add,
+	juxtaposedSum,
 	subtract,
 	multiply,
 	implicitMultiply,

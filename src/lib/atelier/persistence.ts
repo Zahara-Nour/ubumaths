@@ -13,9 +13,19 @@
  */
 
 import { z } from 'zod';
+import { MAX_FORMAT_ZONES, storedFormatSchema, type StoredFormat } from './cell-format';
 import type { ObjectKind } from './types';
 import { MAX_DEFINITION_LENGTH, MAX_INTERVAL_LENGTH } from './types';
-import { MAX_CELL_LENGTH, MAX_TITLE_LENGTH, readCellName } from './grid';
+import {
+	MAX_CELL_LENGTH,
+	MAX_TITLE_LENGTH,
+	definitionFrom,
+	entriesOf,
+	readCellName,
+	renameInFormula
+} from './grid';
+import { indexedNameClash, nextClashFreeName, nextName } from './names';
+import { renameInDefinition } from './parse';
 import { sequenceDisplaySchema, storedDisplaySchema, type StoredDisplay } from './display';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 
@@ -24,6 +34,13 @@ import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 // =============================================================================
 
 export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
+
+/**
+ * L'atelier MIS DE CÔTÉ par « Remplacer mon atelier » ou « Charger » (R3, R5 de
+ * `atelier-remplacer-phase0.md`) : une seule copie, rangée sous la même forme que
+ * l'atelier personnel et relue par les mêmes schémas (B7). Voir `replace.ts`.
+ */
+export const SET_ASIDE_STORAGE_KEY = 'chiphre-atelier-de-cote';
 
 /**
  * Version du format rangé.
@@ -37,8 +54,19 @@ export const ATELIER_STORAGE_KEY = 'chiphre-atelier';
  * code relirait l'état en jetant la grille (Zod retire les clés inconnues),
  * puis l'enregistrerait. Une version 1 se relit : ses listes sont placées en
  * A, B… dans l'ordre des cartes.
+ *
+ * Version 3 (2026-10-18, géométrie v2) : les points et les courbes (`kind`
+ * `point`, `curve`), et `y` devenu réservé — un objet `y` rangé avant est
+ * renommé à la relecture (`migrateReservedNames`, Q2). Sans elle, un onglet
+ * resté sur l'ancien code écarterait les points et les courbes, puis
+ * enregistrerait l'atelier sans eux.
+ *
+ * Version 4 (2026-10-18, géométrie v2, PR 3) : `inFigure`, la courbe d'une
+ * fonction montrée dans la vue Géométrie (K1). Sans elle, un onglet resté sur
+ * la version 3 relirait l'atelier en retirant le champ (Zod), puis
+ * l'enregistrerait sans lui. Une version 3 se relit : rien n'y est affiché.
  */
-export const ATELIER_STATE_VERSION = 2;
+export const ATELIER_STATE_VERSION = 4;
 
 /**
  * Au-delà, on refuse d'enregistrer plutôt que d'écrire un état qu'on ne saura
@@ -60,10 +88,12 @@ const MAX_SERIALIZED_LENGTH = 500_000;
 const storedObjectSchema = z.object({
 	// 12 : la carte `f⁻¹` s'appelle `f^-1`, `u_12^-1` (lot 3 de la réciproque)
 	name: z.string().min(1).max(12),
-	kind: z.enum(['value', 'function', 'sequence', 'list']),
+	kind: z.enum(['value', 'function', 'sequence', 'list', 'point', 'curve']),
 	definition: z.string().max(MAX_DEFINITION_LENGTH),
 	/** Affiché dans la vue Graphe. Absent = non tracé. */
 	plotted: z.boolean().optional(),
+	/** 𝒞f affichée dans la vue Géométrie (K1, version 4). Absent = non affichée. */
+	inFigure: z.boolean().optional().catch(undefined),
 	/**
 	 * La lettre d'une fonction (`f(t)`). Abîmée : oubliée, la fonction gardée et
 	 * montrée en x — sa définition rangée l'est déjà.
@@ -103,6 +133,13 @@ const storedObjectSchema = z.object({
 		.optional()
 		.catch(undefined),
 	/**
+	 * Curseur d'une valeur affiché depuis le menu (lot 4a, décision de David du
+	 * 2026-10-18). Rangé seulement quand il est affiché : pas de nouvelle version,
+	 * même contrepartie que `figureDisplay` (un onglet resté sur l'ancien code
+	 * l'oublie — un affichage, jamais un objet).
+	 */
+	sliderShown: z.literal(true).optional().catch(undefined),
+	/**
 	 * Mode, rang et premier terme d'une suite (lot 5). Absents des suites rangées
 	 * avant : le mode se retrouve à la relecture (S4). Validés à la création.
 	 */
@@ -111,6 +148,17 @@ const storedObjectSchema = z.object({
 	firstTerm: z.string().max(20).optional().catch(undefined),
 	/** Réglages du tracé d'une suite (lot 5b). Abîmés : oubliés, l'objet gardé. */
 	sequenceDisplay: sequenceDisplaySchema.optional().catch(undefined),
+	/**
+	 * Le dessin d'un point (couleur, taille, étiquette) ou d'une courbe de la
+	 * figure (couleur, trait) — lot 4b de la refonte. Jugé par l'objet à la
+	 * relecture (`adoptFigureDisplay`), selon son type : ici, seulement sa forme.
+	 *
+	 * ⚠️ Pas de nouvelle version d'état : absent tant que rien n'est réglé, un
+	 * ancien état se relit tel quel. Contrepartie, la même que la lecture
+	 * graphique (#1497) : un onglet resté sur l'ancien code l'oublie (Zod retire
+	 * la clé) — un réglage de couleur, jamais un objet.
+	 */
+	figureDisplay: z.record(z.string(), z.unknown()).optional().catch(undefined),
 	/**
 	 * La colonne d'une liste dans la grille (`A` à `Z`, version 2). Absente ou
 	 * abîmée : la liste prend la première colonne libre.
@@ -162,6 +210,8 @@ export interface StoredObject {
 	readonly kind: ObjectKind;
 	readonly definition: string;
 	readonly plotted?: boolean;
+	/** 𝒞f affichée dans la vue Géométrie (K1). */
+	readonly inFigure?: boolean;
 	/** La lettre de l'élève d'une fonction (`f(t)`), absente pour x. */
 	readonly letter?: string;
 	/** L'ensemble d'une fonction (`[0;+∞[`), absent sans « sur ». */
@@ -170,10 +220,14 @@ export interface StoredObject {
 	readonly reciprocalOn?: string;
 	readonly display?: StoredDisplay;
 	readonly slider?: { readonly min: number; readonly max: number; readonly step: number };
+	/** Curseur d'une valeur affiché depuis le menu, absent quand il est caché. */
+	readonly sliderShown?: true;
 	readonly mode?: 'explicit' | 'recurrence';
 	readonly firstIndex?: number;
 	readonly firstTerm?: string;
 	readonly sequenceDisplay?: unknown;
+	/** Le dessin d'un point ou d'une courbe de la figure (lot 4b), validé à la relecture. */
+	readonly figureDisplay?: unknown;
 	/** La colonne d'une liste (`A` à `Z`). */
 	readonly column?: string;
 }
@@ -187,6 +241,8 @@ export interface StoredGrid {
 	readonly relative?: boolean;
 	/** La graine des tirages (ALEA, lot 5) : mêmes tirages au rechargement et dans le lien. */
 	readonly seed?: number;
+	/** La mise en forme (reprise de V4), par zone, dans l'ordre où elle a été posée. */
+	readonly formats?: readonly StoredFormat[];
 }
 
 export interface AtelierState {
@@ -229,12 +285,19 @@ export type SaveOutcome =
 // Lire
 // =============================================================================
 
-export function loadAtelier(storage: Storage | null): LoadOutcome {
+/**
+ * @param key - La clé à relire : l'atelier personnel par défaut, ou la copie mise
+ *   de côté (`SET_ASIDE_STORAGE_KEY`), relue par les mêmes schémas (B7).
+ */
+export function loadAtelier(
+	storage: Storage | null,
+	key: string = ATELIER_STORAGE_KEY
+): LoadOutcome {
 	if (!storage) return { kind: 'unavailable' };
 
 	let raw: string | null;
 	try {
-		raw = storage.getItem(ATELIER_STORAGE_KEY);
+		raw = storage.getItem(key);
 	} catch {
 		// Un navigateur peut refuser jusqu'à la lecture (site bloqué).
 		return { kind: 'unavailable' };
@@ -306,7 +369,8 @@ export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: nu
 		}
 		return result;
 	};
-	const raw = candidate as { cells?: unknown; titles?: unknown; seed?: unknown } | null | undefined;
+	const raw = candidate as
+		{ cells?: unknown; titles?: unknown; seed?: unknown; formats?: unknown } | null | undefined;
 	const cells = kept(raw?.cells, storedCellSchema, (text) => text.trim() === '');
 	const titles = kept(raw?.titles, storedTitleSchema, () => false);
 	// Une graine illisible est écartée : les tirages seront neufs, la grille reste
@@ -314,9 +378,28 @@ export function salvageGrid(candidate: unknown): { grid: StoredGrid; dropped: nu
 	const grid: StoredGrid = {
 		...(Object.keys(cells).length > 0 && { cells }),
 		...(Object.keys(titles).length > 0 && { titles }),
-		...(seed.success && { seed: seed.data })
+		...(seed.success && { seed: seed.data }),
+		...salvageFormats(raw?.formats)
 	};
-	return { grid, dropped };
+	return { grid, dropped: dropped + formatsDropped(raw?.formats) };
+}
+
+/** Les mises en forme lisibles, une par une : une seule forgée n'emporte pas les autres. */
+function salvageFormats(candidate: unknown): { formats?: StoredFormat[] } {
+	if (!Array.isArray(candidate)) return {};
+	// Bornées (règle 1) : un lien forgé de 15 000 zones figeait l'onglet (revue)
+	const kept = candidate.slice(0, MAX_FORMAT_ZONES).flatMap((entry) => {
+		const one = storedFormatSchema.safeParse(entry);
+		return one.success ? [one.data as StoredFormat] : [];
+	});
+	return kept.length > 0 ? { formats: kept } : {};
+}
+
+function formatsDropped(candidate: unknown): number {
+	if (!Array.isArray(candidate)) return 0;
+	const read = candidate.slice(0, MAX_FORMAT_ZONES);
+	const unread = candidate.length - read.length;
+	return unread + read.filter((entry) => !storedFormatSchema.safeParse(entry).success).length;
 }
 
 /** L'état relu d'une enveloppe validée : objets puis cellules, chacun trié à part. */
@@ -329,6 +412,118 @@ export function salvageState(shell: z.infer<typeof atelierShellSchema>): {
 	// Sans cellule ni titre, pas de grille : l'état relu est celui qui a été rangé
 	const kept = Object.keys(grid).length > 0 ? { grid } : {};
 	return { state: { version: shell.version, objects, ...kept }, dropped: dropped + lostCells };
+}
+
+// =============================================================================
+// Migrer
+// =============================================================================
+
+/** `y` et les cartes qui le suivent : `y′`, `y″`, `y⁻¹` (rangés `y'`, `y''`, `y^-1`). */
+const RESERVED_Y = /^y('*|\^-1)$/;
+
+/**
+ * Renommer l'objet `y` d'un atelier rangé avant que `y` soit réservé (G5 de la
+ * géométrie, Q2 (a) du 2026-10-18) : à la première lettre libre de son type,
+ * ses cartes `y′`, `y⁻¹` avec lui, et tout ce qui le cite réécrit — définitions,
+ * premier terme d'une suite, formules de la grille. Jamais de perte : l'appelant
+ * dit à l'élève ce qui a changé (`renamed`).
+ *
+ * Appliquée à toute relecture, quelle que soit la version : un état récent n'a
+ * jamais d'objet `y`, et un lien forgé qui en porte un est relu de même.
+ * Renomme aussi une valeur `u_3` rangée à côté d'une suite `u`
+ * (`migrateIndexedNameClashes`, 2026-10-19).
+ *
+ * @param taken - Les noms déjà pris ailleurs (fusion dans l'atelier personnel)
+ */
+export function migrateReservedNames(
+	state: AtelierState,
+	taken: readonly string[] = []
+): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
+	const reserved = migrateReservedY(state, taken);
+	const indexed = migrateIndexedNameClashes(reserved.state, taken);
+	return { state: indexed.state, renamed: [...reserved.renamed, ...indexed.renamed] };
+}
+
+/**
+ * Renommer chaque valeur (point, liste…) `u_3` d'un atelier rangé qui contient
+ * aussi une suite ou une fonction `u` : depuis le 2026-10-19, `u_3` y désigne
+ * le terme de rang 3, et les deux ne cohabitent plus (`indexedNameClash`). La
+ * valeur garde sa définition sous une lettre libre ; jamais de perte, l'appelant
+ * le dit à l'élève (`renamed`).
+ *
+ * ⚠️ Les définitions qui citent `u_3` ne sont PAS réécrites : elles y lisaient
+ * déjà le terme de la suite (`indexedObjectName`, `parse.ts`) — les réécrire
+ * changerait ce qu'elles calculent. À trancher par David si l'élève voulait la
+ * valeur.
+ */
+function migrateIndexedNameClashes(
+	state: AtelierState,
+	taken: readonly string[]
+): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
+	const renamed: Array<{ from: string; to: string }> = [];
+	const names = [...state.objects.map((o) => o.name), ...taken];
+	const objects = state.objects.map((o): StoredObject => {
+		// La valeur cède, jamais la suite ou la fonction : ses termes sont cités
+		if (o.kind === 'function' || o.kind === 'sequence') return o;
+		const others = state.objects.filter((other) => other !== o);
+		if (indexedNameClash(o.name, o.kind, others) === null) return o;
+		const to = nextClashFreeName(o.kind, names, state.objects);
+		names.push(to);
+		renamed.push({ from: o.name, to });
+		return { ...o, name: to };
+	});
+	return renamed.length === 0 ? { state, renamed } : { state: { ...state, objects }, renamed };
+}
+
+/** Le renommage de l'objet `y` (G5) : voir `migrateReservedNames`. */
+function migrateReservedY(
+	state: AtelierState,
+	taken: readonly string[]
+): { state: AtelierState; renamed: ReadonlyArray<{ from: string; to: string }> } {
+	const owner = state.objects.find((o) => o.name === 'y');
+	if (owner === undefined && !state.objects.some((o) => RESERVED_Y.test(o.name))) {
+		return { state, renamed: [] };
+	}
+	const to = nextName(owner?.kind ?? 'function', [...state.objects.map((o) => o.name), ...taken]);
+	const renames = new Map([['y', to]]);
+	const objects = state.objects.map((o): StoredObject => {
+		const match = RESERVED_Y.exec(o.name);
+		const name = match === null ? o.name : `${to}${match[1]}`;
+		// Une courbe n'est jamais réécrite : son y est la variable de l'équation
+		const definition =
+			o.kind === 'curve'
+				? o.definition
+				: o.kind === 'list'
+					? definitionFrom(entriesOf(o.definition).map((text) => renameInFormula(text, renames)))
+					: renameInDefinition(o.definition, 'y', to);
+		return {
+			...o,
+			name,
+			definition,
+			...(o.firstTerm === 'y' && { firstTerm: to })
+		};
+	});
+	const cells = state.grid?.cells;
+	const grid =
+		state.grid === undefined
+			? {}
+			: {
+					grid: {
+						...state.grid,
+						...(cells !== undefined && {
+							cells: Object.fromEntries(
+								Object.entries(cells).map(([address, text]) => [
+									address,
+									renameInFormula(text, renames)
+								])
+							)
+						})
+					}
+				};
+	return {
+		state: { ...state, objects, ...grid },
+		renamed: [{ from: 'y', to }]
+	};
 }
 
 // =============================================================================
@@ -350,11 +545,16 @@ export function isQuotaExceeded(error: unknown): boolean {
 	);
 }
 
-export function saveAtelier(storage: Storage | null, state: AtelierState): SaveOutcome {
+/** @param key - Comme pour `loadAtelier` : l'atelier personnel par défaut. */
+export function saveAtelier(
+	storage: Storage | null,
+	state: AtelierState,
+	key: string = ATELIER_STORAGE_KEY
+): SaveOutcome {
 	if (!storage) return { kind: 'unavailable' };
 
 	// Ne jamais écraser plus récent que soi (§5 L2).
-	const existing = loadAtelier(storage);
+	const existing = loadAtelier(storage, key);
 	if (existing.kind === 'too-recent') {
 		return { kind: 'refused-newer', version: existing.version };
 	}
@@ -372,7 +572,7 @@ export function saveAtelier(storage: Storage | null, state: AtelierState): SaveO
 	}
 
 	try {
-		storage.setItem(ATELIER_STORAGE_KEY, serialized);
+		storage.setItem(key, serialized);
 		return { kind: 'saved' };
 	} catch (error) {
 		if (isQuotaExceeded(error)) {

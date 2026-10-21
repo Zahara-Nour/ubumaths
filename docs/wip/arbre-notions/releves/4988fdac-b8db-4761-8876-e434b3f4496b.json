@@ -1,0 +1,174 @@
+{
+	"template_id": "4988fdac-b8db-4761-8876-e434b3f4496b",
+	"titre": "Trouver le quadruple",
+	"sous_titre": "Nombre inférieur à $10$",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Quadruple et quart",
+	"mis_a_jour": "2026-09-29T18:05:35.060316+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CE2-026",
+			"libelle_point": "Multiplier un nombre entier par 4 (4 × 37 = ?).",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > quadruple et quart",
+			"noeud_cible": "Nombres et calculs > Entiers : multiplication > calcul astucieux",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "libellé « Multiplier un nombre entier par 4 ou par 8. » → « Multiplier un nombre entier par 4 (4 × 37 = ?). »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le quadruple de ${{a}}$ ?\n\nLe quadruple de ${{a}}$ est $?$.",
+				"reponses_brutes": ["{{eval:4*a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 36,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 4, 8, 12, 16, 20, 24, 28, 32, 36]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 36,
+				"nb_distinctes": 10,
+				"valeurs": [0, 4, 8, 12, 16, 20, 24, 28, 32, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 36,
+				"nb_distinctes": 17,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 16, 20, 24, 28, 32, 36],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (36)",
+					"graine": 10,
+					"enonce": "Quel est le quadruple de $9$ ?\n\nLe quadruple de $9$ est $[?]$.",
+					"reponse": ["36"],
+					"variables": {
+						"a": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Quel est le quadruple de $0$ ?\n\nLe quadruple de $0$ est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le quadruple de $3$ ?\n\nLe quadruple de $3$ est $[?]$.",
+					"reponse": ["12"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le quadruple de $7$ ?\n\nLe quadruple de $7$ est $[?]$.",
+					"reponse": ["28"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le quadruple de $6$ ?\n\nLe quadruple de $6$ est $[?]$.",
+					"reponse": ["24"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

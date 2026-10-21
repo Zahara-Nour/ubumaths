@@ -10557,6 +10557,52 @@ export type Database = {
           },
         ]
       }
+      short_links: {
+        Row: {
+          code: string
+          created_at: string
+          created_by: string | null
+          target: string
+          target_hash: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          created_by?: string | null
+          target: string
+          target_hash: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          target?: string
+          target_hash?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "short_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "short_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "short_links_created_by_fkey"
+            columns: ["created_by"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       skill_attempts: {
         Row: {
           code: string | null
@@ -11307,6 +11353,8 @@ export type Database = {
       student_buddies: {
         Row: {
           change_count: number
+          constance_days_this_week: number
+          constance_week_start: string | null
           created_at: string
           current_streak: number
           equipped_skin_id: string | null
@@ -11323,6 +11371,8 @@ export type Database = {
         }
         Insert: {
           change_count?: number
+          constance_days_this_week?: number
+          constance_week_start?: string | null
           created_at?: string
           current_streak?: number
           equipped_skin_id?: string | null
@@ -11339,6 +11389,8 @@ export type Database = {
         }
         Update: {
           change_count?: number
+          constance_days_this_week?: number
+          constance_week_start?: string | null
           created_at?: string
           current_streak?: number
           equipped_skin_id?: string | null
@@ -11555,6 +11607,62 @@ export type Database = {
           },
         ]
       }
+      student_mathoux: {
+        Row: {
+          best_stage: string
+          first_seen_at: string
+          notion_id: string
+          starred_grades: string[]
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          best_stage: string
+          first_seen_at?: string
+          notion_id: string
+          starred_grades?: string[]
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          best_stage?: string
+          first_seen_at?: string
+          notion_id?: string
+          starred_grades?: string[]
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_mathoux_notion_id_fkey"
+            columns: ["notion_id"]
+            isOneToOne: false
+            referencedRelation: "classification_nodes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_mathoux_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_mathoux_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_mathoux_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
       student_observable_state: {
         Row: {
           count_minus: number
@@ -11674,6 +11782,46 @@ export type Database = {
             foreignKeyName: "student_point_state_student_id_fkey"
             columns: ["student_id"]
             isOneToOne: false
+            referencedRelation: "riddle_progress"
+            referencedColumns: ["student_id"]
+          },
+        ]
+      }
+      student_print_settings: {
+        Row: {
+          student_id: string
+          text_size: string
+          updated_at: string
+        }
+        Insert: {
+          student_id: string
+          text_size?: string
+          updated_at?: string
+        }
+        Update: {
+          student_id?: string
+          text_size?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "minesweeper_student_achievement_progress"
+            referencedColumns: ["student_id"]
+          },
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "student_print_settings_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: true
             referencedRelation: "riddle_progress"
             referencedColumns: ["student_id"]
           },
@@ -13623,7 +13771,6 @@ export type Database = {
           school_id: string | null
           status: string
           style_id: string | null
-          template_id: string | null
           title: string
           total_points: number | null
           translations: Json | null
@@ -13644,7 +13791,6 @@ export type Database = {
           school_id?: string | null
           status?: string
           style_id?: string | null
-          template_id?: string | null
           title: string
           total_points?: number | null
           translations?: Json | null
@@ -13665,7 +13811,6 @@ export type Database = {
           school_id?: string | null
           status?: string
           style_id?: string | null
-          template_id?: string | null
           title?: string
           total_points?: number | null
           translations?: Json | null
@@ -13707,13 +13852,6 @@ export type Database = {
             columns: ["style_id"]
             isOneToOne: false
             referencedRelation: "worksheet_styles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "worksheets_template_id_fkey"
-            columns: ["template_id"]
-            isOneToOne: false
-            referencedRelation: "worksheet_templates"
             referencedColumns: ["id"]
           },
         ]
@@ -14876,6 +15014,7 @@ export type Database = {
         Args: { p_user1_id: string; p_user2_id: string }
         Returns: string
       }
+      create_short_link: { Args: { p_target: string }; Returns: string }
       create_tournament: {
         Args: {
           p_class_ids?: string[]
@@ -16133,6 +16272,7 @@ export type Database = {
         }[]
       }
       resolve_open_class_by_code: { Args: { p_code: string }; Returns: string }
+      resolve_short_link: { Args: { p_code: string }; Returns: string }
       resolve_tag_ids: {
         Args: { p_names: string[] }
         Returns: {

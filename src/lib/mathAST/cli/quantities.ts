@@ -26,6 +26,7 @@ import { toCustom } from '../custom-generator';
 import {
 	delimiter,
 	divide,
+	juxtaposedSum,
 	multiply,
 	number,
 	opposite,
@@ -34,7 +35,7 @@ import {
 	relation,
 	withUnit
 } from '../factory';
-import { isUnit } from '../guards';
+import { hasUnitDescendant, isUnit } from '../guards';
 import { findNodes, mapNode } from '../transforms';
 import { analyzeDimensions } from '../dimensional/analyzer';
 import { evaluate } from '../eval/evaluate';
@@ -45,6 +46,7 @@ import {
 	getConversionFactor,
 	getDimensionalSignature,
 	isAffine,
+	isMultipliedTemperature,
 	recognizeDerivedUnit
 } from '../units/conversion';
 import { addRational, divRational, mulRational, subRational } from '../normal/rational';
@@ -281,6 +283,7 @@ function equality(left: MathNode, right: MathNode, written?: QuantityAnswer): Sh
 /** Une température (°C, °F) prise dans un produit, un quotient, une puissance, une fonction. */
 function multipliesTemperature(node: MathNode, composed = false): boolean {
 	if (isUnit(node)) {
+		if (isMultipliedTemperature(node)) return true;
 		return (composed && isAffine(node.unit)) || multipliesTemperature(node.expression, composed);
 	}
 	switch (node.type) {
@@ -321,6 +324,35 @@ function dimensionMessage(error: DimensionalError): string {
 	}
 	if (error.code === 'INVALID_FUNCTION_INPUT') return FUNCTION_MESSAGE;
 	return MIXED_MESSAGE;
+}
+
+/**
+ * Une grandeur déjà formée clôt le terme (lecture-grandeurs PR 4) : `v*3[h]` se lit
+ * (v×3) h tant que `v` est une lettre ; quand `v` est une grandeur du panneau,
+ * substituée après la lecture, l'unité redescend sur le dernier facteur, comme si
+ * la grandeur avait été écrite : `v*(3 h)`, `d/(2 h)` (revue de la PR 4).
+ */
+function unitsOverQuantities(ast: MathNode): MathNode {
+	return mapNode(ast, (node) =>
+		isUnit(node) && hasUnitDescendant(node.expression)
+			? unitOnLastFactor(node.expression, node)
+			: node
+	);
+}
+
+/** L'unité de `quantity` posée sur le dernier facteur du terme `term` */
+function unitOnLastFactor(term: MathNode, quantity: UnitNode): MathNode {
+	switch (term.type) {
+		case 'multiplication':
+			return { ...term, right: unitOnLastFactor(term.right, quantity) };
+		case 'division':
+			return { ...term, denominator: unitOnLastFactor(term.denominator, quantity) };
+		case 'opposite':
+		case 'positive':
+			return { ...term, operand: unitOnLastFactor(term.operand, quantity) };
+		default:
+			return { ...quantity, expression: term };
+	}
 }
 
 /** Les dimensions de l'expression : une erreur en français, ou l'unité du résultat. */
@@ -491,8 +523,9 @@ const DURATION_PARTS: readonly (readonly [string, bigint])[] = [
  * Une durée écrite en h, min, s : `2 h 30 min` (décision de David, lot C des
  * grandeurs : « par défaut on garde l'unité écrite »). Seulement si l'élève a
  * écrit au moins deux de ces unités, et que la durée tombe juste en secondes.
- * L'arbre JUXTAPOSE les grandeurs : il sert à l'affichage — `.convert` et
- * « Garder » reprennent la grandeur exacte.
+ * L'arbre est la somme JUXTAPOSÉE des parties (lecture-grandeurs, PR 5) : il
+ * s'écrit `2[h] 30[min]` et se relit à l'identique ; `.convert` et « Garder »
+ * reprennent la grandeur exacte.
  */
 function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
 	const written = writtenUnits(ast);
@@ -515,8 +548,8 @@ function compositeDuration(ast: MathNode, quantity: MathNode): Shown | null {
 	}
 	// `1 h 30 min / 2` → 45 min : une seule partie suffit, l'élève a écrit h et min
 	if (parts.length === 0) return null;
-	const product = parts.reduce((left, right) => multiply(left, right, 'implicit'));
-	const node = negative ? opposite(delimiter('parentheses', product)) : product;
+	const sum = parts.reduce((left, right) => juxtaposedSum(left, right));
+	const node = negative ? opposite(sum) : sum;
 	const text = `${negative ? '-' : ''}${words.join(' ')}`;
 	const shown = { node, text };
 	return { exact: shown, decimal: shown, approximate: null };
@@ -558,7 +591,8 @@ export function quantityProblem(ast: MathNode): string | null {
  * - un zéro garde son unité : `3[m]-3[m]` → `0 m` ;
  * - l'unité dérivée nommée suit l'unité écrite : `19.62 m.kg/s^2 = 19.62 N`.
  */
-export function computeQuantity(ast: MathNode, mode: QuantityMode): QuantityOutcome {
+export function computeQuantity(written: MathNode, mode: QuantityMode): QuantityOutcome {
+	const ast = unitsOverQuantities(written);
 	if (multipliesTemperature(ast)) return { ok: false, message: TEMPERATURE_PRODUCT_MESSAGE };
 	const dimensions = checkDimensions(ast);
 	if ('message' in dimensions) return { ok: false, message: dimensions.message };

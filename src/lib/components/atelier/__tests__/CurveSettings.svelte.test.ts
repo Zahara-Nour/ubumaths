@@ -1,6 +1,10 @@
 /**
  * « Sur le graphique » — lot 2b du passage de `/grapheur` par l'atelier.
  *
+ * Lot 3 de la refonte de l'atelier : couleur et trait passent par le point de
+ * la carte, tangente et aire par son menu « Affichage » ; ce qui se lit (pente,
+ * bornes, aire) reste sous la carte, seulement quand c'est allumé.
+ *
  * Phase 0 `docs/archive/wip/atelier-grapheur-phase0.md` §1 S1 à S5. Les réglages
  * s'écrivent dans l'ATELIER (`setDisplay`) ; les nombres affichés (pente,
  * aire, courbure, longueur) sont calculés sur la courbe dessinée.
@@ -11,6 +15,11 @@ import { render } from 'vitest-browser-svelte';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { isFunction } from '$lib/atelier/types';
+import { menuItemOf, openFunctionMenu } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 // =============================================================================
 // Décor
@@ -24,15 +33,21 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
-/** Un atelier avec `f` tracée, sa carte ouverte. */
+/** Un atelier avec `f` tracée. */
 async function openPlotted(definition = 'x^2') {
 	const atelier = new Atelier();
 	atelier.create({ kind: 'function', name: 'f', definition }, 'text');
 	atelier.setPlotted('f', true);
 	const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-	(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
-	await vi.waitFor(() => expect(cardFor(container, 'f').querySelector('.reglages')).toBeTruthy());
+	await vi.waitFor(() => expect(cardFor(container, 'f')).toBeTruthy());
 	return { atelier, container, card: () => cardFor(container, 'f') };
+}
+
+/** Cocher « Tangente » ou « Aire sous la courbe » dans le menu de la carte. */
+async function toggleInMenu(container: HTMLElement, label: string) {
+	const menu = await openFunctionMenu(container, 'f');
+	menuItemOf(menu, label).click();
+	await vi.waitFor(() => expect(document.querySelector('[role="menu"]')).toBeNull());
 }
 
 function displayOf(atelier: Atelier) {
@@ -66,12 +81,22 @@ describe('« Sur le graphique »', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x' });
 		const { container } = await render(AtelierContainer, { atelier, ephemeral: true });
-		(cardFor(container, 'f').querySelector('.entete') as HTMLButtonElement).click();
 		await vi.waitFor(() =>
 			expect(cardFor(container, 'f').querySelector('math-field')).toBeTruthy()
 		);
 
 		expect(cardFor(container, 'f').querySelector('.reglages')).toBeNull();
+		// Le menu dit pourquoi tangente et aire ne s'allument pas encore
+		const menu = await openFunctionMenu(container, 'f');
+		// Indisponible mais atteignable au clavier (revue de #1488)
+		expect(menuItemOf(menu, 'Tangente').getAttribute('aria-disabled')).toBe('true');
+		expect(menu.textContent).toContain('Trace d’abord la courbe');
+	});
+
+	it('n’occupe rien sous la carte tant que tangente et aire sont éteintes', async () => {
+		const { card } = await openPlotted();
+
+		expect(card().querySelector('.reglages')).toBeNull();
 	});
 
 	// S1
@@ -79,11 +104,15 @@ describe('« Sur le graphique »', () => {
 		const { atelier, card } = await openPlotted();
 		const before = displayOf(atelier).color;
 
-		(card().querySelector('.color-trigger') as HTMLButtonElement).click();
+		(
+			card().querySelector('button[aria-label="Couleur et trait de f"]') as HTMLButtonElement
+		).click();
 		const other = await vi.waitFor(() => {
-			const swatch = [...document.querySelectorAll('.color-swatch')].find(
-				(s) => s.getAttribute('aria-checked') === 'false'
-			) as HTMLButtonElement | undefined;
+			const swatch = [
+				...document.querySelectorAll(
+					'[role="radiogroup"][aria-label="Couleur de la courbe"] [role="radio"]'
+				)
+			].find((s) => s.getAttribute('aria-checked') === 'false') as HTMLButtonElement | undefined;
 			expect(swatch).toBeTruthy();
 			return swatch!;
 		});
@@ -94,9 +123,9 @@ describe('« Sur le graphique »', () => {
 
 	// S2
 	it('la tangente affiche la pente au point choisi', async () => {
-		const { atelier, card } = await openPlotted('x^2');
+		const { atelier, container, card } = await openPlotted('x^2');
 
-		check(card(), 'Afficher la tangente');
+		await toggleInMenu(container, 'Tangente');
 
 		// Milieu de la fenêtre par défaut [-10 ; 10] : x₀ = 0, f′(0) = 0
 		await vi.waitFor(() => expect(displayOf(atelier).tangentAt).toBe(0));
@@ -116,9 +145,9 @@ describe('« Sur le graphique »', () => {
 
 	// S3
 	it('l’aire se calcule entre les bornes choisies', async () => {
-		const { atelier, card } = await openPlotted('x^2');
+		const { atelier, container, card } = await openPlotted('x^2');
 
-		check(card(), 'Afficher l’aire sous la courbe');
+		await toggleInMenu(container, 'Aire sous la courbe');
 		await vi.waitFor(() => expect(displayOf(atelier).integral).not.toBeNull());
 
 		setInput(card(), 'de, borne inférieure de l’aire', '0');
@@ -140,11 +169,11 @@ describe('« Sur le graphique »', () => {
 
 	// S5 : un réglage n'est pas une action, il n'écrit rien dans Calcul
 	it('n’écrit rien dans l’historique de Calcul', async () => {
-		const { container, card } = await openPlotted('x^2');
+		const { container } = await openPlotted('x^2');
 		const before = container.querySelectorAll('.historique li').length;
 
-		check(card(), 'Afficher la tangente');
-		check(card(), 'Afficher l’aire sous la courbe');
+		await toggleInMenu(container, 'Tangente');
+		await toggleInMenu(container, 'Aire sous la courbe');
 		await new Promise((r) => setTimeout(r, 50));
 
 		expect(container.querySelectorAll('.historique li').length).toBe(before);
@@ -152,7 +181,9 @@ describe('« Sur le graphique »', () => {
 
 	// Phase 0 Q1 : la case « f′ » du grapheur n'est pas reprise
 	it('ne propose pas la case f′', async () => {
-		const { card } = await openPlotted();
+		const { atelier, card } = await openPlotted();
+		atelier.setDisplay('f', { tangentAt: 0 });
+		await vi.waitFor(() => expect(card().querySelector('.reglages')).toBeTruthy());
 
 		expect(card().querySelector('[aria-label="Afficher la courbe dérivée"]')).toBeNull();
 	});
@@ -170,7 +201,9 @@ describe('revues du lot 2b', () => {
 		atelier.setDisplay('f', { tangentAt: 1 });
 		await vi.waitFor(() => expect(text(card(), '.pente')).toBe('f′(x₀) = 2'));
 
-		const eye = cardFor(container, 'f').querySelector('.oeil') as HTMLButtonElement;
+		const eye = cardFor(container, 'f').querySelector(
+			'button[aria-label="Tracer f"]'
+		) as HTMLButtonElement;
 		eye.click();
 		await vi.waitFor(() => expect(card().querySelector('.reglages')).toBeNull());
 		eye.click();

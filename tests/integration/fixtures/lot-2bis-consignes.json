@@ -1,0 +1,6006 @@
+{
+	"modeles": [
+		{
+			"id": "0021eee7-2b1d-4228-ada9-6c759c01d0ec",
+			"noeud": ["Nombres et calculs", "Entiers : numération", "ordre"],
+			"grades": ["CM1"],
+			"tag": {
+				"grade": "CM1",
+				"code": "CM1-008"
+			},
+			"avant": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Jusqu'au million",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$${{eval:g}}$$"
+							},
+							{
+								"content": "$${{eval:h}}$$"
+							}
+						],
+						"statement": "Quel est le plus petit de ces 2 nombres ?",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..4"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:4-a}}..{{eval:6-a}}"
+							},
+							{
+								"name": "c",
+								"expression": "digits:a"
+							},
+							{
+								"name": "d",
+								"expression": "digits:b"
+							},
+							{
+								"name": "f",
+								"expression": "digits:b"
+							},
+							{
+								"name": "g",
+								"expression": "eval:d+c*10^b"
+							},
+							{
+								"name": "h",
+								"expression": "eval:f+c*10^b"
+							}
+						],
+						"conditions": ["g!=h"],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:floor(g/100000)=floor(h/100000)|{{if:floor(g/10000)=floor(h/10000)|{{if:floor(g/1000)=floor(h/1000)|{{if:floor(g/100)=floor(h/100)|{{if:floor(g/10)=floor(h/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.|{{if:g<10|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<10|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<100|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<100|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/100),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<1000|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<1000|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines de milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1000),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1000),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<10000|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<10000|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines de milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10000),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10000),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<100000|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<100000|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/100000),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100000),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}",
+								"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+							]
+						},
+						"correctChoiceIndex": ["{{if:g<h|0|1}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "4",
+							"c": "18",
+							"d": "4498",
+							"f": "7123"
+						},
+						"description": "184498 < 187123",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "4",
+							"c": "18",
+							"d": "4498",
+							"f": "7123"
+						},
+						"description": "mauvais choix",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0",
+							"b": "4",
+							"c": "0",
+							"d": "2748",
+							"f": "5372"
+						},
+						"description": "a=0 : 2748 < 5372",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Jusqu'au million",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$$<$$"
+							},
+							{
+								"content": "$$=$$"
+							},
+							{
+								"content": "$$>$$"
+							}
+						],
+						"statement": "Complète avec le symbole qui convient.\n\n$${{eval:g}} \\ldots {{eval:h}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..4"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:4-a}}..{{eval:6-a}}"
+							},
+							{
+								"name": "c",
+								"expression": "digits:a"
+							},
+							{
+								"name": "d",
+								"expression": "digits:b"
+							},
+							{
+								"name": "f",
+								"expression": "digits:b"
+							},
+							{
+								"name": "g",
+								"expression": "eval:d+c*10^b"
+							},
+							{
+								"name": "egal",
+								"expression": "1..6"
+							},
+							{
+								"name": "h",
+								"expression": "eval:{{if:egal=1|g|f+c*10^b}}"
+							},
+							{
+								"name": "r",
+								"expression": "{{if:g<h|0|{{if:g=h|1|2}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:g=h|Les deux nombres ont les mêmes chiffres aux mêmes rangs : ils sont égaux.|{{if:floor(g/100000)=floor(h/100000)|{{if:floor(g/10000)=floor(h/10000)|{{if:floor(g/1000)=floor(h/1000)|{{if:floor(g/100)=floor(h/100)|{{if:floor(g/10)=floor(h/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.|{{if:g<10|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<10|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<100|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<100|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/100),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<1000|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<1000|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines de milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1000),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1000),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<10000|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<10000|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines de milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines de milliers}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10000),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10000),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}|{{if:g<100000|${{g}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$.|{{if:h<100000|${{h}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines de milliers}}$, ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/100000),10)}}}$ et ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100000),10)}}}$ : {{if:g<h|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{h}}$|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{g}}$}}.}}}}}}}}",
+								"On écrit donc :\n\n$${{g}} {{if:g<h|<|{{if:g=h|=|>}}}} {{h}}$$"
+							]
+						},
+						"correctChoiceIndex": ["{{r}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "4",
+							"c": "18",
+							"d": "4498",
+							"f": "7123",
+							"egal": "2"
+						},
+						"description": "184498 < 187123",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "4",
+							"c": "18",
+							"d": "4498",
+							"f": "7123",
+							"egal": "2"
+						},
+						"description": "184498 < 187123 : > choisi",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "4",
+							"c": "18",
+							"d": "7123",
+							"f": "4498",
+							"egal": "2"
+						},
+						"description": "187123 > 184498",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "4",
+							"c": "18",
+							"d": "4498",
+							"f": "7123",
+							"egal": "1"
+						},
+						"description": "égalité : 184498 = 184498",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0",
+							"b": "4",
+							"c": "0",
+							"d": "2748",
+							"f": "5372",
+							"egal": "2"
+						},
+						"description": "a=0 : 2748 < 5372",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "347eb0d0-4607-4fdb-8f0f-2ecc42ff40b8",
+			"noeud": ["Nombres et calculs", "Relatifs : calculs", "différences"],
+			"grades": ["5"],
+			"tag": {
+				"grade": "5",
+				"code": "5-020"
+			},
+			"avant": {
+				"title": "Calculer une somme ou une différence",
+				"description": "À l'aide de la droite graduée, entre $-7$ et $7$.",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..7"
+							},
+							{
+								"name": "b",
+								"expression": "1..8"
+							},
+							{
+								"name": "expression1",
+								"expression": "(-a)+b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+								"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+								"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + {{b}} {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..{{eval:7-a}}"
+							},
+							{
+								"name": "expression2",
+								"expression": "(-a)-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression3}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..7"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+1}}..8"
+							},
+							{
+								"name": "expression3",
+								"expression": "a-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de ${{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{a}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{a}}$.",
+								"$$\\begin{align} {{a}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "(-3)+1 = -2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "erreur de signe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(-2)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["brackets"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "parenthèses inutiles",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3+1"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "calcul non effectué",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "8"
+						},
+						"description": "borne : (-7)+8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2)-1 = -3",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "confusion avec (-2)+1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "6"
+						},
+						"description": "borne basse : (-1)-6 = -7",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1-4 = -3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "écart sans signe",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "8"
+						},
+						"description": "borne : 7-8 = -1",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer une somme ou une différence",
+				"description": "À l'aide de la droite graduée, entre $-7$ et $7$.",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..7"
+							},
+							{
+								"name": "b",
+								"expression": "1..8"
+							},
+							{
+								"name": "expression1",
+								"expression": "-a+b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+								"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+								"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{-}{{a}} + {{b}} {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..6"
+							},
+							{
+								"name": "b",
+								"expression": "1..{{eval:7-a}}"
+							},
+							{
+								"name": "expression2",
+								"expression": "(-a)-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression3}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--7-7-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..7"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+1}}..8"
+							},
+							{
+								"name": "expression3",
+								"expression": "a-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de ${{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{a}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{a}}$.",
+								"$$\\begin{align} {{a}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "-3+1 = -2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "erreur de signe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(-2)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["brackets"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "parenthèses inutiles",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3+1"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "calcul non effectué",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "8"
+						},
+						"description": "borne : -7+8",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2)-1 = -3",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "confusion avec (-2)+1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "6"
+						},
+						"description": "borne basse : (-1)-6 = -7",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1-4 = -3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "écart sans signe",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "8"
+						},
+						"description": "borne : 7-8 = -1",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "447b5613-d046-4ff0-aaad-334645fd35ce",
+			"noeud": ["Proportionnalité", "Situations de proportionnalité", "quatrième proportionnelle"],
+			"grades": ["6"],
+			"tag": {
+				"grade": "6",
+				"code": "6-191"
+			},
+			"avant": {
+				"title": "Calculer une quatrième proportionnelle",
+				"description": "En travaillant sur les colonnes",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  ?  \\\\                       {{b}}  &   {{eval:b*c}}                       \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &   {{eval:a*c}} \\\\                       {{b}}  &  ?                        \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{a}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &   {{eval:a*c}} \\\\                       ?  &   {{eval:b*c}}                       \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{eval:a*c}} \\\\                       {{b}}  &   {{eval:b*c}}                       \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9!a,b"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v0 raisonnement additif",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["27"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v3 erreur",
+						"variationIndex": 3
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer une quatrième proportionnelle",
+				"description": "En travaillant sur les colonnes",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & ? \\\\ {{b}} & {{eval:b*c}} \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & {{eval:a*c}} \\\\ {{b}} & ? \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{a}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & {{eval:a*c}} \\\\ ? & {{eval:b*c}} \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ ? & {{eval:a*c}} \\\\ {{b}} & {{eval:b*c}} \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9!a,b"
+						},
+						{
+							"name": "k",
+							"expression": "1..3"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v0 raisonnement additif",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["27"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v3 erreur",
+						"variationIndex": 3
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "496ac62e-9ff1-44e5-b85d-0a16752cfcda",
+			"noeud": ["Proportionnalité", "Situations de proportionnalité", "caractérisation"],
+			"grades": ["6"],
+			"tag": {
+				"grade": "6",
+				"code": "6-190"
+			},
+			"avant": {
+				"title": "Reconnaître si un tableau est un tableau de proportionnalité",
+				"description": "En regardant les lignes",
+				"variations": [
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           {{a}}        &   {{b}} \\\\           {{eval:a*c}}  &  {{eval:b*c}}         \\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{c|c}               {{a}}        &   {{b}} \\\\               {{eval:a*c}}  &  {{eval:b*c}}             \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
+								"On a multiplié par le même nombre entre les 2 lignes."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         {{a}}  &  {{b}}  \\\\         {{eval:a*c}}  &   {{eval:b*(c+1)}}       \\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &  {{b}}  \\\\         {{eval:a*c}}  &   {{eval:b*(c+1)}}             \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
+								"On n'a **pas** multiplié par le même nombre entre les 2 lignes."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui"
+						},
+						{
+							"content": "Non"
+						}
+					],
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3"
+						},
+						"description": "Oui (proportionnel)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3"
+						},
+						"description": "Non sur tableau proportionnel",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2",
+							"c": "6"
+						},
+						"description": "Non (non proportionnel)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2",
+							"c": "6"
+						},
+						"description": "Oui sur tableau non proportionnel",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			},
+			"apres": {
+				"title": "Reconnaître si un tableau est un tableau de proportionnalité",
+				"description": "En regardant les lignes",
+				"variations": [
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & {{eval:b*c}} \\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & {{eval:b*c}} \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
+								"On a multiplié par le même nombre entre les 2 lignes."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & {{eval:b*(c+1)}} \\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & {{eval:b*(c+1)}} \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
+								"On n'a **pas** multiplié par le même nombre entre les 2 lignes."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui"
+						},
+						{
+							"content": "Non"
+						}
+					],
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9"
+						},
+						{
+							"name": "k",
+							"expression": "1..3"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "Oui (proportionnel)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "Non sur tableau proportionnel",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2",
+							"c": "6",
+							"k": "1"
+						},
+						"description": "Non (non proportionnel)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2",
+							"c": "6",
+							"k": "1"
+						},
+						"description": "Oui sur tableau non proportionnel",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "4b080eed-cd49-4e7a-a017-532153d25e66",
+			"noeud": ["Proportionnalité", "Situations de proportionnalité", "quatrième proportionnelle"],
+			"grades": ["6"],
+			"tag": {
+				"grade": "6",
+				"code": "6-191"
+			},
+			"avant": {
+				"title": "Calculer une quatrième proportionnelle",
+				"description": "En utilisant le coefficient de proportionnalité",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  {{b}}  \\\\                        ?  &   {{eval:b*c}}                       \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &  {{b}}  \\\\                       {{eval:a*c}}  &  ?                        \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{a}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                       {{a}}  &   ? \\\\                       {{eval:a*c}}  &   {{eval:b*c}}                       \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{c|c}                        ?  &   {{b}} \\\\                        {{eval:a*c}}  &   {{eval:b*c}}                       \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9!a,b"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v0 raisonnement additif",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["27"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3"
+						},
+						"description": "v3 erreur",
+						"variationIndex": 3
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer une quatrième proportionnelle",
+				"description": "En utilisant le coefficient de proportionnalité",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:a*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & ? & {{eval:b*c}} \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:b*c}}$ et ${{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:b*c}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & ? \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{a}}\\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{eval:a*c}}$ et ${{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{b}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & {{a}} & ? \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & {{eval:b*c}} \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{a}}$ et ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}"
+							}
+						],
+						"statement": "Ce tableau est un tableau de proportionnalité. Détermine le nombre manquant.\n\n$\\begin{array}{|l|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & ? & {{b}} \\\\ \\text{{{if:k=2|Distance (km)|Prix (€)}}} & {{eval:a*c}} & {{eval:b*c}} \\end{array}$",
+						"correction": {
+							"steps": [
+								"{{solution}}, car ${{eval:b*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{b}}$ et ${{eval:a*c}} \\textcolor{{{color:primary.0}}}{\\div {{c}}} = {{solution:0}}$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9!a,b"
+						},
+						{
+							"name": "k",
+							"expression": "1..3"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["21"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v0",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["25"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v0 raisonnement additif",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["27"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v2",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v3",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "v3 erreur",
+						"variationIndex": 3
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "52bf3fb9-a815-4a94-9425-f524278fbbc1",
+			"noeud": ["Proportionnalité", "Échelle d'une carte"],
+			"grades": ["6"],
+			"tag": {
+				"grade": "6",
+				"code": "6-193"
+			},
+			"avant": {
+				"title": "Calculer la longueur réelle",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dm]}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/10}}~\\unit{dm} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100}}~\\unit{m} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100}}~\\unit{m} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dam]}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/1000}}~\\unit{dam} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100000}}~\\unit{km} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100000}}~\\unit{km} }=\\frac{ {{c}} }{ {{solution:0}} }$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"statement": "Sur une carte à l'échelle ${{eval:d}}$, on mesure une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$."
+				},
+				"test_specs": [
+					{
+						"answers": ["9~\\unit{dm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "0"
+						},
+						"description": "v0 : 9 cm à 1/10 → 9 dm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v1 : 9 cm à 1/100 → 9 m",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "1"
+						},
+						"description": "v2 : 90 cm à 1/100 → 90 m",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9~\\unit{dam}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v3 : 9 cm à 1/1000 → 9 dam",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "3",
+							"b2": "1"
+						},
+						"description": "v4 : 30 cm à 1/100000 → 30 km",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["90~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v5 : 9 cm à 1/1000000 → 90 km",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["900~\\unit{cm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "unité équivalente acceptée (900 cm)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9~\\unit{cm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "division au lieu de multiplication",
+						"variationIndex": 1
+					}
+				],
+				"options": {
+					"constraints": {
+						"unit": "off"
+					}
+				}
+			},
+			"apres": {
+				"title": "Calculer la longueur réelle",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dm]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[m]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[dam]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{eval:b*d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "2..9"
+							},
+							{
+								"name": "b2",
+								"expression": "0..1"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10^b2"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"unit": {
+									"expected": true
+								},
+								"expectedAnswer": "{{eval:(c)*a;[km]}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "eval:b[cm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. ${{c}}$ représentent donc ${{b}}$ fois plus :",
+								"$${{b}} \\times {{d}} = {{solution:0}}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On mesure sur la carte une longueur de ${{c}}$. Calcule la longueur réelle.\n\nLa longueur réelle est de $?$."
+				},
+				"test_specs": [
+					{
+						"answers": ["9~\\unit{dm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "0"
+						},
+						"description": "v0 : 9 cm (1 cm pour 10 cm) → 9 dm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v1 : 9 cm (1 cm pour 1 m) → 9 m",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90~\\unit{m}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9",
+							"b2": "1"
+						},
+						"description": "v2 : 90 cm (1 cm pour 1 m) → 90 m",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9~\\unit{dam}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v3 : 9 cm (1 cm pour 10 m) → 9 dam",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["30~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "3",
+							"b2": "1"
+						},
+						"description": "v4 : 30 cm (1 cm pour 1 km) → 30 km",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["90~\\unit{km}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "v5 : 9 cm (1 cm pour 10 km) → 90 km",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["900~\\unit{cm}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "unité équivalente acceptée (900 cm)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9~\\unit{cm}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b": "9"
+						},
+						"description": "division au lieu de multiplication",
+						"variationIndex": 1
+					}
+				],
+				"options": {
+					"constraints": {
+						"unit": "off"
+					}
+				}
+			}
+		},
+		{
+			"id": "5b53b1be-f9e7-4fc1-bbeb-be84e180a4fd",
+			"noeud": ["Nombres et calculs", "Relatifs : calculs", "différences"],
+			"grades": ["5"],
+			"tag": {
+				"grade": "5",
+				"code": "5-020"
+			},
+			"avant": {
+				"title": "Calculer une somme ou une différence",
+				"description": "À l'aide de la droite graduée, entre $-4$ et $4$, nombres en ${,}5$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "1..4"
+							},
+							{
+								"name": "expression1",
+								"expression": "(-a.5)+b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+								"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+								"$\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a+0.5)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a+0.5)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a+0.5)=(b)||On soustrait les distances à zéro.}}",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}} \\right) + {{b}} {{if:(a+0.5)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a+0.5;d}} - {{b}} \\right) \\\\ |{{if:(a+0.5)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{eval:a+0.5;d}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}};d}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..{{eval:3-a}}"
+							},
+							{
+								"name": "expression2",
+								"expression": "(-a.5)-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a+0.5;d}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression3}};d}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+1}}..4"
+							},
+							{
+								"name": "expression3",
+								"expression": "a.5-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de ${{eval:a+0.5;d}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{eval:a+0.5;d}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{eval:a+0.5;d}}$.",
+								"$$\\begin{align} {{eval:a+0.5;d}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{eval:a+0.5;d}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["-1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2,5)+1 = -1,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-1{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "virgule MathLive",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "erreur de signe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-1.49"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "valeur voisine (pas d'arrondi toléré)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3/2"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "fraction : décimal attendu",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(-1.5)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["brackets"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "parenthèses inutiles",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-1.50"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "zéro final inutile",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "borne : (-3,5)+4 = 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2,5)-1 = -3,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-1.5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "confusion avec l'addition",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-2.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1,5-4 = -2,5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2.5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "écart sans signe",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer une somme ou une différence",
+				"description": "À l'aide de la droite graduée, entre $-4$ et $4$, nombres en ${,}5$",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}};d}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "1..4"
+							},
+							{
+								"name": "expression1",
+								"expression": "-a.5+b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+								"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+								"$\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a+0.5)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a+0.5)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a+0.5)=(b)||On soustrait les distances à zéro.}}",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}} + {{b}} {{if:(a+0.5)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a+0.5;d}} - {{b}} \\right) \\\\ |{{if:(a+0.5)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{eval:a+0.5;d}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}};d}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..{{eval:3-a}}"
+							},
+							{
+								"name": "expression2",
+								"expression": "(-a.5)-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{eval:a+0.5;d}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{eval:a+0.5;d}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression3}};d}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+1}}..4"
+							},
+							{
+								"name": "expression3",
+								"expression": "a.5-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de ${{eval:a+0.5;d}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{eval:a+0.5;d}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{eval:a+0.5;d}}$.",
+								"$$\\begin{align} {{eval:a+0.5;d}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{eval:a+0.5;d}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["-1.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "-2,5+1 = -1,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-1{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "virgule MathLive",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["1.5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "erreur de signe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-1.49"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "valeur voisine (pas d'arrondi toléré)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3/2"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "fraction : décimal attendu",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(-1.5)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["brackets"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "parenthèses inutiles",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-1.50"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["zeros"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "zéro final inutile",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "4"
+						},
+						"description": "borne : -3,5+4 = 0,5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2,5)-1 = -3,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-1.5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "confusion avec l'addition",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-2.5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1,5-4 = -2,5",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["2.5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "écart sans signe",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "5e4e5e9d-68df-43b4-ac6f-08c4ffd37325",
+			"noeud": ["Proportionnalité", "Échelle d'une carte"],
+			"grades": ["6"],
+			"tag": {
+				"grade": "6",
+				"code": "6-193"
+			},
+			"avant": {
+				"title": "Calculer la longueur sur une carte",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/10}}~\\unit{dm} }=\\frac{ {{solution:0}}~\\unit{cm} }{ {{c}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/10}}~\\unit{dm} }=\\frac{ {{solution:0}}~\\unit{cm} }{ {{c}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100}}~\\unit{m} }=\\frac{ {{solution:0}}~\\unit{cm} }{ {{c}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100}}~\\unit{m} }=\\frac{ {{solution:0}}~\\unit{cm} }{ {{c}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100000}}~\\unit{km} }=\\frac{ {{solution:0}}~\\unit{cm} }{ {{c}} }$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "1/a"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$${{eval:d}}=\\frac{1~\\unit{cm}}{ {{a}}~\\unit{cm} }=\\frac{1~\\unit{cm}}{ {{eval:a/100000}}~\\unit{km} }=\\frac{ {{solution:0}}~\\unit{cm} }{ {{c}} }$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"statement": "Sur une carte à l'échelle ${{eval:d}}$, on veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm."
+				},
+				"test_specs": [
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v0 : 90 dm à 1/10 → 90 cm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v1 : 90 dm à 1/100 → 9 cm",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v2 : 90 m à 1/100 → 90 cm",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v3 : 90 m à 1/1000 → 9 cm",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v4 : 40 km à 1/100000 → 40 cm",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v5 : 40 km à 1/1000000 → 4 cm",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["0{,}9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "conversion oubliée (90 dm → 0,9)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9\\,000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "multiplication au lieu de division",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer la longueur sur une carte",
+				"description": null,
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "10"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{eval:c;[cm]}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[dm]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{eval:c;[m]}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[m]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[m]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "100000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:f/(a[cm])}}"
+							}
+						],
+						"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm.",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1000000"
+							},
+							{
+								"name": "b1",
+								"expression": "1..9"
+							},
+							{
+								"name": "b",
+								"expression": "eval:b1*10"
+							},
+							{
+								"name": "c",
+								"expression": "eval:(b)[km]"
+							},
+							{
+								"name": "d",
+								"expression": "eval:(a)[cm];[km]"
+							},
+							{
+								"name": "f",
+								"expression": "eval:c;[cm]"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Sur la carte, $1$ cm représente ${{d}}$ dans la réalité. On cherche combien de fois ${{d}}$ il y a dans ${{c}}$ :",
+								"$${{c}} = {{solution:0}} \\times {{d}}$$",
+								"La longueur sur la carte est donc de ${{solution:0}}$ cm."
+							]
+						}
+					}
+				],
+				"shared": {
+					"statement": "Sur une carte, $1$ cm représente ${{d}}$ dans la réalité. On veut représenter une longueur réelle de ${{c}}$. Calcule cette longueur sur la carte, en centimètres.\n\nLa longueur sur la carte est $?$ cm."
+				},
+				"test_specs": [
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v0 : 90 dm (1 cm pour 10 cm) → 90 cm",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v1 : 90 dm (1 cm pour 1 m) → 9 cm",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["90"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v2 : 90 m (1 cm pour 1 m) → 90 cm",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["9"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "v3 : 90 m (1 cm pour 10 m) → 9 cm",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["40"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v4 : 40 km (1 cm pour 1 km) → 40 cm",
+						"variationIndex": 4
+					},
+					{
+						"answers": ["4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"b1": "4"
+						},
+						"description": "v5 : 40 km (1 cm pour 10 km) → 4 cm",
+						"variationIndex": 5
+					},
+					{
+						"answers": ["0{,}9"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "conversion oubliée (90 dm → 0,9)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["9\\,000"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"b1": "9"
+						},
+						"description": "multiplication au lieu de division",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "68775a97-3dd5-4bc6-8af0-1ec9544e9a19",
+			"noeud": ["Nombres et calculs", "Entiers : numération", "ordre"],
+			"grades": ["CE2"],
+			"tag": {
+				"grade": "CE2",
+				"code": "CE2-007"
+			},
+			"avant": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Nombres inférieurs à $10\\,000$",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$${{eval:h}}$$"
+							},
+							{
+								"content": "$${{eval:j}}$$"
+							}
+						],
+						"statement": "Quel est le plus petit de ces 2 nombres ?",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							},
+							{
+								"name": "b",
+								"expression": "0..9"
+							},
+							{
+								"name": "c",
+								"expression": "0..9"
+							},
+							{
+								"name": "d",
+								"expression": "0..9"
+							},
+							{
+								"name": "f",
+								"expression": "0..9"
+							},
+							{
+								"name": "g",
+								"expression": "0..9"
+							},
+							{
+								"name": "h1",
+								"expression": "0..9"
+							},
+							{
+								"name": "h",
+								"expression": "eval:a*1000+b*100+c*10+h1"
+							},
+							{
+								"name": "j1",
+								"expression": "0..9"
+							},
+							{
+								"name": "j",
+								"expression": "eval:d*1000+f*100+g*10+j1"
+							}
+						],
+						"conditions": ["h!=j"],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:floor(h/1000)=floor(j/1000)|{{if:floor(h/100)=floor(j/100)|{{if:floor(h/10)=floor(j/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|{{if:h<10|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<10|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<100|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<100|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/100),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<1000|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<1000|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1000),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1000),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}",
+								"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+							]
+						},
+						"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8",
+							"h1": "3",
+							"j1": "1"
+						},
+						"description": "6281 < 7993 : bon choix 1",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8",
+							"h1": "3",
+							"j1": "1"
+						},
+						"description": "mauvais choix",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"h1": "6",
+							"j1": "2"
+						},
+						"description": "2056 < 4342",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Nombres inférieurs à $10\\,000$",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$$<$$"
+							},
+							{
+								"content": "$$=$$"
+							},
+							{
+								"content": "$$>$$"
+							}
+						],
+						"statement": "Complète avec le symbole qui convient.\n\n$${{eval:h}} \\ldots {{eval:j}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							},
+							{
+								"name": "b",
+								"expression": "0..9"
+							},
+							{
+								"name": "c",
+								"expression": "0..9"
+							},
+							{
+								"name": "d",
+								"expression": "0..9"
+							},
+							{
+								"name": "f",
+								"expression": "0..9"
+							},
+							{
+								"name": "g",
+								"expression": "0..9"
+							},
+							{
+								"name": "h1",
+								"expression": "0..9"
+							},
+							{
+								"name": "h",
+								"expression": "eval:a*1000+b*100+c*10+h1"
+							},
+							{
+								"name": "j1",
+								"expression": "0..9"
+							},
+							{
+								"name": "egal",
+								"expression": "1..6"
+							},
+							{
+								"name": "j",
+								"expression": "eval:{{if:egal=1|h|d*1000+f*100+g*10+j1}}"
+							},
+							{
+								"name": "r",
+								"expression": "{{if:h<j|0|{{if:h=j|1|2}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:h=j|Les deux nombres ont les mêmes chiffres aux mêmes rangs : ils sont égaux.|{{if:floor(h/1000)=floor(j/1000)|{{if:floor(h/100)=floor(j/100)|{{if:floor(h/10)=floor(j/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|{{if:h<10|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<10|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<100|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<100|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des milliers. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/100),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<1000|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<1000|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{milliers}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1000),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1000),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}}}",
+								"On écrit donc :\n\n$${{h}} {{if:h<j|<|{{if:h=j|=|>}}}} {{j}}$$"
+							]
+						},
+						"correctChoiceIndex": ["{{r}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8",
+							"h1": "3",
+							"j1": "1",
+							"egal": "2"
+						},
+						"description": "7993 > 6281",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8",
+							"h1": "3",
+							"j1": "1",
+							"egal": "2"
+						},
+						"description": "7993 > 6281 : < choisi",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"h1": "6",
+							"j1": "2",
+							"egal": "2"
+						},
+						"description": "2056 < 4342",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"h1": "6",
+							"j1": "2",
+							"egal": "1"
+						},
+						"description": "égalité : 2056 = 2056",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"h1": "6",
+							"j1": "2",
+							"egal": "1"
+						},
+						"description": "égalité : > choisi",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "943151d0-0af5-46f0-bce8-e4acbd5f1029",
+			"noeud": ["Nombres et calculs", "Entiers : numération", "ordre"],
+			"grades": ["CP"],
+			"tag": {
+				"grade": "CP",
+				"code": "CP-006"
+			},
+			"avant": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Nombres inférieurs à $100$",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$${{f}}$$"
+							},
+							{
+								"content": "$${{g}}$$"
+							}
+						],
+						"statement": "Quel est le plus petit de ces 2 nombres ?",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							},
+							{
+								"name": "b",
+								"expression": "0..9"
+							},
+							{
+								"name": "c",
+								"expression": "0..9"
+							},
+							{
+								"name": "d",
+								"expression": "0..9"
+							},
+							{
+								"name": "f",
+								"expression": "eval:a*10+b"
+							},
+							{
+								"name": "g",
+								"expression": "eval:c*10+d"
+							}
+						],
+						"conditions": ["f!=g"],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:floor(f/10)=floor(g/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{f}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(f/1),10)}}}$ et ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1),10)}}}$ : {{if:f<g|$\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$}}.|{{if:f<10|${{f}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$.|{{if:g<10|${{g}}$ a moins de chiffres que ${{f}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{f}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(f/10),10)}}}$ et ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10),10)}}}$ : {{if:f<g|$\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$}}.}}}}}}",
+								"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+							]
+						},
+						"correctChoiceIndex": ["{{if:f<g|0|1}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6"
+						},
+						"description": "79 < 96 : bon choix 0",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6"
+						},
+						"description": "79 < 96 : mauvais choix",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0",
+							"b": "0",
+							"c": "9",
+							"d": "9"
+						},
+						"description": "borne : 0 < 99",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "1",
+							"c": "1",
+							"d": "5"
+						},
+						"description": "15 < 91 : bon choix 1",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Nombres inférieurs à $100$",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$$<$$"
+							},
+							{
+								"content": "$$=$$"
+							},
+							{
+								"content": "$$>$$"
+							}
+						],
+						"statement": "Complète avec le symbole qui convient.\n\n$${{f}} \\ldots {{g}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							},
+							{
+								"name": "b",
+								"expression": "0..9"
+							},
+							{
+								"name": "c",
+								"expression": "0..9"
+							},
+							{
+								"name": "d",
+								"expression": "0..9"
+							},
+							{
+								"name": "f",
+								"expression": "eval:a*10+b"
+							},
+							{
+								"name": "egal",
+								"expression": "1..6"
+							},
+							{
+								"name": "g",
+								"expression": "eval:{{if:egal=1|f|c*10+d}}"
+							},
+							{
+								"name": "r",
+								"expression": "{{if:f<g|0|{{if:f=g|1|2}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:f=g|Les deux nombres ont les mêmes chiffres aux mêmes rangs : ils sont égaux.|{{if:floor(f/10)=floor(g/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{f}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(f/1),10)}}}$ et ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/1),10)}}}$ : {{if:f<g|$\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$}}.|{{if:f<10|${{f}}$ a moins de chiffres que ${{g}}$ : $\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$.|{{if:g<10|${{g}}$ a moins de chiffres que ${{f}}$ : $\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{f}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(f/10),10)}}}$ et ${{g}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(g/10),10)}}}$ : {{if:f<g|$\\textcolor{{{color:primary.2}}}{{{f}}} < {{g}}$|$\\textcolor{{{color:primary.2}}}{{{g}}} < {{f}}$}}.}}}}}}}}",
+								"On écrit donc :\n\n$${{f}} {{if:f<g|<|{{if:f=g|=|>}}}} {{g}}$$"
+							]
+						},
+						"correctChoiceIndex": ["{{r}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"egal": "2"
+						},
+						"description": "79 < 96",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"egal": "2"
+						},
+						"description": "79 < 96 : > choisi",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "1",
+							"c": "1",
+							"d": "5",
+							"egal": "2"
+						},
+						"description": "91 > 15",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "7",
+							"c": "0",
+							"d": "0",
+							"egal": "1"
+						},
+						"description": "égalité : 47 = 47",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "7",
+							"c": "0",
+							"d": "0",
+							"egal": "1"
+						},
+						"description": "égalité : < choisi",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "0",
+							"b": "0",
+							"c": "9",
+							"d": "9",
+							"egal": "2"
+						},
+						"description": "borne : 0 < 99",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "9c0c47ef-72b0-4333-870d-06cdf0f4a2de",
+			"noeud": ["Nombres et calculs", "Décimaux : numération", "ordre"],
+			"grades": ["CM1"],
+			"tag": {
+				"grade": "CM1",
+				"code": "CM1-034"
+			},
+			"avant": {
+				"title": "Comparer deux nombres décimaux",
+				"description": null,
+				"variations": [
+					{
+						"statement": "Quel est le plus petit de ces deux nombres ?",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..2"
+							},
+							{
+								"name": "c",
+								"expression": "digits:a"
+							},
+							{
+								"name": "d",
+								"expression": "digits:b"
+							},
+							{
+								"name": "f",
+								"expression": "digits:b"
+							},
+							{
+								"name": "h",
+								"expression": "eval:(d+c*10^b)/10^b;d"
+							},
+							{
+								"name": "j",
+								"expression": "eval:(f+c*10^b)/10^b;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux décimaux.** On compare d’abord les parties entières. Si elles sont égales, on compare les dixièmes, puis les centièmes… Un rang sans chiffre compte pour $0$ (on peut compléter par des zéros : $2.3 = 2.30$).",
+								"Les parties entières sont égales (${{c}}$). {{if:floor(round(100*h)/10)=floor(round(100*j)/10)|Les dixièmes sont les mêmes (${{eval:mod(floor(round(100*h)/10),10)}}$). On compare les $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*h),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*j),10)}}}${{if:mod(round(100*h),10)=0| (pas de chiffre écrit : $0$)|}}{{if:mod(round(100*j),10)=0| (pas de chiffre écrit : $0$)|}} : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|On compare les $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*h)/10),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*j)/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}",
+								"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+							]
+						},
+						"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+					},
+					{
+						"statement": "Quel est le plus petit de ces deux nombres ?",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "digits:a"
+							},
+							{
+								"name": "c",
+								"expression": "digits:1"
+							},
+							{
+								"name": "d",
+								"expression": "10..99"
+							},
+							{
+								"name": "h",
+								"expression": "eval:(c+b*10)/10;d"
+							},
+							{
+								"name": "j",
+								"expression": "eval:(d+b*100)/100;d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux décimaux.** On compare d’abord les parties entières. Si elles sont égales, on compare les dixièmes, puis les centièmes… Un rang sans chiffre compte pour $0$ (on peut compléter par des zéros : $2.3 = 2.30$).",
+								"Les parties entières sont égales (${{b}}$). {{if:floor(round(100*h)/10)=floor(round(100*j)/10)|Les dixièmes sont les mêmes (${{eval:mod(floor(round(100*h)/10),10)}}$). On compare les $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*h),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*j),10)}}}${{if:mod(round(100*h),10)=0| (pas de chiffre écrit : $0$)|}}{{if:mod(round(100*j),10)=0| (pas de chiffre écrit : $0$)|}} : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|On compare les $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*h)/10),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*j)/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}",
+								"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+							]
+						},
+						"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "$${{h}}$$"
+						},
+						{
+							"content": "$${{j}}$$"
+						}
+					],
+					"statement": "Quel est le plus petit de ces deux nombres ?",
+					"conditions": ["h!=j"],
+					"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"c": "18",
+							"d": "44",
+							"f": "71"
+						},
+						"description": "18,44 < 18,71",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"c": "18",
+							"d": "44",
+							"f": "71"
+						},
+						"description": "18,71 choisi : refusé",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "82",
+							"c": "1",
+							"d": "67"
+						},
+						"description": "82,1 < 82,67",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "5",
+							"c": "9",
+							"d": "12"
+						},
+						"description": "Piège : 5,12 < 5,9",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "5",
+							"c": "9",
+							"d": "12"
+						},
+						"description": "Piège : 5,9 choisi (plus court) : refusé",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Comparer deux nombres décimaux",
+				"description": null,
+				"variations": [
+					{
+						"statement": "Complète avec le symbole qui convient.\n\n$${{h}} \\ldots {{j}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "1..2"
+							},
+							{
+								"name": "c",
+								"expression": "digits:a"
+							},
+							{
+								"name": "d",
+								"expression": "digits:b"
+							},
+							{
+								"name": "f",
+								"expression": "digits:b"
+							},
+							{
+								"name": "h",
+								"expression": "eval:(d+c*10^b)/10^b;d"
+							},
+							{
+								"name": "egal",
+								"expression": "1..6"
+							},
+							{
+								"name": "j",
+								"expression": "eval:{{if:egal=1|h|(f+c*10^b)/10^b}};d"
+							},
+							{
+								"name": "r",
+								"expression": "{{if:h<j|0|{{if:h=j|1|2}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux décimaux.** On compare d’abord les parties entières. Si elles sont égales, on compare les dixièmes, puis les centièmes… Un rang sans chiffre compte pour $0$ (on peut compléter par des zéros : $2.3 = 2.30$).",
+								"{{if:h=j|Les deux nombres ont les mêmes chiffres aux mêmes rangs : ils sont égaux.|Les parties entières sont égales (${{c}}$). {{if:floor(round(100*h)/10)=floor(round(100*j)/10)|Les dixièmes sont les mêmes (${{eval:mod(floor(round(100*h)/10),10)}}$). On compare les $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*h),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*j),10)}}}${{if:mod(round(100*h),10)=0| (pas de chiffre écrit : $0$)|}}{{if:mod(round(100*j),10)=0| (pas de chiffre écrit : $0$)|}} : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|On compare les $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*h)/10),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*j)/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}",
+								"On écrit donc :\n\n$${{h}} {{if:h<j|<|{{if:h=j|=|>}}}} {{j}}$$"
+							]
+						},
+						"correctChoiceIndex": ["{{r}}"]
+					},
+					{
+						"statement": "Complète avec le symbole qui convient.\n\n$${{h}} \\ldots {{j}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..2"
+							},
+							{
+								"name": "b",
+								"expression": "digits:a"
+							},
+							{
+								"name": "c",
+								"expression": "digits:1"
+							},
+							{
+								"name": "d",
+								"expression": "10..99"
+							},
+							{
+								"name": "h",
+								"expression": "eval:(c+b*10)/10;d"
+							},
+							{
+								"name": "j",
+								"expression": "eval:(d+b*100)/100;d"
+							},
+							{
+								"name": "r",
+								"expression": "{{if:h<j|0|{{if:h=j|1|2}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux décimaux.** On compare d’abord les parties entières. Si elles sont égales, on compare les dixièmes, puis les centièmes… Un rang sans chiffre compte pour $0$ (on peut compléter par des zéros : $2.3 = 2.30$).",
+								"{{if:h=j|Les deux nombres ont les mêmes chiffres aux mêmes rangs : ils sont égaux.|Les parties entières sont égales (${{b}}$). {{if:floor(round(100*h)/10)=floor(round(100*j)/10)|Les dixièmes sont les mêmes (${{eval:mod(floor(round(100*h)/10),10)}}$). On compare les $\\textcolor{{{color:primary.1}}}{\\text{centièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*h),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(round(100*j),10)}}}${{if:mod(round(100*h),10)=0| (pas de chiffre écrit : $0$)|}}{{if:mod(round(100*j),10)=0| (pas de chiffre écrit : $0$)|}} : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|On compare les $\\textcolor{{{color:primary.1}}}{\\text{dixièmes}}$ : ${{h}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*h)/10),10)}}}$, ${{j}}$ en a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(round(100*j)/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}",
+								"On écrit donc :\n\n$${{h}} {{if:h<j|<|{{if:h=j|=|>}}}} {{j}}$$"
+							]
+						},
+						"correctChoiceIndex": ["{{r}}"],
+						"conditions": ["h!=j"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "$$<$$"
+						},
+						{
+							"content": "$$=$$"
+						},
+						{
+							"content": "$$>$$"
+						}
+					],
+					"statement": "Complète avec le symbole qui convient.\n\n$${{h}} \\ldots {{j}}$$",
+					"correctChoiceIndex": ["{{r}}"]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"c": "18",
+							"d": "44",
+							"f": "71",
+							"egal": "2"
+						},
+						"description": "18,44 < 18,71",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"c": "18",
+							"d": "44",
+							"f": "71",
+							"egal": "2"
+						},
+						"description": "18,44 < 18,71 : > choisi",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2",
+							"c": "18",
+							"d": "44",
+							"f": "71",
+							"egal": "1"
+						},
+						"description": "égalité : 18,44 = 18,44",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "82",
+							"c": "1",
+							"d": "67"
+						},
+						"description": "82,1 < 82,67",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "5",
+							"c": "9",
+							"d": "12"
+						},
+						"description": "Piège : 5,9 > 5,12",
+						"variationIndex": 1,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "5",
+							"c": "9",
+							"d": "12"
+						},
+						"description": "Piège : 5,9 < 5,12 (plus court) : refusé",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "d01e97d6-e65b-4526-8444-493bc46bc860",
+			"noeud": ["Proportionnalité", "Situations de proportionnalité", "caractérisation"],
+			"grades": ["6"],
+			"tag": {
+				"grade": "6",
+				"code": "6-190"
+			},
+			"avant": {
+				"title": "Reconnaître si un tableau est un tableau de proportionnalité",
+				"description": "En regardant les colonnes",
+				"variations": [
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}           \t\t\t\t\t{{a}}  &   {{eval:a*c}} \\\\           \t\t\t\t\t{{b}}  &   {{eval:b*c}}         \t\t\t\t\\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &   {{eval:a*c}} \\\\               {{b}}  &   {{eval:b*c}}             \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
+								"On a multiplié par le même nombre entre les 2 colonnes."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{c|c}         \t\t\t\t\t{{a}}  &   {{eval:a*c}} \\\\        \t\t\t\t\t\t{{b}}  &   {{eval:b*(c+1)}}       \t\t\t\t\t\\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{c|c}               {{a}}  &   {{eval:a*c}} \\\\               {{b}}  &   {{eval:b*(c+1)}}             \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
+								"On n'a **pas** multiplié par le même nombre entre les 2 colonnes."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui"
+						},
+						{
+							"content": "Non"
+						}
+					],
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9"
+						},
+						"description": "Oui (proportionnel)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9"
+						},
+						"description": "Non sur tableau proportionnel",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3"
+						},
+						"description": "Non (non proportionnel)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3"
+						},
+						"description": "Oui sur tableau non proportionnel",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			},
+			"apres": {
+				"title": "Reconnaître si un tableau est un tableau de proportionnalité",
+				"description": "En regardant les colonnes",
+				"variations": [
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & {{eval:a*c}} \\\\ {{b}} & {{eval:b*c}} \\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & {{eval:a*c}} \\\\ {{b}} & {{eval:b*c}} \\end{array}$ est un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:b*c}} $",
+								"On a multiplié par le même nombre entre les 2 colonnes."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Ce tableau est-il un tableau de proportionnalité ?\n\n$$\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & {{eval:a*c}} \\\\ {{b}} & {{eval:b*(c+1)}} \\end{array}$$",
+						"correction": {
+							"steps": [
+								"{{solution:html}}, $\\begin{array}{|c|c|} \\text{{{if:k=1|Masse (kg)|{{if:k=2|Durée (h)|Nombre de cahiers}}}}} & \\text{{{if:k=2|Distance (km)|Prix (€)}}} \\\\ {{a}} & {{eval:a*c}} \\\\ {{b}} & {{eval:b*(c+1)}} \\end{array}$ n'est pas un tableau de proportionnalité, car $ {{a}} \\textcolor{{{color:primary.0}}}{\\times {{c}}}={{eval:a*c}}$ et $ {{b}} \\textcolor{{{color:primary.1}}}{\\times {{eval:c+1}}}={{eval:b*(c+1)}}$.",
+								"On n'a **pas** multiplié par le même nombre entre les 2 colonnes."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui"
+						},
+						{
+							"content": "Non"
+						}
+					],
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!m(a),d(a)"
+						},
+						{
+							"name": "c",
+							"expression": "2..9"
+						},
+						{
+							"name": "k",
+							"expression": "1..3"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"k": "1"
+						},
+						"description": "Oui (proportionnel)",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"k": "1"
+						},
+						"description": "Non sur tableau proportionnel",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "Non (non proportionnel)",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "2",
+							"c": "3",
+							"k": "1"
+						},
+						"description": "Oui sur tableau non proportionnel",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "d4245f88-26a7-4608-991b-bfac03f996a5",
+			"noeud": ["Nombres et calculs", "Entiers : numération", "ordre"],
+			"grades": ["CE1"],
+			"tag": {
+				"grade": "CE1",
+				"code": "CE1-007"
+			},
+			"avant": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Nombres inférieurs à $1\\,000$",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$${{h}}$$"
+							},
+							{
+								"content": "$${{j}}$$"
+							}
+						],
+						"statement": "Quel est le plus petit de ces 2 nombres ?",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							},
+							{
+								"name": "b",
+								"expression": "0..9"
+							},
+							{
+								"name": "c",
+								"expression": "1..9"
+							},
+							{
+								"name": "d",
+								"expression": "0..9"
+							},
+							{
+								"name": "f",
+								"expression": "0..9"
+							},
+							{
+								"name": "g",
+								"expression": "1..9"
+							},
+							{
+								"name": "h",
+								"expression": "eval:a*100+b*10+c"
+							},
+							{
+								"name": "j",
+								"expression": "eval:d*100+f*10+g"
+							}
+						],
+						"conditions": ["h!=j"],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:floor(h/100)=floor(j/100)|{{if:floor(h/10)=floor(j/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|{{if:h<10|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<10|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<100|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<100|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/100),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}",
+								"Le plus petit des deux nombres est donc :\n\n{{solution}}"
+							]
+						},
+						"correctChoiceIndex": ["{{if:h<j|0|1}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8"
+						},
+						"description": "628 < 799 : bon choix 1",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8"
+						},
+						"description": "628 < 799 : mauvais choix",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4"
+						},
+						"description": "205 < 434",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Comparer deux nombres entiers",
+				"description": "Nombres inférieurs à $1\\,000$",
+				"variations": [
+					{
+						"choices": [
+							{
+								"content": "$$<$$"
+							},
+							{
+								"content": "$$=$$"
+							},
+							{
+								"content": "$$>$$"
+							}
+						],
+						"statement": "Complète avec le symbole qui convient.\n\n$${{h}} \\ldots {{j}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "0..9"
+							},
+							{
+								"name": "b",
+								"expression": "0..9"
+							},
+							{
+								"name": "c",
+								"expression": "1..9"
+							},
+							{
+								"name": "d",
+								"expression": "0..9"
+							},
+							{
+								"name": "f",
+								"expression": "0..9"
+							},
+							{
+								"name": "g",
+								"expression": "1..9"
+							},
+							{
+								"name": "h",
+								"expression": "eval:a*100+b*10+c"
+							},
+							{
+								"name": "egal",
+								"expression": "1..6"
+							},
+							{
+								"name": "j",
+								"expression": "eval:{{if:egal=1|h|d*100+f*10+g}}"
+							},
+							{
+								"name": "r",
+								"expression": "{{if:h<j|0|{{if:h=j|1|2}}}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Comparer deux entiers.** Le nombre qui a le moins de chiffres est le plus petit. S'ils ont autant de chiffres, on les compare chiffre par chiffre depuis la gauche : le premier chiffre différent décide.",
+								"{{if:h=j|Les deux nombres ont les mêmes chiffres aux mêmes rangs : ils sont égaux.|{{if:floor(h/100)=floor(j/100)|{{if:floor(h/10)=floor(j/10)|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des dizaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{unités}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/1),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/1),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.|{{if:h<10|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<10|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Depuis la gauche, leurs chiffres sont les mêmes jusqu'au rang des centaines. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{dizaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/10),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/10),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}|{{if:h<100|${{h}}$ a moins de chiffres que ${{j}}$ : $\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$.|{{if:j<100|${{j}}$ a moins de chiffres que ${{h}}$ : $\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$.|Les deux nombres ont le même nombre de chiffres. Au rang des $\\textcolor{{{color:primary.1}}}{\\text{centaines}}$, ${{h}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(h/100),10)}}}$ et ${{j}}$ a $\\textcolor{{{color:primary.0}}}{{{eval:mod(floor(j/100),10)}}}$ : {{if:h<j|$\\textcolor{{{color:primary.2}}}{{{h}}} < {{j}}$|$\\textcolor{{{color:primary.2}}}{{{j}}} < {{h}}$}}.}}}}}}}}",
+								"On écrit donc :\n\n$${{h}} {{if:h<j|<|{{if:h=j|=|>}}}} {{j}}$$"
+							]
+						},
+						"correctChoiceIndex": ["{{r}}"]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8",
+							"egal": "2"
+						},
+						"description": "799 > 628",
+						"variationIndex": 0,
+						"selectedChoices": [2]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9",
+							"c": "9",
+							"d": "6",
+							"f": "2",
+							"g": "8",
+							"egal": "2"
+						},
+						"description": "799 > 628 : < choisi",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"egal": "2"
+						},
+						"description": "205 < 434",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"egal": "1"
+						},
+						"description": "égalité : 205 = 205",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "0",
+							"c": "5",
+							"d": "4",
+							"f": "3",
+							"g": "4",
+							"egal": "1"
+						},
+						"description": "égalité : < choisi",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					}
+				],
+				"options": {
+					"shuffleChoices": false
+				}
+			}
+		},
+		{
+			"id": "d7f2568a-d8c5-44ef-9746-2a1c6e22e8f7",
+			"noeud": ["Algèbre", "Calcul littéral", "factorisation"],
+			"grades": ["4"],
+			"tag": {
+				"grade": "4",
+				"code": "4-070"
+			},
+			"avant": {
+				"title": "Factoriser",
+				"description": "Le facteur commun est apparent dans un seul des produits",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{c}}+{{b}}{{d}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{a}}{{c}}+{{eval:a*b}}{{d}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 {{a}}{{c}}+{{eval:a*b}}{{d}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}}+\\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{c}} + {{b}}{{d}}) \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{b}}{{d}}+{{c}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{eval:a*b}}{{d}}+{{a}}{{c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 {{eval:a*b}}{{d}} + {{a}}{{c}}              &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}{{d}} + {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{c}}-{{b}}{{d}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "expression3",
+								"expression": "{{a}}{{c}}-{{eval:a*b}}{{d}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 {{a}}{{c}} - {{eval:a*b}}{{d}}               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{c}} - {{b}}{{d}}) \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{b}}{{d}}-{{c}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "{{eval:a*b}}{{d}}-{{a}}{{c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align}                 {{eval:a*b}}{{d}} - {{a}}{{c}}              &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}}{{d}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\               &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}}{{d}} - {{c}}) \\\\               &= {{solution}}                \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2|3|5|7"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!cd(a)"
+						},
+						{
+							"name": "c",
+							"expression": "x|y|z"
+						},
+						{
+							"name": "d",
+							"expression": "x|y|z!c"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["5(z+9y)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5(9y+z)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5(z-9y)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "v2 bonne réponse",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5(9y-z)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "v3 bonne réponse",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["5z+45y"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "forme développée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5(9y+z)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "5(9y+z) ordre inversé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5(z+9\\times y)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["products"]
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z",
+							"d": "y|y"
+						},
+						"description": "produit explicite dans la parenthèse",
+						"variationIndex": 0
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Factoriser",
+				"description": "Le facteur commun est apparent dans un seul des produits",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{c}}+{{b}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{a}}{{c}}+{{eval:a*b}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{a}}{{c}}+{{eval:a*b}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} \\\\ &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{c}} + {{b}}) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{b}}+{{c}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{eval:a*b}}+{{a}}{{c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{eval:a*b}}+{{a}}{{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} + \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\ &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} + {{c}}) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{c}}-{{b}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "expression3",
+								"expression": "{{a}}{{c}}-{{eval:a*b}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{a}}{{c}}-{{eval:a*b}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} \\\\ &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{c}} - {{b}}) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{a}}({{b}}-{{c}})"
+							}
+						],
+						"statement": "Factorise.\n\n$${{expression4}}$$",
+						"variables": [
+							{
+								"name": "expression4",
+								"expression": "{{eval:a*b}}-{{a}}{{c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} {{eval:a*b}}-{{a}}{{c}} &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{b}} - \\textcolor{{{color:primary.0}}}{{{a}}} \\times {{c}} \\\\ &= \\textcolor{{{color:primary.0}}}{{{a}}} \\times ({{b}} - {{c}}) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2|3|5|7"
+						},
+						{
+							"name": "b",
+							"expression": "2..9!cd(a)"
+						},
+						{
+							"name": "c",
+							"expression": "x|y|z"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["5(z+9)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5(9+z)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["5(z-9)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "v2 bonne réponse",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["5(9-z)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "v3 bonne réponse",
+						"variationIndex": 3
+					},
+					{
+						"answers": ["5z+45"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "forme développée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5(9+z)"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "5(9+z) ordre inversé",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5(z+8)"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "5",
+							"b": "9",
+							"c": "z|z"
+						},
+						"description": "mauvais quotient",
+						"variationIndex": 0
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "db4f1dde-503b-4fad-8b02-96a5124221d5",
+			"noeud": ["Nombres et calculs", "Relatifs : calculs", "différences"],
+			"grades": ["5"],
+			"tag": {
+				"grade": "5",
+				"code": "5-020"
+			},
+			"avant": {
+				"title": "Calculer une somme ou une différence",
+				"description": "À l'aide de la droite graduée, entre $-4$ et $4$.",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..4"
+							},
+							{
+								"name": "b",
+								"expression": "1..4"
+							},
+							{
+								"name": "expression1",
+								"expression": "(-a)+b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+								"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+								"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) + {{b}} {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "1..{{eval:4-a}}"
+							},
+							{
+								"name": "expression2",
+								"expression": "(-a)-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression3}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+1}}..4"
+							},
+							{
+								"name": "expression3",
+								"expression": "a-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de ${{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{a}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{a}}$.",
+								"$$\\begin{align} {{a}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "(-3)+1 = -2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "erreur de signe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(-2)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["brackets"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "parenthèses inutiles",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3+1"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "calcul non effectué",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "4"
+						},
+						"description": "borne : (-4)+4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2)-1 = -3",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "confusion avec (-2)+1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "3"
+						},
+						"description": "borne basse : (-1)-3 = -4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1-4 = -3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "écart sans signe",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer une somme ou une différence",
+				"description": "À l'aide de la droite graduée, entre $-4$ et $4$.",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression1}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..4"
+							},
+							{
+								"name": "b",
+								"expression": "1..4"
+							},
+							{
+								"name": "expression1",
+								"expression": "-a+b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on avance de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la droite.",
+								"**Addition de deux nombres relatifs.** Deux nombres de même signe : on garde ce signe et on additionne leurs distances à zéro. Deux nombres de signes contraires : on prend le signe de celui qui est le plus éloigné de zéro, et on soustrait les distances à zéro.",
+								"$\\textcolor{{{color:primary.0}}}{-}{{a}}$ et ${{b}}$ sont de $\\textcolor{{{color:primary.1}}}{\\text{signes contraires}}$. {{if:(a)>(b)|$\\textcolor{{{color:primary.0}}}{-}{{a}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$.|{{if:(a)<(b)|${{b}}$ est le plus éloigné de zéro : la somme est $\\textcolor{{{color:primary.2}}}{\\text{positif}}$.|Ils ont la même distance à zéro : ils sont opposés, leur somme est nulle.}}}} {{if:(a)=(b)||On soustrait les distances à zéro.}}",
+								"$$\\begin{align} \\textcolor{{{color:primary.0}}}{-}{{a}} + {{b}} {{if:(a)>(b)|&= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} - {{b}} \\right) \\\\ |{{if:(a)<(b)|&= \\textcolor{{{color:primary.2}}}{+}\\left( {{b}} - {{a}} \\right) \\\\ |}}}}&= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression2}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression2}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "1..{{eval:4-a}}"
+							},
+							{
+								"name": "expression2",
+								"expression": "(-a)-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de $\\textcolor{{{color:primary.0}}}{-}{{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On s’éloigne encore de zéro, du côté des négatifs : le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$, et sa distance à zéro est la somme des distances.",
+								"$$\\begin{align} \\left( \\textcolor{{{color:primary.0}}}{-}{{a}} \\right) - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{a}} + {{b}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression3}}}}"
+							}
+						],
+						"statement": "Calcule en t'aidant de la droite graduée.\n\n$${{expression3}}$$\n\n![Question image 1](relatifs/droite-graduee-operations/droite-graduee--4-4-600.png)",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "{{eval:a+1}}..4"
+							},
+							{
+								"name": "expression3",
+								"expression": "a-b"
+							}
+						],
+						"correction": {
+							"steps": [
+								"**Sur la droite graduée**, ajouter un nombre positif, c’est avancer vers la droite ; soustraire un nombre positif, c’est reculer vers la gauche.",
+								"Sur la droite graduée, on part de ${{a}}$ et on recule de ${{b}}$ {{if:(b)>1|graduations|graduation}} vers la gauche. On recule de plus que ${{a}}$ : on dépasse zéro, le résultat est $\\textcolor{{{color:primary.2}}}{\\text{négatif}}$. Sa distance à zéro est l’écart ${{b}} - {{a}}$.",
+								"$$\\begin{align} {{a}} - {{b}} &= \\textcolor{{{color:primary.2}}}{-}\\left( {{b}} - {{a}} \\right) \\\\ &= {{solution}} \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["-2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "-3+1 = -2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "erreur de signe",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["(-2)"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["brackets"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "parenthèses inutiles",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3+1"],
+						"expected": {
+							"status": "bad_form",
+							"constraintViolations": ["form"]
+						},
+						"variables": {
+							"a": "3",
+							"b": "1"
+						},
+						"description": "calcul non effectué",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["0"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "4"
+						},
+						"description": "borne : -4+4",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "(-2)-1 = -3",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-1"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "1"
+						},
+						"description": "confusion avec (-2)+1",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-4"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "3"
+						},
+						"description": "borne basse : (-1)-3 = -4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "1-4 = -3",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "4"
+						},
+						"description": "écart sans signe",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			}
+		},
+		{
+			"id": "e6ddf5d7-2885-4e75-a375-ddf3fd43fc02",
+			"noeud": ["Nombres et calculs", "Entiers : division", "quotient"],
+			"grades": ["CE2"],
+			"tag": {
+				"grade": "CE2",
+				"code": "CE2-018"
+			},
+			"avant": {
+				"title": "Calculer un quotient entier",
+				"description": "Quotients associés aux tables de multiplication",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "expression1",
+								"expression": "{{eval:a*b}}:{{b}}"
+							}
+						]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "63:9 = 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2"
+						},
+						"description": "Bornes : 4:2 = 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "Erreur : 8",
+						"variationIndex": 0
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Calculer un quotient entier",
+				"description": "Quotients associés aux tables de multiplication",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:{{expression1}}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "expression1",
+								"expression": "{{eval:a*b}}\\div{{b}}"
+							}
+						]
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "63 ÷ 9 = 7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["2"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "2"
+						},
+						"description": "Bornes : 4 ÷ 2 = 2",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["8"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "7",
+							"b": "9"
+						},
+						"description": "Erreur : 8",
+						"variationIndex": 0
+					}
+				],
+				"options": null
+			}
+		}
+	]
+}

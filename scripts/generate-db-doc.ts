@@ -124,7 +124,7 @@ export const DOMAINS: Domain[] = [
 			'student_checklist_progress'
 		]
 	},
-	{ title: 'Fiches', match: ['worksheet'] },
+	{ title: 'Fiches', match: ['worksheet', 'student_print_settings'] },
 	{
 		title: 'Évaluations',
 		match: ['evaluation', 'parody_evaluations', 'test_answers', 'test_sessions']
@@ -153,7 +153,8 @@ export const DOMAINS: Domain[] = [
 			'weekly_',
 			'reward_events',
 			'buddy_skins',
-			'student_buddies'
+			'student_buddies',
+			'student_mathoux'
 		]
 	},
 	{
@@ -167,14 +168,16 @@ export const DOMAINS: Domain[] = [
 		]
 	},
 	{
-		title: 'Outils du professeur (kanban, tableau blanc, tableur, constructions, figures)',
+		title:
+			'Outils du professeur (kanban, tableau blanc, tableur, constructions, figures, liens courts)',
 		match: [
 			'kanban_',
 			'whiteboard_',
 			'user_whiteboard_template_favorites',
 			'spreadsheets',
 			'construction',
-			'geometry_figures'
+			'geometry_figures',
+			'short_links'
 		]
 	},
 	{ title: 'Tuteur et recherche documentaire (RAG)', match: ['tutor_', 'rag_'] },

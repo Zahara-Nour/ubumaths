@@ -1,0 +1,296 @@
+{
+	"template_id": "6b44d220-2485-4d2c-aa35-70e74abec66e",
+	"titre": "Calculer une vitesse moyenne",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Vitesses > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-052",
+			"libelle_point": "Utiliser des grandeurs quotients, avec ou sans unités.",
+			"noeud_actuel": "Proportionnalité > Vitesse",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "eval:a1*10 "
+					},
+					{
+						"name": "b",
+						"expression": "eval:(a)[km.h^{-1}]"
+					},
+					{
+						"name": "c1",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "c1[h]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la vitesse moyenne d'une voiture parcourant ${{eval:{b}*{c};[km]}}$ en ${{c}}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $?$.",
+				"reponses_brutes": ["{{eval:b;[km.h^{-1}]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 62,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 20,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [20, 30, 40, 50, 60, 70, 80, 90]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"20[km/h]",
+							"30[km/h]",
+							"40[km/h]",
+							"50[km/h]",
+							"60[km/h]",
+							"70[km/h]",
+							"80[km/h]",
+							"90[km/h]"
+						],
+						"nombres_contenus": {
+							"min": 20,
+							"max": 90,
+							"nb_distinctes": 8,
+							"valeurs": [20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[h]", "3[h]", "4[h]", "5[h]", "6[h]", "7[h]", "8[h]", "9[h]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"20[km.h^{-1}]",
+							"30[km.h^{-1}]",
+							"40[km.h^{-1}]",
+							"50[km.h^{-1}]",
+							"60[km.h^{-1}]",
+							"70[km.h^{-1}]",
+							"80[km.h^{-1}]",
+							"90[km.h^{-1}]"
+						],
+						"nombres_contenus": {
+							"min": -1,
+							"max": 90,
+							"nb_distinctes": 9,
+							"valeurs": [-1, 20, 30, 40, 50, 60, 70, 80, 90],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 810,
+				"nb_distinctes": 39,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": -1,
+				"max": 90,
+				"nb_distinctes": 9,
+				"valeurs": [-1, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -1,
+				"max": 810,
+				"nb_distinctes": 44,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["km", "h"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (810)",
+					"graine": 73,
+					"enonce": "Quelle est la vitesse moyenne d'une voiture parcourant $810~\\mathrm{km}$ en $9~\\mathrm{h}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $[?]$.",
+					"reponse": ["90[km.h^{-1}]"],
+					"variables": {
+						"a1": "9",
+						"a": "90",
+						"b": "90[km/h]",
+						"c1": "9",
+						"c": "9[h]"
+					}
+				},
+				{
+					"role": "plus petite valeur (-1)",
+					"graine": 1,
+					"enonce": "Quelle est la vitesse moyenne d'une voiture parcourant $120~\\mathrm{km}$ en $6~\\mathrm{h}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $[?]$.",
+					"reponse": ["20[km.h^{-1}]"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "20[km/h]",
+						"c1": "6",
+						"c": "6[h]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la vitesse moyenne d'une voiture parcourant $160~\\mathrm{km}$ en $4~\\mathrm{h}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $[?]$.",
+					"reponse": ["40[km.h^{-1}]"],
+					"variables": {
+						"a1": "4",
+						"a": "40",
+						"b": "40[km/h]",
+						"c1": "4",
+						"c": "4[h]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la vitesse moyenne d'une voiture parcourant $100~\\mathrm{km}$ en $5~\\mathrm{h}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $[?]$.",
+					"reponse": ["20[km.h^{-1}]"],
+					"variables": {
+						"a1": "2",
+						"a": "20",
+						"b": "20[km/h]",
+						"c1": "5",
+						"c": "5[h]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la vitesse moyenne d'une voiture parcourant $120~\\mathrm{km}$ en $3~\\mathrm{h}$ ? (n'oublie pas l'unité)\n\nLa vitesse est de $[?]$.",
+					"reponse": ["40[km.h^{-1}]"],
+					"variables": {
+						"a1": "4",
+						"a": "40",
+						"b": "40[km/h]",
+						"c1": "3",
+						"c": "3[h]"
+					}
+				}
+			]
+		}
+	]
+}

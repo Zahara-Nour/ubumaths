@@ -1,0 +1,1216 @@
+{
+	"modeles": [
+		{
+			"id": "71ee6212-6739-4b1c-adf9-358cfda13cea",
+			"noeud": ["Nombres et calculs", "Fractions : calculs", "addition et soustraction"],
+			"grades": ["5"],
+			"tag": {
+				"grade": "5",
+				"code": "5-026"
+			},
+			"avant": {
+				"title": "Additionner ou soustraire",
+				"description": "Dénominateur multiple de l'autre, nombres positifs, sans simplification",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a*d+b}}}{{{eval:c*d}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{a}}/{{c}}+{{b}}/{{eval:c*d}}"
+							}
+						],
+						"conditions": ["gcd(a*d+b,c*d)=1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} + \\dfrac{{{b}}}{{{eval:c*d}}} &= \\dfrac{{{a}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}}{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}} + \\dfrac{{{b}}}{{{eval:c*d}}} \\\\ &= \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} + \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= \\dfrac{{{eval:a*d}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a*d+b}}}{{{eval:c*d}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{b}}/{{eval:c*d}}+{{a}}/{{c}}"
+							}
+						],
+						"conditions": ["gcd(a*d+b,c*d)=1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{b}}}{{{eval:c*d}}} + \\dfrac{{{a}}}{{{c}}} &= \\dfrac{{{b}}}{{{eval:c*d}}} + \\dfrac{{{a}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}}{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}} \\\\ &= \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} + \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= \\dfrac{{{b}}+{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a*d-b}}}{{{eval:c*d}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression3}}$$",
+						"variables": [
+							{
+								"name": "expression3",
+								"expression": "{{a}}/{{c}}-{{b}}/{{eval:c*d}}"
+							}
+						],
+						"conditions": ["a*d>b && gcd(a*d-b,c*d)=1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} - \\dfrac{{{b}}}{{{eval:c*d}}} &= \\dfrac{{{a}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}}{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}} - \\dfrac{{{b}}}{{{eval:c*d}}} \\\\ &= \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} - \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= \\dfrac{{{eval:a*d}}-{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9"
+						},
+						{
+							"name": "c",
+							"expression": "2..9!cd(a),cd(b)"
+						},
+						{
+							"name": "d",
+							"expression": "2..9!cd(b)"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["\\frac{16}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "6",
+							"c": "5",
+							"d": "5"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{8}{30}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "6",
+							"c": "5",
+							"d": "5"
+						},
+						"description": "v1 addition terme à terme",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{32}{50}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "6",
+							"c": "5",
+							"d": "5"
+						},
+						"description": "v1 non simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{72}{49}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9",
+							"c": "7",
+							"d": "7"
+						},
+						"description": "v2 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{18}{49}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9",
+							"c": "7",
+							"d": "7"
+						},
+						"description": "v2 numérateur non multiplié",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{18}{35}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "3",
+							"c": "5",
+							"d": "7"
+						},
+						"description": "v3 bonne réponse",
+						"variationIndex": 2
+					},
+					{
+						"answers": ["\\frac{0}{30}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "3",
+							"b": "3",
+							"c": "5",
+							"d": "7"
+						},
+						"description": "v3 soustraction terme à terme",
+						"variationIndex": 2
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Additionner des fractions",
+				"description": "Dénominateur multiple de l'autre, nombres positifs, sans simplification",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a*d+b}}}{{{eval:c*d}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{a}}/{{c}}+{{b}}/{{eval:c*d}}"
+							}
+						],
+						"conditions": ["gcd(a*d+b,c*d)=1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} + \\dfrac{{{b}}}{{{eval:c*d}}} &= \\dfrac{{{a}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}}{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}} + \\dfrac{{{b}}}{{{eval:c*d}}} \\\\ &= \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} + \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= \\dfrac{{{eval:a*d}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a*d+b}}}{{{eval:c*d}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{b}}/{{eval:c*d}}+{{a}}/{{c}}"
+							}
+						],
+						"conditions": ["gcd(a*d+b,c*d)=1"],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{b}}}{{{eval:c*d}}} + \\dfrac{{{a}}}{{{c}}} &= \\dfrac{{{b}}}{{{eval:c*d}}} + \\dfrac{{{a}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}}{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}} \\\\ &= \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} + \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= \\dfrac{{{b}}+{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "2..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..9"
+						},
+						{
+							"name": "c",
+							"expression": "2..9!cd(a),cd(b)"
+						},
+						{
+							"name": "d",
+							"expression": "2..9!cd(b)"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["\\frac{16}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "6",
+							"c": "5",
+							"d": "5"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{8}{30}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "6",
+							"c": "5",
+							"d": "5"
+						},
+						"description": "v0 addition terme à terme",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{32}{50}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "2",
+							"b": "6",
+							"c": "5",
+							"d": "5"
+						},
+						"description": "v0 non simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{72}{49}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9",
+							"c": "7",
+							"d": "7"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{18}{49}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "9",
+							"c": "7",
+							"d": "7"
+						},
+						"description": "v1 numérateur non multiplié",
+						"variationIndex": 1
+					}
+				],
+				"options": null
+			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Calculer",
+				"subdomain": "Addition et Soustraction",
+				"level": 4,
+				"status": "published"
+			},
+			"scission": {
+				"id": "e100ea6c-c52e-4f35-aec5-df72768d2041",
+				"niveau": 9,
+				"tag": {
+					"grade": "5",
+					"code": "5-123"
+				},
+				"contenu": {
+					"title": "Soustraire des fractions",
+					"description": "Dénominateur multiple de l'autre, nombres positifs, sans simplification",
+					"variations": [
+						{
+							"blanks": [
+								{
+									"expectedAnswer": "\\frac{{{eval:a*d-b}}}{{{eval:c*d}}}"
+								}
+							],
+							"statement": "Calcule.\n\n$${{expression3}}$$",
+							"variables": [
+								{
+									"name": "expression3",
+									"expression": "{{a}}/{{c}}-{{b}}/{{eval:c*d}}"
+								}
+							],
+							"conditions": ["a*d>b && gcd(a*d-b,c*d)=1"],
+							"correction": {
+								"steps": [
+									"$$\\begin{align} \\dfrac{{{a}}}{{{c}}} - \\dfrac{{{b}}}{{{eval:c*d}}} &= \\dfrac{{{a}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}}{{{c}}\\textcolor{{{color:primary.1}}}{\\times {{d}}}} - \\dfrac{{{b}}}{{{eval:c*d}}} \\\\ &= \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} - \\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= \\dfrac{{{eval:a*d}}-{{b}}}{\\textcolor{{{color:primary.0}}}{{{eval:c*d}}}} \\\\ &= {{solution}}  \\end{align}$$"
+								]
+							}
+						}
+					],
+					"shared": {
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..9"
+							},
+							{
+								"name": "b",
+								"expression": "2..9"
+							},
+							{
+								"name": "c",
+								"expression": "2..9!cd(a),cd(b)"
+							},
+							{
+								"name": "d",
+								"expression": "2..9!cd(b)"
+							}
+						]
+					},
+					"test_specs": [
+						{
+							"answers": ["\\frac{18}{35}"],
+							"expected": {
+								"status": "correct"
+							},
+							"variables": {
+								"a": "3",
+								"b": "3",
+								"c": "5",
+								"d": "7"
+							},
+							"description": "v0 bonne réponse",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{0}{30}"],
+							"expected": {
+								"status": "incorrect"
+							},
+							"variables": {
+								"a": "3",
+								"b": "3",
+								"c": "5",
+								"d": "7"
+							},
+							"description": "v0 soustraction terme à terme",
+							"variationIndex": 0
+						}
+					],
+					"options": null
+				}
+			}
+		},
+		{
+			"id": "ae988cc8-040a-4cff-9080-b99a05d7acfa",
+			"noeud": ["Nombres et calculs", "Fractions : calculs", "addition et soustraction"],
+			"grades": ["5"],
+			"tag": {
+				"grade": "5",
+				"code": "5-026"
+			},
+			"avant": {
+				"title": "Additionner ou soustraire des fractions",
+				"description": "Fractions de même dénominateur, nombres positifs, sans simplification",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a+b}}}{{{c}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..13"
+							},
+							{
+								"name": "b",
+								"expression": "2..13"
+							},
+							{
+								"name": "c",
+								"expression": "2..25!cd(a),cd(b),cd({{eval:b+a}})"
+							},
+							{
+								"name": "expression1",
+								"expression": "a/c+b/c"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a-b}}}{{{c}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "3..13"
+							},
+							{
+								"name": "b",
+								"expression": "2..{{eval:a-1}}"
+							},
+							{
+								"name": "c",
+								"expression": "2..25!cd(a),cd(b),cd({{eval:a-b}})"
+							},
+							{
+								"name": "expression2",
+								"expression": "a/c-b/c"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}-\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}-{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["\\frac{9}{7}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "5",
+							"c": "7"
+						},
+						"description": "addition",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{26}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "13",
+							"b": "13",
+							"c": "25"
+						},
+						"description": "addition bornes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{9}{14}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "5",
+							"c": "7"
+						},
+						"description": "addition des dénominateurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{7}{9}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "11",
+							"b": "4",
+							"c": "9"
+						},
+						"description": "soustraction",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{1}{5}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2",
+							"c": "5"
+						},
+						"description": "soustraction résultat 1/c",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{7}{0}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "11",
+							"b": "4",
+							"c": "9"
+						},
+						"description": "soustraction des dénominateurs",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{14}{18}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "11",
+							"b": "4",
+							"c": "9"
+						},
+						"description": "soustraction non simplifiée",
+						"variationIndex": 1
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Additionner des fractions",
+				"description": "Même dénominateur, nombres positifs, sans simplification",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:a+b}}}{{{c}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "a",
+								"expression": "2..13"
+							},
+							{
+								"name": "b",
+								"expression": "2..13"
+							},
+							{
+								"name": "c",
+								"expression": "2..25!cd(a),cd(b),cd({{eval:b+a}})"
+							},
+							{
+								"name": "expression1",
+								"expression": "a/c+b/c"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}+\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}+{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": null,
+				"test_specs": [
+					{
+						"answers": ["\\frac{9}{7}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "4",
+							"b": "5",
+							"c": "7"
+						},
+						"description": "addition",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{26}{25}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "13",
+							"b": "13",
+							"c": "25"
+						},
+						"description": "addition bornes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{9}{14}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "4",
+							"b": "5",
+							"c": "7"
+						},
+						"description": "addition des dénominateurs",
+						"variationIndex": 0
+					}
+				],
+				"options": null
+			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Calculer",
+				"subdomain": "Addition et Soustraction",
+				"level": 3,
+				"status": "published"
+			},
+			"scission": {
+				"id": "2af592ca-d9a9-4539-8d2d-80729a51a5e4",
+				"niveau": 8,
+				"tag": {
+					"grade": "5",
+					"code": "5-123"
+				},
+				"contenu": {
+					"title": "Soustraire des fractions",
+					"description": "Même dénominateur, nombres positifs, sans simplification",
+					"variations": [
+						{
+							"blanks": [
+								{
+									"expectedAnswer": "\\frac{{{eval:a-b}}}{{{c}}}"
+								}
+							],
+							"statement": "Calcule.\n\n$${{expression2}}$$",
+							"variables": [
+								{
+									"name": "a",
+									"expression": "3..13"
+								},
+								{
+									"name": "b",
+									"expression": "2..{{eval:a-1}}"
+								},
+								{
+									"name": "c",
+									"expression": "2..25!cd(a),cd(b),cd({{eval:a-b}})"
+								},
+								{
+									"name": "expression2",
+									"expression": "a/c-b/c"
+								}
+							],
+							"correction": {
+								"steps": [
+									"$$\\begin{align} \\dfrac{{{a}}}{\\textcolor{{{color:primary.0}}}{{{c}}}}-\\dfrac{{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} &= \\dfrac{{{a}}-{{b}}}{\\textcolor{{{color:primary.0}}}{{{c}}}} \\\\ &= {{solution}}  \\end{align}$$"
+								]
+							}
+						}
+					],
+					"shared": null,
+					"test_specs": [
+						{
+							"answers": ["\\frac{7}{9}"],
+							"expected": {
+								"status": "correct"
+							},
+							"variables": {
+								"a": "11",
+								"b": "4",
+								"c": "9"
+							},
+							"description": "soustraction",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{1}{5}"],
+							"expected": {
+								"status": "correct"
+							},
+							"variables": {
+								"a": "3",
+								"b": "2",
+								"c": "5"
+							},
+							"description": "soustraction résultat 1/c",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{7}{0}"],
+							"expected": {
+								"status": "incorrect"
+							},
+							"variables": {
+								"a": "11",
+								"b": "4",
+								"c": "9"
+							},
+							"description": "soustraction des dénominateurs",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{14}{18}"],
+							"expected": {
+								"status": "unoptimal_form",
+								"constraintViolations": ["reducedFractions"]
+							},
+							"variables": {
+								"a": "11",
+								"b": "4",
+								"c": "9"
+							},
+							"description": "soustraction non simplifiée",
+							"variationIndex": 0
+						}
+					],
+					"options": null
+				}
+			}
+		},
+		{
+			"id": "f92d63a6-407d-4887-b263-f708f5904075",
+			"noeud": ["Nombres et calculs", "Fractions : calculs", "addition et soustraction"],
+			"grades": ["5"],
+			"tag": {
+				"grade": "5",
+				"code": "5-026"
+			},
+			"avant": {
+				"title": "Additionner ou soustraire",
+				"description": "Fractions de même dénominateur, nombres positifs, simplification intermediaire possible, simplification finale",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:d/gcd(c,d)}}}{{{eval:c/gcd(c,d)}}}"
+							}
+						],
+						"statement": "Calcule en simplifiant le plus possible le résultat.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{eval:b*d}}/{{eval:a*c}}+{{eval:(a-b)*d}}/{{eval:a*c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{eval:b*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} + \\dfrac{{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} &= \\dfrac{{{eval:b*d}}+{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} \\\\ &= \\dfrac{{{eval:a*d}}}{{{eval:a*c}}} \\\\ &=  \\dfrac{{{eval:a*d}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(a*c,a*d)}}}}{{{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(a*c,a*d)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:d/gcd(c,d)}}}{{{eval:c/gcd(c,d)}}}"
+							}
+						],
+						"statement": "Calcule en simplifiant le plus possible le résultat.\n\n$${{expression2}}$$",
+						"variables": [
+							{
+								"name": "expression2",
+								"expression": "{{eval:a*d}}/{{eval:b*c}}-{{eval:(a-b)*d}}/{{eval:b*c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} - \\dfrac{{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} &= \\dfrac{{{eval:a*d}}-{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} \\\\ &= \\dfrac{{{eval:b*d}}}{{{eval:b*c}}} \\\\ &=  \\dfrac{{{eval:b*d}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(b*c,b*d)}}}}{{{eval:b*c}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(b*c,b*d)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "3..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..{{eval:a-1}}"
+						},
+						{
+							"name": "c",
+							"expression": "2..9"
+						},
+						{
+							"name": "d",
+							"expression": "2..9!m(c)"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["\\frac{5}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v1 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{15}{12}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v1 simplification incomplète",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{45}{36}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v1 pas simplifiée",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{45}{72}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v1 addition des dénominateurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{8}{9}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "8",
+							"c": "9",
+							"d": "8"
+						},
+						"description": "v1 bornes hautes",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{2}{3}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "6",
+							"b": "2",
+							"c": "6",
+							"d": "4"
+						},
+						"description": "v2 bonne réponse",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "3",
+							"b": "2",
+							"c": "2",
+							"d": "3"
+						},
+						"description": "v2 bornes basses",
+						"variationIndex": 1
+					}
+				],
+				"options": null
+			},
+			"apres": {
+				"title": "Additionner des fractions",
+				"description": "Même dénominateur, nombres positifs, résultat simplifiable",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "\\frac{{{eval:d/gcd(c,d)}}}{{{eval:c/gcd(c,d)}}}"
+							}
+						],
+						"statement": "Calcule.\n\n$${{expression1}}$$",
+						"variables": [
+							{
+								"name": "expression1",
+								"expression": "{{eval:b*d}}/{{eval:a*c}}+{{eval:(a-b)*d}}/{{eval:a*c}}"
+							}
+						],
+						"correction": {
+							"steps": [
+								"$$\\begin{align} \\dfrac{{{eval:b*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} + \\dfrac{{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} &= \\dfrac{{{eval:b*d}}+{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:a*c}}}} \\\\ &= \\dfrac{{{eval:a*d}}}{{{eval:a*c}}} \\\\ &=  \\dfrac{{{eval:a*d}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(a*c,a*d)}}}}{{{eval:a*c}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(a*c,a*d)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"variables": [
+						{
+							"name": "a",
+							"expression": "3..9"
+						},
+						{
+							"name": "b",
+							"expression": "2..{{eval:a-1}}"
+						},
+						{
+							"name": "c",
+							"expression": "2..9"
+						},
+						{
+							"name": "d",
+							"expression": "2..9!m(c)"
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"answers": ["\\frac{5}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v0 bonne réponse",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{15}{12}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v0 simplification incomplète (acceptée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{45}{36}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v0 pas simplifiée (acceptée)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{45}{72}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "9",
+							"b": "6",
+							"c": "4",
+							"d": "5"
+						},
+						"description": "v0 addition des dénominateurs",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{8}{9}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "9",
+							"b": "8",
+							"c": "9",
+							"d": "8"
+						},
+						"description": "v0 bornes hautes",
+						"variationIndex": 0
+					}
+				],
+				"options": {
+					"constraints": {
+						"reducedFractions": "off"
+					}
+				}
+			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Calculer",
+				"subdomain": "Addition et Soustraction",
+				"level": 7,
+				"status": "published"
+			},
+			"scission": {
+				"id": "4e1ed43e-33ee-423b-b475-4d3674e2b3e0",
+				"niveau": 10,
+				"tag": {
+					"grade": "5",
+					"code": "5-123"
+				},
+				"contenu": {
+					"title": "Soustraire des fractions",
+					"description": "Même dénominateur, nombres positifs, résultat simplifiable",
+					"variations": [
+						{
+							"blanks": [
+								{
+									"expectedAnswer": "\\frac{{{eval:d/gcd(c,d)}}}{{{eval:c/gcd(c,d)}}}"
+								}
+							],
+							"statement": "Calcule.\n\n$${{expression2}}$$",
+							"variables": [
+								{
+									"name": "expression2",
+									"expression": "{{eval:a*d}}/{{eval:b*c}}-{{eval:(a-b)*d}}/{{eval:b*c}}"
+								}
+							],
+							"correction": {
+								"steps": [
+									"$$\\begin{align} \\dfrac{{{eval:a*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} - \\dfrac{{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} &= \\dfrac{{{eval:a*d}}-{{eval:(a-b)*d}}}{\\textcolor{{{color:primary.0}}}{{{eval:b*c}}}} \\\\ &= \\dfrac{{{eval:b*d}}}{{{eval:b*c}}} \\\\ &=  \\dfrac{{{eval:b*d}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(b*c,b*d)}}}}{{{eval:b*c}}\\textcolor{{{color:primary.1}}}{\\div {{eval:gcd(b*c,b*d)}}}} \\\\ &= {{solution}}  \\end{align}$$"
+								]
+							}
+						}
+					],
+					"shared": {
+						"variables": [
+							{
+								"name": "a",
+								"expression": "3..9"
+							},
+							{
+								"name": "b",
+								"expression": "2..{{eval:a-1}}"
+							},
+							{
+								"name": "c",
+								"expression": "2..9"
+							},
+							{
+								"name": "d",
+								"expression": "2..9!m(c)"
+							}
+						]
+					},
+					"test_specs": [
+						{
+							"answers": ["\\frac{2}{3}"],
+							"expected": {
+								"status": "correct"
+							},
+							"variables": {
+								"a": "6",
+								"b": "2",
+								"c": "6",
+								"d": "4"
+							},
+							"description": "v0 bonne réponse",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{3}{2}"],
+							"expected": {
+								"status": "correct"
+							},
+							"variables": {
+								"a": "3",
+								"b": "2",
+								"c": "2",
+								"d": "3"
+							},
+							"description": "v0 bornes basses",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{8}{12}"],
+							"expected": {
+								"status": "correct"
+							},
+							"variables": {
+								"a": "6",
+								"b": "2",
+								"c": "6",
+								"d": "4"
+							},
+							"description": "v0 non simplifiée (acceptée)",
+							"variationIndex": 0
+						},
+						{
+							"answers": ["\\frac{8}{0}"],
+							"expected": {
+								"status": "incorrect"
+							},
+							"variables": {
+								"a": "6",
+								"b": "2",
+								"c": "6",
+								"d": "4"
+							},
+							"description": "v0 soustraction des dénominateurs",
+							"variationIndex": 0
+						}
+					],
+					"options": {
+						"constraints": {
+							"reducedFractions": "off"
+						}
+					}
+				}
+			}
+		}
+	]
+}

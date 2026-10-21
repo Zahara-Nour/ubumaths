@@ -42,11 +42,13 @@ import type {
 	NodeMetadata
 } from './types';
 import { formatPointNames } from './common/point-names';
+import { indexedVariableLatex } from './common/indexed-names';
 import { flattenRelationChain } from './flatten';
 import { divide, multiply, number, opposite, parentheses, superscript } from './factory';
 import { transformAST } from './visitor';
 import { format } from './units/formatter';
 import { isLimit, isMultiplication, isNumber, isUnit } from './guards';
+import { juxtaposedTerms } from './parser/juxtaposed-quantities';
 import {
 	needsParenthesesAsPowerBase,
 	needsParenthesesAsRightFactor,
@@ -613,7 +615,8 @@ export class LatexGenerator {
 				if ([...node.name].length === 1) {
 					this.emit(node.name, node.metadata);
 				} else {
-					this.emit(`\\mathit{${node.name}}`, node.metadata);
+					// `x_1` : un nom indicé, rendu comme un indice (`indexedVariableLatex`)
+					this.emit(indexedVariableLatex(node.name) ?? `\\mathit{${node.name}}`, node.metadata);
 				}
 				break;
 
@@ -631,6 +634,15 @@ export class LatexGenerator {
 
 			case 'addition':
 			case 'subtraction': {
+				// Durée composée : `2~\unit{h}~30~\unit{min}`, sans `+`
+				const juxtaposed = node.type === 'addition' ? juxtaposedTerms(node) : null;
+				if (juxtaposed) {
+					juxtaposed.forEach((term, i) => {
+						if (i > 0) this.emit('~', node.operatorMetadata ?? node.metadata);
+						this.visitWithSpans(term);
+					});
+					break;
+				}
 				// Mêmes parenthèses que generateAddition / generateSubtraction
 				const wrapRight = needsParenthesesAsRightTerm(node.right, node.type);
 				const wrapLeft = binaryOperandWraps(node)?.left ?? false;
@@ -812,8 +824,8 @@ export class LatexGenerator {
 		const opMeta = node.operatorMetadata ?? node.metadata;
 		switch (node.displayStyle) {
 			case 'implicit':
-				if (juxtaposesDigits(node)) this.emit(' \\times ', opMeta);
-				else this.emit(juxtaposesQuantities(node) ? '~' : ' ', opMeta);
+				if (juxtaposesDigits(node) || juxtaposesQuantities(node)) this.emit(' \\times ', opMeta);
+				else this.emit(' ', opMeta);
 				break;
 			case 'dot':
 				this.emit(' \\cdot ', opMeta);
@@ -1258,7 +1270,8 @@ export class LatexGenerator {
 				if ([...node.name].length === 1) {
 					this.emit(node.name, effectiveMeta);
 				} else {
-					this.emit(`\\mathit{${node.name}}`, effectiveMeta);
+					// `x_1` : un nom indicé, rendu comme un indice (`indexedVariableLatex`)
+					this.emit(indexedVariableLatex(node.name) ?? `\\mathit{${node.name}}`, effectiveMeta);
 				}
 				break;
 			case 'greek':
@@ -1419,6 +1432,9 @@ export class LatexGenerator {
 		if ([...node.name].length === 1) {
 			return node.name;
 		}
+		// `x_1` : un nom indicé (le pipeline en fait une variable), rendu comme un indice
+		const indexed = indexedVariableLatex(node.name);
+		if (indexed !== null) return indexed;
 		// Multi-character: use \mathit{}
 		return `\\mathit{${node.name}}`;
 	}
@@ -1437,6 +1453,9 @@ export class LatexGenerator {
 	}
 
 	private generateAddition(node: AdditionNode): string {
+		// Durée composée : `2~\unit{h}~30~\unit{min}` (une espace ordinaire serait ignorée)
+		const juxtaposed = juxtaposedTerms(node);
+		if (juxtaposed) return juxtaposed.map((term) => this.generateNode(term)).join('~');
 		const left = this.groupLeftOperand(node);
 		// `a + -b` : deux signes ne se suivent pas (voir needsParenthesesAsRightTerm).
 		const renderedRight = this.generateNode(node.right);
@@ -1493,8 +1512,10 @@ export class LatexGenerator {
 
 		switch (node.displayStyle) {
 			case 'implicit':
-				if (juxtaposesDigits(node)) return `${left} \\times ${right}`;
-				return juxtaposesQuantities(node) ? `${left}~${right}` : `${left} ${right}`;
+				if (juxtaposesDigits(node) || juxtaposesQuantities(node)) {
+					return `${left} \\times ${right}`;
+				}
+				return `${left} ${right}`;
 			case 'dot':
 				return `${left} \\cdot ${right}`;
 			case 'cross':
@@ -1916,13 +1937,20 @@ export class LatexGenerator {
 // =============================================================================
 
 /**
- * Deux grandeurs juxtaposées : la durée composée de `;hms` (`{3[h]}{56[min]}`, lue comme un
- * produit implicite). Une espace ORDINAIRE entre `\unit{h}` et `56` est ignorée en mode
- * math (« 3 h56 min ») : l'espace doit être insécable, `~`, comme entre valeur et unité.
+ * Un produit implicite de deux grandeurs (`{2[m]}{3[m]}`) : il s'écrit avec `\times`.
+ * Juxtaposées, deux grandeurs se liraient comme une durée composée (`2~\unit{h}~30~\unit{min}`,
+ * une SOMME depuis le chantier lecture-grandeurs, PR 5) ou seraient refusées.
  */
 export function juxtaposesQuantities(node: MultiplicationNode): boolean {
 	let left: MathNode = node.left;
-	while (isMultiplication(left) && left.displayStyle === 'implicit') left = left.right;
+	// Au travers d'un signe aussi : `-2~\unit{h} 30~\unit{min}` se relirait −(2 h 30 min)
+	while (
+		(isMultiplication(left) && left.displayStyle === 'implicit') ||
+		left.type === 'opposite' ||
+		left.type === 'positive'
+	) {
+		left = left.type === 'multiplication' ? left.right : left.operand;
+	}
 	return isUnit(left) && isUnit(node.right);
 }
 

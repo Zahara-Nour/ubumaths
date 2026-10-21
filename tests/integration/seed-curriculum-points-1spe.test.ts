@@ -9,6 +9,10 @@
  * auto-référence), et la correction E1 des Exemples d'algorithme de 2de. VALIDÉS par
  * David le 2026-10-08 (docs/wip/arbre-notions/seed-1spe.md).
  *
+ * Références reportées par les scissions validées par David (migration
+ * `20261017090000_scission_points_programme`) : fixture transformée par
+ * docs/wip/arbre-notions/c5-scissions-generer.py.
+ *
  * La preuve est INTÉGRALE : chaque point de la fixture avec TOUS ses attributs
  * (chemin du nœud compris), rien d'autre au grade '1_SPE', l'ensemble exact des
  * références, et l'ancien seed 1re spé (1SPE-001…1SPE-173, grade NULL) INTACT.

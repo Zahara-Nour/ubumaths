@@ -1,0 +1,1204 @@
+{
+	"template_id": "9fefb94c-283f-44aa-9adf-203221a2edc0",
+	"titre": "Développer un double produit",
+	"sous_titre": "Coefficients relatifs",
+	"consigne": null,
+	"grades": ["3"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Développement",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-013",
+			"libelle_point": "Utiliser la double distributivité pour développer des expressions.",
+			"noeud_actuel": "Algèbre > Calcul littéral > développement",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±!a,{{eval:-(a)}}"
+					},
+					{
+						"name": "c",
+						"expression": "t|x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}},d,{{eval:-(d)}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "({{a}}{{eval:bc;+}})({{d}}{{eval:fc;+}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Développe et réduis :\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["t", "x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"(-9+z)(-4+3z)",
+							"(-4+z)(3+6z)",
+							"(-9-t)(5-7t)",
+							"(-4-6t)(-5+t)",
+							"(5-6y)(-8+2y)",
+							"(-9+3t)(1-8t)",
+							"(-8+9y)(1-2y)",
+							"(3-4y)(2-y)",
+							"(7+6y)(4-5y)",
+							"(8+4z)(-1-6z)",
+							"(1+2y)(7-8y)",
+							"(-8+2z)(-7-9z)"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 297,
+						"exemples": [
+							"3z^2-31z+36",
+							"6z^2-21z-12",
+							"7t^2+58t-45",
+							"-6t^2+26t+20",
+							"-12y^2+58y-40",
+							"-24t^2+75t-9",
+							"-18y^2+25y-8",
+							"4y^2-11y+6",
+							"-30y^2-11y+28",
+							"-24z^2-52z-8",
+							"-16y^2+6y+7",
+							"-18z^2+58z+56"
+						],
+						"nombres_contenus": {
+							"min": -72,
+							"max": 111,
+							"nb_distinctes": 118,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 118,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 120,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "231/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "201/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (111)",
+					"graine": 294,
+					"enonce": "Développe et réduis :\n\n$$\\left( -9 + 8 t \\right) \\left( 6 - 7 t \\right) = [?]$$",
+					"reponse": ["-56t^2+111t-54"],
+					"variables": {
+						"a": "-9",
+						"b": "8",
+						"c": "t",
+						"d": "6",
+						"f": "-7",
+						"expression1": "(-9+8t)(6-7t)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-72)",
+					"graine": 150,
+					"enonce": "Développe et réduis :\n\n$$\\left( -3 + 8 z \\right) \\left( -4 - 9 z \\right) = [?]$$",
+					"reponse": ["-72z^2-5z+12"],
+					"variables": {
+						"a": "-3",
+						"b": "8",
+						"c": "z",
+						"d": "-4",
+						"f": "-9",
+						"expression1": "(-3+8z)(-4-9z)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Développe et réduis :\n\n$$\\left( -9 + z \\right) \\left( -4 + 3 z \\right) = [?]$$",
+					"reponse": ["3z^2-31z+36"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "z",
+						"d": "-4",
+						"f": "3",
+						"expression1": "(-9+z)(-4+3z)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Développe et réduis :\n\n$$\\left( -4 + z \\right) \\left( 3 + 6 z \\right) = [?]$$",
+					"reponse": ["6z^2-21z-12"],
+					"variables": {
+						"a": "-4",
+						"b": "1",
+						"c": "z",
+						"d": "3",
+						"f": "6",
+						"expression1": "(-4+z)(3+6z)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Développe et réduis :\n\n$$\\left( -9 - t \\right) \\left( 5 - 7 t \\right) = [?]$$",
+					"reponse": ["7t^2+58t-45"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "t",
+						"d": "5",
+						"f": "-7",
+						"expression1": "(-9-t)(5-7t)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±!a,{{eval:-(a)}}"
+					},
+					{
+						"name": "c",
+						"expression": "t|x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}},d,{{eval:-(d)}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "({{eval:bc}}{{eval:a;+}})({{d}}{{eval:fc;+}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Développe et réduis :\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["t", "x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"(z-9)(-4+3z)",
+							"(z-4)(3+6z)",
+							"(-t-9)(5-7t)",
+							"(-6t-4)(-5+t)",
+							"(-6y+5)(-8+2y)",
+							"(3t-9)(1-8t)",
+							"(9y-8)(1-2y)",
+							"(-4y+3)(2-y)",
+							"(6y+7)(4-5y)",
+							"(4z+8)(-1-6z)",
+							"(2y+1)(7-8y)",
+							"(2z-8)(-7-9z)"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 297,
+						"exemples": [
+							"3z^2-31z+36",
+							"6z^2-21z-12",
+							"7t^2+58t-45",
+							"-6t^2+26t+20",
+							"-12y^2+58y-40",
+							"-24t^2+75t-9",
+							"-18y^2+25y-8",
+							"4y^2-11y+6",
+							"-30y^2-11y+28",
+							"-24z^2-52z-8",
+							"-16y^2+6y+7",
+							"-18z^2+58z+56"
+						],
+						"nombres_contenus": {
+							"min": -72,
+							"max": 111,
+							"nb_distinctes": 118,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 118,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 120,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "222/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "139/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (111)",
+					"graine": 294,
+					"enonce": "Développe et réduis :\n\n$$\\left( 8 t - 9 \\right) \\left( 6 - 7 t \\right) = [?]$$",
+					"reponse": ["-56t^2+111t-54"],
+					"variables": {
+						"a": "-9",
+						"b": "8",
+						"c": "t",
+						"d": "6",
+						"f": "-7",
+						"expression2": "(8t-9)(6-7t)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-72)",
+					"graine": 150,
+					"enonce": "Développe et réduis :\n\n$$\\left( 8 z - 3 \\right) \\left( -4 - 9 z \\right) = [?]$$",
+					"reponse": ["-72z^2-5z+12"],
+					"variables": {
+						"a": "-3",
+						"b": "8",
+						"c": "z",
+						"d": "-4",
+						"f": "-9",
+						"expression2": "(8z-3)(-4-9z)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Développe et réduis :\n\n$$\\left( z - 9 \\right) \\left( -4 + 3 z \\right) = [?]$$",
+					"reponse": ["3z^2-31z+36"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "z",
+						"d": "-4",
+						"f": "3",
+						"expression2": "(z-9)(-4+3z)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Développe et réduis :\n\n$$\\left( z - 4 \\right) \\left( 3 + 6 z \\right) = [?]$$",
+					"reponse": ["6z^2-21z-12"],
+					"variables": {
+						"a": "-4",
+						"b": "1",
+						"c": "z",
+						"d": "3",
+						"f": "6",
+						"expression2": "(z-4)(3+6z)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Développe et réduis :\n\n$$\\left( -t - 9 \\right) \\left( 5 - 7 t \\right) = [?]$$",
+					"reponse": ["7t^2+58t-45"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "t",
+						"d": "5",
+						"f": "-7",
+						"expression2": "(-t-9)(5-7t)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±!a,{{eval:-(a)}}"
+					},
+					{
+						"name": "c",
+						"expression": "t|x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}},d,{{eval:-(d)}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "({{eval:bc}}{{eval:a;+}})({{eval:fc}}{{eval:d;+}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Développe et réduis :\n\n$${{expression3}}$$",
+				"reponses_brutes": ["{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["t", "x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"(z-9)(3z-4)",
+							"(z-4)(6z+3)",
+							"(-t-9)(-7t+5)",
+							"(-6t-4)(t-5)",
+							"(-6y+5)(2y-8)",
+							"(3t-9)(-8t+1)",
+							"(9y-8)(-2y+1)",
+							"(-4y+3)(-y+2)",
+							"(6y+7)(-5y+4)",
+							"(4z+8)(-6z-1)",
+							"(2y+1)(-8y+7)",
+							"(2z-8)(-9z-7)"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 297,
+						"exemples": [
+							"3z^2-31z+36",
+							"6z^2-21z-12",
+							"7t^2+58t-45",
+							"-6t^2+26t+20",
+							"-12y^2+58y-40",
+							"-24t^2+75t-9",
+							"-18y^2+25y-8",
+							"4y^2-11y+6",
+							"-30y^2-11y+28",
+							"-24z^2-52z-8",
+							"-16y^2+6y+7",
+							"-18z^2+58z+56"
+						],
+						"nombres_contenus": {
+							"min": -72,
+							"max": 111,
+							"nb_distinctes": 118,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 118,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 119,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"+": "233/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (111)",
+					"graine": 294,
+					"enonce": "Développe et réduis :\n\n$$\\left( 8 t - 9 \\right) \\left( -7 t + 6 \\right) = [?]$$",
+					"reponse": ["-56t^2+111t-54"],
+					"variables": {
+						"a": "-9",
+						"b": "8",
+						"c": "t",
+						"d": "6",
+						"f": "-7",
+						"expression3": "(8t-9)(-7t+6)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-72)",
+					"graine": 150,
+					"enonce": "Développe et réduis :\n\n$$\\left( 8 z - 3 \\right) \\left( -9 z - 4 \\right) = [?]$$",
+					"reponse": ["-72z^2-5z+12"],
+					"variables": {
+						"a": "-3",
+						"b": "8",
+						"c": "z",
+						"d": "-4",
+						"f": "-9",
+						"expression3": "(8z-3)(-9z-4)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Développe et réduis :\n\n$$\\left( z - 9 \\right) \\left( 3 z - 4 \\right) = [?]$$",
+					"reponse": ["3z^2-31z+36"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "z",
+						"d": "-4",
+						"f": "3",
+						"expression3": "(z-9)(3z-4)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Développe et réduis :\n\n$$\\left( z - 4 \\right) \\left( 6 z + 3 \\right) = [?]$$",
+					"reponse": ["6z^2-21z-12"],
+					"variables": {
+						"a": "-4",
+						"b": "1",
+						"c": "z",
+						"d": "3",
+						"f": "6",
+						"expression3": "(z-4)(6z+3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Développe et réduis :\n\n$$\\left( -t - 9 \\right) \\left( -7 t + 5 \\right) = [?]$$",
+					"reponse": ["7t^2+58t-45"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "t",
+						"d": "5",
+						"f": "-7",
+						"expression3": "(-t-9)(-7t+5)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9;±!a,{{eval:-(a)}}"
+					},
+					{
+						"name": "c",
+						"expression": "t|x|y|z"
+					},
+					{
+						"name": "d",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}}"
+					},
+					{
+						"name": "f",
+						"expression": "1..9;±!a,{{eval:-(a)}},b,{{eval:-(b)}},d,{{eval:-(d)}}"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "({{a}}{{eval:bc;+}})({{eval:fc}}{{eval:d;+}})"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Développe et réduis :\n\n$${{expression4}}$$",
+				"reponses_brutes": ["{{eval:b*f*c^2+(a*f+b*d)*c+a*d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 4,
+						"valeurs": ["t", "x", "y", "z"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 18,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"(-9+z)(3z-4)",
+							"(-4+z)(6z+3)",
+							"(-9-t)(-7t+5)",
+							"(-4-6t)(t-5)",
+							"(5-6y)(2y-8)",
+							"(-9+3t)(-8t+1)",
+							"(-8+9y)(-2y+1)",
+							"(3-4y)(-y+2)",
+							"(7+6y)(-5y+4)",
+							"(8+4z)(-6z-1)",
+							"(1+2y)(-8y+7)",
+							"(-8+2z)(-9z-7)"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 18,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 297,
+						"exemples": [
+							"3z^2-31z+36",
+							"6z^2-21z-12",
+							"7t^2+58t-45",
+							"-6t^2+26t+20",
+							"-12y^2+58y-40",
+							"-24t^2+75t-9",
+							"-18y^2+25y-8",
+							"4y^2-11y+6",
+							"-30y^2-11y+28",
+							"-24z^2-52z-8",
+							"-16y^2+6y+7",
+							"-18z^2+58z+56"
+						],
+						"nombres_contenus": {
+							"min": -72,
+							"max": 111,
+							"nb_distinctes": 118,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 18,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 118,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -72,
+				"max": 111,
+				"nb_distinctes": 120,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "241/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "114/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 3,
+					"max": 3
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (111)",
+					"graine": 294,
+					"enonce": "Développe et réduis :\n\n$$\\left( -9 + 8 t \\right) \\left( -7 t + 6 \\right) = [?]$$",
+					"reponse": ["-56t^2+111t-54"],
+					"variables": {
+						"a": "-9",
+						"b": "8",
+						"c": "t",
+						"d": "6",
+						"f": "-7",
+						"expression4": "(-9+8t)(-7t+6)"
+					}
+				},
+				{
+					"role": "plus petite valeur (-72)",
+					"graine": 150,
+					"enonce": "Développe et réduis :\n\n$$\\left( -3 + 8 z \\right) \\left( -9 z - 4 \\right) = [?]$$",
+					"reponse": ["-72z^2-5z+12"],
+					"variables": {
+						"a": "-3",
+						"b": "8",
+						"c": "z",
+						"d": "-4",
+						"f": "-9",
+						"expression4": "(-3+8z)(-9z-4)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Développe et réduis :\n\n$$\\left( -9 + z \\right) \\left( 3 z - 4 \\right) = [?]$$",
+					"reponse": ["3z^2-31z+36"],
+					"variables": {
+						"a": "-9",
+						"b": "1",
+						"c": "z",
+						"d": "-4",
+						"f": "3",
+						"expression4": "(-9+z)(3z-4)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Développe et réduis :\n\n$$\\left( -4 + z \\right) \\left( 6 z + 3 \\right) = [?]$$",
+					"reponse": ["6z^2-21z-12"],
+					"variables": {
+						"a": "-4",
+						"b": "1",
+						"c": "z",
+						"d": "3",
+						"f": "6",
+						"expression4": "(-4+z)(6z+3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Développe et réduis :\n\n$$\\left( -9 - t \\right) \\left( -7 t + 5 \\right) = [?]$$",
+					"reponse": ["7t^2+58t-45"],
+					"variables": {
+						"a": "-9",
+						"b": "-1",
+						"c": "t",
+						"d": "5",
+						"f": "-7",
+						"expression4": "(-9-t)(-7t+5)"
+					}
+				}
+			]
+		}
+	]
+}

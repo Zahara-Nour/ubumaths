@@ -111,6 +111,11 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > tentatives (`skill_attempts`) et indicateurs observables (`student_observable_state`). L'activité
 > exercices (`exercise_completions`/`student_exercise_mastery`/`srs_decks`) passe dans une section
 > **`activite`** distincte. `format_version` → `1.2`.
+>
+> ➕ **2026-10-18.** La section **`gaming`** exporte aussi la mémoire des Mathoux
+> (`student_mathoux`, meilleur stade et étoiles par notion) et le Palotin de l'élève
+> (`student_buddies`, décision de David) ; une lecture en échec rend 500, jamais un export
+> incomplet. `format_version` inchangé (`1.4`). Tableau des catégories : [rgpd.md § 7.3](rgpd.md).
 
 ### 4. Consentement parental (Art. 8)
 

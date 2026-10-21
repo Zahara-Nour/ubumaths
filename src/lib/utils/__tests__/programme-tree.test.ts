@@ -17,6 +17,7 @@ import {
 	buildProgrammeTree,
 	countArchivedPoints,
 	hideArchivedPoints,
+	placeOfNode,
 	type ProgrammePointRow
 } from '../programme-tree';
 import type { ClassificationNode } from '$lib/types/database-helpers';
@@ -184,5 +185,35 @@ describe('archivés', () => {
 		const visible = hideArchivedPoints(tree);
 		expect(visible.map((b) => b.id)).toEqual(['b-nombres']);
 		expect(visible[0].notions[0].points.map((p) => p.id)).toEqual(['p1']);
+	});
+
+	it('garde un archivé déjà coché (pour pouvoir le décocher), et sa branche avec lui', () => {
+		const visible = hideArchivedPoints(tree, new Set(['p3']));
+		expect(visible.map((b) => b.id)).toEqual(['b-geo', 'b-nombres']);
+		expect(visible[0].notions[0].points.map((p) => p.id)).toEqual(['p3']);
+		expect(visible[1].notions[0].points.map((p) => p.id)).toEqual(['p1']);
+	});
+});
+
+describe('placeOfNode', () => {
+	const byId = new Map(NODES.map((n) => [n.id, n]));
+
+	it('sous-notion : sa notion et la branche de celle-ci', () => {
+		const place = placeOfNode('s-simplifier', byId);
+		expect([place?.notion.id, place?.branch.id]).toEqual(['n-fractions', 'b-nombres']);
+	});
+
+	it('notion : elle-même et sa branche', () => {
+		const place = placeOfNode('n-triangles', byId);
+		expect([place?.notion.id, place?.branch.id]).toEqual(['n-triangles', 'b-geo']);
+	});
+
+	it('maillon manquant, branche ou aucun nœud : null, sans lever', () => {
+		expect(placeOfNode('inconnu', byId)).toBeNull();
+		expect(placeOfNode('b-geo', byId)).toBeNull();
+		expect(placeOfNode(null, byId)).toBeNull();
+		const sansBranche = new Map(byId);
+		sansBranche.delete('b-nombres');
+		expect(placeOfNode('s-comparer', sansBranche)).toBeNull();
 	});
 });

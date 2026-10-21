@@ -54,6 +54,8 @@
 		type GuidanceLevel
 	} from '$lib/worksheets/student-copy';
 	import JSZip from 'jszip';
+	import TextSizeSelect from './TextSizeSelect.svelte';
+	import type { TextSize } from '$lib/typst/text-size';
 	import {
 		getTypstCompiler,
 		type TypstCompiler,
@@ -118,6 +120,9 @@
 	const printLevel = $derived<GuidanceLevel>(
 		!estLecteur && isGuidanceLevel(niveauChoisi) ? niveauChoisi : DEFAULT_GUIDANCE_LEVEL
 	);
+	// Taille du texte (accessibilité) : choisie au coup par coup, jamais
+	// enregistrée ; normale à chaque ouverture
+	let textSize = $state<TextSize>('normal');
 	let isGenerating = $state(false);
 	let pdfUrl = $state<string | null>(null);
 	let pdfBlob = $state<Blob | null>(null);
@@ -216,6 +221,11 @@
 		generatePreview();
 	}
 
+	function handleTextSizeChange(size: TextSize) {
+		textSize = size;
+		generatePreview();
+	}
+
 	// ============================================================================
 	// PDF GENERATION (CLIENT-SIDE)
 	// ============================================================================
@@ -227,6 +237,7 @@
 		svgContent = '';
 		// Le niveau de CETTE génération : changé entre-temps, on recommence
 		const levelAtStart = printLevel;
+		const sizeAtStart = textSize;
 
 		// Clean up previous PDF
 		if (pdfUrl) {
@@ -276,7 +287,8 @@
 				inlineCorrections,
 				studentName,
 				className: classId ? 'Classe' : undefined,
-				template: worksheet.template
+				template: worksheet.template,
+				textSize
 			});
 			// Images externes, posées dans le système de fichiers virtuel à la compilation
 			const imageData = await fetchExternalImages(getTrackedExternalImages());
@@ -304,8 +316,8 @@
 		} finally {
 			isGenerating = false;
 		}
-		// Niveau changé pendant la génération : le changement n'est pas perdu
-		if (printLevel !== levelAtStart) {
+		// Niveau ou taille changés pendant la génération : le changement n'est pas perdu
+		if (printLevel !== levelAtStart || textSize !== sizeAtStart) {
 			generatePreview();
 		}
 	}
@@ -645,6 +657,11 @@ INFORMATIONS
 								/>
 							</div>
 						{/if}
+
+						<!-- Pour tous, lecteur du cahier compris : un élève malvoyant peut l'utiliser -->
+						<div class="flex items-end">
+							<TextSizeSelect value={textSize} onchange={handleTextSizeChange} />
+						</div>
 
 						{#if students.length > 0}
 							<div class="space-y-2">

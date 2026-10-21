@@ -12,6 +12,7 @@ import type { Atelier } from './atelier.svelte';
 import type { CalcDesk, Entry } from './desk.svelte';
 import { loadCalcHistory, saveCalcHistory } from './history-storage';
 import { loadAtelier, saveAtelier, readForeignWrite } from './persistence';
+import { renamedOnReadMessage } from './geometry';
 
 /** Délai avant de ranger, pour ne pas écrire à chaque frappe. */
 const SAVE_DELAY_MS = 500;
@@ -28,6 +29,12 @@ export interface SessionOptions {
 	/** Où écouter les écritures des autres onglets. */
 	readonly target?: Pick<Window, 'addEventListener' | 'removeEventListener'> | null;
 	readonly onNotice?: (notice: SessionNotice) => void;
+	/**
+	 * L'atelier tient DÉJÀ ce qui est rangé (il vient d'y être écrit : « Remplacer
+	 * mon atelier ») : ne rien relire. La relecture passerait par `restore()`, qui
+	 * vide la pile d'Annuler — le remplacement ne s'annulerait plus.
+	 */
+	readonly adopt?: boolean;
 }
 
 export interface Session {
@@ -54,16 +61,18 @@ export interface HistoryKeeper {
  * §5 interdit.
  */
 export function openSession(atelier: Atelier, options: SessionOptions): Session {
-	const { storage, target = null, onNotice } = options;
+	const { storage, target = null, onNotice, adopt = false } = options;
 	const say = (kind: SessionNotice['kind'], message: string) => onNotice?.({ kind, message });
 
 	let timer: ReturnType<typeof setTimeout> | null = null;
 	let closed = false;
 
 	// --- Charger ---------------------------------------------------------------
-	const loaded = loadAtelier(storage);
+	const loaded = adopt ? ({ kind: 'empty' } as const) : loadAtelier(storage);
 	if (loaded.kind === 'loaded') {
 		const report = atelier.restore(loaded.state);
+		// Q2 de la géométrie : un objet `y` renommé à la relecture, dit à l'ouverture
+		for (const renamed of report.renamed) say('info', renamedOnReadMessage(renamed));
 		if (report.skipped.length > 0) {
 			const names = report.skipped.map((s) => `« ${s.name} »`).join(', ');
 			say('warning', `${names} n'a pas pu être retrouvé dans l'atelier enregistré.`);

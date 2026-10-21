@@ -1,0 +1,212 @@
+{
+	"template_id": "f3477519-1309-4deb-b3cc-5af828f900bb",
+	"titre": "Forme décimale d'une fraction",
+	"sous_titre": "Millièmes",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Forme décimale",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-039",
+			"libelle_point": "Connaître l'écriture décimale de fractions usuelles",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > forme décimale",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "a/1000"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris la forme décimale de la fraction\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 9,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.001,
+						"max": 0.009,
+						"negatif_possible": false,
+						"denominateurs": [1000],
+						"denominateur_min": 1000,
+						"denominateur_max": 1000,
+						"nb_distinctes": 9,
+						"valeurs": [
+							"1/1000",
+							"2/1000",
+							"3/1000",
+							"4/1000",
+							"5/1000",
+							"6/1000",
+							"7/1000",
+							"8/1000",
+							"9/1000"
+						]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 0.001,
+						"max": 0.009,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0.001,
+				"max": 0.009,
+				"nb_distinctes": 9,
+				"valeurs": [0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009],
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.001,
+				"max": 1000,
+				"nb_distinctes": 19,
+				"valeurs": [
+					0.001, 0.002, 0.003, 0.004, 0.005, 0.006, 0.007, 0.008, 0.009, 1, 2, 3, 4, 5, 6, 7, 8, 9,
+					1000
+				],
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["0.001"],
+					"variables": {
+						"a": "1",
+						"expression1": "1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{3}{1\\,000} = [?]$$",
+					"reponse": ["0.003"],
+					"variables": {
+						"a": "3",
+						"expression1": "3/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{7}{1\\,000} = [?]$$",
+					"reponse": ["0.007"],
+					"variables": {
+						"a": "7",
+						"expression1": "7/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{6}{1\\,000} = [?]$$",
+					"reponse": ["0.006"],
+					"variables": {
+						"a": "6",
+						"expression1": "6/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Écris la forme décimale de la fraction\n\n$$\\dfrac{8}{1\\,000} = [?]$$",
+					"reponse": ["0.008"],
+					"variables": {
+						"a": "8",
+						"expression1": "8/1000"
+					}
+				}
+			]
+		}
+	]
+}

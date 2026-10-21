@@ -2144,7 +2144,25 @@ export function solve(equation: RelationNode, options?: SolveOptions): SolveResu
 
 	// Handle constant equations (no variable)
 	if (!variable) {
-		return handleConstantEquation(expr, opts);
+		// V65 : plusieurs lettres (`|x| = a`, `ax = 1`) ne font pas une équation
+		// constante — la juger telle rendait « contradiction », un ∅ affirmé.
+		// Seules se concluent sans inconnue une identité (`a + b = b + a`) et une
+		// équation dont les lettres s'éliminent (`x + y = x + y + 1`).
+		const letters = [...getVariables(expr)];
+		const constant = handleConstantEquation(expr, opts);
+		const reduced = getVariables(denormalize(normalize(expr)));
+		if (letters.length > 0 && reduced.size > 0 && constant.status !== 'infinite') {
+			return {
+				variable: '',
+				status: 'no-solution',
+				solutions: [],
+				equationType: 'unknown',
+				strategy: 'algebraic',
+				steps: [],
+				error: `Plusieurs lettres (${letters.sort().join(', ')}) : précise l'inconnue à chercher.`
+			};
+		}
+		return constant;
 	}
 
 	// L'inconnue est imposée mais n'apparaît pas : `1 = 0` résolue en x. Sans

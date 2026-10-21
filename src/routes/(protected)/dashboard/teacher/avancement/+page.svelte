@@ -4,7 +4,7 @@
 	 * Teacher — Avancement du programme (coverage heatmap).
 	 *
 	 * Read-only view: for a class, how many times each curriculum point was worked
-	 * on this school year, rolled up to items and themes. Colour = intensity.
+	 * on this school year, rolled up to notions and branches. Colour = intensity.
 	 */
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
@@ -13,15 +13,15 @@
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { Gauge, ChevronRight, ChevronDown } from '@lucide/svelte';
 	import type { PageData } from './$types';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
 
-	type Theme = PageData['tree'][number];
-	type Item = Theme['objectives'][number];
+	type Branch = PageData['tree'][number];
+	type Notion = Branch['notions'][number];
 
 	let { data }: { data: PageData } = $props();
 
-	let openThemes = $state<Record<string, boolean>>({});
-	let openItems = $state<Record<string, boolean>>({});
+	let openBranches = $state<Record<string, boolean>>({});
+	let openNotions = $state<Record<string, boolean>>({});
 	let onlyUncovered = $state(false);
 
 	function changeClass(value: string | string[]) {
@@ -44,17 +44,17 @@
 		return 'bg-emerald-500 text-white';
 	}
 
-	function itemStats(item: Item): { vus: number; total: number } {
-		const total = item.points.length;
-		const vus = item.points.filter((p) => count(p.id) > 0).length;
+	function notionStats(notion: Notion): { vus: number; total: number } {
+		const total = notion.points.length;
+		const vus = notion.points.filter((p) => count(p.id) > 0).length;
 		return { vus, total };
 	}
 
-	function themeStats(theme: Theme): { vus: number; total: number } {
+	function branchStats(branch: Branch): { vus: number; total: number } {
 		let vus = 0;
 		let total = 0;
-		for (const item of theme.objectives) {
-			const s = itemStats(item);
+		for (const notion of branch.notions) {
+			const s = notionStats(notion);
 			vus += s.vus;
 			total += s.total;
 		}
@@ -65,12 +65,12 @@
 		return total > 0 ? Math.round((vus / total) * 100) : 0;
 	}
 
-	function uncoveredPoints(item: Item) {
-		return item.points.filter((p) => count(p.id) === 0);
+	function uncoveredPoints(notion: Notion) {
+		return notion.points.filter((p) => count(p.id) === 0);
 	}
 
-	function themeHasUncovered(theme: Theme): boolean {
-		return theme.objectives.some((item) => uncoveredPoints(item).length > 0);
+	function branchHasUncovered(branch: Branch): boolean {
+		return branch.notions.some((notion) => uncoveredPoints(notion).length > 0);
 	}
 </script>
 
@@ -124,49 +124,47 @@
 
 		<!-- Heatmap tree -->
 		<div class="space-y-2">
-			{#each data.tree as theme (theme.id)}
-				{@const ts = themeStats(theme)}
-				{#if !onlyUncovered || themeHasUncovered(theme)}
+			{#each data.tree as branch (branch.id)}
+				{@const bs = branchStats(branch)}
+				{#if !onlyUncovered || branchHasUncovered(branch)}
 					<div class="rounded-lg border bg-card">
 						<button
 							class="flex w-full items-center gap-2 p-2 text-left"
-							onclick={() => (openThemes[theme.id] = !openThemes[theme.id])}
+							onclick={() => (openBranches[branch.id] = !openBranches[branch.id])}
 						>
-							{#if onlyUncovered || openThemes[theme.id]}
+							{#if onlyUncovered || openBranches[branch.id]}
 								<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
 							{:else}
 								<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 							{/if}
-							<span class="flex-1 font-semibold"><InlineMarkdown content={theme.name} /></span>
+							<span class="flex-1 font-semibold">{branch.name}</span>
 							<span class="text-xs text-muted-foreground">
-								{ts.vus}/{ts.total} · {pct(ts.vus, ts.total)}%
+								{bs.vus}/{bs.total} · {pct(bs.vus, bs.total)}%
 							</span>
 						</button>
 
-						{#if onlyUncovered || openThemes[theme.id]}
+						{#if onlyUncovered || openBranches[branch.id]}
 							<div class="space-y-1 border-t p-2 pl-4">
-								{#each theme.objectives as item (item.id)}
-									{@const is = itemStats(item)}
-									{#if !onlyUncovered || uncoveredPoints(item).length > 0}
+								{#each branch.notions as notion (notion.id)}
+									{@const ns = notionStats(notion)}
+									{#if !onlyUncovered || uncoveredPoints(notion).length > 0}
 										<div class="rounded-md border">
 											<button
 												class="flex w-full items-center gap-2 p-2 text-left text-sm"
-												onclick={() => (openItems[item.id] = !openItems[item.id])}
+												onclick={() => (openNotions[notion.id] = !openNotions[notion.id])}
 											>
-												{#if onlyUncovered || openItems[item.id]}
+												{#if onlyUncovered || openNotions[notion.id]}
 													<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
 												{:else}
 													<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 												{/if}
-												<span class="flex-1 font-medium"
-													><InlineMarkdown content={item.name} /></span
-												>
-												<span class="text-xs text-muted-foreground">{is.vus}/{is.total}</span>
+												<span class="flex-1 font-medium">{notion.name}</span>
+												<span class="text-xs text-muted-foreground">{ns.vus}/{ns.total}</span>
 											</button>
 
-											{#if onlyUncovered || openItems[item.id]}
+											{#if onlyUncovered || openNotions[notion.id]}
 												<div class="space-y-0.5 border-t p-2 pl-4">
-													{#each onlyUncovered ? uncoveredPoints(item) : item.points as point (point.id)}
+													{#each onlyUncovered ? uncoveredPoints(notion) : notion.points as point (point.id)}
 														{@const c = count(point.id)}
 														<div class="flex items-center gap-2 py-0.5 text-sm">
 															<span
@@ -177,7 +175,7 @@
 																{c}
 															</span>
 															<span class:text-muted-foreground={c === 0}
-																><InlineMarkdown content={point.name} /></span
+																><ProgrammePointLabel {point} /></span
 															>
 														</div>
 													{/each}

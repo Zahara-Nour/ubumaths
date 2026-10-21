@@ -3,7 +3,7 @@
  * ============================
  *
  * Provides validation functions for different question types,
- * integrating with MathLive's Compute Engine for mathematical evaluation.
+ * en s'appuyant sur mathAST (`$lib/math`, `$lib/mathAST`) pour lire et comparer les expressions.
  *
  * @module utils/answer-validator
  */
@@ -41,7 +41,8 @@ import {
 	type ConstraintSeverity
 } from '$lib/mathAST/cosmetic-transforms';
 import { extractUnitFromLatex } from '$lib/questions/units/parser';
-import { normalizeStudentQuantity, studentNumericLatex } from '$lib/questions/units/student-input';
+import { normalizeStudentQuantity } from '$lib/questions/units/student-input';
+import { studentValueLatex } from '$lib/questions/units/student-calculation';
 import {
 	CONSTRAINT_FEEDBACK,
 	FORGOTTEN_PERCENT_SIGN,
@@ -1476,9 +1477,11 @@ function validateSingleBlank(
 		// Saisie MathLive (`5\operatorname{\mathrm{km}}`…) ramenée à `valeur\unit{…}`
 		// avant d'isoler la partie numérique, comme à l'étape 2.
 		// Partie numérique telle que tapée (`2{,}5`, `12\\,500`) : la forme normalisée
-		// (`2,5`, `12500`) serait refusée ou jugée mal espacée par le contrôle de forme
+		// (`2,5`, `12500`) serait refusée ou jugée mal espacée par le contrôle de forme.
+		// Un calcul (`2\times3\,m`) y arrive sans ses unités (`2\times3`) : refusé comme
+		// dans une case sans unité (PR 2 bis de correction-cases-unite)
 		const numericLatex =
-			studentNumericLatex(effectiveLatex) ??
+			studentValueLatex(effectiveLatex) ??
 			extractNumericLatexPart(normalizeStudentQuantity(effectiveLatex));
 		const raw = cosmeticViolations(numericLatex, severities, formOptions);
 		const cosmetic = mapCosmeticViolations(raw, false);

@@ -1,0 +1,296 @@
+{
+	"template_id": "a6045667-0ede-4774-a56b-d4728841133c",
+	"titre": "Décomposer l'écriture décimale un nombre",
+	"sous_titre": "En dizaines de milliers, milliers, centaines, dizaines et unités",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Décomposition",
+	"mis_a_jour": "2026-09-29T20:25:47.250107+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM1-005",
+			"libelle_point": "Connaître la valeur des chiffres en fonction de leur position dans un nombre",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > décomposition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..9"
+					},
+					{
+						"name": "n",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression",
+						"expression": "eval:a*10000+b*1000+c*100+d*10+n"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n$$23456 = 20000 + 3000 + 400 + 50 + 6$$\n\n$${{expression}}$$",
+				"reponses_brutes": ["{{eval:a*10000}}+{{eval:b*1000}}+{{eval:c*100}}+{{eval:d*10}}+{{n}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 298,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "n",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11283,
+						"max": 99369,
+						"negatif_possible": false,
+						"nb_distinctes": 298
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 298,
+						"exemples": [
+							"10000+5000+900+90+3",
+							"30000+3000+500+80+6",
+							"10000+5000+100+70+5",
+							"30000+2000+100+30+5",
+							"70000+2000+600+10+6",
+							"10000+6000+200+50+1",
+							"10000+9000+700+50+4",
+							"60000+3000+700+60+5",
+							"80000+2000+800+70+7",
+							"90000+7000+800+50+5",
+							"50000+6000+600+80+5",
+							"10000+6000+900+20+1"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 90000,
+							"nb_distinctes": 45,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 5
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 6,
+				"max": 99369,
+				"nb_distinctes": 304,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 90000,
+				"nb_distinctes": 45,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 99369,
+				"nb_distinctes": 344,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99369)",
+					"graine": 206,
+					"enonce": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n\n$$23\\,456 = 20\\,000 + 3\\,000 + 400 + 50 + 6$$\n\n$$99\\,369 = [?]$$",
+					"reponse": ["90000+9000+300+60+9"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "3",
+						"d": "6",
+						"n": "9",
+						"expression": "99369"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 6,
+					"enonce": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n\n$$23\\,456 = 20\\,000 + 3\\,000 + 400 + 50 + 6$$\n\n$$16\\,251 = [?]$$",
+					"reponse": ["10000+6000+200+50+1"],
+					"variables": {
+						"a": "1",
+						"b": "6",
+						"c": "2",
+						"d": "5",
+						"n": "1",
+						"expression": "16251"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n\n$$23\\,456 = 20\\,000 + 3\\,000 + 400 + 50 + 6$$\n\n$$15\\,993 = [?]$$",
+					"reponse": ["10000+5000+900+90+3"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "9",
+						"n": "3",
+						"expression": "15993"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n\n$$23\\,456 = 20\\,000 + 3\\,000 + 400 + 50 + 6$$\n\n$$33\\,586 = [?]$$",
+					"reponse": ["30000+3000+500+80+6"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "5",
+						"d": "8",
+						"n": "6",
+						"expression": "33586"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Décompose ce nombre en dizaines de milliers, milliers, centaines, dizaines et unités, comme dans cet exemple :\n\n$$23\\,456 = 20\\,000 + 3\\,000 + 400 + 50 + 6$$\n\n$$15\\,175 = [?]$$",
+					"reponse": ["10000+5000+100+70+5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "7",
+						"n": "5",
+						"expression": "15175"
+					}
+				}
+			]
+		}
+	]
+}

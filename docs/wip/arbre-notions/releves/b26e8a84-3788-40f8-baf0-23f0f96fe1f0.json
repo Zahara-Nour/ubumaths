@@ -1,0 +1,401 @@
+{
+	"template_id": "b26e8a84-3788-40f8-baf0-23f0f96fe1f0",
+	"titre": "Trouver l'entier supérieur ou inférieur le plus proche",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Comparer",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CM1-132",
+			"libelle_point": "Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > ordre",
+			"noeud_cible": "Nombres et calculs > Décimaux : numération > encadrement",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "libellé « Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et > » → « Encadrer un nombre décimal (entre deux entiers consécutifs : 3 < 3,7 < 4 ; au dixième près : 3,7 < 3,74 < 3,8). »"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+b*0.1;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le plus petit entier supérieur à ${{c}}$ ?\n\nLe plus petit entier supérieur est $?$.",
+				"reponses_brutes": ["{{eval:a+1}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 1.1,
+						"max": 9.9,
+						"negatif_possible": false,
+						"nb_distinctes": 80
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.1,
+				"max": 9.9,
+				"nb_distinctes": 80,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1.1,
+				"max": 10,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 10,
+					"enonce": "Quel est le plus petit entier supérieur à $9{,}7$ ?\n\nLe plus petit entier supérieur est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "9",
+						"b": "7",
+						"c": "9.7"
+					}
+				},
+				{
+					"role": "plus petite valeur (1.1)",
+					"graine": 27,
+					"enonce": "Quel est le plus petit entier supérieur à $1{,}1$ ?\n\nLe plus petit entier supérieur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "1",
+						"c": "1.1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le plus petit entier supérieur à $1{,}5$ ?\n\nLe plus petit entier supérieur est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1.5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus petit entier supérieur à $3{,}3$ ?\n\nLe plus petit entier supérieur est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "3.3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le plus petit entier supérieur à $3{,}2$ ?\n\nLe plus petit entier supérieur est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3.2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a+b*0.1;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le plus grand entier inférieur à ${{c}}$ ?\n\nLe plus grand entier inférieur est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 1,
+						"min": 1.1,
+						"max": 9.9,
+						"negatif_possible": false,
+						"nb_distinctes": 80
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1.1,
+				"max": 9.9,
+				"nb_distinctes": 80,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9.9,
+				"nb_distinctes": 89,
+				"nature": "décimal",
+				"decimales_max": 1,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9.9)",
+					"graine": 115,
+					"enonce": "Quel est le plus grand entier inférieur à $9{,}9$ ?\n\nLe plus grand entier inférieur est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "9.9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le plus grand entier inférieur à $1{,}5$ ?\n\nLe plus grand entier inférieur est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1.5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le plus grand entier inférieur à $3{,}3$ ?\n\nLe plus grand entier inférieur est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "3.3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le plus grand entier inférieur à $3{,}2$ ?\n\nLe plus grand entier inférieur est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3.2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le plus grand entier inférieur à $7{,}2$ ?\n\nLe plus grand entier inférieur est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "7.2"
+					}
+				}
+			]
+		}
+	]
+}

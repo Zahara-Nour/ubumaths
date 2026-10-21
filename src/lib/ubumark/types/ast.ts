@@ -559,6 +559,7 @@ export type { NumberLineNode } from './number-line';
 export type { CourbeNode } from './courbe';
 export type { FigureNode } from './figure';
 export type { StatChartNode } from './stat-chart';
+export type { QrNode } from './qr';
 
 // Import the types for use in BlockNode union
 import type { VariationTableNode } from './variation-table';
@@ -568,6 +569,7 @@ import type { NumberLineNode } from './number-line';
 import type { CourbeNode } from './courbe';
 import type { FigureNode } from './figure';
 import type { StatChartNode } from './stat-chart';
+import type { QrNode } from './qr';
 
 /**
  * Union of block nodes (top-level document structure)
@@ -589,7 +591,8 @@ export type BlockNode =
 	| NumberLineNode
 	| CourbeNode
 	| FigureNode
-	| StatChartNode;
+	| StatChartNode
+	| QrNode;
 
 // ============================================================================
 // COMPOSITE NODES

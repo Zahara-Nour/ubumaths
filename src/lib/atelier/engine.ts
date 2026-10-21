@@ -29,11 +29,14 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { tidyTerms } from './tidy-terms';
+import { radiansInTrigonometry } from './angle-radians';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
-import { astOf, readNumber } from './parse';
+import { astOf, readNumber, type Provenance } from './parse';
 import { constantOf } from './constant';
+import { perfStats, perfSwitches } from './perf-switches';
 import { transformAST } from '$lib/mathAST/visitor';
+import { indexedNameOf } from '$lib/mathAST/common/indexed-names';
 import {
 	computeSequenceTerms,
 	INDEX_VARIABLE,
@@ -91,8 +94,10 @@ const formulas = new WeakMap<
 
 /** Tout ce dont dépend une réciproque (et le moteur) : définitions, statuts, ensembles. */
 function atelierMark(atelier: Atelier): string {
-	return JSON.stringify(
-		atelier.objects.map((o) => [
+	return JSON.stringify([
+		// Une mesure d'angle change d'unité avec le réglage (2026-10-18)
+		atelier.angleUnit,
+		...atelier.objects.map((o) => [
 			o.name,
 			o.kind,
 			o.definition,
@@ -102,7 +107,7 @@ function atelierMark(atelier: Atelier): string {
 			'reciprocalOn' in o ? o.reciprocalOn : null,
 			'inheritedInterval' in o ? o.inheritedInterval : null
 		])
-	);
+	]);
 }
 
 /** `f⁻¹` citée sans réciproque possible (f non bijective…) ; le message est le refus. */
@@ -205,6 +210,34 @@ function expandDerivatives(
 	functions: Record<string, FunctionDefinition>,
 	reciprocals?: ReciprocalResolver
 ): MathNode {
+	// Rien à développer (ni `f'` ni `f⁻¹`) : l'arbre tel quel, sans copie
+	// (chantier perf du 2026-10-19 — `bindingsOf` recopiait chaque définition
+	// à chaque coordonnée relue). Les arbres ne se modifient jamais.
+	if (!citesDerivedFunction(node)) return node;
+	return expandedCopy(node, functions, reciprocals);
+}
+
+/** L'arbre contient-il une dérivée (`f'`) ou une réciproque (`f⁻¹`) à développer ? */
+function citesDerivedFunction(node: unknown): boolean {
+	if (node === null || typeof node !== 'object' || node instanceof Map) return false;
+	if (Array.isArray(node)) return node.some(citesDerivedFunction);
+	const current = node as { type?: unknown; isInverse?: unknown; derivativeOrder?: unknown };
+	if (
+		current.type === 'function' &&
+		(current.isInverse === true ||
+			(typeof current.derivativeOrder === 'number' && current.derivativeOrder >= 1))
+	) {
+		return true;
+	}
+	return Object.values(node).some(citesDerivedFunction);
+}
+
+/** Le développement lui-même : une copie de l'arbre, dérivées et réciproques remplacées. */
+function expandedCopy(
+	node: MathNode,
+	functions: Record<string, FunctionDefinition>,
+	reciprocals?: ReciprocalResolver
+): MathNode {
 	if (node === null || typeof node !== 'object') return node;
 
 	const current = node as MathNode & {
@@ -280,6 +313,10 @@ function expandDerivatives(
 					? expandDerivatives(item as MathNode, functions, reciprocals)
 					: item
 			);
+		} else if (value instanceof Map) {
+			// L'unité d'une grandeur (`components`, une Map) n'est pas un nœud : copiée
+			// clé à clé, elle devenait {} et la grandeur ne se lisait plus (angles, lot 2)
+			copy[key] = value;
 		} else if (value !== null && typeof value === 'object') {
 			copy[key] = expandDerivatives(value as MathNode, functions, reciprocals);
 		}
@@ -334,8 +371,107 @@ function expandedOrSkipped(
 	}
 }
 
-/** Les définitions des AUTRES objets, sous la forme qu'attend `substituteAll`. */
-function bindingsOf(atelier: Atelier, exclude: string) {
+/** Les types de nœuds qui ne portent aucun nom (ni variable, ni appel, ni longueur `AB`). */
+const NAMELESS_NODES: ReadonlySet<string> = new Set([
+	'number',
+	'constant',
+	'addition',
+	'subtraction',
+	'multiplication',
+	'division',
+	'opposite',
+	'positive',
+	'percentage',
+	'delimiter',
+	'superscript',
+	'unit'
+]);
+
+/**
+ * L'arbre ne nomme-t-il rien que les liaisons pourraient remplacer ? Prudent :
+ * un seul nœud d'un autre type (variable, lettre grecque, longueur, appel,
+ * indice…) et la réponse est non.
+ */
+function namesNothing(node: unknown): boolean {
+	if (node === null || typeof node !== 'object' || node instanceof Map) return true;
+	if (Array.isArray(node)) return node.every(namesNothing);
+	const type = (node as { type?: unknown }).type;
+	if (typeof type === 'string' && !NAMELESS_NODES.has(type)) return false;
+	return Object.entries(node).every(
+		// L'unité d'une grandeur (`m`, `rad`) n'est pas un nom d'objet
+		([key, child]) => (type === 'unit' && key === 'unit') || namesNothing(child)
+	);
+}
+
+/** Les liaisons d'un arbre qui ne nomme rien : aucune (voir `namesNothing`). */
+const NO_BINDINGS: ReturnType<typeof bindingsOf> = {
+	variables: {},
+	functions: {},
+	derivableFunctions: {},
+	reciprocals: () => null
+};
+
+/**
+ * Les types de nœuds dont on sait lire les noms (`collectNames`) : les autres font tout lier.
+ * `subscript` : un nom indicé (`c_2`) se lie sous son nom entier, que `collectNames`
+ * ajoute ; `v_n` se lie comme l'appel `v(n)` (`subscriptsAsCalls`), dont la base
+ * est une des chaînes de l'arbre.
+ */
+const NAMED_NODES: ReadonlySet<string> = new Set(['variable', 'greek', 'function', 'subscript']);
+
+/**
+ * Ajouter à `names` toutes les chaînes de l'arbre — un SUR-ensemble des noms
+ * qu'il cite (`x`, `f`, `a`… et aussi `addition`, sans effet). Rend `false`
+ * quand l'arbre porte un nœud dont on ne sait pas lire les noms (une longueur
+ * `AB`, dont la liaison s'appelle « AB » ou « BA ») : l'appelant lie alors tout.
+ */
+function collectNames(node: unknown, names: Set<string>): boolean {
+	if (typeof node === 'string') {
+		names.add(node);
+		return true;
+	}
+	if (node === null || typeof node !== 'object' || node instanceof Map) return true;
+	if (Array.isArray(node)) return node.every((child) => collectNames(child, names));
+	const type = (node as { type?: unknown }).type;
+	if (typeof type === 'string' && !NAMELESS_NODES.has(type) && !NAMED_NODES.has(type)) {
+		return false;
+	}
+	// `c_2` : la liaison porte le nom entier, absent des morceaux (`c`, `2`)
+	const indexed = type === 'subscript' ? indexedNameOf(node as MathNode) : null;
+	if (indexed !== null) names.add(indexed);
+	return Object.entries(node).every(
+		([key, child]) => (type === 'unit' && key === 'unit') || collectNames(child, names)
+	);
+}
+
+/**
+ * Les objets dont `root` peut avoir besoin : ceux qu'il nomme, puis ceux que
+ * NOMMENT leurs définitions, jusqu'au point fixe (une dérivée `f'` et une
+ * réciproque `f⁻¹` se développent avec la définition de f, déjà comptée).
+ * `null` : on ne sait pas dire, tout lier (chantier perf du 2026-10-19 — une
+ * coordonnée `a` relisait toutes les définitions, mesures comprises).
+ */
+function wantedNames(atelier: Atelier, root: MathNode): ReadonlySet<string> | null {
+	const names = new Set<string>();
+	if (!collectNames(root, names)) return null;
+	const byName = new Map(derivable(atelier).map((o) => [o.name, o]));
+	// Un `Set` parcouru visite aussi ce qu'on y ajoute en route : c'est le point fixe
+	for (const name of names) {
+		const object = byName.get(name);
+		if (object === undefined) continue;
+		const ast = atelier.definitionAst(object);
+		if (ast !== null && !collectNames(ast, names)) return null;
+	}
+	return names;
+}
+
+/**
+ * Les définitions des AUTRES objets, sous la forme qu'attend `substituteAll`.
+ * Avec `root` : seulement celles dont cet arbre peut avoir besoin (`wantedNames`) —
+ * les autres ne s'y appliqueraient à rien.
+ */
+function bindingsOf(atelier: Atelier, exclude: string, root?: MathNode) {
+	const wanted = root === undefined ? null : wantedNames(atelier, root);
 	const reciprocals = reciprocalResolver(atelier);
 	const variables: Record<string, MathNode> = {};
 	const functions: Record<string, FunctionDefinition> = {};
@@ -348,7 +484,11 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 	// ce qui ne se LIT pas est écarté.
 	const raw: Record<string, FunctionDefinition> = {};
 	for (const object of derivable(atelier)) {
-		const plain = astOf(object.definition, object.provenance, atelier.functionNames);
+		if (wanted !== null && !wanted.has(object.name)) continue;
+		// Compté en développement et en test seulement (garde-fou de performance)
+		if (import.meta.env.DEV) perfStats.boundDefinitions++;
+		// Une mesure (`aire(A, B, C)`, `AM`) remplacée par sa valeur exacte (lot 2, L4)
+		const plain = atelier.definitionAst(object);
 		// `g(x) = f⁻¹(x)` : la réciproque développée AVANT toute dérivée (`g'`)
 		const ast = plain === null ? null : expandedOrSkipped(plain, {}, reciprocals);
 		if (ast === null) continue;
@@ -359,10 +499,9 @@ function bindingsOf(atelier: Atelier, exclude: string) {
 
 	for (const object of usable(atelier)) {
 		if (object.name === exclude) continue;
+		if (wanted !== null && !wanted.has(object.name)) continue;
 		// La réciproque déjà développée au premier passage, quand il y en a un
-		const plain =
-			raw[object.name]?.expression ??
-			astOf(object.definition, object.provenance, atelier.functionNames);
+		const plain = raw[object.name]?.expression ?? atelier.definitionAst(object);
 		// ⚠️ Développé ICI aussi : sans quoi une fonction qui cite `g` recevrait
 		// `f'` par substitution, et le développement du niveau supérieur — déjà
 		// passé — ne le verrait jamais.
@@ -452,6 +591,11 @@ export function substitutedAstOf(
 		 * sont remplacées. La carte `f⁻¹` garde ainsi ses curseurs (`reciprocal.ts`).
 		 */
 		readonly keepValues?: boolean;
+		/**
+		 * Garder en lettres CES valeurs seulement : les curseurs de la vue Figure
+		 * (`figure-sync.ts`). `b = 2a` avec `a` gardé devient `2a`.
+		 */
+		readonly keepNames?: ReadonlySet<string>;
 	}
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
@@ -476,12 +620,51 @@ export function substitutedAstOf(
 		};
 	}
 
-	const ast = astOf(object.definition, object.provenance, atelier.functionNames);
+	const ast = atelier.definitionAst(object);
 	if (ast === null) {
 		return { ok: false, message: `« ${object.definition} » ne se lit pas.` };
 	}
+	return substitutedTree(atelier, ast, name, options);
+}
 
-	const { variables, functions, derivableFunctions, reciprocals } = bindingsOf(atelier, name);
+/**
+ * L'arbre d'un TEXTE écrit dans l'atelier (une coordonnée de point), substitué
+ * comme une définition d'objet — voir `substitutedAstOf`.
+ */
+export function substitutedTextOf(
+	atelier: Atelier,
+	text: string,
+	provenance: Provenance | undefined,
+	options?: { readonly keepNames?: ReadonlySet<string> }
+):
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
+	// Une mesure dans ce texte (`(AM ; 0)`, `cercle(A ; AM)`, revue de la PR 2)
+	const measured = atelier.textAst(text, provenance ?? 'url');
+	if (!measured.ok) return measured;
+	const ast = measured.ast;
+	if (ast === null) return { ok: false, message: `« ${text} » ne se lit pas.` };
+	return substitutedTree(atelier, ast, '', options);
+}
+
+/** Le cœur de `substitutedAstOf` : dérivées développées, puis noms remplacés. */
+function substitutedTree(
+	atelier: Atelier,
+	ast: MathNode,
+	name: string,
+	options?: {
+		readonly forDerivation?: boolean;
+		readonly keepValues?: boolean;
+		readonly keepNames?: ReadonlySet<string>;
+	}
+):
+	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
+	// Un arbre qui ne nomme rien (`0`, `3/2`, une mesure déjà remplacée par sa
+	// valeur) : les liaisons ne s'y appliqueraient à rien — on ne les fabrique
+	// pas (chantier perf du 2026-10-19 : chaque coordonnée `0` d'un point relisait
+	// toutes les définitions, mesures comprises)
+	const scoped = perfSwitches.scopedBindings;
+	const { variables, functions, derivableFunctions, reciprocals } =
+		scoped && namesNothing(ast) ? NO_BINDINGS : bindingsOf(atelier, name, scoped ? ast : undefined);
 	// Les dérivées AVANT le reste : `f'` doit devenir une expression avant que
 	// `substituteAll` cherche à y remplacer des noms. Et on les développe avec
 	// les bindings DÉRIVABLES — un objet en attente se dérive.
@@ -518,14 +701,18 @@ export function substitutedAstOf(
 					...functions
 				}
 			: functions;
-	const substituted = substituteAll(
-		withCalls,
-		options?.keepValues === true ? {} : variables,
-		substituteFunction,
-		{ functions: cited }
-	);
+	const keep = options?.keepNames;
+	const values =
+		options?.keepValues === true
+			? {}
+			: keep === undefined
+				? variables
+				: Object.fromEntries(Object.entries(variables).filter(([n]) => !keep.has(n)));
+	const substituted = substituteAll(withCalls, values, substituteFunction, { functions: cited });
 
-	return { ok: true, ast: substituted };
+	// Un angle mesuré pris par un cos, un sin : un nombre de radians (le moteur
+	// n'évalue pas le cos d'une grandeur dans une fonction — revue de la PR 2)
+	return { ok: true, ast: radiansInTrigonometry(substituted) };
 }
 
 /**

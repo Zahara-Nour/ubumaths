@@ -1,0 +1,239 @@
+{
+	"template_id": "3c0464a3-4904-4e0d-b1a8-60e50e3e1f82",
+	"titre": "Ajouter un nombre positif à un nombre négatif en dépassant $0$",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Relatifs > Additionner et soustraire > Sommes",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-018",
+			"libelle_point": "Additionner deux nombres décimaux relatifs.",
+			"noeud_actuel": "Nombres et calculs > Relatifs : calculs > sommes",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:9-a}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "(-{{a}})+{{eval:a+b}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 36,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 36,
+						"exemples": [
+							"(-1)+6",
+							"(-3)+5",
+							"(-1)+5",
+							"(-7)+8",
+							"(-1)+7",
+							"(-1)+9",
+							"(-6)+7",
+							"(-8)+9",
+							"(-5)+8",
+							"(-3)+4",
+							"(-4)+7",
+							"(-2)+8"
+						],
+						"nombres_contenus": {
+							"min": -8,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -8,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 8,
+				"nb_distinctes": 8,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -8,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-8, -7, -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Calcule.\n\n$$\\left( -1 \\right) + 9 = [?]$$",
+					"reponse": ["8"],
+					"variables": {
+						"a": "1",
+						"b": "8",
+						"expression1": "(-1)+9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-8)",
+					"graine": 10,
+					"enonce": "Calcule.\n\n$$\\left( -8 \\right) + 9 = [?]$$",
+					"reponse": ["1"],
+					"variables": {
+						"a": "8",
+						"b": "1",
+						"expression1": "(-8)+9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\left( -1 \\right) + 6 = [?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"expression1": "(-1)+6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\left( -3 \\right) + 5 = [?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"expression1": "(-3)+5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$\\left( -1 \\right) + 5 = [?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"expression1": "(-1)+5"
+					}
+				}
+			]
+		}
+	]
+}

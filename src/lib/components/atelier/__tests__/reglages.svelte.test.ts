@@ -13,6 +13,11 @@ import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
+import { chooseObjectAction } from './harness/function-card';
+import { onDesktopScreen } from './harness/desktop-screen';
+
+// À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
+onDesktopScreen();
 
 // =============================================================================
 // Décor
@@ -42,7 +47,9 @@ async function open(atelier = new Atelier()) {
 	const mathField = () =>
 		(container.querySelector('.calcul form math-field') as MathfieldElement | null) ?? null;
 	const settingsButton = () =>
-		[...container.querySelectorAll('button')].find((b) => b.textContent?.includes('Réglages'));
+		[...container.querySelectorAll('button')].find(
+			(b) => b.getAttribute('aria-label') === 'Réglages'
+		);
 	const history = () => container.querySelector('.historique')?.textContent ?? '';
 
 	/** Un VRAI clic : c'est lui qui donne le focus au bouton, que la fenêtre rendra. */
@@ -313,18 +320,11 @@ describe('la ligne venue du dehors, en écriture mathématique', () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3;4;5;6' });
 		atelier.create({ kind: 'list', name: 'M', definition: '1/6;1/6;1/6;1/6;1/6;1/6' });
-		const { choose, card, mathField, typeMath, history, container } = await open(atelier);
+		const { choose, mathField, typeMath, history, container } = await open(atelier);
 		await choose('Écriture mathématique');
 
-		(card('L').querySelector('.entete') as HTMLButtonElement).click();
-		const action = await vi.waitFor(() => {
-			const found = [...card('L').querySelectorAll('.action')].find(
-				(b) => b.textContent?.trim() === 'Simuler avec probabilités M'
-			) as HTMLButtonElement | undefined;
-			expect(found).toBeTruthy();
-			return found as HTMLButtonElement;
-		});
-		action.click();
+		// Lot 4a de la refonte : l'action est dans le sous-menu « Avec une autre liste »
+		await chooseObjectAction(container, 'L', 'Simuler avec probabilités M');
 		// Les arguments séparés par `\,` : une espace simple ne se voit pas en
 		// mathématiques, l'élève lisait « simuler LM100 » (revue du 2026-10-14)
 		await vi.waitFor(() => expect(mathField()?.value).toContain(String.raw`L\,M\,100`));
@@ -334,19 +334,38 @@ describe('la ligne venue du dehors, en écriture mathématique', () => {
 		expect(container.querySelector('.historique li.refus')).toBeNull();
 	});
 
-	it('changer d’onglet garde la ligne en cours, cases du modèle comprises', async () => {
-		const { choose, typeMath, mathField, tab } = await open();
+	// Revue de #1501 : « Tableau croisé » part, comme « Simuler », une fois le menu
+	// fermé (`onOpenChangeComplete`) — sinon la console n'obtient pas le focus
+	it('« Tableau croisé » prépare sa commande dans la console, qui a le focus', async () => {
+		const atelier = new Atelier();
+		atelier.create({ kind: 'list', name: 'C', definition: 'rouge;vert;rouge' });
+		atelier.create({ kind: 'list', name: 'D', definition: 'grand;petit;grand' });
+		const { choose, mathField, container } = await open(atelier);
+		await choose('Écriture mathématique');
+
+		await chooseObjectAction(container, 'C', 'Tableau croisé avec D');
+
+		await vi.waitFor(() => expect(mathField()?.value).toContain('croiser'));
+		await vi.waitFor(() => expect(document.activeElement).toBe(mathField()));
+	});
+
+	it('fermer et rouvrir la console garde la ligne en cours, cases du modèle comprises', async () => {
+		const { choose, typeMath, mathField, container } = await open();
 		await choose('Écriture mathématique');
 
 		await typeMath('intégrer');
 		await userEvent.keyboard('{Tab}');
 		await vi.waitFor(() => expect(mathField()?.value).toContain('placeholder'));
 		const before = mathField()?.value;
-		tab('Graphe').click();
-		await vi.waitFor(() => expect(mathField()).toBeNull());
-		tab('Calcul').click();
+		const consoleButton = container.querySelector(
+			'button[aria-label="Console"]'
+		) as HTMLButtonElement;
+		consoleButton.click();
+		await vi.waitFor(() => expect(consoleButton.getAttribute('aria-expanded')).toBe('false'));
+		consoleButton.click();
 
-		await vi.waitFor(() => expect(mathField()?.value).toBe(before));
+		await vi.waitFor(() => expect(consoleButton.getAttribute('aria-expanded')).toBe('true'));
+		expect(mathField()?.value).toBe(before);
 	});
 });
 
@@ -392,7 +411,8 @@ describe('l’accessibilité du champ mathématique et de la fenêtre', () => {
 		const { settingsButton, openSettings } = await open();
 
 		await openSettings();
-		await page.getByRole('button', { name: 'Fermer' }).click();
+		// `exact` : « Fermer la console » est aussi un bouton de la page
+		await page.getByRole('button', { name: 'Fermer', exact: true }).click();
 
 		await vi.waitFor(() => expect(document.querySelector('[role="dialog"]')).toBeNull());
 		await vi.waitFor(() => expect(document.activeElement).toBe(settingsButton()));

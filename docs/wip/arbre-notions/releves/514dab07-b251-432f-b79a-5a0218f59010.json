@@ -1,0 +1,645 @@
+{
+	"template_id": "514dab07-b251-432f-b79a-5a0218f59010",
+	"titre": "Comparer deux fractions",
+	"sous_titre": "Fractions de dénominateurs multiples l'un de l'autre",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "multiple_choice",
+	"theme": "Fractions > Apprivoiser > Comparer",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-025",
+			"libelle_point": "Comparer des fractions.",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > ordre",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9!d(b),m(b)"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:b*2}}..{{eval:c*a-1}}!{{eval:b*a}},d({{eval:c*a}}),m({{eval:c*a}})"
+					},
+					{
+						"name": "f",
+						"expression": "b/c"
+					},
+					{
+						"name": "g",
+						"expression": "{{d}}/{{eval:c*a}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la plus petite de ces $2$ fractions ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$\\dfrac{{{b}}}{{{c}}}$$"
+					},
+					{
+						"content": "$$\\dfrac{{{eval:d}}}{{{eval:c*a}}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 283,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 73,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.2222222222222222,
+						"max": 0.8888888888888888,
+						"negatif_possible": false,
+						"denominateurs": [3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 3,
+						"denominateur_max": 9,
+						"nb_distinctes": 22,
+						"valeurs": [
+							"2/3",
+							"2/5",
+							"2/7",
+							"2/9",
+							"3/4",
+							"3/5",
+							"3/7",
+							"3/8",
+							"4/5",
+							"4/6",
+							"4/7",
+							"4/9",
+							"5/6",
+							"5/7",
+							"5/8",
+							"5/9",
+							"6/7",
+							"6/8",
+							"6/9",
+							"7/8",
+							"7/9",
+							"8/9"
+						]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 0.08163265306122448,
+						"max": 0.9841269841269841,
+						"negatif_possible": false,
+						"denominateurs": [
+							6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32, 35, 36, 40, 42, 45,
+							48, 49, 54, 56, 63, 64, 72, 81
+						],
+						"denominateur_min": 6,
+						"denominateur_max": 81,
+						"nb_distinctes": 227
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.08163265306122448,
+						"max": 0.8888888888888888,
+						"negatif_possible": false,
+						"denominateur_min": 3,
+						"denominateur_max": 81,
+						"nb_distinctes": 155
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 57,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 66,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateur_min": 3,
+				"denominateur_max": 81,
+				"numerateur_min": 2,
+				"numerateur_max": 73,
+				"superieure_a_1_possible": false
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateur_min": 3,
+				"denominateur_max": 81,
+				"numerateur_min": 2,
+				"numerateur_max": 67,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 10,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{43}{81}$$\n- B. $$\\dfrac{6}{9}$$",
+					"reponse": ["A. $$\\dfrac{43}{81}$$"],
+					"variables": {
+						"a": "9",
+						"b": "6",
+						"c": "9",
+						"d": "43",
+						"f": "6/9",
+						"g": "43/81"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{17}{18}$$\n- B. $$\\dfrac{5}{9}$$",
+					"reponse": ["B. $$\\dfrac{5}{9}$$"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "17",
+						"f": "5/9",
+						"g": "17/18"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{3}{7}$$\n- B. $$\\dfrac{25}{28}$$",
+					"reponse": ["A. $$\\dfrac{3}{7}$$"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "7",
+						"d": "25",
+						"f": "3/7",
+						"g": "25/28"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{11}{12}$$\n- B. $$\\dfrac{5}{6}$$",
+					"reponse": ["B. $$\\dfrac{5}{6}$$"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "6",
+						"d": "11",
+						"f": "5/6",
+						"g": "11/12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{11}{16}$$\n- B. $$\\dfrac{3}{4}$$",
+					"reponse": ["A. $$\\dfrac{11}{16}$$"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "4",
+						"d": "11",
+						"f": "3/4",
+						"g": "11/16"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..8"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:b+1}}..9!d(b),m(b)"
+					},
+					{
+						"name": "d",
+						"expression": "{{eval:b*a+1}}..80!{{eval:c*a}},d({{eval:b*a}}),m({{eval:b*a}})"
+					},
+					{
+						"name": "f",
+						"expression": "c/b"
+					},
+					{
+						"name": "g",
+						"expression": "{{d}}/{{eval:b*a}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quelle est la plus petite de ces $2$ fractions ?",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "$$\\dfrac{{{c}}}{{{b}}}$$"
+					},
+					{
+						"content": "$$\\dfrac{{{eval:d}}}{{{eval:b*a}}}$$"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 291,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 80,
+						"negatif_possible": false,
+						"nb_distinctes": 67
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 1.125,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8],
+						"denominateur_min": 2,
+						"denominateur_max": 8,
+						"nb_distinctes": 22,
+						"valeurs": [
+							"3/2",
+							"4/3",
+							"5/2",
+							"5/3",
+							"5/4",
+							"6/4",
+							"6/5",
+							"7/2",
+							"7/3",
+							"7/4",
+							"7/5",
+							"7/6",
+							"8/3",
+							"8/5",
+							"8/6",
+							"8/7",
+							"9/2",
+							"9/4",
+							"9/5",
+							"9/6",
+							"9/7",
+							"9/8"
+						]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "fraction",
+						"min": 1.0204081632653061,
+						"max": 11.5,
+						"negatif_possible": false,
+						"denominateurs": [
+							4, 6, 8, 9, 10, 12, 14, 15, 16, 18, 20, 21, 24, 25, 27, 28, 30, 32, 35, 36, 40, 42,
+							45, 48, 49, 54, 56, 63, 64, 72
+						],
+						"denominateur_min": 4,
+						"denominateur_max": 72,
+						"nb_distinctes": 260
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 1.0204081632653061,
+						"max": 4.5,
+						"negatif_possible": false,
+						"denominateur_min": 2,
+						"denominateur_max": 72,
+						"nb_distinctes": 97
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 80,
+				"nb_distinctes": 69,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": {
+				"min": 2,
+				"max": 80,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_tous": {
+				"min": 2,
+				"max": 80,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateur_min": 2,
+				"denominateur_max": 72,
+				"numerateur_min": 3,
+				"numerateur_max": 80,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateur_min": 2,
+				"denominateur_max": 72,
+				"numerateur_min": 3,
+				"numerateur_max": 80,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"fraction": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (80)",
+					"graine": 73,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{80}{72}$$\n- B. $$\\dfrac{9}{8}$$",
+					"reponse": ["A. $$\\dfrac{80}{72}$$"],
+					"variables": {
+						"a": "9",
+						"b": "8",
+						"c": "9",
+						"d": "80",
+						"f": "9/8",
+						"g": "80/72"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{78}{10}$$\n- B. $$\\dfrac{9}{5}$$",
+					"reponse": ["B. $$\\dfrac{9}{5}$$"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "9",
+						"d": "78",
+						"f": "9/5",
+						"g": "78/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{55}{12}$$\n- B. $$\\dfrac{7}{3}$$",
+					"reponse": ["B. $$\\dfrac{7}{3}$$"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "7",
+						"d": "55",
+						"f": "7/3",
+						"g": "55/12"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{64}{10}$$\n- B. $$\\dfrac{6}{5}$$",
+					"reponse": ["B. $$\\dfrac{6}{5}$$"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "6",
+						"d": "64",
+						"f": "6/5",
+						"g": "64/10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quelle est la plus petite de ces $2$ fractions ?\n\n- A. $$\\dfrac{4}{3}$$\n- B. $$\\dfrac{28}{12}$$",
+					"reponse": ["A. $$\\dfrac{4}{3}$$"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "4",
+						"d": "28",
+						"f": "4/3",
+						"g": "28/12"
+					}
+				}
+			]
+		}
+	]
+}

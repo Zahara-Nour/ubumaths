@@ -1,0 +1,2076 @@
+{
+	"template_id": "5cc22ecd-351e-4959-ab27-79883cb9c9d3",
+	"titre": "Connaître la position décimale",
+	"sous_titre": "Des milliers jusqu'aux millièmes",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-142",
+			"libelle_point": "Interpréter l'écriture à virgule : valeur de chaque chiffre (chiffre des centièmes de 3,25 ?).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > écritures",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "code « CM2-031 » → « CM2-142 »"
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **millièmes** dans le nombre ${{j}}$ ?\n\nLe chiffre des millièmes est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9871.254,
+				"nb_distinctes": 309,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des millièmes dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des millièmes est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des millièmes dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des millièmes est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des millièmes dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des millièmes est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des millièmes dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des millièmes est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le chiffre des millièmes dans le nombre $7\\,695{,}023$ ?\n\nLe chiffre des millièmes est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "5",
+						"f": "9",
+						"g": "6",
+						"h": "7",
+						"j": "7695.023"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **centièmes** dans le nombre ${{j}}$ ?\n\nLe chiffre des centièmes est $?$.",
+				"reponses_brutes": ["{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9871.254,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des centièmes dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des centièmes est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 13,
+					"enonce": "Quel est le chiffre des centièmes dans le nombre $7\\,685{,}304$ ?\n\nLe chiffre des centièmes est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "4",
+						"b": "0",
+						"c": "3",
+						"d": "5",
+						"f": "8",
+						"g": "6",
+						"h": "7",
+						"j": "7685.304"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des centièmes dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des centièmes est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des centièmes dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des centièmes est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des centièmes dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des centièmes est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **dixièmes** dans le nombre ${{j}}$ ?\n\nLe chiffre des dixièmes est $?$.",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9871.254,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des dixièmes dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des dixièmes est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des dixièmes dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des dixièmes est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des dixièmes dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des dixièmes est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des dixièmes dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des dixièmes est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le chiffre des dixièmes dans le nombre $7\\,695{,}023$ ?\n\nLe chiffre des dixièmes est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "0",
+						"d": "5",
+						"f": "9",
+						"g": "6",
+						"h": "7",
+						"j": "7695.023"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **unités** dans le nombre ${{j}}$ ?\n\nLe chiffre des unités est $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9871.254,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des unités dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 5,
+					"enonce": "Quel est le chiffre des unités dans le nombre $9\\,450{,}627$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "7",
+						"b": "2",
+						"c": "6",
+						"d": "0",
+						"f": "5",
+						"g": "4",
+						"h": "9",
+						"j": "9450.627"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des unités dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des unités dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des unités dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des unités est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **dizaines** dans le nombre ${{j}}$ ?\n\nLe chiffre des dizaines est $?$.",
+				"reponses_brutes": ["{{f}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9871.254,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des dizaines dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des dizaines est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 6,
+					"enonce": "Quel est le chiffre des dizaines dans le nombre $3\\,905{,}261$ ?\n\nLe chiffre des dizaines est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "1",
+						"b": "6",
+						"c": "2",
+						"d": "5",
+						"f": "0",
+						"g": "9",
+						"h": "3",
+						"j": "3905.261"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des dizaines dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des dizaines est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des dizaines dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des dizaines est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des dizaines dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des dizaines est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **centaines** dans le nombre ${{j}}$ ?\n\nLe chiffre des centaines est $?$.",
+				"reponses_brutes": ["{{g}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9871.254,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des centaines dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des centaines est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 10,
+					"enonce": "Quel est le chiffre des centaines dans le nombre $1\\,024{,}869$ ?\n\nLe chiffre des centaines est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "9",
+						"b": "6",
+						"c": "8",
+						"d": "4",
+						"f": "2",
+						"g": "0",
+						"h": "1",
+						"j": "1024.869"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des centaines dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des centaines est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des centaines dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des centaines est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des centaines dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des centaines est $[?]$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "0..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "0..9!a,b"
+					},
+					{
+						"name": "d",
+						"expression": "0..9!a,b,c"
+					},
+					{
+						"name": "f",
+						"expression": "0..9!a,b,c,d"
+					},
+					{
+						"name": "g",
+						"expression": "0..9!a,b,c,d,f"
+					},
+					{
+						"name": "h",
+						"expression": "0..9!a,b,c,d,f,g"
+					},
+					{
+						"name": "j",
+						"expression": "eval:a*0.001+b*0.01+c*0.1+d+f*10+g*100+h*1000;d"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est le chiffre des **milliers** dans le nombre ${{j}}$ ?\n\nLe chiffre des milliers est $?$.",
+				"reponses_brutes": ["{{h}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 300,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "g",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "h",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "j",
+					"valeurs_tirees": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 165.374,
+						"max": 9871.254,
+						"negatif_possible": false,
+						"nb_distinctes": 300
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 165.374,
+				"max": 9871.254,
+				"nb_distinctes": 300,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9871.254,
+				"nb_distinctes": 310,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9871.254)",
+					"graine": 20,
+					"enonce": "Quel est le chiffre des milliers dans le nombre $9\\,871{,}254$ ?\n\nLe chiffre des milliers est $[?]$.",
+					"reponse": ["9"],
+					"variables": {
+						"a": "4",
+						"b": "5",
+						"c": "2",
+						"d": "1",
+						"f": "7",
+						"g": "8",
+						"h": "9",
+						"j": "9871.254"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 8,
+					"enonce": "Quel est le chiffre des milliers dans le nombre $284{,}536$ ?\n\nLe chiffre des milliers est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "6",
+						"b": "3",
+						"c": "5",
+						"d": "4",
+						"f": "8",
+						"g": "2",
+						"h": "0",
+						"j": "284.536"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le chiffre des milliers dans le nombre $4\\,762{,}951$ ?\n\nLe chiffre des milliers est $[?]$.",
+					"reponse": ["4"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "9",
+						"d": "2",
+						"f": "6",
+						"g": "7",
+						"h": "4",
+						"j": "4762.951"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le chiffre des milliers dans le nombre $7\\,468{,}523$ ?\n\nLe chiffre des milliers est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "8",
+						"f": "6",
+						"g": "4",
+						"h": "7",
+						"j": "7468.523"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le chiffre des milliers dans le nombre $8\\,527{,}041$ ?\n\nLe chiffre des milliers est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "1",
+						"b": "4",
+						"c": "0",
+						"d": "7",
+						"f": "2",
+						"g": "5",
+						"h": "8",
+						"j": "8527.041"
+					}
+				}
+			]
+		}
+	]
+}

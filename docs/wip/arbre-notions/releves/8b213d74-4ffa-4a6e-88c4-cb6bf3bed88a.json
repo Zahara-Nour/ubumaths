@@ -1,0 +1,268 @@
+{
+	"template_id": "8b213d74-4ffa-4a6e-88c4-cb6bf3bed88a",
+	"titre": "Diviser $2$ puissances d'un même nombre.",
+	"sous_titre": "Exposants positifs",
+	"consigne": null,
+	"grades": ["3"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Calculer > Diviser",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-052",
+			"libelle_point": "Diviser des puissances.",
+			"noeud_actuel": "Nombres et calculs > Puissances : calculs > quotient de puissances",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "4..10"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:b-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{a^b}/{a^c}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:b-c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 197,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 197,
+						"exemples": [
+							"{a^7}/{a^5}",
+							"{y^5}/{y^3}",
+							"{a^7}/{a^2}",
+							"{y^5}/{y^2}",
+							"{7^5}/{7^3}",
+							"{a^8}/{a^3}",
+							"{a^10}/{a^6}",
+							"{5^6}/{5^4}",
+							"{8^4}/{8^2}",
+							"{9^8}/{9^6}",
+							"{4^8}/{4^4}",
+							"{b^8}/{b^6}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 8,
+				"nb_distinctes": 7,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 7,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\dfrac{a^{10}}{a^6} = a^[?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "a",
+						"b": "10",
+						"c": "6",
+						"expression1": "{a^10}/{a^6}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\dfrac{a^7}{a^5} = a^[?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "a",
+						"b": "7",
+						"c": "5",
+						"expression1": "{a^7}/{a^5}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\dfrac{y^5}{y^3} = y^[?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "y",
+						"b": "5",
+						"c": "3",
+						"expression1": "{y^5}/{y^3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\dfrac{a^7}{a^2} = a^[?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "a",
+						"b": "7",
+						"c": "2",
+						"expression1": "{a^7}/{a^2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\dfrac{y^5}{y^2} = y^[?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "y",
+						"b": "5",
+						"c": "2",
+						"expression1": "{y^5}/{y^2}"
+					}
+				}
+			]
+		}
+	]
+}

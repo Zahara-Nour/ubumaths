@@ -29,8 +29,8 @@
 	import type { QuestionTemplate } from '$lib/questions/types';
 	import { toTemplatePutBody } from '$lib/questions/template-put-body';
 	import * as Card from '$lib/components/ui/card';
-	import { Loader2, ListTodo, ChevronDown, ChevronRight } from '@lucide/svelte';
-	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
+	import { Loader2, ListTodo } from '@lucide/svelte';
+	import MySelect from '$lib/components/MySelect.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { questionCategoriesCache } from '$lib/stores/questionCategories.svelte';
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
@@ -97,67 +97,88 @@
 	}
 	// --- tagging au programme -------------------------------------------------
 	// `question_template_points` est le pivot de l'acquisition : une tentative n'a
-	// pas de clé étrangère vers un point, elle s'y relie par le template tagué.
-	// Sans une case cochée ici, la question ne validera jamais rien.
-	//
-	// Mise à jour optimiste : la case bascule tout de suite et revient si
-	// l'écriture échoue.
+	// pas de clé étrangère vers un point, elle s'y relie par le modèle tagué.
+	// Un choix par programme (règle 2 en base), parmi les points du nœud du
+	// modèle et de sa notion (règle 1). Changer de point retire l'ancien tag,
+	// puis pose le nouveau ; l'affichage suit ce que la base a accepté.
+
+	const NONE = 'aucun';
 
 	// svelte-ignore state_referenced_locally
-	let taggedSet = $state<Record<string, boolean>>(
-		Object.fromEntries((data.taggedPointIds ?? []).map((id: string) => [id, true]))
+	let selectedByGrade = $state<Record<string, string | null>>(
+		Object.fromEntries(data.programmeTags.programmes.map((p) => [p.grade, p.selectedPointId]))
 	);
-	let openTagThemes = $state<Record<string, boolean>>({});
-	let openTagItems = $state<Record<string, boolean>>({});
+	let savingGrade = $state<string | null>(null);
+	let selectRevision = $state(0);
 
-	const taggedCount = $derived(Object.keys(taggedSet).length);
+	const taggedCount = $derived(Object.values(selectedByGrade).filter((id) => id !== null).length);
 
-	function isTagged(pointId: string): boolean {
-		return taggedSet[pointId] === true;
-	}
-
-	async function tagApi(url: string, method: string, body?: unknown): Promise<boolean> {
+	/** Rend le statut HTTP (0 sur erreur réseau) ; toast d'erreur sauf statut toléré. */
+	async function tagApi(
+		url: string,
+		method: string,
+		body?: unknown,
+		tolerated: number[] = []
+	): Promise<number> {
 		try {
 			const res = await fetch(url, {
 				method,
 				headers: body ? { 'Content-Type': 'application/json' } : undefined,
 				body: body ? JSON.stringify(body) : undefined
 			});
-			if (!res.ok) {
+			if (!res.ok && !tolerated.includes(res.status)) {
 				const j = await res.json().catch(() => ({}));
 				toaster.error(j?.error ?? 'Une erreur est survenue');
-				return false;
 			}
-			return true;
+			return res.status;
 		} catch {
 			toaster.error('Erreur réseau');
-			return false;
+			return 0;
 		}
 	}
 
-	async function toggleTag(pointId: string) {
+	async function changeTag(grade: string, value: string) {
+		const previous = selectedByGrade[grade] ?? null;
+		const next = value === NONE ? null : value;
+		if (next === previous) return;
+
 		const id = data.templateId;
-		if (isTagged(pointId)) {
-			const next = { ...taggedSet };
-			delete next[pointId];
-			taggedSet = next;
-			const ok = await tagApi(
-				`/api/teacher/curriculum/template-tags?template_id=${id}&point_id=${pointId}`,
-				'DELETE'
-			);
-			if (!ok) taggedSet = { ...taggedSet, [pointId]: true };
-		} else {
-			taggedSet = { ...taggedSet, [pointId]: true };
-			const ok = await tagApi('/api/teacher/curriculum/template-tags', 'POST', {
-				template_id: id,
-				point_id: pointId
-			});
-			if (!ok) {
-				const next = { ...taggedSet };
-				delete next[pointId];
-				taggedSet = next;
+		savingGrade = grade;
+		try {
+			if (previous !== null) {
+				// 404 : le tag n'est déjà plus en base (autre onglet, autre admin) — c'est retiré.
+				const status = await tagApi(
+					`/api/teacher/curriculum/template-tags?template_id=${id}&point_id=${previous}`,
+					'DELETE',
+					undefined,
+					[404]
+				);
+				if (status !== 200 && status !== 404) return;
+				selectedByGrade[grade] = null;
 			}
+			if (next !== null) {
+				const status = await tagApi('/api/teacher/curriculum/template-tags', 'POST', {
+					template_id: id,
+					point_id: next
+				});
+				if (status >= 200 && status < 300) selectedByGrade[grade] = next;
+			}
+		} finally {
+			savingGrade = null;
+			// Le menu garde le choix cliqué même refusé : on le reconstruit sur l'état réel.
+			selectRevision += 1;
 		}
+	}
+
+	function pointItems(points: { id: string; code: string; name: string; archived: boolean }[]) {
+		return [
+			{ value: NONE, label: 'Aucun point' },
+			...points.map((p) => ({
+				value: p.id,
+				label: `${p.code} — ${p.name}${p.archived ? ' (archivé)' : ''}`,
+				disabled: p.archived
+			}))
+		];
 	}
 
 	/** « 1ère spécialité maths » plutôt que « 1_SPE » : le code est interne. */
@@ -203,86 +224,59 @@
 	</Card.Root>
 
 	<!-- Points de programme -->
-	{#if data.curriculumByGrade.length > 0}
-		<Card.Root>
-			<Card.Header>
-				<Card.Title class="flex items-center gap-2">
-					<ListTodo class="h-5 w-5 text-primary" />
-					Points de programme
-					{#if taggedCount > 0}
-						<span class="text-sm font-normal text-muted-foreground">
-							· {taggedCount} tagué{taggedCount > 1 ? 's' : ''}
-						</span>
-					{/if}
-				</Card.Title>
-				<Card.Description>
-					Tague les points que cette question permet de valider. Sans au moins un point, elle
-					n'entre dans l'acquisition d'aucun élève. Un point est acquis après réussite sur
-					<strong>deux questions différentes</strong> au moins — un seul tag ne suffit jamais.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content class="space-y-4">
-				{#each data.curriculumByGrade as { grade, tree } (grade)}
-					{#if data.curriculumByGrade.length > 1}
-						<p class="text-sm font-semibold text-muted-foreground">{gradeLabel(grade)}</p>
-					{/if}
+	<Card.Root>
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<ListTodo class="h-5 w-5 text-primary" />
+				Points de programme
+				{#if taggedCount > 0}
+					<span class="text-sm font-normal text-muted-foreground">
+						· {taggedCount} tagué{taggedCount > 1 ? 's' : ''}
+					</span>
+				{/if}
+			</Card.Title>
+			<Card.Description>
+				Pour chaque programme, choisis le point que cette question permet de valider, parmi ceux du
+				nœud du modèle et de sa notion. Sans au moins un point, elle n'entre dans l'acquisition
+				d'aucun élève. Un point est acquis après réussite sur
+				<strong>deux questions différentes</strong> au moins — un seul tag ne suffit jamais.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			{#if data.programmeTags.nodeMissing}
+				<div class="text-sm text-muted-foreground">
+					Rangez d'abord ce modèle dans l'arbre des notions : un modèle sans nœud ne peut pas être
+					tagué.
+				</div>
+			{:else if data.programmeTags.programmes.length === 0}
+				<div class="text-sm text-muted-foreground">
+					Aucun point du programme n'est posé sur le nœud de ce modèle ni sur sa notion.
+				</div>
+			{:else}
+				{#each data.programmeTags.programmes as programme (programme.grade)}
+					{@const chosen = programme.points.find((p) => p.id === selectedByGrade[programme.grade])}
 					<div class="space-y-1">
-						{#each tree as theme (theme.id)}
-							<div class="rounded-md border">
-								<button
-									class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
-									onclick={() => (openTagThemes[theme.id] = !openTagThemes[theme.id])}
-								>
-									{#if openTagThemes[theme.id]}
-										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-									{:else}
-										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-									{/if}
-									<InlineMarkdown content={theme.name} />
-								</button>
-								{#if openTagThemes[theme.id]}
-									<div class="space-y-1 border-t p-2 pl-4">
-										{#each theme.objectives as item (item.id)}
-											<div>
-												<button
-													class="flex w-full items-center gap-2 py-1 text-left text-sm"
-													onclick={() => (openTagItems[item.id] = !openTagItems[item.id])}
-												>
-													{#if openTagItems[item.id]}
-														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-													{:else}
-														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-													{/if}
-													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
-												</button>
-												{#if openTagItems[item.id]}
-													<div class="space-y-1 py-1 pl-6">
-														{#each item.points as point (point.id)}
-															<div class="flex items-start gap-2">
-																<code
-																	class="mt-0.5 shrink-0 font-mono text-[11px] text-muted-foreground tabular-nums"
-																>
-																	{point.code}
-																</code>
-																<MyCheckbox
-																	checked={isTagged(point.id)}
-																	onchange={() => toggleTag(point.id)}
-																>
-																	<InlineMarkdown content={point.name} />
-																</MyCheckbox>
-															</div>
-														{/each}
-													</div>
-												{/if}
-											</div>
-										{/each}
-									</div>
-								{/if}
+						<div class="text-sm font-semibold text-muted-foreground">
+							{gradeLabel(programme.grade)}
+						</div>
+						{#key selectRevision}
+							<MySelect
+								items={pointItems(programme.points)}
+								value={selectedByGrade[programme.grade] ?? NONE}
+								disabled={savingGrade !== null}
+								triggerAriaLabel={`Point de ${gradeLabel(programme.grade)}`}
+								onValueChange={(value: string) => changeTag(programme.grade, value)}
+							/>
+						{/key}
+						{#if chosen}
+							<div class="text-sm">
+								<code class="font-mono text-[11px] text-muted-foreground">{chosen.code}</code>
+								<InlineMarkdown content={chosen.name} />
 							</div>
-						{/each}
+						{/if}
 					</div>
 				{/each}
-			</Card.Content>
-		</Card.Root>
-	{/if}
+			{/if}
+		</Card.Content>
+	</Card.Root>
 </div>

@@ -25,7 +25,6 @@ const WORKSHEET = {
 	description: null,
 	type: 'worksheet',
 	config: {},
-	template_id: null,
 	estimated_duration_minutes: null,
 	total_points: null
 } as unknown as WorksheetRow;

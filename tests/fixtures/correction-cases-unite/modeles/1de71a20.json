@@ -1,0 +1,374 @@
+{
+	"id": "1de71a20-4bd4-4cb2-a0d3-369bef2e2afd",
+	"title": "Trouver la hauteur d'un parallélogramme.",
+	"description": "À partir de son aire et de la base associée.",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Aires",
+	"subdomain": "Aire d'un parallélogramme",
+	"level": 3,
+	"delay": 20,
+	"status": "published",
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[mm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[mm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[mm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[cm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[cm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[dm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[m]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[m]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[m^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[dam]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dam]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[dam^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[hm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[hm]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[hm^2]}}$."
+				]
+			}
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{d}}"
+				}
+			],
+			"statement": "Quelle est la hauteur d'un **parallélogramme** de base associée ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ ?\n\nLa hauteur mesure $?$.",
+			"variables": [
+				{
+					"name": "a",
+					"expression": "1..11"
+				},
+				{
+					"name": "b",
+					"expression": "1..11!a"
+				},
+				{
+					"name": "c",
+					"expression": "eval:a[km]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[km]"
+				}
+			],
+			"correction": {
+				"steps": [
+					"La hauteur d'un parallélogramme de base associée ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ est {{solution:html}} car ${{c}} \\times {{solution:0}} = {{eval:c*d;[km^2]}}$."
+				]
+			}
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["11\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v0 bonne réponse avec unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v1 bonne réponse avec unité",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["11\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v2 bonne réponse avec unité",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["11\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v3 bonne réponse avec unité",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["11\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v4 bonne réponse avec unité",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["11\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v5 bonne réponse avec unité",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["11\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "v6 bonne réponse avec unité",
+			"variationIndex": 6
+		},
+		{
+			"answers": ["8\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "recopie de la base",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["11"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["110\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "11"
+			},
+			"description": "unité équivalente",
+			"variationIndex": 1
+		}
+	]
+}

@@ -184,6 +184,18 @@ export interface SolveResult {
 	readonly periodicSolutions?: PeriodicSolutionFamily;
 
 	/**
+	 * Une famille périodique trouvée puis ÉCARTÉE de `periodicSolutions` :
+	 * quotient dont un membre de la famille du numérateur sort du domaine ou
+	 * annule le dénominateur (`cos x/√x` : −π/2 ; `sin x/x` : 0 ;
+	 * `sin 2x/sin x` : kπ). `solutions` ne liste alors que les solutions d'une
+	 * période : sur un intervalle qui en contient d'autres, la liste est
+	 * INCOMPLÈTE. Le tableau de signes énumère cette famille en écartant les
+	 * membres hors du domaine de l'expression (`sign/helpers/zeros.ts`) ; elle
+	 * n'est jamais affichée comme ensemble de solutions.
+	 */
+	readonly droppedPeriodicSolutions?: PeriodicSolutionFamily;
+
+	/**
 	 * L'écriture du manuel, quand elle diffère de `periodicSolutions` : une
 	 * famille par branche de la résolution, chacune avec SA période
 	 * (`sin 2x = sin x` : 2kπ ou π/3 + 2kπ/3). Même ensemble que

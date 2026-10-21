@@ -1,0 +1,193 @@
+{
+	"template_id": "4ee04b22-c7c3-42a7-8cbf-26022ffbbc28",
+	"titre": "Combien de fois ... dans ....",
+	"sous_titre": "Multiplier par $30$, $40$, $50$, $60$, $70$, $80$, $90$. Nombre à 1 chiffre.",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > A trou",
+	"mis_a_jour": "2026-09-29T22:51:47.11546+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : division > quotient",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Dans ${{eval:a*10*b}}$, combien de fois ${{b}}$ ?\n\nOn peut mettre $?$ fois ${{b}}$.",
+				"reponses_brutes": ["{{eval:a*10}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 90,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [30, 40, 50, 60, 70, 80, 90]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 810,
+				"nb_distinctes": 38,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 30,
+				"max": 90,
+				"nb_distinctes": 7,
+				"valeurs": [30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 810,
+				"nb_distinctes": 42,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (810)",
+					"graine": 73,
+					"enonce": "Dans $810$, combien de fois $9$ ?\n\nOn peut mettre $[?]$ fois $9$.",
+					"reponse": ["90"],
+					"variables": {
+						"a": "9",
+						"b": "9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Dans $100$, combien de fois $2$ ?\n\nOn peut mettre $[?]$ fois $2$.",
+					"reponse": ["50"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Dans $180$, combien de fois $6$ ?\n\nOn peut mettre $[?]$ fois $6$.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "3",
+						"b": "6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Dans $200$, combien de fois $4$ ?\n\nOn peut mettre $[?]$ fois $4$.",
+					"reponse": ["50"],
+					"variables": {
+						"a": "5",
+						"b": "4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Dans $150$, combien de fois $5$ ?\n\nOn peut mettre $[?]$ fois $5$.",
+					"reponse": ["30"],
+					"variables": {
+						"a": "3",
+						"b": "5"
+					}
+				}
+			]
+		}
+	]
+}

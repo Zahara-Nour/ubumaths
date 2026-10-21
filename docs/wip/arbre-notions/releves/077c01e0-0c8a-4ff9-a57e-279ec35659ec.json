@@ -1,0 +1,465 @@
+{
+	"template_id": "077c01e0-0c8a-4ff9-a57e-279ec35659ec",
+	"titre": "Simplifier le symbole de multiplication",
+	"sous_titre": "Devant une lettre",
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Simplification d'écriture",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Algèbre > Calcul littéral > écriture simplifiée",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "q*p"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris l'expression en la simplifiant.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{q}}{{p}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 40,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 40,
+						"exemples": [
+							"6*a",
+							"4*b",
+							"5*a",
+							"3*b",
+							"3*x",
+							"7*a",
+							"9*a",
+							"4*x",
+							"3*y",
+							"7*y",
+							"6*c",
+							"2*b"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 40,
+						"exemples": ["6a", "4b", "5a", "3b", "3x", "7a", "9a", "4x", "3y", "7y", "6c", "2b"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$9 \\times a = [?]$$",
+					"reponse": ["9a"],
+					"variables": {
+						"p": "a",
+						"q": "9",
+						"expression1": "9*a"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$2 \\times b = [?]$$",
+					"reponse": ["2b"],
+					"variables": {
+						"p": "b",
+						"q": "2",
+						"expression1": "2*b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$6 \\times a = [?]$$",
+					"reponse": ["6a"],
+					"variables": {
+						"p": "a",
+						"q": "6",
+						"expression1": "6*a"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$4 \\times b = [?]$$",
+					"reponse": ["4b"],
+					"variables": {
+						"p": "b",
+						"q": "4",
+						"expression1": "4*b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$5 \\times a = [?]$$",
+					"reponse": ["5a"],
+					"variables": {
+						"p": "a",
+						"q": "5",
+						"expression1": "5*a"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					},
+					{
+						"name": "q",
+						"expression": "2..9"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "p*q"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris l'expression en la simplifiant.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{q}}{{p}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 40,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 40,
+						"exemples": [
+							"a*6",
+							"b*4",
+							"a*5",
+							"b*3",
+							"x*3",
+							"a*7",
+							"a*9",
+							"x*4",
+							"y*3",
+							"y*7",
+							"c*6",
+							"b*2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 40,
+						"exemples": ["6a", "4b", "5a", "3b", "3x", "7a", "9a", "4x", "3y", "7y", "6c", "2b"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 9,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 5,
+					"max": 5
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$a \\times 9 = [?]$$",
+					"reponse": ["9a"],
+					"variables": {
+						"p": "a",
+						"q": "9",
+						"expression2": "a*9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$b \\times 2 = [?]$$",
+					"reponse": ["2b"],
+					"variables": {
+						"p": "b",
+						"q": "2",
+						"expression2": "b*2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$a \\times 6 = [?]$$",
+					"reponse": ["6a"],
+					"variables": {
+						"p": "a",
+						"q": "6",
+						"expression2": "a*6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$b \\times 4 = [?]$$",
+					"reponse": ["4b"],
+					"variables": {
+						"p": "b",
+						"q": "4",
+						"expression2": "b*4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris l'expression en la simplifiant.\n\n$$a \\times 5 = [?]$$",
+					"reponse": ["5a"],
+					"variables": {
+						"p": "a",
+						"q": "5",
+						"expression2": "a*5"
+					}
+				}
+			]
+		}
+	]
+}

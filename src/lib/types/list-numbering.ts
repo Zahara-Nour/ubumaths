@@ -91,7 +91,8 @@ export interface ListNumberingConfig {
 
 export const DEFAULT_CONFIG: ListNumberingConfig = {
 	scheme: 'auto',
-	// Même hiérarchie que le PDF (ubumark/generators/typst-generator.ts)
-	schemeWithNesting: 'a-1-i',
-	schemeWithoutNesting: 'a-i'
+	// Même hiérarchie que le PDF (ubumark/generators/typst-generator.ts) ;
+	// une liste à un seul niveau aussi : 1) 2) 3) (choix de David, 2026-10-18)
+	schemeWithNesting: '1-a-i',
+	schemeWithoutNesting: '1-a-i'
 };

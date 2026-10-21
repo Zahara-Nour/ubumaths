@@ -1,0 +1,265 @@
+{
+	"template_id": "a1ae1558-89ca-4a60-8704-8e7e4ebc23ad",
+	"titre": "Puissance d'une puissance",
+	"sous_titre": "Exposants positifs",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Calculer > Puissance de puissance",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Puissances : calculs > puissance de puissance",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "a|b|c|x|y|2|3|4|5|6|7|8|9|10"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "(a^b)^c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:b*c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 258,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.6633333333333333,
+						"nb_distinctes": 14,
+						"valeurs": ["10", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "x", "y"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 258,
+						"exemples": [
+							"(a^6)^9",
+							"(y^4)^6",
+							"(a^5)^2",
+							"(y^3)^2",
+							"(7^3)^6",
+							"(a^7)^3",
+							"(a^9)^7",
+							"(5^4)^7",
+							"(8^3)^8",
+							"(9^7)^8",
+							"(4^6)^6",
+							"(b^6)^9"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 9,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 81,
+						"negatif_possible": false,
+						"nb_distinctes": 31
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 4,
+				"max": 81,
+				"nb_distinctes": 31,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 81,
+				"nb_distinctes": 35,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "101/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (81)",
+					"graine": 156,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( 6^9 \\right)^9 = 6^[?]$$",
+					"reponse": ["81"],
+					"variables": {
+						"a": "6",
+						"b": "9",
+						"c": "9",
+						"expression1": "(6^9)^9"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 3,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( a^5 \\right)^2 = a^[?]$$",
+					"reponse": ["10"],
+					"variables": {
+						"a": "a",
+						"b": "5",
+						"c": "2",
+						"expression1": "(a^5)^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( a^6 \\right)^9 = a^[?]$$",
+					"reponse": ["54"],
+					"variables": {
+						"a": "a",
+						"b": "6",
+						"c": "9",
+						"expression1": "(a^6)^9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( y^4 \\right)^6 = y^[?]$$",
+					"reponse": ["24"],
+					"variables": {
+						"a": "y",
+						"b": "4",
+						"c": "6",
+						"expression1": "(y^4)^6"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule en écrivant le résultat sous la forme d'une puissance.\n\n$$\\left( y^3 \\right)^2 = y^[?]$$",
+					"reponse": ["6"],
+					"variables": {
+						"a": "y",
+						"b": "3",
+						"c": "2",
+						"expression1": "(y^3)^2"
+					}
+				}
+			]
+		}
+	]
+}

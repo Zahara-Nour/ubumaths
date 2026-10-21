@@ -1,0 +1,676 @@
+{
+	"template_id": "71621ba5-d436-444c-a1e2-823a87f9b8fa",
+	"titre": "Trouver un diviseur",
+	"sous_titre": "Nombre à $3$ chiffres",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Diviser > Divisibilité",
+	"mis_a_jour": "2026-09-29T18:05:33.863962+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CM2-008",
+			"libelle_point": "Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?).",
+			"noeud_actuel": "Arithmétique > Divisibilité > multiples et diviseurs",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné ou si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10 » → « Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?). »"
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "2|4|6|8"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+				"reponses_brutes": ["2"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 201,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 4, 6, 8]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 112,
+						"max": 994,
+						"negatif_possible": false,
+						"nb_distinctes": 201
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [2]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 994,
+				"nb_distinctes": 202,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 2,
+				"nb_distinctes": 1,
+				"valeurs": [2],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 994,
+				"nb_distinctes": 203,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (994)",
+					"graine": 115,
+					"enonce": "Trouve un diviseur de $994$ (autre que $1$ et $994$).\n\n$[?]$ est un diviseur de $994$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "4",
+						"d": "994"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un diviseur de $158$ (autre que $1$ et $158$).\n\n$[?]$ est un diviseur de $158$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "8",
+						"d": "158"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un diviseur de $336$ (autre que $1$ et $336$).\n\n$[?]$ est un diviseur de $336$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "6",
+						"d": "336"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un diviseur de $152$ (autre que $1$ et $152$).\n\n$[?]$ est un diviseur de $152$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "2",
+						"d": "152"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un diviseur de $322$ (autre que $1$ et $322$).\n\n$[?]$ est un diviseur de $322$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "2",
+						"d": "322"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "5|0"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+				"reponses_brutes": ["5"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 143,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [0, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 110,
+						"max": 995,
+						"negatif_possible": false,
+						"nb_distinctes": 143
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 5,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [5]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 995,
+				"nb_distinctes": 144,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 5,
+				"max": 5,
+				"nb_distinctes": 1,
+				"valeurs": [5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 995,
+				"nb_distinctes": 145,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (995)",
+					"graine": 115,
+					"enonce": "Trouve un diviseur de $995$ (autre que $1$ et $995$).\n\n$[?]$ est un diviseur de $995$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "5",
+						"d": "995"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un diviseur de $150$ (autre que $1$ et $150$).\n\n$[?]$ est un diviseur de $150$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "0",
+						"d": "150"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un diviseur de $330$ (autre que $1$ et $330$).\n\n$[?]$ est un diviseur de $330$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "0",
+						"d": "330"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un diviseur de $155$ (autre que $1$ et $155$).\n\n$[?]$ est un diviseur de $155$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "5",
+						"d": "155"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un diviseur de $325$ (autre que $1$ et $325$).\n\n$[?]$ est un diviseur de $325$.",
+					"reponse": ["5"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "5",
+						"d": "325"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c1",
+						"expression": "1|4|7"
+					},
+					{
+						"name": "c",
+						"expression": "eval:c1+2-mod(a+b, 3)"
+					},
+					{
+						"name": "d",
+						"expression": "eval:a*100+b*10+c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Trouve un diviseur de ${{d}}$ (autre que $1$ et ${{d}}$).\n\n$?$ est un diviseur de ${{eval:d}}$.",
+				"reponses_brutes": ["3"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 176,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 4, 7]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 111,
+						"max": 993,
+						"negatif_possible": false,
+						"nb_distinctes": 176
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [3]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 993,
+				"nb_distinctes": 177,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 3,
+				"max": 3,
+				"nb_distinctes": 1,
+				"valeurs": [3],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 993,
+				"nb_distinctes": 178,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 11,
+					"max": 11
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (993)",
+					"graine": 115,
+					"enonce": "Trouve un diviseur de $993$ (autre que $1$ et $993$).\n\n$[?]$ est un diviseur de $993$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c1": "1",
+						"c": "3",
+						"d": "993"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Trouve un diviseur de $159$ (autre que $1$ et $159$).\n\n$[?]$ est un diviseur de $159$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c1": "7",
+						"c": "9",
+						"d": "159"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Trouve un diviseur de $336$ (autre que $1$ et $336$).\n\n$[?]$ est un diviseur de $336$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c1": "4",
+						"c": "6",
+						"d": "336"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Trouve un diviseur de $153$ (autre que $1$ et $153$).\n\n$[?]$ est un diviseur de $153$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c1": "1",
+						"c": "3",
+						"d": "153"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Trouve un diviseur de $321$ (autre que $1$ et $321$).\n\n$[?]$ est un diviseur de $321$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c1": "1",
+						"c": "1",
+						"d": "321"
+					}
+				}
+			]
+		}
+	]
+}

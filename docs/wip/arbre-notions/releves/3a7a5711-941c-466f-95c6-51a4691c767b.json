@@ -1,0 +1,1880 @@
+{
+	"template_id": "3a7a5711-941c-466f-95c6-51a4691c767b",
+	"titre": "Trouver la largeur d'un rectangle.",
+	"sous_titre": "A partir de son aire et de sa longueur.",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Périmètres > Périmètre d'un rectangle",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "6-200",
+			"libelle_point": "Connaître la formule de l'aire d'un rectangle",
+			"noeud_actuel": "Grandeurs et mesures > Périmètres > rectangle",
+			"noeud_cible": "Grandeurs et mesures > Aires > rectangle",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[mm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[mm]",
+							"11[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[mm]",
+							"1[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[mm]",
+							"1[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["mm", "mm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{mm}$ et d'aire $110~\\mathrm{mm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[mm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[mm]",
+						"d": "10[mm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{mm}$ et d'aire $6~\\mathrm{mm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[mm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[mm]",
+						"d": "1[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{mm}$ et d'aire $44~\\mathrm{mm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[mm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[mm]",
+						"d": "4[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{mm}$ et d'aire $70~\\mathrm{mm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[mm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[mm]",
+						"d": "7[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{mm}$ et d'aire $12~\\mathrm{mm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[mm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[mm]",
+						"d": "2[mm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[cm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[cm]",
+							"11[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[cm]",
+							"1[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[cm]",
+							"1[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["cm", "cm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{cm}$ et d'aire $110~\\mathrm{cm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[cm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[cm]",
+						"d": "10[cm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{cm}$ et d'aire $6~\\mathrm{cm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[cm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[cm]",
+						"d": "1[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{cm}$ et d'aire $44~\\mathrm{cm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[cm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[cm]",
+						"d": "4[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{cm}$ et d'aire $70~\\mathrm{cm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[cm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[cm]",
+						"d": "7[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{cm}$ et d'aire $12~\\mathrm{cm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[cm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[cm]",
+						"d": "2[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dm]",
+							"11[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dm]",
+							"1[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dm]",
+							"1[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["dm", "dm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{dm}$ et d'aire $110~\\mathrm{dm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[dm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[dm]",
+						"d": "10[dm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{dm}$ et d'aire $6~\\mathrm{dm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[dm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[dm]",
+						"d": "1[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{dm}$ et d'aire $44~\\mathrm{dm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[dm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[dm]",
+						"d": "4[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{dm}$ et d'aire $70~\\mathrm{dm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[dm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[dm]",
+						"d": "7[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{dm}$ et d'aire $12~\\mathrm{dm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[dm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[dm]",
+						"d": "2[dm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[m^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[m]",
+							"11[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[m]",
+							"1[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[m]",
+							"1[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["m", "m^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{m}$ et d'aire $110~\\mathrm{m}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[m]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[m]",
+						"d": "10[m]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{m}$ et d'aire $6~\\mathrm{m}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[m]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[m]",
+						"d": "1[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{m}$ et d'aire $44~\\mathrm{m}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[m]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[m]",
+						"d": "4[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{m}$ et d'aire $70~\\mathrm{m}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[m]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[m]",
+						"d": "7[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{m}$ et d'aire $12~\\mathrm{m}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[m]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[m]",
+						"d": "2[m]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[dam^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dam]",
+							"11[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dam]",
+							"1[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dam]",
+							"1[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["dam", "dam^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{dam}$ et d'aire $110~\\mathrm{dam}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[dam]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[dam]",
+						"d": "10[dam]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{dam}$ et d'aire $6~\\mathrm{dam}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[dam]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[dam]",
+						"d": "1[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{dam}$ et d'aire $44~\\mathrm{dam}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[dam]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[dam]",
+						"d": "4[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{dam}$ et d'aire $70~\\mathrm{dam}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[dam]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[dam]",
+						"d": "7[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{dam}$ et d'aire $12~\\mathrm{dam}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[dam]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[dam]",
+						"d": "2[dam]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[hm^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[hm]",
+							"11[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[hm]",
+							"1[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[hm]",
+							"1[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["hm", "hm^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{hm}$ et d'aire $110~\\mathrm{hm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[hm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[hm]",
+						"d": "10[hm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{hm}$ et d'aire $6~\\mathrm{hm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[hm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[hm]",
+						"d": "1[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{hm}$ et d'aire $44~\\mathrm{hm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[hm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[hm]",
+						"d": "4[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{hm}$ et d'aire $70~\\mathrm{hm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[hm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[hm]",
+						"d": "7[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{hm}$ et d'aire $12~\\mathrm{hm}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[hm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[hm]",
+						"d": "2[hm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quelle est la largeur d'un **rectangle** de longueur ${{c}}$ et d'aire ${{eval:c*d;[km^2]}}$ ?\n\nLa largeur est de $?$.",
+				"reponses_brutes": ["{{d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[km]",
+							"11[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[km]",
+							"1[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[km]",
+							"1[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 110,
+				"nb_distinctes": 46,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 110,
+				"nb_distinctes": 47,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["km", "km^2"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (110)",
+					"graine": 70,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{km}$ et d'aire $110~\\mathrm{km}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["10[km]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[km]",
+						"d": "10[km]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{km}$ et d'aire $6~\\mathrm{km}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["1[km]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[km]",
+						"d": "1[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $11~\\mathrm{km}$ et d'aire $44~\\mathrm{km}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["4[km]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[km]",
+						"d": "4[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $10~\\mathrm{km}$ et d'aire $70~\\mathrm{km}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["7[km]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[km]",
+						"d": "7[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quelle est la largeur d'un rectangle de longueur $6~\\mathrm{km}$ et d'aire $12~\\mathrm{km}^{2}$ ?\n\nLa largeur est de $[?]$.",
+					"reponse": ["2[km]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[km]",
+						"d": "2[km]"
+					}
+				}
+			]
+		}
+	]
+}

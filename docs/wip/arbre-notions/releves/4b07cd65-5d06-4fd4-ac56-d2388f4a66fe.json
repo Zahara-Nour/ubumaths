@@ -1,0 +1,353 @@
+{
+	"template_id": "4b07cd65-5d06-4fd4-ac56-d2388f4a66fe",
+	"titre": "Déterminer le signe dans un quotient",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "multiple_choice",
+	"theme": "Relatifs > Multiplier et Diviser > Quotient",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-002",
+			"libelle_point": "Diviser deux nombres relatifs.",
+			"noeud_actuel": "Nombres et calculs > Relatifs : calculs > quotient",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					}
+				],
+				"conditions": ["a<=0 || b<0"],
+				"enonce_brut": "Quel est le signe du nombre manquant :\n\n$$({{a}}):?=({{b}})$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 99,
+						"negatif_possible": true,
+						"nb_distinctes": 118
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 98,
+						"negatif_possible": true,
+						"nb_distinctes": 120
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["négatif", "positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 137,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 137,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$\\left( 99 \\right) : ? = \\left( -96 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "99",
+						"b": "-96"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 1,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$\\left( -99 \\right) : ? = \\left( 33 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "-99",
+						"b": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$\\left( -54 \\right) : ? = \\left( -60 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-54",
+						"b": "-60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$\\left( -94 \\right) : ? = \\left( -36 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-94",
+						"b": "-36"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$\\left( -53 \\right) : ? = \\left( -68 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-53",
+						"b": "-68"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "30..99;±"
+					},
+					{
+						"name": "b",
+						"expression": "30..99;±"
+					}
+				],
+				"conditions": ["a<=0 || b<0"],
+				"enonce_brut": "Quel est le signe du nombre manquant :\n\n$$?:({{a}})=({{b}})$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "positif"
+					},
+					{
+						"content": "négatif"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 296,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 99,
+						"negatif_possible": true,
+						"nb_distinctes": 118
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -99,
+						"max": 98,
+						"negatif_possible": true,
+						"nb_distinctes": 120
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 2,
+						"valeurs": ["négatif", "positif"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 137,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -99,
+				"max": 99,
+				"nb_distinctes": 137,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"parenthèses": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (99)",
+					"graine": 37,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$? : \\left( 99 \\right) = \\left( -96 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "99",
+						"b": "-96"
+					}
+				},
+				{
+					"role": "plus petite valeur (-99)",
+					"graine": 1,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$? : \\left( -99 \\right) = \\left( 33 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["B. négatif"],
+					"variables": {
+						"a": "-99",
+						"b": "33"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$? : \\left( -54 \\right) = \\left( -60 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-54",
+						"b": "-60"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$? : \\left( -94 \\right) = \\left( -36 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-94",
+						"b": "-36"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Quel est le signe du nombre manquant :\n\n$$? : \\left( -53 \\right) = \\left( -68 \\right)$$\n\n- A. positif\n- B. négatif",
+					"reponse": ["A. positif"],
+					"variables": {
+						"a": "-53",
+						"b": "-68"
+					}
+				}
+			]
+		}
+	]
+}

@@ -1112,19 +1112,47 @@ export interface GeoQuadraticCurve extends GeoElementBase {
 		readonly sourceCoefficients: readonly [number, number, number, number, number, number];
 		readonly transformId: string;
 	};
+	/**
+	 * Coefficients qui suivent des curseurs (vue Figure de l'atelier) : les six
+	 * fonctions [A, B, C, D, E, F] des paramètres, réévaluées puis la conique
+	 * reclassée quand un curseur bouge (`Figure.computePosition`).
+	 */
+	readonly parameterRecipe?: {
+		readonly coefficients: readonly CompiledFn[];
+		readonly parameters: readonly CurveParameter[];
+	};
 	readonly dependsOn: readonly string[];
+}
+
+/**
+ * Un curseur cité par NOM dans l'équation d'une courbe (`x² + y² = a²`) : sa
+ * valeur est liée à `name` à chaque recalcul.
+ */
+export interface CurveParameter {
+	readonly sliderId: string;
+	readonly name: string;
 }
 
 export interface GeoImplicitCurve extends GeoElementBase {
 	readonly type: 'implicitCurve';
 	/** F(x,y) as a symbolic MathNode. */
 	readonly expression: MathNode;
-	/** Compiled F(x,y) for fast numerical evaluation. */
+	/**
+	 * Compiled F(x,y) for fast numerical evaluation. Avec `parameterRecipe`,
+	 * c'est une fermeture liée aux valeurs COURANTES des curseurs, refaite à
+	 * chaque recalcul : le cache de `marchingSquares` (par fonction) ne rend
+	 * donc jamais le tracé d'une ancienne valeur.
+	 */
 	readonly compiledFn: CompiledFn;
 	/** Original equation string as entered by the user. */
 	readonly equation: string;
-	/** Autonomous element — no dependencies on other elements. */
-	readonly dependsOn: readonly [];
+	/** F(x, y, paramètres) non liée, et les curseurs qu'elle cite (vue Figure de l'atelier). */
+	readonly parameterRecipe?: {
+		readonly compiledSource: CompiledFn;
+		readonly parameters: readonly CurveParameter[];
+	};
+	/** Vide, sauf les curseurs de `parameterRecipe`. */
+	readonly dependsOn: readonly string[];
 }
 
 // =============================================================================

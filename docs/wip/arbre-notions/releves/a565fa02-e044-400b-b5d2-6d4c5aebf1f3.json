@@ -1,0 +1,295 @@
+{
+	"template_id": "a565fa02-e044-400b-b5d2-6d4c5aebf1f3",
+	"titre": "Soustraire $19$, $29$, …",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Soustraire > Différence astucieuse",
+	"mis_a_jour": "2026-09-29T18:05:36.097742+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CE2-025",
+			"libelle_point": "Soustraire 9, 19, 29 ou 39 à un nombre.",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..8"
+					},
+					{
+						"name": "b",
+						"expression": "{{eval:a+1}}..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..8"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b*10+c"
+					},
+					{
+						"name": "f",
+						"expression": "eval:a*10+9"
+					},
+					{
+						"name": "expression1",
+						"expression": "d-f"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule de manière astucieuse.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 164,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 22,
+						"max": 98,
+						"negatif_possible": false,
+						"nb_distinctes": 52
+					}
+				},
+				{
+					"nom": "f",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 19,
+						"max": 89,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [19, 29, 39, 49, 59, 69, 79, 89]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 164,
+						"exemples": [
+							"68-19",
+							"55-39",
+							"51-19",
+							"51-39",
+							"85-79",
+							"72-19",
+							"96-19",
+							"76-69",
+							"87-79",
+							"97-89",
+							"85-59",
+							"41-39"
+						],
+						"nombres_contenus": {
+							"min": 19,
+							"max": 98,
+							"nb_distinctes": 60,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 77,
+						"negatif_possible": false,
+						"nb_distinctes": 57
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 19,
+				"max": 98,
+				"nb_distinctes": 60,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 77,
+				"nb_distinctes": 57,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 98,
+				"nb_distinctes": 85,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"−": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (98)",
+					"graine": 102,
+					"enonce": "Calcule de manière astucieuse.\n\n$$98 - 59 = [?]$$",
+					"reponse": ["39"],
+					"variables": {
+						"a": "5",
+						"b": "9",
+						"c": "8",
+						"d": "98",
+						"f": "59",
+						"expression1": "98-59"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 13,
+					"enonce": "Calcule de manière astucieuse.\n\n$$41 - 39 = [?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"c": "1",
+						"d": "41",
+						"f": "39",
+						"expression1": "41-39"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule de manière astucieuse.\n\n$$68 - 19 = [?]$$",
+					"reponse": ["49"],
+					"variables": {
+						"a": "1",
+						"b": "6",
+						"c": "8",
+						"d": "68",
+						"f": "19",
+						"expression1": "68-19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule de manière astucieuse.\n\n$$55 - 39 = [?]$$",
+					"reponse": ["16"],
+					"variables": {
+						"a": "3",
+						"b": "5",
+						"c": "5",
+						"d": "55",
+						"f": "39",
+						"expression1": "55-39"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule de manière astucieuse.\n\n$$51 - 19 = [?]$$",
+					"reponse": ["32"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1",
+						"d": "51",
+						"f": "19",
+						"expression1": "51-19"
+					}
+				}
+			]
+		}
+	]
+}

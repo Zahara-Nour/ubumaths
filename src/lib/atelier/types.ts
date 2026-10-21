@@ -18,8 +18,11 @@ import type { Domain } from '$lib/mathAST/domain/types';
 // Types
 // =============================================================================
 
-/** Les quatre types du v1. La géométrie (v2) et Python (v3) en ajouteront. */
-export type ObjectKind = 'value' | 'function' | 'sequence' | 'list';
+/**
+ * Les quatre types du v1, et les deux de la géométrie (v2, lot 1 : `point`,
+ * `curve`). Python (v3) en ajoutera.
+ */
+export type ObjectKind = 'value' | 'function' | 'sequence' | 'list' | 'point' | 'curve';
 
 /**
  * L'état d'un objet. Décision D9.
@@ -103,6 +106,12 @@ export interface ValueObject extends AtelierObjectBase {
 	/** Unité, quand la valeur est une grandeur. Décision D4 : pas de curseur. */
 	readonly unit?: string;
 	readonly slider?: Slider;
+	/**
+	 * Curseur affiché depuis le menu de la carte alors que la valeur n'est pas un
+	 * paramètre (lot 4a de la refonte). Retenu avec l'atelier, comme la couleur
+	 * d'une courbe (décision de David du 2026-10-18). Absent quand il est caché.
+	 */
+	readonly sliderShown?: true;
 }
 
 /**
@@ -128,10 +137,20 @@ export interface CurveDisplay {
 	readonly showOsculating: boolean;
 	/** Longueur de la courbe, sur les bornes de l'aire. */
 	readonly showArcLength: boolean;
+	/**
+	 * Lecture graphique de l'image : les calculs `f(a)` de la console et un
+	 * point glissant se lisent en pointillés (lot 3 bis de la refonte).
+	 */
+	readonly showReading: boolean;
 }
 
 export interface FunctionObject extends AtelierObjectBase {
 	readonly kind: 'function';
+	/**
+	 * 𝒞f est-elle affichée dans la vue Géométrie ? (géométrie v2, K1) — un état
+	 * d'affichage, comme `plotted`, rangé avec l'objet. Absent = non affichée.
+	 */
+	readonly inFigure?: boolean;
 	/** Décision D2 : `x` seulement en v1 — `createEvaluator` la code en dur. */
 	readonly variable: 'x';
 	/**
@@ -207,6 +226,34 @@ export interface SequenceDisplay {
 	readonly cobwebSteps: number;
 }
 
+/**
+ * Le trait d'une courbe de la figure (lot 4b de la refonte) : les trois champs
+ * de `CurveDisplay` qu'une courbe peut porter — ni tangente ni aire, elle ne va
+ * jamais dans Graphe (G0). Absent tant que l'élève n'a rien réglé.
+ *
+ * `color` absente : la couleur par défaut de la figure, celle qui est peinte —
+ * régler le trait seul ne repeint pas la courbe d'une autre couleur.
+ */
+export interface StrokeDisplay extends Pick<CurveDisplay, 'lineStyle' | 'lineWidth'> {
+	readonly color?: CurveColor;
+}
+
+/** La taille d'un point de la figure. */
+export const POINT_SIZES = ['small', 'medium', 'large'] as const;
+export type PointSize = (typeof POINT_SIZES)[number];
+
+/**
+ * Comment un point de la figure est dessiné (lot 4b de la refonte) : couleur,
+ * taille, et son étiquette (son nom écrit près de lui). Absent tant que
+ * l'élève n'a rien réglé.
+ */
+export interface PointDisplay {
+	/** Absente : la couleur par défaut de la figure (comme `StrokeDisplay`). */
+	readonly color?: CurveColor;
+	readonly size: PointSize;
+	readonly showLabel: boolean;
+}
+
 export interface ListObject extends AtelierObjectBase {
 	readonly kind: 'list';
 	/**
@@ -249,7 +296,35 @@ export interface ListObject extends AtelierObjectBase {
 	readonly qualitativeBecause?: string;
 }
 
-export type AtelierObject = ValueObject | FunctionObject | SequenceObject | ListObject;
+/**
+ * Un point du plan (géométrie v2, décision G3) : `A = (1 ; 2)`.
+ *
+ * `definition` est le couple TEL QU'ÉCRIT, parenthèses comprises (`(a ; 2a)`) :
+ * ses coordonnées se calculent comme une valeur, exactes d'abord, et suivent
+ * les curseurs qu'elles citent. Pas de curseur à lui, pas de tracé dans Graphe
+ * (la vue Figure, PR 2, le montrera).
+ */
+export interface PointObject extends AtelierObjectBase {
+	readonly kind: 'point';
+	/** Couleur, taille, étiquette (lot 4b). Absent : le dessin par défaut de la figure. */
+	readonly display?: PointDisplay;
+}
+
+/**
+ * Une courbe définie par une équation (décision G0) : `d : y = 3x − 2`,
+ * `C : x² + y² = 1`, `v : x = 2`.
+ *
+ * `definition` est l'équation TELLE QU'ÉCRITE, sans le nom ni le « : » — jamais
+ * réécrite en forme réduite (C7). Une courbe ne va jamais dans Graphe (G0).
+ */
+export interface CurveObject extends AtelierObjectBase {
+	readonly kind: 'curve';
+	/** Couleur et trait (lot 4b). Absent : le dessin par défaut de la figure. */
+	readonly display?: StrokeDisplay;
+}
+
+export type AtelierObject =
+	ValueObject | FunctionObject | SequenceObject | ListObject | PointObject | CurveObject;
 
 // =============================================================================
 // Constantes
@@ -274,6 +349,12 @@ export const MAX_DEFINITION_LENGTH = 4000;
 /** Longueur d'un ensemble écrit après « sur » (`interval.ts`) : saisie, sauvegarde, lien. */
 export const MAX_INTERVAL_LENGTH = 200;
 
+/**
+ * Plafond des objets de la figure, points et courbes réunis (M2, Q3 du
+ * 2026-10-18) : même esprit que D8, pour qu'un atelier tienne dans une URL.
+ */
+export const MAX_FIGURE_OBJECTS = 50;
+
 /** Liste qualitative (Q91) : modalités distinctes, longueur d'une modalité */
 export const MAX_CATEGORIES = 20;
 export const MAX_CATEGORY_LENGTH = 40;
@@ -296,6 +377,19 @@ export function isSequence(o: AtelierObject): o is SequenceObject {
 
 export function isList(o: AtelierObject): o is ListObject {
 	return o.kind === 'list';
+}
+
+export function isPoint(o: AtelierObject): o is PointObject {
+	return o.kind === 'point';
+}
+
+export function isCurve(o: AtelierObject): o is CurveObject {
+	return o.kind === 'curve';
+}
+
+/** Un objet de la figure : un point ou une courbe (plafond M2). */
+export function isFigureObject(o: AtelierObject): o is PointObject | CurveObject {
+	return o.kind === 'point' || o.kind === 'curve';
 }
 
 /** Une liste qualitative (Q84) : ses entrées sont des modalités, pas des nombres. */

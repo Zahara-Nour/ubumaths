@@ -54,8 +54,8 @@ describe('la factorisation garde sa place partout ailleurs', () => {
 		['x^2-y^2', 'x^2-y^2'],
 		['x^2-1', 'x^2-1'],
 		['cosh(x)^2+sinh(x)^2', 'cosh(x)^2+sinh(x)^2'],
-		// L'ordre canonique de `tidy` est alphabétique : cosh avant sinh.
-		['sinh(x)^2-cosh(x)^2', '-cosh(x)^2+sinh(x)^2']
+		// Deux termes : le positif devant (David, 2026-10-20).
+		['sinh(x)^2-cosh(x)^2', 'sinh(x)^2-cosh(x)^2']
 	])('%s → %s', (input, expected) => {
 		expect(s(input)).toBe(expected);
 	});

@@ -217,7 +217,7 @@ describe('DELETE /template-tags', () => {
 		expect(list.tags).toHaveLength(0);
 	});
 
-	it('détacher deux fois ne lève pas d’erreur', async () => {
+	it('détacher deux fois : le second détachement rend 404 (rien à supprimer)', async () => {
 		expect.assertions(1);
 		const locals = buildLocals(await teacherUser());
 		const tpl = await svcTemplate();
@@ -225,7 +225,7 @@ describe('DELETE /template-tags', () => {
 		const u = urlWith({ template_id: tpl.id, point_id: pt.id });
 
 		await tagsDELETE({ url: u, locals } as never);
-		expect((await tagsDELETE({ url: u, locals } as never)).status).toBe(200);
+		expect((await tagsDELETE({ url: u, locals } as never)).status).toBe(404);
 	});
 });
 

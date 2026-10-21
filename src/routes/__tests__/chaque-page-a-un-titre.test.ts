@@ -25,7 +25,9 @@ const SANS_TITRE: Record<string, string> = {
 	'(protected)/dashboard/student/worksheets/fiche/[id]/+page.svelte':
 		'page de résolution : le load redirige toujours, jamais rendue',
 	'(protected)/dashboard/teacher/contenu/worksheets/exercice/[id]/+page.svelte':
-		'page de résolution : le load redirige toujours, jamais rendue'
+		'page de résolution : le load redirige toujours, jamais rendue',
+	'(public)/l/[code]/+page.svelte':
+		'lien court d’un QR : le load redirige ou rend la 404, jamais rendue'
 };
 
 const H1 = /<h1[\s>]|level=\{1\}/;

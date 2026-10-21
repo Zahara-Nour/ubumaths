@@ -84,6 +84,7 @@ import { tryUnivariateGcd, dividePolynomials } from './univariate-gcd';
 import { evaluateNodeToApproximatedNumber, exactBinomial, exactFactorial } from '../eval/evaluate';
 import { parse as parseUnit } from '../units/parser';
 import { exactConversion } from '../units/exact';
+import { isMultipliedTemperature } from '../units/conversion';
 import { format as formatUnit } from '../units/formatter';
 import {
 	divide,
@@ -3014,7 +3015,8 @@ function normalizeNode(node: MathNode, ctx?: NormalizeContext): NormalForm {
 function normalizeUnit(node: MathNode & { type: 'unit' }, ctx?: NormalizeContext): NormalForm {
 	const writing = node.unit.original ?? formatUnit(node.unit);
 	const conversion = exactConversion(writing);
-	if (conversion === null) {
+	// §D.2 — `2*20[°C]` n'est ni `40[°C]` ni `586,3 K` : opaque
+	if (conversion === null || isMultipliedTemperature(node)) {
 		return normalizeOpaqueNode(node);
 	}
 

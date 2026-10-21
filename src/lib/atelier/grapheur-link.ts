@@ -12,6 +12,7 @@
 import { z } from 'zod';
 import { Atelier } from './atelier.svelte';
 import { decodeAtelier } from './url';
+import { renamedOnReadMessage } from './geometry';
 import { splitInterval } from './interval';
 import { readingMode } from './parse';
 import type { AtelierState } from './persistence';
@@ -74,6 +75,15 @@ export function atelierFromCurves(
 	definitions: readonly string[]
 ): { ok: true; atelier: Atelier } | { ok: false; message: string } {
 	const atelier = new Atelier();
+	// Un atelier reçu n'est pas un geste de l'élève : Annuler ne doit pas le vider
+	// (revue de #1517 — Ctrl+Z ×4 défaisait les courbes du lien)
+	return atelier.untracked(() => buildFromCurves(atelier, definitions));
+}
+
+function buildFromCurves(
+	atelier: Atelier,
+	definitions: readonly string[]
+): { ok: true; atelier: Atelier } | { ok: false; message: string } {
 	const created: { name: string; definition: string }[] = [];
 	for (const definition of definitions) {
 		// Décision g : « sur » se lit comme dans le reste de l'atelier (`?f=x^2 sur [0;+∞[`)
@@ -127,14 +137,20 @@ export async function openLink(params: URLSearchParams): Promise<OpenedLink> {
 		const atelier = new Atelier();
 		const report = atelier.restore(decoded.state);
 		const lost = decoded.dropped + report.skipped.length;
+		// Q2 de la géométrie : un objet `y` renommé à la relecture, dit à l'ouverture
+		const notices = [
+			...report.renamed.map(renamedOnReadMessage),
+			...(lost === 0
+				? []
+				: [
+						`${lost} objet${lost > 1 ? 's' : ''} du lien n’${lost > 1 ? 'ont' : 'a'} pas pu être relu${lost > 1 ? 's' : ''}.`
+					])
+		];
 		return {
 			kind: 'received',
 			atelier,
 			state: decoded.state,
-			notice:
-				lost === 0
-					? null
-					: `${lost} objet${lost > 1 ? 's' : ''} du lien n’${lost > 1 ? 'ont' : 'a'} pas pu être relu${lost > 1 ? 's' : ''}.`
+			notice: notices.length === 0 ? null : notices.join(' ')
 		};
 	}
 

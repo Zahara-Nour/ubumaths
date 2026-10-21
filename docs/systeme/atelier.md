@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-15.
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21).
 
 ## À quoi ça sert
 
@@ -36,10 +36,10 @@ jamais à l'élève si sa conjecture est juste.
 
 Deux adresses, un seul outil :
 
-| Route       | Fichier                                     | Ouvre                                                                               |
-| ----------- | ------------------------------------------- | ----------------------------------------------------------------------------------- |
-| `/atelier`  | `src/routes/(public)/atelier/+page.svelte`  | l'atelier personnel, vue Calcul                                                     |
-| `/grapheur` | `src/routes/(public)/grapheur/+page.svelte` | le même atelier, vue Graphe, « Mes objets » ouvert ; atelier vide → carte `f` prête |
+| Route       | Fichier                                     | Ouvre                                                                        |
+| ----------- | ------------------------------------------- | ---------------------------------------------------------------------------- |
+| `/atelier`  | `src/routes/(public)/atelier/+page.svelte`  | l'atelier personnel, vue Graphe, console ouverte par-dessus                  |
+| `/grapheur` | `src/routes/(public)/grapheur/+page.svelte` | le même atelier, vue Graphe, console fermée ; atelier vide → carte `f` prête |
 
 L'atelier est l'**entrée unique** : la barre latérale (`src/lib/components/Sidebar.svelte`) n'a
 plus d'entrée « Grapheur », `/grapheur` survit pour les favoris et les liens de projection
@@ -51,8 +51,10 @@ Ceux du code et de l'interface :
 - **objet** : un nom + une définition, de quatre types (valeur, fonction, suite, liste) ;
 - **carte** : la présentation d'un objet dans « Mes objets » (`ObjectCard.svelte`). ⚠️ Rien à
   voir avec la **Carte de cours** de CONTEXT.md ni avec les cartes du SRS ;
-- **vue** : Calcul, Graphe ou Données — une _projection_ des objets, sans état propre ;
-- **historique** : les lignes de la vue Calcul (saisies et réponses) ;
+- **vue** : Graphe, Géométrie ou Données — une _projection_ des objets, sans état propre ;
+- **console** : le volet déroulant où l'on tape (l'ancienne vue Calcul, `CalculView.svelte`) ;
+  dans le code et les messages, « Calcul » la désigne encore souvent ;
+- **historique** : les lignes de la console (saisies et réponses) ;
 - **mode éphémère** : un atelier reçu par lien, qui ne lit ni n'écrit l'atelier personnel.
 - voisin hors atelier : `/calc` (`src/routes/(public)/calc/+page.svelte`, grapheur singleton).
   Sa saisie (`UnifiedInput.svelte`) a un **mode commande** : un « . » dans le champ vide ouvre une
@@ -66,32 +68,48 @@ Ceux du code et de l'interface :
 
 ## Carte du code
 
-### Modèle — `src/lib/atelier/` (64 fichiers hors tests)
+### Modèle — `src/lib/atelier/` (65 fichiers hors tests)
 
-| Fichier                             | Rôle                                                                                                      |
-| ----------------------------------- | --------------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/types.ts`          | Les quatre types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type |
-| `src/lib/atelier/atelier.svelte.ts` | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`     |
-| `src/lib/atelier/formula.ts`        | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus       |
-| `src/lib/atelier/grid.ts`           | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds     |
-| `src/lib/atelier/grid-functions.ts` | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre  |
-| `src/lib/atelier/tabulate.ts`       | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut   |
-| `src/lib/atelier/names.ts`          | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)        |
-| `src/lib/atelier/parse.ts`          | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)     |
-| `src/lib/atelier/letter.ts`         | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                              |
-| `src/lib/atelier/interval.ts`       | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)          |
-| `src/lib/atelier/reciprocal.ts`     | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français     |
-| `src/lib/atelier/limit.ts`          | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule          |
-| `src/lib/atelier/limit-steps.ts`    | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                |
-| `src/lib/atelier/constant.ts`       | La valeur d'une constante (curseurs, premier terme d'une suite)                                           |
-| `src/lib/atelier/list-cited.ts`     | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                              |
-| `src/lib/atelier/actions.ts`        | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                        |
-| `src/lib/atelier/context.ts`        | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                 |
-| `src/lib/atelier/engine.ts`         | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie        |
-| `src/lib/atelier/plot-sync.ts`      | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                            |
-| `src/lib/atelier/display.ts`        | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                |
-| `src/lib/atelier/mathfield.ts`      | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                  |
-| `src/lib/atelier/paste.ts`          | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                      |
+| Fichier                                     | Rôle                                                                                                                                                           |
+| ------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/types.ts`                  | Les six types d'objets, `ObjectStatus`, `CurveDisplay`, `SequenceDisplay`, plafonds D8, gardes de type                                                         |
+| `src/lib/atelier/geometry.ts`               | Points et courbes (v2) : couple découpé, forme d'une équation, messages, refus d'un point cité (P9)                                                            |
+| `src/lib/atelier/atelier.svelte.ts`         | **La classe `Atelier`** : création, renommage, mise à jour, suppression, états, `serialize`/`restore`                                                          |
+| `src/lib/atelier/formula.ts`                | Les formules de la grille : lecture des références (`ω_k`), ordre de calcul, cycles, repli ≈, refus                                                            |
+| `src/lib/atelier/grid.ts`                   | La grille de la vue Données : adresses (`B3`), entrées d'une colonne nommée, répartition P2, plafonds                                                          |
+| `src/lib/atelier/grid-functions.ts`         | Les fonctions du tableur (SOMME, ARRONDI…) : appels, plages, calcul en arbre équilibré, aide de la barre                                                       |
+| `src/lib/atelier/cell-format.ts`            | La mise en forme des cases (reprise de V4) : zones, styles résolus, formats de nombre, rangement                                                               |
+| `src/lib/atelier/cell-colors.ts`            | Les couleurs de la mise en forme : CSS du texte et du fond, réglages de contraste mesurés                                                                      |
+| `src/lib/atelier/tabulate.ts`               | Tabuler une fonction dans la grille : le tableau en formules, ses refus, `.tabuler`, valeurs par défaut                                                        |
+| `src/lib/atelier/names.ts`                  | Validation des noms, nommage automatique (`nextName`), noms de dérivées et de réciproques (`f^-1`)                                                             |
+| `src/lib/atelier/parse.ts`                  | Lecture d'une définition (`parseDefinition`), dépendances (`referencesOf`), provenance (`Provenance`)                                                          |
+| `src/lib/atelier/letter.ts`                 | `f(t) = t^2` : la lettre de l'élève à l'affichage, la définition rangée en x                                                                                   |
+| `src/lib/atelier/interval.ts`               | `f(x) = x^2 sur [0;+∞[` : coupe au mot « sur », lit l'ensemble, juge I3 (domaine) et I4 (`f(5)`)                                                               |
+| `src/lib/atelier/reciprocal.ts`             | La carte `f⁻¹` et `.réciproque` : f passée au moteur, paramètres gardés en lettres, refus en français                                                          |
+| `src/lib/atelier/limit.ts`                  | `.limite EXPR en POINT` : point lu (côté, infini, `en x=1`), `evaluateLimit`, réponse en formule                                                               |
+| `src/lib/atelier/limit-steps.ts`            | `.limite` : « Comment ? » (`limitSteps`), garde de concordance dans `limit-steps-check.ts`                                                                     |
+| `src/lib/atelier/constant.ts`               | La valeur d'une constante (curseurs, premier terme d'une suite)                                                                                                |
+| `src/lib/atelier/list-cited.ts`             | Refus d'une liste citée comme un nombre (`listCitedMessage`)                                                                                                   |
+| `src/lib/atelier/actions.ts`                | Les actions d'une carte selon le type et l'état (`actionsFor`), listes partenaires                                                                             |
+| `src/lib/atelier/context.ts`                | L'instance d'atelier passée par contexte (`provideAtelier`, `useAtelier`)                                                                                      |
+| `src/lib/atelier/engine.ts`                 | Remet `WebReplEngine` en accord avec les objets (`syncEngine`), expansion des noms dans une saisie                                                             |
+| `src/lib/atelier/plot-sync.ts`              | Reporte les objets tracés vers le `GrapheurStore` (`syncPlots`), à sens unique                                                                                 |
+| `src/lib/atelier/figure-sync.ts`            | Reporte points, courbes et 𝒞f affichées vers une `Figure` de `geometry-core` (`syncFigure`)                                                                    |
+| `src/lib/atelier/curve-nature.ts`           | La nature d'une courbe pour sa carte (« droite », « cercle »…) et le constat d'une courbe vide (C6)                                                            |
+| `src/lib/atelier/construction-read.ts`      | Lecture d'une construction (lot 2) : mots du DSL, raccourcis `(AB)` `[AB]` `[AB)`, séparateurs, accents                                                        |
+| `src/lib/atelier/construction-spec.ts`      | Typage d'une construction lue : point, droite ou nombre attendu ; refus du mauvais type (L8)                                                                   |
+| `src/lib/atelier/construction.ts`           | Calcul EXACT d'une construction (fonctions pures de `geometry-core`), équations, longueur, carte                                                               |
+| `src/lib/atelier/point-drag.ts`             | Glisser un point à la souris (lot 3, PR 1) : ce qui se glisse (`dragHoldOf`), couple écrit, position sur un support                                            |
+| `src/lib/atelier/figure-tools.svelte.ts`    | Barre d'outils de la vue Géométrie (lot 3, PR 2 et 3) : outil choisi, construction en cours, noms automatiques, M5 (intersection, `point_sur`), lignes écrites |
+| `src/lib/atelier/construction-intersect.ts` | `intersection` et `point_sur` (PR 3) : calcul pur sur des supports résolus, numérotation `k`, attente et refus                                                 |
+| `src/lib/atelier/measures.ts`               | Mesures (lot 2, PR 2) : `AM`, `distance`, `aire`, `perimetre`, `angle`, calculées exactes et remplacées par leur valeur                                        |
+| `src/lib/atelier/measures-read.ts`          | Repérage des mesures dans un texte, sans atelier (pour `parse.ts`)                                                                                             |
+| `src/lib/atelier/survey.ts`                 | `.relever` (PR 4) : lecture, pas exacts, ce qui varie, relevé (`Atelier.sweep`), deux listes et la ligne de réponse                                            |
+| `src/lib/atelier/perf-switches.ts`          | Les raccourcis du recalcul (mémo des lectures, liaisons limitées, mémo `#refsOf`) et leur compteur, pour les tests                                             |
+| `src/lib/atelier/display.ts`                | Schémas Zod des réglages de courbe et de suite (carte, sauvegarde, lien : une seule règle)                                                                     |
+| `src/lib/atelier/reading.ts`                | Lecture graphique : les `f(a)` de la console qui se lisent sur le graphe (`consoleReadings`)                                                                   |
+| `src/lib/atelier/mathfield.ts`              | Passage texte ↔ LaTeX pour le champ MathLive d'une carte                                                                                                       |
+| `src/lib/atelier/paste.ts`                  | Collage réécrit en LaTeX, annulable (`insertPasted`)                                                                                                           |
 
 **Vue Calcul** (saisie, commandes, historique) :
 
@@ -114,6 +132,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
 | `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)     |
 | `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
+| `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée              |
 | `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
 | `src/lib/atelier/virtual-keyboard.ts`   | Clavier virtuel de l'écriture mathématique : onglets « Calcul » et « Commandes »                           |
 | `src/lib/atelier/domain-steps.ts`       | `.domaine` : réponse `D = …` et « Comment ? » (`domainLine`)                                               |
@@ -135,36 +154,53 @@ Ceux du code et de l'interface :
 
 **Session, partage, export** :
 
-| Fichier                              | Rôle                                                                                               |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------- |
-| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod   |
-| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory` |
-| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds |
-| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                  |
-| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                               |
-| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                 |
-| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                          |
-| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`              |
-| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                             |
-| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                      |
+| Fichier                              | Rôle                                                                                                                              |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/atelier/persistence.ts`     | Ranger / relire le `localStorage` (`loadAtelier`, `saveAtelier`, `readForeignWrite`), schéma Zod                                  |
+| `src/lib/atelier/session.ts`         | Cycle de vie (`openSession`) : chargement, sauvegarde différée, autres onglets ; `keepCalcHistory`                                |
+| `src/lib/atelier/history-storage.ts` | Les lignes de Calcul gardées au rechargement (`loadCalcHistory`, `saveCalcHistory`), Zod, plafonds                                |
+| `src/lib/atelier/safe-latex.ts`      | Liste blanche des commandes LaTeX d'une formule relue du stockage (`isSafeLatex`)                                                 |
+| `src/lib/atelier/url.ts`             | Atelier ↔ charge d'URL compressée (`encodeAtelier`, `decodeAtelier`)                                                              |
+| `src/lib/atelier/grapheur-link.ts`   | Porte unique des liens `?a=` et `?f=` (`openLink`), pour `/atelier` et `/grapheur`                                                |
+| `src/lib/atelier/merge.ts`           | « Garder dans mon atelier » ce qu'on a reçu (`keepReceived`, `mergeInto`)                                                         |
+| `src/lib/atelier/replace.ts`         | « Remplacer mon atelier » : la copie mise de côté (`replacePersonal`, `swapWithSetAside`, `keepAside`, `readSetAside`)            |
+| `src/lib/atelier/rename.ts`          | Réécrire une définition qui cite un objet renommé (`renameInObject`) : `Atelier.rename` et la fusion                              |
+| `src/lib/atelier/history-export.ts`  | Export de l'historique de Calcul : JSON rejouable, ubumark lisible, `downloadHistory`                                             |
+| `src/lib/atelier/history-stack.ts`   | Pile Annuler / Rétablir (lot 5) : étapes à photos avant / après, plafond 100 étapes et 5 Mo ; un geste continu fondu en une étape |
+| `src/lib/atelier/gesture.ts`         | Fin d'un geste de curseur (relâchement, touche relâchée, focus perdu) : une étape d'Annuler par geste                             |
+| `src/lib/atelier/history-import.ts`  | Relecture d'un JSON exporté, validée par Zod et bornée (`readHistory`)                                                            |
+| `src/lib/atelier/atelier-file.ts`    | Enregistrer / Charger l'atelier entier dans un `.atelier.json` (`atelierFileToJson`, `readAtelierFile`)                           |
+| `src/lib/atelier/removal.ts`         | Les phrases de la suppression en cascade (`cascadeMessage`, `removedMessage`)                                                     |
 
 ### Composants — `src/lib/components/atelier/`
 
-| Composant                 | Rôle                                                                                                                    |
-| ------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `AtelierContainer.svelte` | Le conteneur : panneau + vues, session, `CalcDesk`, `GrapheurStore` propre, confirmations                               |
-| `ObjectPanel.svelte`      | « Mes objets » : création, liste des cartes                                                                             |
-| `ObjectCard.svelte`       | Une carte : nom, définition, état, actions ; champs de l'image et de « Tabuler » (de / à / pas)                         |
-| `DefinitionField.svelte`  | `f(x) =` + champ MathLive ; la frappe met l'objet à jour 0,3 s après la dernière touche                                 |
-| `ValueSlider.svelte`      | Curseur d'une valeur (bornes et pas réglables)                                                                          |
-| `CurveSettings.svelte`    | « Sur le graphique » : couleur, trait, tangente, aire, cercle osculateur, longueur                                      |
-| `SequenceSettings.svelte` | Mode, rang initial, premier terme ; nuage ou escalier                                                                   |
-| `CalculView.svelte`       | Vue Calcul : champ (texte ou écriture mathématique), historique, « Garder », export / import                            |
-| `NaturalField.svelte`     | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel       |
-| `AtelierSettings.svelte`  | Le bouton « Réglages » et sa fenêtre : la saisie dans Calcul                                                            |
-| `FormulaText.svelte`      | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`) |
-| `DataView.svelte`         | Vue Données : la grille (barre de cellule, clavier, nommer une colonne), aperçus des listes, diagrammes                 |
-| `ShareBar.svelte`         | Partager (lien `?a=`), recevoir, « Garder dans mon atelier »                                                            |
+| Composant                   | Rôle                                                                                                                                                           |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AtelierContainer.svelte`   | Le conteneur : barre d'icônes, panneau + vues, console déroulante, session, `CalcDesk`, `GrapheurStore` propre                                                 |
+| `roving-toolbar.ts`         | Motif ARIA « barre d'outils » de la barre d'icônes : un arrêt de tabulation, flèches, Début / Fin                                                              |
+| `ToolButton.svelte`         | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                        |
+| `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                  |
+| `ObjectCard.svelte`         | L'aiguillage : confie chaque objet à la carte de son type                                                                                                      |
+| `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; nature, construction en gris, menu                                         |
+| `FigureStylePopover.svelte` | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`                                            |
+| `ValueCard.svelte`          | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes                                         |
+| `SequenceCard.svelte`       | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne                                              |
+| `ListCard.svelte`           | La carte d'une liste : aperçu non éditable, nombre de valeurs ; menu avec le sous-menu « Avec une autre liste »                                                |
+| `CardActionItems.svelte`    | Les actions d'un menu de carte, indisponibles annoncées (`aria-disabled`, raison décrite), jamais `disabled`                                                   |
+| `UnavailableItem.svelte`    | Un réglage de menu qui ne s'applique pas ici (« Curseur » d'une grandeur, « Escalier » d'une suite explicite)                                                  |
+| `FunctionCard.svelte`       | La carte d'une fonction, sur une ligne : point, `f(x) = [champ]`, œil, menu Affichage / Actions ; fenêtre de « Tabuler »                                       |
+| `CurveStylePopover.svelte`  | Le point de couleur d'une fonction ou d'une suite : couleur, épaisseur, style du trait (ou « Tracer » si jamais tracée)                                        |
+| `DefinitionField.svelte`    | Champ MathLive d'une définition ; toutes les cartes le rangent à Entrée / sortie du champ (`commit="validate"`)                                                |
+| `ValueSlider.svelte`        | Le curseur d'une valeur, sous la ligne de sa carte                                                                                                             |
+| `SliderSettings.svelte`     | Les bornes et le pas du curseur, refusés avec leur raison (fenêtre ouverte depuis le menu de la valeur)                                                        |
+| `CurveSettings.svelte`      | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                      |
+| `CalculView.svelte`         | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                        |
+| `NaturalField.svelte`       | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                              |
+| `AtelierSettings.svelte`    | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                                                     |
+| `FormulaText.svelte`        | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                        |
+| `FigureView.svelte`         | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, barre d'outils, case « Repère », glisser des points, flèches, message d'un atelier sans figure |
+| `DataView.svelte`           | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                                                    |
+| `ShareBar.svelte`           | Sous la barre : `share()` (lien `?a=`, appelé par l'icône Partager), retour, lien ; bandeau et « Garder dans mon atelier »                                     |
 
 La vue **Graphe** n'a pas de composant à elle : `AtelierContainer.svelte` monte
 `src/lib/components/grapheur/GrapheurContainer.svelte` avec `panel={false}` sur un
@@ -177,15 +213,308 @@ cartes (décision G3).
 
 ### Objets
 
-`AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject`
-(`src/lib/atelier/types.ts`).
+`AtelierObject` = `ValueObject` | `FunctionObject` | `SequenceObject` | `ListObject` |
+`PointObject` | `CurveObject` (`src/lib/atelier/types.ts`). Les deux derniers sont ceux de la
+géométrie (v2, lot 1 : le modèle en PR 1, la vue Géométrie en PR 2, 𝒞f en PR 3 — phase 0
+[atelier-geometrie-phase0.md](../archive/wip/atelier-geometrie-phase0.md)).
 
-| Type       | Exemple                    | Particularités                                                                                                                          |
-| ---------- | -------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `value`    | `a = 2`, `d = 12[km]`      | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)                                                     |
-| `function` | `f(x) = x^2`, `f(t) = t^2` | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `interval` l'ensemble écrit après « sur » ; `display` du tracé |
-| `sequence` | `u(n) = 2n+1`, `u = 2u+1`  | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)                                                   |
-| `list`     | `L = 12 ; 15 ; 9`          | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage ; `column`, sa colonne dans la grille            |
+| Type       | Exemple                               | Particularités                                                                                                                                |
+| ---------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `value`    | `a = 2`, `d = 12[km]`                 | curseur (bornes `[-10 ; 10]` par défaut, D3) ; une grandeur à unité n'en a pas (D4)                                                           |
+| `function` | `f(x) = x^2`, `f(t) = t^2`            | rangée **en x** ; `letter` garde la lettre de l'élève pour l'affichage ; `interval` l'ensemble écrit après « sur » ; `display` du tracé       |
+| `sequence` | `u(n) = 2n+1`, `u = 2u+1`             | `mode` explicite / récurrence, `firstIndex`, `firstTerm` (nombre ou nom d'une valeur)                                                         |
+| `list`     | `L = 12 ; 15 ; 9`                     | `values` numériques, ou `categories` (liste qualitative) ; `plottedWith` pour le nuage ; `column`, sa colonne dans la grille                  |
+| `point`    | `A = (1 ; 2)`, `M = (a ; 2a)`         | `definition` = le couple tel qu'écrit, parenthèses comprises ; coordonnées calculées comme des valeurs, exactes d'abord ; ni curseur ni tracé |
+| `curve`    | `d : y = 3x - 2`, `C : x^2 + y^2 = 1` | `definition` = l'équation telle qu'écrite, sans le nom ni « : » (jamais réduite, C7) ; jamais dans Graphe (G0)                                |
+
+**Point et courbe** (géométrie v2, décisions G0-G7 et Q1-Q5 du 2026-10-18) : **la forme écrite
+donne le type** (G0) — `f(x) = 3x − 2` est une **fonction** (Graphe, dériver…), `d : y = 3x − 2`
+une **courbe** (vue Géométrie). Dans Calcul, `defineCurve` (`calcul.ts`) ne prend `<nom> :
+<reste>` pour une courbe que si le reste porte une relation (`hasRelation`) : `6 : 3` et `a : b`
+restent la division (C15) ; sur une valeur existante, `a : b = 2` reste une comparaison, `d : y =
+3x` est refusé (« « d » est déjà une valeur. », V62). La lecture (`parseCurve`, `parse.ts`) refuse
+une inégalité (C9), deux « = » (C10), une unité (C11, D4), une équation sans x ni y (C8) — dans
+Calcul ces refus ne créent rien. Un point se tape `A = (1 ; 2)` (G3) : `looksLikePoint` le trie
+(un « ; » de premier niveau, ou une virgule qui sépare : `(1, 2)` est refusé par P6, `(1,2)` reste
+le décimal 1,2 de #983) ; `parsePoint` lit chaque coordonnée comme une valeur (virgule décimale,
+fractions, P3), sans unité (P8), sans x ni y. `A(1 ; 2)` répond « Pour définir un point, écris
+A = (1 ; 2). » (P5). Taper `A` répond `A(1 ; 2)`, chaque coordonnée calculée comme une ligne de
+Calcul (`pointLine`) ; taper `d` répond son équation. Un point ou une courbe cité dans un calcul
+(`A + 1`, `2A`) ou une définition (`a = A + 1`) est refusé (« On ne calcule pas encore avec des
+points. », `figureCitedMessage`, P9), y compris en argument d'une commande de calcul (`.dériver A` répondait `d/dA(A) = 1` ; lu dans le texte par `citesName`, les commandes de données lisant des modalités ne sont pas touchées). `(1 ; 2)` tapé seul répond « Pour définir un point, nomme-le : A = (1 ; 2). » (nom libre) ; un triplet ou un couple dans un calcul (`(1;2)+(3;4)`) garde le refus des couples, et la carte d'une valeur aussi. Ils citent des valeurs et des fonctions comme tout objet :
+`M = (a ; 2a)` attend a avec l'offre de curseur (D9), `T : y = f'(2)(x − 2) + f(2)` suit f, et la
+suppression en cascade les emporte (M3). Ni le moteur (`syncEngine`) ni le grapheur ne les
+reçoivent ; `setPlotted` les ignore. Actions de carte : modifier (le champ, préfixe `d :`) et
+supprimer, rien d'autre au lot 1. Plafond `MAX_FIGURE_OBJECTS` (50, points et courbes, Q3). La
+**nature** d'une courbe (droite, cercle) et la courbe vide (C6) attendent la PR 2 :
+`geometry-core` ne l'expose pas encore hors de `courbe()`.
+
+**Constructions** (géométrie, lot 2, PR 1 — phase 0
+[atelier-geometrie-lot2-phase0.md](../archive/wip/atelier-geometrie-lot2-phase0.md), L1-L3, L7, L8) : un
+point ou une courbe peut aussi être **construit** — mots du DSL de géométrie, mêmes arguments
+(nommés compris), et trois raccourcis de manuel, en définition comme dans un argument :
+
+| Écrit                                                                            | Crée                                                                          |
+| -------------------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| `P = point(1 ; 2)`, `I = milieu(A, B)`, `milieu([AB])`                           | un point                                                                      |
+| `H = projection(M, axe=d)`                                                       | un point                                                                      |
+| `d = (AB)` = `droite(A, B)`, `s = [AB]`, `r = [AB)`                              | droite, segment, demi-droite                                                  |
+| `parallele(P, d)`, `parallele(P, A, B)`, `perpendiculaire(…)`                    | une droite (d : droite, segment, demi-droite, ou équation de droite du lot 1) |
+| `cercle(O, 3)`, `cercle(O ; rayon=r)`, `cercle(O, passant=A)`, `cercle(A, B, C)` | un cercle                                                                     |
+
+Une construction se nomme avec « = » (une équation avec « : ») ; elle est un `PointObject` ou un
+`CurveObject` dont la `definition` est la construction **telle qu'écrite** — aucun champ, aucun type
+nouveau, donc ni schéma ni `ATELIER_STATE_VERSION` changés : sauvegarde, lien, fichier et fusion
+la relisent. Lecture : `construction-read.ts` (sa propre grammaire, pas celle du DSL : voir son
+en-tête), `construction-spec.ts` (types), `parseConstruction` (`parse.ts`). Calcul :
+`construction.ts`, **exact** (`geo-arithmetic.ts`, `projectOnLine`), relu à chaque passage — L1 :
+l'atelier calcule, jamais la `Figure`. Règles :
+
+- **Séparateurs** : `;` toujours, `,` quand rien ne peut être un décimal (`milieu(A, B)`,
+  `point(1, 2)`) ; `point(1,5, 2)` et `point(1,2)` sont refusés (« Sépare les arguments de point
+  avec « ; » »), comme `max(1,2)`. **Accents** acceptés (`parallèle`, `demi-droite`).
+- **`(AB)` : le TYPE de A et B tranche** (décision de David, 2026-10-18, option a) : deux points →
+  la droite ; deux valeurs → le produit, comme avant ; un point et une valeur → refus avec la
+  raison ; un nom encore absent → l'objet attend (D9). Le type suit après coup (A supprimé puis
+  recréé en valeur : `#shortcutKinds`, au début de `recomputeAll`, fait de d une valeur).
+  `[AB]`, `[AB)` n'ont pas d'autre sens qu'une construction (deux valeurs : « « a » n'est pas un
+  point. »).
+- **Refus** (rien n'est créé) : un mot du DSL hors catalogue (« « médiatrice » n'est pas encore
+  dans l'atelier. », aussi dans un calcul : `2·bissectrice(A, B, C)` ; les mesures, elles, se calculent) ; un objet du mauvais type
+  (« « d » n'est pas un point. », « « A » n'est pas une droite. ») ; `cercle(O, A)` avec un point
+  (« … écris cercle(O, passant=A). ») ; une construction circulaire (`K = milieu(K, B)`, ou qui
+  citerait un de ses dépendants) ; un changement de type (V62). Une construction prise dans un
+  calcul (`2·milieu(A, B)`) est refusée.
+- **D9, L8** : un objet cité absent met la construction en attente ; supprimer A propose la
+  cascade (I, puis ce qui cite I) ; redéfinir A recalcule. Ce qui ne se construit pas **avec les
+  valeurs du moment** — deux points confondus, trois points alignés, une parallèle à un cercle, un
+  rayon ≤ 0 — est en **erreur** avec sa raison (`#constructions`, après la propagation de
+  `recomputeAll`, jusqu'au point fixe). Même principe pour une valeur dont les grandeurs ne se
+  combinent pas (`3[min] + 2[km]`) : `#quantityChecks`, juste après. Chaque construction se calcule **une fois par passe** :
+  mémo par révision (`Atelier.constructionMemo`, partagé par le recalcul, les cartes et Calcul),
+  un mémo par passage pour la vue Géométrie (curseurs gardés en lettres) — sans lui, une chaîne
+  de 12 milieux coûtait 46 s. Renommer réécrit aussi les raccourcis écrits en LaTeX par la carte
+  (`\left(AB\right)`, `\left\lbrack AB\right\rbrack`, `A_{1}`). Un nom hors forme (`m2 = …`)
+  est refusé comme nom d'abord.
+- **Tapée seule, c'est un calcul** : `(AB)` répond `(AB) : y=2x+1` (équation réduite ; `x = …`
+  verticale), `[AB]` `segment de longueur sqrt(5)`, `[AB)` `demi-droite portée par …`,
+  `milieu(A, B)` `(1/2 ; 2)`, `cercle(O, 3)` son équation `x^2+y^2=9`. Rien n'est créé ;
+  « Garder » (D5) crée l'objet avec la définition tapée (`CalcResult.construction`). Nommé, `I`
+  répond `I(1/2 ; 2)`, `d` son équation.
+- **Carte** (L7, contenu seulement) : la construction telle qu'écrite (régénérée par
+  `constructionLatex`, jamais le texte saisi), sa nature (« point », « droite », « segment »,
+  « demi-droite », « cercle »), et une ligne `.valeur` : coordonnées exactes, longueur, équation
+  (`constructionSummaryOf`). Le champ de la carte relit le LaTeX de MathLive
+  (`\operatorname{milieu}\left(A,B\right)`, `\left(AB\right)`) ; préfixe `d =`.
+- **Vue Géométrie** : `syncFigure` reçoit les arbres calculés (curseurs gardés en lettres) et pose
+  des éléments existants (droite, segment, demi-droite, cercle par rayon) ; un curseur cité suit
+  par `moveSlider`, sans reconstruire. Le nom d'un cercle est un texte de la figure, de sa
+  couleur, accroché à un point caché du cercle (aucune surface de `geometry-core` n'écrit le nom
+  d'un cercle) : rien n'est désigné au survol, rien de plus à l'export.
+
+**Mesures** (géométrie, lot 2, PR 2 — L4) : des **valeurs** calculées par l'atelier, exactes
+d'abord, citables partout où une valeur l'est (Calcul, définition d'une valeur ou d'une fonction,
+moteur, Graphe par la substitution) :
+
+| Écrit                                   | Vaut                                                                                                                                                                                                                                                        |
+| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AM` (deux points de l'atelier, collés) | la longueur AM (`AE` → `sqrt(5)`) ; `ab` de deux valeurs reste a·b                                                                                                                                                                                          |
+| `distance(A, B)`, `distance(A, d)`      | longueur, ou distance à une DROITE (`d` droite, `(AB)`) ; à un segment ou une demi-droite (`[AB]`, `[AB)`, `s = [AB]`) : refus « … écris distance(N, (AB)) » (décision de David, 2026-10-18 — le DSL, lui, mesure `distance(A, s)` à la droite qui porte s) |
+| `aire(A, M, N, P)`                      | aire du polygone (≥ 3 points) ; croisé → refus « … est croisé »                                                                                                                                                                                             |
+| `perimetre(…)`, `périmètre(…)`          | périmètre du polygone fermé (≥ 3 points)                                                                                                                                                                                                                    |
+| `angle(A, B, C)`                        | l'angle en B, une **grandeur** dans l'unité du réglage « Angles » : `90°`, `45°`, sinon `≈ 36,8699°` (4 décimales à l'affichage, pleine précision au calcul) ; en radians `π/2 rad`, `≈ 0,6435 rad`                                                         |
+
+Lecture : `measures-read.ts` repère les appels (texte ou LaTeX de MathLive, `\operatorname{aire}`,
+accents, séparateurs de `construction-read.ts`) ; `parseDefinition` lit le reste comme un nombre.
+Calcul : `measures.ts` (`measuredText`) remplace chaque mesure par sa valeur exacte, avec les
+points de `construction.ts` ; le moteur lit `Atelier.readableDefinition` (mémo par révision, garde
+contre un objet qui se citerait). Une ligne de Calcul tapée avec une mesure est calculée sur ce
+texte, l'écho restant celui de l'élève. Une **mesure nommée** (`S = aire(A, M, N, P)`, `L = AE`)
+est une valeur **sans `slider`** (comme une grandeur, D4 — critère de la carte) ; `#measures`
+(fin de `recomputeAll`) retire ou rend le curseur quand une valeur devient ou cesse d'être une
+mesure (`S = AM` tapé avant A et M), et met en erreur ce qui ne se calcule pas (polygone croisé,
+sommet d'un angle confondu avec un de ses points). Elle cite ses points (D9, cascade) ; un point cité HORS d'une mesure reste
+refusé (P9). La carte de valeur en montre la valeur (`ValueCard`, ligne `.mesure`, `measureSummaryOf`).
+Décisions de David (2026-10-18) : **un angle est une grandeur** (`(60[°])`, `((\pi/3)[rad])`
+dans le texte lu par le moteur) — `cos(angle(…))` se calcule, `angle(…) + 1` est refusé par la
+règle des grandeurs, une fonction ou une suite qui cite une mesure d'angle est en erreur (choix
+prudent : « une mesure d'angle est une grandeur… ») ; **« Garder »** une ligne de mesure crée une
+valeur de cette définition (`CalcResult.measure`), qui suit ses points. Revue (2026-10-18) : le moteur lit l'ARBRE d'une
+définition à mesures (`Atelier.definitionAst`, `measuredAst` : marques `m_90000` remplacées par le
+nœud exact, angles en grandeur) — relue en texte, `(({1/2}\pi)[rad])` passait en LaTeX et ne se
+lisait plus. La carte de valeur affiche ce que Calcul répond quand on tape son nom
+(`valueAnswerOf`, une seule source de vérité) ; une valeur que Calcul refuse (`W = T + 1`) est en
+erreur avec son message (`quantityProblem`) ; une fonction ne refuse qu'un angle BRUT
+(`hasBareAngle` : `cos(angle(…))·x` passe, `T·x` non) ; la grille dit « T est une grandeur (un
+angle) » ; une ligne de mesure écrit `π`, `vrai`/`faux` sans « ≈ », et refuse une puissance d'un
+angle (choix prudent) ; le champ de la carte montre `\operatorname{aire}` (`measureFieldLatex`). Dans l'arbre substitué d'un objet, un angle mesuré pris
+par un sin, cos, tan devient un nombre de radians (`angle-radians.ts`) : le moteur n'évalue pas le
+cosinus d'une grandeur dans une fonction (`g(x) = cos(R)·x`, R = 90°). La carte recopie le mode
+de la console (`Atelier.calcMode`, posé par le pupitre après chaque saisie). Revue (2026-10-18) : une mesure se cite aussi
+dans les nombres d'une construction (`cercle(A ; AM)`) et dans des coordonnées (`G = (aire(B, C, D) ;
+0)`, `engine.substitutedTextOf` → `Atelier.measuredTextOf`) ; `A = (AM ; 0)` est refusé (circulaire) ;
+renommer un point réécrit les `AM` (`renamePairs`, texte et LaTeX) ; seul un polygone CROISÉ (deux
+côtés non voisins qui se coupent en un point intérieur, `isCrossed`) est refusé : un polygone aplati
+— sommets confondus, tous alignés, côtés qui se touchent ou se recouvrent — a une aire, nulle s'il est
+plat, et un périmètre calculé normalement (décision de David du 2026-10-19, qui revient sur le refus
+posé à la revue de la PR 2) ; un polygone qui **repasse par un sommet** écrit deux fois à des places
+non voisines (`aire(A, B, C, D, B)`) est refusé (« Le polygone repasse par B… », `revisitedVertex`,
+décision de David du 2026-10-19) — on compare ce qui est ÉCRIT, pas les positions, pour qu'un relevé
+ne s'arrête pas quand deux sommets se rejoignent au glisser ; une valeur APPROCHÉE (angle non remarquable) entre au moteur
+en pleine précision et toute ligne qui la cite, même par un autre objet (`approximateNames`), se dit
+`≈`, 4 décimales, jamais en fraction.
+
+**Écrire un angle en degrés** (`degrees.ts`, 2026-10-19) : comme sur la copie. Un `°` collé
+après un nombre, un nom ou une parenthèse fermante est l'unité degré (`60[°]`, π/180 rad) —
+`cos(60°)` → `1/2`, `a = 60°`, `cos(a°)` avec a = 60, `cos((30+30)°)`, `60 °` aussi. En LaTeX,
+`60^\circ`, `60^{\circ}`, `60{}^{\circ}` et `60\degree` (ce que MathLive écrit quand on tape `°`,
+mesuré dans Chromium, `mathlive-degres.svelte.test.ts`) deviennent `60\unit{°}` : carte, champ
+mathématique de la console (`calcTextOf` écrit `°`), ligne de Calcul, cellule de la grille (`=cos(60°)`
+vaut `=cos(60[°])`), argument d'une commande de calcul (pas celui d'une commande de données, qui
+lit des modalités). Lecture : `withDegreeUnits` dans `readByProvenance` (`parse.ts`), en tête de
+`computeInput` et sur la ligne d'une commande (`runCommand`). Un `°` qui ne suit rien (`°`,
+`cos(°60)`, `2 + °`, `^\circ` seul) est refusé : « Le signe ° s'écrit juste après un nombre ou un
+nom : 60°, cos(60°), a°. » (`strayDegreeRefusal`) — plus de « Unsupported symbol … circ », en
+anglais. `20 °C`, `°F` restent des températures. La réponse écrit `60°`, sans espace (règle
+typographique des angles), et `60{}^{\circ}` en LaTeX (`degreeSignWritten`, appliqué à la sortie de
+`runInput` : mesures d'angle comprises, `≈ 36,8699°`, la valeur approchée aussi). Un angle écrit
+en degrés pris par un sin, cos, tan devient un nombre de radians exact dans l'arbre substitué
+(`h(x) = cos(90°)·x` → `h(1) = 0`, `.variations h` constante, `f(x) = sin(30°) + x` → `f(0) = 1/2`)
+et dans l'argument d'une commande (`radiansInText` : `.résoudre h(x)=1` → `x = 2`, `.évaluer
+cos(60°)*x en x=2` → 1). **Une variable en degrés** (choix prudent, à trancher par David) :
+`f(x) = cos(x°)` est acceptée — exacte, `cos(πx/180)`, et c'est l'arbre que trace le Graphe ; un
+angle BRUT écrit dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`, `u(n) = n°`) est en erreur
+avec le message des mesures (« Une mesure d'angle est une grandeur… », `WRITTEN_ANGLE`,
+`atelier.svelte.ts`) — avant, `f(x) = x[°]` passait et `f(1)` répondait `(π/180) rad`.
+`cos(60)` reste en radians ; le réglage « Angles » ne change pas. Revue (2026-10-19) : le `°` CIBLE
+d'une conversion ne se réécrit pas (`1[rad] en °` → `1 rad = (180/π)°`, `.convertir °`) ; une
+fraction de nombres le prend entière (`1/2°` = `(1/2)[°]`, comme `1/2 m`) ; la réponse met entre
+parenthèses une valeur qui n'est pas un nombre seul (`(100/3)°`, `\left(\dfrac{100}{3}\right){}^{\circ}`)
+et colle `\pi°` ; les commandes d'ÉCRITURE (`.latex`, `.texte`, `.analyser`, `.arbre`, `.empreinte`,
+`.forme-normale` : `WRITING_COMMANDS`) gardent l'angle en grandeur ; `.évaluer sin(x) en x=30°` →
+`1/2` (`radiansInLatex` sur la réponse du moteur) ; une puissance d'un angle est refusée sur toute
+ligne, comme pour une mesure (`(60°)^2`, `60°^2`) ; la grille écrit `60°` (`inDegrees`,
+`formula.ts` : la case vaut le nombre de degrés, une formule écrite en `rad` reste en radians).
+`.variations cos(x°)` annonçait « croissante sur ]-∞ ; 0[ » (déjà faux sur main pour
+`cos(πx/180)`) : les zéros périodiques d'un domaine non borné ne sont que ceux d'une période, et
+l'échantillonnage ([-100 ; 100]) ne voyait pas ±180 ; il est coupé sur un intervalle non borné
+dans ce cas (`periodicUnbounded`, `mathAST/sign/helpers/zeros.ts`, `analyze.ts`) — « sens
+indéterminé », comme pour `cos(x)`, dont le tableau ne change pas. `20°C` (collé) reste lu comme
+avant (sans effet).
+
+**Intersections et points sur un objet** (géométrie, lot 2, PR 3 — L5) : deux mots du DSL de
+plus dans le catalogue, mêmes arguments et même numérotation que lui
+(`construction-intersect.ts`, appelé par `construction.ts`) :
+
+| Écrit                                                | Crée                                                                                                                 |
+| ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `E = intersection(d ; c)`, `intersection(d ; c ; 2)` | le point commun (`k` facultatif s'il n'y en a qu'un) ; `d`, `c` : noms ou constructions (`(AB)`, `cercle(O ; 2)`)    |
+| `M = point_sur(s ; 0,3)`, `point_sur(s)`             | M sur s : segment de 0 (A) à 1 (B), 0,5 par défaut ; droite ou demi-droite, l'abscisse le long de (AB), 0 par défaut |
+| `point_sur(c ; 90)`, `point_sur(f ; 2)`              | sur un cercle, l'angle depuis l'horizontale, en degrés toujours ; sur 𝒞f, (x0 ; f(x0))                               |
+
+- **Couples** : droite × droite, × cercle, × courbe par équation (conique : `intersectLQExact`,
+  exacte ; y = f(x)), × fonction ; cercle × cercle ; conique × conique (ou × cercle) en nombres
+  (`intersectQQ`) ; fonction × fonction. Exact d'abord : `intersectLL`, `intersectLC`,
+  `intersectCC`, et pour une courbe y = f(x) les racines EXACTES de mathAST (`exactZeros` :
+  fractions, a ± b√m), sinon `intersectLF` / `intersectFF` (Newton de geometry-core, fenêtre
+  [−10 ; 10] du DSL). Une coordonnée seulement approchée se dit **« ≈ »**, 4 décimales :
+  `E ≈ (1,5811 ; 1,2247)` (carte, Calcul), et une mesure qui cite ce point aussi (`OE` → `≈ 1,5708`).
+- **Numérotation `k`** : celle de `geometry-core` — dans le sens de la droite (de son premier
+  point vers le second) pour droite × cercle et droite × conique ; à gauche de (centre 1 →
+  centre 2) pour deux cercles ; abscisses croissantes pour une courbe y = f(x). Elle ne dépend
+  pas de l'exactitude (`intersectLQExact` suit la formule et l'ordre d'`intersectLQ`) : un point
+  ne change pas de branche quand un curseur glisse (`figure-point-sur.test.ts`).
+- **Segments et demi-droites** : les solutions sont numérotées sur les droites PORTEUSES ; un
+  point hors de la portion n'existe pas — avec `k`, le point **attend** (« Le point 1 de s et c
+  n'est pas sur s. ») ; sans `k`, c'est le seul point commun aux portions qui compte.
+- **Attente** (`pending`, sans `missing` : rien ne manque, aucun curseur n'est offert) : aucun
+  point commun (« d et c ne se coupent pas. »), un `k` au-delà des solutions du moment (« t et
+  c n'ont qu'un point commun. »), une position hors du segment, f non définie en x0. Le point
+  revient seul quand un curseur les fait se couper (`#constructions`, raison `pending` du
+  `BuiltOutcome`) ; ce qui le cite attend avec lui — une construction (`usableObject`), une
+  mesure (`measuredText`, `pending`), et le reste par `#geometryWaits` (après `#measures`).
+- **Refus à la saisie** (rien n'est créé, `defineConstruction` essaie la construction) : deux
+  points ou plus sans `k` (« u et c se coupent en deux points : écris intersection(u, c, 1) ou
+  intersection(u, c, 2). ») ; une infinité de points communs (droites confondues, cercles égaux,
+  coniques proportionnelles) ; un couple pas encore dans l'atelier (fonction × cercle ou
+  conique, comme le DSL ; courbe implicite ; `point_sur` d'une conique). Erreur : un `k` plus grand
+  que le couple ne le permet (« Deux droites ont au plus un point commun… »), ou qui n'est pas un
+  entier à partir de 1. Un support qui n'est ni ligne, ni cercle, ni courbe : « « A » n'est pas une
+  ligne, un cercle ou une courbe. ».
+- **Le curseur de position** : `point_sur(s ; 0,3)` — un NOMBRE écrit — a un curseur dans sa
+  carte (`positionSliderOf`, bornes [0 ; 1] sur un segment, [0 ; 360] sur un cercle, [0 ; 10]
+  sur une demi-droite, celles d'une valeur ailleurs) ; le glisser réécrit le nombre de la
+  définition (`slidePosition`, arrondi au pas, comme `slideTo` : `1/3` glissé devient `0,33`). Une
+  position écrite en LaTeX (`\frac{1}{2}`) n'a pas de curseur (il la réécrirait). Rien de
+  rangé en plus : bornes lues sur la définition, ni schéma ni `ATELIER_STATE_VERSION` changés.
+  `point_sur(s ; t)` suit le curseur de la valeur t ; `point_sur(s)` n'a pas de curseur.
+- **Tapé seul** : un calcul (`intersection(u, c, 1)` → `(-1 ; 0)`), « Garder » le nomme (D5).
+  Renommer réécrit les noms des supports (texte, et LaTeX de la carte :
+  `\operatorname{point\_sur}` ; MathLive tape `point_{sur}`, relu comme `point_sur`).
+- **Écarts avec le DSL** (voulus) : le DSL coupe un segment comme sa droite et ramène la position
+  d'un `point_sur` au bord du segment — l'atelier met le point en attente ; le DSL calcule droite ×
+  conique et droite × fonction en nombres — l'atelier en exact d'abord ; `point_sur` d'une conique
+  est refusé. L'angle d'un `point_sur` sur un cercle est en **degrés toujours**, comme le DSL et
+  la phase 0 (L5) : le réglage « Angles » ne gouverne que l'écriture des mesures (un lien relu
+  en radians donne la même figure). Deux cercles qui deviennent égaux au glisser : le point
+  ATTEND (« … une infinité de points communs. »), le refus reste à la saisie.
+
+**`.relever` en détail** (lot 2, PR 4 : L6 ; `survey.ts`). Le relevé ferme la boucle du problème
+de l'aire : `.relever AM ; S quand M va de 0 à 1 pas 0,05` fait varier M, calcule AM et S à chaque
+pas et crée **deux listes** (colonnes de Données) que l'élève trace en nuage. L'atelier ne valide
+rien : il relève, l'élève conjecture.
+
+- **Ce qui varie** : une **valeur à curseur** (définition constante, sans unité) ou un
+  **`point_sur` à position écrite** (sa position, comme le curseur de la carte). Refus avec la
+  raison, rien de créé : nom absent ; valeur calculée (« fais varier une valeur à curseur ») ;
+  grandeur ; point qui n'est pas posé sur un objet ; `point_sur(s ; t)` (« M suit la valeur « t » :
+  écris … quand t va de … ») ; fonction, liste.
+- **Les pas** : début, fin et pas lus EXACTS (décimaux ou fractions, `-1,5`, `0.05`, `1/3`) ;
+  pas > 0, fin ⩾ début ; au plus `MAX_LIST_VALUES` (200) pas, sinon « Ce relevé ferait 1001 pas :
+  200 au plus. Agrandis le pas. » Chaque pas est écrit comme l'élève l'écrirait (`0,05`, `1/3`) ; un
+  pas qui ne tombe pas juste s'arrête avant la fin, et la ligne le dit (« … s'arrête à 0,9. »).
+- **Le balayage** (`Atelier.sweep`) : chaque pas passe par `update` (la carte, la figure, les
+  mesures qui en dépendent sont recalculées), puis E1 et E2 sont lues comme une coordonnée
+  (`substitutedTextOf` : noms, fonctions, mesures) et évaluées en décimal. À la fin, le TABLEAU des
+  objets d'avant est remis en place, tous objets compris : `update` élargit le curseur d'une
+  valeur posée hors de ses bornes. ⚠️ Une copie du tableau (`[...items]`), pas
+  `$state.snapshot` : hors navigateur, ce dernier rend le tableau lui-même, que le premier pas
+  modifiait (mesuré, test rouge). Coût mesuré dans Chromium, 200 pas (après le chantier performance #1513) : 116 à 141 ms
+  sur la figure de l'aire, 861 à 901 ms sur la figure de 24 objets (`fixtures/figure-24.ts`).
+- **Les cases** : la valeur est calculée EXACTE d'abord, puis écrite en décimal (`sin(πt)` aux
+  entiers → `0`, jamais un résidu de flottant ni `-0`) ; sinon en décimal, et un résultat sous
+  10⁻¹² fois la taille des termes de premier niveau de son calcul (ou du plus grand nombre de la
+  colonne) s'écrit 0 (`sin(t)² + cos(t)² − 1`). 10 chiffres significatifs, virgule décimale,
+  jamais de notation scientifique (`10^(-20)` s'écrit en toutes lettres) ; une valeur ⩾ 10¹⁵ ne
+  tient pas dans une case : sa ligne reste vide et la réponse le dit (« … trop grandes pour une
+  case »). Un angle est relevé en nombre dans l'unité du réglage, l'unité retirée avant le calcul
+  exact (qui passerait en radians) et écrite dans le TITRE de la colonne (« angle(B, A, C) (°) »,
+  « T (rad) », décision de David du 2026-10-19). Un pas où une expression n'a pas de valeur (point en attente,
+  polygone aplati, hors du domaine) laisse sa ligne **vide dans les deux listes** (`12 ; ; 15`),
+  pour que les lignes restent appariées (P1), et la ligne de réponse le compte (« 2 pas sans
+  valeur… »). Une expression sans valeur à AUCUN pas est refusée avec la raison (« « M » est un
+  point ; relève une mesure… », « « x » n'est pas défini… »).
+- **Les listes** : nommées par le mot-clé facultatif **`dans X ; Y`** (décision de David du
+  2026-10-19 ; noms validés comme tout nom d'objet — pris, réservé, invalide ou deux fois le même :
+  refus, rien n'est créé) ; sans lui, deux noms libres de `nextName('list')` (L, M, N, puis L_1…),
+  jamais un nom pris ;
+  la colonne de chacune reçoit pour titre l'expression relevée (« AM », « S », 40 caractères au
+  plus), posé une fois les deux listes créées, sans étape propre (`setTitle(…, { recorded: false
+})`) : la ligne de console est UNE étape de la pile commune (lot 5), qu'Annuler défait en
+  entier, listes et titres. Refus si l'atelier n'a plus de place pour DEUX listes (`MAX_LISTS`)
+  ou deux colonnes libres ; une seconde création refusée retire la première (tout ou rien).
+- **La ligne de réponse** (texte, sans LaTeX) : « Relevé de AM et S quand M va de 0 à 1, pas 0,05 :
+  21 lignes, dans L et L_1. », les notes, puis « Trace le nuage : sur la carte L, « Nuage avec
+  L_1 ». » — le bouton de la carte (`scatter:L_1`), qui pose `plottedWith` comme aujourd'hui. Le
+  geste se rejoue comme toute saisie (`ReplayStep` `saisie`). Dans `.aide`, rubrique « Géométrie : relever
+  des mesures » (`HelpSection` `geometrie`, entre « Étudier une fonction » et « Statistiques »).
+- **Le problème de l'aire**, testé tel quel (`relever.test.ts`) : A(0 ; 0), B(4 ; 0),
+  `M = point_sur([AB] ; 0,5)`, `N = (AM ; MB)`, `P = (0 ; MB)`, `S = aire(A, M, N, P)` → 21 lignes,
+  21 lignes PLEINES, maximum relevé en AM = 2 avec S = 4 ; en M = A et M = B, le rectangle est
+  aplati : S = 0.
+- **Le pas** est obligatoire ; s'il manque, le refus récrit la commande de l'élève avec un pas
+  d'un dixième de l'étendue (« Il manque le pas : écris par exemple .relever t ; 2t quand t va de 0
+  à 1 pas 0,1. »).
 
 **Quatre états** (D9) : `error` > `pending` > `incomplete` > `ok`. Un nom cité mais absent met
 l'objet **en attente** (`pending`, avec `missing`), pas en erreur ; l'attente se répare seule quand
@@ -201,11 +530,73 @@ un autre nom, `u_n` la notation d'une suite) et hors base d'une puissance −1 (
 lettre._ La suggestion suit la variable de l'objet qui cite (`a(t)`, `a(n)` pour une suite) ;
 pour une valeur, _Écris une de ses valeurs, comme a(2)…_ ; une suite citée dans une fonction ou
 une valeur, _Écris un de ses termes, comme u(2)…_ Les cartes `f′` et `f⁻¹` n'y passent pas
-(elles suivent f). ⚠️ Redéfinir un nom garde son type (V62).
-⚠️ `referencesOf` lit tout nom indicé comme sa base (`a_1 x` attend `a`), défaut antérieur (V63).
+(elles suivent f). **Redéfinir un nom sous un autre type est refusé** (V62, corrigé le
+2026-10-20, `defineObject`, `calcul.ts`) : `a = 3` puis `a(x) = x^2`, `a = x^2` ou `a(n) = 2n` →
+_« a » est déjà un nombre : supprime-le ou choisis un autre nom pour créer une fonction._ ; de même
+entre fonction et suite. Avant, l'objet gardait son type rangé avec la nouvelle définition (une
+valeur a = x²), et `a = 3`, `f(x) = a x`, `a(x) = x^2` échappait au refus ci-dessus : `.dériver f`
+affichait 3x². Sans parenthèses, `f = t + 1` redéfinit toujours la fonction dans sa lettre (#905).
+Tests : `redefinir-autre-type.test.ts`.
+**Noms indicés** (corrigé le 2026-10-19, ex-V63) : `a_1` est UN nom, jamais sa base. Le
+parseur en fait un nœud `subscript` (`a`, `1`) ; la lecture des noms le voit sous son nom
+entier (`variablesOf`, `parse.ts`, qui sert `referencesOf`, `bareNamesOf`, les refus x/y, les
+noms d'une formule de la grille), et `substitute` (`mathAST/eval/substitute.ts`) remplace le
+nœud par la liaison `a_1` sans jamais toucher à sa base (`mathAST/common/indexed-names.ts`) —
+avant, avec a = 10, `a_1` devenait `10_1` (« Écriture non reconnue »), et `b = a_1 + 1`
+attendait « a ». Seul un indice ENTIER fait un nom : `u_n` reste la notation d'une suite, et
+`u_3` (u suite ou fonction de l'atelier, `u_3` n'en étant pas une) son terme de rang 3.
+**Les suites** (décisions de David, 2026-10-19) :
+
+- **`u_3` tapé dans Calcul** répond le terme, comme dans une définition : `indexedTermsAsCalls`
+  (`calcul.ts`) récrit `u_3`, `u_{12}` en `u(3)`, `u(12)` avant tout calcul (récurrence comprise,
+  par `recurrenceTermsIn`). L'écho, une réponse restée en lettres (`u_3 + w`) et un refus
+  (`v_0 n'existe pas…`) citent ce qui a été tapé, jamais `u(3)` (`typedTermsIn`). Pas devant une
+  parenthèse (`u_3(2)` appelle la fonction `u_3`) ni quand un objet `u_3` existe. Les commandes
+  de CALCUL aussi (`indexedTermsInArgument`) : `.dériver u_3 x^2`, `.évaluer u_3`, `.évaluer x^2
+en x=u_3` ; pas les commandes d'écriture (`.latex u_3` écrit ce qui est tapé), ni un nom de
+  variable (après « ; », ou posé par `en u_3=…`). `u_3'` : « « u_3 » est le terme de rang 3 de la
+  suite u : un nombre, il n'a pas de dérivée. » Une récurrence citée dans une DÉFINITION
+  (`c = v_3`) reste refusée, comme `c = v(3)`. Renommer la suite u en v emmène ses termes :
+  `b = u_3 + 1` devient `v_3 + 1` (`renameTermsInDefinition`, par `renameInObject`) ; une fonction
+  `f_1` n'est pas un terme de f et reste telle quelle.
+- **Une valeur `u_3` et une suite (ou fonction) `u` ne cohabitent pas** (`indexedNameClash`,
+  `names.ts`, dans `create`, `rename` et le nom proposé d'office) : « u est une suite : u_3
+  désigne son terme de rang 3. Choisis un autre nom. » (fonction : « f_1 désigne f(1) ») ; dans
+  l'autre sens, « u_3 existe déjà : avec une suite u, u_3 désignerait son terme de rang 3.
+  Renomme u_3, ou choisis un autre nom. » Une fonction ou une suite `f_1` à côté de `f` reste
+  permise. Un atelier rangé (lien, sauvegarde, fichier) qui contient les deux : la VALEUR est
+  renommée à la relecture (`migrateIndexedNameClashes`, `persistence.ts`, comme la migration de
+  `y`) et on le dit (`renamedOnReadMessage`, `geometry.ts` : « « u_3 » se lit désormais u(3) :
+  ton objet s'appelle maintenant a. ») ; les définitions qui citaient `u_3` ne sont PAS réécrites
+  — elles y lisaient déjà le terme. **Versement** (`mergeInto`) : le conflit se tranche dans
+  `planNames`, avant toute création, comme un nom pris — dans les deux sens. Une valeur `u_3`
+  reçue à côté d'une suite u locale arrive sous un autre nom. Une suite `u` reçue à côté d'une
+  valeur `u_3` locale arrive sous un autre nom (v), et `rewriteCitations` réécrit les arrivants
+  qui la citent : `c = u(3) + 1` devient `v(3) + 1`, ET le terme reçu `b = u_3 + 1` devient
+  `v_3 + 1` — sans quoi il lirait la valeur locale `u_3`, sans rien dire.
+- **`x_1` n'est jamais x** : le pipeline de lecture du moteur (`mathAST/cli/core/pipeline.ts`)
+  fait de chaque nom indicé latin une VARIABLE `x_1` (`hideIndexedNames`), que toutes les
+  analyses (`.variations`, `.résoudre`, `.intégrer`, `.évaluer`, `.domaine`, le solveur) traitent
+  comme une autre lettre — comme `a`. Avant : `.variations x^2 - x_1 x` ne trouvait pas de point
+  critique, `.intégrer x_1 de 0 à 1` rendait 1, `.évaluer x_1^2 en x_1=3` refusait. Le LaTeX
+  d'une telle variable s'écrit `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
+  Le grec indicé (`\alpha_1`) reste un `subscript`, nommé « α » dans un refus. `.variations`
+  ne conclut plus sur un sens indéterminé (`x^2 - a x`, `x^2 - x_1 x`) : « Signe de f'(x) et sens
+  de variation : non déterminés », « Extrema : non déterminés », au lieu d'un ]-∞ ; +∞[ « ? » et
+  d'un « Extrema : aucun » faux (`variations.command.ts`, défaut hérité de main avec `a`).
+  Côté atelier, lisent aussi le nom entier : `.réciproque` (lettres et paramètres, base latine
+  seulement, `reciprocal.ts`), les étapes de `.résoudre` (`solve-steps.ts`), une borne d'intervalle
+  (`interval.ts`), les lettres d'une courbe (`construction.ts`), l'intégrande
+  (`integrate-steps-check.ts`), et la figure (`figure-sync.ts` : un point `(a_1 ; 2a_1)` n'était
+  pas dessiné, son curseur cherché sous « a »).
 
 **Noms** (`src/lib/atelier/names.ts`) : une lettre latine, éventuellement indicée ; **un seul
-espace de noms** tous types confondus (D1). Les dérivées s'appellent `f′` (`derivativeName`,
+espace de noms** tous types confondus (D1). Réservés : `x`, `y`, `n`, `e`, `pi`, `i` — **`y` depuis
+la géométrie** (G5, 2026-10-18) : c'est la variable des équations de courbe. `y = 3x − 2` sans nom
+répond « Pour une fonction, écris f(x) = 3x − 2 ; pour une droite, nomme-la : d : y = 3x − 2. »
+(Q1 (a), noms libres proposés) ; `y` dans une fonction, une valeur ou une suite met la carte en
+erreur (« « y » est réservé aux équations de courbe… ») ; `f(y) = y^2` reste permis (une lettre de
+fonction, rangée en x). Lettres proposées aux points : A, B, C… ; aux courbes : d, C, D, T. Les dérivées s'appellent `f′` (`derivativeName`,
 `isDerivativeName`) ; la réciproque se range `f^-1` et s'affiche `f⁻¹` (`reciprocalName`,
 `reciprocalOf`) — une forme qu'aucun élève ne peut taper comme nom (`validateName` la refuse), donc
 sans collision possible ; elle n'est pas citable (absente de `functionNames`). Le nommage automatique évite les noms cités par la définition (#329).
@@ -329,8 +720,15 @@ définition (champ MathLive, clavier, URL, collage, Calcul…) qui choisit le pa
 contenu. Elle est rangée sur l'objet, parce que `recomputeAll` relit toujours la définition.
 
 **État d'affichage hors sauvegarde** : les diagrammes de la vue Données (`chartOf`,
-`toggleChart`), la liste partenaire choisie (`choosePartner`) et les lois retenues
-(`rememberLaw`, `lawOf`) vivent dans l'`Atelier` mais pas dans `serialize()`.
+`toggleChart`) et les lois retenues (`rememberLaw`, `lawOf`) vivent dans l'`Atelier` mais pas
+dans `serialize()`. (La partenaire choisie, `choosePartner`, est retirée depuis le lot 4b : le
+sous-menu « Avec une autre liste » propose chaque partenaire par son nom.)
+
+**Affichage rangé sans nouvelle version** (lot 4b) : le dessin d'un point ou d'une courbe
+(`figureDisplay`) et le curseur affiché depuis le menu (`sliderShown`) ne sont rangés que
+lorsqu'ils s'écartent du défaut ; un ancien état se relit tel quel. Contrepartie, la même que la
+lecture graphique (#1497) : un onglet resté sur l'ancien code les oublie (Zod retire la clé) —
+un affichage, jamais un objet.
 
 ### La grille (vue Données)
 
@@ -476,6 +874,19 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   formule). Une exception du moteur pendant le calcul d'une case devient l'erreur de cette case
   (`safely`), jamais celle de la grille. Mesuré : 600 formules à plages, 285 ms ; changer la case
   dont elles dépendent toutes, 250 ms.
+- **Compter les cases** (phase 0 :
+  [atelier-tableur-nbval-phase0.md](../wip/atelier-tableur-nbval-phase0.md), validée le
+  2026-10-18) : `NBVAL(plage ; …)` compte les cases non vides (nombres et mots, tapés ou rendus par
+  une formule), `NB.VIDE(plage)` les vides (`COUNT_FUNCTIONS`, `countCells`, `formula.ts`). Une
+  case est vide si elle MONTRE du vide : une formule qui rend `""` compte comme vide pour les deux
+  (Q-NV-1, à l'inverse d'Excel : NBVAL + NB.VIDE = la taille de la plage). Une case en erreur
+  arrête le compte (Q-NV-2, comme NB). NBVAL lit comme NB : plusieurs plages, case seule, liste
+  nommée (sa colonne), colonne entière, valeur (`NBVAL(3)` = 1). NB.VIDE prend UNE plage ; une
+  colonne entière est refusée (Q-NV-3 : le résultat dépendrait des 200 lignes de la grille) ; une
+  liste nommée compte ses trous de sa première ligne à sa dernière valeur (Q-NV-4 : `12 ; ; 15`
+  → 1, ` ; 12 ; ; 15` → 2) ; un nom qui n'est pas une liste est nommé dans le refus. Dans Calcul,
+  `nbval(L)` renvoie vers `.stats L`, `nb.vide(L)` vers la grille seulement. `NB.SI(plage;"")` vaut toujours 0 (NB.SI ignore les
+  vides, lot 4) : NB.VIDE y répond.
 - **Fonctions de calcul** (lot 4, PR 2) : ARRONDI, ENT, RACINE, ABS, LN, EXP, PI (`CALCULATION_ARITY`,
   nombre d'arguments fixe, refus nommé). RACINE, ABS, LN, EXP et ENT deviennent l'appel de mathAST
   (`sqrt`, `abs`, `ln`, `exp`, `floor`) : mêmes refus que Calcul. ARRONDI arrondit la moitié LOIN
@@ -484,7 +895,16 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   ±15 (`MAX_ROUNDING_DIGITS` : `ARRONDI(1/3;1000000)` gelait l'onglet) ; sur un flottant (π, √2),
   un résultat de plus de 15 chiffres significatifs est approché, jamais présenté comme exact. Leurs arguments
   sont des nombres : une plage est refusée, et une case vide citée laisse la formule vide (T5), à
-  l'inverse des statistiques. `=racine(4)`, `=exp(1)` s'écrivent `=RACINE(4)`, `=EXP(1)` ; `sqrt`
+  l'inverse des statistiques. **RESTE(n ; d)** (repris de V4, phase 0 :
+  [atelier-tableur-reste-et-ou-csv-phase0.md](../wip/atelier-tableur-reste-et-ou-csv-phase0.md),
+  validée le 2026-10-18), du signe du diviseur comme LibreOffice (`RESTE(-7;3)` = 2, le reste
+  euclidien) : deux arguments exacts → en entiers longs (`remainder`, `RESTE(10^20+1;7)` = 3,
+  `RESTE(2/3;1/2)` = 1/6) ; sinon l'arbre `n − d × floor(n/d)`, approché, REFUSÉ quand le
+  quotient dépasse 2⁵³ (revue : `RESTE(EXP(50);3)` rendait du bruit). Un argument approché
+  (`ArgumentValue.approximate` : une case ≈, ou une écriture exacte trop longue entrée en décimal,
+  `MAX_EXACT_CITED`) ne passe jamais par les entiers longs : `RESTE(10^30+1;7)` est refusé, pas
+  « ≈ 5 ». `d = 0` refusé avant tout calcul ; l'aide dit que le quotient est `ENT(n/d)`. Pas de QUOTIENT
+  (Q-RE-6) : `ENT(n/d)` va avec RESTE (−3 et 2), QUOTIENT de LibreOffice non. `=racine(4)`, `=exp(1)` s'écrivent `=RACINE(4)`, `=EXP(1)` ; `sqrt`
   reste lu. **L'aide sous la barre** (`functionHint`) : pendant la frappe, la forme de la fonction
   dont on écrit les arguments (la plus intérieure), ou celles dont on écrit le nom (`=ECART`, trois
   lettres au moins, ou un nom entier de deux : LN, NB, PI — `=A1*ab` n'ouvre pas ABS) ;
@@ -496,7 +916,13 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   refus (`COMPARISON_ALONE_MESSAGE`, au lieu de « pas un nombre réel »). Un côté de la condition est
   un texte, une case (son mot se compare : `B2="fille"`) ou une expression ; un mot ne se compare
   qu'avec `=` ou `<>`, sans tenir compte des majuscules (`compare`). Une case vide dans la condition
-  laisse la formule vide (T5 : recopiée sous les données, elle n'écrit rien). Seule la branche
+  laisse la formule vide (T5 : recopiée sous les données, elle n'écrit rien). **ET, OU** (Q-RE-1 à
+  Q-RE-3) : la condition de SI peut être `ET(comparaison ; …)` ou `OU(…)` formant TOUT l'argument
+  (`logicCallOf`, `readLogic`, parenthèses englobantes ôtées) ; chaque argument est lu comme une condition (`readComparison`), au
+  moins un ; toutes les comparaisons sont calculées, une case vide ou une erreur arrête la formule
+  comme pour SI. Un seul niveau : ET dans OU (ou dans ET) refusé (« écris deux SI ») ; ET ou OU
+  ailleurs refusé avec la bonne écriture (`logicAloneMessage` : la grille n'a pas de valeur
+  VRAI/FAUX). Pas de NON (Q-RE-1). Seule la branche
   choisie est calculée ; un mot rendu par SI fait de la case une case de mots si la formule n'est
   que l'appel (`alone`), sinon refus. NB.SI compte les cases non vides d'une plage (ou d'une liste
   nommée) qui vérifient le critère : un mot, un nombre, ou une comparaison écrite en texte
@@ -526,12 +952,50 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   `alea()` renvoie vers la grille. **Le bouton « Relancer »** (PR 2, Q-L5-2) est à côté de la barre,
   seulement s'il y a des cases à hasard (`randomCells`) ; F9 fait de même tant que la vue Données
   est là (`svelte:window`), et une région `role="status"` annonce « Nouveaux tirages : N cases. ».
-  « Relancer » est un geste de la grille (`GridGesture.seed`) : Ctrl+Z retrouve les tirages d'avant,
-  Ctrl+Y ceux d'après (Q-L5-3) ; après un clic, le focus revient à la grille pour que Ctrl+Z y
-  agisse. F9 maintenu (répétition) ou avec Ctrl/⌘/Alt ne relance pas : l'historique (100 gestes) ne
-  se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
+  « Relancer » est une étape de la pile commune (la graine est dans la photo) : Ctrl+Z retrouve les
+  tirages d'avant, Ctrl+Y ceux d'après (Q-L5-3) ; après un clic, le focus revient à la grille pour
+  que Ctrl+Z y agisse. F9 maintenu (répétition) ou avec Ctrl/⌘/Alt ne relance pas : la pile (100
+  étapes) ne se vide pas de tirages. Garder un atelier reçu qui tirait au hasard refait ses tirages (la graine
   reste la nôtre) : le rapport le dit si des cases à hasard ont vraiment été écrites
   (`MergeReport.redrawn`, d'après `randomCells` avant et après).
+- **Mise en forme** (reprise de V4, phase 0 :
+  [atelier-tableur-mise-en-forme-phase0.md](../wip/atelier-tableur-mise-en-forme-phase0.md), validée le
+  2026-10-18) : gras, italique, alignement, couleur du texte et du fond (6 couleurs du thème), format
+  de nombre (décimales 0 à 6, pourcentage, monnaie). Rangée PAR ZONE (`FormatZone`, `#formats` de
+  l'`Atelier`) sous forme CANONIQUE après chaque geste (`normalizeFormats`) : des rectangles qui ne
+  se chevauchent pas, chacun d'un style résolu non vide — effacer toute la grille laisse `[]`, un bloc
+  collé redevient un rectangle, un geste sans effet n'est pas noté (`sameFormats`). Revue de la PR 1 :
+  les zones s'empilaient (400 par collage, « Effacer » refusé au plafond, lien trop long). `false`/
+  `null` d'un patch ramène au défaut (`CLEAR_PATCH`). Elle ne change que l'AFFICHAGE (`formatShown`,
+  `Intl.NumberFormat` fr-FR, moitié loin de zéro, jamais `-0,00`) : une formule cite la valeur. Une
+  case vide se met en forme d'avance ; la vider garde sa mise en forme. Un geste de la grille
+  (une étape, Ctrl+Z) ; la recopie et le copier-coller interne l'emportent (`patchOf`,
+  Q-MF-4), et sont refusés ENTIERS si elle dépasserait le plafond (jugé avant d'écrire). Rangée dans
+  `grid.formats` (Zod, une forgée écartée seule, au plus 500 relues ; au-delà de 500 zones
+  canoniques, la plus longue partie qui tient, signalée dans le rapport) et dans le lien (Q-MF-5).
+  Un style s'écrit dans un ordre fixe (`canonicalStyle`) ; « Effacer » passe même au plafond
+  (`isRemoval`). Un
+  atelier reçu : ses zones suivent leurs colonnes (T7) ; une colonne qui n'a QUE de la mise en forme
+  arrive s'il reste des colonnes libres (rangée avec les autres, de gauche à droite), sans jamais
+  faire refuser la fusion ; la fusion est un seul
+  geste (`asOneGesture`). Plafond : 500 zones canoniques. Mesuré : un style sur toute la grille, 2 ms.
+  **À l'écran** (`DataView.svelte`, PR 2) : une barre « Mise en forme » sous la barre de formule
+  (`role="group"`, passe à la ligne sur téléphone) pose sur la ZONE sélectionnée gras, italique
+  (aussi Ctrl/⌘+B, +I), alignements (un bouton enfoncé ramène au défaut), couleurs du texte et du
+  fond, format de nombre et décimales (`MySelect`, nom annonçant la valeur choisie), « Effacer la
+  mise en forme ». Les boutons suivent la case active (`aria-pressed`) ; le focus revient à la
+  grille après chaque geste, pour que Ctrl+Z y agisse ; les choix sont liés par fonctions
+  (`bind:value={get, set}`) : un choix refusé au plafond n'est pas affiché comme posé. Rien n'est
+  posé pendant une frappe refusée (le refus reste). Ctrl+Maj+B et la touche maintenue sont ignorés. La case montre `formatShown` à la place de
+  l'écriture LaTeX ; sous la barre, « Valeur exacte » reste visible quand un format arrondit
+  vraiment (`formatRounds` : `0,33` → 1/3 ; pas pour `2,00`). Le style passe en variables CSS (`--texte`, `--fond`) : la teinte de la
+  sélection se pose PAR-DESSUS le fond. Couleurs (`cell-colors.ts`) : les `--color-fig-<nom>` du
+  thème, adoucies (texte tiré vers `--color-foreground`, fond en teinte de 14 %, en sombre sur
+  `#1f1f1f`) — telles quelles, rouge sur fond jaune tombait à 3,3 en sombre ; `cell-colors.test.ts`
+  mesure toutes les paires des couleurs de mise en forme (≥ 4,5, sélection comprise, clair et sombre ; le texte d'une erreur garde `--color-destructive`, hors de cette mesure). Le presse-papiers interne
+  (`application/x-chiphre-grille`) porte `styles` (le style résolu de chaque case, `{}` = défaut),
+  validé par `stylePatchSchema` et ignoré s'il n'a pas la forme du tableau ou pas d'origine valable
+  (une ligne de titres devinée les décalerait).
 - **Fonction à indice** (`=f_1(3)`) : depuis le 2026-10-15, les parseurs lisent `f_1(3)` comme
   un appel de f_1 quand `f_1` est déclarée (avant : `f₁ × 3`, et la grille calculait avec f, sans
   rien dire — revue du lot 3). La grille rend donc la valeur de f_1, et Calcul l'évalue aussi ;
@@ -585,17 +1049,30 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
   nombre sort en décimal à virgule (`1/4` → `0,25` ; un tableur lirait `1/4` comme une date) ; un
   mot qui commence par `=`, `+`, `-`, `@` est précédé d'une apostrophe (injection de formule : une
   grille peut venir d'un lien reçu).
-- **Annuler dans la grille** (T6, exception à D6 limitée à la grille) : `undoGrid` / `redoGrid`,
-  Ctrl/⌘+Z et Ctrl/⌘+Maj+Z (ou Ctrl+Y) sur une cellule, boutons « Annuler » / « Rétablir »
-  (désactivés avec leur raison). Un geste = une saisie, un collage (cases et titres ensemble), un
-  effacement de zone ou un titre ; `MAX_GRID_UNDO` (100) gestes, pas rangés. Une case changée
-  ailleurs depuis (carte, `L = …`) refuse l'annulation et oublie l'historique — jamais par-dessus ;
-  relire un atelier l'oublie aussi. Nommer ou supprimer une liste reste un geste d'objet, avec son
-  propre « Annuler ». **Le geste le plus récent s'annule d'abord** : une suppression de carte (ou
-  un retrait de nom) ferme l'historique de la grille — annuler un geste plus ancien changerait la
-  révision, et la suppression ne pourrait plus s'annuler. Ctrl+Z ne s'arrête à la cellule que si
-  la grille a de quoi annuler ; sinon il remonte à l'atelier (dernière suppression de carte). Une
-  case écrite deux fois dans un geste compte une fois (la dernière écriture).
+- **Ouvrir un CSV** (repris de V4, phase 0 :
+  [atelier-tableur-reste-et-ou-csv-phase0.md](../wip/atelier-tableur-reste-et-ou-csv-phase0.md)
+  §3, validée le 2026-10-18) : bouton « Ouvrir un CSV… » (champ de fichier caché). Le fichier est
+  lu DANS le navigateur, rien n'est envoyé (`readCsvFile`, `grid.ts`) : plus de 1 Mo
+  (`MAX_CSV_BYTES`) refusé AVANT lecture (la taille du `File`) ; un octet nul (image, `.xlsx`)
+  refusé ; UTF-16 avec sa marque (« Texte Unicode » d'Excel), sinon UTF-8 (BOM retiré), sinon
+  Windows-1252 (Excel sous Windows : `é` reste `é`). Séparateur, cherché HORS des guillemets :
+  tabulation, sinon `;`, sinon la virgule SEULEMENT si le fichier écrit des décimaux avec un point
+  (Q-RE-5 (a) : `1.52,45.5` coupé ; `1,5` ou `abs, malade` jamais). Guillemets comme au collage ;
+  l'apostrophe de `exportText` devant `-`, `+`, `@` est retirée (devant `=`, gardée). En tête,
+  seules les lignes vraiment vides tombent : `;;` (cases vides) reste, et une grille téléchargée
+  qui commence en A3 se rouvre en A3. Avant de poser, `csvCellRefusal` dit la case et sa ligne
+  dans le fichier : un « ; » hors d'une formule (il répartirait la case), plus de 200 caractères.
+  Le tableau se pose comme un COLLAGE à partir de la case choisie (Q-RE-4, `pasteTable`) : tout
+  ou rien, un geste, le focus rendu à la grille. Les titres se devinent comme au collage (T4) :
+  des titres au-dessus de NOMBRES redeviennent des titres ; au-dessus de mots seuls, ou un titre
+  qui est un nombre (`2024`), ils reviennent comme une ligne de cases — l'aller-retour n'est
+  exact que dans le premier cas. V4 remplaçait la feuille et tronquait en silence à 20 × 20.
+- **Annuler dans la grille** (T6) : depuis le lot 5 de la refonte, la grille n'a plus sa propre
+  pile ni ses boutons. Ses gestes sont des **étapes de la pile commune** (« Annuler / Rétablir »
+  plus bas) : une saisie, un collage (cases, titres et mise en forme ensemble), un effacement, un
+  titre, une recopie, une mise en forme, « Relancer », nommer ou retirer le nom d'une colonne.
+  Ctrl/⌘+Z sur une cellule remonte à l'atelier. Une case écrite deux fois dans un geste compte une
+  fois (la dernière écriture).
 - **Deux colonnes ensemble : par LIGNE** (P1, `pairs.ts`). Une liste sait la ligne de chacune de
   ses valeurs (`rows`, lu par `parseDefinition`). Nuage (carte et tracé, `plot-sync`), ajustement
   (carte et `.ajustement L : M` / `.stats` à plusieurs listes dans Calcul), effectifs (« Statistiques
@@ -632,12 +1109,62 @@ Une cellule est du texte brut ; une cellule qui commence par `=` est une **formu
 - **modifier** : `update`, `rename` (réécrit les définitions qui citent l'ancien nom),
   `setSlider`, `slideTo`, `setSequence`, `setDisplay`, `setSequenceDisplay`, `setPlotted` ;
 - **supprimer** : `remove`, `removalOf`, `removeWithDependents`, `undoRemoval` ;
-- **dépendances** : `dependents` ; toute mutation finit par `recomputeAll` (relit tout) ;
+- **annuler** (lot 5) : `step`, `undo`, `redo`, `undoStep`, `redoStep`, `endGesture`,
+  `lastStepId`, `inStep`, `history`, `untracked` ;
+- **dépendances** : `dependents`, `citedNames` (ce que cite un objet) ; toute mutation finit par
+  `recomputeAll` (relit tout — voir « Ce qui se recalcule, et ce qui est gardé ») ;
 - **grille** : `cell`, `editCells`, `pasteTable`, `titleOf`, `setTitle`, `nameColumn`,
-  `unnameColumn`, `undoGrid`, `redoGrid`, `gridHistory`, `listAt`, `columnOf`, `usedExtent`,
+  `unnameColumn`, `listAt`, `columnOf`, `usedExtent`,
   `freeColumns` ;
 - **sauvegarde** : `serialize`, `restore` ; `revision` est le **seul** signal « quelque chose a
   changé » (la session l'écoute pour enregistrer).
+
+### Ce qui se recalcule, et ce qui est gardé (chantier perf du 2026-10-19)
+
+**Tout se recalcule à chaque mutation** : `recomputeAll` relit chaque définition, refait chaque
+construction (`#constructions`) et chaque mesure (`#measures`), puis la grille ; ensuite les
+effets (`syncFigure`, `syncPlots`) et les cartes se refont sur la nouvelle révision. Pas de
+recalcul ciblé : l'invariant 4 (« recomputeAll repart de la lecture ») tient tel quel. Ce qui
+rend un cran de curseur rapide, ce sont trois **mémos sans invalidation**, exacts par
+construction (ils ne dépendent que de ce qui leur sert de clé) :
+
+- **les lectures** (`parseByProvenance`, `parse.ts`) : par texte + provenance + noms de
+  fonctions, plafond 5 000. La lecture est pure ; l'arbre rendu est **partagé**.
+  ⚠️ **Règle : un arbre rendu par la lecture ne se modifie JAMAIS en place** — y compris à
+  travers `definitionAst`, `substitutedAstOf` / `substitutedTextOf` et `expandDerivatives`,
+  qui rendent l'arbre lu tel quel quand il n'y a rien à remplacer ou à développer. Toute
+  transformation fabrique un arbre neuf. Le gel (`deepFreeze`) n'a lieu qu'en développement et
+  en test : en production, une écriture abîmerait le mémo en silence ;
+- **les noms cités** (`#refsOf`, `atelier.svelte.ts`) : par objet rangé (un `WeakMap`) et noms de
+  fonctions — un objet rangé n'est jamais modifié sur place ;
+- **les liaisons** (`bindingsOf`, `engine.ts`) : un arbre substitué (une coordonnée, un rayon)
+  ne reçoit que les définitions des noms qu'il peut citer, de proche en proche
+  (`wantedNames`) ; un arbre qui ne nomme rien (`0`, `3/2`) n'en reçoit aucune
+  (`namesNothing`). Un nœud dont on ne sait pas lire les noms (longueur `AB`) fait tout lier ; un nom indicé (`c_2`) se lit sous son nom entier, `v_n` par sa base (2026-10-19).
+  `expandDerivatives` rend l'arbre tel quel quand il n'a ni `f'` ni `f⁻¹`.
+
+Les mémos par révision d'avant (`constructionMemo`, `#measureMemo`, `#astMemo`) restent ; dans
+`#constructions`, ils sont vidés **dès qu'un statut change** (avant : au tour suivant), et les
+constructions passent dans l'**ordre de dépendance** (`#dependencyOrder` : un objet après ceux
+qu'il cite), plus dans celui des cartes. Un objet qui cite une construction en échec dit donc
+toujours « Dépend de « t », qui est en erreur. » (ou « En attente de « t » »), quel que soit
+l'ordre des cartes et ce qu'une mesure a calculé en passant — avant, il reprenait parfois le motif
+de t (« Les deux points sont confondus… »). Rien à invalider
+dans `restore()`, la fusion, le chargement d'un fichier ou « Repartir de zéro » : aucune clé ne
+survit à un objet remplacé. `followsOf` (`card-state.ts`) lit `citedNames` au lieu d'appeler
+`dependents` pour chaque objet (O(n²) relectures).
+
+Mesures (figure de 24 objets, Mac mini M6 ; détail et profil :
+[atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md#performance)) :
+un cran coûtait 36 ms en node et 193 ms dans Chromium (mode dev, rendu compris) ; il coûte
+3 ms et 12,6 ms. Bancs : `banc-curseur.test.ts` et `banc-curseur.svelte.test.ts` (sautés sauf
+`VITE_ATELIER_BANC=1`). Garde-fous : `recalcul-performance.test.ts` (temps, borne 4× ; nombre de
+définitions liées par cran : 3, contre 5 808 sans les raccourcis) et
+`recalcul-equivalence.test.ts` (gestes tirés au hasard, graine fixe : raccourcis allumés ou
+éteints, atelier neuf restauré, `restore(photo)` — mêmes états, réponses, cartes et dessin).
+⚠️ `items` reste un `$state` **profond** : ses proxies coûtaient 4× le temps de node avant les
+mémos, ~1,5× après ; un `$state.raw` ferait tomber `serialize.svelte.test.ts` (« l'état vivant
+N'EST PAS clonable »), qui asserte le proxy.
 
 ### Commandes
 
@@ -717,7 +1244,7 @@ lettres ») est refusé aussi. Test : `src/lib/atelier/__tests__/fonction-sans-p
 | -------------------------- | ----------------------------- | ------------------------------------------------------------------------------------ |
 | registre du moteur         | `WebReplEngine.getCommands()` | `.dériver`, `.résoudre`, `.intégrer`, `.variations`, `.taylor`                       |
 | branchées hors registre    | table `OFF_REGISTRY`          | `.convertir`, `.stats`, `.ajustement`, `.exact`, `.décimal`                          |
-| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.développer`, `.réciproque`, `.limite`, `.simuler`, `.croiser`, lois |
+| servies par l'atelier seul | `ATELIER_ONLY_COMMANDS`       | `.factoriser`, `.développer`, `.réciproque`, `.limite`, `.simuler`, `.relever`, lois |
 
 La table `TRANSLATIONS` donne pour chaque commande son nom français, sa description, son exemple
 et sa rubrique de `.aide` (`HelpSection`) ; **son ordre est l'ordre du catalogue**. Les commandes
@@ -758,8 +1285,8 @@ décisions de David du 2026-10-11) :
 - liste fermée, **↑ / ↓ rappellent les saisies tapées** (`CalcDesk.recallPrevious` /
   `recallNext`) : jamais une ligne écrite par un bouton, même « Comparer avec M » qui passe par
   `submit` ; deux saisies identiques de suite rappelées une fois ; le brouillon d'avant le premier
-  ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; « Repartir de zéro » vide
-  le rappel ; il revient au rechargement avec les lignes (les 100 dernières saisies tapées), et rien
+  ↑ revient au bout ; une ligne rappelée puis modifiée n'est pas perdue ; une console vidée (rejeu,
+  retour d'un lien reçu) vide le rappel — « Repartir de zéro » le garde ; il revient au rechargement avec les lignes (les 100 dernières saisies tapées), et rien
   n'est rappelable après un rejeu ;
 - une fois la commande choisie ou tapée avec son espace, son **modèle** (l'exemple du catalogue,
   `commandBeingWritten`) reste sous le champ pendant qu'on tape la suite. Garde : toute commande
@@ -879,21 +1406,213 @@ de David), Échap ferme jusqu'à la frappe suivante. Garde : chaque proposition,
 est acceptée par Calcul (`completion.test.ts`).
 
 **Actions de carte** : `actionsFor` (`src/lib/atelier/actions.ts`) donne par type les actions
-(fonction : Tracer, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
+(fonction : Tracer, Afficher dans Géométrie, Dériver, Réciproque, Tabuler, Résoudre f(x) = 0, Variations ; suite : Premiers termes ;
 liste : Statistiques, diagrammes, nuage, ajustement, loi — par liste partenaire). Une action qui a
 un sens pour le type mais pas pour cet objet reste **visible, désactivée, avec sa raison**
-(`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans
-Calcul sans changer de vue** et crée **une carte par objet créé** (G7).
+(`disabledReason`). Le clic passe par `CalcDesk.runFromPanel` : il **écrit une ligne dans la
+console sans l'ouvrir ni changer de vue** et crée **une carte par objet créé** (G7).
+
+### La console déroulante
+
+Lot 2 de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
+(décisions de David du 2026-10-18). Plus d'onglet Calcul : `CalculView.svelte` (+ `CalcDesk`)
+vit dans un volet qui descend **par-dessus** la vue (`AtelierContainer.svelte`), environ 40 %
+de la hauteur, réglable à la poignée (souris, ou flèches haut / bas), toute la scène sous
+640 px. Une **région** nommée « Console », pas une `dialog` : rien n'est modal, la vue et
+« Mes objets » restent utilisables. Montée en permanence (l'historique, le brouillon, les étapes
+dépliées survivent à la fermeture), `inert` quand elle est fermée.
+
+- **Ouvrir / fermer** : le bouton « Console » de la barre (`aria-expanded`) ; la **touche
+  physique sous Échap** hors d'un champ ; **Ctrl+Entrée** partout, champs compris
+  (`console-key.ts` : sur Mac, `IntlBackslash` ou `Backquote` — mesure du 2026-10-18 sur un Mac
+  AZERTY, la touche sous Échap rend `IntlBackslash` ; ailleurs `Backquote` ; mesuré sur Chrome
+  seulement, pas sur Safari). Échap dans la
+  console la ferme, sauf s'il ferme d'abord une liste de propositions. À l'ouverture, le focus
+  va au champ ; à la fermeture, un focus resté dedans revient au bouton.
+- **Les touches restent dans la console** : le Graphe reste monté dessous, et ses raccourcis
+  (`KeyboardHandler`, `+ - flèches Échap g 0`) écoutent toute la fenêtre. La région porte
+  `data-own-keys`, que `KeyboardHandler` respecte, comme une touche déjà prise
+  (`defaultPrevented`) : ↓ sur la poignée ne décale pas le graphe, Échap sur « Fermer » ne
+  remet pas la vue à zéro (revue de #1485).
+- **A3** : le bouton porte le nombre de lignes arrivées pendant que la console était fermée ;
+  l'annonce dit « Nouvelle ligne dans la console ». Une commande préparée par une carte
+  (`needs-argument` : « Simuler », « Tableau croisé ») OUVRE la console. Elle s'AJOUTE au
+  brouillon de l'élève, jamais à sa place (`#prepare`, décision de David du 2026-10-18), et le
+  curseur se place en fin de ligne (`focusInput`), en texte comme en écriture mathématique. Limite
+  connue : un brouillon mathématique suivi d'une commande ne se compose pas en une seule écriture
+  (rien n'est perdu).
+- **A5** : une action qui montre quelque chose ailleurs (Tracer, nuage, diagramme, Tabuler,
+  Afficher dans Géométrie) change de vue ; sous 640 px, elle referme la console (`revealView`).
+- **Lisibilité** : invite `>` devant l'instruction (en couleur normale), réponse préfixée `-->`
+  (décoratifs, `aria-hidden`) ; une commande en texte (`.dériver f`) en chasse fixe ; une
+  définition réussie dit « f est correctement défini », le nom en couleur (`definedName`) ; les
+  boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher :
+  `any-hover: none` ou `any-pointer: coarse`, pour un portable tactile à souris). Couleur
+  d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console), `#ffc400` en sombre.
+- **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique
+  (ubumark) ». L'atelier s'enregistre par la barre d'icônes.
+
+### La carte d'une fonction
+
+Lot 3 de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
+(décisions de David du 2026-10-18). `ObjectCard` confie toute fonction à `FunctionCard.svelte` ;
+valeurs, suites et listes ont la leur depuis le lot 4a, points et courbes depuis le lot 4b
+(ci-dessous) : plus aucune carte n'a de vue repliée / développée.
+
+- **Une seule ligne, plus de vue développée** : `● f(x) = [champ MathLive]`, l'œil (tracer),
+  le bouton « Options de f ». Plus de libellé « fonction », plus de second `f(x) =`.
+- **Le champ** (`DefinitionField`, `commit="validate"`) : rien n'est rangé pendant la frappe ;
+  **Entrée** ou la **sortie du champ** rangent (valeur lue sur l'élément MathLive à cet
+  instant). Une saisie illisible (`parseDefinition` en erreur) garde l'ancienne définition :
+  l'erreur est sur le champ (`aria-invalid`, message relié par `aria-describedby`) ; **Échap**
+  rétablit l'ancienne valeur (et ne ferme alors pas la console). La lettre (`f(t)`) et
+  l'intervalle (`sur [0 ; 1]`) se règlent toujours dans le champ.
+- **Le point de couleur** (`CurveStylePopover.svelte`) ouvre couleur, épaisseur et style du
+  trait (`setDisplay`) ; une fonction jamais tracée propose « Tracer f ».
+- **Le menu** (`DropdownMenu`) : **Affichage** — « Tangente », « Aire sous la courbe »
+  (`curve-toggles.ts`, la même règle que les cases de `CurveSettings`), « Lecture graphique »
+  (lot 3 bis, ci-dessous), indisponibles tant que la courbe n'est pas tracée ; **Actions** — `actionsFor`, une raison d'indisponibilité écrite
+  dans l'élément (jamais `disabled` : il reste atteignable au clavier ; marqueur
+  `data-indisponible`). Ce qui se LIT (point de tangence, bornes, aire, longueur) reste sous la
+  ligne, seulement allumé (`CurveSettings compact`).
+- **Pas d'« Image d'un nombre »** (décision de David du 2026-10-18) : `f(2)` s'écrit tout seul
+  dans la console, la carte ne propose ni action ni champ. `CalcDesk.image` reste, pour rejouer
+  les historiques exportés avant, qui contiennent le geste `image`.
+- **« Tabuler »** : une fenêtre « de / à / pas » pré-remplie ; un refus s'y dit, un succès la
+  ferme (focus dans la grille) et sa phrase s'écrit sous la carte.
+- **Les cartes qui suivent** (`f′`, `f⁻¹`) : formule calculée (jamais éditable), une icône de
+  lien à côté du nom dit « dérivée de f — elle suit f » (infobulle, et note dépliée au toucher).
+- `selected` (panneau) ne sert plus, pour une fonction, qu'à la mettre en évidence et à donner
+  le focus au champ d'une carte neuve.
+- **La lecture graphique de l'image** (lot 3 bis, choix de David du 2026-10-18) : réglage de
+  la courbe `showReading` (rangé compact, absent quand éteint ; un état d'avant se relit sans
+  lui, pas de nouvelle `ATELIER_STATE_VERSION`). Allumée, deux sources de pointillés :
+  - **la console** : chaque ligne réussie qui est un appel NU d'une fonction sur un nombre
+    (`f(2)`, `f(-1/2)`, `f(√2)`, `f'(2)` sur la carte de `f′` ; pas `f(2)+1`, `f(a)`, `f(g(2))`
+    ni `f⁻¹(5)`, image de la réciproque) — relue par le parseur de l'atelier (`readingCallOf`,
+    jamais une expression régulière), une ligne n'étant relue qu'une fois pour les mêmes noms
+    de fonctions (cache, la synchronisation relisant la console à chaque révision). Les **3
+    dernières** par courbe (`MAX_READINGS`), une abscisse relue ne comptant qu'une fois ; seules
+    les 100 dernières lignes sont relues. Elles suivent la définition courante de `f`.
+    ⚠️ `f(π)` et `f(\pi)` se lisent, pas `f(pi)` tapé en lettres : le parseur en mode texte y voit
+    `p·i` (mesuré le 2026-10-19, malgré `pi` dans `CONSTANTS`) ;
+  - **le point glissant** : un par courbe lue, posé au milieu de la fenêtre puis là où l'élève
+    le laisse (non rangé : rechargé, il revient au milieu). Aimanté aux entiers et aux demis au
+    glissé ; ← → par pas de la sous-grille, Page ↑ / ↓ par pas de la grille.
+    Le dessin vit dans le grapheur (voir [grapheur.md](grapheur.md#lecture-graphique-de-limage)).
+
+### Les cartes d'une valeur, d'une suite, d'une liste
+
+Lot 4a de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
+(recommandations validées par David le 2026-10-18). La grammaire de la carte de fonction : une
+ligne `● nom = [définition]`, l'œil si l'objet se trace, un menu (`CardActionItems`,
+`UnavailableItem`), Renommer et Supprimer en fin de menu. Le champ est celui des fonctions
+(`DefinitionField`, `commit="validate"`) : une valeur et une suite sont rangées à **Entrée** ou à
+la **sortie du champ**, et non plus 0,3 s après la frappe. Chaque carte dit son état sur sa ligne
+(« à compléter », « en attente », « erreur » : `stateLabelOf`, `card-state.ts`).
+
+- **Valeur** (`ValueCard.svelte`) : `a = [3]`, une grandeur avec son unité (`v = [12 km]`). Le
+  **curseur est sous la ligne** quand la valeur est un **paramètre** — un autre objet la cite
+  (`Atelier.dependents`), point, courbe ou premier terme d'une suite compris. Sinon il est caché,
+  et « Affichage → Curseur » l'affiche — **retenu avec l'atelier** (`sliderShown`,
+  `setSliderShown`, décision de David du 2026-10-18) : il survit au rechargement, au renommage,
+  au fichier et au lien. ⚠️ La règle lit
+  `object.slider` : le modèle l'omet pour une grandeur (D4, `build()`) et l'omettra pour une
+  mesure de la géométrie (`aire(…)`, `distance(…)`) — la carte ne juge jamais la forme de la
+  définition. Seule exception, d'avant ce lot : une valeur **calculée** (`b + 1`, `constantOf`
+  nul) n'a pas de curseur, il effacerait sa formule. Ces deux absences sont dites par
+  « Curseur », indisponible avec sa raison ; un paramètre a « Curseur » coché et indisponible
+  (« a est un paramètre (f la cite) »). « Bornes et pas du curseur… » ouvre une fenêtre
+  (`SliderSettings`). Actions : Convertir (unité).
+- **Suite** (`SequenceCard.svelte`) : `● u(n) = [2n+1]` ou `● u(n+1) = [2u(n)+1]`. Sous la
+  ligne, en petit : `u([0]) = [3]` (rang et premier terme, deux champs) pour une récurrence,
+  « à partir du rang [0] » pour une suite explicite ; rang, premier terme et marches sont rangés à
+  Entrée ou à la sortie du champ (`change`), jamais à la frappe ; un refus se dit alors, relié au
+  seul champ fautif (`refus-suite-u`), et le champ reprend la valeur retenue. Une suite en
+  escalier qui ne peut plus l'être (passée en explicite, ou qui dépend désormais de n) revient au
+  nuage (`#dropImpossibleCobweb`, revue de #1501). Le point de couleur (`CurveStylePopover`, `setSequenceDisplay`)
+  ouvre couleur et trait. Menu : **Affichage** — Nuage / Escalier (choix exclusif ;
+  indisponibles tant que la suite n'est pas tracée, l'escalier d'une suite explicite avec la
+  raison de `cobwebRefusal`), les **marches** se réglant sous la ligne quand l'escalier est
+  tracé ; **Définition** — Explicite / Récurrence (`setSequence`) ; **Actions** — Premiers
+  termes. `SequenceSettings.svelte` est retiré.
+- **Liste** (`ListCard.svelte`) : `L = {3 ; 5 ; 8 ; …} (12 valeurs)`, une liste de mots
+  `(5 valeurs, 3 modalités)`, une colonne de formules « calculée dans la grille »
+  (`list-preview.ts` : les entrées telles que la grille les montre, jamais `=A1*2`). Elle **ne
+  s'édite pas sur la ligne** : « Modifier dans Données » ouvre la vue Données sur sa colonne
+  (action `data`, traitée par le conteneur, hors de `actionsFor`). Les actions à deux listes
+  passent par le sous-menu **« Avec une autre liste »**, un groupe par partenaire
+  (`actionsFor(liste, atelier, partenaire)`), à la place du choix de la partenaire sur la carte
+  (Q46) ; une partenaire renommée y paraît sous son nouveau nom (Q48). Une commande **préparée**
+  (tableau croisé, simuler) part une fois le menu fermé ET retiré (`onOpenChangeComplete`) :
+  lancée avant, le champ mathématique de la console n'obtenait pas le focus.
+- Aucune de ces cartes n'en suit une autre (pas de lien de dépendance, à la différence de `f′`) ;
+  `selected` ne sert qu'à la mise en évidence et au focus d'une carte neuve.
+
+### Les cartes d'un point et d'une courbe
+
+Lot 4b de [atelier-refonte-interface-phase0.md](../archive/wip/atelier-refonte-interface-phase0.md)
+(validé par David le 2026-10-18, précisé avec la session de la géométrie). Une seule carte pour
+les deux, `FigureCard.svelte`, avec la grammaire des autres :
+
+- **Une ligne** : `● A = [(1 ; 2)]`, `● d : [y = 3x − 2]` (équation : « : »), `● d = [(AB)]`
+  (construction : « = », L2). Le champ (`DefinitionField`, `commit="validate"`) est rangé à
+  Entrée ou à la sortie du champ — il l'était 0,3 s après la frappe. Le champ d'un point montre
+  ses coordonnées en LaTeX (`\left(\sqrt{2};1\right)`, `fieldLatexOf`), relisibles.
+- **La nature** en gris SOUS la ligne, en tête de la ligne grise (« point », « droite »,
+  « segment », « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide
+  (C6) sous la ligne. Elle était au bout de la ligne : dans le panneau à sa largeur par défaut,
+  le champ d'une construction ne montrait plus que « cer » pour `cercle(O ; 3)` (2026-10-19).
+- **Une définition trop longue pour la ligne passe dessous, en entier** (`.corps` en
+  `flex-wrap`, champ en `flex: 1 0 auto`, jamais plus étroit que son contenu) — même règle pour
+  les cartes de fonction, de valeur et de suite (`carte-champ-largeur.svelte.test.ts`).
+- **Les boutons (œil, ⋮) restent en haut à droite, sur la ligne du nom** (`.boutons` en
+  position absolue) : le champ réserve leur place derrière lui (`.membre::after`, largeur
+  `--boutons`), réserve qui se replie quand il est passé à la ligne et lui laisse toute la
+  largeur. L'état (« à compléter », « en attente ») passe sous la ligne. Avant (#1508), ⋮
+  descendait avec le champ et se retrouvait seul dessous, à gauche (2026-10-19). Toutes les
+  cartes ; celle d'une liste, dont l'aperçu est tronqué, en grille à deux colonnes.
+- **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris après sa
+  nature (« cercle · … »), non éditable — coordonnées exactes, équation réduite, longueur
+  (`constructionSummaryOf`, L7) ; c'est la construction qu'on modifie. Un point par coordonnées
+  n'a que sa nature sous la ligne.
+  Un point approché s'y lit `E ≈ (1,5811 ; 1,2247)` (lot 2, PR 3). Un `point_sur` à position
+  écrite a, sous la ligne, le **curseur de position** (`ValueSlider`, celui des valeurs : « Position
+  de M », `position de M = 0,3`).
+  L'icône de lien dit ce qu'elle suit (« I se construit à partir de A et B, et suit leurs
+  changements », `followsOf`). En attente : « en attente » et sa raison.
+- **Le point de couleur** (`FigureStylePopover`) : couleur et taille d'un point, couleur,
+  épaisseur et style d'une courbe (`setFigureDisplay`). Il montre la couleur PEINTE : sans
+  couleur réglée, celle de la figure (`figureDefaultColor`), aucune pastille cochée. **Menu** : Affichage → Étiquette (point seulement), puis Renommer
+  et Supprimer.
+- **Le modèle** : `PointDisplay { color?, size: 'small' | 'medium' | 'large', showLabel }` et
+  `StrokeDisplay { color?, lineStyle, lineWidth }` (sous-ensemble de `CurveDisplay`), sur l'objet,
+  absents par défaut. **Le premier réglage part de ce qui est dessiné** (2026-10-19) : taille
+  moyenne, nom affiché, trait continu d'épaisseur 2, couleur ABSENTE (celle de la figure) —
+  régler la taille ou le trait seul ne repeint pas l'objet ; un réglage qui ne change rien (la
+  taille déjà active) n'enregistre rien (`sameFigureDisplay` : pas de `display`, pas de
+  révision) ; rangés en `figureDisplay` (sauvegarde, lien, fichier, fusion :
+  `adoptFigureDisplay`, `.strict()` — le réglage d'un point posé sur une courbe est oublié) ;
+  gardés quand la définition change. La vue Géométrie les **peint** (`syncFigure`, 2026-10-19) :
+  un point prend sa couleur (jeton `var(--color-curve-N)`, comme K4), son rayon (petit 3 px,
+  moyen 5 px — le dessin d'avant —, grand 7 px : `POINT_RADII`) et son nom masqué
+  (`Figure.setLabelHidden` ; `GeometryCanvas`, exports SVG et TikZ lisent `labelHidden` pour les
+  points, Typst le lisait déjà) ; une courbe — équation ou construction, y compris chaque sorte
+  d'une conique à curseur — sa couleur, son trait et son épaisseur (`dashdot` → tirets). Le nom
+  d'un cercle construit suit sa couleur et reste écrit (une courbe n'a pas de `showLabel`). Un
+  réglage repeint sans reconstruire (`restyled`, `Figure.updateStyle`) ; sans réglage, le
+  dessin reste celui d'avant ; un réglage qui disparaît refait la figure (`updateStyle`
+  fusionne et ne sait pas rendre le défaut).
 
 ### Vues
 
-| Vue     | Composant                             | Ce qu'elle projette                                                                                                                 |
-| ------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-| Calcul  | `CalculView.svelte` + `CalcDesk`      | l'historique ; « Garder » promeut une ligne en objet nommé (`promote`, D5) ; « Comment ? » déplie les étapes, « Résumé / Détaillé » |
-| Graphe  | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                 |
-| Données | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                              |
+| Vue       | Composant                             | Ce qu'elle projette                                                                                                                    |
+| --------- | ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| Graphe    | `GrapheurContainer` (`panel={false}`) | fonctions, suites (nuage / escalier), nuages de deux listes, tracés via `syncPlots`                                                    |
+| Géométrie | `FigureView.svelte`                   | points, courbes et 𝒞f affichées dans un repère orthonormé (`GeometryCanvas`), via `syncFigure` ; les points se glissent (lot 3, M1-M2) |
+| Données   | `DataView.svelte`                     | la grille (une liste = une colonne nommée), diagrammes en bâtons / barres / circulaire                                                 |
 
-Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de refaire le travail) :
+Trois ponts à **sens unique**, tous idempotents (une empreinte évite de refaire le travail) :
 
 - `syncEngine` (`engine.ts`) : l'atelier détient les noms, `WebReplEngine` n'est qu'un
   calculateur remis en accord avant chaque usage (Q1, option B). Une fonction liée s'y lit
@@ -901,7 +1620,176 @@ Deux ponts à **sens unique**, tous deux idempotents (une empreinte évite de re
   seuls f, g, h, u, v, w l'étaient) : le moteur passe son état à chaque lecture ;
 - `syncPlots` (`plot-sync.ts`) : l'atelier détient l'état, le grapheur le reflète. Rien de ce qui
   se passe dans le grapheur ne remonte. ⚠️ L'effet qui l'appelle lit et écrit le store : s'il
-  cessait d'être idempotent, il bouclerait.
+  cessait d'être idempotent, il bouclerait. Il reçoit aussi les abscisses lues dans la console
+  (`consoleReadings(desk.entries, …)`), posées sur la courbe en `reading` quand `showReading` est
+  allumé ; l'effet suit donc aussi les lignes de la console. Appelé sans elles (nuage depuis le
+  pupitre), il garde celles déjà posées.
+- `syncFigure` (`figure-sync.ts`, géométrie v2, PR 2) : l'atelier → une `Figure` de
+  `geometry-core`, tenue par `AtelierFigure` (une projection : `FigureView` la crée, un
+  `$effect` la resynchronise à chaque `revision`, comme `syncPlots`). Par l'**API `Figure.create*`**, pas par le DSL :
+  l'atelier a déjà les arbres (dérivées développées, fonctions remplacées par
+  `substitutedAstOf` / `substitutedTextOf`), les réécrire en script reviendrait à relire une sortie
+  texte (invariant 10). La forme d'une courbe est celle de `courbe()` (`curveShapeOf`,
+  `geometry-core/geometry/curve-nature.ts`), lue d'abord sur l'équation **telle qu'écrite**
+  (`y = 1/x` reste y = f(x), comme dans `courbe()`), puis sur l'équation **développée** si
+  l'écrite ne donne qu'une implicite (`(x − 1)² + (y − 2)² = 4`, un cercle) ou si elle révèle une
+  droite (`y = 4(x − 2) + 4`) : droite (exacte sans curseur), y = f(x), conique, implicite. Ce
+  que l'équation décrit est **dessiné, même dégénéré** : point isolé (`x² + y² = 0`), droite
+  double (`x² = 0`, `x² + 2xy + y² = 0`), deux droites par le marching squares (`x² = 4`) ; seul
+  le vide ne dessine rien (la carte le dit). Une conique à curseur dont la sorte change au
+  glisser (`x² = a`) porte les quatre tracés possibles, un seul dessiné à la fois. Une pose qui
+  échoue retire ses aides cachées. Une valeur hors des bornes de sa carte (au-delà de ±10⁹) :
+  ce qui la cite n'est pas dessiné (la figure la ramènerait dans les bornes). Un point sans curseur a ses
+  coordonnées **exactes** (`GeoValue`), dessinées non déplaçables. Un objet en erreur, en attente
+  ou à compléter n'est pas dessiné (F5). **Curseurs partagés (S1, S2, S4)** : chaque valeur à
+  curseur citée devient un curseur **caché** de la figure, aux bornes de sa carte (sans pas : la
+  valeur arrive déjà arrondie par `slideTo`) ; glisser la valeur appelle `Figure.moveSlider` et
+  `recompute` — **sans reconstruire la figure**, seuls les descendants se recalculent. Une
+  conique ou une courbe implicite qui cite un curseur passe par `parameterRecipe` (coefficients
+  réévalués et conique reclassée, fermeture de F reliée aux valeurs courantes). Seul un
+  changement de structure (objet, arbre, bornes) refait la figure. Mesuré (S2, 2026-10-18) : 10
+  courbes dont 3 implicites, glisser `a` coûte ~11 ms par cran dans Chromium (toile 800 × 600,
+  `slideTo` + synchronisation + rendu Svelte). **Intersections et `point_sur`** (lot 2, PR 3) : une
+  intersection qui cite un curseur a pour coordonnées deux lettres (`intersection_1_x`), posées
+  par deux `createScalarExpression` dont le calcul est `intersectionPoint` sur les supports où
+  les valeurs des curseurs sont substituées — le calcul même de la carte, racines exactes
+  comprises (revue : un Newton sur [−10 ; 10] dessinait un autre point), donc son point et sa
+  numérotation (`FigurePlan.derived`, `FigureRecipes`) ; une position
+  écrite de `point_sur` est un curseur caché (`position_M`) réglé par `moveSlider`. Ni l'un ni
+  l'autre ne refait la figure ; un point sans solution n'est pas dessiné (NaN), et l'atelier,
+  qui le met en attente, refait la figure à l'entrée et à la sortie de l'attente.
+
+**Vue Géométrie** (`FigureView.svelte` ; l'onglet s'appelle « Géométrie » depuis la Q5 révisée, le
+code garde ses identifiants `Figure*` et `ViewId` `'figure'`) : repère **orthonormé** par construction, `GeometryCanvas`
+n'ayant qu'un `pixelsPerUnit` (F2 ; 13 unités sur le plus petit côté à l'ouverture) ;
+`objectsMovable={false}` (étiquettes, double-clic figés) mais **les points se glissent** (lot 3,
+PR 1, M1, M2, M7) : la toile ne touche pas la figure, elle DÉLÈGUE le geste (`pointDrag`, au plus un
+mouvement par image ; rien n'est écrit sous 4 px de chemin, un clic qui tremble laisse `(1/3 ; 2,25)`
+tel quel ; l'écart point − curseur de la saisie est gardé, le point ne saute pas ; un seul pointeur,
+les autres sont ignorés ; la classe `dragging` est demandée à `FigureView` (`holds`), la figure
+refaite en plein geste changeant les ids) ; `FigureView` retrouve le nom du point (`AtelierFigure.nameOf`) et appelle
+`atelier.dragPoint(nom, x, y, aimantation)`, qui réécrit sa définition — tout se recalcule
+pendant le geste (mesures, cartes), la figure suit par `syncFigure`. Un point par coordonnées
+NOMBRES reçoit `(x ; y)`, chaque coordonnée aimantée à l'entier à moins de 8 px, sinon arrondie au
+dixième (`(2,3 ; -0,7)`) ; un `point_sur` à position écrite reçoit sa position lue sur son support
+(`supportOfPointOn` puis `positionAt` : paramètre projeté sur une ligne, angle en degrés dans
+[0 ; 360[ sur un cercle, abscisse sur 𝒞f), par `slidePosition` (bornes et pas de son curseur).
+Ne se glissent pas (`dragRefusal`, phrase sous la barre, `role="status"`) : un point construit
+(« déplace les points dont il dépend »), des coordonnées ou une position qui citent une valeur
+(« glisse son curseur »), un `point_sur` sans position écrite. Coût mesuré (banc
+`banc-glisser.svelte.test.ts`, figure de 24 objets, A dont tout dépend, Chromium) : médiane
+15,9 ms, p90 17,6 ms par mouvement, figure refaite comprise. La toile suit la largeur
+de son conteneur (téléphone). La case « Repère » (`MyCheckbox`) montre ou masque grille, axes et
+graduations : l'état vit dans l'`Atelier` (`figureFrame`, `setFigureFrame`), **hors
+`serialize()`** comme `charts`, rendu à son défaut (affiché) par `restore()` (G4, F3). Sans point
+ni courbe ni fonction affichée, la vue dit « Écris un point A = (1 ; 2) ou une courbe d : y = 3x − 2,
+ou affiche une fonction depuis sa carte. » (F1).
+
+**Barre d'outils** (lot 3, PR 2 et 3, M3, M4, M5, M7, M8 de
+`docs/archive/wip/atelier-geometrie-lot3-phase0.md`) : Déplacer (par défaut) · Point · Segment · Droite ·
+Demi-droite · Cercle · Milieu · Intersection · Point sur un objet · Parallèle · Perpendiculaire, en icônes (`aria-label`, `aria-pressed`, motif de barre d'outils
+`rovingToolbar`). Un outil **écrit la ligne qu'on aurait tapée** (G2) : `FigureToolbox`
+(`figure-tools.svelte.ts`) ne crée rien, il passe ses lignes à `write` — `desk.write`, par le
+conteneur (`writeFromFigure`) : une ligne de console rejouable (geste `saisie`), une étape, jamais
+rappelée par ↑, brouillon intact, console fermée (G7) mais la ligne et sa réponse annoncées. Lignes
+écrites : `A = (1,5 ; 2)` (aimanté aux entiers à 8 px, sinon au dixième, comme le glisser),
+`d = [AB]`, `d_1 = (AB)`, `d_2 = [BA)`, `c = cercle(A ; passant=B)` ; la construction n'avance que
+si sa ligne a réussi. Noms (M4, `nextPointName`, `nextLineName`, `nextCircleName`) : première
+majuscule libre puis `A_1`… ; `d`, `d_1`… pour droites, segments, demi-droites ; `c`, `c_1`… pour
+les cercles — jamais un nom pris ni refusé par `indexedNameClash` (une fonction `d` fait passer
+à `D`). Un clic près d'un point existant le réutilise (8 px souris, 20 px doigt), le même point
+deux fois est refusé (« Choisis un autre point que A. »). Avec un outil, la toile ne glisse plus
+rien : elle délègue le clic (`canvasTool`), le fantôme (`overlay`) suit le pointeur, la consigne
+(« Clique sur un deuxième point. ») est dite sous la barre (ligne réservée : la toile ne saute pas).
+Échap ou un second appui sur l'outil abandonne la construction (le premier point posé reste). Les
+flèches déplacent le point choisi (le dernier saisi ou posé, entouré) par `dragPoint` : pas de 0,1,
+Maj : 1, une flèche tenue = une étape (`endGesture` au relâcher).
+
+**M5 complet et outils de construction** (lot 3, PR 3). La toile dit au clic ce qui est proche :
+le point (`findPointNear`), et les autres éléments à la même distance, le plus proche d'abord
+(`findElementsNear` de `geometry-core/interaction/hit-testing.ts`) ; `FigureView` les traduit en
+noms (`projection.nameOf`). Au survol, avec un outil, le point visé, sinon l'objet le plus proche,
+est mis en évidence. La boîte calcule sur l'atelier (`supportNamed` de `construction.ts` : le
+support résolu d'un objet nommé ; `commonPoints` de `construction-intersect.ts` : les points
+communs sur les portions, avec le `k` qui les écrit, `null` pour deux lignes). Un outil qui attend
+un point, là où aucun point n'est visé, écrit : l'**intersection** de deux objets proches si l'un
+de leurs points communs est sous le clic (`C = intersection(d ; c ; 2)`, le plus proche ; sans `k`
+pour deux lignes) ; sinon un **`point_sur`** de l'objet le plus proche, à la position du clic
+arrondie au pas de son curseur (segment au centième, ramené dans [0 ; 1] ; demi-droite et droite
+au dixième, une demi-droite pas sous 0 ; cercle en degrés entiers ; courbe y = f(x) au dixième —, affinée d'une décimale à la fois (trois au plus) tant que le
+point écrit est à plus d'une demi-tolérance du clic (droite longue, courbe raide) —
+`point_sur(d ; 0,63)`, donc glissable) ; sinon un point par coordonnées. Outils : **Milieu** —
+deux points (`C = milieu(A ; B)`), ou un clic sur un segment (`C = milieu(d)`) ; **Intersection** —
+un clic où deux objets se coupent, ou un objet par clic et le point commun le plus proche du
+second clic (« c et d_1 ne se coupent pas. », « … ont une infinité de points communs. », la raison
+d'un couple que l'atelier ne coupe pas — fonction × cercle —, « Choisis un autre objet que c. ») ; **Point sur un
+objet** — un clic sur l'objet, jamais une intersection ; **Parallèle**, **Perpendiculaire** — la
+droite (droite, segment, demi-droite, droite par équation) puis le point (M5), ou un point
+existant puis la droite : `d_1 = parallele(C ; d)`, `d_1 = perpendiculaire(C ; d)` ; un cercle ne
+donne pas de direction (« Clique sur une droite, un segment ou une demi-droite. »). Fantômes : le
+milieu (segment et point) ; la parallèle ou la perpendiculaire par le pointeur, une fois la droite
+choisie. Limite connue : seul le premier morceau d'une fonction à plusieurs morceaux porte son nom
+dans la figure, les autres ne se visent pas.
+
+**Téléphone et tablette** (lot 3, PR 4, M6). La vue se déplace et se zoome sans rien écrire (ni
+ligne, ni étape) : deux doigts la déplacent et la zooment, quel que soit l'outil (un appui d'outil
+interrompu par un second doigt ne pose rien) ; avec Déplacer, un glisser sur le fond, au doigt ou
+à la souris, la déplace — un point se glisse toujours, le second doigt d'un glisser est ignoré
+(prop `viewGestures` de `GeometryCanvas`). Au doigt (`pointer: coarse`), boutons d'outils de
+44 px. Sous 640 px (le seuil de la console pleine page), la toile prend la vue (plancher de
+10rem), la barre d'outils passe **dessous**, sur une rangée qui défile de côté (ombre du côté où
+il reste des outils, case Repère au bout), consigne et invite de la vue vide se posent sur le haut
+de la toile (fond translucide, sans capter le doigt ; vide, la région `role="status"` reste
+rendue). Même disposition sur un écran bas (`max-height: 480px`, téléphone couché), plancher
+6rem : la barre d'outils reste à l'écran. Sans outil, le doigt resté posé après un pincement
+continue de déplacer la vue. Mesuré sur iPhone 13 (390 × 664) : toile de 234 px de haut,
+« Mes objets » vide au-dessus ; couché (750 × 342) : 117 px. ⚠️ La page des tests navigateur
+(414 px de large) prend cette disposition (toile de 10rem) : un test qui suppose une échelle en
+pixels y casse.
+
+**« Mes objets » sur téléphone** (décision du 2026-10-19, journal
+[atelier-mes-objets-telephone-progress.md](../archive/wip/atelier-mes-objets-telephone-progress.md)) : en
+une colonne (≤ 720 px), le panneau ouvert ramenait la vue à son plancher (toile de 160 px avec deux
+points). Il s'ouvre donc **replié** : une barre « Mes objets · N objets » et un bouton
+(nommé par le titre, `aria-expanded`, `aria-controls` ; absent quand l'atelier est vide) qui
+déplie cartes et boutons « + ». Le repli est tranché en CSS
+(classe `replie`, pas de `matchMedia`) : au-dessus de 720 px le bouton est caché et le panneau
+toujours déplié, sans flash au chargement. Il se **déplie** seul quand l'atelier est vide (les « + »
+sont la seule entrée), quand on crée depuis un « + » (le premier objet ne le referme pas), et quand
+une carte prend la main (`selected` non nul : la carte prête à taper de `/grapheur`, f′ après
+« Dériver »). Un objet créé ailleurs (barre d'outils de Géométrie, console) le laisse replié ; le
+compte suit. Le choix n'est pas retenu d'un chargement à l'autre. ⚠️ Les tests des cartes, qui
+tournent à 414 px, se jouent sur bureau (`harness/desktop-screen.ts`) ; le repli a ses propres
+tests (`mes-objets-telephone.svelte.test.ts`).
+
+**𝒞f dans la vue Géométrie** (PR 3, K1-K3) : l'action de carte « Afficher dans Géométrie » /
+« Retirer de Géométrie » (`figure` dans `BY_KIND`, bascule comme « Tracer ») pose `inFigure` sur
+la fonction (`setInFigure`, un état d'affichage **rangé** comme `plotted` : sauvegarde, lien,
+fichier `.atelier.json`, fusion ; version 4). Elle passe par `CalcDesk.runFromPanel` : une ligne
+dans Calcul (« La courbe de f est affichée dans Géométrie. »), rejouable ; `AtelierContainer`
+ouvre l'onglet Géométrie quand elle affiche (A5, comme « Tracer » ouvre le Graphe). Désactivée
+avec la raison de l'objet si la fonction n'est pas `ok` (invariant 9) ; « Retirer » reste
+possible. `syncFigure` trace la fonction par `createFunction` (l'arbre de `substitutedAstOf`,
+curseurs gardés en lettres et liés par nom : `f(x) = a x²` suit `a` sans reconstruire), une
+`GeoFunction` par morceau de son ensemble (`plotRestrictionOf`, hérité compris : K2), nommée
+comme sur sa carte (`f`, `f′`, `f⁻¹`), et **peinte du trait de sa carte** (K4, 2026-10-18) :
+couleur (`display.color`, la `CurveColor` du Graphe, peinte par son jeton `var(--color-curve-N)`,
+le même en clair et en sombre), pointillés et épaisseur (`dashdot` devient des tirets, la figure
+n'en a pas) ; un changement dans la carte repeint par `Figure.updateStyle`, sans reconstruire
+(`syncFigure` rend `restyled`) ; une fonction jamais tracée garde la couleur par défaut. Le
+même chemin (`Look`, hors empreinte, posé par `paint` sur tout ce qui est visible et posé pour
+l'objet) sert aux points et aux courbes depuis le lot 4b.
+`f′` et `f⁻¹` ont la même action, leur propre couleur de carte, et suivent `f` (K3) ;
+une carte `f′` ou `f⁻¹` créée depuis une `f` affichée naît affichée, comme pour le tracé.
+
+**Nature d'une courbe** (`curve-nature.ts`, C1, C2, C6) : la carte remplace le type « courbe »
+par la nature, **recalculée** à chaque lecture (jamais rangée) avec les valeurs citées
+remplacées — « droite », « cercle », « ellipse », « parabole », « hyperbole », « deux droites »,
+« point », sinon « courbe ». Une courbe vide reste acceptée et la carte constate « Aucun point
+ne vérifie cette équation. » (C6) ; une conique réduite à un point dit « point » et constate
+« Un seul point vérifie cette équation. ». Même classification que `courbe()`
+(`curveNatureOf`, `degenerateConic`). La carte d'un point ou d'une courbe se lit comme celle
+d'une fonction, sur une ligne : le nom, le « : » ou le « = », puis le champ (lot 4b).
 
 ### Copier une réponse
 
@@ -923,7 +1811,11 @@ une définition ; une ligne sans formule (`.stats`) copie son texte.
 ### Réglages et écriture mathématique
 
 Le bouton **« Réglages »** de la barre du haut (`AtelierSettings.svelte`, 2026-10-14) ouvre une
-fenêtre au réglage unique, **« Saisie dans Calcul »** : **Texte** (le champ de toujours, un point
+fenêtre à deux réglages. **« Angles »** (2026-10-18, `angle-unit.ts`) : **Degrés** (le défaut,
+comme `unite_angle` du DSL) ou **Radians** — l'unité des seules mesures d'angle (`angle(A, B, C)`) ;
+un nombre seul reste en radians (`cos(60)`, dérivées, tracés inchangés). Retenu dans ce navigateur
+(`chiphre-atelier-angles`), posé sur l'atelier par `setAngleUnit` (hors `serialize()`, qui
+recalcule), jamais dans un lien. **« Saisie dans Calcul »** : **Texte** (le champ de toujours, un point
 devant les commandes ; le défaut) ou **Écriture mathématique** (MathLive, sans point, marquée « en
 essai »). Le choix prend effet tout de suite et reste dans le navigateur (`chiphre-atelier-saisie`,
 à part de l'atelier) : ni dans un lien, ni dans un export ; présent aussi sur un atelier reçu.
@@ -976,7 +1868,16 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   (`grid.cells`, sans « ; », triés un par un par
   `salvageGrid`, réunies par `salvageState`) ; une version 1 se relit, ses listes placées en A, B…
   dans l'ordre des cartes. Sans la version 2, un onglet resté sur l'ancien code relirait l'état en
-  jetant la grille, puis l'enregistrerait. Chaque issue est nommée (`LoadOutcome`,
+  jetant la grille, puis l'enregistrerait. **Version 4** (2026-10-18, PR 3 de la géométrie) :
+  `inFigure` (𝒞f affichée dans la vue Géométrie) ; une version 3 se relit, rien n'y est
+  affiché. **Version 3** (2026-10-18, géométrie) : les types
+  `point` et `curve`, et `y` réservé — `migrateReservedNames` renomme un objet `y` à la première
+  lettre libre de son type (ses cartes `y′`, `y⁻¹` avec lui), réécrit ce qui le cite (définitions
+  sauf celles des courbes, premier terme d'une suite, formules de la grille, `renameInFormula`) et
+  rend le renommage : `restore` le met dans son rapport (`renamed`), la session et `openLink` le
+  disent (« « y » est désormais réservé aux équations : ton objet s'appelle maintenant k. »), la
+  fusion le compte parmi les arrivants renommés en évitant aussi les noms de l'atelier qui reçoit. « Garder dans mon atelier » dit aussi le renommage d'un `y` de l'atelier personnel, relu à cette occasion (`MergeReport.migrated`, `ShareBar.svelte`).
+  Appliquée à toute relecture, quelle que soit la version. Chaque issue est nommée (`LoadOutcome`,
   `SaveOutcome` : stockage indisponible, quota, trop volumineux…).
 - **Session** (`session.ts`) : sauvegarde différée de 500 ms sur `revision`, écrite aussi au
   `pagehide` ; l'événement `storage` signale une écriture d'un autre onglet. Tout ce qui doit être
@@ -992,7 +1893,42 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   (`keepReceived`) verse dans l'atelier personnel ; en cas de collision, **l'arrivant est
   renommé** et on le dit (Q2, `mergeInto`). Ses colonnes (listes et cellules sans nom) vont dans
   les **premières colonnes libres**, dans leur ordre ; pas assez de colonnes libres → refus,
-  rien n'est versé (T7, `mergeRefusal`).
+  rien n'est versé (T7, `mergeRefusal`). Les noms des arrivants sont choisis **avant** toute
+  création, et une lettre libre évite aussi les noms des autres arrivants (pas de renommage en
+  chaîne) ; puis les arrivants qui citent un renommé sont réécrits (B9 de
+  `atelier-remplacer-phase0.md`, `renameInObject` : texte et LaTeX de carte, `a_1` / `a_{1}`,
+  longueurs `AM`, constructions, premier terme d'une suite) — reçu `a = 3` et `f(x) = a x` dans un
+  atelier qui a `a = 5`, `f` suit le `a` reçu devenu `b`, plus le `a` local.
+- **Remplacer mon atelier** (`docs/wip/atelier-remplacer-phase0.md`, R1-R5 et B1-B9, validée
+  par David le 2026-10-19) : l'autre geste d'un atelier reçu, à côté de « Garder »
+  (`ShareBar.svelte`, `onReplace`). Confirmation qui compte (« Tes 6 objets et ta grille seront
+  remplacés. Ton atelier est mis de côté : tu pourras le retrouver. », `replacementLoss`), sans
+  confirmation ni copie si l'atelier personnel est vide (B1). L'atelier personnel est **mis de
+  côté** sous sa propre clé, `SET_ASIDE_STORAGE_KEY` (`chiphre-atelier-de-cote`), une seule copie,
+  écrite **avant** l'atelier reçu (`replacePersonal`) ; une écriture refusée (quota, stockage
+  indisponible) défait la précédente et rien ne change (B5) ; un atelier personnel plus récent ou
+  abîmé n'est pas remplacé, comme la fusion (B6). Ce qui devient l'atelier personnel est l'atelier
+  **affiché** (le lien, avec ce que l'élève y a fait). Le conteneur quitte alors le lien **sans
+  recharger** : l'ancien atelier est remis à l'écran puis remplacé en une étape
+  (`replaceWith`, « remplacer mon atelier » : un Ctrl+Z le rend), la session s'ouvre sur
+  l'atelier affiché sans le relire (`openSession(…, { adopt: true })`, qui garderait sinon la
+  pile vide), la console de l'élève revient (R4 : celle du lien est oubliée, la sienne relue), et
+  la page retire `?a=` / `?f=` de l'adresse (`onLinkLeft`, `replaceState`). Avis « Ton atelier
+  précédent est mis de côté. » avec le geste **Retrouver mon atelier précédent** (B4).
+- **Retrouver mon atelier précédent** : dans l'avis qui suit un remplacement, et dans la barre
+  d'icônes après Charger (`ArchiveRestore`) **seulement quand une copie existe** (B4). C'est un
+  **échange** (B3, `swapWithSetAside`) : la copie devient l'atelier personnel, l'atelier quitté
+  devient la copie (un atelier vide efface la copie au lieu d'en laisser une vide), les deux
+  écritures ou aucune ; à l'écran, `replaceWith` (« retrouver mon atelier précédent »,
+  annulable). La copie est relue par les mêmes schémas que l'atelier personnel (`loadAtelier(…,
+SET_ASIDE_STORAGE_KEY)`) et les migrations à sa relecture par l'atelier (`y` renommé, dit) ;
+  abîmée, elle est oubliée avec un message (B7) ; d'une version plus récente, ni relue ni oubliée.
+  **Annuler / Rétablir gardent la copie d'accord avec l'écran** : l'atelier qu'ils quittent devient
+  la copie (`onLeave` de `replaceWith` → `keepLeftAside`, qui range d'abord l'atelier affiché
+  tout de suite, `session.saveNow()`, puis la copie) — rien n'est jamais perdu. Le Annuler /
+  Rétablir d'un remplacement s'écrit dans la console **sans geste rejouable**
+  (règle générale `#replayable` du pupitre, #1521 : le remplacement n'a pas de ligne de
+  console) — au rejeu, « annuler » aurait défait l'étape d'avant. Le bouton cliqué disparu, le focus va à « Mes objets ».
 - **Lignes de Calcul** (`history-storage.ts`, décision de David du 2026-10-13, « option 1 ») :
   clé **à part**, `CALC_HISTORY_STORAGE_KEY` (`chiphre-atelier-historique`), version
   `CALC_HISTORY_VERSION`. Rangées 500 ms après la dernière ligne (et au `pagehide`, au démontage)
@@ -1028,33 +1964,180 @@ Phase 0 : [atelier-reglages-phase0.md](../wip/atelier-reglages-phase0.md) ; règ
   `historique-garde-sonde.test.ts` (chaque commande permise composée par MathLive avec des
   arguments piégés : aucun ne finit dans un attribut), `historique-garde.svelte.test.ts` (le DOM
   rendu).
-- **Repartir de zéro** : confirmation, vide aussi l'historique **et ce qui en est rangé** ;
-  actif dès qu'il y a un objet OU une ligne de Calcul (les lignes survivent au rechargement) ;
-  absent d'un atelier reçu.
+- **Repartir de zéro** : confirmation, vide les objets et la grille, **garde la console** (décision
+  de David du 2026-10-19, qui remplace C3 : l'historique était vidé) et y écrit la ligne « Atelier
+  vidé. » ; actif dès qu'il y a un objet ou une grille (`atelier.isBlank` faux) — des lignes de
+  console seules ne suffisent plus ; absent d'un atelier reçu. Annulable depuis le lot 5 (voir
+  « Annuler / Rétablir »).
+
+### Annuler / Rétablir (lot 5)
+
+Phase 0 : `docs/archive/wip/atelier-annuler-retablir-phase0.md` (validée par David le 2026-10-19). Une
+**pile de photos** (`history-stack.ts`, pur) : avant et après chaque étape, l'atelier tel que
+`serialize()` le range, plus les diagrammes affichés et la graine des tirages. Annuler remet la
+photo d'avant, Rétablir celle d'après, par la même voie que la relecture (`restore`) — sauf ce
+qu'une relecture remet à zéro et qu'une annulation garde : les lois des variables aléatoires et le
+repère de la vue Géométrie. Hors photo, donc jamais annulés : le réglage des angles, le mode de la
+console, le zoom du graphe, l'ouverture de la console, l'onglet.
+
+- **Une étape** = `atelier.step(nom, geste)`. Les étapes s'emboîtent : seule la plus externe
+  enregistre (une ligne de console qui fait cent mises à jour puis crée deux listes = une étape).
+  Une étape qui ne change rien (un calcul, `f(2)`) n'est pas gardée.
+- **Qui ouvre une étape** : une ligne de console (`#submit`, nom « « f(x)=x^2 » », y compris une
+  ligne écrite par un outil de la vue Géométrie, `write`), une action de
+  carte (`runFromPanel`), « Garder », une validation de carte (`DefinitionField`), et les méthodes
+  du modèle qui sont toujours un geste : `create`, `createDerivative`, `createReciprocal`,
+  `createFromOffer`, `rename`, `removeWithDependents`, `setPlotted`, `setInFigure`, `setDisplay`,
+  `setSequenceDisplay`, `setFigureDisplay`, `setSequence`, `setSlider`, `setSliderShown`,
+  `toggleChart`, `slideTo`, `slidePosition`, `dragPoint`, et tous les gestes de la grille. `update` n'en ouvre
+  PAS.
+- **Un geste continu = UNE étape** (PR 2, décision de David : « tout un glissé = une étape » ;
+  revue de #1517 : 150 crans de tangente faisaient 100 étapes et chassaient une suppression).
+  `step(nom, geste, clé)` : tant que le geste n'est pas fermé (`endGesture()`), ses écritures se
+  fondent dans une seule étape, dont la photo d'avant reste celle du début ; un geste revenu à son
+  point de départ ne laisse rien ; un autre geste, Annuler ou Rétablir le ferment aussi
+  (`HistoryStack.push(…, clé)` / `seal`). Clés : `curseur:a` (`slideTo`), `position:M`
+  (`slidePosition`, le curseur d'un `point_sur` ou son glisser), `glisser:A` (`dragPoint`, un
+  point par coordonnées glissé à la souris, fermé au relâcher ; tant qu'il est ouvert,
+  `atelier.draggingPoint` est vrai et Ctrl+Z / Ctrl+Y de `AtelierContainer` ne font rien), `tangente:f` (`CurveSettings`),
+  `borne-from:f` / `borne-to:f` (bornes de l'aire), `curseur-min:a`… (`SliderSettings`).
+  **Fin du geste** (`gesture.ts`) : souris ou doigt → au relâchement (`onValueCommit` de bits-ui) ;
+  clavier → au relâchement de la touche, donc **un appui = une étape et une flèche tenue = une
+  étape** (bits-ui rappelle `onValueCommit` à chaque `keydown`, répétitions comprises : le
+  conteneur écoute `keydown` en capture pour ne pas fermer à la première répétition) ; perte du
+  focus, par sûreté ; `pointercancel` (le navigateur reprend le geste au doigt : bits-ui ne ferme
+  rien, et le glissé suivant se fondait dans la même étape, revue de #1518). Un champ tapé à chaque frappe (bornes, réglages du curseur) se ferme quand on
+  le quitte (`change`). Les points de lecture graphique (`ReadingSliders`) ne sont pas rangés : ils
+  ne font aucune étape.
+- **Un changement fait hors étape** n'est jamais perdu : à la prochaine étape ou annulation,
+  l'écart avec la dernière photo devient sa propre étape, « modifier l'atelier »
+  (`OUTSIDE_STEP_LABEL`). La barre le dit tout de suite (le setter de `revision` publie « Annuler :
+  modifier l'atelier ») ; si l'écart s'est annulé de lui-même, le libellé ment jusqu'au clic.
+- **La provenance** de chaque définition est dans la photo : Annuler relit une définition comme
+  elle avait été écrite (`keyboard`, `text`…), pas comme un lien (`url`) — le curseur d'une
+  valeur lit sa constante selon la provenance.
+- **Remplacer tout l'atelier en une étape** : `atelier.replaceWith(état, nom, { onLeave })`
+  (objets, grille, réglages rangés), par la voie interne de restauration qui **garde la pile** :
+  un Ctrl+Z rend l'atelier d'avant, les étapes d'avant restent annulables. La console n'en fait
+  pas partie (R4). `onLeave(atelier quitté)` est appelé quand Annuler ou Rétablir quitte un côté
+  de l'étape. Servent : « Remplacer mon atelier » et « Retrouver mon atelier précédent ».
+  Le remplacement remet les lois des variables aléatoires et le repère de Géométrie à leur défaut,
+  comme une relecture ; hors des photos, ils sont gardés à part (`#settingsAcross`) et Annuler /
+  Rétablir échangent ceux de l'écran contre ceux de l'autre côté (revue de #1524 : Annuler les
+  perdait).
+- **Jamais une étape** : une relecture (`restore` : chargement, autre onglet, lien reçu, qui
+  **vide la pile**), un atelier ouvert par un lien `?f=` (`atelierFromCurves`, sous `untracked`),
+  et ce qu'on passe à `untracked` (la carte prête à taper d'un atelier vide, B3).
+- **Plafond** : 100 étapes et 5 Mo de photos, la plus ancienne oubliée au-delà. Perdue au
+  rechargement.
+- **La barre** : Annuler (`Undo2`) et Rétablir (`Redo2`) à gauche ; le nom du bouton dit l'étape
+  (« Annuler : supprimer f »), indisponible avec sa raison quand la pile est vide. Ctrl/⌘+Z annule,
+  Ctrl+Y ou Ctrl/⌘+Maj+Z rétablit — **jamais dans un champ** (`FIELD_SELECTOR` : le champ annule sa
+  frappe), ni dans une fenêtre, un menu ou une liste ouverts (`dialog`, `alertdialog`, `menu`,
+  `menubar`, `listbox`) ; le raccourci consommé (`preventDefault`) ne remonte pas au graphe.
+  Chaque geste est annoncé (« Annulé : supprimer f. »).
+- **La console garde la trace** (PR 2) : la barre et Ctrl+Z passent par le pupitre
+  (`desk.undo` / `desk.redo`), qui écrit une ligne « Annuler » / « Rétablir ». Elle est
+  **rejouable** (`ReplayStep` `annuler` / `rétablir`) — sinon le rejeu d'un export refaisait ce
+  qui avait été annulé (revue de #1517) — **seulement si l'étape défaite ou refaite vient d'une
+  ligne rejouable** de la console (`#replayable`). Une étape sans ligne (curseur glissé, réglage
+  d'affichage, carte, tableur, « modifier l'atelier ») n'existe pas au rejeu : son `annuler`
+  rejoué déferait l'étape de console d'avant et détruirait des objets (revue de #1518, mesuré).
+  Sa ligne s'affiche, et s'exporte en simple `ligne`, sans geste. Chaque ligne garde l'étape qu'elle a produite (`Entry.stepId`, jamais
+  rangé) : **annuler l'étape barre la ligne** (`Entry.undone`, classe `annulee`, « Annulée : » dit
+  aux lecteurs d'écran), Rétablir la débarre ; une ligne « Annuler » ou « Rétablir » ne se barre
+  jamais ; après une nouvelle étape, les lignes barrées le restent, et le restent au rechargement
+  (`undone` est rangé). Une ligne barrée ne dessine plus de lecture graphique (`consoleReadings`).
+  Au rejeu, un `annuler` qui suit une suppression défait cette suppression (ligne « Annuler la
+  suppression », comme le toast et les fichiers d'avant) — et elle seule : si elle ne s'annule
+  pas, le rejeu s'arrête plutôt que de défaire une étape sans rapport. Ailleurs, il défait la
+  dernière étape.
+- **Le toast d'une suppression** reste (il fait découvrir le geste) ; son bouton défait cette
+  suppression si elle est encore la dernière étape, et barre sa ligne « Supprimer ». Il se ferme au
+  bout de 10 s, la suppression reste annulable par la barre.
+- **Charger et Repartir de zéro** (PR 3) passent par `replaceWith` : UNE étape, pile gardée, que
+  Ctrl+Z défait (objets, grille, réglages). Leur toast propose « Annuler », qui ne défait que
+  leur étape si elle est encore la dernière (`atelier.isTopStep(id)`, qui range d'abord une
+  modification faite hors étape : c'est elle qu'Annuler déferait, revue de #1524), comme celui
+  d'une suppression.
+  - **Charger** ne remplace pas la console (décision de David du 2026-10-19, comme R4) : la ligne
+    « Atelier chargé depuis <fichier>. » s'ajoute (`desk.loaded`), elle porte l'étape et se barre
+    si on annule, puis les lignes du fichier, à la suite (les `garder` décalés). La copie mise de
+    côté suit Annuler / Rétablir (`onLeave: keepLeftAside`), seulement si l'atelier a été mis de
+    côté.
+  - **Repartir de zéro** garde la console, comme Charger (décision de David du 2026-10-19) :
+    `desk.reset()` écrit « Atelier vidé. », qui porte l'étape. **Pas de copie mise de côté**, ni de `onLeave` : l'atelier vide
+    quitté par Annuler effacerait la copie (`keepAside` d'un atelier vide l'oublie, B1).
+  - **Au rejeu** : la ligne d'un chargement porte `{ kind: 'rupture', reason }` — le rejeu
+    s'arrête là et dit pourquoi (le contenu du fichier n'est pas dans l'historique). « Repartir de
+    zéro » porte `{ kind: 'vider' }` et se rejoue, son annuler et son rétablir aussi : la console a
+    gardé les lignes de l'atelier d'avant. (Un historique d'avant la revue de #1524 porte encore
+    une `rupture` sur ces annuler / rétablir : il s'y arrête.)
+- **Le rejeu d'un ancien historique** (`replayNow`) vide encore la pile (`restore`) : il contient
+  lui-même des annulations, qu'une étape englobante ne saurait pas refaire.
+
+### La barre d'icônes, Enregistrer et Charger
+
+Lot 1 de la refonte de l'interface (`docs/archive/wip/atelier-refonte-interface-phase0.md`, validé par
+David le 2026-10-18). Une seule barre (`role="toolbar"`) au-dessus des onglets, en icônes seules
+(`ToolButton.svelte`) : à gauche **Repartir de zéro**, **Charger un atelier**, **Enregistrer
+l'atelier**, précédés d'**Annuler** et **Rétablir** (lot 5, voir « Annuler / Rétablir ») ; à
+droite **Console**, **Partager** et **Réglages**.
+Un bouton indisponible garde le focus (`aria-disabled`, pas `disabled`) et dit pourquoi, dans son
+infobulle et à l'aide technique (« Ton atelier est vide : il n'y a rien à enregistrer. »). Sur un
+atelier reçu par lien : ni Repartir de zéro, ni Charger, ni Partager. La barre suit le motif ARIA
+« barre d'outils » (`roving-toolbar.ts`, revue de #1479) : un seul arrêt de tabulation, flèches
+gauche / droite (en boucle), Début et Fin pour aller d'un bouton à l'autre.
+
+**Enregistrer n'est pas l'ancien export JSON.** Le JSON « pour rejouer » ne garde que les gestes
+de Calcul : une définition changée sur une carte, une couleur, le tableur s'y perdaient. Le
+fichier `atelier-AAAA-MM-JJ.atelier.json` (`atelier-file.ts`, format `chiphre-atelier`) porte
+l'état complet (`Atelier.serialize()`, celui que `persistence.ts` range) et la console telle que
+`history-storage.ts` la range (`keptHistoryOf`).
+
+**Charger** lit le fichier choisi (`readAtelierFile`). Taille bornée deux fois : la page refuse
+AVANT lecture au-delà de `MAX_ATELIER_FILE_BYTES` (en octets, 4 × la limite en caractères : un
+atelier riche en accents pèse plus d'octets que de caractères), puis `readAtelierFile` applique la
+limite exacte en caractères (`MAX_ATELIER_FILE_LENGTH`). Ensuite les **mêmes** schémas que le
+navigateur — objets et cellules triés un par un (`salvageState`), console par `readKeptHistory`
+(liste blanche de `safe-latex.ts`). Un atelier qui a des objets ou une grille demande
+confirmation (« Charger remplace l'atelier actuel ») ; la console seule ne compte pas, elle n'est
+pas remplacée (2026-10-19). Comme « Remplacer mon atelier » (R5, B8), l'atelier remplacé est **mis de
+côté** avant (`keepAside`), la confirmation le dit, et l'avis propose « Retrouver mon atelier
+précédent » ; s'il ne peut pas l'être, rien n'est chargé (B5). Sans stockage (navigateur qui
+n'enregistre rien), Charger reste ce qu'il était, sans copie. Un fichier refusé ne remplace rien, et la raison s'affiche dans les avis
+(« Ce fichier n'est pas un atelier Chiphre. ») ; un objet écarté ou un `y` renommé se dit aussi,
+et ce que la console a perdu (illisible, version plus récente, lignes écartées : `consoleNotice`). Un **ancien historique JSON**
+(`chiphre-calcul`) est reconnu et rejoué comme avant (même confirmation).
 
 ### Export et rejeu de l'historique
 
-Bouton « Exporter » de la vue Calcul (`history-export.ts`) :
+Le JSON « pour rejouer » ne se télécharge plus que par `.exporter` tapé ; la barre « Exporter
+l'historique » a quitté la vue Calcul (lot 1), et il se relit par **Charger**. Les deux formats
+(`history-export.ts`) :
 
 - **JSON** (`historyToJson`, format `HISTORY_FORMAT` = `chiphre-calcul`) pour rejouer : chaque
-  entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `garder`)
+  entrée garde son **geste** (`ReplayStep` : `saisie`, `action`, `supprimer`, `annuler`, `rétablir`, `garder`)
   et sa réponse ;
-- **ubumark** (`historyToUbumark`) pour recopier dans une fiche, formules en `$…$` LaTeX. Le
+- **ubumark** (`historyToUbumark`), par le menu « ⋮ » de la console (copier ou télécharger
+  l'historique pour une fiche ; le lien sous l'historique est retiré au lot 2), pour recopier
+  dans une fiche, formules en `$…$` LaTeX. Le
   titre d'une étape garde ses formules `$…$` (V25 : les pipelines pédagogiques y écrivent leurs
   maths) ; le texte autour est neutralisé (`*` → `×`, `\$`, `\~`).
 
 **`.exporter` tapé dans Calcul** (retrait de `/cas`, 2026-10-13) : le pupitre l'intercepte
-(`isExportCommand`, avant `runInput` — le moteur n'a jamais eu l'historique) et lance le **même**
-téléchargement que le bouton JSON (`downloadHistory`, appelé par `CalcDesk.download`). Aucune ligne
+(`isExportCommand`, avant `runInput` — le moteur n'a jamais eu l'historique) et lance le
+téléchargement JSON (`downloadHistory`, appelé par `CalcDesk.download`). Aucune ligne
 n'est ajoutée ; la réponse va dans la zone de retour (« Historique exporté : calcul-….json. »).
-Historique vide : rien ne part, et la réponse est la raison des boutons désactivés
-(`NOTHING_TO_EXPORT`, « Rien à exporter pour l'instant. »). Un argument (`.exporter ubumark`) est
+Historique vide : rien ne part (`NOTHING_TO_EXPORT`, « Rien à exporter pour l'instant. »). Un argument (`.exporter ubumark`) est
 refusé. Un rejeu saute une saisie `.exporter` et ne télécharge rien.
 
 Rejeu (`CalcDesk.replay`) : le fichier vient de dehors, donc `readHistory` le valide (Zod) et le
 borne (`MAX_HISTORY_BYTES`, `MAX_HISTORY_ENTRIES`) avant tout. Chaque geste est refait **par le
 même chemin** que l'élève (`submit`, `runFromPanel`, `keep`…) ; rien n'est injecté. Le rejeu
-s'arrête à la première ligne qui échoue et dit laquelle (`ReplayReport`). Désactivé en mode
+s'arrête à la première ligne qui échoue et dit laquelle (`ReplayReport`) — sauf l'algèbre écrite
+avec des espaces d'un historique d'avant la lecture des grandeurs (`5 s + 1`), refaite avec son
+ancien sens ([grandeurs.md](grandeurs.md)). Désactivé en mode
 éphémère. Une ligne restaurée au rechargement garde son geste : un export fait après
 un rechargement se rejoue comme avant.
 
@@ -1065,11 +2148,11 @@ Supprimer un objet supprime **aussi ses dépendants**, directs ou en chaîne (d�
 
 - `removalOf` les nomme (dans l'ordre des cartes, sans compter deux fois un cycle) ; la
   confirmation en cite trois puis « et N autres » (`cascadeMessage`) ;
-- `removeWithDependents` rend un reçu ; `undoRemoval` restaure **à l'identique** (définitions,
-  réglages, tracés, diagrammes) — une seule fois, et **refusé si l'atelier a changé depuis**
-  (`revision`) : jamais de restauration par-dessus un nom repris. Elle remet aussi les cellules
-  sans nom d'avant : retirer le nom d'une colonne puis annuler rend la colonne à sa liste, sans
-  copie dans la grille.
+- `removeWithDependents` est UNE étape de la pile (« supprimer f ») et rend un reçu ;
+  `undoRemoval(reçu)` (le bouton du toast) la défait **seulement si elle est encore la dernière
+  étape** — sinon refus, rien ne bouge, et Annuler dans la barre remonte jusqu'à elle. La photo
+  remet tout à l'identique : définitions, réglages, tracés, diagrammes, cellules et titres
+  (retirer le nom d'une colonne puis annuler rend la colonne à sa liste, sans copie).
 
 L'état « en attente » reste pour un nom cité _avant_ d'être défini ; seule la suppression a changé.
 
@@ -1080,25 +2163,25 @@ L'état « en attente » reste pour un nom cité _avant_ d'être défini ; seule
 L'atelier ne calcule presque rien lui-même : il choisit le bon module et met la réponse en forme.
 Doc du moteur : [mathast/README.md](mathast/README.md).
 
-| Geste de l'élève                        | Module appelé                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
-| --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| écrire une grandeur (`5 km`)            | `readNaturalQuantities` (`src/lib/atelier/natural-quantities.ts`) : « un nombre, une espace, une unité », calculs et valeurs seulement                                                                                                                                                                                                                                                                                                                                                    |
-| grandeur dans le champ d'une carte      | `definitionFromField` / `fieldLatexOf` (`src/lib/atelier/mathfield.ts`) : la même lecture sur le LaTeX de MathLive (`2\,h\,30\,\min`) ; une durée composée revient `2 h 30 min` (dans un calcul : `(1 h + 30 min) × 2`, relu aussi) ; virgule de l'élève (`2{,}5`, valeurs et fonctions) ; une unité montrée par le champ reste une unité (`10^3 m`)                                                                                                                                      |
-| conversion d'un trait (`2,5 h en min`)  | `naturalConversion` / `convertNaturally` (`calcul.ts`) : un calcul sans `=`, « en », une unité du module → la grandeur calculée puis `.convertir`, même réponse ; la gauche est d'abord ESSAYÉE sur un moteur à part (`probeEngine`) : une ligne refusée ne change pas la dernière grandeur de l'élève ; gauche en erreur → son erreur, pas une grandeur → refus qui la cite. Avant le 2026-10-14 : un produit de lettres (« 2,5 h e n m i n »). Pas dans une définition (`d = … en min`) |
-| calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` ; contrat : [grandeurs.md](grandeurs.md)                                                                                                                                                                                                                                                                                                                    |
-| `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                                                                                                                                                           |
-| `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                                                                                                                                                            |
-| `.développer`                           | même pipeline, intention `developper`, niveau lycée, pour la réponse ; le « Comment ? » rédigé à part (`pedagogical-simplify/expand-steps.ts`, voir « `.développer` en détail ») ; aucun repli moteur : « rien à développer » se dit                                                                                                                                                                                                                                                      |
-| `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `.réciproque`, « Réciproque », `f⁻¹`    | `computeReciprocal` (`src/lib/mathAST/reciprocal/`, [mathast/reciproque.md](mathast/reciproque.md)) ; lettres des paramètres : `solve` puis `textbookWriting`                                                                                                                                                                                                                                                                                                                             |
-| `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                                                                                                                                                                  |
-| `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                                                                                                                                                        |
-| `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                                                                                                                                                       |
-| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; « Comment ? » : `src/lib/mathAST/pedagogical-arithmetic/` niveau collège, vérifié par `evaluate-steps-check.ts`                                                                                                                                                    |
-| `.limite`                               | réponse : `evaluateLimit` (`mathAST/limits`) ; « Comment ? » : `generatePedagogicalLimitSteps` (`src/lib/mathAST/pedagogical-limits/`) niveau lycée, vérifié par `limit-steps-check.ts`                                                                                                                                                                                                                                                                                                   |
-| `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                                                                                                                                                       |
-| syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| Geste de l'élève                        | Module appelé                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| calculs, commandes du registre          | `WebReplEngine` (`src/lib/mathAST/cli/web/web-repl-engine.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| écrire une grandeur (`5 km`)            | `readNaturalQuantities` (`src/lib/atelier/natural-quantities.ts`) : « un nombre, une espace, une unité », puis tout terme de nombres (`10^3 m`, `2π m` ; une lettre reste de l'algèbre), calculs et valeurs seulement ; une durée composée reste juxtaposée (`2[h] 30[min]`, refusée collée à `*` ou `/`), [grandeurs.md](grandeurs.md)                                                                                                                                                     |
+| grandeur dans le champ d'une carte      | `definitionFromField` / `fieldLatexOf` (`src/lib/atelier/mathfield.ts`) : la même lecture sur le LaTeX de MathLive (`2\,h\,30\,\min`) ; une durée composée est rangée juxtaposée (`2\unit{h}30\unit{min}`, lue en bloc par le parseur) et revient `2 h 30 min` (l'ancien rangement `(2[h]+30[min])` aussi ; dans un calcul : `(1 h + 30 min) × 2`, relu aussi, le × gardé) ; virgule de l'élève (`2{,}5`, valeurs et fonctions) ; une unité montrée par le champ reste une unité (`10^3 m`) |
+| conversion d'un trait (`2,5 h en min`)  | `naturalConversion` / `convertNaturally` (`calcul.ts`) : un calcul sans `=`, « en », une unité du module → la grandeur calculée puis `.convertir`, même réponse ; la gauche est d'abord ESSAYÉE sur un moteur à part (`probeEngine`) : une ligne refusée ne change pas la dernière grandeur de l'élève ; gauche en erreur → son erreur, pas une grandeur → refus qui la cite. Avant le 2026-10-14 : un produit de lettres (« 2,5 h e n m i n »). Pas dans une définition (`d = … en min`)   |
+| calcul avec des grandeurs, `.convertir` | `computeQuantity` / `convertQuantity` (`src/lib/mathAST/cli/quantities.ts`) : `tidy`, unité écrite d'abord — comme `{{eval}}` ; contrat : [grandeurs.md](grandeurs.md)                                                                                                                                                                                                                                                                                                                      |
+| `.simplifier`                           | `generatePedagogicalSimplifySteps`, intention `auto` (ADR 0007)                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `.factoriser`                           | même pipeline, intention `factoriser`, niveau lycée (stratégies de l'ADR 0024 : identités à coefficients, Δ, racine évidente) ; aucun repli moteur : « je n'ai pas su » se dit                                                                                                                                                                                                                                                                                                              |
+| `.développer`                           | même pipeline, intention `developper`, niveau lycée, pour la réponse ; le « Comment ? » rédigé à part (`pedagogical-simplify/expand-steps.ts`, voir « `.développer` en détail ») ; aucun repli moteur : « rien à développer » se dit                                                                                                                                                                                                                                                        |
+| `.dériver`, « Dériver », `f′`           | `src/lib/mathAST/pedagogical-differentiation/` (règle nommée, sous-étapes)                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| `.réciproque`, « Réciproque », `f⁻¹`    | `computeReciprocal` (`src/lib/mathAST/reciprocal/`, [mathast/reciproque.md](mathast/reciproque.md)) ; lettres des paramètres : `solve` puis `textbookWriting`                                                                                                                                                                                                                                                                                                                               |
+| `.résoudre`, « Résoudre »               | `src/lib/mathAST/pedagogical-solve/`, vérifié par `solve-steps-check.ts`                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `.intégrer`                             | réponse : `integration` (`integrate.command.ts`) ; « Comment ? » : `src/lib/mathAST/pedagogical-integration/` niveau lycée, vérifié par `integrate-steps-check.ts`                                                                                                                                                                                                                                                                                                                          |
+| `.domaine`                              | réponse : `computeDomain` (`domain.command.ts` refuse ce qu'il ne résout pas), écrite par `domainToLatex` ; « Comment ? » : `src/lib/mathAST/pedagogical-domain/` niveau lycée, vérifié par `domain-steps-check.ts`                                                                                                                                                                                                                                                                         |
+| `.évaluer`                              | réponse : `eval.command.ts` — `substitute`, refus d'une valeur interdite (`forbiddenValue`, `mathAST/eval/forbidden-value.ts`, exact), puis `evaluate` ; la ligne est une formule (`evaluatedLine`, voir ci-dessous) ; « Comment ? » : `src/lib/mathAST/pedagogical-arithmetic/` niveau collège, vérifié par `evaluate-steps-check.ts`                                                                                                                                                      |
+| `.limite`                               | réponse : `evaluateLimit` (`mathAST/limits`) ; « Comment ? » : `generatePedagogicalLimitSteps` (`src/lib/mathAST/pedagogical-limits/`) niveau lycée, vérifié par `limit-steps-check.ts`                                                                                                                                                                                                                                                                                                     |
+| `.variations`, « Variations »           | `computeVariations` (`src/lib/mathAST/variations/`) — le même calcul que le tableau                                                                                                                                                                                                                                                                                                                                                                                                         |
+| syntaxe des commandes                   | `src/lib/mathAST/cli/core/variable-argument.ts`                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 
 **`.résoudre` en détail** (`solve-steps.ts`). `generateEquationSteps` (niveau `college`) choisit
 le pipeline — premier degré, second degré, ou **valeur absolue** (`|2x+1|=5`, `3\left|x-1\right|=6`,
@@ -1127,7 +2210,7 @@ gouverne que l'`explanation` de chaque étape — le résumé garde toutes les �
 comprise), titres et calculs, sans le « pourquoi ». `summary` suit `steps` partout (virgule
 décimale, `Entry`) ; l'export de l'historique ne garde que `steps`. `.variations` a sa propre
 rédaction, sans verbosité : pas de `summary`. Dans `CalculView`, l'interrupteur est DANS le
-« Comment ? » déplié (choix segmenté de `SequenceSettings`, `aria-pressed` et coche ✓), réglé
+« Comment ? » déplié (choix segmenté, `aria-pressed` et coche ✓, comme l'ancien nuage / escalier des suites), réglé
 **ligne par ligne** (décision de David, 2026-10-13) : basculer une ligne ne change pas les autres
 lignes dépliées. Le dernier choix fait, sur n'importe quelle ligne, est retenu sous
 `chiphre-atelier-etapes` dans `localStorage` (lecture et écriture dans un `try` : la vue marche
@@ -1521,7 +2604,12 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
 1. **L'atelier possède l'état ; les vues sont des projections** (décision figée n° 1). Un réglage
    écrit ailleurs que dans l'`Atelier` (dans le grapheur, dans une carte) serait écrasé à la
    synchronisation suivante.
-2. **Ponts à sens unique** : atelier → moteur (`syncEngine`), atelier → grapheur (`syncPlots`).
+2. **Ponts à sens unique** : atelier → moteur (`syncEngine`), atelier → grapheur (`syncPlots`),
+   atelier → figure (`syncFigure`). Points et courbes n'entrent que dans le troisième (avec les
+   fonctions marquées `inFigure`) ; rien de
+   la figure ne remonte : le glisser d'un point (lot 3) est délégué par la toile à l'atelier, qui
+   réécrit la définition. Une **construction** est calculée par
+   l'atelier (`construction.ts`, L1), jamais lue dans la `Figure`.
 3. **Un seul espace de noms** (D1) ; jamais d'écrasement silencieux d'un nom (création, renommage,
    fusion d'un atelier reçu).
 4. **Tout contrôle sur une définition vit dans sa lecture** (`parseDefinition`), jamais dans
@@ -1534,7 +2622,8 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    rangées (`loadCalcHistory`, formules par la liste blanche `isSafeLatex`), réglages
    (`curveDisplaySchema`).
 8. **Plafonds D8** : `MAX_LIST_VALUES` (200) par liste, `MAX_LISTS` (8) listes,
-   `MAX_DEFINITION_LENGTH` à la saisie — pour qu'un atelier tienne dans une URL. La grille :
+   `MAX_FIGURE_OBJECTS` (50 points et courbes, M2), `MAX_DEFINITION_LENGTH` à la saisie — pour
+   qu'un atelier tienne dans une URL. La grille :
    26 × 200, 200 caractères par cellule.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
@@ -1556,6 +2645,13 @@ max(2,5 ; x)` puis `f(1)` répond `5/2` (avant le 2026-10-13 : « Écriture non 
     texte du moteur (`toCustom` écrit `max(2,3)`), dont la virgule sépare. Comme sur une ligne de
     calcul, `f(x) = max(1,2)+x` est refusée (« Sépare les valeurs avec « ; » »). Le
     champ de la carte montre `\max\left(2{,}5;x\right)` (`argumentSeparatorsShown`).
+    Le parseur maison ne lit plus la virgule décimale depuis le 2026-10-21 (lecture-grandeurs,
+    PR 6) ; or un objet rangé (lien, sauvegarde) est relu SANS provenance, donc en `'url'`, et
+    l'atelier en range avec une virgule (`formatSliderValue` pose `0,3`, une commande range le
+    texte de l'élève). Hors saisie de l'élève, `readByProvenance` passe donc le texte par
+    `legacyDecimalCommas` (`mathAST/parser/custom/legacy-decimal-commas.ts`), la règle exacte de
+    l'ancien tokenizer : `0,3` → `0.3`, `max(2,3)` inchangé. Tout atelier rangé se relit comme
+    avant (`atelier/__tests__/virgule-rangee.test.ts`, `recalcul-equivalence.test.ts`).
 12. **On ne valide pas** les réponses de l'élève (décision figée n° 2).
 13. **Une cellule de la grille a un seul propriétaire** : la liste de sa colonne (dans sa
     définition) ou la grille (`cells`), jamais les deux.
@@ -1578,7 +2674,9 @@ max(2,5 ; x)` puis `f(1)` répond `5/2` (avant le 2026-10-13 : « Écriture non 
    [atelier-syntaxe.md](atelier-syntaxe.md) à jour.
 4. Les tests du catalogue rejouent **chaque exemple** (`commands.test.ts`, `aide-calcul.test.ts`) :
    un exemple qui refuse ou rend une ligne vide fait échouer la suite. Un exemple qui cite des
-   listes déclare son décor dans `exampleSetup`.
+   objets déclare son décor dans `exampleSetup` (`stageExampleSetup`) : `L` → une liste, `f(x)` →
+   une fonction, `point:A` et `value:S` → un point et une valeur écrits comme dans Calcul
+   (`.relever`, dont l'exemple est le problème de l'aire).
 
 **Une action de carte** — ajouter l'action au type dans `BY_KIND` (`actions.ts`), puis son traitement dans
 `CalcDesk.runFromPanel` (`desk.svelte.ts`) — elle doit écrire une ligne dans Calcul, et une carte
@@ -1586,12 +2684,22 @@ par objet créé. Le geste devient alors rejouable (`ReplayStep` `action`).
 
 **Une vue** — (1) un composant sous `src/lib/components/atelier/` qui lit l'atelier par `useAtelier()` et n'a
 **aucun état de modèle** à lui ; un état d'affichage qui doit survivre au changement de vue
-vit dans l'`Atelier`, hors `serialize()` (comme `charts`) ; (2) l'ajouter au type `ViewId` et au rendu de `AtelierContainer.svelte` ; (3) s'il faut un nouveau moteur (géométrie v2), un pont à sens unique sur le modèle de
-`syncPlots`, idempotent.
+vit dans l'`Atelier`, hors `serialize()` (comme `charts`, ou `figureFrame` de la vue Géométrie) ; (2) l'ajouter au type `ViewId` et au rendu de `AtelierContainer.svelte` ; (3) s'il faut un nouveau moteur, un pont à sens unique sur le modèle de
+`syncPlots`, idempotent — fait pour la vue Géométrie (`syncFigure`, `figure-sync.ts`).
+
+**Un mot de construction** (lot 2) — l'ajouter à `ConstructionWord` / `CONSTRUCTION_WORDS` et
+`NAMED_KEYS` (`construction-read.ts`), le typer (`construction-spec.ts` : `typed`, `FORMS`,
+`natureOf`, `partsOf`), le calculer exact (`construction.ts`), le poser dans `figure-sync.ts` s'il
+dessine un nouveau genre d'élément ; tant qu'il manque, `isLaterWord` le refuse avec sa raison.
+Le mot doit exister dans le DSL (L2 : aucun mot inventé), et `dsl-builtins.md` le décrire.
 
 **Un type d'objet** — le plus coûteux : `ObjectKind` et l'union dans `types.ts`, lecture dans `parse.ts`, schéma de
 `persistence.ts` (et **incrémenter `ATELIER_STATE_VERSION`** si la forme rangée change), actions,
-carte, fusion. Prévu pour la v2 (géométrie) et la v3 (Python) ; aucune phase 0 n'existe.
+carte, fusion — et la migration si un nom devient réservé (`migrateReservedNames`). Fait pour la
+v2 (`point`, `curve`, 2026-10-18) : `types.ts`, `names.ts` (`PREFERRED_NAMES`), `parse.ts`
+(`parseDefinition`), `atelier.svelte.ts` (`build`, `#cited`, plafond), `actions.ts` (`BY_KIND`),
+`calcul.ts`, `persistence.ts`, `ObjectCard.svelte`, `ObjectPanel.svelte` ; les `Record` indexés
+par le type (`KIND_WORDS`, `KIND_NAMES`) sont signalés par le typecheck. Prévu pour la v3 (Python).
 
 ---
 
@@ -1605,7 +2713,18 @@ carte, fusion. Prévu pour la v2 (géométrie) et la v3 (Python) ; aucune phase 
 - Fichiers repères : `atelier.test.ts` et `names.test.ts` (modèle), `calcul.test.ts`,
   `commands.test.ts`, `syntaxe-mots-cles.test.ts`, `persistence.test.ts`, `url.svelte.test.ts`,
   `suppression-cascade.test.ts`, `rejeu-calcul.svelte.test.ts`, `solve-steps-oracle.test.ts`
-  (oracle du garde-fou), `paste.svelte.test.ts` (la pile d'annulation dans Chromium).
+  (oracle du garde-fou), `paste.svelte.test.ts` (la pile d'annulation dans Chromium),
+  `figure-sync.test.ts` (le pont de la vue Géométrie, assertions sur le dessin), `figure-fonctions.test.ts` (𝒞f, K1-K3),
+  `construction-lecture.test.ts` (la lecture, comparée au lecteur du DSL), `construction-modele.test.ts`
+  (L2, L3, L8, sauvegarde), `figure-constructions.test.ts`, `point-sur-intersections.test.ts` et
+  `figure-point-sur.test.ts` (PR 3 : modèle, numérotation stable au glisser), `relever.test.ts`
+  (PR 4 : `.relever`, le problème de l'aire de bout en bout),
+  `components/atelier/__tests__/point-sur.svelte.test.ts`, `components/atelier/__tests__/construction.svelte.test.ts` et
+  `components/atelier/__tests__/FigureView.svelte.test.ts` (harnais `WithFigure.svelte`),
+  `outils-figure.test.ts` et `components/atelier/__tests__/outils-figure.svelte.test.ts` (barre
+  d'outils de la géométrie, lot 3, PR 2),
+  `recalcul-equivalence.test.ts` et `recalcul-performance.test.ts` (raccourcis du recalcul, sur
+  les figures `__tests__/fixtures/figure-24.ts` et `figure-fonctions.ts` — dérivée, réciproque, suites, noms indicés).
 
 Lancer : `pnpm test:server <fichier>.test.ts`, `pnpm test:client <fichier>.svelte.test.ts`. Aucun
 test d'intégration : l'atelier ne touche pas la base.
@@ -1624,18 +2743,18 @@ décisions figées) : 1 l'atelier possède l'état · 2 on ne valide pas · 3 pa
 
 **Phase 0 v1** ([atelier-recherche-eleve-phase0.md](../archive/wip/atelier-recherche-eleve-phase0.md) §9), état au 2026-10-10 :
 
-| #   | Décision                                                     | Toujours vraie ?                                                               |
-| --- | ------------------------------------------------------------ | ------------------------------------------------------------------------------ |
-| D1  | Un seul espace de noms                                       | ✅                                                                             |
-| D2  | `x` seulement pour les fonctions, `n` pour les suites        | ⚠️ **Assouplie** (2026-10-06) : `f(t) = t^2` accepté, rangé en x (`letter.ts`) |
-| D3  | Toute valeur numérique a un curseur, `[-10 ; 10]` par défaut | ✅ (bornes réglables dans la carte)                                            |
-| D4  | Grandeur à unité : sans curseur, non traçable                | ✅                                                                             |
-| D5  | L'historique reste, une ligne se promeut en objet            | ✅ (« Garder », `promote`)                                                     |
-| D6  | Pas d'annulation globale                                     | ✅ — exceptions : la dernière suppression en cascade ; la grille (T6)          |
-| D7  | « Afficher la dérivée » et « garder `f′` », deux gestes      | ⚠️ **Remplacée par G6** : « Dériver » crée la carte `f′`, qui suit `f`         |
-| D8  | 200 valeurs par liste, 8 listes                              | ✅ (`MAX_LIST_VALUES`, `MAX_LISTS`)                                            |
-| D9  | Nom inconnu → en attente, pas en erreur                      | ✅                                                                             |
-| D10 | Le parseur suit la provenance                                | ✅ (en partie : le panneau et les données appellent `create` sans provenance)  |
+| #   | Décision                                                     | Toujours vraie ?                                                                   |
+| --- | ------------------------------------------------------------ | ---------------------------------------------------------------------------------- |
+| D1  | Un seul espace de noms                                       | ✅                                                                                 |
+| D2  | `x` seulement pour les fonctions, `n` pour les suites        | ⚠️ **Assouplie** (2026-10-06) : `f(t) = t^2` accepté, rangé en x (`letter.ts`)     |
+| D3  | Toute valeur numérique a un curseur, `[-10 ; 10]` par défaut | ✅ (bornes réglables dans la carte)                                                |
+| D4  | Grandeur à unité : sans curseur, non traçable                | ✅                                                                                 |
+| D5  | L'historique reste, une ligne se promeut en objet            | ✅ (« Garder », `promote`)                                                         |
+| D6  | Pas d'annulation globale                                     | ❌ levée au lot 5 de la refonte (2026-10-19) : une pile commune Annuler / Rétablir |
+| D7  | « Afficher la dérivée » et « garder `f′` », deux gestes      | ⚠️ **Remplacée par G6** : « Dériver » crée la carte `f′`, qui suit `f`             |
+| D8  | 200 valeurs par liste, 8 listes                              | ✅ (`MAX_LIST_VALUES`, `MAX_LISTS`)                                                |
+| D9  | Nom inconnu → en attente, pas en erreur                      | ✅                                                                                 |
+| D10 | Le parseur suit la provenance                                | ✅ (en partie : le panneau et les données appellent `create` sans provenance)      |
 
 **Autres** : option B (moteur et grapheur reflètent l'atelier, Q1 du 2026-09-16) · commandes
 traduites côté atelier, pas dans `mathAST` (Q3) · arrivant renommé à la fusion (Q2) · G1 à G8
@@ -1656,12 +2775,21 @@ lois (`.binomiale`, `.géométrique`, `.uniforme`, `.exponentielle`, `.normale`)
 **À venir** (suivi : [docs/wip/atelier-progress.md](../wip/atelier-progress.md)) :
 
 - `/calc` existe encore (`/cas`, elle, est retirée depuis le 2026-10-13) ;
-- **v2** géométrie à la souris, **v3** Python : non commencées, sans phase 0 ;
+- **v2** géométrie : **livrée** (lot 1 : modèle, vue Géométrie, 𝒞f ; lot 2 : constructions au
+  clavier, mesures, `point_sur`, intersections, `.relever` ; lot 3 : barre d'outils, glisser,
+  outils de construction, téléphone et tablette), pas encore en prod ; chantier clos le
+  2026-10-19, journal : [atelier-geometrie-progress.md](../archive/wip/atelier-geometrie-progress.md). **v3** Python : non
+  commencée, sans phase 0 ;
 - tableur intégré (option C, 2026-10-15) : lot 1 en cours — grille de valeurs (PR 1), collage /
   copie / CSV / titres (PR 2), annulation (PR 3a), appariement par ligne (PR 3b) — lot 1 complet ;
   à venir : les formules (lot 2) ;
-- dettes connues : action « Renommer » encore désactivée (« prochain lot »), `recomputeAll`
-  réassigne tout le tableau (jamais mesuré), saisie des unités sans palette.
+- dettes connues : action « Renommer » encore désactivée (« prochain lot »), saisie des unités
+  sans palette. `recomputeAll` réassigne tout le tableau : mesuré le 2026-10-19, ce n'est pas un
+  poste (< 0,1 ms ; voir « Ce qui se recalcule, et ce qui est gardé »).
+  `.relever` sur une figure chargée (intersections, perpendiculaire, périmètre, angle, deux
+  mesures composées) : 19 à 23 s pour le balayage, ~8 ms puis ~95 ms de recalcul par pas — le
+  même coût que chaque cran du curseur, ou chaque mouvement d'un point glissé, sur cette figure
+  (mesuré le 2026-10-19). Pas d'optimisation sûre et évidente côté `.relever` ;
 
 ⚠️ La section « Ce qui reste pour clore la v1 » de `atelier-progress.md` (2026-10-04) dit encore
 les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809,
@@ -1669,4 +2797,4 @@ les garanties `/grapheur` non faites : elles le sont (lots 2 à 6, #779 → #809
 
 ---
 
-Vérifié contre le code le 2026-10-15.
+Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3).

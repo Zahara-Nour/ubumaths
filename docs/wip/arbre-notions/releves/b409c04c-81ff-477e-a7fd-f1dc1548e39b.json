@@ -1,0 +1,191 @@
+{
+	"template_id": "b409c04c-81ff-477e-a7fd-f1dc1548e39b",
+	"titre": "Convertir des durées",
+	"sous_titre": "HMS en minutes (2)",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Durées > Convertir",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-159",
+			"libelle_point": "Convertir des durées",
+			"noeud_actuel": "Grandeurs et mesures > Durées > conversions",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..2"
+					},
+					{
+						"name": "b",
+						"expression": "1..59"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Convertis.\n\n${{a}}~\\unit{h}\\,{{b}}~\\unit{min} = ?~\\unit{min}$",
+				"reponses_brutes": ["{{eval:a*60+b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 107,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 59,
+						"negatif_possible": false,
+						"nb_distinctes": 58
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 61,
+						"max": 179,
+						"negatif_possible": false,
+						"nb_distinctes": 107
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 59,
+				"nb_distinctes": 58,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 61,
+				"max": 179,
+				"nb_distinctes": 107,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 179,
+				"nb_distinctes": 165,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["h", "min"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (179)",
+					"graine": 73,
+					"enonce": "Convertis.\n\n$2~\\mathrm{h}\\,59~\\mathrm{min} = [?]~\\mathrm{min}$",
+					"reponse": ["179"],
+					"variables": {
+						"a": "2",
+						"b": "59"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Convertis.\n\n$1~\\mathrm{h}\\,32~\\mathrm{min} = [?]~\\mathrm{min}$",
+					"reponse": ["92"],
+					"variables": {
+						"a": "1",
+						"b": "32"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Convertis.\n\n$1~\\mathrm{h}\\,17~\\mathrm{min} = [?]~\\mathrm{min}$",
+					"reponse": ["77"],
+					"variables": {
+						"a": "1",
+						"b": "17"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Convertis.\n\n$1~\\mathrm{h}\\,27~\\mathrm{min} = [?]~\\mathrm{min}$",
+					"reponse": ["87"],
+					"variables": {
+						"a": "1",
+						"b": "27"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Convertis.\n\n$1~\\mathrm{h}\\,14~\\mathrm{min} = [?]~\\mathrm{min}$",
+					"reponse": ["74"],
+					"variables": {
+						"a": "1",
+						"b": "14"
+					}
+				}
+			]
+		}
+	]
+}

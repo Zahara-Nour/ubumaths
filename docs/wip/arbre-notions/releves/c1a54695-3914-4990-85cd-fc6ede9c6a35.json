@@ -1,0 +1,1018 @@
+{
+	"template_id": "c1a54695-3914-4990-85cd-fc6ede9c6a35",
+	"titre": "Trouver l'échelle d'une carte",
+	"sous_titre": "Unités différentes.",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Proportionnalité > Echelle d'une carte > Trouver l'échelle",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-193",
+			"libelle_point": "S'initier à la résolution de problèmes d'échelles",
+			"noeud_actuel": "Proportionnalité > Échelle d'une carte",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 5,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"reponses_brutes": ["{{eval:(1[cm])/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[dm]", "3[dm]", "4[dm]", "5[dm]", "6[dm]", "7[dm]", "8[dm]", "9[dm]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.011111111111111112,
+						"max": 0.05,
+						"negatif_possible": false,
+						"denominateurs": [20, 30, 40, 50, 60, 70, 80, 90],
+						"denominateur_min": 20,
+						"denominateur_max": 90,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\dfrac{1}{20}",
+							"\\dfrac{1}{30}",
+							"\\dfrac{1}{40}",
+							"\\dfrac{1}{50}",
+							"\\dfrac{1}{60}",
+							"\\dfrac{1}{70}",
+							"\\dfrac{1}{80}",
+							"\\dfrac{1}{90}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 9,
+				"valeurs": [1, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 90,
+				"nb_distinctes": 17,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 20, 30, 40, 50, 60, 70, 80, 90],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [20, 30, 40, 50, 60, 70, 80, 90],
+				"denominateur_min": 20,
+				"denominateur_max": 90,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm", "dm"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90)",
+					"graine": 10,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $9~\\mathrm{dm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{90}"],
+					"variables": {
+						"a1": "9",
+						"a": "9[dm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $2~\\mathrm{dm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{20}"],
+					"variables": {
+						"a1": "2",
+						"a": "2[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $4~\\mathrm{dm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{40}"],
+					"variables": {
+						"a1": "4",
+						"a": "4[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $8~\\mathrm{dm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{80}"],
+					"variables": {
+						"a1": "8",
+						"a": "8[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $7~\\mathrm{dm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{70}"],
+					"variables": {
+						"a1": "7",
+						"a": "7[dm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[m]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"reponses_brutes": ["{{eval:(1[cm])/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[m]", "3[m]", "4[m]", "5[m]", "6[m]", "7[m]", "8[m]", "9[m]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.0011111111111111111,
+						"max": 0.005,
+						"negatif_possible": false,
+						"denominateurs": [200, 300, 400, 500, 600, 700, 800, 900],
+						"denominateur_min": 200,
+						"denominateur_max": 900,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\dfrac{1}{200}",
+							"\\dfrac{1}{300}",
+							"\\dfrac{1}{400}",
+							"\\dfrac{1}{500}",
+							"\\dfrac{1}{600}",
+							"\\dfrac{1}{700}",
+							"\\dfrac{1}{800}",
+							"\\dfrac{1}{900}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 900,
+				"nb_distinctes": 9,
+				"valeurs": [1, 200, 300, 400, 500, 600, 700, 800, 900],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 900,
+				"nb_distinctes": 17,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 200, 300, 400, 500, 600, 700, 800, 900],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [200, 300, 400, 500, 600, 700, 800, 900],
+				"denominateur_min": 200,
+				"denominateur_max": 900,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm", "m"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (900)",
+					"graine": 10,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $9~\\mathrm{m}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{900}"],
+					"variables": {
+						"a1": "9",
+						"a": "9[m]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $2~\\mathrm{m}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{200}"],
+					"variables": {
+						"a1": "2",
+						"a": "2[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $4~\\mathrm{m}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{400}"],
+					"variables": {
+						"a1": "4",
+						"a": "4[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $8~\\mathrm{m}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{800}"],
+					"variables": {
+						"a1": "8",
+						"a": "8[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $7~\\mathrm{m}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{700}"],
+					"variables": {
+						"a1": "7",
+						"a": "7[m]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[dam]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"reponses_brutes": ["{{eval:(1[cm])/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.00011111111111111112,
+						"max": 0.0005,
+						"negatif_possible": false,
+						"denominateurs": [2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+						"denominateur_min": 2000,
+						"denominateur_max": 9000,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\dfrac{1}{2000}",
+							"\\dfrac{1}{3000}",
+							"\\dfrac{1}{4000}",
+							"\\dfrac{1}{5000}",
+							"\\dfrac{1}{6000}",
+							"\\dfrac{1}{7000}",
+							"\\dfrac{1}{8000}",
+							"\\dfrac{1}{9000}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9000,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9000,
+				"nb_distinctes": 17,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2000, 3000, 4000, 5000, 6000, 7000, 8000, 9000],
+				"denominateur_min": 2000,
+				"denominateur_max": 9000,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm", "dam"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9000)",
+					"graine": 10,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $9~\\mathrm{dam}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{9000}"],
+					"variables": {
+						"a1": "9",
+						"a": "9[dam]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $2~\\mathrm{dam}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{2000}"],
+					"variables": {
+						"a1": "2",
+						"a": "2[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $4~\\mathrm{dam}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{4000}"],
+					"variables": {
+						"a1": "4",
+						"a": "4[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $8~\\mathrm{dam}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{8000}"],
+					"variables": {
+						"a1": "8",
+						"a": "8[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $7~\\mathrm{dam}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{7000}"],
+					"variables": {
+						"a1": "7",
+						"a": "7[dam]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[hm]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"reponses_brutes": ["{{eval:(1[cm])/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[hm]", "3[hm]", "4[hm]", "5[hm]", "6[hm]", "7[hm]", "8[hm]", "9[hm]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.000011111111111111112,
+						"max": 0.00005,
+						"negatif_possible": false,
+						"denominateurs": [20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000],
+						"denominateur_min": 20000,
+						"denominateur_max": 90000,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\dfrac{1}{20000}",
+							"\\dfrac{1}{30000}",
+							"\\dfrac{1}{40000}",
+							"\\dfrac{1}{50000}",
+							"\\dfrac{1}{60000}",
+							"\\dfrac{1}{70000}",
+							"\\dfrac{1}{80000}",
+							"\\dfrac{1}{90000}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 90000,
+				"nb_distinctes": 9,
+				"valeurs": [1, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 90000,
+				"nb_distinctes": 17,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 5
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000],
+				"denominateur_min": 20000,
+				"denominateur_max": 90000,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm", "hm"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (90000)",
+					"graine": 10,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $9~\\mathrm{hm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{90000}"],
+					"variables": {
+						"a1": "9",
+						"a": "9[hm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $2~\\mathrm{hm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{20000}"],
+					"variables": {
+						"a1": "2",
+						"a": "2[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $4~\\mathrm{hm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{40000}"],
+					"variables": {
+						"a1": "4",
+						"a": "4[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $8~\\mathrm{hm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{80000}"],
+					"variables": {
+						"a1": "8",
+						"a": "8[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $7~\\mathrm{hm}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{70000}"],
+					"variables": {
+						"a1": "7",
+						"a": "7[hm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a1",
+						"expression": "2..9"
+					},
+					{
+						"name": "a",
+						"expression": "a1[km]"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Sur une carte, $1~\\unit{cm}$ représente ${{a}}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $?$.",
+				"reponses_brutes": ["{{eval:(1[cm])/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 8,
+			"variables": [
+				{
+					"nom": "a1",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 8,
+						"valeurs": ["2[km]", "3[km]", "4[km]", "5[km]", "6[km]", "7[km]", "8[km]", "9[km]"],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 9,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.000001111111111111111,
+						"max": 0.000005,
+						"negatif_possible": false,
+						"denominateurs": [200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000],
+						"denominateur_min": 200000,
+						"denominateur_max": 900000,
+						"nb_distinctes": 8,
+						"valeurs": [
+							"\\dfrac{1}{200000}",
+							"\\dfrac{1}{300000}",
+							"\\dfrac{1}{400000}",
+							"\\dfrac{1}{500000}",
+							"\\dfrac{1}{600000}",
+							"\\dfrac{1}{700000}",
+							"\\dfrac{1}{800000}",
+							"\\dfrac{1}{900000}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 900000,
+				"nb_distinctes": 9,
+				"valeurs": [1, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 900000,
+				"nb_distinctes": 17,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 6
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [200000, 300000, 400000, 500000, 600000, 700000, 800000, 900000],
+				"denominateur_min": 200000,
+				"denominateur_max": 900000,
+				"numerateur_min": 1,
+				"numerateur_max": 1,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm", "km"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 13,
+					"max": 13
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (900000)",
+					"graine": 10,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $9~\\mathrm{km}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{900000}"],
+					"variables": {
+						"a1": "9",
+						"a": "9[km]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $2~\\mathrm{km}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{200000}"],
+					"variables": {
+						"a1": "2",
+						"a": "2[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $4~\\mathrm{km}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{400000}"],
+					"variables": {
+						"a1": "4",
+						"a": "4[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $8~\\mathrm{km}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{800000}"],
+					"variables": {
+						"a1": "8",
+						"a": "8[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Sur une carte, $1~\\mathrm{cm}$ représente $7~\\mathrm{km}$ en réalité. Donne l'échelle de cette carte.\n\nL'échelle est $[?]$.",
+					"reponse": ["\\dfrac{1}{700000}"],
+					"variables": {
+						"a1": "7",
+						"a": "7[km]"
+					}
+				}
+			]
+		}
+	]
+}

@@ -18,6 +18,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import JournalWeekGrid from '$lib/components/journal/JournalWeekGrid.svelte';
 	import JournalDatePicker from '$lib/components/journal/JournalDatePicker.svelte';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import { BookOpen, GraduationCap, Calendar, Link2, Copy, Check } from '@lucide/svelte';
 	import { enhance } from '$app/forms';
 	import { toaster } from '$lib/stores/toaster.svelte';
@@ -242,6 +243,7 @@
 									<Copy class="mr-2 h-4 w-4" />Copier
 								{/if}
 							</Button>
+							<QrCodeButton url={shareUrl} label="le cahier de texte" containsToken />
 						</div>
 						{#if data.shareToken?.expires_at}
 							<p class="text-xs text-muted-foreground">

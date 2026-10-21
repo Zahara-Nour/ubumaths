@@ -21,6 +21,7 @@ import type { ScalarParam } from '../types/geo-value';
 import type { SymbolTable } from './symbol-table';
 import type { EndpointType } from '$lib/math/intervals/types';
 import { parseCustom, getVariables } from '$lib/mathAST';
+import { legacyDecimalCommas } from '$lib/mathAST/parser/custom/legacy-decimal-commas';
 import { DslRuntimeError } from './errors';
 
 // =============================================================================
@@ -127,7 +128,7 @@ function parseIntervalSuffix(
 	}
 
 	const inner = trimmed.slice(1, -1);
-	// Prefer ';' if present (handles French decimal commas).
+	// Prefer ';' if present (handles French decimal commas: `]0,5 ; 1,5[`, lues par `parseBound`).
 	const sep = inner.includes(';') ? ';' : ',';
 	const parts = inner.split(sep);
 	if (parts.length !== 2) {
@@ -303,7 +304,9 @@ function parseBound(
 	// though the resulting bound is a static MathNode that doesn't carry the
 	// reactive value at evaluation time — this is a Phase B simplification).
 	try {
-		const node = parseCustom(trimmed);
+		// Le parseur maison ne lit plus la virgule décimale (lecture-grandeurs, PR 6) :
+		// une borne d'auteur la garde, lue selon la règle d'avant (`legacyDecimalCommas`)
+		const node = parseCustom(legacyDecimalCommas(trimmed));
 		if (symbols) {
 			for (const v of getVariables(node)) {
 				const entry = symbols.get(v);

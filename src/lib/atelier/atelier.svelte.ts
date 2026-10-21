@@ -18,9 +18,13 @@
 import { SvelteMap } from 'svelte/reactivity';
 import {
 	MAX_DEFINITION_LENGTH,
+	MAX_FIGURE_OBJECTS,
 	MAX_LISTS,
+	isCurve,
+	isFigureObject,
 	isFunction,
 	isList,
+	isPoint,
 	isSequence,
 	isValue,
 	parametersOf
@@ -33,14 +37,17 @@ import type {
 	ObjectKind,
 	ObjectStatus,
 	ListObject,
+	PointDisplay,
 	SequenceDisplay,
 	SequenceObject,
 	Slider,
+	StrokeDisplay,
 	ValueObject
 } from './types';
 import {
 	validateName,
-	nextName,
+	indexedNameClash,
+	nextClashFreeName,
 	nameRejectionMessage,
 	derivativeOf,
 	hasObjectNameShape,
@@ -59,28 +66,44 @@ import type { Provenance } from './parse';
 import {
 	bareNamesOf,
 	parseDefinition,
+	pointCoordinatesOf,
 	readNumber,
-	referencesOf,
-	renameInDefinition
+	referencesOf
 } from './parse';
 import { z } from 'zod';
 import { COORDINATE_LIMIT } from '$lib/grapheur/types';
 import type { ListChartKind } from './chart';
-import { ATELIER_STATE_VERSION, type AtelierState, type StoredObject } from './persistence';
-import { expressionOf, graphLatexOf, termsOf } from './engine';
+import {
+	ATELIER_STATE_VERSION,
+	migrateReservedNames,
+	type AtelierState,
+	type StoredObject
+} from './persistence';
+import { expressionOf, graphLatexOf, substitutedAstOf, termsOf } from './engine';
+import { isUnit } from '$lib/mathAST/guards';
+import { findNodes } from '$lib/mathAST/transforms';
 import {
 	compactDisplay,
 	fullDisplay,
 	newDisplay,
+	newPointDisplay,
+	sameFigureDisplay,
 	newSequenceDisplay,
+	newStrokeDisplay,
+	plainFigureDisplay,
 	plainSequenceDisplay,
+	pointDisplaySchema,
 	readDisplayPatch,
+	readFigureDisplayPatch,
 	readSequenceDisplayPatch,
 	sequenceDisplaySchema,
+	strokeDisplaySchema,
 	type StoredDisplay
 } from './display';
 import { astOf as astOfDefinition } from './parse';
+import { renameInObject } from './rename';
 import { INTERNAL_LETTER, letterRejection, typedLetterOf } from './letter';
+import { perfSwitches } from './perf-switches';
 import {
 	checkInterval,
 	citedIntervals,
@@ -91,6 +114,35 @@ import {
 import type { Domain } from '$lib/mathAST/domain/types';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { listCitedMessage } from './list-cited';
+import { figureCitedMessage, figureFullMessage } from './geometry';
+import { partsOf, specOf, type ConstructionSpec } from './construction-spec';
+import { DEFAULT_ANGLE_UNIT, type AngleUnit } from './angle-unit';
+import type { MathNode } from '$lib/mathAST/types';
+import { quantityProblem } from '$lib/mathAST/cli/quantities';
+import {
+	citesMeasure,
+	hasBareAngle,
+	hasMeasureCall,
+	measureCallNames,
+	measuredAst,
+	measuredText,
+	withoutMeasureCalls,
+	withoutMeasures,
+	type MeasuredText
+} from './measures';
+import { bareLineShortcut, readConstruction } from './construction-read';
+import {
+	constructionOf,
+	isConstruction,
+	kindsOf,
+	positionSliderFor,
+	positionTextOf,
+	positionValueOf,
+	supportOfPointOn,
+	withPosition,
+	type ConstructionMemo
+} from './construction';
+import { dragHoldOf, draggedCoordinates, positionAt } from './point-drag';
 import {
 	computeGrid,
 	gridTexts,
@@ -121,11 +173,78 @@ import {
 	type CellEdit
 } from './grid';
 import { transformAST } from '$lib/mathAST/visitor';
+import {
+	CLEAR_PATCH,
+	formatOf,
+	isRemoval,
+	normalizeFormats,
+	sameFormats,
+	MAX_FORMAT_ZONES,
+	patchOf,
+	patchRefusal,
+	storedOf,
+	styleAt as cellStyleAt,
+	zoneInGrid,
+	type CellStyle,
+	type FormatZone,
+	type GridZone,
+	type StoredFormat,
+	type StylePatch
+} from './cell-format';
 import { planTabulation, type TabulationRequest } from './tabulate';
+import { HistoryStack } from './history-stack';
 
 // =============================================================================
 // Types de retour
 // =============================================================================
+
+/** Ce que la barre d'icônes montre d'Annuler / Rétablir (lot 5). */
+export interface HistoryState {
+	/** Le nom de l'étape qu'Annuler défera (« supprimer f »), ou `null`. */
+	readonly undo: string | null;
+	/** Le nom de l'étape que Rétablir refera, ou `null`. */
+	readonly redo: string | null;
+	/** Le nombre d'étapes annulables. */
+	readonly steps: number;
+}
+
+/** L'étape la plus externe en cours : `id` est posé à sa fermeture (`null` si vide). */
+interface StepToken {
+	id: number | null;
+}
+
+/** Une photo d'Annuler / Rétablir : l'état rangé, plus ce qui s'annule sans y être. */
+interface AtelierPhoto {
+	readonly state: AtelierState;
+	readonly charts: [string, ListChartState][];
+	readonly seed: number;
+	/**
+	 * Comment chaque définition a été écrite (revue de #1517) : une restauration
+	 * ordinaire relit tout comme un lien (`url`), et le curseur d'une valeur lit
+	 * sa constante selon la provenance.
+	 */
+	readonly provenances: [string, Provenance][];
+}
+
+/** Les réglages hors photo qu'un remplacement remet à leur défaut (`#settingsAcross`). */
+interface AtelierSettings {
+	readonly figureFrame: boolean;
+	readonly laws: readonly [string, string][];
+}
+
+/** Ce qu'Annuler / Rétablir rendent : l'étape défaite ou refaite. */
+export interface MovedStep {
+	readonly id: number;
+	readonly label: string;
+}
+
+/** « couleur de g », « affichage de f » : le nom d'un réglage d'affichage comme étape. */
+function displayStepLabel(name: string, patch: object): string {
+	return `${'color' in patch ? 'couleur' : 'affichage'} de ${displayName(name)}`;
+}
+
+/** Le nom d'une étape faite de changements hors étape (un curseur glissé, PR 2). */
+export const OUTSIDE_STEP_LABEL = 'modifier l’atelier';
 
 /** Un refus, avec son message déjà en français — l'UI l'affiche tel quel. */
 export interface Refused {
@@ -162,20 +281,6 @@ export interface RemovedWithDependents {
 	readonly removed: readonly string[];
 }
 
-/** De quoi remettre l'atelier tel qu'il était avant une suppression en cascade. */
-interface RemovalUndo {
-	readonly receipt: RemovedWithDependents;
-	/** `revision` juste après la suppression : si elle a bougé, on n'annule plus (L4). */
-	readonly revision: number;
-	readonly items: AtelierObject[];
-	readonly charts: [string, ListChartState][];
-	readonly partnerChoices: [string, string][];
-	/** Les cellules sans nom d'avant : retirer un nom y verse la colonne (T3). */
-	readonly cells: [string, string][];
-	/** Les titres d'avant : supprimer une liste vide sa colonne, titre compris. */
-	readonly titles: [number, string][];
-}
-
 export interface Updated {
 	readonly ok: true;
 	readonly object: AtelierObject;
@@ -198,6 +303,11 @@ export interface SkippedObject {
 export interface RestoreReport {
 	readonly restored: number;
 	readonly skipped: readonly SkippedObject[];
+	/**
+	 * Les objets renommés à la relecture parce que leur nom est devenu réservé
+	 * (`y`, G5 et Q2 de la géométrie) — à dire à l'élève, jamais à taire.
+	 */
+	readonly renamed: ReadonlyArray<{ readonly from: string; readonly to: string }>;
 }
 
 /** La carte `f⁻¹` créée ou mise à jour, avec ce que le calcul a donné (la ligne de Calcul). */
@@ -373,24 +483,15 @@ function formatSliderValue(value: number, step: number): string {
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
 
+/** Une unité d'angle écrite dans une définition : `[°]`, `[rad]`, `°`, `\degree`, `^{\circ}`. */
+const WRITTEN_ANGLE =
+	/\[(?:°|rad)\]|\\unit\s*\{(?:°|rad)\}|°(?![CF])|\\degree(?![A-Za-z])|\^\s*\{?\s*\\circ/;
+
+/** Un angle est une grandeur (° ou rad) : une fonction ne s'en sert pas encore. */
+const ANGLE_IN_FUNCTION =
+	'Une mesure d’angle est une grandeur (en ° ou en rad) : une fonction ne s’en sert pas. Utilise son cosinus ou son sinus, ou une valeur sans unité.';
+
 const GRID_FULL = 'La grille est pleine : vide une colonne pour créer une liste.';
-
-/** Les gestes de la grille qu'on peut annuler (T6) : au-delà, les plus anciens partent. */
-export const MAX_GRID_UNDO = 100;
-
-const GRID_CHANGED_SINCE =
-	'La grille a changé depuis (une carte, Calcul…) : ce geste ne peut plus être annulé.';
-
-/**
- * Un geste de la grille (saisie, collage, effacement, titre) : chaque case et
- * chaque titre, avant et après. Annuler remet `before`, rétablir remet `after`.
- */
-interface GridGesture {
-	readonly cells: readonly { column: number; row: number; before: string; after: string }[];
-	readonly titles: readonly { column: number; before: string; after: string }[];
-	/** « Relancer » (lot 5, Q-L5-3) : la graine d'avant et d'après. */
-	readonly seed?: { readonly before: number; readonly after: number };
-}
 
 /**
  * Pourquoi ces entrées ne peuvent pas devenir la colonne d'une liste, ou `null`.
@@ -426,6 +527,9 @@ function functionAsNumberMessage(cited: AtelierObject, user: AtelierObject): str
 			: `Écris ${cited.name}(${variable})`;
 	return `« ${cited.name} » est une ${what} : « ${user.name} » ne peut pas s'en servir comme d'un nombre. ${hint}, ou donne un autre nom à la lettre.`;
 }
+
+/** Une unité écrite dans une définition : `5[km]`, `\unit{km}`, celle que montre le champ. */
+const UNIT_WRITTEN = /\[|\\unit\{|\\operatorname\{\\mathrm\{/;
 
 const brokenMessage = (culprits: readonly string[]) =>
 	culprits.length === 1
@@ -483,7 +587,16 @@ export class Atelier {
 	 * sauvegarde. Un `$effect` qui lit `revision` couvre tout, y compris les
 	 * actions qui n'existent pas encore.
 	 */
-	revision = $state(0);
+	#revision = $state(0);
+
+	get revision(): number {
+		return this.#revision;
+	}
+
+	set revision(value: number) {
+		this.#revision = value;
+		this.#touchedOutsideStep();
+	}
 
 	/**
 	 * Diagrammes affichés sous les listes, vue Données (outils statistiques,
@@ -496,13 +609,12 @@ export class Atelier {
 	private charts = new SvelteMap<string, ListChartState>();
 
 	/**
-	 * Liste partenaire choisie sur la carte d'une liste (Q46) : liste → partenaire.
-	 *
-	 * ⚠️ Ici plutôt que dans la carte (Q48) : retenue par son NOM dans la carte,
-	 * elle revenait en silence à celle par défaut après un renommage. Même
-	 * statut que `charts` : affichage seulement, hors de `serialize()`.
+	 * Le repère de la vue Figure (géométrie v2, G4 et F3) : affiché par défaut —
+	 * au lot 1, tout objet de la figure a des coordonnées ou une équation.
+	 * Même statut que `charts` : affichage seulement, hors de `serialize()` et
+	 * de `revision` ; `restore()` le rend à son défaut.
 	 */
-	private partnerChoices = new SvelteMap<string, string>();
+	#figureFrame = $state(true);
 
 	/**
 	 * Les cellules des colonnes SANS nom de la grille (vue Données), par adresse
@@ -516,20 +628,11 @@ export class Atelier {
 	private titles = new SvelteMap<number, string>();
 
 	/**
-	 * L'historique de la grille (T6, exception à D6 limitée à la grille) : pas
-	 * rangé, perdu au rechargement. `gridHistory` dit à la vue ce qui se peut.
+	 * La mise en forme de la grille (reprise de V4, 2026-10-18) : des zones, dans
+	 * l'ordre où elles ont été posées — la dernière qui touche une case l'emporte.
+	 * Elle ne change que l'affichage (`cell-format.ts`).
 	 */
-	#undo: GridGesture[] = [];
-	#redo: GridGesture[] = [];
-	/** Le geste en cours de composition (un collage : cases PUIS titres), sinon `null`. */
-	#gesture: {
-		cells: GridGesture['cells'][number][];
-		titles: GridGesture['titles'][number][];
-		seed?: { before: number; after: number };
-	} | null = null;
-	/** Annuler ou rétablir écrit sans s'enregistrer comme un nouveau geste. */
-	#replaying = false;
-	gridHistory = $state({ undo: 0, redo: 0 });
+	#formats = $state.raw<readonly FormatZone[]>([]);
 
 	/**
 	 * Les valeurs des FORMULES de la grille (tableur, lot 2), par adresse :
@@ -556,8 +659,42 @@ export class Atelier {
 		return byColumn;
 	});
 
-	/** La dernière suppression en cascade, tant qu'elle peut s'annuler (lot B, N4). */
-	#lastRemoval: RemovalUndo | null = null;
+	/**
+	 * Annuler / Rétablir (lot 5, phase 0 `atelier-annuler-retablir-phase0.md`) :
+	 * une pile de PHOTOS de l'atelier, avant et après chaque étape. Une étape est
+	 * un geste de l'élève (`step`) ; les étapes emboîtées n'en font qu'une.
+	 * Perdue au rechargement, vidée par `restore()`.
+	 */
+	#history = new HistoryStack();
+	/** La profondeur des étapes ouvertes : seule la plus externe enregistre. */
+	#stepDepth = 0;
+	/** L'étape la plus externe en cours : son identifiant est connu à sa fermeture. */
+	#openStep: StepToken | null = null;
+	/**
+	 * La photo que la pile décrit (après la dernière étape, ou après une
+	 * annulation). Un écart à la prochaine étape = un changement fait hors étape
+	 * (un curseur glissé, PR 2) : il devient sa propre étape, jamais perdu.
+	 */
+	#baseline: string | null = null;
+	/** Annuler ou rétablir remet une photo : rien de ce qu'il écrit n'est une étape. */
+	#restoring = false;
+	/** L'étape gardée par la dernière `step` (voir `lastStepId`). */
+	#lastStepId: number | null = null;
+	/** Le point glissé à la souris, jusqu'au relâcher (`endGesture`). */
+	#draggedPoint: string | null = null;
+	/** La suppression d'un reçu → son étape : le toast « Annuler » ne défait qu'elle. */
+	#receipts = new WeakMap<RemovedWithDependents, StepToken>();
+	/** Les étapes de `replaceWith` qui veulent savoir quand on les quitte (`onLeave`). */
+	#onLeave = new Map<number, (left: AtelierState) => void>();
+	/**
+	 * Les réglages de l'AUTRE côté d'une étape de `replaceWith` : lois et repère,
+	 * hors des photos (ce sont des réglages), que le remplacement remet à leur
+	 * défaut. Annuler et Rétablir échangent ceux de l'écran contre ceux-là
+	 * (revue de #1524 : Annuler un chargement les perdait).
+	 */
+	#settingsAcross = new Map<number, AtelierSettings>();
+	/** Ce que la barre affiche : l'étape qu'Annuler défera, celle que Rétablir refera. */
+	history = $state<HistoryState>({ undo: null, redo: null, steps: 0 });
 
 	/**
 	 * Les lois des variables aléatoires (décision de David, 2026-10-09) :
@@ -587,6 +724,19 @@ export class Atelier {
 
 	get objects(): readonly AtelierObject[] {
 		return this.items;
+	}
+
+	/**
+	 * Ni objet, ni grille (titres et mise en forme compris) : ce que
+	 * `isBlankAtelier(serialize())` dirait, sans tout ranger. Réactif.
+	 */
+	get isBlank(): boolean {
+		return (
+			this.items.length === 0 &&
+			this.cells.size === 0 &&
+			this.titles.size === 0 &&
+			this.#formats.length === 0
+		);
 	}
 
 	/** Les noms pris, tous types confondus (décision D1). */
@@ -628,6 +778,11 @@ export class Atelier {
 	// ---------------------------------------------------------------------------
 
 	create(input: CreateInput, provenance: Provenance = 'url'): Created | Refused {
+		const shown = input.name === undefined ? 'une carte' : displayName(input.name);
+		return this.step(`ajouter ${shown}`, () => this.#create(input, provenance));
+	}
+
+	#create(input: CreateInput, provenance: Provenance): Created | Refused {
 		const definition = input.definition ?? '';
 
 		// Plafonds du v1 (décision D8) : ils existent pour qu'un atelier tienne
@@ -637,6 +792,13 @@ export class Atelier {
 				ok: false,
 				message: `Un atelier ne peut pas contenir plus de ${MAX_LISTS} listes.`
 			};
+		}
+		// M2 (Q3) : points et courbes réunis, même esprit que D8
+		if (
+			(input.kind === 'point' || input.kind === 'curve') &&
+			this.items.filter(isFigureObject).length >= MAX_FIGURE_OBJECTS
+		) {
+			return { ok: false, message: figureFullMessage(MAX_FIGURE_OBJECTS) };
 		}
 		// Une liste EST une colonne de la grille (T1) : la voulue si elle est libre,
 		// sinon la première libre
@@ -656,7 +818,8 @@ export class Atelier {
 			// #329 : ne pas se nommer comme un objet que la définition cite déjà,
 			// sinon l'atelier fabrique lui-même la circularité qu'il dénonce.
 			const cited = this.#cited(input.kind, definition, provenance).map((r) => r.name);
-			name = nextName(input.kind, this.names, cited);
+			// Jamais `u_1` d'office à côté d'une suite u : il désignerait son terme
+			name = nextClashFreeName(input.kind, this.names, this.items, cited);
 		} else if (derivativeOf(input.name) !== null) {
 			// La carte `f′` n'a qu'une définition possible : elle-même, que le
 			// parseur lit comme la dérivée de `f`. Toute autre est refusée — une
@@ -694,6 +857,9 @@ export class Atelier {
 			if (rejection) return { ok: false, message: nameRejectionMessage(rejection, input.name) };
 			const asLetter = this.#letterUse(input.name);
 			if (asLetter !== null) return { ok: false, message: asLetter };
+			// `u_3` et une suite `u` : deux sens pour un nom (décision de David, 2026-10-19)
+			const clash = indexedNameClash(input.name, input.kind, this.items);
+			if (clash !== null) return { ok: false, message: clash };
 			name = input.name;
 		}
 
@@ -735,6 +901,10 @@ export class Atelier {
 	 * il est rendu tel quel (L1, `existed`).
 	 */
 	createDerivative(name: string): Created | Refused {
+		return this.step(`dériver ${displayName(name)}`, () => this.#createDerivative(name));
+	}
+
+	#createDerivative(name: string): Created | Refused {
 		const base = this.get(name);
 		if (base === undefined) return { ok: false, message: `« ${displayName(name)} » n'existe pas.` };
 		if (base.kind !== 'function') {
@@ -779,6 +949,8 @@ export class Atelier {
 			return { ok: false, message: `La dérivée de « ${displayName(name)} » ne se calcule pas.` };
 		}
 		if (base.plotted) this.setPlotted(derived, true);
+		// Comme le tracé : `f′` naît là où `f` est montrée (K3)
+		if (isFunction(base) && base.inFigure) this.setInFigure(derived, true);
 		return { ok: true, object: this.get(derived)! };
 	}
 
@@ -807,6 +979,13 @@ export class Atelier {
 	 * @param on - l'intervalle tapé après « sur » ; croisé avec celui de f
 	 */
 	createReciprocal(base: string, on?: string): ReciprocalCreated | (Refused & { formulas?: true }) {
+		return this.step(`réciproque de ${displayName(base)}`, () => this.#createReciprocal(base, on));
+	}
+
+	#createReciprocal(
+		base: string,
+		on?: string
+	): ReciprocalCreated | (Refused & { formulas?: true }) {
 		// Sans « sur » (le bouton), la carte existante garde l'intervalle tapé avant
 		const existing = this.get(reciprocalName(base));
 		const wanted =
@@ -836,6 +1015,7 @@ export class Atelier {
 		});
 		if (!created.ok) return created;
 		if (owner.plotted) this.setPlotted(name, true);
+		if (isFunction(owner) && owner.inFigure) this.setInFigure(name, true);
 		return { ok: true, object: this.get(name)!, outcome };
 	}
 
@@ -850,7 +1030,15 @@ export class Atelier {
 	 * réglage de curseur ne change aucune valeur — seul le compteur bouge, pour
 	 * la sauvegarde.
 	 */
-	setSlider(name: string, patch: Partial<Slider>): { ok: true } | Refused {
+	setSlider(name: string, patch: Partial<Slider>, gesture?: string): { ok: true } | Refused {
+		return this.step(
+			`réglages du curseur de ${displayName(name)}`,
+			() => this.#setSlider(name, patch),
+			gesture
+		);
+	}
+
+	#setSlider(name: string, patch: Partial<Slider>): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isValue(current) || current.slider === undefined) {
@@ -916,7 +1104,125 @@ export class Atelier {
 		if (written === current.definition) {
 			return { ok: true, object: current, recomputed: [] };
 		}
-		return this.update(name, written, 'text');
+		// Tout un glissé = UNE étape (lot 5, PR 2) : fermée au relâchement (`endGesture`)
+		return this.step(
+			`curseur de ${displayName(name)}`,
+			() => this.update(name, written, 'text'),
+			`curseur:${name}`
+		);
+	}
+
+	/**
+	 * Le curseur de position d'un `point_sur` à position écrite (PR 3, L5), ou
+	 * `null` : bornes de l'objet ([0 ; 1] sur un segment, [0 ; 360] sur un cercle).
+	 * Lu sur la définition, jamais rangé — la sauvegarde ne change pas.
+	 */
+	positionSliderOf(name: string): Slider | null {
+		return positionSliderFor(this, name);
+	}
+
+	/** La position écrite d'un `point_sur`, en nombre, ou `null`. */
+	positionOf(name: string): number | null {
+		return positionValueOf(this, name);
+	}
+
+	/**
+	 * Glisser la position d'un `point_sur` : le nombre écrit devient celui-ci,
+	 * arrondi au pas et gardé dans les bornes — comme `slideTo` pour une valeur.
+	 * Ce qui cite le point suit.
+	 */
+	slidePosition(name: string, value: number): Updated | Refused {
+		const current = this.get(name);
+		const slider = this.positionSliderOf(name);
+		if (current === undefined || slider === null) {
+			return { ok: false, message: `« ${name} » n’a pas de curseur de position.` };
+		}
+		if (!Number.isFinite(value)) return { ok: false, message: 'Cette valeur n’est pas un nombre.' };
+		const clamped = Math.min(slider.max, Math.max(slider.min, value));
+		const written = formatSliderValue(clamped, slider.step);
+		// Un cran qui ne change pas le nombre ÉCRIT ne réécrit rien ; `1/3` glissé à 0,33, si
+		if (written === positionTextOf(this, name)) {
+			return { ok: true, object: current, recomputed: [] };
+		}
+		const definition = withPosition(current.definition, current.provenance ?? 'url', written);
+		if (definition === null) {
+			return { ok: false, message: `« ${name} » n’a pas de curseur de position.` };
+		}
+		return this.step(
+			`position de ${displayName(name)}`,
+			() => this.update(name, definition, 'text'),
+			`position:${name}`
+		);
+	}
+
+	/**
+	 * Pourquoi le point `name` ne se glisse pas à la souris, ou `null` s'il se
+	 * glisse (géométrie lot 3, M2) : la phrase dit quoi déplacer à la place.
+	 */
+	dragRefusal(name: string): string | null {
+		const hold = dragHoldOf(this, name);
+		return hold.kind === 'refused' ? hold.message : null;
+	}
+
+	/**
+	 * Glisser le point `name` en (x ; y) à la souris (géométrie lot 3, M1, M2) :
+	 * sa définition est réécrite (coordonnées, ou position d'un `point_sur`), et
+	 * tout ce qui le cite suit PENDANT le geste. `snap` : l'écart, en unités du
+	 * repère, sous lequel une coordonnée s'aimante à l'entier.
+	 *
+	 * Tout un glisser = UNE étape (M7), fermée au relâcher (`endGesture`).
+	 */
+	dragPoint(name: string, x: number, y: number, snap = 0): Updated | Refused {
+		const hold = dragHoldOf(this, name);
+		if (hold.kind === 'refused') return { ok: false, message: hold.message };
+		this.#draggedPoint = name;
+		if (!Number.isFinite(x) || !Number.isFinite(y)) {
+			return { ok: false, message: 'Cette position n’est pas un nombre.' };
+		}
+		if (hold.kind === 'position') {
+			const support = supportOfPointOn(this, name);
+			const position = support === null ? null : positionAt(support, x, y);
+			if (position === null) {
+				return { ok: false, message: `« ${displayName(name)} » ne peut pas se glisser ici.` };
+			}
+			return this.slidePosition(name, position);
+		}
+		const current = this.get(name)!;
+		const written = draggedCoordinates(x, y, snap);
+		// Un mouvement qui ne change pas le couple ÉCRIT ne recalcule rien
+		if (written === current.definition) {
+			return { ok: true, object: current, recomputed: [] };
+		}
+		return this.step(
+			`déplacer ${displayName(name)}`,
+			() => this.update(name, written, 'text'),
+			`glisser:${name}`
+		);
+	}
+
+	/**
+	 * Relever (`.relever`, géométrie lot 2, PR 4) : poser tour à tour chaque
+	 * définition de `name` (une valeur, la position d'un `point_sur`), tout
+	 * recalculer et lire ce qu'il faut — `null` pour un pas que l'atelier refuse.
+	 *
+	 * ⚠️ L'atelier est ensuite rendu EXACTEMENT tel qu'il était, tous les objets
+	 * et pas seulement `name` : `update` élargit le curseur d'une valeur posée
+	 * hors de ses bornes, et la rendre par `update` le laisserait élargi.
+	 */
+	sweep<T>(name: string, definitions: readonly string[], read: () => T): (T | null)[] {
+		if (this.get(name) === undefined) return [];
+		// Une copie du TABLEAU suffit : un objet n'est jamais modifié en place,
+		// `update` le remplace. ⚠️ Pas `$state.snapshot` : hors navigateur, il
+		// rend le tableau lui-même, que le premier pas modifiait (mesuré)
+		const saved = [...this.items];
+		try {
+			return definitions.map((definition) =>
+				this.update(name, definition, 'text').ok ? read() : null
+			);
+		} finally {
+			this.items = saved;
+			this.recomputeAll();
+		}
 	}
 
 	// ---------------------------------------------------------------------------
@@ -954,22 +1260,112 @@ export class Atelier {
 	 * du texte brut. Lue comme une expression, `fille ; garçon` citait `fille`
 	 * et `garçon`, et la liste restait « en attente » d'objets inexistants (Q84).
 	 */
-	#cited(kind: AtelierObject['kind'], definition: string, provenance?: Provenance) {
-		return kind === 'list' ? [] : referencesOf(definition, provenance, this.functionNames);
+	#cited(
+		kind: AtelierObject['kind'],
+		definition: string,
+		provenance?: Provenance
+	): MissingReference[] {
+		if (kind === 'list') return [];
+		// Une construction (lot 2) : les objets qu'elle nomme, et ce que citent ses nombres
+		const construction = this.#constructionSpec(kind, definition, provenance);
+		if (construction !== null) {
+			const { names, scalars } = partsOf(construction);
+			const found = new Map<string, MissingReference>(
+				names.map((name) => [name, { name, as: 'value' }])
+			);
+			// Un nombre d'une construction peut être une mesure (`cercle(A ; AM)`, revue PR 2)
+			for (const scalar of scalars) {
+				for (const ref of this.#cited('value', scalar, 'text')) {
+					if (!found.has(ref.name)) found.set(ref.name, ref);
+				}
+			}
+			return [...found.values()];
+		}
+		// Un point cite ce que citent ses deux coordonnées : le couple, lui, ne se
+		// lit pas comme une expression
+		if (kind === 'point')
+			return this.#inCoordinates(definition, (c) => this.#cited('value', c, provenance));
+		// Une mesure (lot 2, L4) : les noms de ses appels, et le reste lu comme un calcul
+		if (hasMeasureCall(definition, provenance ?? 'url')) {
+			const found = new Map<string, MissingReference>(
+				referencesOf(
+					withoutMeasureCalls(definition, provenance ?? 'url'),
+					provenance,
+					this.functionNames
+				).map((r) => [r.name, r])
+			);
+			for (const name of measureCallNames(definition, provenance ?? 'url')) {
+				if (!found.has(name)) found.set(name, { name, as: 'value' });
+			}
+			return [...found.values()];
+		}
+		return referencesOf(definition, provenance, this.functionNames);
 	}
 
-	/**
-	 * La définition après renommage. ⚠️ Une liste n'est JAMAIS réécrite (Q87) :
-	 * renommer un objet `A` changeait `A ; B ; A ; O`, une liste de groupes
-	 * sanguins.
-	 */
+	/** La construction que décrit cette définition (sans contrôle de type), ou `null`. */
+	#constructionSpec(
+		kind: AtelierObject['kind'],
+		definition: string,
+		provenance: Provenance | undefined
+	): ConstructionSpec | null {
+		if (kind !== 'point' && kind !== 'curve') return null;
+		const read = specOf(definition, provenance ?? 'url');
+		return read !== null && read.ok ? read.spec : null;
+	}
+
+	/** Ce que rend `read` sur chaque coordonnée d'un point, sans doublon de nom. */
+	#inCoordinates<T extends string | MissingReference>(
+		definition: string,
+		read: (coordinate: string) => readonly T[]
+	): T[] {
+		const found = new Map<string, T>();
+		for (const coordinate of pointCoordinatesOf(definition) ?? []) {
+			for (const item of read(coordinate)) {
+				const key = typeof item === 'string' ? item : item.name;
+				// Un appel l'emporte sur la lecture « valeur », comme dans `referencesOf`
+				if (!found.has(key) || (typeof item !== 'string' && item.as === 'function')) {
+					found.set(key, item);
+				}
+			}
+		}
+		return [...found.values()];
+	}
+
+	/** Les noms qu'une définition emploie comme un nombre (V58), coordonnées d'un point comprises. */
+	#bareNamesOf(o: AtelierObject): string[] {
+		// Une construction : seuls ses NOMBRES emploient un nom comme un nombre
+		const construction = this.#constructionSpec(o.kind, o.definition, o.provenance);
+		if (construction !== null) {
+			return partsOf(construction).scalars.flatMap((scalar) =>
+				bareNamesOf(scalar, 'text', this.functionNames)
+			);
+		}
+		return o.kind === 'point'
+			? this.#inCoordinates(o.definition, (c) => bareNamesOf(c, o.provenance, this.functionNames))
+			: bareNamesOf(
+					withoutMeasureCalls(o.definition, o.provenance ?? 'url'),
+					o.provenance,
+					this.functionNames
+				);
+	}
+
+	/** La définition après renommage (`rename.ts` : la même règle que la fusion). */
 	#renamedIn(object: AtelierObject, from: string, to: string): string {
-		return object.kind === 'list'
-			? object.definition
-			: renameInDefinition(object.definition, from, to);
+		const isPoint = (name: string) => this.get(name === from ? to : name)?.kind === 'point';
+		// Une suite (ou une fonction) renommée emmène ses termes : `u_3` → `v_3`
+		const owner = this.get(to) ?? this.get(from);
+		const hasTerms = owner?.kind === 'sequence' || owner?.kind === 'function';
+		const isTerm = hasTerms ? (name: string) => this.get(name) === undefined : undefined;
+		return renameInObject(object, from, to, isPoint, isTerm);
 	}
 
 	rename(from: string, to: string): Renamed | Refused {
+		return this.step(`renommer ${displayName(from)} en ${displayName(to)}`, () =>
+			this.#rename(from, to)
+		);
+	}
+
+	#rename(from: string, to: string): Renamed | Refused {
 		const index = this.items.findIndex((o) => o.name === from);
 		if (index === -1) return { ok: false, message: `« ${from} » n'existe pas.` };
 
@@ -1013,6 +1409,12 @@ export class Atelier {
 		if (rejection) return { ok: false, message: nameRejectionMessage(rejection, to) };
 		const asLetter = this.#letterUse(to);
 		if (asLetter !== null) return { ok: false, message: asLetter };
+		const clash = indexedNameClash(
+			to,
+			this.items[index].kind,
+			this.items.filter((o) => o.name !== from)
+		);
+		if (clash !== null) return { ok: false, message: clash };
 
 		// L'objet renommé voit sa PROPRE définition réécrite lui aussi : une suite
 		// récurrente se cite elle-même (`u(n+1) = 2·u(n)`), et l'oublier la
@@ -1062,10 +1464,6 @@ export class Atelier {
 			const partner = chart.partner === from ? to : chart.partner;
 			this.charts.delete(list);
 			this.charts.set(list === from ? to : list, { ...chart, partner });
-		}
-		for (const [list, partner] of [...this.partnerChoices]) {
-			this.partnerChoices.delete(list);
-			this.partnerChoices.set(list === from ? to : list, partner === from ? to : partner);
 		}
 
 		this.recomputeAll();
@@ -1166,10 +1564,15 @@ export class Atelier {
 			...rebuilt,
 			...keptSequence,
 			...(previous.plotted && { plotted: true }),
-			...((isFunction(previous) || isSequence(previous)) &&
+			...(isFunction(previous) && isFunction(rebuilt) && previous.inFigure && { inFigure: true }),
+			// Un point ou une courbe garde son dessin (lot 4b) : la définition change, pas la couleur
+			...((isFunction(previous) || isSequence(previous) || isFigureObject(previous)) &&
 				previous.display && { display: previous.display }),
-			...(keptSlider && { slider: keptSlider })
+			...(keptSlider && { slider: keptSlider }),
+			// Le curseur affiché à la main reste affiché, tant que la valeur en a un
+			...(isValue(previous) && previous.sliderShown && keptSlider && { sliderShown: true })
 		} as AtelierObject;
+		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
 
 		return { ok: true, object: this.get(name)!, recomputed: dependents };
@@ -1185,16 +1588,11 @@ export class Atelier {
 
 		const broken = this.allDependents(name);
 		this.items.splice(index, 1);
-		this.#forgetGridHistory();
 		this.charts.delete(name);
 		// Les diagrammes dont elle donnait les effectifs disparaissent avec elle :
 		// sinon, une liste recréée sous ce nom s'y rattacherait en silence
 		for (const [list, chart] of [...this.charts]) {
 			if (chart.partner === name) this.charts.delete(list);
-		}
-		this.partnerChoices.delete(name);
-		for (const [list, partner] of [...this.partnerChoices]) {
-			if (partner === name) this.partnerChoices.delete(list);
 		}
 		this.recomputeAll();
 
@@ -1220,7 +1618,7 @@ export class Atelier {
 	 * Le reçu rendu permet UNE annulation, tant que rien d'autre n'a changé.
 	 */
 	removeWithDependents(name: string): RemovedWithDependents | Refused {
-		return this.#removeWithDependents(name);
+		return this.step(`supprimer ${displayName(name)}`, () => this.#removeWithDependents(name));
 	}
 
 	/**
@@ -1236,67 +1634,323 @@ export class Atelier {
 		}
 		const removed = [name, ...this.removalOf(name)];
 		const gone = new Set(removed);
-		// Copié AVANT : `items` est un `$state`, ses objets des proxies
-		const items = $state.snapshot(this.items) as AtelierObject[];
 		const charts = [...this.charts].filter(
 			([list, c]) => gone.has(list) || gone.has(c.partner ?? '')
 		);
-		const partnerChoices = [...this.partnerChoices].filter(
-			([list, partner]) => gone.has(list) || gone.has(partner)
-		);
-		const cells = [...this.cells];
-		const titles = [...this.titles];
 		const columns = this.items.flatMap((o) => (isList(o) && gone.has(o.name) ? [o.column] : []));
 
 		this.items = this.items.filter((o) => !gone.has(o.name));
 		for (const [list] of charts) this.charts.delete(list);
-		for (const [list] of partnerChoices) this.partnerChoices.delete(list);
 		this.recomputeAll();
 		if (unnamed !== undefined) unnamed();
 		else for (const column of columns) this.titles.delete(column);
-		// Une suppression FERME l'historique de la grille : annuler un geste plus
-		// ancien changerait la révision, et la suppression ne pourrait plus
-		// s'annuler — ses objets seraient perdus (revue de la PR 3a)
-		this.#forgetGridHistory();
 
 		const receipt: RemovedWithDependents = { ok: true, removed };
-		this.#lastRemoval = {
-			receipt,
-			revision: this.revision,
-			items,
-			charts: $state.snapshot(charts) as [string, ListChartState][],
-			partnerChoices,
-			cells,
-			titles
-		};
+		if (this.#openStep !== null) this.#receipts.set(receipt, this.#openStep);
 		return receipt;
 	}
 
 	/**
-	 * Annuler la suppression de ce reçu. Refusé — et rien ne bouge — si une autre
-	 * suppression l'a suivie, si elle est déjà annulée, ou si l'atelier a changé
-	 * depuis : on ne restaure jamais par-dessus un nom repris (L4).
+	 * Annuler la suppression de ce reçu (le toast « Annuler »). Refusé — et rien
+	 * ne bouge — si elle n'est plus la dernière étape : une autre l'a suivie, elle
+	 * est déjà annulée, ou l'atelier a changé depuis (L4). Ctrl+Z et le bouton
+	 * Annuler de la barre, eux, défont toujours la dernière étape.
 	 */
 	undoRemoval(receipt: RemovedWithDependents): boolean {
-		const undo = this.#lastRemoval;
-		if (undo === null || undo.receipt !== receipt || undo.revision !== this.revision) return false;
-		this.#lastRemoval = null;
-		this.items = undo.items;
-		// Les cellules sans nom d'avant : une colonne dont on avait retiré le nom
-		// redevient la liste, sans garder une copie de ses cellules dans la grille
-		this.cells.clear();
-		for (const [address, text] of undo.cells) this.cells.set(address, text);
-		this.titles.clear();
-		for (const [column, title] of undo.titles) this.titles.set(column, title);
-		// Un diagramme remis entre-temps (hors `revision`, Q37) prime sur l'ancien
-		for (const [list, chart] of undo.charts) {
-			if (!this.charts.has(list)) this.charts.set(list, chart);
+		const token = this.#receipts.get(receipt);
+		if (token === undefined || this.#stepDepth > 0) return false;
+		this.#capture(this.#photo());
+		if (token.id === null || token.id !== this.#history.topId) {
+			this.#publish();
+			return false;
 		}
-		for (const [list, partner] of undo.partnerChoices) {
-			if (!this.partnerChoices.has(list)) this.partnerChoices.set(list, partner);
+		return this.undo() !== null;
+	}
+
+	// ---------------------------------------------------------------------------
+	// Annuler / Rétablir (lot 5)
+	// ---------------------------------------------------------------------------
+
+	/**
+	 * Faire de `run` UNE étape d'Annuler / Rétablir, nommée `label` (« supprimer
+	 * f »). Emboîtée dans une autre, elle se fond dans la plus externe : une ligne
+	 * de console qui fait cent mises à jour puis crée deux listes est une étape.
+	 * Une étape qui ne change rien (un calcul) n'est pas gardée.
+	 *
+	 * `gesture` : la clé d'un geste CONTINU (un curseur glissé, un champ tapé à
+	 * chaque frappe, PR 2). Ses écritures se fondent dans une seule étape jusqu'à
+	 * `endGesture()` — décision de David : « tout un glissé = une étape ».
+	 */
+	step<T>(label: string, run: () => T, gesture?: string): T {
+		if (this.#stepDepth > 0 || this.#restoring) return run();
+		const before = this.#photo();
+		this.#capture(before);
+		const token: StepToken = { id: null };
+		this.#openStep = token;
+		this.#stepDepth++;
+		try {
+			return run();
+		} finally {
+			this.#stepDepth--;
+			this.#openStep = null;
+			const after = this.#photo();
+			token.id = this.#history.push({ label, before, after }, gesture);
+			this.#lastStepId = token.id;
+			this.#baseline = after;
+			this.#publish();
 		}
+	}
+
+	/**
+	 * L'identifiant de l'étape que la dernière `step` a gardée (ou dans laquelle
+	 * elle s'est fondue), `null` si elle n'a rien changé : la console l'attache à
+	 * sa ligne, pour la barrer quand l'étape est annulée.
+	 */
+	get lastStepId(): number | null {
+		return this.#lastStepId;
+	}
+
+	/**
+	 * L'étape qu'Annuler défera maintenant, `null` sans étape : le toast d'un
+	 * chargement ou de « Repartir de zéro » ne défait que la sienne (lot 5, PR 3).
+	 */
+	get topStepId(): number | null {
+		return this.#history.topId;
+	}
+
+	/**
+	 * L'étape `stepId` est-elle celle qu'Annuler défera maintenant ? Une
+	 * modification faite hors étape depuis compte (`#capture`) : Annuler la
+	 * déferait, elle, et pas `stepId` (revue de #1524, toast d'un remplacement).
+	 */
+	isTopStep(stepId: number): boolean {
+		if (this.#stepDepth > 0) return false;
+		this.#capture(this.#photo());
+		this.#publish();
+		return this.#history.topId === stepId;
+	}
+
+	/** Une étape est-elle ouverte ? Une `step` appelée dedans s'y fond. */
+	get inStep(): boolean {
+		return this.#stepDepth > 0;
+	}
+
+	/** Fermer le geste continu en cours : le prochain fera une nouvelle étape. */
+	endGesture(): void {
+		this.#draggedPoint = null;
+		this.#history.seal();
+	}
+
+	/**
+	 * Un point est-il glissé à la souris (`dragPoint` jusqu'à `endGesture`) ?
+	 * Annuler / Rétablir attendent le relâcher : défaire l'étape en plein geste,
+	 * c'est la voir renaître au mouvement suivant.
+	 */
+	get draggingPoint(): boolean {
+		return this.#draggedPoint !== null;
+	}
+
+	/**
+	 * Faire `run` sans étape, et sans qu'Annuler le défasse ensuite : la carte
+	 * prête à taper d'un atelier vide (B3) n'est pas un geste de l'élève.
+	 */
+	untracked<T>(run: () => T): T {
+		if (this.#stepDepth > 0) return run();
+		const restoring = this.#restoring;
+		this.#restoring = true;
+		try {
+			return run();
+		} finally {
+			this.#restoring = restoring;
+			if (this.#baseline !== null) this.#baseline = this.#photo();
+		}
+	}
+
+	/** Défaire la dernière étape ; rend son nom, ou `null` s'il n'y a rien à annuler. */
+	undo(): string | null {
+		return this.undoStep()?.label ?? null;
+	}
+
+	/** Refaire la dernière étape annulée ; rend son nom, ou `null`. */
+	redo(): string | null {
+		return this.redoStep()?.label ?? null;
+	}
+
+	/** Comme `undo`, avec l'identifiant de l'étape : la console barre sa ligne. */
+	undoStep(): MovedStep | null {
+		if (this.#stepDepth > 0) return null;
+		this.#capture(this.#photo());
+		const step = this.#history.undo();
+		if (step !== null) {
+			this.#apply(step.before);
+			this.#swapSettings(step.id);
+			this.#left(step.id, step.after);
+		}
+		this.#publish();
+		return step === null ? null : { id: step.id, label: step.label };
+	}
+
+	/** Comme `redo`, avec l'identifiant de l'étape : la console débarre sa ligne. */
+	redoStep(): MovedStep | null {
+		if (this.#stepDepth > 0) return null;
+		// Un changement fait après l'annulation a déjà oublié ce qui restait à rétablir
+		this.#capture(this.#photo());
+		const step = this.#history.redo();
+		if (step !== null) {
+			this.#apply(step.after);
+			this.#swapSettings(step.id);
+			this.#left(step.id, step.before);
+		}
+		this.#publish();
+		return step === null ? null : { id: step.id, label: step.label };
+	}
+
+	/**
+	 * La photo de l'atelier : ce que `serialize()` range, plus ce qui doit
+	 * s'annuler sans y être — les diagrammes affichés (Q37) et la graine, rangée
+	 * seulement quand la grille tire au hasard. Le réglage des angles, le repère
+	 * de la vue Géométrie et le mode de la console n'en sont pas : ce sont des
+	 * réglages, pas des gestes.
+	 */
+	#photo(): string {
+		const photo: AtelierPhoto = {
+			state: this.serialize(),
+			charts: [...this.charts].map(([list, chart]) => [list, { ...chart }]),
+			seed: this.#seed,
+			provenances: this.items.flatMap((o): [string, Provenance][] =>
+				o.provenance === undefined ? [] : [[o.name, o.provenance]]
+			)
+		};
+		return JSON.stringify(photo);
+	}
+
+	/** Un changement fait hors étape devient sa propre étape : Annuler ne le perd jamais. */
+	#capture(current: string): void {
+		if (this.#baseline !== null && current !== this.#baseline) {
+			this.#history.push({ label: OUTSIDE_STEP_LABEL, before: this.#baseline, after: current });
+		}
+		this.#baseline = current;
+	}
+
+	/**
+	 * Remettre une photo. Comme `restore()`, sauf ce que `restore()` remet à zéro
+	 * pour un chargement et qu'une annulation doit garder : les lois des variables
+	 * aléatoires (`#laws`) et le repère de la vue Géométrie.
+	 */
+	#apply(text: string): void {
+		const photo = JSON.parse(text) as AtelierPhoto;
+		const frame = this.#figureFrame;
+		const laws = [...this.#laws];
+		this.#restoring = true;
+		try {
+			this.#restoreState(
+				{ ...photo.state, grid: { ...photo.state.grid, seed: photo.seed } },
+				new Map(photo.provenances)
+			);
+		} finally {
+			this.#restoring = false;
+		}
+		this.#figureFrame = frame;
+		for (const [variable, head] of laws) this.#laws.set(variable, head);
+		for (const [list, chart] of photo.charts) this.charts.set(list, chart);
+		this.#baseline = this.#photo();
+	}
+
+	#settings(): AtelierSettings {
+		return { figureFrame: this.#figureFrame, laws: [...this.#laws] };
+	}
+
+	/** Une étape de `replaceWith` franchie : ses réglages d'en face contre ceux de l'écran. */
+	#swapSettings(id: number): void {
+		const across = this.#settingsAcross.get(id);
+		if (across === undefined) return;
+		this.#settingsAcross.set(id, this.#settings());
+		this.#figureFrame = across.figureFrame;
+		this.#laws = new Map(across.laws);
+	}
+
+	/** Une étape de `replaceWith` quittée : son `onLeave` reçoit l'atelier quitté. */
+	#left(id: number, photo: string): void {
+		const onLeave = this.#onLeave.get(id);
+		if (onLeave !== undefined) onLeave((JSON.parse(photo) as AtelierPhoto).state);
+	}
+
+	/**
+	 * Une modification hors de toute étape (revue de #1517) : la barre le dit
+	 * tout de suite — « Annuler : modifier l'atelier » —, sans attendre la
+	 * prochaine étape qui la rangera (`#capture`). Rien n'est photographié ici :
+	 * une modification par cran resterait coûteuse.
+	 */
+	#touchedOutsideStep(): void {
+		if (this.#stepDepth > 0 || this.#restoring || this.#baseline === null) return;
+		if (this.history.undo === OUTSIDE_STEP_LABEL && this.history.redo === null) return;
+		this.history = {
+			undo: OUTSIDE_STEP_LABEL,
+			redo: null,
+			steps: this.#history.size + 1
+		};
+	}
+
+	#publish(): void {
+		this.history = {
+			undo: this.#history.undoLabel,
+			redo: this.#history.redoLabel,
+			steps: this.#history.size
+		};
+	}
+
+	#forgetHistory(): void {
+		this.#history.clear();
+		this.#onLeave.clear();
+		this.#settingsAcross.clear();
+		this.#baseline = null;
+		this.#publish();
+	}
+
+	// ---------------------------------------------------------------------------
+	// Repère de la vue Figure
+	// ---------------------------------------------------------------------------
+
+	/** Le repère de la vue Figure est-il affiché ? (F3) */
+	get figureFrame(): boolean {
+		return this.#figureFrame;
+	}
+
+	/** Afficher ou masquer le repère de la vue Figure (F3) — sans rien enregistrer. */
+	setFigureFrame(shown: boolean): void {
+		this.#figureFrame = shown;
+	}
+
+	/**
+	 * L'unité des mesures d'angle (réglage « Angles », 2026-10-18) : un réglage de
+	 * ce navigateur, hors `serialize()`, comme le repère de la vue Figure.
+	 */
+	#angleUnit = $state<AngleUnit>(DEFAULT_ANGLE_UNIT);
+
+	get angleUnit(): AngleUnit {
+		return this.#angleUnit;
+	}
+
+	/**
+	 * Le mode de la console (exact / décimal), que la carte d'une mesure recopie
+	 * pour dire ce que dit Calcul (`valueAnswerOf`, revue de la PR 2). Posé par le
+	 * pupitre après chaque saisie ; hors `serialize()`.
+	 */
+	#calcMode = $state<'exact' | 'decimal'>('exact');
+
+	get calcMode(): 'exact' | 'decimal' {
+		return this.#calcMode;
+	}
+
+	setCalcMode(mode: 'exact' | 'decimal'): void {
+		this.#calcMode = mode;
+	}
+
+	/** Changer l'unité des angles recalcule les mesures d'angle (`T = angle(…)`). */
+	setAngleUnit(unit: AngleUnit): void {
+		if (unit === this.#angleUnit) return;
+		this.#angleUnit = unit;
 		this.recomputeAll();
-		return true;
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1321,6 +1975,12 @@ export class Atelier {
 	 * @returns le diagramme est-il affiché après le geste ?
 	 */
 	toggleChart(name: string, partner: string | null, kind: ListChartKind = 'barres'): boolean {
+		return this.step(`diagramme de ${displayName(name)}`, () =>
+			this.#toggleChart(name, partner, kind)
+		);
+	}
+
+	#toggleChart(name: string, partner: string | null, kind: ListChartKind): boolean {
 		const shown = this.chartOf(name);
 		if (shown?.partner === partner && (shown.kind ?? 'barres') === kind) {
 			this.charts.delete(name);
@@ -1329,15 +1989,6 @@ export class Atelier {
 		// Le genre n'est noté que pour un circulaire : les bâtons gardent leur forme v1
 		this.charts.set(name, { partner, ...(kind !== 'barres' && { kind }) });
 		return true;
-	}
-
-	/** La partenaire choisie sur la carte de cette liste, s'il y en a une. */
-	partnerChoiceOf(name: string): string | undefined {
-		return this.partnerChoices.get(name);
-	}
-
-	choosePartner(name: string, partner: string): void {
-		this.partnerChoices.set(name, partner);
 	}
 
 	// ---------------------------------------------------------------------------
@@ -1408,8 +2059,15 @@ export class Atelier {
 		return this.titles.get(column) ?? '';
 	}
 
-	/** Poser le titre d'une colonne ; vide, le retirer. */
-	setTitle(column: number, text: string): { ok: true } | Refused {
+	/**
+	 * Poser le titre d'une colonne ; vide, le retirer. `recorded: false` : sans
+	 * étape propre (`.relever`, dont la ligne de console est l'étape).
+	 */
+	setTitle(
+		column: number,
+		text: string,
+		options: { readonly recorded?: boolean } = {}
+	): { ok: true } | Refused {
 		if (!isInGrid(column, 1)) {
 			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
 		}
@@ -1418,10 +2076,15 @@ export class Atelier {
 			return { ok: false, message: `Un titre garde au plus ${MAX_TITLE_LENGTH} caractères.` };
 		}
 		if (title === this.titleOf(column)) return { ok: true };
-		this.#record({ cells: [], titles: [{ column, before: this.titleOf(column), after: title }] });
-		if (title === '') this.titles.delete(column);
-		else this.titles.set(column, title);
-		this.revision++;
+		const write = () => {
+			if (title === '') this.titles.delete(column);
+			else this.titles.set(column, title);
+			this.revision++;
+		};
+		// `recorded: false` (`.relever`) : pas d'étape à lui — la ligne de console
+		// qui l'appelle en est une, qui l'emporte (lot 5)
+		if (options.recorded === false) write();
+		else this.step(`titre de la colonne ${columnLetter(column)}`, write);
 		return { ok: true };
 	}
 
@@ -1439,7 +2102,9 @@ export class Atelier {
 		 * Copié DANS la grille, depuis cette case : les formules se décalent comme
 		 * une recopie (Q-L2-4), et aucune ligne de titres n'est devinée.
 		 */
-		origin?: { readonly column: number; readonly row: number }
+		origin?: { readonly column: number; readonly row: number },
+		/** Copié DANS la grille : la mise en forme de chaque case copiée (Q-MF-4). */
+		styles?: readonly (readonly CellStyle[])[]
 	): { ok: true } | Refused {
 		if (origin !== undefined) {
 			table = table.map((cells) =>
@@ -1492,14 +2157,24 @@ export class Atelier {
 				text: text.replace(/\s*\n\s*/g, ' ').trim()
 			}))
 		);
-		// Cases et titres : UN geste, qu'une seule annulation défait (T6)
-		return this.#grouped(() => {
+		// La mise en forme copiée suit le collage (Q-MF-4) ; le plafond se juge
+		// AVANT d'écrire : tout ou rien (revue)
+		const pasted: FormatZone[] = [];
+		styles?.forEach((line, i) =>
+			line.forEach((style, j) => {
+				const target = { left: column + j, right: column + j, top: row + i, bottom: row + i };
+				pasted.push({ zone: target, patch: patchOf(style) });
+			})
+		);
+		if (this.#formatsWith(pasted) === null) return { ok: false, message: FORMATS_FULL };
+		// Cases, titres, mise en forme : UN geste, qu'une seule annulation défait (T6)
+		return this.step('coller dans la grille', () => {
 			const written = this.editCells(edits);
 			if (!written.ok) return written;
 			titles?.forEach((title, j) => {
 				if (title.trim() !== '') this.setTitle(column + j, title);
 			});
-			return { ok: true };
+			return this.#addFormats(pasted);
 		});
 	}
 
@@ -1527,7 +2202,91 @@ export class Atelier {
 				edits.push({ column, row, text: shiftFormula(source, 0, row - zone.top) });
 			}
 		}
-		return edits.length === 0 ? { ok: true } : this.editCells(edits);
+		if (edits.length === 0) return { ok: true };
+		// La mise en forme de la première ligne suit la recopie (Q-MF-4), dans le même geste
+		const styles: FormatZone[] = [];
+		for (let column = zone.left; column <= zone.right; column++) {
+			const target = { left: column, right: column, top: zone.top + 1, bottom: zone.bottom };
+			styles.push({ zone: target, patch: patchOf(this.styleAt(column, zone.top)) });
+		}
+		// Tout ou rien : le plafond de mise en forme se juge AVANT d'écrire (revue)
+		if (this.#formatsWith(styles) === null) return { ok: false, message: FORMATS_FULL };
+		return this.step('recopier vers le bas', () => {
+			const written = this.editCells(edits);
+			if (!written.ok) return written;
+			return this.#addFormats(styles);
+		});
+	}
+
+	// ---------------------------------------------------------------------------
+	// Mise en forme (reprise de V4, 2026-10-18)
+	// ---------------------------------------------------------------------------
+
+	/** Le style d'une case (`{}` sans mise en forme). */
+	styleAt(column: number, row: number): CellStyle {
+		return cellStyleAt(this.#formats, column, row);
+	}
+
+	/** Les zones de mise en forme, dans l'ordre (lues par la vue et par la fusion). */
+	get formats(): readonly FormatZone[] {
+		return this.#formats;
+	}
+
+	/** Mettre en forme une zone (Q-MF-2) : un geste de la grille, annulable (T6). */
+	applyStyle(zone: GridZone, patch: StylePatch): { ok: true } | Refused {
+		if (!zoneInGrid(zone)) return { ok: false, message: 'Cette zone sort de la grille.' };
+		const refusal = patchRefusal(patch);
+		if (refusal !== null) return { ok: false, message: refusal };
+		return this.step('mise en forme', () => this.#addFormats([{ zone, patch }]));
+	}
+
+	/** « Effacer la mise en forme » de la zone. */
+	clearStyle(zone: GridZone): { ok: true } | Refused {
+		return this.applyStyle(zone, CLEAR_PATCH);
+	}
+
+	/**
+	 * Des zones reçues d'un autre atelier (T7, `mergeInto`) : posées comme un geste,
+	 * sans contrôle du patch déjà validé au rangement.
+	 */
+	adoptFormats(formats: readonly FormatZone[]): { ok: true } | Refused {
+		return formats.length === 0 ? { ok: true } : this.#addFormats(formats);
+	}
+
+	/**
+	 * Ajouter des zones, puis ranger la mise en forme sous sa forme CANONIQUE
+	 * (`normalizeFormats`) : effacer retire vraiment, un bloc collé redevient un
+	 * rectangle, un geste sans effet n'est pas noté (revue de la PR 1).
+	 */
+	#addFormats(added: readonly FormatZone[]): { ok: true } | Refused {
+		const after = this.#formatsWith(added);
+		if (after === null) return { ok: false, message: FORMATS_FULL };
+		if (sameFormats(after, this.#formats)) return { ok: true };
+		this.#setFormats(after);
+		return { ok: true };
+	}
+
+	/** La mise en forme canonique avec ces zones en plus, ou `null` au-delà du plafond. */
+	#formatsWith(added: readonly FormatZone[]): FormatZone[] | null {
+		if (added.length === 0) return [...this.#formats];
+		const after = normalizeFormats([...this.#formats, ...added]);
+		// « Effacer » passe toujours : effacer une case découpe un rectangle et peut
+		// dépasser le plafond, et l'élève doit pouvoir s'en sortir (contre-revue)
+		if (added.every((zone) => isRemoval(zone.patch))) return after;
+		return after.length > MAX_FORMAT_ZONES ? null : after;
+	}
+
+	/**
+	 * Faire de `run` UN geste de la grille (une seule annulation) : la fusion d'un
+	 * atelier reçu écrit cases et mise en forme ensemble (revue).
+	 */
+	asOneGesture<T>(run: () => T): T {
+		return this.step('modifier la grille', run);
+	}
+
+	#setFormats(formats: readonly FormatZone[]): void {
+		this.#formats = formats;
+		this.revision++;
 	}
 
 	/**
@@ -1552,7 +2311,7 @@ export class Atelier {
 		if (this.freeColumns.length < 2) {
 			return { ok: false, message: 'Il faut deux colonnes libres dans la grille.' };
 		}
-		const written = this.#grouped(() => {
+		const written = this.step(`tabuler ${displayName(request.name)}`, () => {
 			const edited = this.editCells(plan.edits);
 			if (!edited.ok) return edited;
 			this.setTitle(x, plan.titles[0]);
@@ -1567,103 +2326,6 @@ export class Atelier {
 				? null
 				: `Le pas ne tombe pas juste sur ${plan.shortOf} : le tableau s’arrête à ${last.shown}.`;
 		return { ok: true, columns: [x, image], rows: plan.rows, note };
-	}
-
-	// ---------------------------------------------------------------------------
-	// Annuler dans la grille (T6)
-	// ---------------------------------------------------------------------------
-
-	/** Annuler le dernier geste de la grille. Refusé si une de ses cases a changé ailleurs depuis. */
-	undoGrid(): { ok: true } | Refused {
-		return this.#replay(this.#undo, this.#redo, 'before', 'Rien à annuler dans la grille.');
-	}
-
-	/** Rétablir le dernier geste annulé. */
-	redoGrid(): { ok: true } | Refused {
-		return this.#replay(this.#redo, this.#undo, 'after', 'Rien à rétablir dans la grille.');
-	}
-
-	#replay(
-		from: GridGesture[],
-		to: GridGesture[],
-		target: 'before' | 'after',
-		nothing: string
-	): { ok: true } | Refused {
-		const gesture = from.pop();
-		if (gesture === undefined) return { ok: false, message: nothing };
-		const current = target === 'before' ? 'after' : 'before';
-		// Jamais par-dessus un changement venu d'ailleurs (une carte, `L = …`) :
-		// l'historique ne décrit plus la grille, il est oublié
-		const untouched =
-			gesture.cells.every((c) => this.cell(c.column, c.row) === c[current]) &&
-			gesture.titles.every((t) => this.titleOf(t.column) === t[current]) &&
-			(gesture.seed === undefined || this.#seed === gesture.seed[current]);
-		if (!untouched) {
-			this.#forgetGridHistory();
-			return { ok: false, message: GRID_CHANGED_SINCE };
-		}
-		this.#replaying = true;
-		try {
-			const written = this.editCells(
-				gesture.cells.map((c) => ({ column: c.column, row: c.row, text: c[target] }))
-			);
-			if (!written.ok) {
-				this.#forgetGridHistory();
-				return written;
-			}
-			for (const t of gesture.titles) this.setTitle(t.column, t[target]);
-			if (gesture.seed !== undefined) this.#setSeed(gesture.seed[target]);
-		} finally {
-			this.#replaying = false;
-		}
-		to.push(gesture);
-		this.#countHistory();
-		return { ok: true };
-	}
-
-	/** Noter un geste : dans celui en cours de composition, sinon comme un nouveau. */
-	#record(part: GridGesture): void {
-		const empty = part.cells.length === 0 && part.titles.length === 0 && part.seed === undefined;
-		if (this.#replaying || empty) return;
-		if (this.#gesture !== null) {
-			this.#gesture.cells.push(...part.cells);
-			this.#gesture.titles.push(...part.titles);
-			// Une graine dans un geste composé : la première d'avant, la dernière d'après
-			if (part.seed !== undefined) {
-				this.#gesture.seed = {
-					before: this.#gesture.seed?.before ?? part.seed.before,
-					after: part.seed.after
-				};
-			}
-			return;
-		}
-		this.#undo.push(part);
-		if (this.#undo.length > MAX_GRID_UNDO) this.#undo.shift();
-		this.#redo = [];
-		this.#countHistory();
-	}
-
-	/** Composer un seul geste de tout ce que `run` écrit. */
-	#grouped<T>(run: () => T): T {
-		if (this.#gesture !== null) return run();
-		this.#gesture = { cells: [], titles: [] };
-		try {
-			return run();
-		} finally {
-			const gesture = this.#gesture;
-			this.#gesture = null;
-			this.#record(gesture);
-		}
-	}
-
-	#forgetGridHistory(): void {
-		this.#undo = [];
-		this.#redo = [];
-		this.#countHistory();
-	}
-
-	#countHistory(): void {
-		this.gridHistory = { undo: this.#undo.length, redo: this.#redo.length };
 	}
 
 	/**
@@ -1692,6 +2354,10 @@ export class Atelier {
 	 * hors de la grille ou trop longue refuse le geste entier.
 	 */
 	editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
+		return this.step('modifier la grille', () => this.#editCells(edits));
+	}
+
+	#editCells(edits: readonly CellEdit[]): { ok: true } | Refused {
 		// `=a2+1` → `=A2+1` (lot 2) ; une formule n'est jamais répartie (P2)
 		const spread = edits.flatMap((edit) =>
 			spreadText(edit.row, edit.text).map((piece) => ({
@@ -1743,16 +2409,6 @@ export class Atelier {
 			if (tooLong !== null) return { ok: false, message: tooLong };
 		}
 
-		this.#record({
-			cells: changes.map((edit) => ({
-				column: edit.column,
-				row: edit.row,
-				before: this.cell(edit.column, edit.row),
-				after: edit.text
-			})),
-			titles: []
-		});
-
 		let unnamedChanged = false;
 		for (const edit of changes) {
 			if (this.listAt(edit.column) !== undefined) continue;
@@ -1783,6 +2439,12 @@ export class Atelier {
 	 * (phase 0 §1). Les refus de nom sont ceux d'aujourd'hui (`create`).
 	 */
 	nameColumn(column: number, name: string): Created | Refused {
+		return this.step(`nommer la colonne ${columnLetter(column)}`, () =>
+			this.#nameColumn(column, name)
+		);
+	}
+
+	#nameColumn(column: number, name: string): Created | Refused {
 		if (!isInGrid(column, 1)) {
 			return { ok: false, message: 'Cette colonne est hors de la grille (A à Z).' };
 		}
@@ -1830,11 +2492,13 @@ export class Atelier {
 			return { ok: false, message: `La colonne ${columnLetter(column)} n'a pas de nom.` };
 		}
 		const entries = entriesOf(list.definition);
-		return this.#removeWithDependents(list.name, () => {
-			entries.forEach((text, index) => {
-				if (text !== '') this.cells.set(cellName(column, index + 1), text);
-			});
-		});
+		return this.step(`retirer le nom de la colonne ${columnLetter(column)}`, () =>
+			this.#removeWithDependents(list.name, () => {
+				entries.forEach((text, index) => {
+					if (text !== '') this.cells.set(cellName(column, index + 1), text);
+				});
+			})
+		);
 	}
 
 	/** Ni liste, ni cellule sans nom : une liste peut s'y poser (un titre reste le sien). */
@@ -1898,6 +2562,8 @@ export class Atelier {
 			// Rangé seulement quand il est vrai : un atelier sans courbe tracée ne
 			// paie pas ce champ dans l'URL, qui est le mécanisme de partage.
 			...(o.plotted ? { plotted: true } : {}),
+			// 𝒞f dans la vue Géométrie (K1) : rangé seulement quand c'est vrai, comme `plotted`
+			...(isFunction(o) && o.inFigure ? { inFigure: true } : {}),
 			// Recopié champ par champ : `display` est un objet, donc un proxy
 			// `$state` — tel quel, `structuredClone` jetterait (voir plus haut).
 			...(isFunction(o) && o.display ? { display: compactDisplay(o.display) } : {}),
@@ -1918,9 +2584,13 @@ export class Atelier {
 			...(isValue(o) && o.slider && !isDefaultSlider(o.slider)
 				? { slider: { min: o.slider.min, max: o.slider.max, step: o.slider.step } }
 				: {}),
+			// Le curseur affiché depuis le menu : seulement quand il l'est (pas de version neuve)
+			...(isValue(o) && o.sliderShown ? { sliderShown: true } : {}),
 			// Le mode toujours (une récurrence constante ne se devine pas), le rang
 			// et le premier terme seulement s'ils diffèrent du défaut
 			...(isSequence(o) && o.display ? { sequenceDisplay: plainSequenceDisplay(o.display) } : {}),
+			// Point ou courbe de la figure (lot 4b) : absent tant que rien n'est réglé
+			...(isFigureObject(o) && o.display ? { figureDisplay: plainFigureDisplay(o.display) } : {}),
 			...(isSequence(o)
 				? {
 						mode: o.mode,
@@ -1946,7 +2616,8 @@ export class Atelier {
 		const grid = {
 			...(this.cells.size > 0 && { cells }),
 			...(this.titles.size > 0 && { titles }),
-			...(random && { seed: this.#seed })
+			...(random && { seed: this.#seed }),
+			...(this.#formats.length > 0 && { formats: this.#formats.map(storedOf) })
 		};
 		return {
 			version: ATELIER_STATE_VERSION,
@@ -1965,16 +2636,93 @@ export class Atelier {
 	 *
 	 * Les états sont recalculés, jamais relus.
 	 */
-	restore(state: AtelierState): RestoreReport {
+	restore(stored: AtelierState): RestoreReport {
+		const report = this.#restoreState(stored);
+		// Un autre atelier (chargement, autre onglet, lien reçu) : la pile ne le décrit pas
+		this.#forgetHistory();
+		return report;
+	}
+
+	/**
+	 * Remplacer TOUT l'atelier (objets, grille, réglages rangés) par `state`, en
+	 * UNE étape d'Annuler nommée `label` — « remplacer mon atelier », « retrouver
+	 * mon atelier précédent » (`docs/wip/atelier-remplacer-phase0.md`, coordination
+	 * avec le lot 5).
+	 *
+	 * La différence avec `restore()` : la pile est GARDÉE. Un Ctrl+Z rend
+	 * l'atelier d'avant, tant que la page est ouverte ; les étapes d'avant restent
+	 * annulables. Même relecture que `restore()` (objets refusés écartés un par un
+	 * et nommés, migration de `y`), même rapport. La console n'est PAS remplacée,
+	 * ni dans la photo de l'étape (R4) : elle est au pupitre, pas à l'atelier.
+	 *
+	 * `onLeave` (facultatif) : appelé quand Annuler ou Rétablir QUITTE l'un des
+	 * deux côtés de cette étape, avec l'atelier quitté — Annuler quitte `state`,
+	 * Rétablir l'atelier d'avant. C'est ce qui garde la copie mise de côté
+	 * d'accord avec l'écran (B3 : rien n'est jamais perdu).
+	 *
+	 * Pour la PR 3 du lot 5 : Charger et Repartir de zéro s'y brancheront tels
+	 * quels (`replaceWith(fichier, 'charger un atelier')`).
+	 */
+	replaceWith(
+		state: AtelierState,
+		label: string,
+		options: { readonly onLeave?: (left: AtelierState) => void } = {}
+	): RestoreReport {
+		const outermost = this.#stepDepth === 0 && !this.#restoring;
+		const before = this.#settings();
+		// Comme une relecture : les lois et le repère repartent de leur défaut. Le
+		// recalcul fait bouger `revision` : la session range l'atelier remplacé
+		const report = this.step(label, () => this.#restoreState(state));
+		const id = this.#lastStepId;
+		// ⚠️ Imbriqué ou en relecture, pas d'étape à soi : rien à rendre, Annuler les
+		// perdrait (aucun appel ne le fait aujourd'hui)
+		if (outermost && id !== null) {
+			// Annuler les rend (`#swapSettings`)
+			this.#settingsAcross.set(id, before);
+			if (options.onLeave !== undefined) this.#onLeave.set(id, options.onLeave);
+		}
+		return report;
+	}
+
+	#restoreState(
+		stored: AtelierState,
+		provenances?: ReadonlyMap<string, Provenance>
+	): RestoreReport {
+		// Une relecture n'est jamais une étape : les réglages qu'elle repose non plus
+		const restoring = this.#restoring;
+		this.#restoring = true;
+		try {
+			return this.#restoreObjects(stored, provenances);
+		} finally {
+			this.#restoring = restoring;
+		}
+	}
+
+	#restoreObjects(
+		stored: AtelierState,
+		provenances?: ReadonlyMap<string, Provenance>
+	): RestoreReport {
+		// Q2 de la géométrie : un objet `y` (nom réservé depuis) est renommé, et
+		// les définitions qui le citent suivent — l'appelant le dit à l'élève
+		const { state, renamed } = migrateReservedNames(stored);
 		this.#seed = state.grid?.seed ?? newGridSeed();
+		const read = restoredFormats(state.grid?.formats ?? []);
+		this.#formats = read.formats;
 		this.items = [];
 		this.charts.clear();
-		this.partnerChoices.clear();
+		this.#figureFrame = true;
 		this.cells.clear();
 		this.titles.clear();
-		this.#forgetGridHistory();
 		this.#laws.clear();
 		const skipped: SkippedObject[] = [];
+		// Une mise en forme trop riche (lien forgé ou ancien) : la plus longue partie
+		// qui tient, et on le dit (contre-revue : elle disparaissait en silence)
+		if (read.lost) {
+			skipped.push({
+				name: 'une partie de la mise en forme',
+				reason: `Au-delà de ${MAX_FORMAT_ZONES} zones de mise en forme.`
+			});
+		}
 
 		// Les titres d'abord : ils appartiennent à leur colonne, nommée ou non
 		for (const [letter, title] of Object.entries(state.grid?.titles ?? {})) {
@@ -2011,19 +2759,21 @@ export class Atelier {
 					stored.column !== undefined && { column: columnOfLetter(stored.column) ?? undefined })
 			};
 			let attempt = input;
-			let result = this.create(attempt);
+			// Annuler : chaque définition relue comme elle avait été écrite
+			const provenance = provenances?.get(stored.name);
+			let result = this.create(attempt, provenance);
 			// Un ensemble refusé (lien abîmé, domaine changé) : la fonction est gardée
 			// sur son domaine — perdre f pour son intervalle serait disproportionné
 			if (!result.ok && attempt.interval !== undefined) {
 				attempt = { ...attempt, interval: undefined };
-				result = this.create(attempt);
+				result = this.create(attempt, provenance);
 			}
 			// Une lettre refusée (`e`, `n`, le nom de la fonction) : la fonction est
 			// gardée en x — sa définition rangée l'est déjà (`persistence.ts`). Les
 			// relances s'ENCHAÎNENT : ensemble et lettre refusés, f reste (revue)
 			if (!result.ok && attempt.letter !== undefined) {
 				attempt = { ...attempt, letter: undefined };
-				result = this.create(attempt);
+				result = this.create(attempt, provenance);
 			}
 			if (!result.ok) {
 				skipped.push({ name: stored.name, reason: result.message });
@@ -2033,12 +2783,35 @@ export class Atelier {
 			// couleur neuve à une courbe qui avait déjà la sienne.
 			if (stored.display) this.adoptDisplay(stored.name, stored.display);
 			if (stored.sequenceDisplay) this.adoptSequenceDisplay(stored.name, stored.sequenceDisplay);
+			if (stored.figureDisplay) this.adoptFigureDisplay(stored.name, stored.figureDisplay);
 			if (stored.slider) this.adoptSlider(stored.name, stored.slider);
+			if (stored.sliderShown) this.setSliderShown(stored.name, true);
 			if (stored.plotted) this.setPlotted(stored.name, true);
+			if (stored.inFigure) this.setInFigure(stored.name, true);
 		}
 
 		this.recomputeAll();
-		return { restored: this.items.length, skipped };
+		return { restored: this.items.length, skipped, renamed };
+	}
+
+	/**
+	 * Afficher — ou retirer — la courbe de cette fonction dans la vue Géométrie
+	 * (géométrie v2, K1). Comme `setPlotted`, le modèle ne juge pas : une
+	 * fonction en attente peut être marquée, la vue ne dessine que ce qui est `ok`.
+	 * Rien pour un autre type d'objet.
+	 */
+	setInFigure(name: string, shown: boolean): void {
+		const label = `${shown ? 'montrer' : 'retirer'} ${displayName(name)} dans Géométrie`;
+		this.step(label, () => this.#setInFigure(name, shown));
+	}
+
+	#setInFigure(name: string, shown: boolean): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		if (index === -1) return;
+		const current = this.items[index];
+		if (!isFunction(current) || (current.inFigure === true) === shown) return;
+		this.items[index] = { ...current, inFigure: shown };
+		this.recomputeAll();
 	}
 
 	/**
@@ -2049,8 +2822,15 @@ export class Atelier {
 	 * « Tracer » sans rien voir se passer, une fois de plus.
 	 */
 	setPlotted(name: string, plotted: boolean, withList?: string): void {
+		const label = `${plotted ? 'tracer' : 'masquer'} ${displayName(name)}`;
+		this.step(label, () => this.#setPlotted(name, plotted, withList));
+	}
+
+	#setPlotted(name: string, plotted: boolean, withList?: string): void {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return;
+		// Un point, une courbe ne vont jamais dans Graphe (G0) : la vue Figure les montrera
+		if (isFigureObject(this.items[index])) return;
 		// `plottedWith` ne vaut que pour une liste ; posé ici pour que la
 		// synchronisation n'ait rien à redeviner.
 		const current = this.items[index];
@@ -2082,7 +2862,11 @@ export class Atelier {
 	 * un lien passent tous par cette porte, et doivent obéir à la même règle.
 	 * Une fonction jamais tracée reçoit d'abord les réglages d'une courbe neuve.
 	 */
-	setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {
+	setDisplay(name: string, patch: Partial<CurveDisplay>, gesture?: string): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setDisplay(name, patch), gesture);
+	}
+
+	#setDisplay(name: string, patch: Partial<CurveDisplay>): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		if (index === -1) return { ok: false, message: `« ${name} » n'existe pas.` };
 		const current = this.items[index];
@@ -2104,6 +2888,29 @@ export class Atelier {
 		// ⚠️ Pas de `recomputeAll` : un réglage ne change aucun statut, et le
 		// curseur de la tangente en enverrait un par mouvement. Seul le compteur
 		// bouge — c'est lui que la sauvegarde et le tracé écoutent.
+		this.revision++;
+		return { ok: true };
+	}
+
+	/**
+	 * Afficher — ou cacher — le curseur d'une valeur qui n'est pas un paramètre
+	 * (Affichage → Curseur, lot 4a). Retenu avec l'atelier (décision de David du
+	 * 2026-10-18). Refusé pour une valeur sans curseur (grandeur, mesure).
+	 */
+	setSliderShown(name: string, shown: boolean): { ok: true } | Refused {
+		return this.step(`curseur de ${displayName(name)}`, () => this.#setSliderShown(name, shown));
+	}
+
+	#setSliderShown(name: string, shown: boolean): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isValue(current) || current.slider === undefined) {
+			return { ok: false, message: `« ${name} » n'a pas de curseur.` };
+		}
+		if ((current.sliderShown === true) === shown) return { ok: true };
+		const { sliderShown: _, ...rest } = current;
+		this.items[index] = shown ? { ...rest, sliderShown: true } : rest;
+		// Un affichage : aucun statut ne change, seul le compteur (la sauvegarde l'écoute)
 		this.revision++;
 		return { ok: true };
 	}
@@ -2178,6 +2985,10 @@ export class Atelier {
 	 * d'autre — c'est la règle du grapheur.
 	 */
 	setSequenceDisplay(name: string, patch: Partial<SequenceDisplay>): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setSequenceDisplay(name, patch));
+	}
+
+	#setSequenceDisplay(name: string, patch: Partial<SequenceDisplay>): { ok: true } | Refused {
 		const index = this.items.findIndex((o) => o.name === name);
 		const current = this.items[index];
 		if (current === undefined || !isSequence(current)) {
@@ -2206,6 +3017,67 @@ export class Atelier {
 		this.items[index] = { ...current, display: read.data };
 	}
 
+	/**
+	 * Régler le dessin d'un point (couleur, taille, étiquette) ou d'une courbe de
+	 * la figure (couleur, trait) — lot 4b de la refonte.
+	 *
+	 * Même porte que `setDisplay` : le patch est validé ici, un réglage qui n'est
+	 * pas celui de l'objet est refusé. Le premier réglage part de ce qui est
+	 * DESSINÉ (taille moyenne, trait continu, couleur par défaut de la figure) :
+	 * régler la taille seule ne repeint pas le point. Un réglage qui ne change
+	 * rien (la taille déjà active) n'enregistre rien. La vue Géométrie le lit par
+	 * `syncFigure`.
+	 */
+	setFigureDisplay(
+		name: string,
+		patch: Partial<PointDisplay> | Partial<StrokeDisplay>
+	): { ok: true } | Refused {
+		return this.step(displayStepLabel(name, patch), () => this.#setFigureDisplay(name, patch));
+	}
+
+	#setFigureDisplay(
+		name: string,
+		patch: Partial<PointDisplay> | Partial<StrokeDisplay>
+	): { ok: true } | Refused {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined || !isFigureObject(current)) {
+			return { ok: false, message: `« ${name} » n'est ni un point ni une courbe.` };
+		}
+		const read = readFigureDisplayPatch(current.kind, patch);
+		if (!read.ok) return { ok: false, message: read.message };
+		if (Object.keys(read.patch).length === 0) return { ok: true };
+		if (isPoint(current)) {
+			const base = current.display ?? newPointDisplay();
+			const next = { ...base, ...read.patch } as PointDisplay;
+			if (sameFigureDisplay(base, next)) return { ok: true };
+			this.items[index] = { ...current, display: next };
+		} else {
+			const base = current.display ?? newStrokeDisplay();
+			const next = { ...base, ...read.patch } as StrokeDisplay;
+			if (sameFigureDisplay(base, next)) return { ok: true };
+			this.items[index] = { ...current, display: next };
+		}
+		// Comme `setDisplay` : un réglage ne change aucun statut, seul le compteur bouge
+		this.revision++;
+		return { ok: true };
+	}
+
+	/** Poser un réglage de point ou de courbe relu (sauvegarde, lien), validé : abîmé, oublié. */
+	adoptFigureDisplay(name: string, stored: unknown): void {
+		const index = this.items.findIndex((o) => o.name === name);
+		const current = this.items[index];
+		if (current === undefined) return;
+		if (isPoint(current)) {
+			const read = pointDisplaySchema.safeParse(stored);
+			if (read.success) this.items[index] = { ...current, display: read.data };
+		} else if (isCurve(current)) {
+			// `.strict()` : le réglage d'un point posé sur une courbe n'est pas le sien
+			const read = strokeDisplaySchema.strict().safeParse(stored);
+			if (read.success) this.items[index] = { ...current, display: read.data };
+		}
+	}
+
 	/** Les objets dont la définition cite `name`, directement. */
 	dependents(name: string): readonly string[] {
 		return this.items
@@ -2218,7 +3090,33 @@ export class Atelier {
 	 * récurrence quand c'est le nom d'une valeur (`u₀ = a`, décision S1) — sans
 	 * quoi supprimer `a` laisserait la suite « ok » et muette.
 	 */
-	#refsOf(o: AtelierObject): MissingReference[] {
+	#refsOf(o: AtelierObject): readonly MissingReference[] {
+		// Mémo par objet (chantier perf du 2026-10-19) : un objet rangé n'est jamais
+		// modifié sur place, et sa lecture ne dépend que de lui et des noms de
+		// fonctions (`#cited`). `dependents`, appelé par chaque carte, relisait
+		// toutes les définitions à chaque fois.
+		if (!perfSwitches.refsMemo) return this.#readRefsOf(o);
+		const functionNames = this.functionNames.join(',');
+		const known = this.#refsMemo.get(o);
+		if (known !== undefined && known.functionNames === functionNames) return known.refs;
+		const refs = this.#readRefsOf(o);
+		this.#refsMemo.set(o, { functionNames, refs });
+		return refs;
+	}
+
+	/** Les lectures de `#refsOf`, par objet rangé. */
+	#refsMemo = new WeakMap<
+		AtelierObject,
+		{ readonly functionNames: string; readonly refs: readonly MissingReference[] }
+	>();
+
+	/** Les noms que cite l'objet `name` (sa définition, le premier terme d'une récurrence). */
+	citedNames(name: string): readonly string[] {
+		const object = this.get(name);
+		return object === undefined ? [] : this.#refsOf(object).map((ref) => ref.name);
+	}
+
+	#readRefsOf(o: AtelierObject): MissingReference[] {
 		// La carte `f⁻¹` dépend de f, et de rien d'autre : ses lettres (`(x − b)/a`)
 		// sont celles que f cite déjà. Supprimer f l'emporte (#828)
 		const base = reciprocalOf(o.name);
@@ -2243,6 +3141,13 @@ export class Atelier {
 	 * met la suite en attente, comme tout nom manquant.
 	 */
 	setSequence(
+		name: string,
+		patch: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>
+	): { ok: true } | Refused {
+		return this.step(`modifier ${displayName(name)}`, () => this.#setSequence(name, patch));
+	}
+
+	#setSequence(
 		name: string,
 		patch: Partial<Pick<SequenceObject, 'mode' | 'firstIndex' | 'firstTerm'>>
 	): { ok: true } | Refused {
@@ -2276,8 +3181,22 @@ export class Atelier {
 			};
 		}
 		this.items[index] = next;
+		this.#dropImpossibleCobweb(index);
 		this.recomputeAll();
 		return { ok: true };
+	}
+
+	/**
+	 * Une suite en escalier qui ne peut plus l'être — passée en explicite, ou
+	 * récurrence qui dépend désormais de n — revient au nuage (revue de #1501 :
+	 * le menu ne cochait plus rien, les marches restaient affichées, et le graphe
+	 * dessinait un nuage). Même règle que le refus de `setSequenceDisplay`.
+	 */
+	#dropImpossibleCobweb(index: number): void {
+		const current = this.items[index];
+		if (!isSequence(current) || current.display?.representation !== 'cobweb') return;
+		if (cobwebRefusal(current, this.functionNames) === null) return;
+		this.items[index] = { ...current, display: { ...current.display, representation: 'ranks' } };
 	}
 
 	/**
@@ -2287,6 +3206,10 @@ export class Atelier {
 	 * fabrique pas, elle se saisit.
 	 */
 	createFromOffer(name: string): Created | Refused {
+		return this.step(`ajouter ${displayName(name)}`, () => this.#createFromOffer(name));
+	}
+
+	#createFromOffer(name: string): Created | Refused {
 		const offered = this.items.some((o) =>
 			(o.missing ?? []).some((m) => m.name === name && m.as === 'value')
 		);
@@ -2344,14 +3267,18 @@ export class Atelier {
 				const value: ValueObject = {
 					...base,
 					kind: 'value',
+					// Une MESURE (`aire(A, B, C)`, `AM`, lot 2) n'a pas de curseur non plus : elle
+					// suit ses points (critère convenu avec la refonte : `slider` absent)
 					...(parsed.unit
 						? { unit: parsed.unit }
-						: {
-								slider: widenedSlider(
-									DEFAULT_SLIDER,
-									constantOf(definition, provenance, this.functionNames)
-								)
-							})
+						: this.#citesMeasure(definition, provenance)
+							? {}
+							: {
+									slider: widenedSlider(
+										DEFAULT_SLIDER,
+										constantOf(definition, provenance, this.functionNames)
+									)
+								})
 				};
 				return value;
 			}
@@ -2373,6 +3300,11 @@ export class Atelier {
 					firstIndex: 0,
 					firstTerm: '0'
 				} satisfies SequenceObject;
+			// Géométrie (v2) : rien de plus que la définition, lue par `parseDefinition`
+			case 'point':
+				return { ...base, kind: 'point' };
+			case 'curve':
+				return { ...base, kind: 'curve' };
 		}
 	}
 
@@ -2404,6 +3336,8 @@ export class Atelier {
 	 * pas lire ne peut rien promettre, donc l'erreur prime sur l'attente.
 	 */
 	private recomputeAll(): void {
+		this.#overFigureCap.clear();
+		this.#shortcutKinds();
 		const living = new Set(this.names);
 		// Un objet encore vide ne peut rien fournir à ceux qui le citent : ils
 		// l'attendent, exactement comme un nom absent. Sans ça, « g = f(x)+1 »
@@ -2433,19 +3367,55 @@ export class Atelier {
 				this.functionNames
 			).error;
 			ownError.set(o.name, unreadable);
+			if (!unreadable && this.#overFigureCap.has(o.name)) {
+				ownError.set(o.name, figureFullMessage(MAX_FIGURE_OBJECTS));
+				miswritten.add(o.name);
+			}
 			if (unreadable) miswritten.add(o.name);
 
 			// Une suite qui se cite elle-même est une récurrence, pas un cycle :
 			// `u(n+1) = 0,5·u(n) + 3` est une définition parfaitement saine.
 			const refs = this.#refsOf(o).filter((r) => !(r.name === o.name && o.kind === 'sequence'));
+			// Une construction NOMME des points et des droites : seuls ses nombres
+			// se contrôlent comme un calcul (P9, #985) ; ses noms, par leur type (L8)
+			const construction = this.#constructionSpec(o.kind, o.definition, o.provenance);
+			const asNumbers =
+				construction === null
+					? this.#numberRefs(o, refs)
+					: partsOf(construction).scalars.flatMap((scalar) =>
+							referencesOf(
+								withoutMeasures(scalar, 'text', this.#isPoint),
+								'text',
+								this.functionNames
+							)
+						);
+			if (!ownError.get(o.name) && construction !== null) {
+				const typed = specOf(o.definition, o.provenance ?? 'url', kindsOf(this));
+				if (typed !== null && !typed.ok) {
+					ownError.set(o.name, typed.message);
+					miswritten.add(o.name);
+				}
+			}
 			// Une liste citée comme un nombre (`a = L + 1`) : le refus de Calcul
 			// (#985), jamais L lu comme une lettre libre
 			if (!ownError.get(o.name)) {
 				const cited = listCitedMessage(
 					this.items,
-					refs.map((r) => r.name)
+					asNumbers.map((r) => r.name)
 				);
 				if (cited !== null) ownError.set(o.name, cited);
+			}
+			// Un point ou une courbe cité dans un calcul (`a = A + 1`) : le refus de
+			// Calcul (P9), jamais A lu comme une lettre libre
+			if (!ownError.get(o.name)) {
+				const figure = figureCitedMessage(
+					this.items,
+					asNumbers.map((r) => r.name)
+				);
+				if (figure !== null) {
+					ownError.set(o.name, figure);
+					miswritten.add(o.name);
+				}
 			}
 			// V58 : `a` lettre de f, puis `a(x) = x^2` — quel que soit l'ordre de
 			// saisie, f ne vaut rien. Les cartes `f′`, `f⁻¹` suivent f, elles ne
@@ -2456,7 +3426,7 @@ export class Atelier {
 				derivativeOf(o.name) === null &&
 				reciprocalOf(o.name) === null
 			) {
-				const asNumber = bareNamesOf(o.definition, o.provenance, this.functionNames)
+				const asNumber = this.#bareNamesOf(o)
 					.filter((n) => n !== o.name)
 					.map((n) => this.get(n))
 					.find((c) => c !== undefined && (c.kind === 'function' || c.kind === 'sequence'));
@@ -2568,10 +3538,332 @@ export class Atelier {
 		});
 
 		this.#inheritIntervals(intervals.inherited);
+		this.#constructions();
+		this.#measures();
+		this.#geometryWaits(deps);
+		this.#quantityChecks(deps);
 		this.#underivable();
 		this.#sequenceChecks();
 		this.#reciprocals();
 		this.#recomputeGrid();
+	}
+
+	/**
+	 * `(AB)` seul : une droite entre deux points, un produit entre deux valeurs —
+	 * le TYPE de A et B tranche (décision de David, 2026-10-18, option a), et il
+	 * peut changer après coup (`(AB)` tapé avant A et B, A supprimé puis recréé en
+	 * valeur). L'objet suit : courbe pour deux points, ou un point et une valeur
+	 * (la construction dit alors pourquoi elle refuse) ; valeur pour deux valeurs.
+	 * Un nom encore absent ne tranche rien : l'objet garde son type et attend.
+	 */
+	#shortcutKinds(): void {
+		this.items.forEach((o, i) => {
+			if (o.kind !== 'curve' && o.kind !== 'value') return;
+			const read = readConstruction(o.definition, o.provenance ?? 'url');
+			if (read === null || !read.ok) return;
+			const pair = bareLineShortcut(read.call);
+			if (pair === null) return;
+			const kinds = pair.map((name) => this.get(name)?.kind);
+			if (kinds.some((kind) => kind === undefined)) return;
+			const wanted = kinds.every((kind) => kind === 'value')
+				? 'value'
+				: kinds.every((kind) => kind === 'point' || kind === 'value')
+					? 'curve'
+					: o.kind;
+			if (wanted === o.kind) return;
+			// M2 : devenue droite, elle compte parmi les 50 objets de la figure (revue
+			// de la PR 1). Au-delà, elle reste une valeur, en erreur avec le plafond
+			if (wanted === 'curve' && this.items.filter(isFigureObject).length >= MAX_FIGURE_OBJECTS) {
+				this.#overFigureCap.add(o.name);
+				return;
+			}
+			this.items[i] = this.build(o.name, wanted, o.definition, o.provenance);
+		});
+	}
+
+	/** Les valeurs qui SONT une grandeur d'angle, pour la révision courante. */
+	#angles: { readonly revision: number; readonly names: ReadonlySet<string> } | null = null;
+
+	/**
+	 * Les valeurs qui SONT une grandeur d'angle (`T = angle(…)`, `2T`) — pas celles
+	 * qui la prennent dans un cos, un sin, une tan (revue de la PR 2).
+	 */
+	angleQuantities(): ReadonlySet<string> {
+		if (this.#angles !== null && this.#angles.revision === this.revision) return this.#angles.names;
+		const names = new Set<string>();
+		for (const o of this.items) {
+			if (!isValue(o) || o.status !== 'ok') continue;
+			const read = substitutedAstOf(this, o.name);
+			if (read.ok && hasBareAngle(read.ast)) names.add(o.name);
+		}
+		this.#angles = { revision: this.revision, names };
+		return names;
+	}
+
+	/** Les valeurs `(AB)` restées valeurs faute de place dans la figure (M2). */
+	#overFigureCap = new Set<string>();
+
+	/** Les mesures relues pour la révision courante (`readableDefinition`). */
+	#measureMemo: { readonly revision: number; readonly byName: Map<string, MeasuredText> } | null =
+		null;
+	/** Les objets dont on calcule les mesures : un objet qui s'y cite lui-même n'y entre pas. */
+	#measuring = new Set<string>();
+
+	/** Le nom est-il celui d'un point de l'atelier ? */
+	#isPoint = (name: string): boolean => this.get(name)?.kind === 'point';
+
+	/** La définition cite-t-elle une mesure (appel, ou `AM` de deux points) ? */
+	#citesMeasure(definition: string, provenance: Provenance | undefined): boolean {
+		return citesMeasure(definition, provenance ?? 'url', this.#isPoint);
+	}
+
+	/**
+	 * Les noms qu'un objet cite comme des NOMBRES (le refus P9 d'un point) : ceux
+	 * d'une mesure n'en sont pas — `S = AM`, `aire(A, M, N)` citent des points.
+	 */
+	#numberRefs(o: AtelierObject, refs: MissingReference[]): MissingReference[] {
+		const provenance = o.provenance ?? 'url';
+		// Un point par ses coordonnées (`G = (aire(B, C, D) ; 0)`, revue de la PR 2)
+		if (o.kind === 'point') {
+			const left = new Set(
+				(pointCoordinatesOf(o.definition) ?? []).flatMap((c) =>
+					referencesOf(
+						withoutMeasures(c, provenance, this.#isPoint),
+						provenance,
+						this.functionNames
+					).map((r) => r.name)
+				)
+			);
+			return refs.filter((r) => left.has(r.name));
+		}
+		if (o.kind !== 'value' && o.kind !== 'function' && o.kind !== 'sequence') return refs;
+		if (!citesMeasure(o.definition, provenance, this.#isPoint)) return refs;
+		const left = new Set(
+			referencesOf(
+				withoutMeasures(o.definition, provenance, this.#isPoint),
+				provenance,
+				this.functionNames
+			).map((r) => r.name)
+		);
+		return refs.filter((r) => left.has(r.name));
+	}
+
+	/**
+	 * Une mesure relue (lot 2, L4) : sa définition, chaque mesure remplacée par sa
+	 * valeur exacte — `null` pour un objet qui n'en cite pas. Une fois par
+	 * révision ; un objet qui se cite lui-même en cours de calcul n'en a pas.
+	 */
+	measuredOf(object: AtelierObject): MeasuredText | null {
+		if (object.kind !== 'value' && object.kind !== 'function' && object.kind !== 'sequence') {
+			return null;
+		}
+		const provenance = object.provenance ?? 'url';
+		if (!citesMeasure(object.definition, provenance, this.#isPoint)) return null;
+		if (this.#measureMemo === null || this.#measureMemo.revision !== this.revision) {
+			this.#measureMemo = { revision: this.revision, byName: new Map() };
+		}
+		const memo = this.#measureMemo.byName;
+		const known = memo.get(object.name);
+		if (known !== undefined) return known;
+		if (this.#measuring.has(object.name)) return null;
+		this.#measuring.add(object.name);
+		try {
+			const read = measuredText(this, object.definition, provenance);
+			memo.set(object.name, read);
+			return read;
+		} finally {
+			this.#measuring.delete(object.name);
+		}
+	}
+
+	/** Les textes dont on calcule les mesures : `A = (AM ; 0)` ne boucle pas. */
+	#measuringTexts = new Set<string>();
+
+	/**
+	 * Un TEXTE (une coordonnée, le rayon d'un cercle), mesures remplacées par leur
+	 * valeur — `engine.substitutedTextOf`. Un texte qui se mesure à partir de
+	 * lui-même (une coordonnée de A qui cite AM) est refusé.
+	 */
+	measuredTextOf(text: string, provenance: Provenance): MeasuredText {
+		const key = `${provenance}\u0000${text}`;
+		if (!citesMeasure(text, provenance, this.#isPoint)) {
+			return { ok: true, text, changed: false, approximate: false };
+		}
+		if (this.#measuringTexts.has(key)) {
+			return { ok: false, message: CIRCULAR };
+		}
+		this.#measuringTexts.add(key);
+		try {
+			return measuredText(this, text, provenance);
+		} finally {
+			this.#measuringTexts.delete(key);
+		}
+	}
+
+	/** Les objets dont la valeur n'est qu'approchée (revue de la PR 2), pour la révision courante. */
+	#approximate: { readonly revision: number; readonly names: ReadonlySet<string> } | null = null;
+
+	/**
+	 * Les objets qui citent — eux-mêmes ou par un autre objet — une mesure
+	 * APPROCHÉE (un angle non remarquable) : leur valeur se dit « ≈ », jamais en
+	 * fraction exacte (`368699/10000`).
+	 */
+	approximateNames(): ReadonlySet<string> {
+		if (this.#approximate !== null && this.#approximate.revision === this.revision) {
+			return this.#approximate.names;
+		}
+		const names = new Set<string>();
+		for (const o of this.items) {
+			const read = this.measuredOf(o);
+			if (read !== null && read.ok && read.approximate) names.add(o.name);
+		}
+		this.spread((name) => {
+			const o = this.get(name);
+			return o !== undefined && this.#refsOf(o).some((r) => names.has(r.name));
+		}, names);
+		this.#approximate = { revision: this.revision, names };
+		return names;
+	}
+
+	/** Ce que lit le moteur : la définition, mesures remplacées par leur valeur (`engine.ts`). */
+	readableDefinition(object: AtelierObject): string {
+		const read = this.measuredOf(object);
+		return read !== null && read.ok && read.changed ? read.text : object.definition;
+	}
+
+	/** Les arbres relus pour la révision courante (`definitionAst`). */
+	#astMemo: { readonly revision: number; readonly byName: Map<string, MathNode | null> } | null =
+		null;
+
+	/**
+	 * L'ARBRE d'une définition, chaque mesure remplacée par son nœud exact — angles
+	 * en grandeur (revue de la PR 2 : relu par le texte, `(({1/2}\pi)[rad])` ne se
+	 * lisait plus). C'est ce que lit le moteur (`engine.ts`).
+	 */
+	definitionAst(object: AtelierObject): MathNode | null {
+		const provenance = object.provenance ?? 'url';
+		const read = this.measuredOf(object);
+		if (read === null || !read.ok || !read.changed) {
+			return astOfDefinition(object.definition, provenance, this.functionNames);
+		}
+		if (this.#astMemo === null || this.#astMemo.revision !== this.revision) {
+			this.#astMemo = { revision: this.revision, byName: new Map() };
+		}
+		const known = this.#astMemo.byName.get(object.name);
+		if (known !== undefined) return known;
+		if (this.#measuring.has(object.name)) return null;
+		this.#measuring.add(object.name);
+		try {
+			const tree = measuredAst(this, object.definition, provenance, this.functionNames);
+			const ast = tree.ok ? tree.ast : null;
+			this.#astMemo.byName.set(object.name, ast);
+			return ast;
+		} finally {
+			this.#measuring.delete(object.name);
+		}
+	}
+
+	/** L'arbre d'un TEXTE (coordonnée, rayon), mesures remplacées — `engine.substitutedTextOf`. */
+	textAst(
+		text: string,
+		provenance: Provenance
+	):
+		| { readonly ok: true; readonly ast: MathNode | null }
+		| { readonly ok: false; readonly message: string } {
+		if (!citesMeasure(text, provenance, this.#isPoint)) {
+			return { ok: true, ast: astOfDefinition(text, provenance, this.functionNames) };
+		}
+		const key = `${provenance}\u0000${text}`;
+		if (this.#measuringTexts.has(key)) return { ok: false, message: CIRCULAR };
+		this.#measuringTexts.add(key);
+		try {
+			return measuredAst(this, text, provenance, this.functionNames);
+		} finally {
+			this.#measuringTexts.delete(key);
+		}
+	}
+
+	/**
+	 * Les mesures (lot 2, L4) : une mesure qui ne se calcule pas avec les valeurs
+	 * du moment (polygone croisé, sommet confondu) met l'objet en erreur, avec la
+	 * raison. Le curseur suit : une valeur devenue mesure le perd, une valeur qui
+	 * cesse de l'être (ses points supprimés) le retrouve.
+	 */
+	#measures(): void {
+		this.#measureMemo = null;
+		this.#astMemo = null;
+		this.items.forEach((o, i) => {
+			if (isValue(o) && o.unit === undefined) {
+				const measured = this.#citesMeasure(o.definition, o.provenance);
+				if (measured && o.slider !== undefined) {
+					const { slider: _dropped, ...rest } = o;
+					void _dropped;
+					this.items[i] = rest;
+				} else if (!measured && o.slider === undefined) {
+					this.items[i] = {
+						...o,
+						slider: widenedSlider(
+							DEFAULT_SLIDER,
+							constantOf(o.definition, o.provenance, this.functionNames)
+						)
+					};
+				}
+			}
+			const current = this.items[i];
+			if (current.status !== 'ok') return;
+			const read = this.measuredOf(current);
+			if (read !== null && !read.ok) {
+				// Un point cité qui attend (PR 3) : la mesure attend avec lui
+				const status = read.pending === true ? 'pending' : 'error';
+				this.items[i] = { ...current, status, message: read.message } as AtelierObject;
+			}
+		});
+		// Avec les statuts de ce passage : une grandeur d'angle, ce que Calcul refuserait
+		this.#angles = null;
+		this.items.forEach((o, i) => {
+			if (
+				o.status !== 'ok' ||
+				(o.kind !== 'value' && o.kind !== 'function' && o.kind !== 'sequence')
+			) {
+				return;
+			}
+			// Un angle ÉCRIT dans une fonction ou une suite (`f(x) = 2x°`, `x[°]`) aussi :
+			// `cos(x°)` passe, pris par le cosinus (`angle-radians.ts`)
+			const cites =
+				this.measuredOf(o) !== null ||
+				(o.kind !== 'value' && WRITTEN_ANGLE.test(o.definition)) ||
+				this.#refsOf(o).some((r) => this.angleQuantities().has(r.name));
+			if (!cites) return;
+			const tree = substitutedAstOf(this, o.name);
+			if (!tree.ok) return;
+			// Choix prudent (David, 2026-10-18 : un angle est une grandeur) : une fonction,
+			// une suite ne prennent pas un angle BRUT — son cosinus, si
+			const problem =
+				o.kind !== 'value'
+					? hasBareAngle(tree.ast)
+						? ANGLE_IN_FUNCTION
+						: null
+					: quantityProblem(tree.ast);
+			if (problem !== null) {
+				this.items[i] = { ...o, status: 'error', message: problem } as AtelierObject;
+				this.#angles = null;
+			}
+		});
+	}
+
+	/** Les constructions calculées pour la révision courante (`construction.ts`). */
+	#constructionMemo: { readonly revision: number; readonly memo: ConstructionMemo } | null = null;
+
+	/**
+	 * Le mémo des constructions de CETTE révision : chaque construction se calcule
+	 * une fois par passe, quel que soit le nombre d'objets qui la citent (revue de
+	 * la PR 1 du lot 2) — recalcul, cartes, ligne de Calcul le partagent.
+	 */
+	constructionMemo(): ConstructionMemo {
+		if (this.#constructionMemo === null || this.#constructionMemo.revision !== this.revision) {
+			this.#constructionMemo = { revision: this.revision, memo: new Map() };
+		}
+		return this.#constructionMemo.memo;
 	}
 
 	/** La graine des tirages (lot 5), lue par le calcul de la grille. */
@@ -2586,9 +3878,8 @@ export class Atelier {
 	relaunch(): void {
 		let next = newGridSeed();
 		while (next === this.#seed) next = newGridSeed();
-		// Un geste de la grille : Ctrl+Z retrouve les tirages d'avant (Q-L5-3)
-		this.#record({ cells: [], titles: [], seed: { before: this.#seed, after: next } });
-		this.#setSeed(next);
+		// Une étape : Ctrl+Z retrouve les tirages d'avant (Q-L5-3)
+		this.step('relancer les tirages', () => this.#setSeed(next));
 	}
 
 	#setSeed(seed: number): void {
@@ -2779,6 +4070,153 @@ export class Atelier {
 	}
 
 	/**
+	 * Les constructions (lot 2, L1) : calculées par l'atelier, exactes. Ce qui ne
+	 * se construit pas avec les valeurs du moment (deux points confondus, trois
+	 * points alignés, une parallèle à un cercle) est en erreur et dit pourquoi ;
+	 * ce qui en dépend aussi, jusqu'au point fixe (la propagation de
+	 * `recomputeAll` est déjà passée).
+	 */
+	#constructions(): void {
+		// Les objets cités AVANT ceux qui les citent (ordre de dépendance, pas celui
+		// des cartes) : un objet qui cite une construction en échec dit toujours
+		// « Dépend de « t », qui est en erreur. » (ou « En attente de « t » »), que sa
+		// carte vienne avant ou après celle de t (revue du chantier perf, 2026-10-19)
+		const order = this.#dependencyOrder();
+		let changed = true;
+		while (changed) {
+			changed = false;
+			// Un statut vient de changer : ce qui a été calculé avec l'ancien ne vaut plus
+			this.#constructionMemo = null;
+			this.#measureMemo = null;
+			this.#astMemo = null;
+			for (const i of order) {
+				const o = this.items[i];
+				if (o.status !== 'ok' || !isConstruction(o)) continue;
+				const built = constructionOf(this, o.name);
+				if (built.ok) continue;
+				// PR 3 : deux lignes qui ne se coupent pas (avec les valeurs du moment)
+				// ATTENDENT — un curseur peut les faire se couper ; le reste est une erreur
+				// Une infinité de points communs (deux cercles devenus égaux au glisser) aussi :
+				// refusée à la saisie, elle ATTEND pendant le recalcul (revue de la PR 3)
+				const status =
+					built.reason === 'pending' || built.reason === 'infinite' ? 'pending' : 'error';
+				this.items[i] = { ...o, status, message: built.message } as AtelierObject;
+				changed = true;
+				// Ce qui a été calculé avec l'ancien statut ne vaut plus, DÈS MAINTENANT :
+				// un objet qui cite celui-ci le lira en échec (`usableObject`) au lieu de
+				// reprendre son motif d'un mémo rempli plus tôt (par une mesure, en passant)
+				this.#constructionMemo = null;
+				this.#measureMemo = null;
+				this.#astMemo = null;
+			}
+		}
+	}
+
+	/**
+	 * Les indices des objets, chacun après ceux qu'il cite (parcours en
+	 * profondeur ; à égalité, l'ordre des cartes). Un cycle ne boucle pas : ses
+	 * objets sont déjà en erreur, l'ordre entre eux ne compte pas.
+	 */
+	#dependencyOrder(): number[] {
+		const index = new Map(this.items.map((o, i) => [o.name, i]));
+		const placed = new Set<number>();
+		const visiting = new Set<number>();
+		const order: number[] = [];
+		const visit = (i: number): void => {
+			if (placed.has(i) || visiting.has(i)) return;
+			visiting.add(i);
+			for (const ref of this.#refsOf(this.items[i])) {
+				const cited = index.get(ref.name);
+				if (cited !== undefined && cited !== i) visit(cited);
+			}
+			visiting.delete(i);
+			placed.add(i);
+			order.push(i);
+		};
+		this.items.forEach((_, i) => visit(i));
+		return order;
+	}
+
+	/**
+	 * Ce qui cite un objet mis en attente APRÈS la propagation de `recomputeAll`
+	 * (PR 3 : une intersection vide, un point hors de son segment) attend avec
+	 * lui, jusqu'au point fixe — une mesure `L = AE`, une fonction qui cite L.
+	 * Sans `missing` : rien ne manque, il n'y a pas de curseur à offrir.
+	 */
+	#geometryWaits(deps: ReadonlyMap<string, readonly string[]>): void {
+		const waiting = new Set(
+			this.items.filter((o) => o.status === 'pending' && o.missing === undefined).map((o) => o.name)
+		);
+		if (waiting.size === 0) return;
+		const before = new Set(waiting);
+		this.spread(
+			(name) =>
+				this.get(name)?.status === 'ok' && (deps.get(name) ?? []).some((d) => waiting.has(d)),
+			waiting
+		);
+		this.items.forEach((o, i) => {
+			if (!waiting.has(o.name) || before.has(o.name)) return;
+			const cause = (deps.get(o.name) ?? []).find((d) => waiting.has(d)) ?? '';
+			this.items[i] = {
+				...o,
+				status: 'pending',
+				message: `En attente de « ${cause} ».`
+			} as AtelierObject;
+		});
+	}
+
+	/**
+	 * Une valeur dont les grandeurs ne se combinent pas (`3[min] + 2[km]`, ou
+	 * `r + 2[m]` avec r = 3 s) est en erreur dès sa définition, avec le refus de
+	 * Calcul ; ce qui la cite aussi, jusqu'au point fixe (demande de David du
+	 * 2026-10-18 : avant, elle était « ok » et le refus attendait qu'on la cite).
+	 */
+	#quantityChecks(deps: ReadonlyMap<string, readonly string[]>): void {
+		const cites = (name: string, names: ReadonlySet<string>) =>
+			(deps.get(name) ?? []).some((d) => names.has(d));
+		// Seules les valeurs qui portent une unité, écrite ou citée, sont relues :
+		// relire toutes les valeurs à chaque recalcul coûtait ~65 ms pour 50 valeurs
+		// (revue), à chaque cran d'un curseur
+		const carrying = new Set(
+			this.items
+				.filter((o) => o.kind === 'value' && UNIT_WRITTEN.test(o.definition))
+				.map((o) => o.name)
+		);
+		this.spread((n) => this.get(n)?.kind === 'value' && cites(n, carrying), carrying);
+
+		const own = new Map<string, string>();
+		for (const o of this.items) {
+			if (o.status !== 'ok' || !carrying.has(o.name)) continue;
+			const message = this.#quantityMessage(o.name);
+			if (message !== null) own.set(o.name, message);
+		}
+		if (own.size === 0) return;
+
+		// Ce qui cite une valeur en erreur, quel qu'en soit le type ; une valeur
+		// fautive qui en cite une autre la désigne, quel que soit l'ordre de création
+		const failing = new Set(own.keys());
+		this.spread((n) => this.get(n)?.status === 'ok' && cites(n, failing), failing);
+		this.items.forEach((o, i) => {
+			if (!failing.has(o.name)) return;
+			const culprits = (deps.get(o.name) ?? []).filter((d) => failing.has(d));
+			const message = culprits.length > 0 ? brokenMessage(culprits) : own.get(o.name)!;
+			this.items[i] = { ...o, status: 'error', message } as AtelierObject;
+		});
+	}
+
+	/** Le refus de dimension d'une valeur, en français, ou `null`. */
+	#quantityMessage(name: string): string | null {
+		const substituted = substitutedAstOf(this, name);
+		if (!substituted.ok) return null;
+		// Jugée sur l'arbre, pas sur son texte : `toCustom` écrit `3[m]*π/2` en `\pi:/2`, illisible
+		const ast = substituted.ast;
+		// Une lettre libre (un curseur, une inconnue) : rien à juger ici
+		if (findNodes(ast, isUnit).length === 0) return null;
+		if (getVariables(ast).size > 0) return null;
+		return quantityProblem(ast);
+	}
+
+	/**
 	 * Une carte `f′` dont la dérivée ne se calcule pas (`f` = |x|) passe en
 	 * erreur, avec le message de `expressionOf` (revue du lot 3a, B1).
 	 *
@@ -2813,6 +4251,33 @@ export class Atelier {
 		}
 	}
 }
+
+/**
+ * La mise en forme relue, canonique et sous le plafond : la plus longue suite de
+ * zones rangées qui y tient (par dichotomie), et si une partie a été perdue.
+ */
+function restoredFormats(stored: readonly StoredFormat[]): {
+	formats: FormatZone[];
+	lost: boolean;
+} {
+	const zones = stored.flatMap((one) => {
+		const format = formatOf(one);
+		return format === null ? [] : [format];
+	});
+	const whole = normalizeFormats(zones);
+	if (whole.length <= MAX_FORMAT_ZONES) return { formats: whole, lost: false };
+	let fits = 0;
+	let tooMany = zones.length;
+	while (tooMany - fits > 1) {
+		const middle = Math.floor((fits + tooMany) / 2);
+		if (normalizeFormats(zones.slice(0, middle)).length <= MAX_FORMAT_ZONES) fits = middle;
+		else tooMany = middle;
+	}
+	return { formats: normalizeFormats(zones.slice(0, fits)), lost: true };
+}
+
+/** Le refus d'une mise en forme au-delà du plafond. */
+const FORMATS_FULL = `La grille garde ${MAX_FORMAT_ZONES} zones de mise en forme : efface-en avant d’en poser d’autres.`;
 
 /** Une graine de tirages : un entier de 32 bits. */
 function newGridSeed(): number {

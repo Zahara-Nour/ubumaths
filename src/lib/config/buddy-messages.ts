@@ -4,6 +4,8 @@
  * Generated via ChatGPT with personality-specific prompts (see docs/systeme/buddy-palotins.md).
  */
 
+import { lore } from '$lib/config/lore';
+
 export type BuddyMessageContext =
 	| 'correct'
 	| 'incorrect'
@@ -27,7 +29,16 @@ export type BuddyMessageContext =
 	| 'vip_card_rare'
 	| 'vip_card_epic'
 	| 'vip_card_legendary'
-	| 'onboarding';
+	| 'onboarding'
+	/** Fin de séance : le Palotin a gagné des pansées */
+	| 'session_gain'
+	/** Fin de séance : plafond du jour atteint, plus rien à gagner aujourd'hui */
+	| 'daily_cap';
+
+/** Mot du lore pour le niveau du Palotin (« Tour de panse »), jamais « Niveau » */
+const LEVEL = lore.buddy.level;
+/** Mot du lore pour la série de semaines tenues (« Constance Royale ») */
+const CONSTANCE = lore.learning.streak;
 
 export type PalotinType = 'giron' | 'pile' | 'cotice';
 
@@ -128,32 +139,32 @@ const giron: BuddyMessages = {
 		'Cornegidouille, t’es intouchable !'
 	],
 	streak_lost: [
-		'Ah, la série tombe ! On relance !',
-		'Pas grave, nouvelle série direct !',
-		'Ça casse, mais on repart plus fort !',
-		'Le combat continue ! Rien n’est fini !'
+		`La semaine n’a pas eu ses trois jours : la ${CONSTANCE} retombe ! On relance !`,
+		'Semaine ratée, pas grave ! Trois jours cette semaine et on repart !',
+		`La ${CONSTANCE} casse, mais on la reconstruit dès cette semaine !`,
+		'Le combat continue ! Une nouvelle semaine, trois jours, on attaque !'
 	],
 	level_up: [
-		'Niveau 1 ! On commence tranquille !',
-		'Niveau 2 ! Ça prend forme !',
-		'Niveau 3 ! Tu montes déjà !',
-		'Niveau 4 ! Ça accélère !',
-		'Niveau 5 ! On entre dans le sérieux !',
-		'Niveau 6 ! Tu gagnes en puissance !',
-		'Niveau 7 ! Ça devient impressionnant !',
-		'Niveau 8 ! Tu fais tomber les exos !',
-		'Niveau 9 ! Tu prends le contrôle !',
-		'Niveau 10 ! Mi-chemin, solide !',
-		'Niveau 11 ! Tu tiens le rythme !',
-		'Niveau 12 ! Ça commence à piquer pour eux !',
-		'Niveau 13 ! Tu deviens redoutable !',
-		'Niveau 14 ! Là c’est du haut niveau !',
-		'Niveau 15 ! Le Père Ubu flippe !',
-		'Niveau 16 ! T’es une machine !',
-		'Niveau 17 ! Rien ne t’arrête !',
-		'Niveau 18 ! Tu écrases tout !',
-		'Niveau 19 ! Presque au sommet !',
-		'Niveau 20 ! Légende vivante !'
+		`${LEVEL} 1 ! On commence tranquille !`,
+		`${LEVEL} 2 ! Ça prend forme !`,
+		`${LEVEL} 3 ! Tu montes déjà !`,
+		`${LEVEL} 4 ! Ça accélère !`,
+		`${LEVEL} 5 ! On entre dans le sérieux !`,
+		`${LEVEL} 6 ! Tu gagnes en puissance !`,
+		`${LEVEL} 7 ! Ça devient impressionnant !`,
+		`${LEVEL} 8 ! Tu fais tomber les exos !`,
+		`${LEVEL} 9 ! Tu prends le contrôle !`,
+		`${LEVEL} 10 ! Mi-chemin, solide !`,
+		`${LEVEL} 11 ! Tu tiens le rythme !`,
+		`${LEVEL} 12 ! Ça commence à piquer pour eux !`,
+		`${LEVEL} 13 ! Tu deviens redoutable !`,
+		`${LEVEL} 14 ! Là c’est du haut niveau !`,
+		`${LEVEL} 15 ! Le Père Ubu flippe !`,
+		`${LEVEL} 16 ! T’es une machine !`,
+		`${LEVEL} 17 ! Rien ne t’arrête !`,
+		`${LEVEL} 18 ! Tu écrases tout !`,
+		`${LEVEL} 19 ! Presque au sommet !`,
+		`${LEVEL} 20 ! Légende vivante !`
 	],
 	theme_fractions: [
 		'Les fractions ? On découpe et on domine !',
@@ -186,6 +197,17 @@ const giron: BuddyMessages = {
 		'Hé ! Moi c’est Giron ! On va cogner des maths !',
 		'Je suis Giron, j’adore les défis ! On fonce !',
 		'Giron à ton service ! Les exos vont trembler !'
+	],
+	session_gain: [
+		'Miam ! Ça, c’est de la bonne réflexion !',
+		'Par ma chandelle verte, je me sens plus costaud !',
+		'Une séance comme ça, ça nourrit son Palotin !',
+		'Cornegidouille, je prends du ventre !'
+	],
+	daily_cap: [
+		'J’ai le ventre plein pour aujourd’hui ! Demain, on remet ça !',
+		'Plus une miette ne rentre ! Je digère jusqu’à demain !',
+		'Panse pleine ! Tu peux t’entraîner encore, mais moi je cale !'
 	]
 };
 
@@ -284,32 +306,32 @@ const pile: BuddyMessages = {
 		'Cornegidouille, même le temps semble suivre ton rythme.'
 	],
 	streak_lost: [
-		'La série s’interrompt, comme une respiration, puis on repart.',
-		'Tout s’arrête un instant, et ça laisse place à autre chose.',
-		'Ce n’est qu’une pause dans le mouvement.',
-		'On recommence doucement, sans perdre le fil.'
+		`La semaine s’est fermée avant ses trois jours… la ${CONSTANCE} s’interrompt, comme une respiration.`,
+		'Une semaine qui passe sans trois jours, ce n’est qu’une pause dans le mouvement.',
+		`La ${CONSTANCE} recommence à zéro, doucement, avec cette nouvelle semaine.`,
+		'Trois jours cette semaine, et le fil se renoue sans bruit.'
 	],
 	level_up: [
-		'Niveau 1, une porte s’ouvre doucement.',
-		'Niveau 2, tu avances déjà un peu plus loin.',
-		'Niveau 3, quelque chose commence à se dessiner.',
-		'Niveau 4, le paysage change subtilement.',
-		'Niveau 5, tu explores avec plus d’assurance.',
-		'Niveau 6, les idées circulent plus librement.',
-		'Niveau 7, tu entres dans une zone intéressante.',
-		'Niveau 8, les liens deviennent visibles.',
-		'Niveau 9, tu vois plus large maintenant.',
-		'Niveau 10, tu franchis un cap important.',
-		'Niveau 11, ta manière de voir évolue.',
-		'Niveau 12, les choses prennent de la profondeur.',
-		'Niveau 13, tu navigues avec aisance.',
-		'Niveau 14, le chemin devient presque évident.',
-		'Niveau 15, même le Père Ubu serait surpris.',
-		'Niveau 16, tu explores des zones fines.',
-		'Niveau 17, tout devient plus fluide.',
-		'Niveau 18, tu comprends sans forcer.',
-		'Niveau 19, presque au sommet du calme.',
-		'Niveau 20, c’est une maîtrise paisible.'
+		`${LEVEL} 1, une porte s’ouvre doucement.`,
+		`${LEVEL} 2, tu avances déjà un peu plus loin.`,
+		`${LEVEL} 3, quelque chose commence à se dessiner.`,
+		`${LEVEL} 4, le paysage change subtilement.`,
+		`${LEVEL} 5, tu explores avec plus d’assurance.`,
+		`${LEVEL} 6, les idées circulent plus librement.`,
+		`${LEVEL} 7, tu entres dans une zone intéressante.`,
+		`${LEVEL} 8, les liens deviennent visibles.`,
+		`${LEVEL} 9, tu vois plus large maintenant.`,
+		`${LEVEL} 10, tu franchis un cap important.`,
+		`${LEVEL} 11, ta manière de voir évolue.`,
+		`${LEVEL} 12, les choses prennent de la profondeur.`,
+		`${LEVEL} 13, tu navigues avec aisance.`,
+		`${LEVEL} 14, le chemin devient presque évident.`,
+		`${LEVEL} 15, même le Père Ubu serait surpris.`,
+		`${LEVEL} 16, tu explores des zones fines.`,
+		`${LEVEL} 17, tout devient plus fluide.`,
+		`${LEVEL} 18, tu comprends sans forcer.`,
+		`${LEVEL} 19, presque au sommet du calme.`,
+		`${LEVEL} 20, c’est une maîtrise paisible.`
 	],
 	theme_fractions: [
 		'Les fractions sont comme des morceaux de lune, à assembler doucement.',
@@ -363,6 +385,17 @@ const pile: BuddyMessages = {
 		'Je suis Pile, je regarde les maths comme on regarde les étoiles, tranquillement.',
 		'Moi c’est Pile, j’aime les chemins étranges que prennent les nombres.',
 		'Pile, pour t’accompagner, sans bruit, mais avec curiosité.'
+	],
+	session_gain: [
+		'Chaque pensée me nourrit un peu, comme une soupe tiède.',
+		'Je me sens plus rond, et c’est grâce à toi.',
+		'Ta séance a laissé une douce chaleur dans ma panse.',
+		'Les idées s’empilent en moi, tranquillement.'
+	],
+	daily_cap: [
+		'Ma panse est pleine pour aujourd’hui ; je vais rêver en digérant.',
+		'Je ne peux plus rien avaler ce soir, mais j’ai aimé te regarder penser.',
+		'Assez pour aujourd’hui, pour moi ; demain, la panse sera de nouveau vide.'
 	]
 };
 
@@ -461,32 +494,32 @@ const cotice: BuddyMessages = {
 		'Cornegidouille, c’est du jamais vu !'
 	],
 	streak_lost: [
-		'Ah, la série s’arrête, mais on repart direct !',
-		'Pas grave, nouvelle série en vue !',
-		'On perd la série, mais pas la motivation !',
-		'Allez, on relance la machine !'
+		`Ah, la semaine n’a pas eu ses trois jours : la ${CONSTANCE} s’arrête, mais on repart direct !`,
+		'Pas grave, nouvelle semaine, nouveaux trois jours en vue !',
+		`On perd la ${CONSTANCE}, mais pas la motivation !`,
+		'Allez, trois jours cette semaine et on relance la machine !'
 	],
 	level_up: [
-		'Niveau 1 ! On démarre tranquille !',
-		'Niveau 2 ! Ça avance déjà !',
-		'Niveau 3 ! T’es lancé !',
-		'Niveau 4 ! Ça monte vite !',
-		'Niveau 5 ! Là ça devient intéressant !',
-		'Niveau 6 ! Tu prends confiance !',
-		'Niveau 7 ! Beau rythme !',
-		'Niveau 8 ! Tu gères bien !',
-		'Niveau 9 ! On accélère !',
-		'Niveau 10 ! Mi-parcours, solide !',
-		'Niveau 11 ! Tu tiens le cap !',
-		'Niveau 12 ! Ça devient sérieux !',
-		'Niveau 13 ! Tu fais la différence !',
-		'Niveau 14 ! Impressionnant !',
-		'Niveau 15 ! Même le Père Ubu regarde !',
-		'Niveau 16 ! T’es chaud !',
-		'Niveau 17 ! Rien ne t’arrête !',
-		'Niveau 18 ! Incroyable progression !',
-		'Niveau 19 ! Presque au sommet !',
-		'Niveau 20 ! Légende totale !'
+		`${LEVEL} 1 ! On démarre tranquille !`,
+		`${LEVEL} 2 ! Ça avance déjà !`,
+		`${LEVEL} 3 ! T’es lancé !`,
+		`${LEVEL} 4 ! Ça monte vite !`,
+		`${LEVEL} 5 ! Là ça devient intéressant !`,
+		`${LEVEL} 6 ! Tu prends confiance !`,
+		`${LEVEL} 7 ! Beau rythme !`,
+		`${LEVEL} 8 ! Tu gères bien !`,
+		`${LEVEL} 9 ! On accélère !`,
+		`${LEVEL} 10 ! Mi-parcours, solide !`,
+		`${LEVEL} 11 ! Tu tiens le cap !`,
+		`${LEVEL} 12 ! Ça devient sérieux !`,
+		`${LEVEL} 13 ! Tu fais la différence !`,
+		`${LEVEL} 14 ! Impressionnant !`,
+		`${LEVEL} 15 ! Même le Père Ubu regarde !`,
+		`${LEVEL} 16 ! T’es chaud !`,
+		`${LEVEL} 17 ! Rien ne t’arrête !`,
+		`${LEVEL} 18 ! Incroyable progression !`,
+		`${LEVEL} 19 ! Presque au sommet !`,
+		`${LEVEL} 20 ! Légende totale !`
 	],
 	theme_fractions: [
 		'Les fractions, c’est comme partager une pizza !',
@@ -528,6 +561,17 @@ const cotice: BuddyMessages = {
 		'Hey ! Moi c’est Cotice ! On va s’amuser avec les maths !',
 		'Cotice ici ! Je suis là pour t’accompagner et te motiver !',
 		'Salut ! Avec moi, les maths deviennent un jeu !'
+	],
+	session_gain: [
+		'Trop bien ! Tes efforts me font grandir !',
+		'Bravo ! Je me sens tout rebondi !',
+		'Super séance ! Ma panse te dit merci !',
+		'Yes ! On progresse ensemble !'
+	],
+	daily_cap: [
+		'Ouf, je suis rassasié pour aujourd’hui ! On se retrouve demain ?',
+		'Ma panse est pleine ! Ton travail compte quand même, bravo !',
+		'J’ai assez mangé pour aujourd’hui ! Demain, je repars le ventre vide !'
 	]
 };
 

@@ -104,7 +104,8 @@ parenthèses (CM1-049, CM2-054). D'où la frontière « 6e ou avant ».
   supérieur ; « est différent(e) de ». Encadrement : « 1 est strictement inférieur à x, qui est
   strictement inférieur à 3 ». Autres relations (∈, ≈…) : la relation entière en formule.
 - Bloc sans lecture prévue (`90°`, `n!`, limite, `max`, `\log_2`, `\sin^{-1}`…) : lu comme
-  formule, sans mot.
+  formule, sans mot. Une durée composée (`2 h 30 min`, somme juxtaposée) aussi : un bloc, comme une
+  grandeur, jamais aplatie dans la somme qui la contient (lecture-grandeurs, PR 5).
 - Puissance : 2 → carré, 3 → cube, sinon « x puissance n », exposant en formule (négatif compris) ;
   `(−1)ⁿ` garde ses parenthèses (« (−1) puissance n », sinon confondu avec `−1ⁿ`).
 - Accord : « la somme … est **égale** à », « le produit … est **égal** à ».

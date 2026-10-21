@@ -19,6 +19,7 @@ import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import {
 	dependsOnMessage,
+	isFunction,
 	isValue,
 	isList,
 	isQualitative,
@@ -79,6 +80,10 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 	value: [],
 	function: [
 		{ id: 'plot', label: 'Tracer' },
+		// Géométrie v2, K1 : 𝒞f dans la vue Géométrie (repère orthonormé)
+		{ id: 'figure', label: 'Afficher dans Géométrie' },
+		// Pas d'« Image d'un nombre » : `f(2)` s'écrit tout seul dans la console
+		// (décision de David du 2026-10-18). Le geste `image` reste rejouable.
 		{ id: 'derive', label: 'Dériver' },
 		// Lot 3 de la réciproque (R1) : la carte `f⁻¹`, comme « Dériver » crée `f′`
 		{ id: 'reciprocal', label: 'Réciproque' },
@@ -87,8 +92,6 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'table', label: 'Tabuler' },
 		{ id: 'solve', label: 'Résoudre f(x) = 0' },
 		{ id: 'variations', label: 'Variations' }
-		// « Image d'un nombre » n'est plus un bouton : c'est un petit champ de la
-		// carte, qui calcule sans envoyer dans Calcul (phase 0 `/grapheur` §3 A4)
 	],
 	sequence: [
 		// « Tracer en nuage / en escalier » ne sont plus des boutons : 👁 trace, et
@@ -103,7 +106,11 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
 		{ id: 'chart', label: 'Diagramme en bâtons' },
 		{ id: 'scatter', label: 'Nuage de points' },
 		{ id: 'fit', label: 'Ajustement affine' }
-	]
+	],
+	// Géométrie, lot 1 : la carte se modifie et se supprime, rien de plus — les
+	// constructions et les mesures viendront au lot 2
+	point: [],
+	curve: []
 };
 
 /**
@@ -115,8 +122,8 @@ const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> 
  */
 const NOT_YET: ReadonlySet<string> = new Set([
 	// 'plot' est câblé depuis le lot « vue Graphe ».
-	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' est
-	// devenu un champ de la carte, lot 3b).
+	// 'derive', 'solve' et 'variations' le sont depuis la vue Calcul ('image' a
+	// quitté la carte : elle s'écrit dans la console).
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
 	// depuis le lot 5 des outils statistiques, 'table' (le formulaire de la
 	// carte) depuis le lot 3 du tableur.
@@ -417,6 +424,8 @@ export function actionsFor(
 		if (action.id === 'plot' && object.plotted) {
 			action = { ...action, label: 'Retirer du graphe' };
 		}
+		const shownInFigure = action.id === 'figure' && isFunction(object) && object.inFigure === true;
+		if (shownInFigure) action = { ...action, label: 'Retirer de Géométrie' };
 		// Même bascule pour le diagramme d'une liste (vue Données, Q36) : le bouton
 		// qui l'a affiché le retire
 		const [root, partner] = action.id.split(':');
@@ -442,7 +451,8 @@ export function actionsFor(
 			blocked !== undefined && parameters !== null
 				? parameterReason(parameters, action.id, blocked)
 				: blocked;
-		if (reason && !(action.id === 'plot' && object.plotted)) {
+		// Même règle pour « Retirer de Géométrie »
+		if (reason && !(action.id === 'plot' && object.plotted) && !shownInFigure) {
 			// ⚠️ Une raison déjà posée par `partnerActions` (« il faut deux listes »)
 			// est plus précise que « cet objet ne peut rien produire » : on la garde.
 			return { ...action, disabledReason: action.disabledReason ?? reason };

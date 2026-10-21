@@ -1,0 +1,1261 @@
+{
+	"decided_by": "David, 2026-10-17 (page « Scissions des points du programme »)",
+	"archive": [
+		{
+			"code": "3-002",
+			"reason": "doublon du BO avec 3-001 (ADR 0020 §7)"
+		}
+	],
+	"tables_deja_ecrites": ["CP-018", "CE1-026", "CE2-020", "CE1-027", "CE2-021"],
+	"scissions": [
+		{
+			"code": "CM2-036",
+			"current": "Connaître des faits numériques usuels avec des entiers — répertoire multiplicatif ✂",
+			"labels": [
+				"Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
+				"Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56)."
+			],
+			"source": "famille M0 tables (décision déjà prise)"
+		},
+		{
+			"code": "CM1-035",
+			"current": "Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire additif ✂",
+			"labels": [
+				"Connaître le répertoire additif : donner la somme de deux nombres (8 + 7 = ?).",
+				"Connaître le répertoire additif : compléter une addition à trou (8 + ? = 15)."
+			],
+			"source": "famille M0 tables (décision déjà prise)"
+		},
+		{
+			"code": "CM1-036",
+			"current": "Connaître des faits numériques usuels relatifs aux nombres entiers — répertoire multiplicatif ✂",
+			"labels": [
+				"Connaître le répertoire multiplicatif : donner le produit de deux nombres (7 × 8 = ?).",
+				"Connaître le répertoire multiplicatif : compléter une multiplication à trou (7 × ? = 56)."
+			],
+			"source": "famille M0 tables (décision déjà prise)"
+		},
+		{
+			"code": "CM2-035",
+			"current": "Connaître des faits numériques usuels avec des entiers — répertoire additif ✂",
+			"labels": [
+				"Connaître le répertoire additif : donner la somme de deux nombres (8 + 7 = ?).",
+				"Connaître le répertoire additif : compléter une addition à trou (8 + ? = 15)."
+			],
+			"source": "famille M0 tables (décision déjà prise)"
+		},
+		{
+			"code": "CP-022",
+			"current": "Ajouter ou soustraire 20, 30, 40, 50, 60, 70, 80 ou 90 à un nombre.",
+			"labels": [
+				"Ajouter 20, 30, …, 90 à un nombre (14 + 30 = ?).",
+				"Soustraire 20, 30, …, 90 à un nombre (74 − 30 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "CE1-084",
+			"current": "Ajouter ou soustraire un nombre entier de centaines à un nombre.",
+			"labels": [
+				"Ajouter un nombre entier de centaines à un nombre (346 + 200 = ?).",
+				"Soustraire un nombre entier de centaines à un nombre (346 − 200 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "CE1-029",
+			"current": "Ajouter ou soustraire un nombre entier de dizaines à un nombre.",
+			"labels": [
+				"Ajouter un nombre entier de dizaines à un nombre (246 + 30 = ?).",
+				"Soustraire un nombre entier de dizaines à un nombre (246 − 30 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "CM1-043",
+			"current": "Ajouter ou soustraire 8, 9, 18, 19, 28, 29, 38 ou 39, à un nombre",
+			"labels": [
+				"Ajouter 8, 9, 18, 19, 28, 29, 38 ou 39 à un nombre (57 + 29 = ?).",
+				"Soustraire 8, 9, 18, 19, 28, 29, 38 ou 39 à un nombre (57 − 29 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "CM2-045",
+			"current": "Ajouter ou soustraire 8, 9, 18, 19, 28, 29, …, 98 ou 99 à un nombre",
+			"labels": [
+				"Ajouter 8, 9, 18, 19, …, 98 ou 99 à un nombre (157 + 39 = ?).",
+				"Soustraire 8, 9, 18, 19, …, 98 ou 99 à un nombre (157 − 39 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "CP-020",
+			"current": "Ajouter ou soustraire 1 ou 2 à un nombre.",
+			"labels": [
+				"Ajouter 1 ou 2 à un nombre (37 + 2 = ?).",
+				"Soustraire 1 ou 2 à un nombre (37 − 2 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "CP-021",
+			"current": "Ajouter ou soustraire 10 à un nombre.",
+			"labels": [
+				"Ajouter 10 à un nombre (34 + 10 = ?).",
+				"Soustraire 10 à un nombre (34 − 10 = ?)."
+			],
+			"source": "famille M1 ajouter ou soustraire N"
+		},
+		{
+			"code": "5-026",
+			"current": "Additionner et soustraire des fractions de dénominateurs quelconques.",
+			"labels": [
+				"Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?).",
+				"Soustraire des fractions de dénominateurs quelconques (2/3 − 1/4 = ?)."
+			],
+			"source": "famille M2 additionner et soustraire des fractions"
+		},
+		{
+			"code": "6-135",
+			"current": "Additionner et soustraire des fractions",
+			"labels": [
+				"Additionner des fractions (2/3 + 1/6 = ?).",
+				"Soustraire des fractions (2/3 − 1/6 = ?)."
+			],
+			"source": "famille M2 additionner et soustraire des fractions"
+		},
+		{
+			"code": "CM1-021",
+			"current": "Additionner et soustraire des fractions",
+			"labels": [
+				"Additionner des fractions (3/10 + 5/10 = ?).",
+				"Soustraire des fractions (8/10 − 5/10 = ?)."
+			],
+			"source": "famille M2 additionner et soustraire des fractions"
+		},
+		{
+			"code": "CE1-021",
+			"current": "Additionner et soustraire des fractions de même dénominateur.",
+			"labels": [
+				"Additionner des fractions de même dénominateur (2/5 + 1/5 = ?).",
+				"Soustraire des fractions de même dénominateur (4/5 − 1/5 = ?)."
+			],
+			"source": "famille M2 additionner et soustraire des fractions"
+		},
+		{
+			"code": "CE2-014",
+			"current": "Additionner et soustraire des fractions.",
+			"labels": [
+				"Additionner des fractions (3/4 + 1/4 = ?).",
+				"Soustraire des fractions (3/4 − 1/4 = ?)."
+			],
+			"source": "famille M2 additionner et soustraire des fractions"
+		},
+		{
+			"code": "CM2-020",
+			"current": "Additionner et soustraire des fractions",
+			"labels": [
+				"Additionner des fractions (3/4 + 1/4 = ?).",
+				"Soustraire des fractions (3/4 − 1/4 = ?)."
+			],
+			"source": "famille M2 additionner et soustraire des fractions"
+		},
+		{
+			"code": "CP-014",
+			"current": "Comprendre le sens de l'addition et de la soustraction.",
+			"labels": [
+				"Comprendre le sens de l'addition (choisir l'addition pour une situation de réunion, d'ajout).",
+				"Comprendre le sens de la soustraction (choisir la soustraction pour une situation de retrait, d'écart)."
+			],
+			"source": "famille M2bis sens de deux opérations"
+		},
+		{
+			"code": "CE1-022",
+			"current": "Poser et effectuer des additions et des soustractions en colonnes.",
+			"labels": [
+				"Poser et effectuer une addition en colonnes.",
+				"Poser et effectuer une soustraction en colonnes."
+			],
+			"source": "famille M3 poser additions et soustractions"
+		},
+		{
+			"code": "CE2-016",
+			"current": "Poser et effectuer des additions et des soustractions en colonnes.",
+			"labels": [
+				"Poser et effectuer une addition en colonnes.",
+				"Poser et effectuer une soustraction en colonnes."
+			],
+			"source": "famille M3 poser additions et soustractions"
+		},
+		{
+			"code": "CM1-050",
+			"current": "Poser en colonnes et effectuer des additions et des soustractions de nombres décimaux",
+			"labels": [
+				"Poser en colonnes et effectuer une addition de nombres décimaux.",
+				"Poser en colonnes et effectuer une soustraction de nombres décimaux."
+			],
+			"source": "famille M3 poser additions et soustractions"
+		},
+		{
+			"code": "CE1-028",
+			"current": "Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.",
+			"labels": [
+				"Connaître des faits multiplicatifs usuels : les doubles (double de 25 = ?).",
+				"Connaître des faits multiplicatifs usuels : les moitiés (moitié de 50 = ?)."
+			],
+			"source": "famille M4 doubles et moitiés"
+		},
+		{
+			"code": "CE2-022",
+			"current": "Connaitre des faits multiplicatifs usuels : les doubles et les moitiés.",
+			"labels": [
+				"Connaître des faits multiplicatifs usuels : les doubles (double de 35 = ?).",
+				"Connaître des faits multiplicatifs usuels : les moitiés (moitié de 70 = ?)."
+			],
+			"source": "famille M4 doubles et moitiés"
+		},
+		{
+			"code": "CP-019",
+			"current": "Connaitre les doubles et les moitiés de nombres usuels.",
+			"labels": [
+				"Connaître les doubles de nombres usuels (double de 8 = ?).",
+				"Connaître les moitiés de nombres usuels (moitié de 16 = ?)."
+			],
+			"source": "famille M4 doubles et moitiés"
+		},
+		{
+			"code": "CE1-007",
+			"current": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles (=, <, >).",
+			"labels": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CE2-007",
+			"current": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles (=, <, >).",
+			"labels": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CM1-008",
+			"current": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et >",
+			"labels": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CM1-132",
+			"current": "Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"labels": [
+				"Encadrer un nombre décimal (par deux entiers consécutifs, au dixième près : 3 < 3,7 < 4).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CP-006",
+			"current": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et >.",
+			"labels": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "6-113",
+			"current": "Encadrer un nombre décimal par deux nombres décimaux, intercaler un nombre décimal entre deux nombres décimaux",
+			"labels": [
+				"Encadrer un nombre décimal par deux nombres décimaux (… < 3,47 < …).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "6-133",
+			"current": "Comparer et encadrer des fractions",
+			"labels": [
+				"Comparer deux fractions (3/4 … 5/6).",
+				"Encadrer une fraction par deux nombres entiers consécutifs (… < 7/3 < …)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CM1-028",
+			"current": "Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >",
+			"labels": [
+				"Comparer deux fractions décimales avec les symboles =, < et > (7/10 … 65/100).",
+				"Encadrer une fraction décimale (… < 237/100 < …).",
+				"Intercaler une fraction décimale entre deux fractions décimales (3/10 < … < 4/10)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CM2-005",
+			"current": "Comparer, encadrer, intercaler des nombres entiers en utilisant les symboles =, < et >",
+			"labels": [
+				"Comparer deux nombres entiers avec les symboles =, < et > (47 … 52).",
+				"Encadrer un nombre entier avec les symboles < et > (… < 47 < …).",
+				"Intercaler un nombre entier entre deux nombres donnés (47 < … < 52)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CM2-028",
+			"current": "Comparer, encadrer, intercaler des fractions décimales en utilisant les symboles =, < et >",
+			"labels": [
+				"Comparer deux fractions décimales avec les symboles =, < et > (7/10 … 65/100).",
+				"Encadrer une fraction décimale (… < 237/100 < …).",
+				"Intercaler une fraction décimale entre deux fractions décimales (3/10 < … < 4/10)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "CM2-117",
+			"current": "Encadrer, intercaler des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"labels": [
+				"Encadrer un nombre décimal (par deux entiers consécutifs, au dixième près : 3 < 3,7 < 4).",
+				"Intercaler un nombre décimal entre deux nombres décimaux (3,4 < … < 3,5)."
+			],
+			"source": "famille M5 comparer / encadrer / intercaler"
+		},
+		{
+			"code": "5-017",
+			"current": "Comparer et ranger dans l'ordre croissant et décroissant des nombres décimaux relatifs.",
+			"labels": [
+				"Comparer deux nombres relatifs (−3 … −5).",
+				"Ranger des nombres relatifs dans l'ordre croissant ou décroissant."
+			],
+			"source": "famille M6 comparer / ranger"
+		},
+		{
+			"code": "CM1-034",
+			"current": "Comparer, ordonner, par ordre croissant ou décroissant, des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"labels": [
+				"Comparer deux nombres décimaux avec les symboles =, < et > (3,7 … 3,25).",
+				"Ordonner des nombres décimaux dans l'ordre croissant ou décroissant."
+			],
+			"source": "famille M6 comparer / ranger"
+		},
+		{
+			"code": "CM2-034",
+			"current": "Comparer, ordonner par ordre croissant ou décroissant des nombres décimaux donnés par leur écriture à virgule en utilisant les symboles =, < et >",
+			"labels": [
+				"Comparer deux nombres décimaux avec les symboles =, < et > (3,7 … 3,25).",
+				"Ordonner des nombres décimaux dans l'ordre croissant ou décroissant."
+			],
+			"source": "famille M6 comparer / ranger"
+		},
+		{
+			"code": "5-016",
+			"current": "Lire l'abscisse d'un nombre relatif sur une droite graduée et placer un nombre relatif d'abscisse donnée.",
+			"labels": [
+				"Lire l'abscisse d'un point sur une droite graduée (nombres relatifs).",
+				"Placer sur une droite graduée un point d'abscisse relative donnée."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "5-046",
+			"current": "Sur une droite graduée : lire l'abscisse d'un point donné ; placer un point d'abscisse donnée.",
+			"labels": [
+				"Lire l'abscisse d'un point sur une droite graduée.",
+				"Placer sur une droite graduée un point d'abscisse donnée."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "5-047",
+			"current": "Dans le plan muni d'un repère orthogonal : lire les coordonnées d'un point donné ; placer un point de coordonnées données.",
+			"labels": [
+				"Lire les coordonnées d'un point dans un repère orthogonal.",
+				"Placer un point de coordonnées données dans un repère orthogonal."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM1-010",
+			"current": "Savoir placer des nombres et repérer des points sur une demi-droite graduée",
+			"labels": [
+				"Placer un nombre entier sur une demi-droite graduée.",
+				"Lire le nombre qui repère un point d'une demi-droite graduée."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM1-025",
+			"current": "Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale",
+			"labels": [
+				"Placer une fraction décimale sur une demi-droite graduée.",
+				"Repérer un point d'une demi-droite graduée par une fraction décimale."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM1-032",
+			"current": "Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre décimal",
+			"labels": [
+				"Placer un nombre décimal sur une demi-droite graduée.",
+				"Repérer un point d'une demi-droite graduée par un nombre décimal."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM2-007",
+			"current": "Placer des nombres et repérer des points sur une demi-droite graduée",
+			"labels": [
+				"Placer un nombre entier sur une demi-droite graduée.",
+				"Lire le nombre qui repère un point d'une demi-droite graduée."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM2-025",
+			"current": "Placer une fraction décimale sur une demi-droite graduée et repérer un point d'une demi-droite graduée par une fraction décimale",
+			"labels": [
+				"Placer une fraction décimale sur une demi-droite graduée.",
+				"Repérer un point d'une demi-droite graduée par une fraction décimale."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM2-032",
+			"current": "Placer un nombre décimal en écriture à virgule sur une demi-droite graduée et repérer un point d'une demi-droite graduée par un nombre en écriture à virgule",
+			"labels": [
+				"Placer un nombre décimal sur une demi-droite graduée.",
+				"Repérer un point d'une demi-droite graduée par un nombre décimal."
+			],
+			"source": "famille M7 placer / repérer (lire)"
+		},
+		{
+			"code": "CM1-031",
+			"current": "Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)",
+			"labels": [
+				"Lire et écrire un nombre décimal en chiffres et en lettres (trois unités et vingt-cinq centièmes ↔ 3,25).",
+				"Interpréter l'écriture à virgule : valeur de chaque chiffre (chiffre des centièmes de 3,25 ?).",
+				"Représenter un nombre décimal (figure partagée en dixièmes ou en centièmes)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CM2-031",
+			"current": "Interpréter, représenter, écrire et lire des nombres décimaux (écriture à virgule)",
+			"labels": [
+				"Lire et écrire un nombre décimal en chiffres et en lettres (trois unités et vingt-cinq centièmes ↔ 3,25).",
+				"Interpréter l'écriture à virgule : valeur de chaque chiffre (chiffre des centièmes de 3,25 ?).",
+				"Représenter un nombre décimal (figure partagée en dixièmes ou en centièmes)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CE1-016",
+			"current": "Savoir interpréter, représenter, écrire et lire les fractions ½, ⅓, ¼, ⅕, ⅙, ⅛ et 1/10.",
+			"labels": [
+				"Lire et écrire une fraction en chiffres et en lettres (un quart ↔ 1/4).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CE1-017",
+			"current": "Savoir interpréter, représenter, écrire et lire des fractions inférieures ou égales à 1.",
+			"labels": [
+				"Lire et écrire une fraction en chiffres et en lettres (trois quarts ↔ 3/4).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CM1-014",
+			"current": "Savoir interpréter, représenter, écrire et lire des fractions",
+			"labels": [
+				"Lire et écrire une fraction en chiffres et en lettres (cinq tiers ↔ 5/3).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CM1-023",
+			"current": "Interpréter, représenter, écrire et lire des fractions décimales",
+			"labels": [
+				"Lire et écrire une fraction décimale en chiffres et en lettres (vingt-trois centièmes ↔ 23/100).",
+				"Représenter une fraction décimale donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction décimale (quelle part de la figure est coloriée ?)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CM2-013",
+			"current": "Interpréter, représenter, écrire et lire des fractions",
+			"labels": [
+				"Lire et écrire une fraction en chiffres et en lettres (cinq tiers ↔ 5/3).",
+				"Représenter une fraction donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction (quelle part de la figure est coloriée ?)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "CM2-023",
+			"current": "Interpréter, représenter, écrire et lire des fractions décimales",
+			"labels": [
+				"Lire et écrire une fraction décimale en chiffres et en lettres (vingt-trois centièmes ↔ 23/100).",
+				"Représenter une fraction décimale donnée par un partage (colorier les parts d'une figure).",
+				"Interpréter un partage par une fraction décimale (quelle part de la figure est coloriée ?)."
+			],
+			"source": "famille M8 interpréter / représenter / lire-écrire"
+		},
+		{
+			"code": "4-004",
+			"current": "Utiliser le vocabulaire (somme, quotient, etc.) à partir d'un enchainement d'opérations dans un programme de calcul et inversement.",
+			"labels": [
+				"Nommer un enchaînement d'opérations avec le vocabulaire (somme, produit, quotient…) : (3 + 5) × 2 est « le produit de la somme de 3 et 5 par 2 ».",
+				"Écrire l'enchaînement d'opérations décrit par une phrase (« le quotient de 12 par la somme de 2 et 4 » = ?)."
+			],
+			"source": "famille M9 dans les deux sens"
+		},
+		{
+			"code": "6-181",
+			"current": "Voir dans l'espace des assemblages de cubes : passage, dans les deux sens, entre l'objet à trois dimensions et ses diverses représentations à deux dimensions ; dénombrements",
+			"labels": [
+				"Associer à un assemblage de cubes ses représentations planes (vue de dessus, de face…).",
+				"Retrouver un assemblage de cubes à partir de ses représentations planes.",
+				"Dénombrer les cubes d'un assemblage."
+			],
+			"source": "famille M9 dans les deux sens"
+		},
+		{
+			"code": "CM1-030",
+			"current": "Passer d'une écriture sous forme d'une fraction décimale ou d'une somme de fractions décimales à une écriture à virgule et réciproquement",
+			"labels": [
+				"Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?).",
+				"Écrire un nombre à virgule sous forme de fraction décimale ou de somme de fractions décimales (2,37 = ?/100)."
+			],
+			"source": "famille M9 dans les deux sens"
+		},
+		{
+			"code": "CM2-030",
+			"current": "Passer d'une écriture sous forme d'une fraction décimale ou de la somme de fractions décimales à une écriture à virgule et réciproquement",
+			"labels": [
+				"Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?).",
+				"Écrire un nombre à virgule sous forme de fraction décimale ou de somme de fractions décimales (2,37 = ?/100)."
+			],
+			"source": "famille M9 dans les deux sens"
+		},
+		{
+			"code": "5-013",
+			"current": "Définir l'opposé et la valeur absolue d'un nombre.",
+			"labels": [
+				"Donner l'opposé d'un nombre relatif (opposé de −3 = ?).",
+				"Donner la valeur absolue d'un nombre relatif (valeur absolue de −3 = ?)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "6-157",
+			"current": "Effectuer des calculs sur des horaires et des durées",
+			"labels": [
+				"Calculer un horaire à partir d'un horaire et d'une durée (départ 9 h 40, durée 1 h 35 : arrivée ?).",
+				"Calculer sur des durées (1 h 40 min + 2 h 35 min = ?)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "3-036",
+			"current": "Traduire une augmentation ou une diminution en pourcentages.",
+			"labels": [
+				"Traduire une augmentation en pourcentage.",
+				"Traduire une diminution en pourcentage."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "3-045",
+			"current": "Déterminer graphiquement les coefficients d'une fonction affine.",
+			"labels": [
+				"Lire graphiquement l'ordonnée à l'origine d'une fonction affine.",
+				"Lire graphiquement le coefficient directeur d'une fonction affine."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "4-029",
+			"current": "Connaitre le volume de la pyramide et du cône de révolution.",
+			"labels": [
+				"Calculer le volume d'une pyramide (V = B × h / 3).",
+				"Calculer le volume d'un cône de révolution (V = π r² h / 3)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "4-048",
+			"current": "Calculer la probabilité d'un évènement et de l'évènement contraire.",
+			"labels": [
+				"Calculer la probabilité d'un évènement.",
+				"Calculer la probabilité de l'évènement contraire (P(non A) = 1 − P(A))."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "4-057",
+			"current": "Rendre compte d'une augmentation ou une diminution exprimée en pourcentages au moyen d'un coefficient multiplicateur",
+			"labels": [
+				"Traduire une augmentation de t % par un coefficient multiplicateur (+ 20 % → × 1,2).",
+				"Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "4-060",
+			"current": "Savoir appliquer un programme de calcul à deux (plusieurs) étapes à un nombre simple puis à une variable.",
+			"labels": [
+				"Appliquer un programme de calcul à un nombre donné.",
+				"Appliquer un programme de calcul à une variable (écrire l'expression obtenue en fonction de x)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "5-051",
+			"current": "Connaitre et convertir des unités usuelles (volume et capacité).",
+			"labels": [
+				"Convertir des unités de volume (m³, dm³, cm³).",
+				"Convertir entre unités de volume et de contenance (1 L = 1 dm³)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "5-076",
+			"current": "Calculer des effectifs et des fréquences (exprimées sous forme décimale, fractionnaire ou de pourcentage).",
+			"labels": [
+				"Calculer des effectifs à partir de données.",
+				"Calculer une fréquence (sous forme décimale, fractionnaire ou de pourcentage)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "5-086",
+			"current": "Calculer, appliquer des proportions, des pourcentages.",
+			"labels": [
+				"Calculer une proportion ou un pourcentage (part du tout : 12 sur 48 = ? %).",
+				"Appliquer une proportion ou un pourcentage à une quantité (25 % de 48 = ?)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "CE1-063",
+			"current": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (pour des intervalles de temps situés dans une même journée, avec des heures données en heures entières, en heures et demi-heure ou en heures et quarts d'heure).",
+			"labels": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "CE2-059",
+			"current": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (pour des intervalles de temps situés dans une même journée).",
+			"labels": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "CM1-033",
+			"current": "Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal",
+			"labels": [
+				"Donner la partie entière d'un nombre décimal (partie entière de 3,7 = ?).",
+				"Donner l'arrondi à l'entier d'un nombre décimal (arrondi de 3,7 = ?)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "CM1-094",
+			"current": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure et minute)",
+			"labels": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "CM2-033",
+			"current": "Savoir donner la partie entière et l'arrondi à l'entier d'un nombre décimal",
+			"labels": [
+				"Donner la partie entière d'un nombre décimal (partie entière de 3,7 = ?).",
+				"Donner l'arrondi à l'entier d'un nombre décimal (arrondi de 3,7 = ?)."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "CM2-084",
+			"current": "Comparer et mesurer des durées écoulées entre deux instants affichés sur une horloge (instants et durées sont exprimés en heure, minute et seconde)",
+			"labels": [
+				"Mesurer la durée écoulée entre deux instants affichés sur une horloge.",
+				"Comparer deux durées écoulées entre des instants affichés sur une horloge."
+			],
+			"source": "famille M10 deux notions"
+		},
+		{
+			"code": "3-016",
+			"current": "Manipuler les trois identités remarquables pour développer et factoriser : a² + 2ab + b² = (a + b)² ; a² − 2ab + b² = (a − b)² ; a² − b² = (a − b)(a + b).",
+			"labels": [
+				"Développer avec les identités remarquables ((x + 3)² = ?).",
+				"Factoriser avec les identités remarquables (x² − 9 = ?)."
+			],
+			"source": "famille M11 développer / factoriser"
+		},
+		{
+			"code": "5-045",
+			"current": "Résoudre des équations du type ax = c ou x + b = c par des méthodes arithmétiques s'appuyant sur les opérations inverses.",
+			"labels": [
+				"Résoudre une équation du type x + b = c (x + 7 = 12).",
+				"Résoudre une équation du type ax = c (3x = 12)."
+			],
+			"source": "famille M12 deux types d'équations"
+		},
+		{
+			"code": "5-044",
+			"current": "Modéliser des problèmes relevant des opérations à trous par des équations du type ax = c ou x + b = c.",
+			"labels": [
+				"Modéliser un problème par une équation du type x + b = c.",
+				"Modéliser un problème par une équation du type ax = c."
+			],
+			"source": "famille M12 deux types d'équations"
+		},
+		{
+			"code": "3-014",
+			"current": "Résoudre analytiquement et graphiquement une inéquation du premier degré du type ax ⩾ b.",
+			"labels": [
+				"Résoudre par le calcul une inéquation du premier degré (3x ⩾ 12).",
+				"Résoudre graphiquement une inéquation du premier degré."
+			],
+			"source": "famille M13 deux méthodes / deux objets"
+		},
+		{
+			"code": "3-042",
+			"current": "Résoudre graphiquement des équations et des inéquations linéaires.",
+			"labels": [
+				"Résoudre graphiquement une équation linéaire (f(x) = 6).",
+				"Résoudre graphiquement une inéquation linéaire (f(x) ⩽ 6)."
+			],
+			"source": "famille M13 deux méthodes / deux objets"
+		},
+		{
+			"code": "3-044",
+			"current": "Définir et utiliser les fonctions affines.",
+			"labels": [
+				"Reconnaître une fonction affine (expression ou droite).",
+				"Utiliser une fonction affine donnée par son expression (calculer une image : f(3) = ?)."
+			],
+			"source": "famille M14 définir / utiliser"
+		},
+		{
+			"code": "3-041",
+			"current": "Définir et utiliser les fonctions linéaires.",
+			"labels": [
+				"Reconnaître une fonction linéaire (expression ou droite passant par l'origine).",
+				"Utiliser une fonction linéaire donnée par son expression (calculer une image : f(3) = ?)."
+			],
+			"source": "famille M14 définir / utiliser"
+		},
+		{
+			"code": "3-030",
+			"current": "Construire et utiliser des boites à moustache pour représenter les valeurs de position d'une série statistique.",
+			"labels": [
+				"Construire la boîte à moustaches d'une série statistique.",
+				"Lire une boîte à moustaches (médiane, quartiles, étendue)."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "4-009",
+			"current": "Calculer et représenter la fraction d'une fraction, d'un nombre, d'une quantité.",
+			"labels": [
+				"Calculer la fraction d'une fraction, d'un nombre ou d'une quantité (2/3 de 3/5 = ?).",
+				"Représenter la fraction d'une fraction ou d'une quantité (par un schéma)."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "5-062",
+			"current": "Définir et tracer les hauteurs dans un triangle.",
+			"labels": [
+				"Définir une hauteur d'un triangle (quel segment est la hauteur issue de A ?).",
+				"Tracer une hauteur d'un triangle."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "5-064",
+			"current": "Définir et tracer les médianes dans un triangle.",
+			"labels": [
+				"Définir une médiane d'un triangle (quel segment est la médiane issue de A ?).",
+				"Tracer une médiane d'un triangle."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "5-070",
+			"current": "Utiliser une propriété caractéristique sur les diagonales ou les côtés pour construire des parallélogrammes ou donner la nature du quadrilatère.",
+			"labels": [
+				"Donner la nature d'un quadrilatère à l'aide d'une propriété de ses côtés ou de ses diagonales.",
+				"Construire un parallélogramme à l'aide d'une propriété de ses côtés ou de ses diagonales."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "6-178",
+			"current": "Connaître et construire le cercle circonscrit à un triangle",
+			"labels": [
+				"Connaître le cercle circonscrit à un triangle (son centre est le point de concours des médiatrices).",
+				"Construire le cercle circonscrit à un triangle."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CE1-070",
+			"current": "Reconnaitre, nommer et décrire un cercle, un carré, un rectangle, un triangle, un triangle rectangle en utilisant le vocabulaire approprié.",
+			"labels": [
+				"Reconnaître et nommer une figure plane usuelle (quelle est cette figure ?).",
+				"Décrire une figure plane usuelle avec le vocabulaire approprié (côtés, sommets, angles droits)."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CE2-068",
+			"current": "Reconnaitre, nommer et décrire le carré, le rectangle, le triangle, le triangle rectangle et le losange.",
+			"labels": [
+				"Reconnaître et nommer une figure plane usuelle (quelle est cette figure ?).",
+				"Décrire une figure plane usuelle avec le vocabulaire approprié (côtés, sommets, angles droits)."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CM1-100",
+			"current": "Reconnaître et utiliser la notion de perpendicularité",
+			"labels": [
+				"Reconnaître des droites perpendiculaires.",
+				"Tracer la droite perpendiculaire à une droite donnée passant par un point."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CM1-101",
+			"current": "Reconnaître et utiliser la notion de parallélisme",
+			"labels": [
+				"Reconnaître des droites parallèles.",
+				"Tracer la droite parallèle à une droite donnée passant par un point."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CM2-089",
+			"current": "Reconnaître et utiliser la notion de perpendicularité",
+			"labels": [
+				"Reconnaître des droites perpendiculaires.",
+				"Tracer la droite perpendiculaire à une droite donnée passant par un point."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CM2-090",
+			"current": "Reconnaître et utiliser la notion de parallélisme",
+			"labels": [
+				"Reconnaître des droites parallèles.",
+				"Tracer la droite parallèle à une droite donnée passant par un point."
+			],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "CP-069",
+			"current": "Construire et compléter un tableau à double entrée.",
+			"labels": ["Compléter un tableau à double entrée.", "Construire un tableau à double entrée."],
+			"source": "famille M15 reconnaître ou définir / tracer ou construire"
+		},
+		{
+			"code": "6-195",
+			"current": "Produire et exécuter une séquence d'instructions",
+			"labels": [
+				"Exécuter une séquence d'instructions (résultat pour un nombre de départ donné).",
+				"Produire une séquence d'instructions pour obtenir un résultat donné."
+			],
+			"source": "famille M16 exécuter / produire"
+		},
+		{
+			"code": "CM2-067",
+			"current": "Exécuter ou produire un programme de calcul",
+			"labels": [
+				"Exécuter un programme de calcul (résultat pour un nombre de départ donné).",
+				"Produire un programme de calcul pour obtenir un résultat donné."
+			],
+			"source": "famille M16 exécuter / produire"
+		},
+		{
+			"code": "5-006",
+			"current": "Nommer un calcul, distinguer sommes et produits, termes et facteurs.",
+			"labels": [
+				"Nommer un calcul : dire s'il est une somme ou un produit (3 + 4 × 5 est une somme).",
+				"Identifier les termes d'une somme ou les facteurs d'un produit."
+			],
+			"source": "famille M17 deux vocabulaires"
+		},
+		{
+			"code": "CM2-008",
+			"current": "Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné ou si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10",
+			"labels": [
+				"Déterminer si un nombre entier inférieur ou égal à 10 est un diviseur d'un nombre entier donné (7 est-il un diviseur de 56 ?).",
+				"Déterminer si un nombre entier donné est un multiple d'un nombre entier inférieur ou égal à 10 (56 est-il un multiple de 7 ?)."
+			],
+			"source": "famille M17 deux vocabulaires"
+		},
+		{
+			"code": "5-090",
+			"current": "Reconnaitre une situation de proportionnalité à partir d'un tableau ou d'un graphique.",
+			"labels": [
+				"Reconnaître une situation de proportionnalité à partir d'un tableau (quotients égaux).",
+				"Reconnaître une situation de proportionnalité à partir d'un graphique (points alignés avec l'origine)."
+			],
+			"source": "famille M18 deux supports, deux techniques"
+		},
+		{
+			"code": "CE1-082",
+			"current": "Lire et interpréter les données d'un diagramme en barres.",
+			"labels": [
+				"Lire une donnée sur un diagramme en barres (combien d'élèves ont choisi le foot ?).",
+				"Interpréter les données d'un diagramme en barres (quel sport est le plus choisi ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CE1-089",
+			"current": "Lire et interpréter les données d'un tableau à double entrée.",
+			"labels": [
+				"Lire une donnée dans un tableau à double entrée (combien de filles mangent à la cantine le lundi ?).",
+				"Interpréter les données d'un tableau à double entrée (quel jour y a-t-il le plus d'élèves à la cantine ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CE2-075",
+			"current": "Lire et interpréter les données d'un tableau à double entrée.",
+			"labels": [
+				"Lire une donnée dans un tableau à double entrée (combien de filles mangent à la cantine le lundi ?).",
+				"Interpréter les données d'un tableau à double entrée (quel jour y a-t-il le plus d'élèves à la cantine ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CE2-083",
+			"current": "Lire et interpréter les données d'un diagramme en barres.",
+			"labels": [
+				"Lire une donnée sur un diagramme en barres (combien d'élèves ont choisi le foot ?).",
+				"Interpréter les données d'un diagramme en barres (combien d'élèves de plus pour le foot que pour le basket ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM1-121",
+			"current": "Lire et interpréter les données d'un tableau à simple entrée",
+			"labels": [
+				"Lire une donnée dans un tableau à simple entrée (quelle est la population de Lyon ?).",
+				"Interpréter les données d'un tableau à simple entrée (quelle ville est la plus peuplée ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM1-137",
+			"current": "Lire et interpréter les données d'un tableau à double entrée",
+			"labels": [
+				"Lire une donnée dans un tableau à double entrée (combien de garçons pratiquent la natation ?).",
+				"Interpréter les données d'un tableau à double entrée (quel sport attire le plus de filles ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM1-138",
+			"current": "Lire et interpréter les données d'un diagramme en barres",
+			"labels": [
+				"Lire une donnée sur un diagramme en barres (combien de livres ont été prêtés en mars ?).",
+				"Interpréter les données d'un diagramme en barres (combien de livres de plus en mars qu'en février ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM1-139",
+			"current": "Lire et interpréter les données d'une courbe",
+			"labels": [
+				"Lire une donnée sur une courbe (quelle température à 14 h ?).",
+				"Interpréter les données d'une courbe (à quel moment la température est-elle la plus haute ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM2-107",
+			"current": "Lire et interpréter les données d'un tableau",
+			"labels": [
+				"Lire une donnée dans un tableau (quelle est la population de Lyon ?).",
+				"Interpréter les données d'un tableau (quelle ville est la plus peuplée ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM2-123",
+			"current": "Lire et interpréter les données d'un diagramme en barres",
+			"labels": [
+				"Lire une donnée sur un diagramme en barres (combien de livres ont été prêtés en mars ?).",
+				"Interpréter les données d'un diagramme en barres (combien de livres de plus en mars qu'en février ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM2-124",
+			"current": "Lire et interpréter les données d'un diagramme circulaire",
+			"labels": [
+				"Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?).",
+				"Interpréter les données d'un diagramme circulaire (quel moyen de transport est le plus utilisé ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "CM2-125",
+			"current": "Lire et interpréter les données d'une courbe",
+			"labels": [
+				"Lire une donnée sur une courbe (quelle température à 14 h ?).",
+				"Interpréter les données d'une courbe (entre quelles heures la température augmente-t-elle ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-077",
+			"current": "Lire et interpréter des informations présentées sous forme de graphiques.",
+			"labels": [
+				"Lire une donnée sur un graphique (quelle est la valeur en 2020 ?).",
+				"Interpréter les données d'un graphique (entre quelles années la valeur a-t-elle le plus augmenté ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-094",
+			"current": "Lire et interpréter un tableau de valeurs.",
+			"labels": [
+				"Lire une donnée dans un tableau de valeurs (quelle est l'image de 3 ?).",
+				"Interpréter les données d'un tableau de valeurs (la grandeur augmente-t-elle quand x augmente ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-096",
+			"current": "Lire et interpréter un graphique cartésien donné par une courbe ou un nuage de points.",
+			"labels": [
+				"Lire une donnée sur un graphique cartésien, courbe ou nuage de points (quelle est l'ordonnée du point d'abscisse 2 ?).",
+				"Interpréter les données d'un graphique cartésien, courbe ou nuage de points (pour quelles valeurs la grandeur dépasse-t-elle 10 ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-109",
+			"current": "Lire et interpréter des informations présentées sous forme de tableaux.",
+			"labels": [
+				"Lire une donnée dans un tableau (combien d'élèves ont 12 ans ?).",
+				"Interpréter les données d'un tableau (quel âge est le plus fréquent ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-110",
+			"current": "Lire et interpréter des informations présentées sous forme de diagrammes en barres.",
+			"labels": [
+				"Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?).",
+				"Interpréter les données d'un diagramme en barres (quel âge est le plus fréquent ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-111",
+			"current": "Lire et interpréter des informations présentées sous forme de diagrammes circulaires.",
+			"labels": [
+				"Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?).",
+				"Interpréter les données d'un diagramme circulaire (quel moyen de transport est le plus utilisé ?)."
+			],
+			"source": "famille M19 lire / interpréter"
+		},
+		{
+			"code": "5-080",
+			"current": "Calculer et interpréter la moyenne simple d'une série de données.",
+			"labels": [
+				"Calculer la moyenne simple d'une série de données (12, 15, 9, 14 → ?).",
+				"Interpréter la moyenne simple d'une série de données (une moyenne de 12 veut-elle dire que chacun a 12 ?)."
+			],
+			"source": "famille M20 calculer / interpréter"
+		},
+		{
+			"code": "4-040",
+			"current": "Déterminer une médiane et l'interpréter dans le cas d'une série de petit effectif présentée sous forme de données brutes.",
+			"labels": [
+				"Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?).",
+				"Interpréter la médiane d'une série de petit effectif (que dire des valeurs si la médiane vaut 8 ?)."
+			],
+			"source": "famille M20 calculer / interpréter"
+		},
+		{
+			"code": "4-041",
+			"current": "Calculer et interpréter l'étendue d'une série présentée sous forme de données brutes, d'un tableau, d'un diagramme en barres, d'un diagramme circulaire.",
+			"labels": [
+				"Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme.",
+				"Interpréter l'étendue d'une série (laquelle des deux classes a les notes les plus dispersées ?)."
+			],
+			"source": "famille M20 calculer / interpréter"
+		},
+		{
+			"code": "CP-003",
+			"current": "Connaitre la suite écrite et la suite orale des nombres jusqu'à cent.",
+			"labels": [
+				"Connaître la suite écrite des nombres jusqu'à cent (écris le nombre qui suit 99).",
+				"Connaître la suite orale des nombres jusqu'à cent (récite la suite de 90 à 100, en classe)."
+			],
+			"source": "cas écarté e2 (scinder)"
+		},
+		{
+			"code": "CE1-004",
+			"current": "Connaitre la suite écrite et la suite orale des nombres jusqu'à mille.",
+			"labels": [
+				"Connaître la suite écrite des nombres jusqu'à mille (écris le nombre qui suit 999).",
+				"Connaître la suite orale des nombres jusqu'à mille (récite la suite de 990 à 1 000, en classe)."
+			],
+			"source": "cas écarté e2 (scinder)"
+		},
+		{
+			"code": "CE2-004",
+			"current": "Connaitre la suite écrite et la suite orale des nombres jusqu'à dix-mille.",
+			"labels": [
+				"Connaître la suite écrite des nombres jusqu'à dix mille (écris le nombre qui suit 9 999).",
+				"Connaître la suite orale des nombres jusqu'à dix mille (récite la suite de 9 990 à 10 000, en classe)."
+			],
+			"source": "cas écarté e2 (scinder)"
+		},
+		{
+			"code": "CM1-004",
+			"current": "Connaître la suite écrite et la suite orale des nombres jusqu'à 999 999",
+			"labels": [
+				"Connaître la suite écrite des nombres jusqu'à 999 999 (écris le nombre qui suit 99 999).",
+				"Connaître la suite orale des nombres jusqu'à 999 999 (récite la suite de 99 990 à 100 000, en classe)."
+			],
+			"source": "cas écarté e2 (scinder)"
+		},
+		{
+			"code": "CM2-002",
+			"current": "Connaître la suite écrite et la suite orale des nombres jusqu'à 999 999 999",
+			"labels": [
+				"Connaître la suite écrite des nombres jusqu'à 999 999 999 (écris le nombre qui suit 999 999).",
+				"Connaître la suite orale des nombres jusqu'à 999 999 999 (récite la suite de 999 990 à 1 000 000, en classe)."
+			],
+			"source": "cas écarté e2 (scinder)"
+		},
+		{
+			"code": "6-134",
+			"current": "Ordonner une liste de nombres écrits sous forme de fractions ou de nombres mixtes",
+			"labels": [
+				"Ordonner une liste de fractions (range 3/4 ; 2/3 ; 5/6).",
+				"Ordonner une liste de nombres mixtes (range 2 + 1/4 ; 1 + 3/4 ; 2 + 1/3)."
+			],
+			"source": "cas écarté e7 (scinder)"
+		},
+		{
+			"code": "CM1-018",
+			"current": "Savoir placer une fraction ou la somme d'un nombre entier et d'une fraction inférieure à un sur une demi-droite graduée",
+			"labels": [
+				"Placer une fraction sur une demi-droite graduée (place 3/4).",
+				"Placer la somme d'un entier et d'une fraction inférieure à un sur une demi-droite graduée (place 2 + 1/4)."
+			],
+			"source": "cas écarté e7 (scinder)"
+		},
+		{
+			"code": "CM2-017",
+			"current": "Placer une fraction ou la somme d'un nombre entier et d'une fraction inférieure à un sur une demi-droite graduée",
+			"labels": [
+				"Placer une fraction sur une demi-droite graduée (place 3/4).",
+				"Placer la somme d'un entier et d'une fraction inférieure à un sur une demi-droite graduée (place 2 + 1/4)."
+			],
+			"source": "cas écarté e7 (scinder)"
+		},
+		{
+			"code": "5-010",
+			"current": "Connaitre les critères de divisibilité par 3 et par 9.",
+			"labels": [
+				"Connaître le critère de divisibilité par 3 (4 518 est-il divisible par 3 ?).",
+				"Connaître le critère de divisibilité par 9 (4 518 est-il divisible par 9 ?)."
+			],
+			"source": "cas écarté e19 (scinder)"
+		},
+		{
+			"code": "5-005",
+			"current": "Traduire un problème, une succession donnée d'opérations, un programme de calcul, en une seule expression, en faisant appel ou non à des parenthèses.",
+			"labels": [
+				"Traduire un problème en une seule expression (Léo achète 3 cahiers à 2 € et un stylo à 1 € : écris le calcul du prix).",
+				"Traduire une succession donnée d'opérations en une seule expression (ajoute 3 à 5, puis multiplie le résultat par 2 : écris le calcul).",
+				"Traduire un programme de calcul en une seule expression (choisis 5, ajoute 3, multiplie par 2 : écris l'expression)."
+			],
+			"source": "cas écarté e27 (scinder, trois points validés)"
+		},
+		{
+			"code": "5-058",
+			"current": "Connaitre la somme des angles d'un triangle et savoir la démontrer.",
+			"labels": [
+				"Connaître la somme des angles d'un triangle (deux angles de 40° et 65° : le troisième ?).",
+				"Savoir démontrer la somme des angles d'un triangle (démontre que la somme vaut 180°, sur papier)."
+			],
+			"source": "cas écarté e35 (5-058 seulement)"
+		},
+		{
+			"code": "CP-015",
+			"current": "Comprendre et utiliser les symboles « + », « - » et « = ».",
+			"labels": [
+				"Comprendre et utiliser le symbole « + » (5 + 3 : que veut dire ce signe ?).",
+				"Comprendre et utiliser le symbole « − » (8 − 3 : que veut dire ce signe ?).",
+				"Comprendre et utiliser le symbole « = » (complète : 5 + 3 … 8)."
+			],
+			"source": "avis e9 (en 3)"
+		},
+		{
+			"code": "CE2-017",
+			"current": "Comprendre et utiliser les mots « facteur », « produit » et « multiple ».",
+			"labels": [
+				"Comprendre et utiliser les mots « facteur » et « produit » (dans 4 × 6 = 24, quel est le produit ?).",
+				"Comprendre et utiliser le mot « multiple » (24 est-il un multiple de 6 ?)."
+			],
+			"source": "avis e15"
+		},
+		{
+			"code": "3-022",
+			"current": "Connaitre et appliquer le théorème de Thalès (configurations des triangles emboités et configuration dite du papillon).",
+			"labels": [
+				"Reconnaître une configuration où le théorème de Thalès s'applique : triangles emboîtés ou papillon (les droites (BC) et (MN) sont-elles parallèles ? quelle configuration ?).",
+				"Écrire l'égalité des rapports du théorème de Thalès dans une configuration donnée (AM/AB = … = …).",
+				"Appliquer le théorème de Thalès pour calculer une longueur (AM = 3, AB = 5, BC = 7 : calcule MN)."
+			],
+			"source": "avis e43 (en 3)"
+		},
+		{
+			"code": "3-023",
+			"current": "Connaitre et utiliser les lignes trigonométriques dans le triangle rectangle : cosinus, sinus, tangente.",
+			"labels": [
+				"Connaître les lignes trigonométriques dans le triangle rectangle : écrire cosinus, sinus et tangente d'un angle (cos(B) = … / …).",
+				"Utiliser les lignes trigonométriques pour calculer une longueur ou un angle dans un triangle rectangle (BC = 6, angle B = 40° : calcule AB)."
+			],
+			"source": "avis e43"
+		}
+	]
+}

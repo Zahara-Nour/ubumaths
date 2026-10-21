@@ -1,0 +1,779 @@
+{
+	"template_id": "4df558f0-37b9-4093-a3e4-fdc45a05e847",
+	"titre": "Carré et racine carrée",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Racines carrées > Manipuler > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "4-019",
+			"libelle_point": "Comprendre et connaitre la définition de la racine carrée d'un nombre positif.",
+			"noeud_actuel": "Nombres et calculs > Racines carrées : calculs > techniques de calcul",
+			"noeud_cible": "Nombres et calculs > Racines carrées : sens et écritures > définition",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 4,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..50"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "(sqrt(a))^2"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 48,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 48,
+						"exemples": [
+							"(sqrt(2))^2",
+							"(sqrt(17))^2",
+							"(sqrt(3))^2",
+							"(sqrt(18))^2",
+							"(sqrt(39))^2",
+							"(sqrt(5))^2",
+							"(sqrt(32))^2",
+							"(sqrt(43))^2",
+							"(sqrt(46))^2",
+							"(sqrt(27))^2",
+							"(sqrt(19))^2",
+							"(sqrt(22))^2"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 50,
+							"nb_distinctes": 48,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$\\left( \\sqrt{50} \\right)^2 = [?]$$",
+					"reponse": ["50"],
+					"variables": {
+						"a": "50",
+						"expression1": "(sqrt(50))^2"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\left( \\sqrt{2} \\right)^2 = [?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"expression1": "(sqrt(2))^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\left( \\sqrt{17} \\right)^2 = [?]$$",
+					"reponse": ["17"],
+					"variables": {
+						"a": "17",
+						"expression1": "(sqrt(17))^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$\\left( \\sqrt{3} \\right)^2 = [?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"expression1": "(sqrt(3))^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule.\n\n$$\\left( \\sqrt{18} \\right)^2 = [?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "18",
+						"expression1": "(sqrt(18))^2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..50"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "sqrt(a^2)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:{{expression2}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 48,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 48,
+						"exemples": [
+							"sqrt(2^2)",
+							"sqrt(17^2)",
+							"sqrt(3^2)",
+							"sqrt(18^2)",
+							"sqrt(39^2)",
+							"sqrt(5^2)",
+							"sqrt(32^2)",
+							"sqrt(43^2)",
+							"sqrt(46^2)",
+							"sqrt(27^2)",
+							"sqrt(19^2)",
+							"sqrt(22^2)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 50,
+							"nb_distinctes": 48,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$\\sqrt{50^2} = [?]$$",
+					"reponse": ["50"],
+					"variables": {
+						"a": "50",
+						"expression2": "sqrt(50^2)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\sqrt{2^2} = [?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"expression2": "sqrt(2^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\sqrt{17^2} = [?]$$",
+					"reponse": ["17"],
+					"variables": {
+						"a": "17",
+						"expression2": "sqrt(17^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$\\sqrt{3^2} = [?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"expression2": "sqrt(3^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule.\n\n$$\\sqrt{18^2} = [?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "18",
+						"expression2": "sqrt(18^2)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..50"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "sqrt((-a)^2)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression3}}$$",
+				"reponses_brutes": ["{{eval:{{expression3}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 48,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 48,
+						"exemples": [
+							"sqrt((-2)^2)",
+							"sqrt((-17)^2)",
+							"sqrt((-3)^2)",
+							"sqrt((-18)^2)",
+							"sqrt((-39)^2)",
+							"sqrt((-5)^2)",
+							"sqrt((-32)^2)",
+							"sqrt((-43)^2)",
+							"sqrt((-46)^2)",
+							"sqrt((-27)^2)",
+							"sqrt((-19)^2)",
+							"sqrt((-22)^2)"
+						],
+						"nombres_contenus": {
+							"min": -50,
+							"max": 2,
+							"nb_distinctes": 49,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -50,
+				"max": 2,
+				"nb_distinctes": 49,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -50,
+				"max": 50,
+				"nb_distinctes": 96,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"puissance": "300/300",
+					"racine": "300/300",
+					"parenthèses": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$\\sqrt{\\left( -50 \\right)^2} = [?]$$",
+					"reponse": ["50"],
+					"variables": {
+						"a": "50",
+						"expression3": "sqrt((-50)^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\sqrt{\\left( -2 \\right)^2} = [?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"expression3": "sqrt((-2)^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\sqrt{\\left( -17 \\right)^2} = [?]$$",
+					"reponse": ["17"],
+					"variables": {
+						"a": "17",
+						"expression3": "sqrt((-17)^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$\\sqrt{\\left( -3 \\right)^2} = [?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"expression3": "sqrt((-3)^2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule.\n\n$$\\sqrt{\\left( -18 \\right)^2} = [?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "18",
+						"expression3": "sqrt((-18)^2)"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..50"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "sqrt(a)*sqrt(a)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression4}}$$",
+				"reponses_brutes": ["{{eval:{{expression4}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 48,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 48,
+						"exemples": [
+							"sqrt(2)*sqrt(2)",
+							"sqrt(17)*sqrt(17)",
+							"sqrt(3)*sqrt(3)",
+							"sqrt(18)*sqrt(18)",
+							"sqrt(39)*sqrt(39)",
+							"sqrt(5)*sqrt(5)",
+							"sqrt(32)*sqrt(32)",
+							"sqrt(43)*sqrt(43)",
+							"sqrt(46)*sqrt(46)",
+							"sqrt(27)*sqrt(27)",
+							"sqrt(19)*sqrt(19)",
+							"sqrt(22)*sqrt(22)"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 50,
+							"nb_distinctes": 48,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 48
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 48,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"racine": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 37,
+					"enonce": "Calcule.\n\n$$\\sqrt{50} \\times \\sqrt{50} = [?]$$",
+					"reponse": ["50"],
+					"variables": {
+						"a": "50",
+						"expression4": "sqrt(50)*sqrt(50)"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$\\sqrt{2} \\times \\sqrt{2} = [?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"expression4": "sqrt(2)*sqrt(2)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$\\sqrt{17} \\times \\sqrt{17} = [?]$$",
+					"reponse": ["17"],
+					"variables": {
+						"a": "17",
+						"expression4": "sqrt(17)*sqrt(17)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$\\sqrt{3} \\times \\sqrt{3} = [?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3",
+						"expression4": "sqrt(3)*sqrt(3)"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule.\n\n$$\\sqrt{18} \\times \\sqrt{18} = [?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "18",
+						"expression4": "sqrt(18)*sqrt(18)"
+					}
+				}
+			]
+		}
+	]
+}

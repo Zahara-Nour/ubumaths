@@ -233,9 +233,9 @@ describe('§5 annuler « Relancer » (Q-L5-3)', () => {
 		a.relaunch();
 		const after = faces(a);
 
-		expect(a.undoGrid()).toEqual({ ok: true });
+		expect(a.undo()).not.toBeNull();
 		expect(faces(a)).toEqual(before);
-		expect(a.redoGrid()).toEqual({ ok: true });
+		expect(a.redo()).not.toBeNull();
 		expect(faces(a)).toEqual(after);
 	});
 

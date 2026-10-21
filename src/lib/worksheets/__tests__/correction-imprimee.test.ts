@@ -78,7 +78,6 @@ const worksheet = {
 	version: 1,
 	published_at: null,
 	archived_at: null,
-	template_id: null,
 	estimated_duration_minutes: null,
 	total_points: null,
 	grades: [],

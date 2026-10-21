@@ -7,7 +7,13 @@
  * colle plus de bandeau sur la fiche : le corrigé a son propre gabarit.
  */
 import { describe, expect, it } from 'vitest';
-import { BUILT_IN_STYLES, DEFAULT_STYLE_ID, resolveTemplate } from '../styles';
+import {
+	BUILT_IN_STYLES,
+	BUILT_IN_STYLE_OPTIONS,
+	DEFAULT_STYLE_ID,
+	printedStyleId,
+	resolveTemplate
+} from '../styles';
 import {
 	CORRECTIONS_PART,
 	DEFAULT_TEMPLATES,
@@ -15,6 +21,10 @@ import {
 	STUDENT_STYLE_TEMPLATE
 } from '../default-templates';
 import { generateWorksheetTypst } from '../../generators/worksheet-generator';
+import {
+	correctionFontBlocks,
+	outsideCorrectionFontBlocks
+} from '../../__tests__/correction-font-blocks';
 import type {
 	InstanceData,
 	WorksheetConfig,
@@ -47,14 +57,14 @@ const INSTANCE: InstanceData = {
 	]
 };
 
-function worksheet(templateId: string | null): WorksheetRow {
+function worksheet(styleId: string | null): WorksheetRow {
 	return {
 		id: 'w-1',
 		title: 'Fiche test',
 		description: null,
 		type: 'worksheet',
 		config: {},
-		template_id: templateId,
+		style_id: styleId,
 		estimated_duration_minutes: null,
 		total_points: null
 	} as unknown as WorksheetRow;
@@ -121,6 +131,51 @@ describe('styles fournis par Chiphre', () => {
 	});
 });
 
+describe('« 2 colonnes - paysage » (David, 2026-10-16)', () => {
+	const LANDSCAPE_ID = DEFAULT_TEMPLATE_IDS.studentStyleLandscape;
+
+	/** Le Typst d'une forme, l'orientation paysage retirée */
+	function asPortrait(typst: string): string {
+		return typst.replace('A4 paysage sur', 'A4 sur').replace('\n  flipped: true,', '');
+	}
+
+	it('proposé au menu, sous ce nom', () => {
+		expect(BUILT_IN_STYLE_OPTIONS.find((s) => s.id === LANDSCAPE_ID)?.name).toBe(
+			'2 colonnes - paysage'
+		);
+	});
+
+	it('ses quatre formes sont en A4 paysage, sur deux colonnes', () => {
+		for (const form of FORMS) {
+			const resolved = resolveTemplate(LANDSCAPE_ID, form).content;
+			expect(resolved).toContain('paper: "a4",\n  flipped: true,');
+			expect(resolved).toContain('columns: 2');
+		}
+	});
+
+	it('à l’orientation près, chaque forme est celle de « Fiche élève »', () => {
+		for (const form of FORMS) {
+			const landscape = resolveTemplate(LANDSCAPE_ID, form).content;
+			expect(landscape).not.toBe(resolveTemplate(DEFAULT_STYLE_ID, form).content);
+			expect(asPortrait(landscape)).toBe(resolveTemplate(DEFAULT_STYLE_ID, form).content);
+		}
+	});
+
+	it('« Fiche élève » reste en portrait', () => {
+		for (const form of FORMS) {
+			expect(resolveTemplate(DEFAULT_STYLE_ID, form).content).not.toContain('flipped');
+		}
+	});
+
+	it('le générateur imprime la fiche et le corrigé en paysage', () => {
+		for (const mode of ['worksheet', 'correction'] as const) {
+			const typst = generate(mode, { templateId: LANDSCAPE_ID });
+			expect(typst).toContain('flipped: true');
+			expect(typst).toContain(mode === 'worksheet' ? 'ENONCE1' : 'CORRECTION1');
+		}
+	});
+});
+
 describe('résolution du gabarit', () => {
 	it('un autre style garde SA fiche', () => {
 		const standard = DEFAULT_TEMPLATES.find((t) => t.id === DEFAULT_TEMPLATE_IDS.standard);
@@ -176,9 +231,13 @@ describe('générateur : une forme = un gabarit', () => {
 		}
 	});
 
-	it('le corrigé ne dépend plus du style de la fiche, ni du gabarit lu en base', () => {
+	it('le corrigé ne dépend ni du style de la fiche, sauf un style qui a son propre corrigé, ni du gabarit lu en base', () => {
 		const reference = generate('correction');
-		for (const t of DEFAULT_TEMPLATES) {
+		// Sauf « 2 colonnes - paysage », qui a son propre corrigé (en paysage)
+		const others = DEFAULT_TEMPLATES.filter(
+			(t) => t.id !== DEFAULT_TEMPLATE_IDS.studentStyleLandscape
+		);
+		for (const t of others) {
 			expect(generate('correction', { templateId: t.id })).toBe(reference);
 			expect(
 				generate('correction', { templateId: t.id, template: row(t.template_content, t.id) })
@@ -239,6 +298,13 @@ describe('fiche + corrections', () => {
 		const typst = generate('worksheet', { withCorrections: 'correction' });
 		const shantell = typst.indexOf('Shantell Sans');
 		expect(shantell).toBeGreaterThan(typst.indexOf('#pagebreak()'));
+		// La correction seule : bandeau et titres des exercices en police habituelle
+		const blocks = correctionFontBlocks(typst);
+		expect(blocks.length).toBeGreaterThan(0);
+		expect(blocks.some((block) => block.includes('CORRECTION1'))).toBe(true);
+		const corrections = outsideCorrectionFontBlocks(typst.slice(typst.indexOf('#pagebreak()')));
+		expect(corrections).not.toContain('CORRECTION1');
+		expect(corrections).toContain('[CORRECTION]');
 		expect(generate('worksheet', { withCorrections: 'answers' })).not.toContain('Shantell Sans');
 		expect(
 			generate('worksheet', { withCorrections: 'correction', correctionFonts: false })
@@ -282,5 +348,29 @@ describe('points : le type de la fiche décide, quel que soit le style (ADR 0030
 		expect(gen('assessment', 'worksheet', 'perso', perso)).toMatch(POINTS);
 		const copy = row(STUDENT_STYLE_TEMPLATE.template_content, DEFAULT_STYLE_ID);
 		expect(gen('assessment', 'worksheet', DEFAULT_STYLE_ID, copy)).toMatch(POINTS);
+	});
+});
+
+// « Fiche élève » en grande taille : en paysage, sauf les Réponses (David, 2026-10-17)
+describe('printedStyleId', () => {
+	const PAYSAGE = DEFAULT_TEMPLATE_IDS.studentStyleLandscape;
+	const PROF = '550e8400-e29b-41d4-a716-446655449999';
+
+	it('« Fiche élève » (choisi ou par défaut), Grande : son jumeau paysage', () => {
+		expect(printedStyleId(DEFAULT_STYLE_ID, 'worksheet', 'large')).toBe(PAYSAGE);
+		expect(printedStyleId(null, 'correction', 'x_large')).toBe(PAYSAGE);
+		expect(printedStyleId(undefined, 'worksheet_with_corrections', 'large')).toBe(PAYSAGE);
+	});
+
+	it('Réponses, ou taille normale : le style tel quel', () => {
+		expect(printedStyleId(DEFAULT_STYLE_ID, 'answers', 'x_large')).toBe(DEFAULT_STYLE_ID);
+		expect(printedStyleId(DEFAULT_STYLE_ID, 'worksheet', 'normal')).toBe(DEFAULT_STYLE_ID);
+	});
+
+	it('autre style de Chiphre, ou style d’un prof : inchangé', () => {
+		expect(printedStyleId(DEFAULT_TEMPLATE_IDS.standard, 'worksheet', 'large')).toBe(
+			DEFAULT_TEMPLATE_IDS.standard
+		);
+		expect(printedStyleId(PROF, 'worksheet', 'large', '#set page(paper: "a4")')).toBe(PROF);
 	});
 });

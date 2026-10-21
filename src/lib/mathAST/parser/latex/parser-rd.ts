@@ -10,7 +10,7 @@
  * - Implicit multiplication detection
  * - Color stack for \textcolor nesting
  * - Tolerant and strict parsing modes
- * - Right-associative chained exponents: x^2^3 -> x^(2^3)
+ * - Chained exponents refused: x^2^3 (write x^{2^3} or {x^2}^3)
  * - Left-to-right for mixed: x_1^2 -> (x_1)^2
  *
  * Grammar:
@@ -49,6 +49,16 @@ import {
 	factorialOf
 } from '../factorial-notation';
 import { numberAfterFactorMessage } from '../number-after-factor';
+import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
+import { expectCode, unitErrorCode } from '../refusal-codes';
+import { STACKED_EXPONENTS_MESSAGE } from '../exponent-rules';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -293,7 +303,7 @@ class RDParser {
 				message ?? `Expected ${type} but got ${this.currentToken.type}`,
 				this.currentToken.position,
 				this.currentToken.length,
-				'UNEXPECTED_TOKEN'
+				expectCode(type, this.currentToken)
 			);
 		}
 		return this.advance();
@@ -451,7 +461,7 @@ class RDParser {
 	 * Addition and subtraction are left-associative
 	 */
 	private parseAdditive(): MathNode {
-		let left = this.parseMultiplicative();
+		let left = this.parseJuxtaposed();
 
 		while (this.check('PLUS') || this.check('MINUS')) {
 			// Argument de \lim : `\lim A + \lim B` = lim(A) + lim(B)
@@ -465,7 +475,7 @@ class RDParser {
 			// Check for consecutive signs: ++, +-, --, -+
 			this.checkConsecutiveSigns(opToken);
 
-			const right = this.parseMultiplicative();
+			const right = this.parseJuxtaposed();
 
 			if (isPlus) {
 				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
@@ -482,6 +492,55 @@ class RDParser {
 		}
 
 		return left;
+	}
+
+	/**
+	 * juxtaposed := multiplicative (NUMBER multiplicative)* — une durée composée
+	 * (`2~\unit{h}~30~\unit{min}`), un bloc face à `+` et `-`. Le terme qui suit est
+	 * lu avec ses opérateurs (`30\unit{min}\cdot 2`, refusé).
+	 */
+	private parseJuxtaposed(): MathNode {
+		let left = this.parseMultiplicative();
+		while (this.check('NUMBER') && endsWithQuantity(left)) {
+			const number = this.currentToken;
+			const right = this.parseMultiplicative();
+			const juxtaposed = juxtaposeAfterNumber(left, right);
+			if (juxtaposed === null) {
+				// `2\unit{m}~30` : le refus habituel d'un nombre après un facteur
+				this.error(
+					numberAfterFactorMessage(number.value),
+					number.position,
+					number.length,
+					'MISSING_OPERATOR'
+				);
+			}
+			left = this.juxtaposed(juxtaposed, number);
+			// Une couleur ouverte dans le terme se ferme ici, comme après un opérateur
+			while (this.check('RBRACE') && this.colorScopeStack.length > 0) {
+				this.advance(); // consume }
+				this.colorScopeStack.pop();
+				this.colorStack.pop();
+			}
+		}
+		return left;
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: Token): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `{1\unit{h}}{30\unit{min}}\cdot 2` : une durée composée collée à un produit ou un quotient */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
+		);
 	}
 
 	/**
@@ -512,43 +571,53 @@ class RDParser {
 
 			// Explicit multiplication operators
 			if (this.check('STAR')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'star'), operatorColor);
 			} else if (this.check('SLASH')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
 			} else if (this.check('COLON')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
 			}
 			// \cdot and \times commands
 			else if (this.checkCommand('cdot')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'dot'), operatorColor);
 			} else if (this.checkCommand('times')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
 				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
 			}
 			// Implicit multiplication
 			else if (this.shouldInsertImplicitMultiply()) {
+				const start = this.currentToken;
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(
-					MathAST.multiply(left, right, 'implicit'),
-					operatorColor
-				);
+				// `{2\unit{h}}{30\unit{min}}` : une durée composée, pas un produit
+				const juxtaposed = juxtaposeImplicit(left, right);
+				left =
+					juxtaposed === null
+						? this.applyColorWithOperator(MathAST.multiply(left, right, 'implicit'), operatorColor)
+						: this.juxtaposed(juxtaposed, start);
 			} else if (this.check('NUMBER')) {
+				// Un nombre après une grandeur : durée composée, lue par `parseJuxtaposed`
+				if (endsWithQuantity(left)) break;
 				// `x2`, `(a)2`, `\sqrt{2}3` : nombre après un facteur, refusé avec un message clair
 				const token = this.currentToken;
 				this.error(
 					numberAfterFactorMessage(token.value),
 					token.position,
 					token.length,
-					'UNEXPECTED_TOKEN'
+					'MISSING_OPERATOR'
 				);
 			} else {
 				// No more multiplication operators
@@ -600,8 +669,8 @@ class RDParser {
 	/**
 	 * power := postfix ('^' powerOperand | '_' subscriptOperand)*
 	 *
-	 * Handles both superscript and subscript with special right-associativity rules:
-	 * - x^2^3 => x^(2^3) (right-associative for chained same operator)
+	 * Handles both superscript and subscript:
+	 * - x^2^3 is refused (STACKED_EXPONENTS, see parsePowerOperand)
 	 * - x_1^2 => (x_1)^2 (left-to-right for mixed operators)
 	 */
 	private parsePower(): MathNode {
@@ -650,26 +719,20 @@ class RDParser {
 	}
 
 	/**
-	 * Parse the operand of a superscript (handles braces and right-associativity)
-	 * For x^2^3 to parse as x^(2^3):
-	 * - If braced, just parse the brace group
-	 * - If not braced, parse a single primary, then check for chained ^
+	 * Parse the operand of a superscript (a brace group or a single primary).
+	 * A second `^` right after it is refused: `x^2^3` was read x^(2^3) here and
+	 * (x^2)^3 by the custom parser (2026-10-20). TeX refuses it too.
 	 */
 	private parsePowerOperand(): MathNode {
-		if (this.check('LBRACE')) {
-			return this.parseBraceGroup();
-		}
-
-		// Parse single primary token
-		const operand = this.parsePrimary();
-
-		// Check for chained superscript (right-associativity)
+		const operand = this.check('LBRACE') ? this.parseBraceGroup() : this.parsePrimary();
 		if (this.check('CARET')) {
-			this.advance();
-			const nextOperand = this.parsePowerOperand();
-			return this.applyColor(MathAST.superscript(operand, nextOperand));
+			this.error(
+				STACKED_EXPONENTS_MESSAGE,
+				this.currentToken.position,
+				this.currentToken.length,
+				'STACKED_EXPONENTS'
+			);
 		}
-
 		return operand;
 	}
 
@@ -722,7 +785,12 @@ class RDParser {
 			const unitStr = this.parseUnitString();
 			this.expect('RBRACE', "Expected '}' after \\unit");
 			if (this.check('CARET')) {
-				this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+				this.error(
+					UNIT_EXPONENT_MESSAGE_LATEX,
+					this.currentToken.position,
+					1,
+					'UNIT_EXPONENT_OUTSIDE'
+				);
 			}
 
 			const unit = parseUnit(unitStr);
@@ -731,7 +799,7 @@ class RDParser {
 					unitErrorMessage(unitStr),
 					this.currentToken.position,
 					unitStr.length,
-					'INVALID_UNIT'
+					unitErrorCode(unitStr)
 				);
 			}
 
@@ -1690,7 +1758,12 @@ class RDParser {
 		const unitStr = this.parseUnitString();
 		this.expect('RBRACE', "Expected '}' after \\unit");
 		if (this.check('CARET')) {
-			this.error(UNIT_EXPONENT_MESSAGE_LATEX, this.currentToken.position, 1, 'INVALID_UNIT');
+			this.error(
+				UNIT_EXPONENT_MESSAGE_LATEX,
+				this.currentToken.position,
+				1,
+				'UNIT_EXPONENT_OUTSIDE'
+			);
 		}
 
 		const unit = parseUnit(unitStr);
@@ -1699,7 +1772,7 @@ class RDParser {
 				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
-				'INVALID_UNIT'
+				unitErrorCode(unitStr)
 			);
 		}
 
@@ -1754,7 +1827,7 @@ class RDParser {
 			}
 
 			if (previousEnd !== null && token.position > previousEnd) {
-				this.error(UNIT_SPACE_MESSAGE, previousEnd, 1, 'INVALID_UNIT');
+				this.error(UNIT_SPACE_MESSAGE, previousEnd, 1, 'SPACE_IN_UNIT');
 			}
 			unitStr += piece;
 			previousEnd = token.type === 'COMMAND' ? null : token.position + token.length;

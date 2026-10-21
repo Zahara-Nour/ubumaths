@@ -1,0 +1,327 @@
+{
+	"template_id": "0f182533-6669-43f5-b5d8-3ce9955e9dee",
+	"titre": "Trouver l'opposé d'un nombre",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Relatifs > Apprivoiser > La définition d'un nombre négatif",
+	"mis_a_jour": "2026-10-01T06:18:15.338263+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "5-013",
+			"libelle_point": "Donner l'opposé d'un nombre relatif (opposé de −3 = ?).",
+			"noeud_actuel": "Nombres et calculs > Relatifs : sens et écritures > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "libellé « Définir l'opposé et la valeur absolue d'un nombre. » → « Donner l'opposé d'un nombre relatif (opposé de −3 = ?). »"
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..20"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est l'opposé de ce nombre ?\n\n$${{a}}$$\n\nL'opposé de ${{a}}$ est $?$.",
+				"reponses_brutes": ["-{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 20,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -20,
+						"max": -1,
+						"negatif_possible": true,
+						"nb_distinctes": 20,
+						"valeurs": [
+							-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2,
+							-1
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -20,
+				"max": -1,
+				"nb_distinctes": 20,
+				"valeurs": [
+					-20, -19, -18, -17, -16, -15, -14, -13, -12, -11, -10, -9, -8, -7, -6, -5, -4, -3, -2, -1
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -20,
+				"max": 20,
+				"nb_distinctes": 40,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 24,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$20$$\n\nL'opposé de $20$ est $[?]$.",
+					"reponse": ["-20"],
+					"variables": {
+						"a": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$1$$\n\nL'opposé de $1$ est $[?]$.",
+					"reponse": ["-1"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$7$$\n\nL'opposé de $7$ est $[?]$.",
+					"reponse": ["-7"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$16$$\n\nL'opposé de $16$ est $[?]$.",
+					"reponse": ["-16"],
+					"variables": {
+						"a": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$2$$\n\nL'opposé de $2$ est $[?]$.",
+					"reponse": ["-2"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..20"
+					}
+				],
+				"variables_variation": [],
+				"conditions": [],
+				"enonce_brut": "Quel est l'opposé de ce nombre ?\n\n$$-{{a}}$$\n\nL'opposé de $-{{a}}$ est $?$.",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 20,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 24,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$-20$$\n\nL'opposé de $-20$ est $[?]$.",
+					"reponse": ["20"],
+					"variables": {
+						"a": "20"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$-1$$\n\nL'opposé de $-1$ est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$-7$$\n\nL'opposé de $-7$ est $[?]$.",
+					"reponse": ["7"],
+					"variables": {
+						"a": "7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$-16$$\n\nL'opposé de $-16$ est $[?]$.",
+					"reponse": ["16"],
+					"variables": {
+						"a": "16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Quel est l'opposé de ce nombre ?\n\n$$-2$$\n\nL'opposé de $-2$ est $[?]$.",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2"
+					}
+				}
+			]
+		}
+	]
+}

@@ -164,8 +164,9 @@ Fichiers : `src/lib/types/list-numbering.ts`, `src/lib/stores/listNumbering.svel
   (1. 1.1. 1.1.1.). L'`id` devient une classe CSS `scheme-<id>` posée sur les `<ol>`, avec
   `enumerate-depth-<n>` ; la CSS numérote par compteurs et `::before`.
 - **Réglage** (`ListNumberingConfig`) : `scheme` (`'auto'` ou un schéma), `schemeWithNesting`,
-  `schemeWithoutNesting`. Par défaut : `auto`, `a-1-i` avec imbrication (même hiérarchie que le
-  PDF, `typst-generator.ts`), `a-i` sans.
+  `schemeWithoutNesting`. Par défaut : `auto`, `1-a-i` avec ou sans imbrication (même hiérarchie que
+  le PDF, `typst-generator.ts` ; une liste plate est numérotée 1) 2) 3), choix de David du
+  2026-10-18). Un réglage enregistré par l'admin (localStorage) garde son choix.
 - **Calcul** : `MarkdownRenderer.svelte` (`effectiveListScheme`) prend le store, fusionne la prop
   `listNumberingOverride`, et en mode `auto` choisit selon la profondeur maximale des listes de
   l'AST. `ListNode.svelte` applique la classe.

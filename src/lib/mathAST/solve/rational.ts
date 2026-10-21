@@ -20,7 +20,8 @@
  */
 
 import type { MathNode, RelationNode } from '../types';
-import type { Solution, SolveResult, SolveOptions } from './types';
+import type { PeriodicSolutionFamily, Solution, SolveResult, SolveOptions } from './types';
+import { isSolverFailure } from './types';
 import type { SolveStepRecorder } from './types';
 import { denormalize, normalize } from '../normal';
 import { equals, number } from '../factory';
@@ -28,6 +29,8 @@ import { hasVariable } from '../eval/substitute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 import { substitute } from '../eval/substitute';
 import { mapNode } from '../transforms';
+import { computeDomain } from '../domain/compute';
+import { isUniversal } from '../domain/algebra';
 
 /**
  * Maximum nesting depth for rational decomposition recursion. The
@@ -177,14 +180,137 @@ export function tryRationalDecomposition(
 
 	const status: SolveResult['status'] = validSolutions.length === 1 ? 'unique' : 'multiple';
 
+	// Numérateur à zéros PÉRIODIQUES (`cos x/(x² + 1)`, f′ de 1/sin x :
+	// −cos x/sin²x) : la famille suit, sinon seuls les zéros d'une période
+	// restaient (±π/2) et le tableau de signes ou de variations ne voyait pas
+	// 3π/2, 5π/2… Seulement quand numérateur et dénominateurs sont définis sur ℝ
+	// et qu'AUCUN membre n'annule un dénominateur : la liste ci-dessus est
+	// filtrée, une famille ne peut pas l'être membre à membre.
+	const family =
+		numResult.periodicSolutions !== undefined &&
+		definedEverywhere([numerator, ...denominatorsToCheck], variable) &&
+		familyAvoidsDenominators(numResult.periodicSolutions, denominatorsToCheck, variable, solveFn)
+			? numResult.periodicSolutions
+			: undefined;
+
 	return {
 		variable,
 		status,
 		solutions: validSolutions,
 		equationType: 'rational',
 		strategy: 'algebraic',
-		steps: [...recorder.getStepsFiltered(opts.verbosity), ...numResult.steps]
+		steps: [...recorder.getStepsFiltered(opts.verbosity), ...numResult.steps],
+		...(numResult.periodicSolutions !== undefined &&
+			family === undefined && { droppedPeriodicSolutions: numResult.periodicSolutions }),
+		...(family !== undefined && {
+			periodicSolutions: family,
+			...(numResult.displayFamilies !== undefined && {
+				displayFamilies: numResult.displayFamilies
+			}),
+			...(numResult.periodicityNote !== undefined && {
+				periodicityNote: numResult.periodicityNote
+			})
+		})
 	};
+}
+
+// =============================================================================
+// Famille périodique et valeurs interdites
+// =============================================================================
+
+/**
+ * Chaque expression est définie sur ℝ entier. Sinon un membre de la famille
+ * peut tomber hors du domaine (`cos x/√x` : −π/2 ; `cos x/tan x` : π/2, où
+ * tan n'est pas définie) : la liste des solutions est filtrée par le domaine,
+ * une famille ne le serait pas, et le tableau de signes affichait ces zéros.
+ */
+function definedEverywhere(expressions: readonly MathNode[], variable: string): boolean {
+	return expressions.every((expression) => {
+		try {
+			const result = computeDomain(expression, variable);
+			return result.unresolved === undefined && isUniversal(result.domain);
+		} catch {
+			return false;
+		}
+	});
+}
+
+/** Écart sous lequel une valeur est tenue pour un membre d'une famille. */
+const MEMBER_EPS = 1e-9;
+
+/** Plus grand dénominateur cherché pour le rapport de deux périodes. */
+const MAX_PERIOD_RATIO_DENOMINATOR = 24;
+
+/**
+ * Aucun membre de la famille n'annule un des dénominateurs : démontré en
+ * résolvant D(x) = 0. Sans solution réelle (`x² + 1`, `2 + sin x`) : vrai ;
+ * des valeurs isolées : aucune n'est un membre ; une famille (`sin²x` : kπ) :
+ * les deux familles, de périodes commensurables, sont disjointes sur une
+ * période commune. Tout le reste (D(x) = 0 non résolue, périodes
+ * incommensurables) : faux — on ne propage pas ce qu'on ne démontre pas.
+ */
+function familyAvoidsDenominators(
+	family: PeriodicSolutionFamily,
+	denominators: readonly MathNode[],
+	variable: string,
+	solveFn: (eq: RelationNode, options?: SolveOptions) => SolveResult
+): boolean {
+	return denominators.every((denominator) => {
+		let poles: SolveResult;
+		try {
+			poles = solveFn(equals(denominator, number('0')), { variable, verbosity: 'result' });
+		} catch {
+			return false;
+		}
+		if (isSolverFailure(poles) || poles.status === 'infinite') return false;
+		if (poles.solutions.some((pole) => isMemberOf(family, approximateOf(pole)))) return false;
+		if (poles.periodicSolutions === undefined) return true;
+		return familiesDisjoint(family, poles.periodicSolutions);
+	});
+}
+
+/** La valeur approchée d'une solution, `NaN` quand elle n'est pas calculable. */
+function approximateOf(solution: Solution): number {
+	return ensureApproximate(solution).approximate ?? Number.NaN;
+}
+
+/** `value` est-il un membre de la famille ? `NaN` compte pour un membre (prudence). */
+function isMemberOf(family: PeriodicSolutionFamily, value: number): boolean {
+	if (!Number.isFinite(value)) return true;
+	const period = family.periodNumeric;
+	if (!Number.isFinite(period) || period <= 0) return true;
+	return family.baseSolutions.some((base) => {
+		const start = approximateOf(base);
+		if (!Number.isFinite(start)) return true;
+		const k = (value - start) / period;
+		return Math.abs(k - Math.round(k)) * period < MEMBER_EPS * (1 + Math.abs(value));
+	});
+}
+
+/**
+ * Deux familles sans membre commun. Périodes T₁/T₂ = p/q (q ≤ 24) : la
+ * période commune vaut q·T₁, et les membres de la première sur cette période
+ * suffisent. Périodes incommensurables : faux (non démontré).
+ */
+function familiesDisjoint(first: PeriodicSolutionFamily, second: PeriodicSolutionFamily): boolean {
+	const ratio = first.periodNumeric / second.periodNumeric;
+	if (!Number.isFinite(ratio) || ratio <= 0) return false;
+	let repeats: number | null = null;
+	for (let q = 1; q <= MAX_PERIOD_RATIO_DENOMINATOR; q++) {
+		if (Math.abs(ratio * q - Math.round(ratio * q)) < MEMBER_EPS) {
+			repeats = q;
+			break;
+		}
+	}
+	if (repeats === null) return false;
+	return first.baseSolutions.every((base) => {
+		const start = approximateOf(base);
+		if (!Number.isFinite(start)) return false;
+		for (let k = 0; k < repeats; k++) {
+			if (isMemberOf(second, start + k * first.periodNumeric)) return false;
+		}
+		return true;
+	});
 }
 
 /**

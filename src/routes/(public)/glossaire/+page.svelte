@@ -17,6 +17,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import { Separator } from '$lib/components/ui/separator';
 	import MySelect from '$lib/components/MySelect.svelte';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import * as Dialog from '$lib/components/ui/dialog';
 	import { Search, BookOpen, RotateCcw } from '@lucide/svelte';
 	import { findPrincipal } from '$lib/lexicon/card';
@@ -223,6 +224,9 @@
 				{filteredTerms.length} terme{filteredTerms.length > 1 ? 's' : ''}
 				{hasActiveFilters ? '(filtré)' : ''}
 			</p>
+		</div>
+		<div class="ml-auto">
+			<QrCodeButton url="/glossaire" label="Glossaire" />
 		</div>
 	</div>
 

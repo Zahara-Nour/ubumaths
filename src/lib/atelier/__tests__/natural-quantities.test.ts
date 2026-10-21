@@ -31,9 +31,43 @@ describe('un nombre, une espace, une unité : une grandeur', () => {
 		expect(read('3/4 km + 1 km')).toBe('(3/4)[km] + 1[km]');
 	});
 
-	it('deux grandeurs collées s’ajoutent : une durée composée', () => {
-		expect(read('2 h 30 min')).toBe('(2[h]+30[min])');
-		expect(read('1 h 5 min 30 s')).toBe('(1[h]+5[min]+30[s])');
+	// Une durée composée reste juxtaposée : le parseur la lit en bloc (lecture-grandeurs, PR 5)
+	it('une durée composée reste juxtaposée', () => {
+		expect(read('2 h 30 min')).toBe('2[h] 30[min]');
+		expect(read('1 h 5 min 30 s')).toBe('1[h] 5[min] 30[s]');
+		// Après `*` aussi : le parseur la refuse comme ambiguë
+		expect(read('2*1 h 30 min')).toBe('2*1[h] 30[min]');
+	});
+
+	// Revue : la durée composée gardait ses aides ; une fraction devant reste lue comme avant
+	it('une durée composée garde les aides de ses parties', () => {
+		const reading = readNaturalQuantities('2 h 30 s', ['h']);
+		expect(reading.notes).toEqual(['h est aussi un nom du panneau : pour 2 × h, écris 2h.']);
+		expect(reading.singleLetters.map((unit) => unit.written)).toEqual(['2 h', '30 s']);
+		expect(read('1/2 h 30 min')).toBe('((1/2)[h]+30[min])');
+		expect(read('2^-1 h 30 min')).toBe('(2^-1)[h] 30[min]');
+	});
+
+	it('d’autres grandeurs collées s’ajoutent', () => {
+		expect(read('2 m 30 cm')).toBe('(2[m]+30[cm])');
+	});
+});
+
+describe('un produit ou un quotient de grandeurs, opérateur collé', () => {
+	// `2 m*3 m` est (2 m) × (3 m), comme mathAST lit `2\unit{m}\times3\unit{m}` : une
+	// grandeur déjà lue clôt le terme de la suivante (avant : `2[m]*3 m`, m pris pour une lettre)
+	it.each([
+		['2 m*3 m', '2[m]*3[m]'],
+		['2 m/4 s', '2[m]/4[s]'],
+		['(2 m)*3 m', '(2[m])*3[m]'],
+		['2 m*3*4 m', '2[m]*(3*4)[m]'],
+		['2 m*10^3 m', '2[m]*(10^3)[m]']
+	])('%s → %s', (input, expected) => {
+		expect(read(input)).toBe(expected);
+	});
+
+	it('sans unité après, le facteur reste un nombre', () => {
+		expect(read('2 m*3')).toBe('2[m]*3');
 	});
 });
 

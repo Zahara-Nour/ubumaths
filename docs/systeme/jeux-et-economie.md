@@ -53,7 +53,11 @@ dépensées en **cartes VIP** (privilèges et pouvoirs accordés en classe par l
 pouvoirs de jeu. Les cartes s'échangent sur le **marché** entre élèves d'une même école. Le
 prof distribue aussi gidouilles et cartes à la main.
 
-Le compagnon virtuel (Palotins) a sa propre doc : [buddy-palotins.md](buddy-palotins.md).
+Le compagnon virtuel (Palotins) a sa propre doc : [buddy-palotins.md](buddy-palotins.md). Le
+tableau des Palotins du prof (`teacher/gamification/buddies`) affiche la Constance Royale en
+semaines tenues d'affilée, telle que l'élève la voit (`displayedConstance`). L'onglet voisin
+« Mathoux » (`teacher/gamification/mathoux`) montre les Mathoux des élèves par classe : voir
+[mathoux.md § Vue du professeur](mathoux.md#vue-du-professeur).
 Les tables, une par une : [base-de-donnees-tables.md](base-de-donnees-tables.md) (sections
 « Jeux, défis et récompenses » et « Marché »).
 

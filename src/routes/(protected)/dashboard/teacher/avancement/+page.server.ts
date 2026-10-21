@@ -2,13 +2,15 @@
  * Teacher — Avancement du programme (coverage heatmap) — server load.
  *
  * For a class, shows how many times each curriculum point was worked on during
- * the current school year (count from journal_entry_points), rolled up to items
- * and themes. Read-only.
+ * the current school year (count from journal_entry_points), rolled up to
+ * notions and branches of the programme tree. Read-only. Un point archivé
+ * n'apparaît que s'il a été travaillé cette année.
  */
 
 import type { PageServerLoad } from './$types';
 import { requireRoles } from '$lib/server/middleware/auth';
-import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
+import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
+import type { ProgrammeBranch } from '$lib/utils/programme-tree';
 import { error } from '@sveltejs/kit';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -37,12 +39,10 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 	const yearStart = `${startYear}-09-01`;
 	const yearEnd = `${startYear + 1}-09-01`;
 
-	let tree: CurriculumTreeTheme[] = [];
+	let tree: ProgrammeBranch[] = [];
 	const counts: Record<string, number> = {};
 
 	if (selected?.grade) {
-		tree = await getCurriculumTree(locals.supabase, selected.grade);
-
 		const { data: entries, error: entriesError } = await locals.supabase
 			.from('class_journal_entries')
 			.select('id')
@@ -70,6 +70,9 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 				counts[row.point_id] = (counts[row.point_id] ?? 0) + 1;
 			}
 		}
+
+		// Arbre lu APRÈS les passages : un archivé travaillé cette année reste visible.
+		tree = await getProgrammeTreeKeeping(locals.supabase, selected.grade, Object.keys(counts));
 	}
 
 	return {

@@ -42,15 +42,34 @@ import { DEFAULT_CAPITAL_PAIRS } from '../types';
 import { scanPointNames, type PointNamesSyntax } from '../latex/point-names';
 import { CustomTokenizer, type CustomToken, type CustomTokenType } from './tokenizer';
 import { ColorStack, isValidColor, normalizeColor } from '../latex/color-stack';
+import {
+	NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
+	STACKED_EXPONENTS_MESSAGE
+} from '../exponent-rules';
 import { MathAST, euler, complex } from '../../factory';
 import { DOUBLE_FACTORIAL_ERROR, factorialOf } from '../factorial-notation';
 import { parse as parseUnit, unitErrorMessage } from '../../units/parser';
+import { expectCode, preciseUnexpectedToken, unitErrorCode } from '../refusal-codes';
+import {
+	JUXTAPOSITION_MESSAGES,
+	endsWithQuantity,
+	isCompoundDurationOperand,
+	juxtaposeAfterNumber,
+	juxtaposeImplicit,
+	type JuxtapositionRefusal
+} from '../juxtaposed-quantities';
 import {
 	isGroupingBracket,
 	readUnitWriting,
+	unitWritingAhead,
 	UNIT_EXPONENT_MESSAGE,
 	UNIT_SPACE_MESSAGE
 } from './unit-writing';
+import {
+	AMBIGUOUS_TERM_MESSAGE,
+	missingNumberBeforeUnitMessage,
+	UnitTermReader
+} from './unit-term';
 import {
 	SecurityError,
 	getEffectiveSecurityOptions,
@@ -130,6 +149,8 @@ class CustomRDParser {
 	private holeCounter: number = 0;
 	/** Profondeur d'indice : un `i` en indice (x_i, u_{i+1}) est un nom d'indice, pas l'unité imaginaire */
 	private subscriptDepth: number = 0;
+	/** L'unité multiplie tout le terme qui la précède (`1/2[m]` = (1/2) m) */
+	private readonly unitTerm = new UnitTermReader(() => this.refuseAmbiguousTerm());
 
 	constructor(input: string, options: ParserOptions) {
 		this.tokenizer = new CustomTokenizer(input);
@@ -187,11 +208,15 @@ class CustomRDParser {
 	/** Dernier token consommé : `3!27!` (un nombre juste après une factorielle) */
 	private previousToken: CustomToken | undefined;
 
+	/** Le jeton d'avant `previousToken` : `1.2.3` n'est pas `.3` */
+	private tokenBeforePrevious: CustomToken | undefined;
+
 	/**
 	 * Advance to the next token
 	 */
 	private advance(): CustomToken {
 		const prev = this.currentToken;
+		this.tokenBeforePrevious = this.previousToken;
 		this.previousToken = prev;
 		this.currentToken = this.tokenizer.nextToken();
 		return prev;
@@ -213,7 +238,7 @@ class CustomRDParser {
 				message ?? `Expected ${type} but got ${this.currentToken.type}`,
 				this.currentToken.position,
 				this.currentToken.length,
-				'UNEXPECTED_TOKEN'
+				expectCode(type, this.currentToken)
 			);
 		}
 		return this.advance();
@@ -223,6 +248,24 @@ class CustomRDParser {
 	 * Report an error
 	 */
 	private error(message: string, position: number, length: number, code: ParseErrorCode): never {
+		// Un jeton refusé sans code précis : `x2`, `(1+x)2`, `.5` disent ce qui manque
+		const precise =
+			code === 'UNEXPECTED_TOKEN' && position === this.currentToken.position
+				? preciseUnexpectedToken(
+						this.currentToken,
+						this.previousToken,
+						this.tokenBeforePrevious,
+						this.tokenizer.peek()
+					)
+				: null;
+		if (precise) {
+			throw new ParseException(
+				precise.message ?? message,
+				precise.position ?? position,
+				precise.length ?? length,
+				precise.code
+			);
+		}
 		throw new ParseException(message, position, length, code);
 	}
 
@@ -358,13 +401,13 @@ class CustomRDParser {
 	 * Addition and subtraction are left-associative
 	 */
 	private parseAdditive(): MathNode {
-		let left = this.parseMultiplicative();
+		let left = this.parseJuxtaposed(() => this.parseMultiplicative());
 
 		while (this.check('PLUS') || this.check('MINUS')) {
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
 			this.advance();
-			const right = this.parseMultiplicative();
+			const right = this.parseJuxtaposed(() => this.parseMultiplicative());
 
 			if (isPlus) {
 				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
@@ -374,6 +417,56 @@ class CustomRDParser {
 		}
 
 		return left;
+	}
+
+	/**
+	 * juxtaposed := multiplicative (NUMBER multiplicative)* — une durée composée
+	 * (`2[h] 30[min]`), un bloc face à `+` et `-`. Le terme qui suit est lu avec ses
+	 * opérateurs (`30[min]*2`, refusé).
+	 */
+	private parseJuxtaposed(parseTerm: () => MathNode): MathNode {
+		let left = parseTerm();
+		while (this.check('NUMBER') && endsWithQuantity(left)) {
+			const number = this.currentToken;
+			const right = parseTerm();
+			const juxtaposed = juxtaposeAfterNumber(left, right);
+			if (juxtaposed === null) {
+				// `2[m] 30` : le refus habituel d'un nombre après un facteur
+				throw new ParseException(
+					`Unexpected token: ${number.value}`,
+					number.position,
+					number.length,
+					'MISSING_OPERATOR'
+				);
+			}
+			left = this.juxtaposed(juxtaposed, number);
+		}
+		return left;
+	}
+
+	/** Produit implicite, ou durée composée entre accolades (`{2[h]}{30[min]}`) */
+	private implicitProduct(factor: MathNode, value: MathNode, start: CustomToken): MathNode {
+		const juxtaposed = juxtaposeImplicit(factor, value);
+		if (juxtaposed === null) return this.applyColor(MathAST.multiply(factor, value, 'implicit'));
+		return this.juxtaposed(juxtaposed, start);
+	}
+
+	/** La durée composée lue, ou son refus posé sur le jeton `at` */
+	private juxtaposed(result: MathNode | JuxtapositionRefusal, at: CustomToken): MathNode {
+		if (typeof result !== 'string') return result;
+		this.error(JUXTAPOSITION_MESSAGES[result], at.position, at.length, 'JUXTAPOSED_QUANTITIES');
+	}
+
+	/** `{1[h]}{30[min]}*2` : une durée composée collée à `*`, `:/` ou `:` est ambiguë */
+	private refuseCompoundDurationOperand(left: MathNode): void {
+		if (!isCompoundDurationOperand(left)) return;
+		const token = this.currentToken;
+		this.error(
+			JUXTAPOSITION_MESSAGES.operator,
+			token.position,
+			token.length,
+			'JUXTAPOSED_QUANTITIES'
+		);
 	}
 
 	/**
@@ -389,20 +482,38 @@ class CustomRDParser {
 			const operatorColor = this.colorStack.current();
 
 			if (this.check('STAR')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.applyColorWithOperator(MathAST.multiply(factor, value, 'cross'), operatorColor)
+				);
 			} else if (this.check('COLON_SLASH')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'inline'),
+						operatorColor
+					)
+				);
 			} else if (this.check('COLON')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnary();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'ratio'),
+						operatorColor
+					)
+				);
 			} else if (this.shouldInsertImplicitMultiply()) {
+				const start = this.currentToken;
 				const right = this.parseUnary();
-				left = this.applyColor(MathAST.multiply(left, right, 'implicit'));
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.implicitProduct(factor, value, start)
+				);
 			} else {
 				break;
 			}
@@ -441,13 +552,13 @@ class CustomRDParser {
 			}
 
 			const operand = this.parseUnary();
-			return this.applyColor(MathAST.opposite(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.opposite(value)));
 		}
 
 		if (this.check('PLUS')) {
 			this.advance();
 			const operand = this.parseUnary();
-			return this.applyColor(MathAST.positive(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.positive(value)));
 		}
 
 		return this.parsePower();
@@ -479,23 +590,91 @@ class CustomRDParser {
 	}
 
 	/**
-	 * Parse the operand of a superscript (handles braces and single tokens)
+	 * Parse the operand of a superscript, then refuse a second `^` right after it
 	 */
 	private parsePowerOperand(): MathNode {
+		const exponent = this.parsePowerOperandContent();
+		// `2^3^2` : lu (2³)² ici et 2^(3²) en LaTeX, refusé dans les deux
+		if (this.check('CARET')) {
+			this.error(
+				STACKED_EXPONENTS_MESSAGE,
+				this.currentToken.position,
+				this.currentToken.length,
+				'STACKED_EXPONENTS'
+			);
+		}
+		return exponent;
+	}
+
+	/**
+	 * Parse the operand of a superscript (handles braces and single tokens)
+	 */
+	private parsePowerOperandContent(): MathNode {
 		if (this.check('LBRACE')) {
 			return this.parseBraceGroup();
 		}
 
-		// CRITICAL: Minus REQUIRES braces for exponent
-		if (this.check('MINUS')) {
+		// Comme le parseur Pratt : dans un exposant, les parenthèses ne font que
+		// grouper (`x^(1/2)` = `x^{1/2}`), sans nœud `delimiter`
+		if (this.check('LPAREN')) {
+			this.advance(); // consume (
+			if (this.check('RPAREN')) {
+				this.error(
+					'Empty exponent group not allowed',
+					this.currentToken.position,
+					1,
+					'EMPTY_GROUP'
+				);
+			}
+			const content = this.parseExpression();
+			this.expect('RPAREN', "Expected ')' after exponent");
+			return content;
+		}
+
+		// `10^-3` = `10^{-3}`, `10^+3` = `10^{+3}` : un signe, puis UN nombre ou
+		// UNE lettre ; devant un groupe, on ne sait pas jusqu'où va l'exposant
+		if (this.check('MINUS') || this.check('PLUS')) {
+			const sign = this.advance();
+			if (this.check('NUMBER') || this.check('LETTER') || this.check('SYMBOL')) {
+				const operand = this.parseSinglePowerOperand();
+				return this.applyColor(
+					sign.type === 'MINUS' ? MathAST.opposite(operand) : MathAST.positive(operand)
+				);
+			}
+			if (this.checkGroupStart()) {
+				this.error(
+					NEGATIVE_EXPONENT_BEFORE_GROUP_MESSAGE,
+					sign.position,
+					sign.length,
+					'NEGATIVE_EXPONENT_BEFORE_GROUP'
+				);
+			}
 			this.error(
-				'Negative exponent requires braces: use x^{-2}',
+				'Expected exponent',
 				this.currentToken.position,
 				this.currentToken.length,
 				'INVALID_SUPERSCRIPT'
 			);
 		}
 
+		return this.parseSinglePowerOperand();
+	}
+
+	/** Un `(`, `{`, `|`, `[` ou un nom de fonction : le début d'un groupe */
+	private checkGroupStart(): boolean {
+		return (
+			this.check('LPAREN') ||
+			this.check('LBRACE') ||
+			this.check('PIPE') ||
+			this.check('LBRACKET') ||
+			this.check('DOUBLE_LBRACKET') ||
+			this.check('FUNC') ||
+			this.check('BACKSLASH')
+		);
+	}
+
+	/** Un exposant sans accolades : un nombre, une lettre ou un symbole */
+	private parseSinglePowerOperand(): MathNode {
 		// Number: auto-grouped (entire number, e.g., x^12 is fine)
 		if (this.check('NUMBER')) {
 			return this.parseNumber();
@@ -609,7 +788,9 @@ class CustomRDParser {
 		while (this.check('SLASH')) {
 			this.advance(); // consume /
 			const right = this.parseFractionOperand(); // Parse ONLY next operand
-			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
+			left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+				this.applyColor(MathAST.divide(numerator, denominator, 'fraction'))
+			);
 		}
 
 		return left;
@@ -748,6 +929,7 @@ class CustomRDParser {
 			token.type === 'RBRACE' ||
 			token.type === 'RBRACKET' ||
 			token.type === 'COMMA' ||
+			token.type === 'SEMICOLON' ||
 			this.isRelationOperator()
 		) {
 			return false;
@@ -841,6 +1023,12 @@ class CustomRDParser {
 				this.check('UNDERSCORE')
 					? MathAST.variable('i')
 					: complex(MathAST.number('0'), MathAST.number('1'))
+			);
+		}
+		// `π` tapé tel quel : la constante, comme `\pi` (Q11) ; `π_1` reste une variable
+		if (letter === 'π') {
+			return this.applyColor(
+				this.check('UNDERSCORE') ? MathAST.variable('π') : MathAST.piConstant()
 			);
 		}
 
@@ -937,6 +1125,7 @@ class CustomRDParser {
 	 * Crochet de calcul : `[x-1]` — des parenthèses de forme `square`.
 	 */
 	private parseSquareBrackets(): MathNode {
+		this.refuseUnitWithoutNumber();
 		this.advance(); // consume [
 
 		if (this.check('RBRACKET')) {
@@ -949,6 +1138,30 @@ class CustomRDParser {
 		return this.applyColor(
 			MathAST.delimiter('parentheses', content, 'grouping', { shape: 'square' })
 		);
+	}
+
+	/**
+	 * `[m]` en tête de terme : une unité sans nombre devant (K2), refusée. Un contenu
+	 * qui n'est pas une unité connue (`[x]`, `[x-1]`) reste un crochet de calcul.
+	 */
+	private refuseUnitWithoutNumber(): void {
+		const tokenAt = (offset: number) =>
+			offset === 0 ? this.currentToken : this.tokenizer.peekAt(offset - 1);
+		if (isGroupingBracket(tokenAt)) return;
+		const writing = unitWritingAhead(tokenAt);
+		if (writing === null || !parseUnit(writing)) return;
+		this.error(
+			missingNumberBeforeUnitMessage(writing),
+			this.currentToken.position,
+			writing.length + 2,
+			'MISSING_NUMBER_BEFORE_UNIT'
+		);
+	}
+
+	/** Refus E7 : après une grandeur, le terme qui porte l'unité compte plusieurs nombres */
+	private refuseAmbiguousTerm(): never {
+		const token = this.previousToken ?? this.currentToken;
+		this.error(AMBIGUOUS_TERM_MESSAGE, token.position, token.length, 'AMBIGUOUS_TERM');
 	}
 
 	/**
@@ -981,8 +1194,8 @@ class CustomRDParser {
 		const content = this.parseExpression();
 		this.expect('RBRACE', "Expected '}' after expression");
 
-		// Braces are TRANSPARENT - return content directly
-		return content;
+		// Braces are TRANSPARENT - return content directly ; une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**
@@ -1064,13 +1277,13 @@ class CustomRDParser {
 	 * Parse additive, stopping at PIPE
 	 */
 	private parseAdditiveStopAtPipe(): MathNode {
-		let left = this.parseMultiplicativeStopAtPipe();
+		let left = this.parseJuxtaposed(() => this.parseMultiplicativeStopAtPipe());
 
 		while ((this.check('PLUS') || this.check('MINUS')) && !this.check('PIPE')) {
 			const operatorColor = this.colorStack.current();
 			const isPlus = this.check('PLUS');
 			this.advance();
-			const right = this.parseMultiplicativeStopAtPipe();
+			const right = this.parseJuxtaposed(() => this.parseMultiplicativeStopAtPipe());
 
 			if (isPlus) {
 				left = this.applyColorWithOperator(MathAST.add(left, right), operatorColor);
@@ -1094,20 +1307,38 @@ class CustomRDParser {
 			const operatorColor = this.colorStack.current();
 
 			if (this.check('STAR')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColorWithOperator(MathAST.multiply(left, right, 'cross'), operatorColor);
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.applyColorWithOperator(MathAST.multiply(factor, value, 'cross'), operatorColor)
+				);
 			} else if (this.check('COLON_SLASH')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'inline'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'inline'),
+						operatorColor
+					)
+				);
 			} else if (this.check('COLON')) {
+				this.refuseCompoundDurationOperand(left);
 				this.advance();
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColorWithOperator(MathAST.divide(left, right, 'ratio'), operatorColor);
+				left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+					this.applyColorWithOperator(
+						MathAST.divide(numerator, denominator, 'ratio'),
+						operatorColor
+					)
+				);
 			} else if (this.shouldInsertImplicitMultiplyStopAtPipe()) {
+				const start = this.currentToken;
 				const right = this.parseUnaryStopAtPipe();
-				left = this.applyColor(MathAST.multiply(left, right, 'implicit'));
+				left = this.unitTerm.binary(left, right, (factor, value) =>
+					this.implicitProduct(factor, value, start)
+				);
 			} else {
 				break;
 			}
@@ -1153,13 +1384,13 @@ class CustomRDParser {
 			}
 
 			const operand = this.parseUnaryStopAtPipe();
-			return this.applyColor(MathAST.opposite(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.opposite(value)));
 		}
 
 		if (this.check('PLUS')) {
 			this.advance();
 			const operand = this.parseUnaryStopAtPipe();
-			return this.applyColor(MathAST.positive(operand));
+			return this.unitTerm.unary(operand, (value) => this.applyColor(MathAST.positive(value)));
 		}
 
 		return this.parsePowerStopAtPipe();
@@ -1208,7 +1439,9 @@ class CustomRDParser {
 		while (this.check('SLASH') && !this.check('PIPE')) {
 			this.advance();
 			const right = this.parseAtomStopAtPipe();
-			left = this.applyColor(MathAST.divide(left, right, 'fraction'));
+			left = this.unitTerm.binary(left, right, (numerator, denominator) =>
+				this.applyColor(MathAST.divide(numerator, denominator, 'fraction'))
+			);
 		}
 
 		return left;
@@ -1344,7 +1577,8 @@ class CustomRDParser {
 		this.expect('RBRACE', "Expected '}' after colored content");
 		this.colorStack.pop();
 
-		return content; // Color already applied via applyColor() during parsing
+		// Color already applied via applyColor() during parsing ; des accolades : une grandeur y reste fermée
+		return this.unitTerm.close(content);
 	}
 
 	/**
@@ -1396,12 +1630,12 @@ class CustomRDParser {
 			(token) => token.type === 'RBRACKET' || token.type === 'EOF'
 		);
 		if (spaceAt !== null) {
-			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'INVALID_UNIT');
+			this.error(UNIT_SPACE_MESSAGE, spaceAt, 1, 'SPACE_IN_UNIT');
 		}
 
 		this.expect('RBRACKET', "Expected ']' after unit");
 		if (this.check('CARET')) {
-			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'INVALID_UNIT');
+			this.error(UNIT_EXPONENT_MESSAGE, this.currentToken.position, 1, 'UNIT_EXPONENT_OUTSIDE');
 		}
 
 		const unit = parseUnit(unitStr);
@@ -1410,7 +1644,7 @@ class CustomRDParser {
 				unitErrorMessage(unitStr),
 				this.currentToken.position,
 				unitStr.length,
-				'INVALID_UNIT'
+				unitErrorCode(unitStr)
 			);
 		}
 

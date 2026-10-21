@@ -20,7 +20,7 @@
 import type { Atelier } from './atelier.svelte';
 import type { AtelierObject } from './types';
 import type { MathNode } from '$lib/mathAST/types';
-import { astOf } from './parse';
+import { astOf, variablesOf } from './parse';
 import {
 	cellName,
 	columnLetter,
@@ -32,12 +32,16 @@ import {
 import type { AtelierState } from './persistence';
 import { gridContext, termsOf, type GridContext } from './engine';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { getVariables } from '$lib/mathAST/eval/substitute';
 import { transformAST, visitAST } from '$lib/mathAST/visitor';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { tidyTerms } from './tidy-terms';
 import { decimalCommaLatex, decimalCommaText } from './decimal-comma';
 import { toLatex } from '$lib/mathAST/latex-generator';
+import { isUnit } from '$lib/mathAST/guards';
+import { format as formatUnit } from '$lib/mathAST/units';
+import { findNodes } from '$lib/mathAST/transforms';
+import { divide, multiply, number as mathNumber, piConstant } from '$lib/mathAST/factory';
+import { simplifyExact } from '$lib/geometry-core/compute/geo-arithmetic';
 import { readListValue } from '$lib/statistics/read-value';
 import { intervalDomainOf, outsideIntervalMessage } from './interval';
 import { containsValue } from '$lib/mathAST/domain/algebra';
@@ -76,7 +80,12 @@ import {
 	RANGE_MIXED_MESSAGE,
 	readRange,
 	type ArgumentValue,
-	type GridFunction
+	type GridFunction,
+	isLogic,
+	isCount,
+	isColumnRange,
+	logicAloneMessage,
+	type LogicFunction
 } from './grid-functions';
 import { findUnknownFunctionCall, SHOWN_FUNCTIONS } from '$lib/mathAST/parser/custom/tokenizer';
 
@@ -181,12 +190,21 @@ type ReadArgument =
 	/** Une case citée en critère de NB.SI : son mot ou son nombre (`NB.SI(B2:B30;B2)`). */
 	| { readonly kind: 'cell'; readonly address: string }
 	/** La condition de SI : `A1>=10`, `B2="fille"`. */
+	| ConditionArgument
+	/** La condition de SI en ET ou OU de comparaisons (Q-RE-2, Q-RE-3 : un seul niveau). */
 	| {
-			readonly kind: 'condition';
-			readonly left: Operand;
-			readonly op: Comparison;
-			readonly right: Operand;
+			readonly kind: 'logic';
+			readonly name: LogicFunction;
+			readonly conditions: readonly ConditionArgument[];
 	  };
+
+/** Une comparaison : `A1>=10`, `B2="fille"`. */
+interface ConditionArgument {
+	readonly kind: 'condition';
+	readonly left: Operand;
+	readonly op: Comparison;
+	readonly right: Operand;
+}
 
 /** Un côté d'une comparaison : un texte, une case (qui peut contenir un mot), ou une expression. */
 type Operand =
@@ -403,7 +421,7 @@ function readBody(typed: string, functionNames: readonly string[]): ReadFormula 
 		ok: true,
 		ast,
 		refs,
-		names: [...new Set([...namesIn(ast), ...argumentNames])],
+		names: [...new Set([...namesIn(ast, functionNames), ...argumentNames])],
 		calls,
 		deps: [...deps],
 		lists: [...lists],
@@ -427,16 +445,27 @@ function readCall(
 			random: boolean;
 	  }
 	| { ok: false; message: string } {
+	// Lu ici, ET ou OU n'est pas la condition de SI (lue plus bas) : refusé (Q-RE-2)
+	if (isLogic(name)) return { ok: false, message: logicAloneMessage(name) };
 	const statistic = isStatistic(name);
+	// NBVAL prend des plages comme NB ; NB.VIDE, une seule (phase 0 NBVAL)
+	const counting = isCount(name);
+	if (name === 'NB.VIDE' && rawArgs.length !== 1) {
+		return { ok: false, message: 'NB.VIDE attend une plage : NB.VIDE(B2:B31).' };
+	}
+	// Q-NV-3 : une colonne entière n'a pas de sens pour NB.VIDE (200 lignes de grille)
+	if (name === 'NB.VIDE' && isColumnRange(rawArgs[0])) {
+		return { ok: false, message: EMPTY_COUNT_RANGE_MESSAGE };
+	}
 	const occurrence = isRandom(name) ? randomOccurrence++ : -1;
 	let random = isRandom(name);
-	if (statistic && rawArgs.length === 0) {
+	if ((statistic || name === 'NBVAL') && rawArgs.length === 0) {
 		return {
 			ok: false,
 			message: `${name} attend au moins un argument, par exemple ${name}(A2:A21).`
 		};
 	}
-	if (!statistic && rawArgs.length !== arityOf(name)) {
+	if (!statistic && !counting && rawArgs.length !== arityOf(name)) {
 		return { ok: false, message: arityMessage(name) };
 	}
 	const args: ReadArgument[] = [];
@@ -466,50 +495,37 @@ function readCall(
 			deps.push(address);
 			continue;
 		}
-		// La condition de SI : deux côtés et leur comparaison
+		// La condition de SI : deux côtés et leur comparaison, ou ET/OU de comparaisons
 		if (name === 'SI' && index === 0) {
+			const logic = logicCallOf(raw);
+			if (logic !== null) {
+				const read = readLogic(logic.name, logic.args, functionNames);
+				if (!read.ok) return read;
+				read.reads.forEach(addExpression);
+				deps.push(...read.deps);
+				args.push({ kind: 'logic', name: logic.name, conditions: read.conditions });
+				continue;
+			}
 			const parts = splitComparison(raw);
 			if (parts === null) return { ok: false, message: CONDITION_MESSAGE };
-			const operands: Operand[] = [];
-			for (const side of [parts.left, parts.right]) {
-				const sideText = textLiteral(side);
-				if (sideText !== null) {
-					operands.push({ kind: 'text', text: sideText });
-					continue;
-				}
-				// Une case seule : son mot se compare (`B2="fille"`)
-				const sideCell = LONE_CELL.exec(side);
-				if (sideCell !== null) {
-					const address = sideCell[1].replaceAll('$', '').toUpperCase();
-					const at = readCellName(address);
-					if (at === null) return { ok: false, message: outsideGrid(address) };
-					operands.push({ kind: 'cell', address });
-					deps.push(address);
-					continue;
-				}
-				const read = readBody(side, functionNames);
-				// `A1<B1<C1` : le second côté garde une comparaison
-				if (!read.ok && read.message === COMPARISON_ALONE_MESSAGE) {
-					return {
-						ok: false,
-						message: 'La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
-					};
-				}
-				if (!read.ok) return read;
-				operands.push({ kind: 'expression', read });
-				addExpression(read);
-			}
-			args.push({ kind: 'condition', left: operands[0], op: parts.op, right: operands[1] });
+			const read = readComparison(parts, functionNames);
+			if (!read.ok) return read;
+			read.reads.forEach(addExpression);
+			deps.push(...read.deps);
+			args.push(read.condition);
 			continue;
 		}
 		// Une plage : les statistiques, et la plage de NB.SI. Une case citée seule
 		// s'y lit comme une plage d'une case (vide ou mot ignoré, comme LibreOffice)
 		// — ailleurs elle garde T5 (`RACINE(A5)`, A5 vide → vide)
-		const rangeLike = statistic || (name === 'NB.SI' && index === 0);
+		const rangeLike = statistic || counting || (name === 'NB.SI' && index === 0);
 		const cell = rangeLike ? LONE_CELL.exec(raw) : null;
 		const range = cell === null ? readRange(raw) : readRange(`${cell[1]}:${cell[1]}`);
 		if (range !== null && !rangeLike) {
-			return { ok: false, message: `${name} attend un nombre, pas une plage : ${name}(A1).` };
+			return {
+				ok: false,
+				message: `${name} attend un nombre, pas une plage : ${numberExample(name)}.`
+			};
 		}
 		if (range !== null) {
 			if (range.bottom > GRID_ROWS) {
@@ -527,7 +543,7 @@ function readCall(
 				ok: false,
 				message: rangeLike
 					? RANGE_MIXED_MESSAGE
-					: `${name} attend un nombre, pas une plage : ${name}(A1).`
+					: `${name} attend un nombre, pas une plage : ${numberExample(name)}.`
 			};
 		}
 		if (!read.ok) return read;
@@ -538,6 +554,146 @@ function readCall(
 	}
 	const label = rawArgs.map((a) => a.trim()).join(' ; ');
 	return { ok: true, call: { name, args, label, occurrence }, deps, lists, names, random };
+}
+
+/** Une comparaison lue : ses deux côtés, les cases citées, les expressions lues. */
+type ReadComparison =
+	| {
+			ok: true;
+			condition: ConditionArgument;
+			deps: readonly string[];
+			reads: readonly (ReadFormula & { ok: true })[];
+	  }
+	| { ok: false; message: string };
+
+/** Les deux côtés d'une comparaison de la condition de SI (`A1>=10`, `B2="fille"`). */
+function readComparison(
+	parts: { left: string; op: Comparison; right: string },
+	functionNames: readonly string[]
+): ReadComparison {
+	const deps: string[] = [];
+	const reads: (ReadFormula & { ok: true })[] = [];
+	const operands: Operand[] = [];
+	for (const side of [parts.left, parts.right]) {
+		const sideText = textLiteral(side);
+		if (sideText !== null) {
+			operands.push({ kind: 'text', text: sideText });
+			continue;
+		}
+		// Une case seule : son mot se compare (`B2="fille"`)
+		const sideCell = LONE_CELL.exec(side);
+		if (sideCell !== null) {
+			const address = sideCell[1].replaceAll('$', '').toUpperCase();
+			const at = readCellName(address);
+			if (at === null) return { ok: false, message: outsideGrid(address) };
+			operands.push({ kind: 'cell', address });
+			deps.push(address);
+			continue;
+		}
+		const read = readBody(side, functionNames);
+		// `A1<B1<C1` : le second côté garde une comparaison
+		if (!read.ok && read.message === COMPARISON_ALONE_MESSAGE) {
+			return {
+				ok: false,
+				message: 'La condition de SI ne compare que deux choses : A1<B1, pas A1<B1<C1.'
+			};
+		}
+		if (!read.ok) return read;
+		operands.push({ kind: 'expression', read });
+		reads.push(read);
+	}
+	return {
+		ok: true,
+		condition: { kind: 'condition', left: operands[0], op: parts.op, right: operands[1] },
+		deps,
+		reads
+	};
+}
+
+/** L'exemple d'appel d'une fonction à nombres : `RACINE(A1)`, `RESTE(A1 ; 2)` (revue). */
+function numberExample(name: GridFunction): string {
+	if (name === 'ARRONDI' || name === 'RESTE' || name === 'ALEA.ENTRE.BORNES') {
+		return `${name}(A1 ; 2)`;
+	}
+	return `${name}(A1)`;
+}
+
+/** Le texte sans les parenthèses qui l'entourent TOUT entier : `((ET(…)))` → `ET(…)`. */
+function withoutOuterParentheses(raw: string): string {
+	let text = raw.trim();
+	while (text.startsWith('(') && text.endsWith(')')) {
+		let depth = 0;
+		let quoted = false;
+		let closesAtEnd = true;
+		for (let i = 0; i < text.length; i++) {
+			if (text[i] === '"') quoted = !quoted;
+			if (quoted) continue;
+			if (text[i] === '(') depth++;
+			else if (text[i] === ')') depth--;
+			if (depth === 0 && i < text.length - 1) {
+				closesAtEnd = false;
+				break;
+			}
+		}
+		if (!closesAtEnd) break;
+		text = text.slice(1, -1).trim();
+	}
+	return text;
+}
+
+/** `ET(…)` ou `OU(…)` qui forme TOUT l'argument (entre parenthèses ou non), sinon `null`. */
+function logicCallOf(raw: string): { name: LogicFunction; args: readonly string[] } | null {
+	const text = withoutOuterParentheses(raw);
+	const calls = findCalls(text);
+	if (calls === null || calls.length !== 1) return null;
+	const [call] = calls;
+	if (call.start !== 0 || call.end !== text.length || !isLogic(call.name)) return null;
+	return { name: call.name, args: call.args };
+}
+
+/** ET(…) ou OU(…) : au moins une comparaison, chacune lue comme la condition de SI. */
+function readLogic(
+	name: LogicFunction,
+	rawArgs: readonly string[],
+	functionNames: readonly string[]
+):
+	| {
+			ok: true;
+			conditions: readonly ConditionArgument[];
+			deps: readonly string[];
+			reads: readonly (ReadFormula & { ok: true })[];
+	  }
+	| { ok: false; message: string } {
+	const example = `${name}(A1>=10 ; B1="fille")`;
+	if (rawArgs.length === 0) {
+		return { ok: false, message: `${name} attend au moins une comparaison : ${example}.` };
+	}
+	const conditions: ConditionArgument[] = [];
+	const deps: string[] = [];
+	const reads: (ReadFormula & { ok: true })[] = [];
+	for (const raw of rawArgs) {
+		// Q-RE-3 : un seul niveau
+		const nested = logicCallOf(raw);
+		if (nested !== null) {
+			return {
+				ok: false,
+				message: `Un ${nested.name} dans un ${name} n’est pas pris en charge : écris deux SI.`
+			};
+		}
+		const parts = splitComparison(raw);
+		if (parts === null) {
+			return {
+				ok: false,
+				message: `Dans ${name}, chaque argument compare deux choses : ${example}.`
+			};
+		}
+		const read = readComparison(parts, functionNames);
+		if (!read.ok) return read;
+		conditions.push(read.condition);
+		deps.push(...read.deps);
+		reads.push(...read.reads);
+	}
+	return { ok: true, conditions, deps, reads };
 }
 
 /** Le nombre d'arguments d'une fonction qui n'est pas de statistiques. */
@@ -558,6 +714,7 @@ function arityMessage(name: CalculationFunction | ConditionFunction | RandomFunc
 	if (name === 'NB.SI') return 'NB.SI attend deux arguments : NB.SI(plage ; critère).';
 	if (name === 'PI') return 'PI s’écrit sans argument : PI().';
 	if (name === 'ARRONDI') return 'ARRONDI attend deux arguments : ARRONDI(x ; n).';
+	if (name === 'RESTE') return 'RESTE attend deux arguments : RESTE(nombre ; diviseur).';
 	return `${name} attend un argument : ${name}(x).`;
 }
 
@@ -586,9 +743,10 @@ export function indexedFunctionMessage(name: string): string {
 }
 
 /** Les noms qu'une formule cite : variables et fonctions, hors des marques de cellules. */
-function namesIn(ast: MathNode): string[] {
+function namesIn(ast: MathNode, functionNames: readonly string[]): string[] {
+	// `a_1` sous son nom entier : la case suit a_1, pas a (`variablesOf`)
 	const names = new Set(
-		[...getVariables(ast)].filter((name) => name !== MARK && name !== CALL_MARK)
+		[...variablesOf(ast, functionNames)].filter((name) => name !== MARK && name !== CALL_MARK)
 	);
 	transformAST(ast, {
 		enterFunction: (node) => {
@@ -905,17 +1063,52 @@ function computeCell(
 	const expanded = context.expand(terms.ast);
 	if (!expanded.ok) return error(expanded.message);
 
-	const free = [...getVariables(expanded.ast)];
+	const free = [...variablesOf(expanded.ast, atelier.functionNames)];
 	if (free.length > 0) return error(freeNameMessage(free[0], atelier));
 
 	const started = performance.now();
 	const result = evaluate(expanded.ast, { mode: inexact ? 'decimal' : 'exact' });
 	if (performance.now() - started > EXACT_BUDGET_MS) approximate.add(address);
-	return numberValue(
+	const cell = numberValue(
 		result,
 		inexact,
 		divided || ownDivision(read.ast, read.names.length > 0, context)
 	);
+	return result.status === 'value' ? inDegrees(cell, result.node, read.ast) : cell;
+}
+
+/**
+ * Un angle s'écrit en degrés dans la case, comme dans Calcul (`=60°` → `60°`,
+ * revue de la PR « 60° ») : le moteur le rend en radians (`(π/3)[rad]`). Une
+ * formule écrite en radians (`=(π/3)[rad]`) le reste. La valeur de la case
+ * (listes, tris) est le nombre de degrés montré ; l'arbre cité reste l'angle.
+ */
+function inDegrees(cell: CellValue, node: MathNode, typed: MathNode): CellValue {
+	if (cell.kind !== 'number' || !isUnit(node)) return cell;
+	if (formatUnit(node.unit, 'original') !== 'rad') return cell;
+	const writtenInRadians = findNodes(typed, isUnit).some(
+		(unit) => isUnit(unit) && formatUnit(unit.unit, 'original') === 'rad'
+	);
+	if (writtenInRadians) return cell;
+	const degrees = simplifyExact(
+		divide(multiply(node.expression, mathNumber('180'), 'implicit'), piConstant(), 'fraction')
+	);
+	const exactNumber = cell.exact && degrees.type === 'number';
+	// Le nombre exact quand il l'est : 60, pas 59,999999999999993 (π/3 · 180/π en flottants)
+	const value =
+		exactNumber && degrees.type === 'number' ? Number(degrees.value) : (cell.value * 180) / Math.PI;
+	const written = exactNumber
+		? decimalCommaText(degrees.value)
+		: `≈ ${decimalCommaText(String(Number(value.toFixed(4))))}`;
+	const latex = exactNumber ? `${decimalCommaLatex(degrees.value)}{}^{\\circ}` : null;
+	return {
+		...cell,
+		value,
+		shown: `${written}°`,
+		shownExact: exactNumber,
+		latex,
+		exactLatex: latex
+	};
 }
 
 /**
@@ -1012,18 +1205,31 @@ function conditionValue(
 	context: GridContext
 ): CallResult {
 	const [condition, yes, no] = call.args;
-	if (condition.kind !== 'condition') return { ok: false, value: error(UNREADABLE) };
-	const sides: Compared[] = [];
-	for (const side of [condition.left, condition.right]) {
-		const value = argumentValue(side, address, texts, values, approximate, atelier, context);
-		const compared = comparedOf(value);
-		if (compared === null) return { ok: false, value };
-		sides.push(compared);
+	if (condition.kind !== 'condition' && condition.kind !== 'logic') {
+		return { ok: false, value: error(UNREADABLE) };
 	}
-	const verdict = compare(sides[0], condition.op, sides[1]);
-	if (verdict === null) {
-		return { ok: false, value: error('Un mot se compare avec = ou <> seulement.') };
+	// ET : toutes vraies ; OU : au moins une. Chaque comparaison est calculée : une
+	// case vide ou une erreur, où qu'elle soit, arrête la formule comme pour SI (T5)
+	const conditions = condition.kind === 'logic' ? condition.conditions : [condition];
+	const verdicts: boolean[] = [];
+	for (const one of conditions) {
+		const sides: Compared[] = [];
+		for (const side of [one.left, one.right]) {
+			const value = argumentValue(side, address, texts, values, approximate, atelier, context);
+			const compared = comparedOf(value);
+			if (compared === null) return { ok: false, value };
+			sides.push(compared);
+		}
+		const verdictOfOne = compare(sides[0], one.op, sides[1]);
+		if (verdictOfOne === null) {
+			return { ok: false, value: error('Un mot se compare avec = ou <> seulement.') };
+		}
+		verdicts.push(verdictOfOne);
 	}
+	const verdict =
+		condition.kind === 'logic' && condition.name === 'OU'
+			? verdicts.some((v) => v)
+			: verdicts.every((v) => v);
 	const chosen = argumentValue(
 		verdict ? yes : no,
 		address,
@@ -1096,6 +1302,82 @@ function randomValue(
  * que d'autres (revue) ; à un million, l'écart reste sous 0,03 %.
  */
 const MAX_RANDOM_RANGE = 1e6;
+
+const EMPTY_COUNT_RANGE_MESSAGE = 'NB.VIDE compte dans une plage : NB.VIDE(A2:A31).';
+
+/**
+ * NBVAL(plage ; …) : les cases non vides ; NB.VIDE(plage) : les vides (phase 0
+ * NBVAL). Une case est vide si elle MONTRE du vide, formule qui rend `""`
+ * comprise (Q-NV-1 : NBVAL + NB.VIDE = la taille de la plage) ; une case en
+ * erreur arrête le compte (Q-NV-2). Une liste nommée : sa colonne pour NBVAL,
+ * ses entrées jusqu'à la dernière non vide pour NB.VIDE (Q-NV-4).
+ */
+function countCells(
+	call: ReadCall,
+	address: string,
+	texts: ReadonlyMap<string, string>,
+	values: ReadonlyMap<string, CellValue>,
+	approximate: ReadonlySet<string>,
+	atelier: Atelier,
+	context: GridContext
+): CallResult {
+	const valueAt = (cell: string) => values.get(cell) ?? plainValue(texts.get(cell) ?? '');
+	const empties = call.name === 'NB.VIDE';
+	let count = 0;
+	const tally = (value: CellValue, cell: string | null): CellValue | null => {
+		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
+		if ((value.kind === 'empty') === empties) count++;
+		return null;
+	};
+	for (const arg of call.args) {
+		const column =
+			arg.kind === 'expression' && arg.name !== null && atelier.get(arg.name)?.kind === 'list'
+				? atelier.columnOf(arg.name)
+				: undefined;
+		let cells: readonly string[] | null = arg.kind === 'range' ? arg.cells : null;
+		if (column !== undefined) {
+			const all = Array.from({ length: GRID_ROWS }, (_, i) => cellName(column, i + 1));
+			// NB.VIDE d'une liste : ses trous, pas les lignes de grille sous elle
+			const last = all.findLastIndex((cell) => valueAt(cell).kind !== 'empty');
+			cells = empties ? all.slice(0, last + 1) : all;
+		}
+		if (cells !== null) {
+			for (const cell of cells) {
+				const refused = tally(valueAt(cell), cell);
+				if (refused !== null) return { ok: false, value: refused };
+			}
+			continue;
+		}
+		// Un nom qui n'est pas une liste (`NB.VIDE(M)`, M inconnu) : son refus le nomme (revue)
+		if (empties && arg.kind === 'expression' && arg.name !== null) {
+			const named = computeCell(
+				address,
+				arg.read,
+				texts,
+				values,
+				new Set(approximate),
+				atelier,
+				context
+			);
+			if (named.kind === 'error') return { ok: false, value: named };
+		}
+		if (empties || arg.kind !== 'expression') {
+			return { ok: false, value: error(EMPTY_COUNT_RANGE_MESSAGE) };
+		}
+		// NBVAL(3), NBVAL(A1*2) : une valeur, qui compte si elle n'est pas vide
+		const refused = tally(
+			computeCell(address, arg.read, texts, values, new Set(approximate), atelier, context),
+			null
+		);
+		if (refused !== null) return { ok: false, value: refused };
+	}
+	return {
+		ok: true,
+		node: { type: 'number', value: String(count) },
+		inexact: false,
+		divided: false
+	};
+}
 
 /** NB.SI(plage ; critère) : les cases (vides ignorées) qui vérifient le critère. */
 function countIf(
@@ -1174,6 +1456,8 @@ function callValue(
 		return conditionValue(call, address, texts, values, approximate, atelier, context);
 	if (call.name === 'NB.SI')
 		return countIf(call, address, texts, values, approximate, atelier, context);
+	if (isCount(call.name))
+		return countCells(call, address, texts, values, approximate, atelier, context);
 	const numbers: ArgumentValue[] = [];
 	let inexact = false;
 	const statistic = isStatistic(call.name);
@@ -1184,9 +1468,14 @@ function callValue(
 		if (value.kind === 'empty' || value.kind === 'word') return null;
 		if (value.kind === 'error') return cell === null ? value : error(`${cell} est en erreur.`);
 		const long = value.exact && toCustom(value.node).length > MAX_EXACT_CITED;
-		if (!value.exact || long || (cell !== null && approximate.has(cell))) inexact = true;
+		const approached = !value.exact || long || (cell !== null && approximate.has(cell));
+		if (approached) inexact = true;
 		if (value.divided === true) argumentsDivided = true;
-		numbers.push({ node: long ? decimalNode(value.value) : value.node, value: value.value });
+		numbers.push({
+			node: long ? decimalNode(value.value) : value.node,
+			value: value.value,
+			approximate: approached
+		});
 		return null;
 	};
 	const cellValueAt = (cell: string) => values.get(cell) ?? plainValue(texts.get(cell) ?? '');
@@ -1220,6 +1509,8 @@ function callValue(
 		if (refused !== null) return { ok: false, value: refused };
 	}
 
+	// ET, OU : refusés à la lecture hors de la condition de SI (Q-RE-2)
+	if (isLogic(call.name)) return { ok: false, value: error(logicAloneMessage(call.name)) };
 	const computed = isStatistic(call.name)
 		? computeFunction(call.name, numbers, call.label)
 		: computeCalculation(call.name, numbers);
@@ -1436,6 +1727,10 @@ function unitRefusal(names: readonly string[], atelier: Atelier): string | null 
 				.replace(/\s+/g, ' ')
 				.trim();
 			return `${name} est une grandeur (${written}) : une cellule calcule sans unités.`;
+		}
+		// Une mesure d'angle (géométrie, lot 2) : une grandeur, en ° ou en rad
+		if (object?.kind === 'value' && atelier.angleQuantities().has(name)) {
+			return `${name} est une grandeur (un angle) : une cellule calcule sans unités.`;
 		}
 	}
 	return null;

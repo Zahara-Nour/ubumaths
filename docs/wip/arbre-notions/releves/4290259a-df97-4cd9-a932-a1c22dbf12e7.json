@@ -1,0 +1,703 @@
+{
+	"template_id": "4290259a-df97-4cd9-a932-a1c22dbf12e7",
+	"titre": "Fréquence",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Probabilités > Apprivoiser > Fréquences",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-188",
+			"libelle_point": "Comparer des résultats d'une expérience aléatoire répétée à une probabilité calculée",
+			"noeud_actuel": "Probabilités > Expériences aléatoires > fréquences",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "6|8|10|12|20"
+					},
+					{
+						"name": "c",
+						"expression": "1..a"
+					},
+					{
+						"name": "d",
+						"expression": "1..b"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Je lance ${{a}}$ fois un dé à ${{b}}$ faces. J'obtiens ${{c}}$ fois le nombre ${{d}}$.\n\nCalcule la fréquence d'apparition du nombre ${{d}}$.\n\nLa fréquence d'apparition est $?$.",
+				"reponses_brutes": ["{{eval:c/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 275,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [6, 8, 10, 12, 20]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 20,
+						"negatif_possible": false,
+						"nb_distinctes": 20,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.14666666666666667,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"1",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{7}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{2}{7}",
+							"\\dfrac{2}{9}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{3}{7}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{4}{7}",
+							"\\dfrac{4}{9}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{7}",
+							"\\dfrac{5}{8}",
+							"\\dfrac{5}{9}",
+							"\\dfrac{6}{7}",
+							"\\dfrac{7}{8}",
+							"\\dfrac{7}{9}",
+							"\\dfrac{8}{9}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 20,
+				"nb_distinctes": 20,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 256,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 8,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 20,
+					"max": 20
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (20)",
+					"graine": 7,
+					"enonce": "Je lance $4$ fois un dé à $20$ faces. J'obtiens $3$ fois le nombre $11$.\n\nCalcule la fréquence d'apparition du nombre $11$.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "20",
+						"c": "3",
+						"d": "11"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Je lance $4$ fois un dé à $10$ faces. J'obtiens $4$ fois le nombre $10$.\n\nCalcule la fréquence d'apparition du nombre $10$.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["1"],
+					"variables": {
+						"a": "4",
+						"b": "10",
+						"c": "4",
+						"d": "10"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Je lance $5$ fois un dé à $8$ faces. J'obtiens $3$ fois le nombre $8$.\n\nCalcule la fréquence d'apparition du nombre $8$.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{3}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "8",
+						"c": "3",
+						"d": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Je lance $4$ fois un dé à $10$ faces. J'obtiens $1$ fois le nombre $8$.\n\nCalcule la fréquence d'apparition du nombre $8$.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{1}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "10",
+						"c": "1",
+						"d": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Je lance $5$ fois un dé à $8$ faces. J'obtiens $1$ fois le nombre $2$.\n\nCalcule la fréquence d'apparition du nombre $2$.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{1}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "8",
+						"c": "1",
+						"d": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Je lance ${{a}}$ fois une pièce de monnaie. J'obtiens ${{b}}$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $?$.",
+				"reponses_brutes": ["{{eval:b/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 39,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "mixte (nombre ou texte/expression)",
+						"part_numerique": 0.16,
+						"nb_distinctes": 28,
+						"valeurs": [
+							"1",
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{7}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{2}{7}",
+							"\\dfrac{2}{9}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{3}{7}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{4}{7}",
+							"\\dfrac{4}{9}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{7}",
+							"\\dfrac{5}{8}",
+							"\\dfrac{5}{9}",
+							"\\dfrac{6}{7}",
+							"\\dfrac{7}{8}",
+							"\\dfrac{7}{9}",
+							"\\dfrac{8}{9}"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 252,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 8,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 9,
+					"enonce": "Je lance $9$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{2}{9}"],
+					"variables": {
+						"a": "9",
+						"b": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 3,
+					"enonce": "Je lance $4$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Je lance $4$ fois une pièce de monnaie. J'obtiens $3$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"a": "4",
+						"b": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Je lance $5$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{2}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Je lance $8$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté face.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{1}{4}"],
+					"variables": {
+						"a": "8",
+						"b": "2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..{{eval:a-1}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Je lance ${{a}}$ fois une pièce de monnaie. J'obtiens ${{b}}$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $?$.",
+				"reponses_brutes": ["{{eval:(a-b)/a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 33,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 6,
+						"valeurs": [4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 8,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.1111111111111111,
+						"max": 0.8888888888888888,
+						"negatif_possible": false,
+						"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+						"denominateur_min": 2,
+						"denominateur_max": 9,
+						"nb_distinctes": 27,
+						"valeurs": [
+							"\\dfrac{1}{2}",
+							"\\dfrac{1}{3}",
+							"\\dfrac{1}{4}",
+							"\\dfrac{1}{5}",
+							"\\dfrac{1}{6}",
+							"\\dfrac{1}{7}",
+							"\\dfrac{1}{8}",
+							"\\dfrac{1}{9}",
+							"\\dfrac{2}{3}",
+							"\\dfrac{2}{5}",
+							"\\dfrac{2}{7}",
+							"\\dfrac{2}{9}",
+							"\\dfrac{3}{4}",
+							"\\dfrac{3}{5}",
+							"\\dfrac{3}{7}",
+							"\\dfrac{3}{8}",
+							"\\dfrac{4}{5}",
+							"\\dfrac{4}{7}",
+							"\\dfrac{4}{9}",
+							"\\dfrac{5}{6}",
+							"\\dfrac{5}{7}",
+							"\\dfrac{5}{8}",
+							"\\dfrac{5}{9}",
+							"\\dfrac{6}{7}",
+							"\\dfrac{7}{8}",
+							"\\dfrac{7}{9}",
+							"\\dfrac{8}{9}"
+						]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9],
+				"denominateur_min": 2,
+				"denominateur_max": 9,
+				"numerateur_min": 1,
+				"numerateur_max": 8,
+				"superieure_a_1_possible": false
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 23,
+					"max": 23
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 9,
+					"enonce": "Je lance $9$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{7}{9}"],
+					"variables": {
+						"a": "9",
+						"b": "2"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Je lance $4$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{1}{2}"],
+					"variables": {
+						"a": "4",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Je lance $5$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{3}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Je lance $5$ fois une pièce de monnaie. J'obtiens $1$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{4}{5}"],
+					"variables": {
+						"a": "5",
+						"b": "1"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Je lance $8$ fois une pièce de monnaie. J'obtiens $2$ fois le côté face.\n\nCalcule la fréquence d'apparition du côté pile.\n\nLa fréquence d'apparition est $[?]$.",
+					"reponse": ["\\dfrac{3}{4}"],
+					"variables": {
+						"a": "8",
+						"b": "2"
+					}
+				}
+			]
+		}
+	]
+}

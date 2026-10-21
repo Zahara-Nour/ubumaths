@@ -40,6 +40,7 @@
 	} from '$lib/ubumark/generators/typst-generator';
 	import { fetchExternalImages, urlToVirtualPath } from '$lib/typst/image-loader';
 	import CodeViewer from '$lib/components/CodeViewer.svelte';
+	import QrCodeButton from '$lib/components/qr/QrCodeButton.svelte';
 	import MarkdownRenderer from '$lib/components/markdown/MarkdownRenderer.svelte';
 	import { goto } from '$app/navigation';
 	import { resolve } from '$app/paths';
@@ -48,7 +49,7 @@
 	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import type { ExerciseShareToken } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
@@ -105,8 +106,9 @@
 	const initialTags: Record<string, boolean> = {};
 	for (const pid of initialTaggedIds) initialTags[pid] = true;
 	let taggedSet = $state<Record<string, boolean>>(initialTags);
-	let openTagThemes = $state<Record<string, boolean>>({});
-	let openTagItems = $state<Record<string, boolean>>({});
+	// Clé « niveau:nœud » : une même branche peut s'afficher sous deux niveaux de l'exercice.
+	let openTagBranches = $state<Record<string, boolean>>({});
+	let openTagNotions = $state<Record<string, boolean>>({});
 
 	function isTagged(pointId: string): boolean {
 		return taggedSet[pointId] === true;
@@ -119,6 +121,8 @@
 				headers: body ? { 'Content-Type': 'application/json' } : undefined,
 				body: body ? JSON.stringify(body) : undefined
 			});
+			// Retirer un tag qui ne l'est déjà plus (autre onglet) : l'état voulu est atteint.
+			if (method === 'DELETE' && res.status === 404) return true;
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
 				toaster.error(j?.error ?? 'Une erreur est survenue');
@@ -606,75 +610,85 @@
 	/>
 
 	<!-- Points de programme (tagging → couverture auto dans le cahier de texte) -->
-	{#if data.curriculumByGrade.length > 0}
-		<Card.Root class="mt-6">
-			<Card.Header>
-				<Card.Title class="flex items-center gap-2">
-					<ListTodo class="h-5 w-5 text-primary" />
-					Points de programme
-				</Card.Title>
-				<Card.Description>
-					Tague les points du programme couverts par cette {lore.learning.exercise}. Quand elle est
-					référencée dans une entrée de cahier de texte, ces points sont cochés automatiquement.
-				</Card.Description>
-			</Card.Header>
-			<Card.Content class="space-y-4">
-				{#each data.curriculumByGrade as { grade, tree } (grade)}
-					{#if data.curriculumByGrade.length > 1}
-						<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
-					{/if}
-					<div class="space-y-1">
-						{#each tree as theme (theme.id)}
-							<div class="rounded-md border">
-								<button
-									class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
-									onclick={() => (openTagThemes[theme.id] = !openTagThemes[theme.id])}
-								>
-									{#if openTagThemes[theme.id]}
-										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-									{:else}
-										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-									{/if}
-									<InlineMarkdown content={theme.name} />
-								</button>
-								{#if openTagThemes[theme.id]}
-									<div class="space-y-1 border-t p-2 pl-4">
-										{#each theme.objectives as item (item.id)}
-											<div>
-												<button
-													class="flex w-full items-center gap-2 py-1 text-left text-sm"
-													onclick={() => (openTagItems[item.id] = !openTagItems[item.id])}
-												>
-													{#if openTagItems[item.id]}
-														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-													{:else}
-														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-													{/if}
-													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
-												</button>
-												{#if openTagItems[item.id]}
-													<div class="space-y-1 py-1 pl-6">
-														{#each item.points as point (point.id)}
-															<MyCheckbox
-																checked={isTagged(point.id)}
-																onchange={() => toggleTag(point.id)}
-															>
-																<InlineMarkdown content={point.name} />
-															</MyCheckbox>
-														{/each}
-													</div>
-												{/if}
-											</div>
-										{/each}
-									</div>
+	<Card.Root class="mt-6">
+		<Card.Header>
+			<Card.Title class="flex items-center gap-2">
+				<ListTodo class="h-5 w-5 text-primary" />
+				Points de programme
+			</Card.Title>
+			<Card.Description>
+				Tague les points du programme couverts par cette {lore.learning.exercise}. Quand elle est
+				référencée dans une entrée de cahier de texte, ces points sont cochés automatiquement.
+			</Card.Description>
+		</Card.Header>
+		<Card.Content class="space-y-4">
+			{#if data.exerciseUnranked}
+				<p class="text-sm text-muted-foreground">
+					Cette {lore.learning.exercise} n’est rangée dans aucune notion : aucun point du programme ne
+					peut lui être associé.
+				</p>
+			{:else if data.curriculumByGrade.length === 0}
+				<p class="text-sm text-muted-foreground">
+					Aucun point du programme de ses niveaux sur les notions où elle est rangée.
+				</p>
+			{/if}
+			{#each data.curriculumByGrade as { grade, tree } (grade)}
+				{#if data.curriculumByGrade.length > 1}
+					<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
+				{/if}
+				<div class="space-y-1">
+					{#each tree as branch (branch.id)}
+						{@const branchKey = `${grade}:${branch.id}`}
+						<div class="rounded-md border">
+							<button
+								class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
+								onclick={() => (openTagBranches[branchKey] = !openTagBranches[branchKey])}
+							>
+								{#if openTagBranches[branchKey]}
+									<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+								{:else}
+									<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 								{/if}
-							</div>
-						{/each}
-					</div>
-				{/each}
-			</Card.Content>
-		</Card.Root>
-	{/if}
+								{branch.name}
+							</button>
+							{#if openTagBranches[branchKey]}
+								<div class="space-y-1 border-t p-2 pl-4">
+									{#each branch.notions as notion (notion.id)}
+										{@const notionKey = `${grade}:${notion.id}`}
+										<div>
+											<button
+												class="flex w-full items-center gap-2 py-1 text-left text-sm"
+												onclick={() => (openTagNotions[notionKey] = !openTagNotions[notionKey])}
+											>
+												{#if openTagNotions[notionKey]}
+													<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+												{:else}
+													<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+												{/if}
+												<span class="font-medium">{notion.name}</span>
+											</button>
+											{#if openTagNotions[notionKey]}
+												<div class="space-y-1 py-1 pl-6">
+													{#each notion.points as point (point.id)}
+														<MyCheckbox
+															checked={isTagged(point.id)}
+															onchange={() => toggleTag(point.id)}
+														>
+															<ProgrammePointLabel {point} />
+														</MyCheckbox>
+													{/each}
+												</div>
+											{/if}
+										</div>
+									{/each}
+								</div>
+							{/if}
+						</div>
+					{/each}
+				</div>
+			{/each}
+		</Card.Content>
+	</Card.Root>
 </div>
 
 <!-- JSON Debug Dialog -->
@@ -824,15 +838,18 @@
 					<div class="overflow-hidden rounded-lg border bg-muted/50 p-3">
 						<code class="block truncate text-sm">{buildPublicUrl()}</code>
 					</div>
-					<Button variant="outline" size="sm" class="w-full" onclick={copyPublicUrl}>
-						{#if copiedPublicLink}
-							<Check class="mr-1 h-4 w-4 text-green-500" />
-							Copié
-						{:else}
-							<Copy class="mr-1 h-4 w-4" />
-							Copier le lien
-						{/if}
-					</Button>
+					<div class="flex gap-2">
+						<Button variant="outline" size="sm" class="flex-1" onclick={copyPublicUrl}>
+							{#if copiedPublicLink}
+								<Check class="mr-1 h-4 w-4 text-green-500" />
+								Copié
+							{:else}
+								<Copy class="mr-1 h-4 w-4" />
+								Copier le lien
+							{/if}
+						</Button>
+						<QrCodeButton url={buildPublicUrl()} label={data.exercise.title ?? 'l’exercice'} />
+					</div>
 				</div>
 				<p class="text-xs text-muted-foreground">
 					Pas besoin de creer un token. Vous pouvez aussi creer des liens avec expiration ci-dessous
@@ -919,6 +936,13 @@
 										<Copy class="h-4 w-4" />
 									{/if}
 								</Button>
+								<QrCodeButton
+									url={expired || inactive ? null : buildShareUrl(token)}
+									label={data.exercise.title ?? 'l’exercice'}
+									unavailableReason={expired ? 'lien expiré' : 'lien révoqué'}
+									containsToken
+									variant="icon"
+								/>
 								<Button
 									variant="ghost"
 									size="icon"

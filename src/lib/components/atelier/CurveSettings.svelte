@@ -28,13 +28,21 @@
 	import { Slider } from '$lib/components/ui/slider';
 	import { isCurveColor } from '$lib/grapheur/colors';
 	import { Input } from '$lib/components/ui/input';
+	import { integralToggle, tangentToggle } from '$lib/atelier/curve-toggles';
+	import { gestureHandlers } from '$lib/atelier/gesture';
 
 	interface Props {
 		object: FunctionObject;
 		display: CurveDisplay;
+		/**
+		 * La carte d'une fonction (lot 3 de la refonte) règle couleur et trait par
+		 * son point, tangente et aire par son menu : il ne reste ici que ce qu'on
+		 * LIT — le point de tangence, les bornes, les nombres.
+		 */
+		compact?: boolean;
 	}
 
-	let { object, display }: Props = $props();
+	let { object, display, compact = false }: Props = $props();
 
 	const atelier = useAtelier();
 	const graph = useGrapheurStore();
@@ -67,10 +75,6 @@
 
 	/** Pourquoi la dernière borne saisie n'a pas été retenue. */
 	let boundRefusal = $state<{ edge: 'from' | 'to'; message: string } | null>(null);
-
-	function round(n: number): number {
-		return Math.round(n * 100) / 100;
-	}
 
 	function update(patch: Partial<CurveDisplay>) {
 		atelier.setDisplay(object.name, patch);
@@ -111,22 +115,27 @@
 
 	/** La tangente part du milieu de la fenêtre visible, comme dans le grapheur. */
 	function handleTangentChange(checked: boolean | 'indeterminate') {
-		const { xMin, xMax } = graph.viewport;
-		update({ tangentAt: checked === true ? round((xMin + xMax) / 2) : null });
+		update(tangentToggle(checked === true, graph.viewport));
 	}
+
+	/**
+	 * Tout un glissé de la tangente = UNE étape d'Annuler (lot 5, PR 2 ; revue de
+	 * #1517 : 150 crans faisaient 100 étapes et chassaient une suppression).
+	 */
+	const tangentGesture = gestureHandlers(() => atelier.endGesture());
 
 	function handleTangentSlide(index: number) {
 		const { xMin, xMax } = graph.viewport;
-		update({ tangentAt: fromSliderIndex(index, xMin, xMax) });
+		atelier.setDisplay(
+			object.name,
+			{ tangentAt: fromSliderIndex(index, xMin, xMax) },
+			`tangente:${object.name}`
+		);
 	}
 
 	/** Bornes par défaut : la moitié centrale de la fenêtre visible. */
 	function handleIntegralChange(checked: boolean | 'indeterminate') {
-		const { xMin, xMax } = graph.viewport;
-		const quarter = (xMax - xMin) / 4;
-		update({
-			integral: checked === true ? { from: round(xMin + quarter), to: round(xMax - quarter) } : null
-		});
+		update(integralToggle(checked === true, graph.viewport));
 	}
 
 	function handleBoundInput(edge: 'from' | 'to') {
@@ -138,7 +147,12 @@
 			const current = atelier.get(object.name);
 			const integral = current && isFunction(current) ? current.display?.integral : null;
 			if (!Number.isFinite(parsed) || !integral) return;
-			const result = atelier.setDisplay(object.name, { integral: { ...integral, [edge]: parsed } });
+			// Une frappe par écriture, UNE étape par champ quitté (lot 5, PR 2)
+			const result = atelier.setDisplay(
+				object.name,
+				{ integral: { ...integral, [edge]: parsed } },
+				`borne-${edge}:${object.name}`
+			);
 			// Refusée (au-delà de ±1e9) : on le DIT — sinon le champ contredit l'aire
 			boundRefusal = result.ok
 				? null
@@ -156,6 +170,7 @@
 	 */
 	function handleBoundChange(edge: 'from' | 'to') {
 		return (event: Event & { currentTarget: HTMLInputElement }) => {
+			atelier.endGesture();
 			const current = atelier.get(object.name);
 			const integral = current && isFunction(current) ? current.display?.integral : null;
 			if (integral) event.currentTarget.value = String(integral[edge]);
@@ -186,42 +201,55 @@
 	});
 </script>
 
-<section class="reglages" aria-label={`Sur le graphique : ${object.name}`}>
-	<!-- Pas de titre de section (h3) : le panneau n'a pas de h2, l'ordre sauterait -->
-	<p class="titre">Sur le graphique</p>
+<section class="reglages" class:compact aria-label={`Sur le graphique : ${object.name}`}>
+	{#if !compact}
+		<!-- Pas de titre de section (h3) : le panneau n'a pas de h2, l'ordre sauterait -->
+		<p class="titre">Sur le graphique</p>
 
-	<div class="ligne">
-		<ColorPicker
-			value={display.color}
-			onchange={(color) => {
-				if (isCurveColor(color)) update({ color });
-			}}
-		/>
-		<LineWidthPicker value={display.lineWidth} onchange={(lineWidth) => update({ lineWidth })} />
-		<LineStylePicker
-			value={display.lineStyle}
-			onchange={(lineStyle: LineStyle) => update({ lineStyle })}
-		/>
-	</div>
+		<div class="ligne">
+			<ColorPicker
+				value={display.color}
+				onchange={(color) => {
+					if (isCurveColor(color)) update({ color });
+				}}
+			/>
+			<LineWidthPicker value={display.lineWidth} onchange={(lineWidth) => update({ lineWidth })} />
+			<LineStylePicker
+				value={display.lineStyle}
+				onchange={(lineStyle: LineStyle) => update({ lineStyle })}
+			/>
+		</div>
 
-	<div class="ligne">
-		<MyCheckbox
-			checked={display.tangentAt !== null}
-			onCheckedChange={handleTangentChange}
-			label="tangente"
-			aria-label="Afficher la tangente"
-		/>
-		<MyCheckbox
-			checked={display.integral !== null}
-			onCheckedChange={handleIntegralChange}
-			label="aire"
-			aria-label="Afficher l’aire sous la courbe"
-		/>
-	</div>
+		<div class="ligne">
+			<MyCheckbox
+				checked={display.tangentAt !== null}
+				onCheckedChange={handleTangentChange}
+				label="tangente"
+				aria-label="Afficher la tangente"
+			/>
+			<MyCheckbox
+				checked={display.integral !== null}
+				onCheckedChange={handleIntegralChange}
+				label="aire"
+				aria-label="Afficher l’aire sous la courbe"
+			/>
+		</div>
+	{/if}
 
 	{#if display.tangentAt !== null}
 		<div class="encadre">
-			<div class="ligne curseur" bind:this={sliderZone}>
+			<!-- Les touches arrivent du pouce (`role="slider"`), seul élément interactif :
+			     le conteneur ne fait qu'apprendre la fin du geste (Annuler, lot 5 PR 2) -->
+			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+			<div
+				class="ligne curseur"
+				role="group"
+				bind:this={sliderZone}
+				onkeydowncapture={tangentGesture.keydown}
+				onkeyup={tangentGesture.keyup}
+				onfocusout={tangentGesture.focusout}
+				onpointercancel={tangentGesture.pointercancel}
+			>
 				<span class="symbole">x₀</span>
 				<!--
 					Curseur piloté en entiers, comme dans le grapheur : bits-ui compare la
@@ -240,6 +268,7 @@
 							),
 						handleTangentSlide
 					}
+					onValueCommit={tangentGesture.commit}
 					min={0}
 					max={SLIDER_STEPS}
 					step={1}
@@ -329,6 +358,11 @@
 		gap: 0.375rem;
 		padding-top: 0.375rem;
 		border-top: 1px solid var(--color-border);
+	}
+	/* Sous la ligne d'une carte de fonction : pas de filet, la carte encadre déjà */
+	.reglages.compact {
+		padding-top: 0;
+		border-top: none;
 	}
 	.refus {
 		margin: 0;

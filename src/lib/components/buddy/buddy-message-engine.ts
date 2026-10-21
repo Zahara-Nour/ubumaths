@@ -18,14 +18,14 @@ const RECENT_HISTORY_SIZE = 5;
 /** Map context -> expression for avatar display */
 const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	correct: 'happy',
-	incorrect: 'sad',
+	incorrect: 'determined',
 	idle: 'neutral',
 	idle_lore: 'thinking',
 	streak_3: 'excited',
 	streak_7: 'excited',
 	streak_14: 'excited',
 	streak_30: 'excited',
-	streak_lost: 'sad',
+	streak_lost: 'determined',
 	level_up: 'excited',
 	theme_fractions: 'thinking',
 	theme_geometry: 'thinking',
@@ -39,7 +39,9 @@ const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	vip_card_rare: 'happy',
 	vip_card_epic: 'excited',
 	vip_card_legendary: 'excited',
-	onboarding: 'encouraging'
+	onboarding: 'encouraging',
+	session_gain: 'happy',
+	daily_cap: 'happy'
 };
 
 class BuddyMessageEngine {

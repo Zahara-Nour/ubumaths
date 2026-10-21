@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21).
 
 ## À quoi ça sert
 
@@ -39,23 +39,23 @@ test, ~14 000 cas (`it(`/`test(`).
 
 ### Fichiers racine
 
-| Fichier                                 | Rôle                                                                                                                                                                   |
-| --------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `types.ts`                              | l'union `MathNode` (29 variantes), `NodeMetadata`, styles d'affichage                                                                                                  |
-| `factory.ts`                            | constructeurs de nœuds, regroupés dans l'espace de noms `MathAST`                                                                                                      |
-| `guards.ts`                             | prédicats de type (`isAddition`, `isDelimiter`, `isFraction`, `isMinusOne`…)                                                                                           |
-| `transforms.ts`                         | `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `withMetadata`, `getChildren`, `cloneNode`, `countNodes`, `getDepth`, `stripUnnecessaryBrackets` |
-| `visitor.ts`                            | `visitAST`, `transformAST`                                                                                                                                             |
-| `flatten.ts`                            | `flattenSumShallow/Deep`, `flattenProductShallow/Deep`, `unflattenSum`, `unflattenProduct`, `unflattenRelationChain`, `flipSign`                                       |
-| `exp.ts`                                | `Exp` : enveloppe chaînable (`Exp.parse(…)`, `.latex`, `.matches`, `.simplifyWith`…)                                                                                   |
-| `equivalence.ts`, `equivalence-core.ts` | `areEquivalent` : le **décideur** de la correction                                                                                                                     |
-| `assumptions.ts`                        | hypothèses de l'énoncé (« x > 0 », « n entier », ADR 0012) traduites pour le décideur                                                                                  |
-| `cosmetic-transforms.ts`                | `checkForm` et ses transformations (contraintes de forme de la correction)                                                                                             |
-| `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                |
-| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`)                                                                                                |
-| `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                         |
-| `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                               |
-| `index.ts`                              | point d'entrée `$lib/mathAST`                                                                                                                                          |
+| Fichier                                 | Rôle                                                                                                                                                                                                                                                   |
+| --------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `types.ts`                              | l'union `MathNode` (29 variantes), `NodeMetadata`, styles d'affichage                                                                                                                                                                                  |
+| `factory.ts`                            | constructeurs de nœuds, regroupés dans l'espace de noms `MathAST`                                                                                                                                                                                      |
+| `guards.ts`                             | prédicats de type (`isAddition`, `isDelimiter`, `isFraction`, `isMinusOne`…)                                                                                                                                                                           |
+| `transforms.ts`                         | `mapNode`, `mapNodeTopDown`, `findNodes`, `findFirst`, `replaceNode`, `withMetadata`, `getChildren`, `cloneNode`, `countNodes`, `getDepth`, `stripUnnecessaryBrackets`                                                                                 |
+| `visitor.ts`                            | `visitAST`, `transformAST`                                                                                                                                                                                                                             |
+| `flatten.ts`                            | `flattenSumShallow/Deep`, `flattenProductShallow/Deep`, `unflattenSum`, `unflattenProduct`, `unflattenRelationChain`, `flipSign`                                                                                                                       |
+| `exp.ts`                                | `Exp` : enveloppe chaînable (`Exp.parse(…)`, `.latex`, `.matches`, `.simplifyWith`…)                                                                                                                                                                   |
+| `equivalence.ts`, `equivalence-core.ts` | `areEquivalent` : le **décideur** de la correction                                                                                                                                                                                                     |
+| `assumptions.ts`                        | hypothèses de l'énoncé (« x > 0 », « n entier », ADR 0012) traduites pour le décideur                                                                                                                                                                  |
+| `cosmetic-transforms.ts`                | `checkForm` et ses transformations (contraintes de forme de la correction) ; tests d'écriture d'un nombre (`isSimpleNumberLatex`, `isNumberOrNumberFractionLatex`, `isQuantityValueLatex` : fraction écrite `\frac` seulement, `6\div2` est un calcul) |
+| `decimal-comma.ts`                      | la virgule décimale nue (`3,14`) : nombre ou séparateur                                                                                                                                                                                                |
+| `latex-generator.ts`                    | `toLatex`, `LatexGenerator` (options `renderMetadata`, `preserveHoles`)                                                                                                                                                                                |
+| `custom-generator.ts`                   | `toCustom`, `CustomGenerator` (syntaxe maison)                                                                                                                                                                                                         |
+| `pretty-print.ts`                       | `prettyPrint` (débogage)                                                                                                                                                                                                                               |
+| `index.ts`                              | point d'entrée `$lib/mathAST`                                                                                                                                                                                                                          |
 
 ### Sous-dossiers
 
@@ -86,7 +86,7 @@ test, ~14 000 cas (`it(`/`test(`).
 | `analysis/`                                                                                                                         | continuité (`analyzeContinuity`), périodicité, symétrie, classification, détecteurs d'identités (`structures.ts`, lus par `algebraicFactoringRules`) ; zéros hybrides exact + balayage (`roots.ts`, `critical-points.ts`), où un échantillon presque nul ne compte que si \|f\| y est un minimum local (`touchesZero`, `near-zero.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | `piecewise/`                                                                                                                        | `extractPiecewiseBoundaries` : ruptures d'une fonction par morceaux (consommé par `geometry-core`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
 | `matrix/`                                                                                                                           | opérations matricielles                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
-| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) ; dimension `information` (octet, bit, multiples nommés un à un, 2026-10-13) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md), contrat : [grandeurs.md](../grandeurs.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `units/`                                                                                                                            | unités physiques (`parse`, `format`, conversions, `selectBestUnit`) ; dimension `information` (octet, bit, multiples nommés un à un, 2026-10-13 ; `Ko` accepté pour `ko`, 2026-10-18) — doc : `units/README.md`, notation : [notation-unites.md](../../pratiques/notation-unites.md), contrat : [grandeurs.md](../grandeurs.md)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `dimensional/`                                                                                                                      | analyse dimensionnelle                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | **Raconter**                                                                                                                        |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
 | `pedagogical-simplify/`                                                                                                             | `generatePedagogicalSimplifySteps` : quatre intentions (`SimplifyIntent`) ; `explainExpansion` (`expand-explained.ts`) : la seule rédaction montrée de `developper` (atelier, corrections, démo), par `writeExpandSteps` (`expand-steps.ts`, ordre du manuel `expand-order.ts`)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
@@ -268,6 +268,15 @@ de variable, une racine en u paramétrée ne doit annuler aucun dénominateur en
 (`a\ln x + b = 1`), cos, sin ; plusieurs termes en x (`y = xe^x`). Tests :
 `solve/__tests__/second-membre-litteral.test.ts`, `cli/commands/__tests__/condition-sur-parametre.test.ts`.
 
+Inconnue non précisée (V65, 2026-10-20) : `detectVariable` ne choisit l'inconnue que s'il n'y a
+qu'**une** lettre. Appelée sans `variable`, une équation à plusieurs lettres (`|x| = a`, `ax = 1`,
+`a\cos x = 1`) était jugée **constante** : « contradiction », `no-solution` **sans** `error`, un ∅
+affirmé. Elle rend désormais un échec (`isSolverFailure`) : « Plusieurs lettres (a, x) : précise
+l'inconnue à chercher. » Seule une identité (`a + b = b + a`) se conclut encore sans inconnue.
+Rappel du contrat (`types.ts`) : un échec du solveur vaut `no-solution` + `error`, sans
+`conclusive` ; tout appelant teste `isSolverFailure` avant le statut. Tests :
+`solve/__tests__/inconnue-non-precisee.test.ts`.
+
 Écart V40 (2026-10-13) : **valeur absolue d'une expression affine**. `tryAbsoluteValue`
 (`solve/absolute-value.ts`), premier repli après la classification, remplace la valeur absolue
 par une lettre neuve t, résout en t (premier degré, sans autre lettre : `2\left|x\right| = 6`,
@@ -291,6 +300,93 @@ implicite après `|…|` suivi d'un facteur est refusée comme ambiguë (`|2|x|-
 « valeur absolue » du clavier virtuel de MathLive rend `\left\vert2x+1\right\vert`, refusé
 auparavant. `\mid` (divisibilité) et `\Vert`, `\|` (norme) restent refusés. Tests :
 `parser/latex/__tests__/vert-commands.test.ts`, `utils/__tests__/answer-validator-vert.test.ts`.
+
+Le parseur maison lit `×`, `·` et `⋅` tapés tels quels comme le `*` du produit (2026-10-20,
+chantier lecture-grandeurs) : `2×3`, `2[m]·3[m]`. Ils étaient pris pour une lettre (`2×3` refusé,
+`2×` lu « 2 fois la lettre × »). Entre crochets d'unité, `·` et `⋅` valent le point (`3[m·s^-1]` =
+`3[m.s^-1]`), `×` vaut `*` (`unit-writing.ts`) ; le portier de l'atelier (`cli/core/input-detector.ts`)
+reconnaît ces unités comme de la syntaxe maison. Le parseur LaTeX ne change pas : il lit `\times`,
+`\cdot` et refuse le symbole Unicode (MathLive ne l'écrit jamais). Tests :
+`parser/custom/__tests__/multiplication-symbols.test.ts`, `cli/__tests__/input-detector-units.test.ts`.
+
+Exposants (2026-10-20, chantier lecture-grandeurs, `parser/exponent-rules.ts`). Le parseur maison lit
+un signe suivi d'UN nombre ou d'UNE lettre comme l'exposant : `10^-3` = `10^{-3}`, `10^+3` = `10^{+3}`,
+`10^-3+4` = `10^{-3}+4`, `10^-3[m]` = `10^{-3}[m]`. Avant, il exigeait les accolades (« Negative exponent
+requires braces »), et l'atelier relisait `x^-1` en `x^(-1)` après ce refus (rattrapage retiré). Un signe
+devant un groupe est refusé, `NEGATIVE_EXPONENT_BEFORE_GROUP` (`2^-sin(x)`, `2^-(x+1)`, `2^-f(x)` d'une
+fonction générique : jusqu'où va l'exposant ?) ; `2^-x y` reste refusé comme `2^x y`. Sur une fonction
+générique, `f^-1(x)` est la réciproque, comme `f^{-1}(x)` (`parseGenericFunction`). Deux exposants à la suite sont refusés par les
+QUATRE parseurs, `STACKED_EXPONENTS` (`2^3^2`, `e^x^2`, `2^{3}^{2}`) : le maison lisait (2³)², le LaTeX
+2^(3²). On écrit `2^{3^2}` ou `(2^3)^2` ; `toLatex` et `toCustom` n'ont jamais écrit d'empilement, et
+MathLive met toujours les accolades. Le RD maison lit aussi `x^(…)` comme Pratt (il le refusait). Tests :
+`parser/custom/__tests__/exponent-sign-stacked.test.ts`.
+
+Codes précis des refus (2026-10-20, chantier lecture-grandeurs, `parser/refusal-codes.ts`, partagé
+par les quatre parseurs). La lecture ne change pas ; seul le code change, et le texte anglais reste
+celui que traduit l'atelier (`cli/web/french-errors.ts`). `INVALID_UNIT` n'existe plus :
+`UNKNOWN_UNIT` (`5[xyz]`), `EMPTY_UNIT` (`5[]`), `AMBIGUOUS_UNIT` (`3[kg/m.s]`), `SPACE_IN_UNIT`
+(`3[m s]`), `UNIT_EXPONENT_OUTSIDE` (`10[m]^3`). `MISSING_DELIMITER` : l'écriture s'arrête avant le
+`)`, `]` ou `}` attendu (`(1+2`, `5[m`). `MISSING_OPERATOR` : un nombre juste après un facteur, même périmètre dans le maison et le LaTeX
+(refus « nombre après un facteur ») : lettre, nombre, `)`, `]`, `}`, `|` (`x2`, `x 2`, `(1+x)2`, `x^2 3`,
+`|x|2`, `2[m] 3`, `\sqrt{2}3`).
+`LEADING_DECIMAL_POINT` (maison seul ; le LaTeX lit `.5` ; un `.` collé à un facteur, `1.2.3`, `x.5`,
+n'en est pas un) a un texte nouveau, « Missing zero before the
+decimal point (write 0.5) », traduit par l'atelier. `UNEXPECTED_TOKEN` reste en dernier recours.
+Tests : `parser/__tests__/codes-des-refus.test.ts`.
+
+Virgule et point-virgule (2026-10-21, chantier lecture-grandeurs, PR 6). Le parseur maison est la
+langue interne du moteur : **point décimal seul, virgule toujours séparatrice** (arguments d'une
+fonction, éléments d'une matrice), pas de point-virgule. Le tokenizer (`parser/custom/tokenizer.ts`)
+ne lit plus jamais la virgule comme décimale (`3,14` = `3` `,` `14`) et fait de `;` un jeton
+`SEMICOLON` (il était une lettre : `x;y` se lisait x·;·y). Le refus naît au jeton refusé
+(`refusal-codes.ts`) : `DECIMAL_COMMA` quand la virgule est collée entre deux entiers (`2,5`, `(1,2)`,
+`[1,2]`, `max((2,5),3)`, `√2,5`), texte « Decimal comma: the decimal separator is '.' (write 2.5) »
+avec le nombre tapé ; `UNEXPECTED_COMMA` pour toute autre virgule hors fonction et matrice (`1, 2`,
+`,5`, `x,2`) ; `SEMICOLON` (`max(2;5)`, `f(x;y)`, `(1;2)`). `f(1,5)` est un appel à deux arguments
+(il valait f(1.5)). Le français (virgule décimale, « ; ») est traduit AVANT le parseur : l'atelier
+(`decimalCommaInput`), la lecture LaTeX (MathLive écrit `{,}`), les bornes des domaines d'élève.
+Pour relire à l'identique un texte écrit avant, `parser/custom/legacy-decimal-commas.ts`
+(`legacyDecimalCommas`) applique la règle de l'ancien tokenizer — virgule collée entre deux entiers
+décimale, sauf directement dans un appel de fonction connue ou une matrice : l'atelier pour ses
+définitions rangées sans provenance (lien, stockage : `0,3` d'un curseur), la DSL géométrie pour
+`sur ]0,5 ; 1,5[` et ses autres chaînes (`courbe("y = 0,5x")`). Les trois refus sont traduits par
+`cli/web/french-errors.ts` (textes de la page virgule). Contenus de la base au point : `scripts/reecrire-virgule-decimale-base.ts`
+(avant le `deploy:prod`). Tests : `parser/__tests__/virgule-point-virgule.test.ts`,
+`atelier/__tests__/virgule-rangee.test.ts`.
+
+Durées juxtaposées (2026-10-20, chantier lecture-grandeurs, PR 5 ; `parser/juxtaposed-quantities.ts`,
+partagé par les quatre parseurs). `2[h] 30[min]`, `2[h]30[min]`, `{2[h]}{30[min]}`,
+`2~\unit{h}~30~\unit{min}` se lisent comme UNE durée : la somme 2 h + 30 min, marquée
+`displayStyle: 'juxtaposed'` (`AdditionNode`, `juxtaposedSum`, `isJuxtaposedSum`). Un bloc face à
+`+` et `−` (`3[h] - 1[h] 30[min]` = 1 h 30 min ; signe en tête sur tout le bloc : `-2[h] 30[min]` =
+−(2 h 30 min)) ; collé à `*`, `/`, `:`, d'un côté comme de l'autre, il est refusé
+(`JUXTAPOSED_QUANTITIES`, « écris 2*(1 h 30 min) pour 3 h, ou 2*1 h + 30 min pour 2 h 30 min ») ;
+entre parenthèses ou en `\frac`, il se lit. Seules les durées : `2[m] 30[cm]`, `2[m]3[m]`,
+`2[h] 30[°]` et `2[h] 30` sont refusés (`JUXTAPOSED_QUANTITIES`), `2[m] 30` garde `MISSING_OPERATOR` ;
+entre accolades, deux grandeurs qui ne sont pas des durées restent un produit (`{2[m]}{3[m]}`, que
+`toLatex` écrit avec `\times`). Les angles attendent les unités ′ et ″, absentes. L'ordre et les unités
+répétées ne sont pas jugés (`30[min] 2[h]` est lu). Écriture : `toCustom` `2[h] 30[min]`, `toLatex`
+`2~\unit{h}~30~\unit{min}`, sans parenthèses après un signe ou un `−` (`juxtaposedTerms`,
+`common/sign-parentheses.ts`) ; la structure en fait un bloc. Les recopies d'arbre (`mapNode`,
+`mapNodeTopDown`, `cloneNode`, `stripUnnecessaryBrackets`, `transformAST`) gardent la marque ; un terme
+changé (valeur négative, expression) fait retomber l'écriture sur la somme avec `+`, valeur juste.
+Tests et garde (toute recopie `case 'addition' → add(…)` passe `displayStyle`) :
+`parser/__tests__/juxtaposed-quantities.test.ts`.
+
+L'unité multiplie tout le terme qui la précède (2026-10-20, chantier lecture-grandeurs, PR 4,
+`parser/custom/unit-term.ts`, partagé par Pratt et RD) : `1/2[m]` = (1/2) m (avant 1/(2 m) = 0,5 m⁻¹),
+`-5[m]` = (−5) m, `2*3[m]` = (2×3) m, `x:/2[m]` = (x:/2) m. Le terme s'arrête au `+`/`-` d'addition, à une
+grandeur déjà formée (`6[m]/2[s]`), à des parenthèses ou des accolades (`2/{7[km]}`, valeur de `braceWrap`).
+Après une grandeur, un terme de plusieurs nombres est refusé, `AMBIGUOUS_TERM` (`6[m]/2*3[s]`) ; une unité
+seule en tête, `MISSING_NUMBER_BEFORE_UNIT` (`[m]` ; `[x]` reste un crochet de calcul). Espaces entre
+chiffres ignorés (`12 500` = 12500), sauf en exposant ou en indice (`x^2 3` refusé). `π` tapé tel quel est la
+constante (comme `\pi`) ; `pi` reste p × i, et un calcul de modèle (`{{eval}}`, `conditions`) qui l'écrit
+nu est refusé (« écris \pi », `barePiRefusal` ; la tolérance `BARE_PI` est retirée). `toCustom` ne
+parenthèse plus un signe (`-5[m]`) et ferme d'accolades l'opérande droit qui se relirait autrement
+(`x:/{2[m]}`, `{6[m]}/2*{3[s]}`, `needsClosedRightOperand`). Calcul (`cli/quantities.ts`) : une unité sur un
+terme qui porte déjà une grandeur le multiplie (`unitsOverQuantities`) ; `2*20[°C]` refusé, `-20[°C]` est
+−20 °C (Q-T1, Q-T2). Les deux refus sont traduits par l'atelier. Tests :
+`parser/custom/__tests__/unite-terme.test.ts`.
 
 Les arguments d'une fonction connue entre `\left( … \right)` se lisent comme entre `( … )`
 (2026-10-13, `parseFunctionArguments` de `parser-pratt.ts`) : `\max\left(2,x\right)`, la forme
@@ -326,7 +422,8 @@ Elle rend maintenant le domaine de `solve` intersecté avec l'intervalle, mis en
 `normalizeExcludedPoints` (exporté de `domain/compute.ts` : point hors de l'intervalle effacé,
 point sur une borne qui l'ouvre — `\frac{2x}{2x}=1 dans [0;1]` → `]0 ; 1]`), et refuse
 (« Je ne sais pas encore résoudre ») un domaine à exclusion périodique, qu'`intersect` perdait
-(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0). Tests :
+(`\frac{\sin x}{\sin x}=1 dans [-1;3]` gardait 0 ; depuis le 2026-10-19, `intersect` garde ces
+valeurs interdites sur un ensemble borné, voir « Variations et valeurs interdites » plus bas). Tests :
 `cli/commands/__tests__/identite-dans-intervalle.test.ts`.
 
 **Zéros transcendants d'un dénominateur** (2026-10-15). `nonZeroSet` (`domain/compute.ts`) lit
@@ -370,9 +467,130 @@ l'appelant (atelier, `correction-generator`) se replie sur la réponse du moteur
 intervalle borné à la française, `solveInInterval` (`readSolvingDomain`) et `.variations` lisent
 l'ensemble par `parseStudentDomain` — borne infinie (`[0 ; +∞[`), réunion, `ℝ \ {0}`. Pour
 `.variations`, `studyDomain` (`domain/study.ts`) le croise avec le domaine de l'expression avant
-`computeVariations`, qui prend le domaine fourni tel quel. `writeCommandArguments` écrit `dans` en
+`computeVariations`, qui depuis le 2026-10-19 fait aussi ce croisement lui-même. `writeCommandArguments` écrit `dans` en
 dernier : un intervalle semi-ouvert ne referme pas ses crochets, et un `pour t` placé après y
 restait collé (et `dans [0;+∞[ pour t` tapé se relit). Une famille périodique sur un ensemble non borné est refusée (« Une infinité de solutions »), `findZeros` n'en rendant que les premiers termes. Tests : `atelier/__tests__/intervalle-calculs.test.ts`.
+**Signe d'une fonction à zéros périodiques** (2026-10-19, PR « 60° » de l'atelier). Sur un domaine
+non borné, le solveur ne rend que les zéros d'une période, et l'échantillonnage (5 points dans
+[−100 ; 100]) ne voyait pas les autres : `cos(πx/180)` était « négatif sur ]90 ; +∞[ », et
+`.variations cos(x°)` annonçait un maximum local en 0 ; `eˣ·cos x`, `e⁻ˣ·sin x` recevaient de même un
+signe constant faux. Trois règles (`sign/analyze.ts`, `sign/helpers/zeros.ts`,
+`sign/helpers/periodic-sign.ts`) :
+
+1. sur un intervalle **non borné**, le signe ne s'échantillonne plus : quand f est elle-même
+   périodique (`detectPeriodicity`, prouvée, continue), il se lit entre les zéros consécutifs d'**une
+   période** — un même signe partout vaut pour tout le domaine (`1 + cos x`, `sin²x` positifs ;
+   f′ = 1 − cos x ≥ 0, donc x − sin x croissante) ; sinon il reste **inconnu** (`cos x` au-delà de
+   ±π/2, `eˣ·cos x`), et aucun extremum ne s'en déduit ;
+2. `findZerosWithStatus` ajoute les membres de la famille compris **entre** les zéros connus et la
+   borne finie du domaine (`(x − 20)·sin x` : 2π … 6π entre π et 20) et rend la famille
+   (`periodicFamily`) ;
+3. une énumération tronquée (plafond de 500 zéros, ou plus de 1000 périodes) rend
+   `resolved: false` au lieu d'une liste incomplète tenue pour complète (`sin 2x` sur [0 ; 360]).
+
+Les domaines bornés ne changent pas. Tests : `sign/__tests__/periodique-non-borne.test.ts`,
+`variations/__tests__/periodique-non-borne.test.ts`.
+
+**Extrema périodiques et valeurs interdites** (2026-10-19). Quatre défauts de `computeVariations`,
+corrigés à la cause :
+
+1. **les points critiques sont les zéros du tableau de signes de f′** (`findZerosWithStatus`),
+   plus une résolution à part : le solveur ne rend que les zéros d'une période (`cos x = 0` → π/2),
+   et `critical-points.ts` s'en contentait. `sin x` sur [0 ; 2π] perdait son minimum −1 en 3π/2 et
+   annonçait 0 et 2π « minimum global » (valeur 0) ; même chose pour `sin 2x`, `3 cos 2x`,
+   `sin x + cos x`, `eˣ cos x`… Le tableau, lui, coupait bien en 3π/2. Effet de bord voulu :
+   `computeRange` de `sin x` sur [0 ; 10] rend [−1 ; 1] (il rendait `null`) ;
+2. **le domaine fourni est restreint au domaine de f** (`restrictToNaturalDomain`, comme
+   `studyDomain`) : `tan x` sur [0 ; π] était étudiée sur [0 ; π] entier, « croissante » à travers
+   π/2 ; `\frac{2x-1}{x+3}` sur [−10 ; 10] annonçait des extrema globaux ; `ln x` sur [−3 ; 3] un
+   « minimum local en 0 ». Intersection vide (`ln x` sur [−3 ; −1]) : `VariationError` « f n'est pas
+   définie sur l'intervalle d'étude ». Domaine de f non résolu ou conditionnel : le domaine fourni
+   est gardé ;
+3. **`intersect` garde les valeurs interdites périodiques sur un ensemble borné**
+   (`restrictPeriodicExclusion`, `domain/algebra.ts`) : il rendait l'ensemble tel quel. Une valeur
+   sur une borne l'ouvre (`tan ∩ ]−π/2 ; π/2[` reste `]−π/2 ; π/2[`), les autres sont exclues, écrites
+   mises au propre (`tidyPeriodicMember` : 3π/2, pas 3/2·π). Sur un ensemble non borné il le rend
+   encore tel quel (une infinité de points, que `interval_set` ne sait pas écrire). Conséquence :
+   une inéquation à exclusion périodique sur un domaine imposé BORNÉ est `complete`
+   (`\tan x > 0` sur [0 ; π] → ]0 ; π/2[), `partial` seulement sur un domaine non borné ;
+4. **le sens ne traverse pas une valeur interdite périodique** (`cutAtPeriodicExclusions`,
+   `variations/monotonicity.ts`) : 1/cos²x est positive partout où elle est définie, et `tan x` était
+   « croissante sur ℝ ». Un intervalle borné est coupé en chaque valeur interdite ; un intervalle non
+   borné garde son sens sur l'intervalle de définition voisin de sa borne finie (ou de 0 sur ℝ :
+   `tan x` croissante sur ]−π/2 ; π/2[), **inconnu** au-delà, avec un avertissement (« le sens de
+   variation ne se conclut que sur chaque intervalle de définition, jamais sur leur réunion »).
+
+Côté réciproque (`reciprocal/index.ts`, décision (5) de David) : quand aucun morceau listé n'a de
+formule et que la commande proposée échouerait (`tan` sur ]−1 ; 4[, `sin` sur ]−1 ; 4[), aucune
+commande n'est proposée — refus périodique honnête (« Sa réciproque y est la fonction arctan… »)
+si f est périodique, conseil sans commande sinon.
+
+Et : **un sens inconnu quelque part interdit tout extremum global** (`e^{−x} sin x` sur [0 ; +∞[
+annonçait f(0) = 0 minimum ET maximum global). Le membre a + kT s'écrit par `periodicMember`
+(`common/periodic-member.ts`, partagé avec l'énumération des zéros). Reste connu : un maximum
+global atteint à la fois en un point intérieur et en une borne n'est donné qu'au point intérieur
+(`3 cos 2x` sur [0 ; 2π] : π, pas 0 ni 2π). Tests : `variations/__tests__/periodique-non-borne.test.ts`
+— oracle numérique, 55 fonctions × 7 domaines plus 4 domaines contenant une valeur interdite : tout
+signe et tout sens affirmés vérifiés sur une grille, aucun sens à travers une valeur interdite,
+chaque extremum vérifié (valeur, position, nature locale et globale), aucun extremum de la grille
+manquant quand le tableau se conclut sur un domaine borné.
+
+**Zéros périodiques d'un quotient, quartiques** (2026-10-19, suite). Quatre défauts, corrigés à la
+cause :
+
+1. **la famille périodique du numérateur traverse la décomposition rationnelle**
+   (`solve/rational.ts`) : `N/D = 0` rendait les zéros d'une période de N (±π/2) sans
+   `periodicSolutions`. Sur un domaine borné, 3π/2, 5π/2… manquaient : `cos x/(x² + 1)` restait de
+   signe « inconnu » sur ]π/2 ; 2π], `1/sin x` et `ln(2 + sin x)` (f′ = cos x/(2 + sin x)) de sens
+   « inconnu » sur [0 ; 2π] ; `cos x/eˣ` était « positive sur ]π/2 ; +∞[ » et « croissante sur
+   [0 ; +∞[ » (faux). La famille n'est propagée que si numérateur et dénominateurs sont définis
+   sur ℝ (`definedEverywhere` : sinon `cos x/√x` affichait des zéros en −π/2, −3π/2 et
+   `cos x/tan x = 0` rendait « aucune solution » ET une famille) et qu'AUCUN membre n'annule un
+   dénominateur, démontré en résolvant D = 0 (`familyAvoidsDenominators`) : pas de solution
+   réelle (`x² + 1`, `2 + sin x`), solutions isolées hors famille, ou famille disjointe de périodes
+   commensurables (`sin²x` : kπ). Sinon la famille est rendue à part,
+   `droppedPeriodicSolutions` — jamais affichée comme ensemble de solutions — et le tableau de
+   signes l'énumère membre à membre en ne gardant que ceux où l'expression est définie
+   (`definedMemberFilter`, `sign/helpers/zeros.ts`) : `sin x/x` sur [0 ; 2π] a pour zéros π et
+   2π (pas 0), `cos x/√x` sur [−5 ; 5] π/2 et 3π/2. Domaine de l'expression non déterminé : zéros
+   non résolus, rien ne se conclut. Un contrôle numérique (« finie au membre et de part et
+   d'autre ») a été essayé puis retiré : il gardait des membres où f n'est pas définie (0/0 de
+   `sin 2x/(sin x·√(2 + sin x))` en π et 2π, `cos x/ln(sin x + 1)` en 3π/2). `2√(sin x)` sur
+   ]0 ; π[ reste donc inconnu ;
+2. **le premier membre de la famille au-delà d'une borne finie compte** (`familyBetweenKnownZeros`,
+   `sign/helpers/zeros.ts`) : `ln(2 + sin x)` sur [0 ; +∞[ était « positif » sans aucun zéro (le
+   solveur rend −π/2, hors du domaine), au lieu de 0 en 3π/2 ; `cos x/eˣ` sur [0 ; +∞[ se lit
+   maintenant « décroissante sur [0 ; 3π/4[ », inconnu au-delà ;
+3. **Ferrari** (`common/quartic-roots.ts`, `realQuarticRoots`, désormais partagé par
+   `solve/solvers/quartic.ts` et `domain/preimage.ts`, qui en avaient chacun une copie) : la
+   résolvante est écrite pour y = m/2, la factorisation employait y au lieu de m = 2y. Toute
+   quartique non bicarrée une fois dépréciée (B ≠ 0) avait des racines fausses
+   (x⁴ + x³ − 7x² − x + 6 = 0 rendait −3,13 ; −0,29 ; 0,15 ; 2,26), d'où les points critiques faux
+   de `(x−1)²(x+2)³` : le tableau a maintenant un maximum en −1/5, un minimum en 1, rien en −2
+   (zéro double de f′). Aucun discriminant n'est arrondi à zéro : une tolérance relative fondait
+   deux racines proches (3 et 3,002) en une seule, ensuite écartée — « aucune racine réelle ». Un
+   discriminant légèrement négatif (racine double à ~1e-8 près) donne deux candidats de part et
+   d'autre du sommet ; chacun est poli par Newton sans s'éloigner (un pas pouvait sauter sur une
+   autre racine) ; on ne fusionne qu'après, deux racines entre lesquelles P reste au niveau du
+   bruit de calcul — la borne de Horner Σ|cₖ|·|x|ᵏ·ε, pas Σ|cₖ|·max(1, |x|)⁴, qui fondait
+   1000 et 1001 et acceptait 7500 pour (x − 3)(x − 5000)(x − 10⁴)(x + 2·10⁴) — et une racine multiple est affinée comme racine simple d'une dérivée (5/3,
+   triple, sortait doublée). Testé sur 200 quartiques tirées à graine fixe (racines simples,
+   doubles, triples, proches en valeur relative, jusqu'à ±2·10⁴, facteur x² + 1) ;
+4. **domaine de f non déterminé** (`ln(sin x)` : le domaine fourni est gardé tel quel) : un sens
+   n'est affirmé que là où f est numériquement définie (`withoutClaimsWhereUndefined`,
+   `variations/compute.ts`), et le signe de f′ s'étudie sur le domaine de f′ quand il est
+   déterminé (`withinDerivativeDomain` : coupure en 0 pour cos x/sin x) ; `ln(sin x)` sur
+   [0 ; 2π] était « décroissante sur ]3π/2 ; 2π] », où f n'existe pas. `ln(x + sin x)` sur
+   [1 ; +∞[ reste inconnu : main concluait « croissante » par échantillonnage, non démontré.
+
+Reste connu : `ln(2 + sin x)`, `1/(2 + cos x)`, `√(2 + cos x)` sur ℝ sont refusées (domaine
+2 + sin x > 0 non déterminé) ; `1/sin x` sur ℝ a un signe « inconnu » partout (pôles périodiques non
+découpés) ; sur un domaine fourni BRUT qui déborde l'ensemble de définition, le tableau de signes
+ne coupe pas aux valeurs interdites non périodiques (`cos x/ln x` sur [−π ; π] : pas de coupure
+en 1) ni ne retire ce qui sort du domaine (`ln(sin x)` « négatif » sur ]π ; 2π[) — déjà le cas
+sur main, les appelants passent l'ensemble d'étude restreint ; `cos x/(x² + 1)` a des variations non résolues (tan x = −2x/(x² + 1), honnête). Tests :
+`solve/__tests__/rational.test.ts`, `solve/__tests__/quartic.test.ts`,
+`domain/__tests__/preimage-quartic.test.ts`, `variations/__tests__/periodique-non-borne.test.ts`.
 
 ### Carte du code
 
@@ -618,6 +836,25 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   majuscules des exercices de prod, 355 à majuscules collées) identique sans option et en
   produit, et aucune saisie lisible en produit ne devient une erreur en longueur
   (`parser/custom/__tests__/capital-pairs-empreinte.test.ts`).
+- **Noms indicés** (2026-10-19, relevé de l'atelier) : `a_1`, `a_{12}`, `\alpha_1` — une lettre
+  latine (`variable`) ou grecque (`greek`, nommée `alpha_1`) munie d'un indice ENTIER — sont UN nom
+  (`indexedNameOf`, `common/indexed-names.ts`). L'indice reste tel qu'écrit : `a_{01}` et `a_1`
+  sont deux noms. L'arbre reste un `subscript` ; `substitute` le remplace en entier par la liaison
+  `a_1`, et la liaison `a` ne touche plus sa base (avant : `a = 10` faisait `10_1`, que rien ne
+  lisait). Un seul masquage, `hideIndexedNames` / `revealIndexedNames` (avec un filtre : l'atelier
+  y laisse `u_3`, terme d'une suite), sert `substitute`, `hasAllBindings`, `getMissingBindings`,
+  la liste « (variables: a_1, x) » du REPL web et `variablesOf` (`atelier/parse.ts`). Un indice non
+  entier (`x_n`, `u_{n+1}`) n'est pas un nom : sa base se remplace comme avant. ⚠️ `getVariables`
+  rend toujours la base (`a`) : ses ~80 appelants (solveur, validation des réponses…) n'ont pas été
+  revus pour un changement de sens. **Le pipeline de la console** (`cli/core/pipeline.ts`, `parse`,
+  2026-10-19) lit chaque nom indicé LATIN comme une variable entière `x_1` (`hideIndexedNames`) :
+  dans le REPL et les commandes (`.variations`, `.résoudre`, `.intégrer`, `.évaluer`, `.diff`…),
+  `x_1` est donc une autre lettre que x, comme `a` (avant : `.variations x^2 - x_1 x` ne savait pas
+  résoudre f'(x) = 0, `.intégrer x_1 de 0 à 1` rendait 1). Le grec indicé reste un `subscript`.
+  `toLatex` écrit une telle variable `x_1`, `a_{12}` (`indexedVariableLatex`), plus `\mathit{x_1}`.
+  `.variations` ne conclut pas sur un sens indéterminé : tous les intervalles « ? » → « Signe …
+  et sens de variation : non déterminés » et « Extrema : non déterminés » ; un seul « ? » sans
+  extremum trouvé → « Extrema : non déterminés », jamais « aucun ».
 
 ## Invariants structurels non évidents
 

@@ -1,0 +1,166 @@
+/**
+ * Noms propres des Mathoux : un par notion de l'arbre des notions (134).
+ *
+ * Clé = nom de la notion (`classification_nodes.name`), comme dans la migration de seed :
+ * les identifiants diffèrent entre la base locale et la prod. Une notion absente (renommée,
+ * nouvelle) garde le nom générique de `mathouName`.
+ *
+ * Relus par David sur la page à cocher le 2026-10-19 (ses remplacements repris tels quels) ;
+ * les noms qu'il n'a pas encore relus sont validés par défaut, à revoir plus tard.
+ * Table de travail : docs/wip/mathoux-noms.md.
+ */
+export const MATHOU_NAMES: Readonly<Record<string, string>> = {
+	// Nombres et calculs
+	'Entiers : numération': 'Position',
+	'Entiers : addition et soustraction': 'Retenue',
+	'Entiers : multiplication': 'Produit',
+	'Entiers : division': 'Dividende',
+	'Entiers : priorités opératoires': 'Parenthèse',
+	'Décimaux : numération': 'Virgule',
+	'Décimaux : calculs': 'Félix À-Peu-Près',
+	'Fractions : sens et écritures': 'Tarte',
+	'Fractions : calculs': 'Mère Réduite',
+	'Relatifs : sens et écritures': 'Moins-Que-Rien',
+	'Relatifs : calculs': 'Plus-Par-Moins',
+	'Puissances : sens et écritures': 'Monseigneur Carré',
+	'Puissances : calculs': 'Exposantin',
+	'Racines carrées : sens et écritures': 'Racinot',
+	'Racines carrées : calculs': 'Radical',
+	'Problèmes arithmétiques': 'Casse-Tête',
+	// Arithmétique
+	Divisibilité: 'Pile-Poil',
+	'Nombres premiers': "l'Indivisible",
+	'PGCD, Bézout et Gauss': 'Bézouille',
+	Congruences: 'Modulo',
+	// Nombres complexes
+	'Forme algébrique': 'Cardano',
+	'Module et argument': 'Bombelli',
+	'Formes trigo. et exponentielle': 'Eulerot',
+	'Équations polynomiales': 'Conjugué',
+	'Interprétation géométrique': 'Argand',
+	// Proportionnalité
+	'Situations de proportionnalité': 'Félix Règle-de-Trois',
+	Pourcentages: 'Centime',
+	Évolutions: 'Coef',
+	"Échelle d'une carte": 'Michelin',
+	Vitesse: 'Flèche',
+	// Algèbre
+	'Premiers pas algébriques': 'Petit x',
+	'Calcul littéral': 'Viète',
+	'Équations : premier degré': 'Balance',
+	'Équations : produit et quotient': 'Félix Produit-Nul',
+	'Inéquations : premier degré': 'Félix Au-Dessus-En-Dessous',
+	'Inéquations : produit et quotient': 'Plus-Moins',
+	'Équations : second degré': 'Discriminette',
+	'Inéquations : second degré': 'Trinôme',
+	Inégalités: 'Encadré',
+	// Fonctions
+	'Généralités sur les fonctions': 'Antécédent',
+	'Fonctions affines': 'Droit-Devant',
+	'Fonction carré': 'Parabole',
+	'Fonction inverse': 'Hyperbole',
+	'Fonction racine carrée': 'Racinette',
+	'Fonction cube': 'Cubiste',
+	'Fonction valeur absolue': "l'Absolu",
+	'Second degré': 'Sommet',
+	Dérivation: 'Tangentin',
+	'Fonction exponentielle': 'Gonflette',
+	'Fonctions trigonométriques': 'Cosinus',
+	'Limites de fonctions': 'Asymptote',
+	Continuité: "Trait-d'Union",
+	Convexité: 'Bedaine',
+	Logarithmes: 'Népérot',
+	// Intégration
+	"Calcul d'intégrales": 'Primitif',
+	'Intégrale et aire': 'Aire-de-Rien',
+	'Valeur moyenne': 'Félix Juste-Milieu',
+	'Fonction intégrale': 'Cumulard',
+	// Équations différentielles
+	Généralités: 'Différentiel',
+	'y′ = f': 'Remonte-Pente',
+	'y′ = ay': 'Malthus',
+	'y′ = ay + b': 'Équilibre',
+	'y′ = ay + f': 'Particulier',
+	// Suites
+	'Généralités sur les suites': 'Énième',
+	'Suites arithmétiques': 'Pas-à-Pas',
+	'Suites géométriques': 'Boule-de-Neige',
+	"Modèles d'évolution": 'Tirelire',
+	'Limites de suites': 'Convergent',
+	'Raisonnement par récurrence': 'Domino',
+	'Suites récurrentes': 'Escargot',
+	'Suites arithmético-géométriques': 'Point-Fixe',
+	// Matrices
+	'Calcul matriciel': 'Matricule',
+	'Systèmes linéaires': 'Pivot',
+	'Suites et matrices': 'Itératif',
+	'Transformations du plan': 'Tourneboule',
+	// Graphes
+	'Vocabulaire des graphes': 'König',
+	'Chaînes et connexité': 'Maillon',
+	"Matrice d'adjacence": 'Voisin',
+	'Chaînes de Markov': 'Markovitch',
+	// Géométrie
+	Solides: 'Pavé',
+	'Figures planes': 'Losange',
+	'Symétrie axiale': 'Miroir',
+	'Repérage et déplacements': 'Boussole',
+	'Symétrie centrale': 'Demi-Tour',
+	Translations: 'Glissade',
+	'Théorème de Pythagore': 'le Chanoine Hypoténuse',
+	'Théorème de Thalès': 'Pyramidon',
+	'Trigonométrie du triangle rectangle': 'Cahsohtoa',
+	Rotations: 'Toupie',
+	Homothéties: 'Loupe',
+	'Triangles semblables': 'Sosie',
+	"Repérage dans l'espace": 'Altitude',
+	Vecteurs: 'Chasles',
+	'Géométrie repérée': 'Abscisse',
+	'Produit scalaire': 'Scalairon',
+	Espace: 'Perspective',
+	"Orthogonalité et distances dans l'espace": 'Fil-à-Plomb',
+	// Grandeurs et mesures
+	Longueurs: 'Toise',
+	Masses: 'Poids-Plume',
+	Contenances: 'Carafe',
+	Monnaie: 'Phynance',
+	Angles: 'Rapporteur',
+	Périmètres: 'Fait-le-Tour',
+	Aires: 'Carrelage',
+	Volumes: 'Cubage',
+	Durées: 'Sablier',
+	'Unités et conversions': 'Convertine',
+	// Probabilités
+	'Expériences aléatoires': 'Pile-ou-Face',
+	'Probabilités conditionnelles': 'le Révérend Bayes',
+	'Variables aléatoires': 'Espérance',
+	'Loi binomiale': 'Bernoulli',
+	'Autres lois': 'Poisson',
+	'Sommes et concentration': 'Tchebychev',
+	// Dénombrement
+	'Principes de dénombrement': 'Ramifié',
+	'Arrangements et permutations': 'Factoriel',
+	Combinaisons: 'Pascalou',
+	'Problèmes de dénombrement': 'Compte-Tout',
+	// Statistiques
+	'Représenter des données': 'Camembert',
+	Indicateurs: 'Médiane',
+	Échantillonnage: 'Sondeur',
+	'Tableaux croisés': 'Effectif',
+	'Statistique à deux variables': 'Nuage',
+	// Logique
+	'Proposition mathématique': 'Vérité',
+	'Implication et équivalence': 'Donc',
+	'Quantificateurs et négation': 'Quel-que-Soit',
+	Raisonnements: "l'Absurde",
+	// Ensembles
+	'Ensembles de nombres': 'Rationnel',
+	'Opérations sur les ensembles': 'Patate',
+	'Cardinal et produit cartésien': 'Cardinal',
+	// Algorithmique
+	Préalgorithmique: 'Recette',
+	'Variables et instructions': 'Affectation',
+	Boucles: 'Tourne-en-Rond',
+	'Fonctions Python': 'Pythonisse',
+	Listes: 'Indice-Zéro'
+};

@@ -41,6 +41,8 @@ export interface KeptLine {
 	readonly alternative?: Alternative;
 	readonly formulas?: true;
 	readonly replay?: ReplayStep;
+	/** Ligne barrée : son étape a été annulée (lot 5, PR 2) — elle le reste. */
+	readonly undone?: true;
 }
 
 export interface KeptHistory {
@@ -99,6 +101,9 @@ const replaySchema = z.discriminatedUnion('kind', [
 	}),
 	z.object({ kind: z.literal('supprimer'), name }),
 	z.object({ kind: z.literal('annuler') }),
+	z.object({ kind: z.literal('rétablir') }),
+	z.object({ kind: z.literal('vider') }),
+	z.object({ kind: z.literal('rupture'), reason: z.string().min(1).max(MAX_TEXT_LENGTH) }),
 	z.object({ kind: z.literal('garder'), line: z.number().int().min(0).max(MAX_KEPT_LINES) })
 ]);
 
@@ -117,7 +122,8 @@ const keptLineSchema = z
 			.optional()
 			.catch(undefined),
 		formulas: z.literal(true).optional().catch(undefined),
-		replay: replaySchema.optional().catch(undefined)
+		replay: replaySchema.optional().catch(undefined),
+		undone: z.literal(true).optional().catch(undefined)
 	})
 	// Les formules `$…$` d'un refus vont aussi à MathLive (`FormulaText`), par le
 	// même découpage (`messageParts`) : une seule refusée, le texte reste brut
@@ -152,6 +158,14 @@ export function loadCalcHistory(storage: Storage | null): LoadedHistory {
 	} catch {
 		return EMPTY;
 	}
+	return readKeptHistory(parsed);
+}
+
+/**
+ * Relire un historique déjà décodé : celui du navigateur, ou celui d'un fichier
+ * `.atelier.json` (`atelier-file.ts`). Même tri, même liste blanche.
+ */
+export function readKeptHistory(parsed: unknown): LoadedHistory {
 	const version = (parsed as { version?: unknown } | null)?.version;
 	if (typeof version === 'number' && version > CALC_HISTORY_VERSION) return { kind: 'too-recent' };
 
@@ -166,6 +180,16 @@ export function loadCalcHistory(storage: Storage | null): LoadedHistory {
 		.filter((t): t is string => typeof t === 'string' && t.length <= MAX_INPUT_LENGTH)
 		.slice(-MAX_KEPT_LINES);
 	return { kind: 'loaded', history: { lines, typed } };
+}
+
+/**
+ * Combien de lignes `readKeptHistory` examinerait (les plus récentes, au plus
+ * `MAX_KEPT_LINES`), ou `null` si l'enveloppe elle-même est illisible. Sert au
+ * fichier `.atelier.json` à dire ce qui s'est perdu, jamais en silence.
+ */
+export function offeredLineCount(parsed: unknown): number | null {
+	const shell = shellSchema.safeParse(parsed);
+	return shell.success ? Math.min(shell.data.lines.length, MAX_KEPT_LINES) : null;
 }
 
 // =============================================================================
@@ -203,7 +227,8 @@ function keptLineOf(entry: Entry): KeptLine {
 		...(entry.alternative !== undefined &&
 			entry.alternative.latex.length <= MAX_LATEX_LENGTH && { alternative: entry.alternative }),
 		...(entry.formulas === true && entry.text.length <= MAX_TEXT_LENGTH && { formulas: true }),
-		...(replay !== undefined && { replay })
+		...(replay !== undefined && { replay }),
+		...(entry.undone === true && { undone: true })
 	};
 }
 
@@ -240,8 +265,31 @@ function recentTyped(typed: readonly string[]): string[] {
 	return recent.slice(start);
 }
 
+/** La place des lignes : le plafond, moins les saisies et une marge pour l'enveloppe. */
+function linesBudget(typed: readonly string[]): number {
+	// La marge couvre l'enveloppe (`version`, clés, crochets)
+	return MAX_KEPT_HISTORY_LENGTH - JSON.stringify(typed).length - 1_000;
+}
+
 /**
- * Ranger l'historique ; vide (« Repartir de zéro ») : la clé est retirée. Stockage
+ * L'historique tel qu'on le range, sans le ranger : celui que porte un fichier
+ * `.atelier.json` (`atelier-file.ts`). Mêmes bornes que le navigateur, donc
+ * toujours relisible par `readKeptHistory`.
+ */
+export function keptHistoryOf(
+	entries: readonly Entry[],
+	typed: readonly string[]
+): { version: typeof CALC_HISTORY_VERSION; lines: KeptLine[]; typed: string[] } {
+	const kept = recentTyped(typed);
+	return {
+		version: CALC_HISTORY_VERSION,
+		lines: recentLines(entries, linesBudget(kept), MAX_KEPT_LINES),
+		typed: kept
+	};
+}
+
+/**
+ * Ranger l'historique ; vide (console vidée) : la clé est retirée. Stockage
  * plein : les lignes les plus récentes, par moitiés, puis rien — jamais d'exception.
  */
 export function saveCalcHistory(
@@ -256,8 +304,7 @@ export function saveCalcHistory(
 			return 'removed';
 		}
 		const kept = recentTyped(typed);
-		// La marge couvre l'enveloppe (`version`, clés, crochets)
-		const budget = MAX_KEPT_HISTORY_LENGTH - JSON.stringify(kept).length - 1_000;
+		const budget = linesBudget(kept);
 		let lines = recentLines(entries, budget, MAX_KEPT_LINES);
 		for (;;) {
 			try {

@@ -1,0 +1,471 @@
+{
+	"template_id": "c415d81d-64be-453a-a30e-fb5625530a68",
+	"titre": "Définition par quotient",
+	"sous_titre": "$$?*b=a$$",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > Apprivoiser > Définition",
+	"mis_a_jour": "2026-10-01T06:18:13.577595+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-127",
+			"libelle_point": "Compléter des égalités à trous multiplicatives",
+			"noeud_actuel": "Nombres et calculs > Fractions : sens et écritures > définition",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..19"
+					},
+					{
+						"name": "b",
+						"expression": "2..19!cd(a)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "b*?=a"
+					}
+				],
+				"conditions": ["gcd(a,b)=1", "mod(10000,b)!=0"],
+				"enonce_brut": "Détermine le facteur manquant.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["\\frac{{{a}}}{{{b}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 125,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [3, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 125,
+						"exemples": [
+							"11*?=2",
+							"11*?=7",
+							"3*?=2",
+							"11*?=3",
+							"13*?=15",
+							"13*?=2",
+							"19*?=3",
+							"7*?=13",
+							"15*?=16",
+							"18*?=19",
+							"12*?=11",
+							"3*?=8"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 19,
+							"nb_distinctes": 18,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.10526315789473684,
+						"max": 6.333333333333333,
+						"negatif_possible": false,
+						"denominateurs": [3, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19],
+						"denominateur_min": 3,
+						"denominateur_max": 19,
+						"nb_distinctes": 125
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19],
+				"denominateur_min": 3,
+				"denominateur_max": 19,
+				"numerateur_min": 2,
+				"numerateur_max": 19,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 7,
+					"enonce": "Détermine le facteur manquant.\n\n$$19 \\times [?] = 3$$",
+					"reponse": ["\\frac{3}{19}"],
+					"variables": {
+						"a": "3",
+						"b": "19",
+						"expression1": "19*?=3"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Détermine le facteur manquant.\n\n$$11 \\times [?] = 2$$",
+					"reponse": ["\\frac{2}{11}"],
+					"variables": {
+						"a": "2",
+						"b": "11",
+						"expression1": "11*?=2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le facteur manquant.\n\n$$11 \\times [?] = 7$$",
+					"reponse": ["\\frac{7}{11}"],
+					"variables": {
+						"a": "7",
+						"b": "11",
+						"expression1": "11*?=7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Détermine le facteur manquant.\n\n$$3 \\times [?] = 2$$",
+					"reponse": ["\\frac{2}{3}"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"expression1": "3*?=2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Détermine le facteur manquant.\n\n$$11 \\times [?] = 3$$",
+					"reponse": ["\\frac{3}{11}"],
+					"variables": {
+						"a": "3",
+						"b": "11",
+						"expression1": "11*?=3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..19"
+					},
+					{
+						"name": "b",
+						"expression": "2..19!cd(a)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "?*b=a"
+					}
+				],
+				"conditions": ["gcd(a,b)=1", "mod(10000,b)!=0"],
+				"enonce_brut": "Détermine le facteur manquant.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["\\frac{{{a}}}{{{b}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 125,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 18,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 12,
+						"valeurs": [3, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 125,
+						"exemples": [
+							"?*11=2",
+							"?*11=7",
+							"?*3=2",
+							"?*11=3",
+							"?*13=15",
+							"?*13=2",
+							"?*19=3",
+							"?*7=13",
+							"?*15=16",
+							"?*18=19",
+							"?*12=11",
+							"?*3=8"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 19,
+							"nb_distinctes": 18,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "fraction",
+						"min": 0.10526315789473684,
+						"max": 6.333333333333333,
+						"negatif_possible": false,
+						"denominateurs": [3, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19],
+						"denominateur_min": 3,
+						"denominateur_max": 19,
+						"nb_distinctes": 125
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 18,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": {
+				"nb": 300,
+				"denominateurs": [3, 6, 7, 9, 11, 12, 13, 14, 15, 17, 18, 19],
+				"denominateur_min": 3,
+				"denominateur_max": 19,
+				"numerateur_min": 2,
+				"numerateur_max": 19,
+				"superieure_a_1_possible": true
+			},
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 4,
+					"max": 4
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 7,
+					"enonce": "Détermine le facteur manquant.\n\n$$[?] \\times 19 = 3$$",
+					"reponse": ["\\frac{3}{19}"],
+					"variables": {
+						"a": "3",
+						"b": "19",
+						"expression2": "?*19=3"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Détermine le facteur manquant.\n\n$$[?] \\times 11 = 2$$",
+					"reponse": ["\\frac{2}{11}"],
+					"variables": {
+						"a": "2",
+						"b": "11",
+						"expression2": "?*11=2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Détermine le facteur manquant.\n\n$$[?] \\times 11 = 7$$",
+					"reponse": ["\\frac{7}{11}"],
+					"variables": {
+						"a": "7",
+						"b": "11",
+						"expression2": "?*11=7"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Détermine le facteur manquant.\n\n$$[?] \\times 3 = 2$$",
+					"reponse": ["\\frac{2}{3}"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"expression2": "?*3=2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Détermine le facteur manquant.\n\n$$[?] \\times 11 = 3$$",
+					"reponse": ["\\frac{3}{11}"],
+					"variables": {
+						"a": "3",
+						"b": "11",
+						"expression2": "?*11=3"
+					}
+				}
+			]
+		}
+	]
+}

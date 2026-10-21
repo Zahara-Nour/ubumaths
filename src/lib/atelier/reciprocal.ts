@@ -18,7 +18,7 @@
 
 import type { Atelier } from './atelier.svelte';
 import type { CalcResult } from './calcul';
-import type { MathNode } from '$lib/mathAST/types';
+import type { MathNode, SubscriptNode } from '$lib/mathAST/types';
 import type { Domain } from '$lib/mathAST/domain/types';
 import type { RenderedStep } from '$lib/mathAST/common/step-renderer-base';
 import { computeReciprocal, type ReciprocalResult } from '$lib/mathAST/reciprocal';
@@ -28,6 +28,7 @@ import { solve } from '$lib/mathAST/solve/solve';
 import { isSolverFailure } from '$lib/mathAST/solve/types';
 import { equals, variable as variableNode } from '$lib/mathAST/factory';
 import { getVariables, substitute } from '$lib/mathAST/eval/substitute';
+import { hideIndexedNames } from '$lib/mathAST/common/indexed-names';
 import { containsValue, intersect, isEmpty } from '$lib/mathAST/domain/algebra';
 import { formatInterval } from '$lib/mathAST/domain/format';
 import { toCustom } from '$lib/mathAST/custom-generator';
@@ -126,7 +127,13 @@ function refused(message: string, formulas = false): ReciprocalOutcome {
 }
 
 /** Le type d'un objet, dans la phrase de refus (« a est une valeur »). */
-const KIND_NAMES = { value: 'une valeur', sequence: 'une suite', list: 'une liste' } as const;
+const KIND_NAMES = {
+	value: 'une valeur',
+	sequence: 'une suite',
+	list: 'une liste',
+	point: 'un point',
+	curve: 'une courbe'
+} as const;
 
 /**
  * La réciproque de la fonction `base` de l'atelier, sur `on` (tapé après
@@ -187,12 +194,15 @@ export function reciprocalOfFunction(
 	const lettered = substitutedAstOf(atelier, base, { keepValues: true });
 	if (!numeric.ok) return refused(numeric.message);
 	if (!lettered.ok) return refused(lettered.message);
-	const parameters = [...getVariables(lettered.ast)].filter((v) => v !== INTERNAL_LETTER).sort();
+	// `x_1` est UN paramètre, pas x : ses noms indicés deviennent des variables
+	// (`hideIndexedNames`), que le solveur ne confond plus avec x (2026-10-19)
+	const letteredAst = hideIndexedNames(lettered.ast, latinBase).node;
+	const parameters = [...getVariables(letteredAst)].filter((v) => v !== INTERNAL_LETTER).sort();
 	const values = parameterValues(atelier, parameters);
 
 	const key = [
 		toCustom(numeric.ast),
-		toCustom(lettered.ast),
+		toCustom(letteredAst),
 		domain === null ? '' : formatInterval(domain),
 		letter,
 		shown,
@@ -204,7 +214,7 @@ export function reciprocalOfFunction(
 			name: shown,
 			...(domain !== null && { interval: domain })
 		});
-		return outcomeOf(result, { lettered: lettered.ast, values, letter, name: shown });
+		return outcomeOf(result, { lettered: letteredAst, values, letter, name: shown });
 	});
 }
 
@@ -217,6 +227,15 @@ function parameterValues(atelier: Atelier, parameters: readonly string[]): Recor
 		if (value !== null) values[name] = value;
 	}
 	return values;
+}
+
+/**
+ * Seuls les noms indicés LATINS deviennent des variables (`x_1`), comme dans le
+ * pipeline du moteur : `\alpha_1` reste un indice, nommé « α₁ » dans un refus
+ * (avec la variable `alpha_1`, il demandait « alpha_1 = 2 », qui ne se tape pas).
+ */
+function latinBase(_name: string, node: SubscriptNode): boolean {
+	return node.base.type === 'variable';
 }
 
 /** L'arbre de f, rangé en x, écrit dans la lettre de l'élève. */
@@ -382,8 +401,10 @@ export function reciprocalCommand(
 
 	// Une expression : la ligne seule, dans sa lettre (x, sinon la seule qu'elle cite)
 	const expanded = expandCommandArgument(atelier, prepare(body));
-	const ast = expanded === null ? null : astOf(expanded, 'text', atelier.functionNames);
-	if (ast === null) return { kind: 'refus', message: `Je n'ai pas su lire « ${body} ».` };
+	const read = expanded === null ? null : astOf(expanded, 'text', atelier.functionNames);
+	if (read === null) return { kind: 'refus', message: `Je n'ai pas su lire « ${body} ».` };
+	// `x_1` est une autre lettre que x, et une variable pour le calcul (`.réciproque x_1^2 + 1`)
+	const ast = hideIndexedNames(read, latinBase).node;
 	const letters = [...getVariables(ast)];
 	const letter = letters.includes(INTERNAL_LETTER)
 		? INTERNAL_LETTER

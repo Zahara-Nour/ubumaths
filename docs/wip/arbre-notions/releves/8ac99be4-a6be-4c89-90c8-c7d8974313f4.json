@@ -1,0 +1,500 @@
+{
+	"template_id": "8ac99be4-a6be-4c89-90c8-c7d8974313f4",
+	"titre": "Multiplier et diviser des puissances de $10$.",
+	"sous_titre": "Exposants positifs",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Calculer > Mixer tout ça",
+	"mis_a_jour": "2026-10-01T06:17:35.245153+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-018",
+			"libelle_point": "Résoudre des problèmes faisant intervenir des puissances.",
+			"noeud_actuel": "Nombres et calculs > Puissances : calculs",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "2..9"
+					},
+					{
+						"name": "c",
+						"expression": "2..{{eval:a+b-2}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{10^a*10^b}/{10^c}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:a+b-c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 213,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 14,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 213,
+						"exemples": [
+							"{10^2*10^6}/{10^6}",
+							"{10^4*10^4}/{10^4}",
+							"{10^2*10^5}/{10^2}",
+							"{10^4*10^3}/{10^2}",
+							"{10^8*10^3}/{10^6}",
+							"{10^2*10^7}/{10^3}",
+							"{10^2*10^9}/{10^7}",
+							"{10^7*10^4}/{10^7}",
+							"{10^8*10^3}/{10^8}",
+							"{10^9*10^7}/{10^12}",
+							"{10^6*10^6}/{10^7}",
+							"{10^4*10^2}/{10^2}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 14,
+							"nb_distinctes": 13,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 14,
+						"negatif_possible": false,
+						"nb_distinctes": 13,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 14,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 14,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 14,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (14)",
+					"graine": 73,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^9 \\times 10^9}{10^4} = 10^[?]$$",
+					"reponse": ["14"],
+					"variables": {
+						"a": "9",
+						"b": "9",
+						"c": "4",
+						"expression1": "{10^9*10^9}/{10^4}"
+					}
+				},
+				{
+					"role": "plus petite valeur (2)",
+					"graine": 1,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^2 \\times 10^6}{10^6} = 10^[?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "6",
+						"c": "6",
+						"expression1": "{10^2*10^6}/{10^6}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^4 \\times 10^4}{10^4} = 10^[?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "4",
+						"b": "4",
+						"c": "4",
+						"expression1": "{10^4*10^4}/{10^4}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^2 \\times 10^5}{10^2} = 10^[?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "2",
+						"b": "5",
+						"c": "2",
+						"expression1": "{10^2*10^5}/{10^2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^4 \\times 10^3}{10^2} = 10^[?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"c": "2",
+						"expression1": "{10^4*10^3}/{10^2}"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..4"
+					},
+					{
+						"name": "b",
+						"expression": "2..3"
+					},
+					{
+						"name": "c",
+						"expression": "{{eval:a+b+2}}..9"
+					},
+					{
+						"name": "expression2",
+						"expression": "{10^c}/{10^a*10^b}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris sous la forme d'une seule puissance de $10$.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:c-a-b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 15,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 6,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 15,
+						"valeurs": [
+							"{10^6}/{10^2*10^2}",
+							"{10^7}/{10^2*10^2}",
+							"{10^7}/{10^2*10^3}",
+							"{10^7}/{10^3*10^2}",
+							"{10^8}/{10^2*10^2}",
+							"{10^8}/{10^2*10^3}",
+							"{10^8}/{10^3*10^2}",
+							"{10^8}/{10^3*10^3}",
+							"{10^8}/{10^4*10^2}",
+							"{10^9}/{10^2*10^2}",
+							"{10^9}/{10^2*10^3}",
+							"{10^9}/{10^3*10^2}",
+							"{10^9}/{10^3*10^3}",
+							"{10^9}/{10^4*10^2}",
+							"{10^9}/{10^4*10^3}"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 10,
+							"nb_distinctes": 8,
+							"valeurs": [2, 3, 4, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [2, 3, 4, 5]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 8,
+				"valeurs": [2, 3, 4, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 5,
+				"nb_distinctes": 4,
+				"valeurs": [2, 3, 4, 5],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 2,
+				"max": 10,
+				"nb_distinctes": 9,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"fraction": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 8,
+					"max": 8
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (10)",
+					"graine": 1,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^9}{10^2 \\times 10^3} = 10^[?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"c": "9",
+						"expression2": "{10^9}/{10^2*10^3}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^8}{10^2 \\times 10^2} = 10^[?]$$",
+					"reponse": ["4"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "8",
+						"expression2": "{10^8}/{10^2*10^2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^6}{10^2 \\times 10^2} = 10^[?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "6",
+						"expression2": "{10^6}/{10^2*10^2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^9}{10^4 \\times 10^2} = 10^[?]$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "4",
+						"b": "2",
+						"c": "9",
+						"expression2": "{10^9}/{10^4*10^2}"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 6,
+					"enonce": "Réécris sous la forme d'une seule puissance de $10$.\n\n$$\\dfrac{10^7}{10^2 \\times 10^3} = 10^[?]$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "2",
+						"b": "3",
+						"c": "7",
+						"expression2": "{10^7}/{10^2*10^3}"
+					}
+				}
+			]
+		}
+	]
+}

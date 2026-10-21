@@ -230,7 +230,11 @@ export type ParseErrorCode =
 	| 'MISSING_BRACE' // Missing { or }
 	| 'MISSING_DELIMITER' // Missing \left, \right, (, ), etc.
 	| 'UNKNOWN_COMMAND' // Unknown LaTeX command
-	| 'INVALID_UNIT' // Invalid or unknown unit
+	| 'UNKNOWN_UNIT' // Unité inconnue : 5[xyz]
+	| 'EMPTY_UNIT' // Crochet d'unité vide : 5[]
+	| 'AMBIGUOUS_UNIT' // Unité ambiguë : 3[kg/m.s]
+	| 'SPACE_IN_UNIT' // Espace dans une unité : 3[m s]
+	| 'UNIT_EXPONENT_OUTSIDE' // Exposant après le crochet d'unité : 10[m]^3
 	| 'INVALID_COLOR' // Invalid color specification
 	| 'INVALID_NUMBER' // Malformed number
 	| 'EMPTY_GROUP' // Empty braces {}
@@ -241,7 +245,17 @@ export type ParseErrorCode =
 	| 'UNKNOWN_ENVIRONMENT' // Unknown LaTeX environment (e.g., \begin{xyz})
 	| 'UNCLOSED_ENVIRONMENT' // Environment not closed (missing \end)
 	| 'MISMATCHED_ENVIRONMENT' // Begin/end environment names don't match
-	| 'CONSECUTIVE_SIGNS'; // Consecutive +/- signs (++, --, +-, -+)
+	| 'CONSECUTIVE_SIGNS' // Consecutive +/- signs (++, --, +-, -+)
+	| 'STACKED_EXPONENTS' // Deux exposants à la suite : 2^3^2 (écrire 2^{3^2} ou (2^3)^2)
+	| 'NEGATIVE_EXPONENT_BEFORE_GROUP' // Signe d'exposant devant un groupe : 2^-sin(x), 2^-(x+1)
+	| 'MISSING_OPERATOR' // Nombre juste après une lettre ou une ')' : x2, (1+x)2
+	| 'AMBIGUOUS_TERM' // Plusieurs nombres devant une unité après une grandeur : 6[m]/2*3[s]
+	| 'JUXTAPOSED_QUANTITIES' // Grandeurs juxtaposées hors durée (2[m] 30[cm]), durée composée collée à * ou /
+	| 'MISSING_NUMBER_BEFORE_UNIT' // Unité écrite sans nombre : [m]
+	| 'LEADING_DECIMAL_POINT' // Zéro de tête oublié : .5
+	| 'DECIMAL_COMMA' // Virgule décimale dans le parseur maison : 2,5 (écrire 2.5)
+	| 'UNEXPECTED_COMMA' // Virgule hors d'une fonction ou d'une matrice : 1, 2
+	| 'SEMICOLON'; // Point-virgule dans le parseur maison : max(2;5)
 
 /**
  * Context around an error showing surrounding text.

@@ -29,7 +29,7 @@ const createMockWorksheet = (overrides?: Partial<WorksheetRow>): WorksheetRow =>
 	version: 1,
 	published_at: '2024-01-01',
 	archived_at: null,
-	template_id: null,
+	style_id: null,
 	estimated_duration_minutes: 30,
 	total_points: 20,
 	grades: ['3eme'],
@@ -129,7 +129,7 @@ describe('WorksheetGenerator', () => {
 		it('includes exercises', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({ style_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -313,7 +313,7 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({
 				worksheet: createMockWorksheet({
 					type: 'exam',
-					template_id: DEFAULT_TEMPLATE_IDS.exam,
+					style_id: DEFAULT_TEMPLATE_IDS.exam,
 					estimated_duration_minutes: 50
 				}),
 				instance: createMockInstance()
@@ -339,7 +339,7 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({
 				worksheet: createMockWorksheet({
 					type: 'assessment',
-					template_id: DEFAULT_TEMPLATE_IDS.standard
+					style_id: DEFAULT_TEMPLATE_IDS.standard
 				}),
 				instance: createMockInstance()
 			});
@@ -527,7 +527,7 @@ describe('WorksheetGenerator', () => {
 		it('uses numeric numbering by default', () => {
 			const generator = new WorksheetGenerator(createMockConfig());
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({ style_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -540,7 +540,7 @@ describe('WorksheetGenerator', () => {
 				numbering_style: 'roman'
 			} as WorksheetConfig);
 			const result = generator.generate({
-				worksheet: createMockWorksheet({ template_id: DEFAULT_TEMPLATE_IDS.standard }),
+				worksheet: createMockWorksheet({ style_id: DEFAULT_TEMPLATE_IDS.standard }),
 				instance: createMockInstance()
 			});
 
@@ -561,7 +561,7 @@ describe('WorksheetGenerator', () => {
 			const result = generator.generate({
 				worksheet: createMockWorksheet({
 					type: 'assessment',
-					template_id: DEFAULT_TEMPLATE_IDS.standard
+					style_id: DEFAULT_TEMPLATE_IDS.standard
 				}),
 				instance
 			});
@@ -872,5 +872,114 @@ describe('sens de AB de l’exercice (capital_pairs)', () => {
 		const before = render(instanceWithPrimes(undefined));
 		expect(before).toContain('Unexpected token');
 		expect(render(instanceWithPrimes('product'))).toBe(before);
+	});
+});
+
+// Accessibilité (élèves malvoyants, 2026-10-16) : le gabarit grandit, les exercices suivent
+describe('taille du texte', () => {
+	const generate = (textSize?: 'normal' | 'large' | 'x_large', templateId: string | null = null) =>
+		new WorksheetGenerator(createMockConfig(), undefined, undefined, { textSize }).generate({
+			worksheet: createMockWorksheet({ style_id: templateId }),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it('sans réglage : « Fiche élève » à 10 pt sur deux colonnes, comme avant', () => {
+		const typst = generate();
+		expect(typst).toContain('size: 10pt, lang:');
+		expect(typst).toContain('columns: 2,');
+	});
+
+	it('grande : 14 pt, deux colonnes gardées, exercices compris', () => {
+		const typst = generate('large');
+		expect(typst).toContain('size: 14pt, lang:');
+		expect(typst).toContain('columns: 2,');
+		expect(typst).toContain('2x + 3 = 7');
+	});
+
+	it('très grande : 18 pt', () => {
+		expect(generate('x_large')).toContain('size: 18pt, lang:');
+	});
+
+	it('un autre style grandit aussi (Standard, 11 pt → 15,4 pt)', () => {
+		const typst = generate('large', DEFAULT_TEMPLATE_IDS.standard);
+		expect(typst).toContain('size: 15.4pt');
+		expect(typst).not.toContain('size: 11pt');
+	});
+
+	// Styles qui posent leurs colonnes dans le corps (`#columns(N)[…]`) : elles restent
+	it.each([
+		['Deux colonnes', DEFAULT_TEMPLATE_IDS.twoColumns, '#columns(2'],
+		['Paysage', DEFAULT_TEMPLATE_IDS.landscape, '#columns(3']
+	])('style « %s » en grande taille : ses colonnes restent', (_, templateId, columns) => {
+		expect(generate('x_large', templateId)).toContain(columns);
+	});
+
+	it('la fonction héritée transmet la taille', () => {
+		const typst = generateWorksheetTypst({
+			worksheet: createMockWorksheet(),
+			instance: createMockInstance(),
+			config: createMockConfig(),
+			mode: 'worksheet',
+			textSize: 'x_large'
+		});
+		expect(typst).toContain('size: 18pt, lang:');
+	});
+});
+
+// « Fiche élève » en grande taille : en paysage, sauf les Réponses (David, 2026-10-17)
+describe('« Fiche élève » en paysage en grande taille', () => {
+	const typstOf = (
+		textSize: 'normal' | 'large' | 'x_large',
+		mode: 'worksheet' | 'answers' | 'correction',
+		options: { templateId?: string | null; withCorrections?: 'answers' | 'correction' } = {}
+	) =>
+		new WorksheetGenerator(
+			createMockConfig(),
+			undefined,
+			{ mode },
+			{
+				textSize,
+				withCorrections: options.withCorrections
+			}
+		).generate({
+			worksheet: createMockWorksheet({ style_id: options.templateId ?? null }),
+			instance: createMockInstance()
+		}).typstContent;
+
+	it.each([
+		['fiche', 'worksheet', undefined],
+		['corrigé', 'correction', undefined],
+		['fiche + réponses', 'worksheet', 'answers'],
+		['fiche + corrigé', 'worksheet', 'correction']
+	] as const)('%s en Grande et Très grande : paysage', (_, mode, withCorrections) => {
+		for (const size of ['large', 'x_large'] as const) {
+			const typst = typstOf(size, mode, { withCorrections });
+			expect(typst).toContain('flipped: true');
+			expect(typst).toContain('columns: 2,');
+		}
+	});
+
+	it('Réponses en Grande et Très grande : portrait', () => {
+		for (const size of ['large', 'x_large'] as const) {
+			expect(typstOf(size, 'answers')).not.toContain('flipped: true');
+		}
+	});
+
+	it('taille normale : portrait, quelle que soit la forme', () => {
+		for (const mode of ['worksheet', 'answers', 'correction'] as const) {
+			expect(typstOf('normal', mode)).not.toContain('flipped: true');
+		}
+	});
+
+	it('« Fiche élève » choisi explicitement : paysage aussi', () => {
+		expect(
+			typstOf('large', 'worksheet', { templateId: DEFAULT_TEMPLATE_IDS.studentStyle })
+		).toContain('flipped: true');
+	});
+
+	it('un autre style ne change pas d’orientation (Standard)', () => {
+		const standard = typstOf('large', 'worksheet', { templateId: DEFAULT_TEMPLATE_IDS.standard });
+		expect(standard).not.toContain('flipped: true');
+		expect(standard).toContain('size: 15.4pt');
 	});
 });

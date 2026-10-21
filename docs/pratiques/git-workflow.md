@@ -20,6 +20,7 @@
      Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
    - ⚠️ **Avant de pousser : `git pull --rebase`, jamais un `git pull` qui fusionne.** Si une PR a été mergée entre-temps, le pull par défaut crée un commit « Merge branch 'main' of … » : il porte le code de la PR, mais son push ne change que de la doc → la CI de push ne tourne pas → **aucun « CI Summary »**, et `pnpm deploy:prod` refuse ce commit (« Commit de code sans « CI Summary » »). Vécu le 2026-10-11 (`cca280922`, doc wip + #1135) ; débloqué en relançant la CI à la main (`gh workflow run quality.yml --ref main`). Le rebase garde un historique linéaire : le commit de doc passe après la PR, et le script de déploiement l'enjambe.
    - ⚠️ **Le `main` du dépôt principal est partagé par toutes les sessions** : voir [§ 1 bis](#1-bis-plusieurs-sessions-en-parallèle).
+   - ⚠️ **Prettier sur ses fichiers seulement** (`pnpm exec prettier --write <fichiers>`), jamais un glob (`docs/wip/*.md`) : le 2026-10-11, un glob a reformaté le journal d'une autre session, embarqué ensuite dans un commit. Et un commit de doc direct n'a pas de CI : un `.md` mal formaté qui atteint `main` fait échouer le `prettier --check` de **toutes** les PR (leur CI vérifie la fusion avec `main`) → remède : un commit de formatage seul sur `main`.
 4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic** — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande** (deux commits en ont reçu un le 2026-10-15).
 
 ## 1 bis. Plusieurs sessions en parallèle
@@ -118,6 +119,17 @@ Pour un changement de schéma **non rétro-compatible** ou un gros cutover :
 ## 9. Hotfix prod urgent
 
 Même flux, expédié : `fix/<slug>` depuis `main` → fix **+ test de non-régression** → PR → CI verte → merge → deploy. Maintenance mode si le bug impacte les données.
+
+**Retour arrière Vercel (Instant Rollback) : jamais vers une version dont le code dépend de ce qu'une migration a retiré depuis.** Le retour arrière ne ramène que le code ; la base garde son schéma. Une table, une colonne, une policy ou un droit retirés après cette version la cassent, souvent en silence (une écriture refusée par la RLS rend zéro ligne).
+
+- **Plancher au 2026-10-19 : v0.39.0.** Migration `20261017090100` : l'élève n'écrit plus lui-même `student_buddies` ni `srs_review_sessions` ; le code d'avant v0.39.0 le faisait (choix du Palotin, XP, série, séances de révision). Plancher précédent : v0.35.0 (migration `20261016103800`, ancien système de versions des modèles de chapitre).
+- **Vérifier avant tout retour arrière vers `vX`** : lister les migrations ajoutées depuis `vX` qui retirent quelque chose :
+  ```bash
+  git diff --name-only --diff-filter=A vX origin/production -- supabase/migrations \
+    | xargs grep -liE '^[^-]*(drop (table|column|policy|function)|revoke|rename)'
+  ```
+  Un résultat → lire son en-tête : si le code de `vX` utilise ce qui a été retiré, pas de retour arrière vers `vX` ; corriger en avant (§ 9).
+- Une migration qui retire quelque chose relève le plancher : mettre à jour la ligne ci-dessus dans la même PR.
 
 ## 10. Interdits (leçons gravées — sessions 2026-06-16/17)
 

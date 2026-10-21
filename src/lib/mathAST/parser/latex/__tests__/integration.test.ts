@@ -26,8 +26,8 @@ const TEST_CASES = [
 	'x^2',
 	'a + b c',
 
-	// Chained exponents (right-associative)
-	'x^2^3',
+	// Exponent of an exponent (x^2^3 is refused: stacked exponents)
+	'x^{2^3}',
 
 	// Structures
 	'\\frac{a}{b}',

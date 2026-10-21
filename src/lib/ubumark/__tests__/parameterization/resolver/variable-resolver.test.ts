@@ -350,8 +350,8 @@ describe('resolveVariables', () => {
 		});
 
 		it('should treat a negative single-letter var as a grouped exponent', () => {
-			// `10^-2` errors ("negative exponent requires braces"); the `{}` wrap
-			// turns it into `10^{-2}` = 0.01.
+			// The `{}` wrap turns `10^{{n}}` into `10^{-2}` = 0.01 (`10^-2` also
+			// reads 10^{-2} since 2026-10-20; `10^-2.5` or `10^-x` too).
 			const variables: Variable[] = [
 				{ name: 'n', expression: '-2' },
 				{ name: 'result', expression: '{{eval:10^{{n}}}}' }
@@ -1505,25 +1505,29 @@ describe("{{eval:…}} : virgule dans un appel de fonction = séparateur d'argum
 		expect(resolveExpression('{{eval:mod(b^2-a^2,4)}}', resolved)).toBe('0');
 	});
 
-	it('décimal à virgule hors appel inchangé : {{eval:2,5*2}} → 5', () => {
-		expect(resolveExpression('{{eval:2,5*2}}', [])).toBe('5');
+	// lecture-grandeurs, PR 6 : le parseur maison n'a que le point décimal
+	it('décimal à virgule refusé : {{eval:2,5*2}} (écrire {{eval:2.5*2}})', () => {
+		expect(() => resolveExpression('{{eval:2,5*2}}', [])).toThrow(
+			"Decimal comma: the decimal separator is '.' (write 2.5)"
+		);
+		expect(resolveExpression('{{eval:2.5*2}}', [])).toBe('5');
 	});
 });
 
 describe('{{eval:…}} : un multiple rationnel de π s’écrit \\dfrac{k\\pi}{n}', () => {
-	it('{{eval:m*pi/12}} avec m=2 → \\dfrac{\\pi}{6}', () => {
-		expect(resolveExpression('{{eval:m*pi/12}}', [{ name: 'm', value: '2' }])).toBe(
+	it('{{eval:m*\\pi/12}} avec m=2 → \\dfrac{\\pi}{6}', () => {
+		expect(resolveExpression('{{eval:m*\\pi/12}}', [{ name: 'm', value: '2' }])).toBe(
 			'\\dfrac{\\pi}{6}'
 		);
 	});
 
-	it('{{eval:m*pi/12}} avec m=-8 → -\\dfrac{2 \\pi}{3}', () => {
-		expect(resolveExpression('{{eval:m*pi/12}}', [{ name: 'm', value: '-8' }])).toBe(
+	it('{{eval:m*\\pi/12}} avec m=-8 → -\\dfrac{2 \\pi}{3}', () => {
+		expect(resolveExpression('{{eval:m*\\pi/12}}', [{ name: 'm', value: '-8' }])).toBe(
 			'-\\dfrac{2 \\pi}{3}'
 		);
 	});
 
-	it('{{eval:m*pi/12}} avec m=24 → 2 \\pi', () => {
-		expect(resolveExpression('{{eval:m*pi/12}}', [{ name: 'm', value: '24' }])).toBe('2 \\pi');
+	it('{{eval:m*\\pi/12}} avec m=24 → 2 \\pi', () => {
+		expect(resolveExpression('{{eval:m*\\pi/12}}', [{ name: 'm', value: '24' }])).toBe('2 \\pi');
 	});
 });

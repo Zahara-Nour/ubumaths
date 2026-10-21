@@ -1,0 +1,174 @@
+{
+	"template_id": "eeb834fe-8997-4d12-80b8-04ba9f7b8ff9",
+	"titre": "Trouver le quart",
+	"sous_titre": "Multiples de $4$ inférieurs à $40$",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Quadruple et quart",
+	"mis_a_jour": "2026-09-29T18:05:35.060316+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > quadruple et quart",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..10"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Quel est le quart de ${{eval:4*a}}$ ?\n\nLe quart de ${{eval:4*a}}$ est $?$.",
+				"reponses_brutes": ["{{eval:a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 11,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 11,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 11,
+				"valeurs": [0, 4, 8, 12, 16, 20, 24, 28, 32, 36, 40],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 10,
+				"nb_distinctes": 11,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 40,
+				"nb_distinctes": 19,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 16, 20, 24, 28, 32, 36, 40],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 9,
+					"max": 9
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (40)",
+					"graine": 10,
+					"enonce": "Quel est le quart de $40$ ?\n\nLe quart de $40$ est $[?]$.",
+					"reponse": ["10"],
+					"variables": {
+						"a": "10"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "Quel est le quart de $0$ ?\n\nLe quart de $0$ est $[?]$.",
+					"reponse": ["0"],
+					"variables": {
+						"a": "0"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le quart de $12$ ?\n\nLe quart de $12$ est $[?]$.",
+					"reponse": ["3"],
+					"variables": {
+						"a": "3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Quel est le quart de $32$ ?\n\nLe quart de $32$ est $[?]$.",
+					"reponse": ["8"],
+					"variables": {
+						"a": "8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "Quel est le quart de $24$ ?\n\nLe quart de $24$ est $[?]$.",
+					"reponse": ["6"],
+					"variables": {
+						"a": "6"
+					}
+				}
+			]
+		}
+	]
+}

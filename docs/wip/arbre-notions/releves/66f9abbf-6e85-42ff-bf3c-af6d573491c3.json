@@ -1,0 +1,2034 @@
+{
+	"template_id": "66f9abbf-6e85-42ff-bf3c-af6d573491c3",
+	"titre": "Calcul du périmètre d'un rectangle.",
+	"sous_titre": "A partir d'une description",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Périmètres > Périmètre d'un rectangle",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-199",
+			"libelle_point": "Calculer le périmètre d'un rectangle",
+			"noeud_actuel": "Grandeurs et mesures > Périmètres > rectangle",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 7,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[mm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[mm]",
+							"11[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[mm]",
+							"1[mm]",
+							"2[mm]",
+							"3[mm]",
+							"4[mm]",
+							"5[mm]",
+							"6[mm]",
+							"7[mm]",
+							"8[mm]",
+							"9[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[mm]",
+							"12[mm]",
+							"14[mm]",
+							"16[mm]",
+							"18[mm]",
+							"20[mm]",
+							"22[mm]",
+							"24[mm]",
+							"26[mm]",
+							"28[mm]",
+							"30[mm]",
+							"32[mm]",
+							"34[mm]",
+							"36[mm]",
+							"38[mm]",
+							"40[mm]",
+							"42[mm]",
+							"6[mm]",
+							"8[mm]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["mm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{mm}$ et de largeur $10~\\mathrm{mm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[mm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[mm]",
+						"d": "10[mm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{mm}$ et de largeur $1~\\mathrm{mm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[mm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[mm]",
+						"d": "1[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{mm}$ et de largeur $4~\\mathrm{mm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[mm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[mm]",
+						"d": "4[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{mm}$ et de largeur $7~\\mathrm{mm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[mm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[mm]",
+						"d": "7[mm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{mm}$ et de largeur $2~\\mathrm{mm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[mm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[mm]",
+						"d": "2[mm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[cm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[cm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[cm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[cm]",
+							"11[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[cm]",
+							"1[cm]",
+							"2[cm]",
+							"3[cm]",
+							"4[cm]",
+							"5[cm]",
+							"6[cm]",
+							"7[cm]",
+							"8[cm]",
+							"9[cm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[cm]",
+							"12[cm]",
+							"14[cm]",
+							"16[cm]",
+							"18[cm]",
+							"20[cm]",
+							"22[cm]",
+							"24[cm]",
+							"26[cm]",
+							"28[cm]",
+							"30[cm]",
+							"32[cm]",
+							"34[cm]",
+							"36[cm]",
+							"38[cm]",
+							"40[cm]",
+							"42[cm]",
+							"6[cm]",
+							"8[cm]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["cm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{cm}$ et de largeur $10~\\mathrm{cm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[cm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[cm]",
+						"d": "10[cm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{cm}$ et de largeur $1~\\mathrm{cm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[cm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[cm]",
+						"d": "1[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{cm}$ et de largeur $4~\\mathrm{cm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[cm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[cm]",
+						"d": "4[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{cm}$ et de largeur $7~\\mathrm{cm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[cm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[cm]",
+						"d": "7[cm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{cm}$ et de largeur $2~\\mathrm{cm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[cm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[cm]",
+						"d": "2[cm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[dm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[dm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dm]",
+							"11[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dm]",
+							"1[dm]",
+							"2[dm]",
+							"3[dm]",
+							"4[dm]",
+							"5[dm]",
+							"6[dm]",
+							"7[dm]",
+							"8[dm]",
+							"9[dm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[dm]",
+							"12[dm]",
+							"14[dm]",
+							"16[dm]",
+							"18[dm]",
+							"20[dm]",
+							"22[dm]",
+							"24[dm]",
+							"26[dm]",
+							"28[dm]",
+							"30[dm]",
+							"32[dm]",
+							"34[dm]",
+							"36[dm]",
+							"38[dm]",
+							"40[dm]",
+							"42[dm]",
+							"6[dm]",
+							"8[dm]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["dm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{dm}$ et de largeur $10~\\mathrm{dm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[dm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[dm]",
+						"d": "10[dm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{dm}$ et de largeur $1~\\mathrm{dm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[dm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[dm]",
+						"d": "1[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{dm}$ et de largeur $4~\\mathrm{dm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[dm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[dm]",
+						"d": "4[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{dm}$ et de largeur $7~\\mathrm{dm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[dm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[dm]",
+						"d": "7[dm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{dm}$ et de largeur $2~\\mathrm{dm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[dm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[dm]",
+						"d": "2[dm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[m]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[m]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[m]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[m]",
+							"11[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[m]",
+							"1[m]",
+							"2[m]",
+							"3[m]",
+							"4[m]",
+							"5[m]",
+							"6[m]",
+							"7[m]",
+							"8[m]",
+							"9[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[m]",
+							"12[m]",
+							"14[m]",
+							"16[m]",
+							"18[m]",
+							"20[m]",
+							"22[m]",
+							"24[m]",
+							"26[m]",
+							"28[m]",
+							"30[m]",
+							"32[m]",
+							"34[m]",
+							"36[m]",
+							"38[m]",
+							"40[m]",
+							"42[m]",
+							"6[m]",
+							"8[m]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["m"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{m}$ et de largeur $10~\\mathrm{m}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[m]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[m]",
+						"d": "10[m]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{m}$ et de largeur $1~\\mathrm{m}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[m]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[m]",
+						"d": "1[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{m}$ et de largeur $4~\\mathrm{m}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[m]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[m]",
+						"d": "4[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{m}$ et de largeur $7~\\mathrm{m}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[m]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[m]",
+						"d": "7[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{m}$ et de largeur $2~\\mathrm{m}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[m]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[m]",
+						"d": "2[m]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[dam]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[dam]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[dam]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dam]",
+							"11[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[dam]",
+							"1[dam]",
+							"2[dam]",
+							"3[dam]",
+							"4[dam]",
+							"5[dam]",
+							"6[dam]",
+							"7[dam]",
+							"8[dam]",
+							"9[dam]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[dam]",
+							"12[dam]",
+							"14[dam]",
+							"16[dam]",
+							"18[dam]",
+							"20[dam]",
+							"22[dam]",
+							"24[dam]",
+							"26[dam]",
+							"28[dam]",
+							"30[dam]",
+							"32[dam]",
+							"34[dam]",
+							"36[dam]",
+							"38[dam]",
+							"40[dam]",
+							"42[dam]",
+							"6[dam]",
+							"8[dam]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["dam"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{dam}$ et de largeur $10~\\mathrm{dam}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[dam]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[dam]",
+						"d": "10[dam]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{dam}$ et de largeur $1~\\mathrm{dam}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[dam]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[dam]",
+						"d": "1[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{dam}$ et de largeur $4~\\mathrm{dam}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[dam]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[dam]",
+						"d": "4[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{dam}$ et de largeur $7~\\mathrm{dam}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[dam]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[dam]",
+						"d": "7[dam]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{dam}$ et de largeur $2~\\mathrm{dam}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[dam]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[dam]",
+						"d": "2[dam]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[hm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[hm]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[hm]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[hm]",
+							"11[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[hm]",
+							"1[hm]",
+							"2[hm]",
+							"3[hm]",
+							"4[hm]",
+							"5[hm]",
+							"6[hm]",
+							"7[hm]",
+							"8[hm]",
+							"9[hm]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[hm]",
+							"12[hm]",
+							"14[hm]",
+							"16[hm]",
+							"18[hm]",
+							"20[hm]",
+							"22[hm]",
+							"24[hm]",
+							"26[hm]",
+							"28[hm]",
+							"30[hm]",
+							"32[hm]",
+							"34[hm]",
+							"36[hm]",
+							"38[hm]",
+							"40[hm]",
+							"42[hm]",
+							"6[hm]",
+							"8[hm]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["hm"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{hm}$ et de largeur $10~\\mathrm{hm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[hm]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[hm]",
+						"d": "10[hm]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{hm}$ et de largeur $1~\\mathrm{hm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[hm]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[hm]",
+						"d": "1[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{hm}$ et de largeur $4~\\mathrm{hm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[hm]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[hm]",
+						"d": "4[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{hm}$ et de largeur $7~\\mathrm{hm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[hm]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[hm]",
+						"d": "7[hm]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{hm}$ et de largeur $2~\\mathrm{hm}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[hm]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[hm]",
+						"d": "2[hm]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 7,
+			"graines": "1..300 (modèle réduit à la variation 7)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "1..11"
+					},
+					{
+						"name": "b",
+						"expression": "1..11!a"
+					},
+					{
+						"name": "c",
+						"expression": "eval:a[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[mm]"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "c",
+						"expression": "eval:a[km]"
+					},
+					{
+						"name": "d",
+						"expression": "eval:b[km]"
+					}
+				],
+				"conditions": ["a>b"],
+				"enonce_brut": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+				"reponses_brutes": ["{{eval:(c+d)*2;[km]}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 55,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 11,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 10,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[km]",
+							"11[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 2,
+							"max": 11,
+							"nb_distinctes": 10,
+							"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": [
+							"10[km]",
+							"1[km]",
+							"2[km]",
+							"3[km]",
+							"4[km]",
+							"5[km]",
+							"6[km]",
+							"7[km]",
+							"8[km]",
+							"9[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 19,
+						"valeurs": [
+							"10[km]",
+							"12[km]",
+							"14[km]",
+							"16[km]",
+							"18[km]",
+							"20[km]",
+							"22[km]",
+							"24[km]",
+							"26[km]",
+							"28[km]",
+							"30[km]",
+							"32[km]",
+							"34[km]",
+							"36[km]",
+							"38[km]",
+							"40[km]",
+							"42[km]",
+							"6[km]",
+							"8[km]"
+						],
+						"nombres_contenus": {
+							"min": 6,
+							"max": 42,
+							"nb_distinctes": 19,
+							"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 11,
+				"nb_distinctes": 11,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 6,
+				"max": 42,
+				"nb_distinctes": 19,
+				"valeurs": [6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40, 42],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 42,
+				"nb_distinctes": 27,
+				"valeurs": [
+					1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38,
+					40, 42
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"case ?": "300/300"
+				},
+				"unites": ["km"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 16,
+					"max": 16
+				},
+				"contexte_probable": true
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (42)",
+					"graine": 70,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{km}$ et de largeur $10~\\mathrm{km}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["42[km]"],
+					"variables": {
+						"a": "11",
+						"b": "10",
+						"c": "11[km]",
+						"d": "10[km]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 11,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{km}$ et de largeur $1~\\mathrm{km}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["14[km]"],
+					"variables": {
+						"a": "6",
+						"b": "1",
+						"c": "6[km]",
+						"d": "1[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $11~\\mathrm{km}$ et de largeur $4~\\mathrm{km}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["30[km]"],
+					"variables": {
+						"a": "11",
+						"b": "4",
+						"c": "11[km]",
+						"d": "4[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $10~\\mathrm{km}$ et de largeur $7~\\mathrm{km}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["34[km]"],
+					"variables": {
+						"a": "10",
+						"b": "7",
+						"c": "10[km]",
+						"d": "7[km]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Quel est le périmètre d'un rectangle de longueur $6~\\mathrm{km}$ et de largeur $2~\\mathrm{km}$ ?\n\nLe périmètre du rectangle est $[?]$.",
+					"reponse": ["16[km]"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "6[km]",
+						"d": "2[km]"
+					}
+				}
+			]
+		}
+	]
+}

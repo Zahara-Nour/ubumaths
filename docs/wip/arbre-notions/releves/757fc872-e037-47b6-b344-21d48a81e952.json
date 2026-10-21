@@ -1,0 +1,294 @@
+{
+	"template_id": "757fc872-e037-47b6-b344-21d48a81e952",
+	"titre": "Définition à l'aide de fractions décimales (2)",
+	"sous_titre": "Jusqu'aux millièmes",
+	"consigne": null,
+	"grades": ["CM2"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "DEPLACER_PUIS_TAG",
+			"code": "CM2-030",
+			"libelle_point": "Écrire à virgule un nombre donné par une fraction décimale ou une somme de fractions décimales (237/100 = ? ou 2 + 3/10 + 7/100 = ?).",
+			"noeud_actuel": "Nombres et calculs > Décimaux : numération > écritures",
+			"noeud_cible": "Nombres et calculs > Décimaux : numération > forme fractionnaire",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "décision « TAG » → « DEPLACER_PUIS_TAG » ; code « CM2-031 » → « CM2-030 » ; nœud cible « ∅ » → « Nombres et calculs > Décimaux : numération > forme fractionnaire »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "digits:1"
+					},
+					{
+						"name": "b",
+						"expression": "1..3"
+					},
+					{
+						"name": "c",
+						"expression": "digits:b"
+					},
+					{
+						"name": "d",
+						"expression": "a+c/1000"
+					},
+					{
+						"name": "expression1",
+						"expression": "d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris sous la forme d'un nombre décimal.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 257,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 3,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [1, 2, 3]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 994,
+						"negatif_possible": false,
+						"nb_distinctes": 178
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 257,
+						"exemples": [
+							"1+98/1000",
+							"3+5/1000",
+							"1+16/1000",
+							"3+1/1000",
+							"7+6/1000",
+							"1+28/1000",
+							"1+729/1000",
+							"6+7/1000",
+							"8+8/1000",
+							"9+821/1000",
+							"5+63/1000",
+							"1+94/1000"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1000,
+							"nb_distinctes": 179,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 257,
+						"exemples": [
+							"1+98/1000",
+							"3+5/1000",
+							"1+16/1000",
+							"3+1/1000",
+							"7+6/1000",
+							"1+28/1000",
+							"1+729/1000",
+							"6+7/1000",
+							"8+8/1000",
+							"9+821/1000",
+							"5+63/1000",
+							"1+94/1000"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1000,
+							"nb_distinctes": 179,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 3,
+						"min": 1.001,
+						"max": 9.929,
+						"negatif_possible": false,
+						"nb_distinctes": 257
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 179,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_reponse": {
+				"min": 1.001,
+				"max": 9.929,
+				"nb_distinctes": 257,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1000,
+				"nb_distinctes": 436,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 1,
+					"enonce": "Réécris sous la forme d'un nombre décimal.\n\n$$1 + \\dfrac{98}{1\\,000} = [?]$$",
+					"reponse": ["1.098"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "98",
+						"d": "1+98/1000",
+						"expression1": "1+98/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris sous la forme d'un nombre décimal.\n\n$$3 + \\dfrac{5}{1\\,000} = [?]$$",
+					"reponse": ["3.005"],
+					"variables": {
+						"a": "3",
+						"b": "1",
+						"c": "5",
+						"d": "3+5/1000",
+						"expression1": "3+5/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Réécris sous la forme d'un nombre décimal.\n\n$$1 + \\dfrac{16}{1\\,000} = [?]$$",
+					"reponse": ["1.016"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "16",
+						"d": "1+16/1000",
+						"expression1": "1+16/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Réécris sous la forme d'un nombre décimal.\n\n$$3 + \\dfrac{1}{1\\,000} = [?]$$",
+					"reponse": ["3.001"],
+					"variables": {
+						"a": "3",
+						"b": "1",
+						"c": "1",
+						"d": "3+1/1000",
+						"expression1": "3+1/1000"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Réécris sous la forme d'un nombre décimal.\n\n$$7 + \\dfrac{6}{1\\,000} = [?]$$",
+					"reponse": ["7.006"],
+					"variables": {
+						"a": "7",
+						"b": "1",
+						"c": "6",
+						"d": "7+6/1000",
+						"expression1": "7+6/1000"
+					}
+				}
+			]
+		}
+	]
+}

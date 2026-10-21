@@ -1,0 +1,234 @@
+{
+	"template_id": "5706769f-d29d-410d-a2e0-2943d3c11a25",
+	"titre": "Calculer une somme",
+	"sous_titre": "Nombres entiers à 2 chiffres dont la somme vaut 100",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Somme",
+	"mis_a_jour": "2026-09-29T20:53:21.387221+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > complément",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..9"
+					},
+					{
+						"name": "b",
+						"expression": "12..{{eval:a*10-12}}"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:b}}+{{eval:100-b}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 61,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 7,
+						"valeurs": [3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 12,
+						"max": 78,
+						"negatif_possible": false,
+						"nb_distinctes": 61
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 61,
+						"exemples": [
+							"15+85",
+							"19+81",
+							"17+83",
+							"24+76",
+							"16+84",
+							"18+82",
+							"26+74",
+							"20+80",
+							"58+42",
+							"34+66",
+							"13+87",
+							"25+75"
+						],
+						"nombres_contenus": {
+							"min": 12,
+							"max": 88,
+							"nb_distinctes": 77,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 100,
+						"max": 100,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [100]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 12,
+				"max": 88,
+				"nb_distinctes": 77,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 100,
+				"max": 100,
+				"nb_distinctes": 1,
+				"valeurs": [100],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 12,
+				"max": 100,
+				"nb_distinctes": 78,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (100)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$15 + 85 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "3",
+						"b": "15",
+						"expression1": "15+85"
+					}
+				},
+				{
+					"role": "plus petite valeur (12)",
+					"graine": 27,
+					"enonce": "Calcule.\n\n$$12 + 88 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "3",
+						"b": "12",
+						"expression1": "12+88"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$19 + 81 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "5",
+						"b": "19",
+						"expression1": "19+81"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule.\n\n$$17 + 83 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "5",
+						"b": "17",
+						"expression1": "17+83"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$24 + 76 = [?]$$",
+					"reponse": ["100"],
+					"variables": {
+						"a": "8",
+						"b": "24",
+						"expression1": "24+76"
+					}
+				}
+			]
+		}
+	]
+}

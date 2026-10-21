@@ -18,6 +18,7 @@
  */
 
 import type { MathNode } from '../types';
+import { isSignedCompoundDuration, juxtaposedTerms } from '../parser/juxtaposed-quantities';
 
 /**
  * Cette expression doit-elle être parenthésée sous un signe unaire ?
@@ -27,7 +28,8 @@ import type { MathNode } from '../types';
  * sans ambiguïté, et parenthéser alourdirait pour rien.
  */
 export function needsParenthesesUnderSign(node: MathNode): boolean {
-	return node.type === 'addition' || node.type === 'subtraction';
+	// Une durée composée signée aussi (`(-2[h] 30[min])*2`) : collée à `*`, la relecture la refuse
+	return node.type === 'addition' || node.type === 'subtraction' || isSignedCompoundDuration(node);
 }
 
 /**
@@ -58,8 +60,8 @@ export function needsParenthesesUnderPercent(node: MathNode): boolean {
  * `superscript(opposite(2), n)`, mais écrit sans parenthèses il se relit
  * −(2ⁿ) : une AUTRE valeur (n pair). De même `1/4^n` se relit 1/(4ⁿ).
  *
- * De même `e^x^2` se relit e^{x²} (KaTeX refuse le double exposant) et `2x^2`
- * se relit 2·x².
+ * De même `e^x^2` est refusé par les parseurs (deux exposants à la suite, comme dans
+ * KaTeX) et `2x^2` se relit 2·x².
  *
  * Une somme, une différence, un opposé, un quotient, un produit, une puissance ou
  * une grandeur : oui.
@@ -126,6 +128,9 @@ function startsWithSign(node: MathNode): boolean {
 			return startsWithSign(node.left);
 		case 'division':
 			return node.displayStyle !== 'fraction' && startsWithSign(node.numerator);
+		// `-5[m]` est la grandeur (−5) m : son signe ouvre l'écriture (lecture-grandeurs PR 4)
+		case 'unit':
+			return startsWithSign(node.expression);
 		default:
 			return false;
 	}
@@ -158,7 +163,17 @@ export function needsParenthesesAsRightFactor(node: MathNode): boolean {
  * et tout ce dont l'écriture commence par un signe.
  */
 export function needsParenthesesUnderOpposite(node: MathNode): boolean {
+	if (isWrittenCompoundDuration(node)) return false;
 	return needsParenthesesUnderSign(node) || startsWithSign(node);
+}
+
+/**
+ * Une durée composée écrite sans `+` (`2[h] 30[min]`) : un bloc face à `+` et `−`,
+ * à la relecture comme à l'écrit — `-2[h] 30[min]` = −(2 h 30 min), `3[h]-1[h] 30[min]`
+ * = 3 h − (1 h 30 min) (lecture-grandeurs, PR 5). Sous `*`, `/` ou `^`, parenthésée.
+ */
+function isWrittenCompoundDuration(node: MathNode): boolean {
+	return juxtaposedTerms(node) !== null;
 }
 
 /**
@@ -177,5 +192,6 @@ export function needsParenthesesAsRightTerm(
 	node: MathNode,
 	operator: 'addition' | 'subtraction'
 ): boolean {
+	if (isWrittenCompoundDuration(node)) return false;
 	return operator === 'subtraction' ? needsParenthesesAsRightFactor(node) : startsWithSign(node);
 }

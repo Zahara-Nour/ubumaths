@@ -89,17 +89,17 @@ Validation Zod : `src/lib/server/validation/srs.ts` (paquets, cartes, sections, 
 
 ### Routes API
 
-| Route                                          | Méthodes                     | Rôle                                                                                                  |
-| ---------------------------------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------------- |
-| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.  |
-| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).  |
-| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace `srs`, Programme, statistiques `srs_review_sessions`.    |
-| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                  |
-| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace. |
-| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.   |
-| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.              |
-| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                             |
-| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).               |
+| Route                                          | Méthodes                     | Rôle                                                                                                                   |
+| ---------------------------------------------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| `api/skill-attempts`                           | POST                         | Réponse à une question interactive : FSRS **puis** trace (`auto` ou `student_self`), puis Programme.                   |
+| `api/srs/review/due`                           | GET                          | Cartes dues d'un paquet (RPC `get_due_cards_for_deck`), filtres `states` et `all` (révision forcée).                   |
+| `api/srs/review/submit`                        | POST                         | Révision d'une carte de paquet : FSRS, trace `srs`, Programme, statistiques `srs_review_sessions`, forfait du Palotin. |
+| `api/srs/chapters/[chapterId]/due`             | GET                          | Séance du paquet calculé d'un chapitre (élève seul).                                                                   |
+| `api/srs/chapters/[chapterId]/submit`          | POST                         | Réponse dans ce paquet : recalcul du paquet (modèle hors paquet → 403), FSRS meilleur-du-jour, trace.                  |
+| `api/srs/decks`, `api/srs/decks/[id]`          | GET, POST / GET, PUT, DELETE | Paquets ; un paquet assigné ne se modifie ni ne se supprime. Statistiques par RPC `get_deck_stats`.                    |
+| `api/srs/decks/[id]/assign`                    | POST                         | Prof : copie le paquet pour chaque élève (cartes, sections, mémoire), au client service.                               |
+| `api/srs/decks/[id]/sections`, `…/[sectionId]` | GET, POST / PATCH, DELETE    | Sections manuelles d'un paquet personnel.                                                                              |
+| `api/srs/cards`, `api/srs/cards/[id]`          | GET, POST / GET, PUT, DELETE | Cartes ; 403 sur un paquet assigné (création et modification : aussi sur le Programme).                                |
 
 ### Pages
 
@@ -159,7 +159,9 @@ d'entrée, une seule règle : `api/skill-attempts`, `api/srs/review/submit`, `re
 Le paquet d'un chapitre n'ajoute **rien** au Programme.
 
 La page `decks/programme` range les cartes en 4 sections calculées à la lecture
-(`templateToBadge`) ; « À remédier » et « À renforcer » lancent une séance filtrée
+(`templateToBadge`) et affiche sous chaque carte la **notion** de l'arbre où se range son point
+(niveau de l'élève d'abord, `keepLinksOfGrade` ; points neufs seuls, le plus petit code s'il y en a
+plusieurs) ; « À remédier » et « À renforcer » lancent une séance filtrée
 (`?states=learning,relearning`, `?states=review`) :
 
 | Badge                | Règle (par carte)                                |
@@ -172,7 +174,9 @@ La page `decks/programme` range les cartes en 4 sections calculées à la lectur
 Sur un point du programme (`computePointBadges`), le badge est le **pire** de ses modèles
 (`worstBadge`, ordre ci-dessus), `non_commencee` s'il n'en a aucune mémoire. Il s'affiche **à
 côté** du verdict d'acquisition du référentiel (`student_point_state`) : les deux peuvent
-diverger sans se contredire (acquis, mais en train d'être oublié).
+diverger sans se contredire (acquis, mais en train d'être oublié). Lecture en échec : par défaut
+`non_commencee` partout (la page reste affichée) ; `onError: 'throw'` lève à la place (la Chatterie,
+où une panne effacerait les siestes en silence).
 
 ### Paquets personnels, sections
 
@@ -202,7 +206,38 @@ dans la requête.
 `ReviewSession.svelte` lit `dueUrl(source)`, présente chaque carte (instance neuve pour un
 modèle), envoie la note par `submitRequest`. Côté paquet, `srs_review_sessions` cumule par jour
 cartes revues, bonnes réponses (note ≥ 3) et temps ; une panne de ces statistiques n'annule pas
-la révision.
+la révision. Écriture au client service (`recordReviewSessionCard`,
+`src/lib/server/srs/review-session-stats.ts`), `userId` de la session, après vérification du paquet
+par la RLS de l'élève ; 0 ligne écrite est journalisé. La lecture de la séance du jour reste au client
+de l'élève.
+
+**Forfait du Palotin** (décision de David, 2026-10-18 : l'effort, pas la réussite) :
+`rewardFinishedReviewSession` (`src/lib/server/srs/review-session-reward.ts`), appelé après chaque
+carte notée. Le Palotin reçoit `XP_SOURCES.review_session` (20, sous le plafond du jour), au plus une
+fois par jour, si (a) l'élève a révisé au moins 10 cartes aujourd'hui, tous paquets confondus, ou (b)
+le paquet n'a plus aucune carte due (`get_due_cards_for_deck`, échéance respectée) et il a révisé au
+moins 3 cartes aujourd'hui (`REVIEW_REWARD_CARDS_ANY_DECK`, `REVIEW_REWARD_CARDS_EMPTIED_DECK`). Le
+compte du jour = cartes distinctes dont `srs_card_stats.last_review` tombe aujourd'hui (table écrite
+par le serveur seul, Q171 ; elle inclut aussi les réponses d'Entraînement et de flash, qui passent par
+FSRS). Une révision forcée d'un paquet sans carte due rapporte donc le forfait dès la 3e carte.
+
+« Une fois par jour » : `srs_review_sessions.completed_at` marque la séance qui a rapporté le forfait.
+Une séance déjà marquée aujourd'hui → rien, sans autre lecture. Plafond déjà atteint ou élève sans
+Palotin → pas de réclamation. Réclamation conditionnelle (`completed_at is null`, vérifiée par
+`.select()`), relâchée si le crédit échoue ou rapporte 0 ; réclamation et relâche au client
+service, filtrées sur le `userId` de la session. Deux paquets réclamés au même instant :
+chacun voit l'autre, aucun forfait ce jour-là (côté sûr). `api/srs/review/submit` rend le gain sous
+`buddy_xp`, même forme que `api/tests/save` ; toute panne rend `null` sans toucher la révision.
+RLS (migration `20261017090100_palotin_constance_et_ecritures_serveur.sql`) : l'élève n'a plus de
+policy INSERT ni UPDATE sur `srs_review_sessions` (seule reste « Users can view their own review
+sessions ») ; il ne peut donc plus remettre `completed_at` à vide pour toucher deux fois le forfait.
+Une écriture faite à son client rend 42501 (INSERT) ou 0 ligne sans erreur (UPDATE). Preuve :
+`tests/integration/palotin-ecritures-eleve.test.ts`. Le paquet de chapitre
+(`api/srs/chapters/[id]/submit`) ne donne pas de forfait.
+
+En fin de séance, une fois la dernière carte enregistrée, `ReviewSession` demande les nouveautés de
+la Chatterie (`fetchMathouNews`) et les affiche sous le gain du Palotin (`MathouNewsCard`) : voir
+[mathoux.md](mathoux.md#annonce-des-nouveautés-en-fin-de-séance-v12).
 
 « Quitter », en tête de séance (`BackLink kind="quit"`, [composants-ui.md § BackLink](../pratiques/composants-ui.md#backlink--bouton-retour-obligatoire)), ramène là
 où elle a commencé : la page du paquet, ou le Programme si elle en part (`?depuis=programme`, posé par
@@ -241,6 +276,9 @@ saute un drapeau identique non résolu de moins de 7 jours, écrit dans `srs_ant
    UPDATE / DELETE de `srs_card_stats` révoqués aux comptes connectés. Écrivains :
    `upsertCardStats` (client service) et `api/srs/decks/[id]/assign`. Le `userId` vient
    **toujours** de la session, jamais du corps de la requête.
+   Lecture : l'élève lit sa mémoire ; le professeur lit celle de **tous ses élèves**
+   (`is_my_student(user_id)`, `20261021173000_srs_card_stats_lecture_prof`), pas seulement les
+   cartes des paquets qu'il leur a assignés.
 2. **Paquets Programme et assignés créés par le serveur seul** (`20261004213000_carnets_srs_acces`) :
    aucun compte connecté ne pose `is_assigned`, `is_auto_managed` ni `source_deck_id`.
    Les cartes du Programme aussi (`20261003100000_srs_cards_insert_policy_service_role`).

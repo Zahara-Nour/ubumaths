@@ -32,9 +32,13 @@ import { Grade, type FSRSConfig } from '$lib/srs/types';
 // La mémoire de révision est écrite au client SERVICE (Q171) : l'UPSERT de
 // `srs_card_stats` ne passe plus par le client de l'élève.
 const serviceUpsert = vi.hoisted(() => vi.fn());
+// Statistiques de séance (`srs_review_sessions`) : écrites au client service aussi
+const serviceSessionInsert = vi.hoisted(() =>
+	vi.fn(() => ({ select: async () => ({ data: [{ id: 'session-1' }], error: null }) }))
+);
 vi.mock('$lib/server/serviceRoleClient', () => ({
 	createServiceRoleClient: () => ({
-		from: () => ({ upsert: serviceUpsert })
+		from: () => ({ upsert: serviceUpsert, insert: serviceSessionInsert })
 	})
 }));
 
@@ -855,6 +859,7 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 
 		const mockSupabase = mockSupabaseClient();
 		const userUpsert = vi.fn().mockResolvedValue({ error: null });
+		const userSessionInsert = vi.fn().mockResolvedValue({ error: null });
 		serviceUpsert.mockReset().mockResolvedValue({ error: null });
 
 		setupAuthedSupabase(mockSupabase, (table) => {
@@ -945,7 +950,8 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 							})
 						})
 					}),
-					insert: vi.fn().mockResolvedValue({ error: null })
+					// Jamais appelé : la séance est créée au client service
+					insert: userSessionInsert
 				};
 			}
 			return {};
@@ -976,6 +982,11 @@ describe('POST /api/srs/review/submit - Submit Review', () => {
 		expect(serviceUpsert).toHaveBeenCalledTimes(1);
 		expect(serviceUpsert.mock.calls[0][0]).toMatchObject({ user_id: TEST_IDS.user1 });
 		expect(userUpsert).not.toHaveBeenCalled();
+		expect(serviceSessionInsert).toHaveBeenCalledTimes(1);
+		expect(serviceSessionInsert.mock.calls[0]).toEqual([
+			expect.objectContaining({ user_id: TEST_IDS.user1, deck_id: TEST_IDS.deck1 })
+		]);
+		expect(userSessionInsert).not.toHaveBeenCalled();
 	});
 
 	it('should validate grade value', async () => {

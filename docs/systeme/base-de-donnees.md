@@ -287,11 +287,22 @@ Code : `src/lib/server/` (`chapters.ts`, `chapters-publication.ts`, `chapter-tem
   `tests/integration/cadres-lignes-par-question.test.ts`, `cadres-lignes-partage.test.ts`).
 - `worksheet_instances` : exercices générés par élève (graine déterministe).
 - `worksheet_styles` (ADR 0028, `20261016103200`) : style de mise en page d'une fiche, propriétaire
-  vide = fourni par Chiphre (Typst dans le code). Lus par le prof et l'admin (ceux de Chiphre et les
+  vide = fourni par Chiphre (Typst dans le code ; 13 styles, le 13ᵉ « 2 colonnes - paysage » ajouté par
+  `20261016104100`, avec sa ligne dans `worksheet_templates`). La fiche désigne son style par
+  `worksheets.style_id` seul ; l'ancienne `worksheets.template_id`, recopiée dans `style_id` (#1529),
+  est retirée (`20261019221542`). Lus par le prof et l'admin (ceux de Chiphre et les
   leurs), modifiés par leur propriétaire ou l'admin ; **aucun accès élève ni `anon`**. Une clé
   étrangère se vérifie hors RLS : deux déclencheurs refusent qu'un gabarit rejoigne un style qui
   n'est pas celui de son auteur, ou qu'une fiche prenne le style d'un autre que Chiphre ou son auteur
   (test `tests/integration/styles-de-fiche.test.ts`).
+- `student_print_settings` (`20261016104200`) : **taille du texte** des PDF de fiche d'un élève
+  (`text_size` : `normal` 10 pt, `large` 14 pt, `x_large` 18 pt ; pas de ligne = normale), pour
+  les élèves malvoyants. Une ligne par élève (`student_id` clé primaire, compte `student`
+  seulement). L'élève lit et modifie la sienne ; le prof et l'admin, celle de tout élève
+  (`is_my_student`) ; personne d'autre. ⚠️ Volontairement **hors de `profiles`** : un ami lit la
+  ligne `profiles` entière, et ce réglage révèle un trouble de la vue (test :
+  `tests/integration/taille-texte-fiches-eleve.test.ts`, dont le témoin vérifie que l'ami lit
+  bien le profil).
 
 **L'accès est hérité, jamais distribué** : `student_has_worksheet_access` part de
 `worksheet_assignments`, passe par `worksheet_assignment_classes` / `worksheet_assignment_students`
@@ -346,7 +357,9 @@ Accès : l'élève gère ses paquets **non assignés et non automatiques** ; il 
 paquet assigné, automatique ou copié (policies RESTRICTIVE `srs_decks_paquets_serveur_*`) — ces
 paquets passent par le client service (`ensureProgrammeDeck`, `src/lib/server/srs/programme-deck.ts`,
 et `src/routes/api/srs/decks/[id]/assign`). `srs_card_stats` : l'élève **lit** sa mémoire, le
-professeur celle des élèves à qui il a assigné un paquet ; **seul le serveur écrit**
+professeur celle de ses élèves (`is_my_student`, migration `20261021173000`, pour les siestes de la
+[Chatterie vue par le prof](mathoux.md#vue-du-professeur) ; avant, seulement des élèves à qui il
+avait assigné un paquet) ; **seul le serveur écrit**
 (`upsertCardStats`, `src/lib/server/srs/fsrs-actions.ts`).
 
 Une révision écrit FSRS d'abord, puis `skill_attempts` : si FSRS échoue, rien n'est enregistré. Code :
@@ -431,6 +444,21 @@ Jeux (démineur, 2048, Mathémo, combats), énigmes, succès, compagnons et éco
 VIP, récompenses hebdomadaires). Détail : [jeux-et-economie.md](jeux-et-economie.md),
 [buddy-palotins.md](buddy-palotins.md). Pivots : `minesweeper_games`, `riddles` → `riddle_attempts`,
 `achievements` → `student_achievements`, `student_buddies`, `reward_events`, `gidouilles_activity`.
+`student_buddies` (le Palotin) et `srs_review_sessions` (séances de révision, qui portent le
+forfait du Palotin) ne s'écrivent que par le serveur (client service) : l'élève n'y a plus que la
+lecture (migration `20261017090100`, qui ajoute aussi les colonnes de la Constance Royale
+hebdomadaire `constance_week_start` et `constance_days_this_week`, 0 à 7).
+`student_mathoux` (migration `20261017090200`) est la mémoire des Mathoux de la Chatterie : par
+élève et par notion de l'arbre, le meilleur stade atteint (`chaton`, `matou`, `grand_matou`, qui
+ne redescend jamais), les niveaux étoilés (`starred_grades`, codes de grade, 20 au plus) et la
+sieste écrite par le dernier calcul (`asleep`, faux par défaut, migration `20261021200000` : sert à
+annoncer le réveil ; lue et écrite comme le reste de la ligne). Lecture
+calquée sur `student_buddies` (l'élève les siennes, prof et admin tout) ; aucune policy d'écriture
+et `authenticated` n'a que SELECT : seul le serveur écrit (client service), `anon` n'a aucun droit.
+Cascade depuis `profiles` (effacement RGPD), RESTRICT vers `classification_nodes`. Piège d'écriture :
+un lot d'insertions où une ligne omet `starred_grades` y envoie NULL (union des clés de PostgREST) —
+passer `defaultToNull: false` ou toujours fournir la colonne. Test :
+`tests/integration/mathoux-memoire.test.ts`.
 Le solde vit dans `profiles.gidouilles` / `vip_cards`. L'élève lit ses propres traces, le professeur
 celles de tous les élèves ; les classements passent par `game_leaderboard`, borné à l'école
 (énigmes : `riddle_school_leaderboard`, prénom et score seulement, migration `20261015090800`).
@@ -491,6 +519,13 @@ fichiers, et `storage_removed_at` (`20261016101000`) dit s'ils ont été retiré
 (nul = à retirer). `delete_user_account` ne rend, pour les pièces jointes de messages privés et les
 captures de signalement, que les chemins rangés chez l'élève (`20261016101200`) : il en écrit
 lui-même le chemin.
+
+**Liens courts des QR codes** (`short_links`, `20261019170000`) : un code de 8 caractères vers un
+chemin **interne** du site, en ASCII imprimable (jamais un autre domaine : la contrainte refuse `//`,
+`\`, les espaces, les caractères de contrôle et l'Unicode). RLS sans policy et aucun droit direct : un prof ou l'admin crée par
+`create_short_link` (même cible → même code, unicité sur l'empreinte `target_hash`), et quiconque a
+le code, `anon` compris, lit la cible par `resolve_short_link`. Personne ne liste la table. Les liens
+n'expirent pas : un QR imprimé ne se reprend pas. Phase 0 : `docs/wip/liens-courts-phase0.md`.
 
 ---
 

@@ -1,0 +1,370 @@
+{
+	"template_id": "6fbf1ab2-c476-4a6c-bd98-ce2c58d8c459",
+	"titre": "Simplifier un produit par $0$ ou $1$",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["5"],
+	"type": "fill_in_blanks",
+	"theme": "Calcul littéral > Transformation > Simplification d'écriture",
+	"mis_a_jour": "2026-10-01T06:18:01.097043+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Algèbre > Calcul littéral > écriture simplifiée",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "1{{p}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris plus simplement cette expression littérale :\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{p}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["1a", "1b", "1c", "1x", "1y"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 1,
+							"nb_distinctes": 1,
+							"valeurs": [1],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 1,
+				"nb_distinctes": 1,
+				"valeurs": [1],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1)",
+					"graine": 1,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$1 a = [?]$$",
+					"reponse": ["a"],
+					"variables": {
+						"p": "a",
+						"expression1": "1a"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$1 b = [?]$$",
+					"reponse": ["b"],
+					"variables": {
+						"p": "b",
+						"expression1": "1b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$1 x = [?]$$",
+					"reponse": ["x"],
+					"variables": {
+						"p": "x",
+						"expression1": "1x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$1 y = [?]$$",
+					"reponse": ["y"],
+					"variables": {
+						"p": "y",
+						"expression1": "1y"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$1 c = [?]$$",
+					"reponse": ["c"],
+					"variables": {
+						"p": "c",
+						"expression1": "1c"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "p",
+						"expression": "a|b|c|x|y"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "0{{p}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Écris plus simplement cette expression littérale :\n\n$${{expression2}}$$",
+				"reponses_brutes": ["0"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 5,
+			"variables": [
+				{
+					"nom": "p",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["a", "b", "c", "x", "y"],
+						"nombres_contenus": null
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 5,
+						"valeurs": ["0a", "0b", "0c", "0x", "0y"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 0,
+							"nb_distinctes": 1,
+							"valeurs": [0],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 0,
+						"negatif_possible": false,
+						"nb_distinctes": 1,
+						"valeurs": [0]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 0,
+				"nb_distinctes": 1,
+				"valeurs": [0],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0)",
+					"graine": 1,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$0 a = [?]$$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "a",
+						"expression2": "0a"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$0 b = [?]$$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "b",
+						"expression2": "0b"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$0 x = [?]$$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "x",
+						"expression2": "0x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 9,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$0 y = [?]$$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "y",
+						"expression2": "0y"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 11,
+					"enonce": "Écris plus simplement cette expression littérale :\n\n$$0 c = [?]$$",
+					"reponse": ["0"],
+					"variables": {
+						"p": "c",
+						"expression2": "0c"
+					}
+				}
+			]
+		}
+	]
+}

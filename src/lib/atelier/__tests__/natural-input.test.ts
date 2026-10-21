@@ -101,7 +101,8 @@ describe('un mot devient texte quand il est fini, et seulement à sa place', () 
 describe('la complétion', () => {
 	it('commandes dès 2 lettres en tête de ligne', () => {
 		const labels = proposalsFor(wordAtCaret('ré', false), 'calculation', words).map((p) => p.label);
-		expect(labels).toEqual(['résoudre', 'réciproque']);
+		// Les accents sont facultatifs : « ré » propose aussi `relever` (lot 2, PR 4)
+		expect(labels).toEqual(['résoudre', 'relever', 'réciproque']);
 		expect(proposalsFor(wordAtCaret('r', false), 'calculation', words)).toEqual([]);
 	});
 
@@ -173,6 +174,16 @@ describe('le champ produit le texte que lit runInput, et la vraie chaîne répon
 		expect(converted).toEqual({ ok: true, text });
 		if (!converted.ok) return;
 		expect(shown(runInput(session, converted.text))).toContain(answer);
+	});
+
+	it.each([
+		['2 m*3 m', '6~\\mathrm{m}^{2}'],
+		['(2 m)*3 m', '6~\\mathrm{m}^{2}'],
+		['6 m/2 s', '3~\\mathrm{m}']
+	])('un produit ou un quotient de grandeurs, opérateur collé : %s', (text, answer) => {
+		expect(
+			shown(runInput({ atelier: new Atelier(), engine: new WebReplEngine() }, text))
+		).toContain(answer);
 	});
 
 	it('une case vide du modèle est refusée avant le moteur', () => {

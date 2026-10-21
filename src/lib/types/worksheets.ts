@@ -390,11 +390,10 @@ export interface WorksheetRow {
 	version: number;
 	published_at: string | null;
 	archived_at: string | null;
-	template_id: string | null;
 	/**
-	 * Le style de la fiche (`worksheet_styles`, lot 3). Vide pour les fiches
-	 * d'avant : `template_id` désigne alors le style (`styleIdOf`). Optionnel :
-	 * les fiches construites hors de la base (scripts, tests) n'en ont pas.
+	 * Le style de la fiche (`worksheet_styles`, lot 3). Vide : « Fiche élève »
+	 * (`styleIdOf`). Optionnel : les fiches construites hors de la base
+	 * (scripts, tests) n'en ont pas.
 	 */
 	style_id?: string | null;
 	estimated_duration_minutes: number | null;
@@ -534,7 +533,6 @@ export interface WorksheetInsert {
 	config?: WorksheetConfig;
 	status?: WorksheetStatus;
 	version?: number;
-	template_id?: string | null;
 	style_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
@@ -645,7 +643,6 @@ export interface WorksheetUpdate {
 	version?: number;
 	published_at?: string | null;
 	archived_at?: string | null;
-	template_id?: string | null;
 	style_id?: string | null;
 	estimated_duration_minutes?: number | null;
 	total_points?: number | null;
@@ -871,11 +868,9 @@ export interface StudentWorksheetView {
 	/** Sections for grouping exercises */
 	sections: StudentSectionView[];
 	/**
-	 * Le style de la fiche (lot 4b) : `style_id`, sinon `template_id` (fiches
-	 * d'avant le lot 3). Absents : « Fiche élève ».
+	 * Le style de la fiche (lot 4b). Absent : « Fiche élève ».
 	 */
 	style_id?: string | null;
-	template_id?: string | null;
 	/**
 	 * La mise en page (forme « fiche ») d'un style du prof auteur de la fiche,
 	 * fournie par le serveur (D11) ; `null` pour un style de Chiphre (Typst
@@ -916,7 +911,6 @@ export interface WorksheetFormData {
 	estimated_duration_minutes: number | null;
 	grades: GradeCode[];
 	tags: string[];
-	template_id: string | null;
 }
 
 export interface WorksheetExerciseFormData {

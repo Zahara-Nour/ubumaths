@@ -554,6 +554,7 @@ function reconstructNode(original: MathNode, transformedChildren: Map<string, Ma
 		// Binary operations
 		case 'addition':
 			return add(getChild('left', original.left), getChild('right', original.right), {
+				displayStyle: original.displayStyle,
 				operatorMetadata: original.operatorMetadata,
 				metadata: original.metadata
 			});

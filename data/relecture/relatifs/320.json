@@ -20,7 +20,7 @@
 					},
 					{
 						"name": "expression1",
-						"expression": "(-a,5)+b"
+						"expression": "(-a.5)+b"
 					}
 				],
 				"blanks": [
@@ -42,7 +42,7 @@
 					},
 					{
 						"name": "expression2",
-						"expression": "(-a,5)-b"
+						"expression": "(-a.5)-b"
 					}
 				],
 				"blanks": [
@@ -64,7 +64,7 @@
 					},
 					{
 						"name": "expression3",
-						"expression": "a,5-b"
+						"expression": "a.5-b"
 					}
 				],
 				"blanks": [

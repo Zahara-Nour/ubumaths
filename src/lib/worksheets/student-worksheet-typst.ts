@@ -25,6 +25,7 @@ import type {
 	WorksheetTemplateRow
 } from '$lib/types/worksheets';
 import { WorksheetGenerator } from '$lib/typst/generators/worksheet-generator';
+import type { TextSize } from '$lib/typst/text-size';
 import { documentFromStudentView } from './document/student-adapter';
 
 // ============================================================================
@@ -59,6 +60,8 @@ export interface StudentPdfOptions {
 	 * l'affectation) ; `null` : ligne à remplir (élève à la classe inconnue).
 	 */
 	className?: string | null;
+	/** Taille du texte de l'élève (`student_print_settings`) ; normale par défaut */
+	textSize?: TextSize;
 }
 
 // ============================================================================
@@ -67,9 +70,8 @@ export interface StudentPdfOptions {
 
 /**
  * Le PDF de l'élève, par le générateur unique (ADR 0028, lot 4b) : le gabarit
- * du style de la fiche (`style_id`, sinon `template_id`, sinon « Fiche
- * élève » ; la mise en page d'un style du prof arrive dans `template`), rempli
- * avec le document de la vue — corrections déjà filtrées par le serveur, et
+ * du style de la fiche (`style_id`, sinon « Fiche élève » ; la mise en page
+ * d'un style du prof arrive dans `template`), rempli avec le document de la vue — corrections déjà filtrées par le serveur, et
  * celles qui ne sont pas visibles jamais imprimées.
  *
  * @param worksheet - Student worksheet view with resolved exercises
@@ -108,7 +110,6 @@ export function generateStudentWorksheetTypst(
 		translations: null,
 		type: worksheet.type,
 		config,
-		template_id: worksheet.template_id ?? null,
 		style_id: worksheet.style_id ?? null,
 		total_points: worksheet.total_points ?? null,
 		estimated_duration_minutes: worksheet.estimated_duration_minutes ?? null
@@ -126,7 +127,8 @@ export function generateStudentWorksheetTypst(
 		{
 			withCorrections: ending === 'none' ? undefined : ending,
 			correctionFonts: options.correctionFonts,
-			individualCopyNotice: options.individualCopyNotice
+			individualCopyNotice: options.individualCopyNotice,
+			textSize: options.textSize
 		}
 	);
 	return generator.generate({

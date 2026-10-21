@@ -157,13 +157,30 @@ export function getSuggestions(code: ParseErrorCode, message: string): string[] 
 
 		case 'INVALID_SUPERSCRIPT':
 			suggestions.push('Utilisez des accolades pour les exposants complexes : x^{ab}');
-			if (message.includes('negative') || message.includes('négatif')) {
-				suggestions.push('Pour un exposant négatif, écrivez x^{-2} et non x^-2');
-			}
 			break;
 
-		case 'INVALID_UNIT':
+		case 'STACKED_EXPONENTS':
+			suggestions.push('Deux exposants à la suite : écrivez 2^{3^2} ou (2^3)^2');
+			break;
+
+		case 'NEGATIVE_EXPONENT_BEFORE_GROUP':
+			suggestions.push('Mettez tout l’exposant entre accolades : 2^{-(x+1)}');
+			break;
+
+		case 'UNKNOWN_UNIT':
+		case 'EMPTY_UNIT':
+		case 'AMBIGUOUS_UNIT':
+		case 'SPACE_IN_UNIT':
+		case 'UNIT_EXPONENT_OUTSIDE':
 			suggestions.push("Vérifier la syntaxe de l'unité : m, kg, s, etc.");
+			break;
+
+		case 'MISSING_OPERATOR':
+			suggestions.push('Écrivez le nombre devant (2x) ou utilisez * (x*2)');
+			break;
+
+		case 'LEADING_DECIMAL_POINT':
+			suggestions.push('Écrivez le zéro avant le point décimal : 0.5');
 			break;
 
 		case 'INVALID_COLOR':

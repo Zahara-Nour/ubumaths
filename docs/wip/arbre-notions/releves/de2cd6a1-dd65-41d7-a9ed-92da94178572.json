@@ -1,0 +1,239 @@
+{
+	"template_id": "de2cd6a1-dd65-41d7-a9ed-92da94178572",
+	"titre": "Multiplier $2$ puissances de $10$.",
+	"sous_titre": "Exposants positifs",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Puissances > Calculer > Multiplier",
+	"mis_a_jour": "2026-10-01T06:17:39.995354+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "4-016",
+			"libelle_point": "Multiplier des puissances d'exposant entier naturel d'un même nombre entre elles.",
+			"noeud_actuel": "Nombres et calculs > Puissances : calculs > produit de puissances",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "1..9"
+					},
+					{
+						"name": "expression1",
+						"expression": "10^b*10^c"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:b+c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 80,
+			"variables": [
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 80,
+						"exemples": [
+							"10^1*10^5",
+							"10^3*10^3",
+							"10^3*10^2",
+							"10^7*10^2",
+							"10^1*10^6",
+							"10^1*10^9",
+							"10^6*10^3",
+							"10^8*10^2",
+							"10^9*10^7",
+							"10^5*10^6",
+							"10^4*10^1",
+							"10^4*10^5"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 10,
+							"nb_distinctes": 10,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 10,
+				"nb_distinctes": 10,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 18,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 18,
+				"nb_distinctes": 18,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"puissance": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 10,
+					"max": 10
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 115,
+					"enonce": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$$10^9 \\times 10^9 = 10^[?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"b": "9",
+						"c": "9",
+						"expression1": "10^9*10^9"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$$10^1 \\times 10^5 = 10^[?]$$",
+					"reponse": ["6"],
+					"variables": {
+						"b": "1",
+						"c": "5",
+						"expression1": "10^1*10^5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$$10^3 \\times 10^3 = 10^[?]$$",
+					"reponse": ["6"],
+					"variables": {
+						"b": "3",
+						"c": "3",
+						"expression1": "10^3*10^3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$$10^3 \\times 10^2 = 10^[?]$$",
+					"reponse": ["5"],
+					"variables": {
+						"b": "3",
+						"c": "2",
+						"expression1": "10^3*10^2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Simplifie en écrivant sous la forme d'une seule puissance de $10$.\n\n$$10^7 \\times 10^2 = 10^[?]$$",
+					"reponse": ["9"],
+					"variables": {
+						"b": "7",
+						"c": "2",
+						"expression1": "10^7*10^2"
+					}
+				}
+			]
+		}
+	]
+}

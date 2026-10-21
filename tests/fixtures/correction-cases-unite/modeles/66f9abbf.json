@@ -1,0 +1,298 @@
+{
+	"id": "66f9abbf-6e85-42ff-bf3c-af6d573491c3",
+	"title": "Calcul du périmètre d'un rectangle.",
+	"description": "A partir d'une description",
+	"grades": ["6"],
+	"theme": "Grandeurs",
+	"domain": "Périmètres",
+	"subdomain": "Périmètre d'un rectangle",
+	"level": 1,
+	"delay": 15,
+	"status": "published",
+	"shared": {
+		"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+		"variables": [
+			{
+				"name": "a",
+				"expression": "1..11"
+			},
+			{
+				"name": "b",
+				"expression": "1..11!a"
+			},
+			{
+				"name": "c",
+				"expression": "eval:a[mm]"
+			},
+			{
+				"name": "d",
+				"expression": "eval:b[mm]"
+			}
+		],
+		"conditions": ["a>b"],
+		"correction": {
+			"steps": [
+				"Le périmètre d'un rectangle de longueur ${{c}}$ et de largeur ${{d}}$ est $2 \\times ({{c}}+{{d}}) =$ {{solution:html}}."
+			]
+		}
+	},
+	"variations": [
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[mm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[mm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[mm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[cm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[cm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[cm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[dm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[dm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[m]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[m]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[m]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[dam]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[dam]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[dam]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[hm]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[hm]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[hm]"
+				}
+			]
+		},
+		{
+			"blanks": [
+				{
+					"unit": {
+						"expected": true
+					},
+					"expectedAnswer": "{{eval:(c+d)*2;[km]}}"
+				}
+			],
+			"statement": "Quel est le périmètre d'un **rectangle** de longueur ${{c}}$ et de largeur ${{d}}$ ?\n\nLe périmètre du rectangle est $?$.",
+			"variables": [
+				{
+					"name": "c",
+					"expression": "eval:a[km]"
+				},
+				{
+					"name": "d",
+					"expression": "eval:b[km]"
+				}
+			]
+		}
+	],
+	"testSpecs": [
+		{
+			"answers": ["26\\unit{mm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) mm = 26 mm",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["13\\unit{mm}"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "demi-périmètre 13",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26"],
+			"expected": {
+				"status": "incorrect"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "sans unité",
+			"variationIndex": 0
+		},
+		{
+			"answers": ["26\\unit{cm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) cm = 26 cm",
+			"variationIndex": 1
+		},
+		{
+			"answers": ["26\\unit{dm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) dm = 26 dm",
+			"variationIndex": 2
+		},
+		{
+			"answers": ["26\\unit{m}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) m = 26 m",
+			"variationIndex": 3
+		},
+		{
+			"answers": ["26\\unit{dam}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) dam = 26 dam",
+			"variationIndex": 4
+		},
+		{
+			"answers": ["26\\unit{hm}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) hm = 26 hm",
+			"variationIndex": 5
+		},
+		{
+			"answers": ["26\\unit{km}"],
+			"expected": {
+				"status": "correct"
+			},
+			"variables": {
+				"a": "8",
+				"b": "5"
+			},
+			"description": "2 × (8+5) km = 26 km",
+			"variationIndex": 6
+		}
+	]
+}

@@ -1,0 +1,1516 @@
+{
+	"template_id": "86b80159-8395-4546-8d0e-2828693b6d97",
+	"titre": "Compléter une addition ou soustraction à trou",
+	"sous_titre": "Quotients avec nombres relatifs",
+	"consigne": null,
+	"grades": ["4"],
+	"type": "fill_in_blanks",
+	"theme": "Fractions > A trou > Addition - Soustraction",
+	"mis_a_jour": "2026-10-01T06:18:10.056379+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Fractions : calculs > addition et soustraction",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "?/{{c}}+{{{b}}}/{{c}}={{eval:a+(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"],
+				"enonce_brut": "Complète cette égalité avec le nombre manquant.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 271,
+						"exemples": [
+							"?/19+{2}/19=-7/19",
+							"?/11+{-5}/11=-9/11",
+							"?/11+{-2}/11=-11/11",
+							"?/11+{-6}/11=-10/11",
+							"?/13+{3}/13=-5/13",
+							"?/5+{4}/5=-5/5",
+							"?/11+{-3}/11=-1/11",
+							"?/11+{-5}/11=-1/11",
+							"?/6+{5}/6=10/6",
+							"?/3+{5}/3=13/3",
+							"?/17+{3}/17=5/17",
+							"?/3+{-8}/3=-12/3"
+						],
+						"nombres_contenus": {
+							"min": -18,
+							"max": 19,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": -9,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 1,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{19} + \\dfrac{2}{19} = -\\dfrac{7}{19}$$",
+					"reponse": ["-9"],
+					"variables": {
+						"a": "-9",
+						"b": "2",
+						"c": "19",
+						"expression1": "?/19+{2}/19=-7/19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{11} + \\dfrac{-5}{11} = -\\dfrac{9}{11}$$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "-5",
+						"c": "11",
+						"expression1": "?/11+{-5}/11=-9/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{11} + \\dfrac{-2}{11} = -\\dfrac{11}{11}$$",
+					"reponse": ["-9"],
+					"variables": {
+						"a": "-9",
+						"b": "-2",
+						"c": "11",
+						"expression1": "?/11+{-2}/11=-11/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{11} + \\dfrac{-6}{11} = -\\dfrac{10}{11}$$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "11",
+						"expression1": "?/11+{-6}/11=-10/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{13} + \\dfrac{3}{13} = -\\dfrac{5}{13}$$",
+					"reponse": ["-8"],
+					"variables": {
+						"a": "-8",
+						"b": "3",
+						"c": "13",
+						"expression1": "?/13+{3}/13=-5/13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "{{{a}}}/?+{{{b}}}/{{c}}={{eval:a+(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"],
+				"enonce_brut": "Complète cette égalité avec le nombre manquant.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 271,
+						"exemples": [
+							"{-9}/?+{2}/19=-7/19",
+							"{-4}/?+{-5}/11=-9/11",
+							"{-9}/?+{-2}/11=-11/11",
+							"{-4}/?+{-6}/11=-10/11",
+							"{-8}/?+{3}/13=-5/13",
+							"{-9}/?+{4}/5=-5/5",
+							"{2}/?+{-3}/11=-1/11",
+							"{4}/?+{-5}/11=-1/11",
+							"{5}/?+{5}/6=10/6",
+							"{8}/?+{5}/3=13/3",
+							"{2}/?+{3}/17=5/17",
+							"{-4}/?+{-8}/3=-12/3"
+						],
+						"nombres_contenus": {
+							"min": -18,
+							"max": 19,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": -9,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 1,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{[?]} + \\dfrac{2}{19} = -\\dfrac{7}{19}$$",
+					"reponse": ["19"],
+					"variables": {
+						"a": "-9",
+						"b": "2",
+						"c": "19",
+						"expression2": "{-9}/?+{2}/19=-7/19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{[?]} + \\dfrac{-5}{11} = -\\dfrac{9}{11}$$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-4",
+						"b": "-5",
+						"c": "11",
+						"expression2": "{-4}/?+{-5}/11=-9/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{[?]} + \\dfrac{-2}{11} = -\\dfrac{11}{11}$$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-9",
+						"b": "-2",
+						"c": "11",
+						"expression2": "{-9}/?+{-2}/11=-11/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{[?]} + \\dfrac{-6}{11} = -\\dfrac{10}{11}$$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "11",
+						"expression2": "{-4}/?+{-6}/11=-10/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-8}{[?]} + \\dfrac{3}{13} = -\\dfrac{5}{13}$$",
+					"reponse": ["13"],
+					"variables": {
+						"a": "-8",
+						"b": "3",
+						"c": "13",
+						"expression2": "{-8}/?+{3}/13=-5/13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression3",
+						"expression": "{{{a}}}/{{c}}+?/{{c}}={{eval:a+(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"],
+				"enonce_brut": "Complète cette égalité avec le nombre manquant.\n\n$${{expression3}}$$",
+				"reponses_brutes": ["{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression3",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 271,
+						"exemples": [
+							"{-9}/19+?/19=-7/19",
+							"{-4}/11+?/11=-9/11",
+							"{-9}/11+?/11=-11/11",
+							"{-4}/11+?/11=-10/11",
+							"{-8}/13+?/13=-5/13",
+							"{-9}/5+?/5=-5/5",
+							"{2}/11+?/11=-1/11",
+							"{4}/11+?/11=-1/11",
+							"{5}/6+?/6=10/6",
+							"{8}/3+?/3=13/3",
+							"{2}/17+?/17=5/17",
+							"{-4}/3+?/3=-12/3"
+						],
+						"nombres_contenus": {
+							"min": -18,
+							"max": 19,
+							"nb_distinctes": 35,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 27,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+					18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": -9,
+				"numerateur_max": 18,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 1,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{19} + \\dfrac{[?]}{19} = -\\dfrac{7}{19}$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "-9",
+						"b": "2",
+						"c": "19",
+						"expression3": "{-9}/19+?/19=-7/19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{11} + \\dfrac{[?]}{11} = -\\dfrac{9}{11}$$",
+					"reponse": ["-5"],
+					"variables": {
+						"a": "-4",
+						"b": "-5",
+						"c": "11",
+						"expression3": "{-4}/11+?/11=-9/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{11} + \\dfrac{[?]}{11} = -\\dfrac{11}{11}$$",
+					"reponse": ["-2"],
+					"variables": {
+						"a": "-9",
+						"b": "-2",
+						"c": "11",
+						"expression3": "{-9}/11+?/11=-11/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{11} + \\dfrac{[?]}{11} = -\\dfrac{10}{11}$$",
+					"reponse": ["-6"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "11",
+						"expression3": "{-4}/11+?/11=-10/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-8}{13} + \\dfrac{[?]}{13} = -\\dfrac{5}{13}$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "-8",
+						"b": "3",
+						"c": "13",
+						"expression3": "{-8}/13+?/13=-5/13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression4",
+						"expression": "{{{a}}}/{{c}}-{{{b}}}/?={{eval:a-(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"],
+				"enonce_brut": "Complète cette égalité avec le nombre manquant.\n\n$${{expression4}}$$",
+				"reponses_brutes": ["{{c}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression4",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 271,
+						"exemples": [
+							"{-9}/19-{2}/?=-11/19",
+							"{-4}/11-{-5}/?=1/11",
+							"{-9}/11-{-2}/?=-7/11",
+							"{-4}/11-{-6}/?=2/11",
+							"{-8}/13-{3}/?=-11/13",
+							"{-9}/5-{4}/?=-13/5",
+							"{2}/11-{-3}/?=5/11",
+							"{4}/11-{-5}/?=9/11",
+							"{5}/6-{5}/?=0/6",
+							"{8}/3-{5}/?=3/3",
+							"{2}/17-{3}/?=-1/17",
+							"{-4}/3-{-8}/?=4/3"
+						],
+						"nombres_contenus": {
+							"min": -17,
+							"max": 19,
+							"nb_distinctes": 37,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					17, 18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 19,
+				"nb_distinctes": 17,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					17, 18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": -9,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 1,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{19} - \\dfrac{2}{[?]} = -\\dfrac{11}{19}$$",
+					"reponse": ["19"],
+					"variables": {
+						"a": "-9",
+						"b": "2",
+						"c": "19",
+						"expression4": "{-9}/19-{2}/?=-11/19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{11} - \\dfrac{-5}{[?]} = \\dfrac{1}{11}$$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-4",
+						"b": "-5",
+						"c": "11",
+						"expression4": "{-4}/11-{-5}/?=1/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{11} - \\dfrac{-2}{[?]} = -\\dfrac{7}{11}$$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-9",
+						"b": "-2",
+						"c": "11",
+						"expression4": "{-9}/11-{-2}/?=-7/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{11} - \\dfrac{-6}{[?]} = \\dfrac{2}{11}$$",
+					"reponse": ["11"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "11",
+						"expression4": "{-4}/11-{-6}/?=2/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-8}{13} - \\dfrac{3}{[?]} = -\\dfrac{11}{13}$$",
+					"reponse": ["13"],
+					"variables": {
+						"a": "-8",
+						"b": "3",
+						"c": "13",
+						"expression4": "{-8}/13-{3}/?=-11/13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression5",
+						"expression": "?/{{c}}-{{{b}}}/{{c}}={{eval:a-(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"],
+				"enonce_brut": "Complète cette égalité avec le nombre manquant.\n\n$${{expression5}}$$",
+				"reponses_brutes": ["{{a}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression5",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 271,
+						"exemples": [
+							"?/19-{2}/19=-11/19",
+							"?/11-{-5}/11=1/11",
+							"?/11-{-2}/11=-7/11",
+							"?/11-{-6}/11=2/11",
+							"?/13-{3}/13=-11/13",
+							"?/5-{4}/5=-13/5",
+							"?/11-{-3}/11=5/11",
+							"?/11-{-5}/11=9/11",
+							"?/6-{5}/6=0/6",
+							"?/3-{5}/3=3/3",
+							"?/17-{3}/17=-1/17",
+							"?/3-{-8}/3=4/3"
+						],
+						"nombres_contenus": {
+							"min": -17,
+							"max": 19,
+							"nb_distinctes": 37,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					17, 18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					17, 18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": -9,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 1,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{19} - \\dfrac{2}{19} = -\\dfrac{11}{19}$$",
+					"reponse": ["-9"],
+					"variables": {
+						"a": "-9",
+						"b": "2",
+						"c": "19",
+						"expression5": "?/19-{2}/19=-11/19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{11} - \\dfrac{-5}{11} = \\dfrac{1}{11}$$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "-5",
+						"c": "11",
+						"expression5": "?/11-{-5}/11=1/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{11} - \\dfrac{-2}{11} = -\\dfrac{7}{11}$$",
+					"reponse": ["-9"],
+					"variables": {
+						"a": "-9",
+						"b": "-2",
+						"c": "11",
+						"expression5": "?/11-{-2}/11=-7/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{11} - \\dfrac{-6}{11} = \\dfrac{2}{11}$$",
+					"reponse": ["-4"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "11",
+						"expression5": "?/11-{-6}/11=2/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{[?]}{13} - \\dfrac{3}{13} = -\\dfrac{11}{13}$$",
+					"reponse": ["-8"],
+					"variables": {
+						"a": "-8",
+						"b": "3",
+						"c": "13",
+						"expression5": "?/13-{3}/13=-11/13"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "c",
+						"expression": "2..19!cd(a),cd(b)"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression6",
+						"expression": "{{{a}}}/{{c}}-?/{{c}}={{eval:a-(b)}}/{{c}}"
+					}
+				],
+				"conditions": ["a+b!=0"],
+				"enonce_brut": "Complète cette égalité avec le nombre manquant.\n\n$${{expression6}}$$",
+				"reponses_brutes": ["{{b}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 271,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 19,
+						"negatif_possible": false,
+						"nb_distinctes": 17,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19]
+					}
+				},
+				{
+					"nom": "expression6",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 271,
+						"exemples": [
+							"{-9}/19-?/19=-11/19",
+							"{-4}/11-?/11=1/11",
+							"{-9}/11-?/11=-7/11",
+							"{-4}/11-?/11=2/11",
+							"{-8}/13-?/13=-11/13",
+							"{-9}/5-?/5=-13/5",
+							"{2}/11-?/11=5/11",
+							"{4}/11-?/11=9/11",
+							"{5}/6-?/6=0/6",
+							"{8}/3-?/3=3/3",
+							"{2}/17-?/17=-1/17",
+							"{-4}/3-?/3=4/3"
+						],
+						"nombres_contenus": {
+							"min": -17,
+							"max": 19,
+							"nb_distinctes": 37,
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					17, 18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 16,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 19,
+				"nb_distinctes": 28,
+				"valeurs": [
+					-9, -8, -7, -6, -5, -4, -3, -2, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
+					17, 18, 19
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": {
+				"nb": 600,
+				"denominateurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19],
+				"denominateur_min": 2,
+				"denominateur_max": 19,
+				"numerateur_min": -9,
+				"numerateur_max": 17,
+				"superieure_a_1_possible": true
+			},
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"fraction": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 7,
+					"max": 7
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (19)",
+					"graine": 1,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{19} - \\dfrac{[?]}{19} = -\\dfrac{11}{19}$$",
+					"reponse": ["2"],
+					"variables": {
+						"a": "-9",
+						"b": "2",
+						"c": "19",
+						"expression6": "{-9}/19-?/19=-11/19"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{11} - \\dfrac{[?]}{11} = \\dfrac{1}{11}$$",
+					"reponse": ["-5"],
+					"variables": {
+						"a": "-4",
+						"b": "-5",
+						"c": "11",
+						"expression6": "{-4}/11-?/11=1/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-9}{11} - \\dfrac{[?]}{11} = -\\dfrac{7}{11}$$",
+					"reponse": ["-2"],
+					"variables": {
+						"a": "-9",
+						"b": "-2",
+						"c": "11",
+						"expression6": "{-9}/11-?/11=-7/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-4}{11} - \\dfrac{[?]}{11} = \\dfrac{2}{11}$$",
+					"reponse": ["-6"],
+					"variables": {
+						"a": "-4",
+						"b": "-6",
+						"c": "11",
+						"expression6": "{-4}/11-?/11=2/11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Complète cette égalité avec le nombre manquant.\n\n$$\\dfrac{-8}{13} - \\dfrac{[?]}{13} = -\\dfrac{11}{13}$$",
+					"reponse": ["3"],
+					"variables": {
+						"a": "-8",
+						"b": "3",
+						"c": "13",
+						"expression6": "{-8}/13-?/13=-11/13"
+					}
+				}
+			]
+		}
+	]
+}

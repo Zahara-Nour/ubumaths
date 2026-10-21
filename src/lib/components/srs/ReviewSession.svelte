@@ -37,6 +37,11 @@
 		type ReviewSource,
 		type SessionCard
 	} from '$lib/srs/review-source';
+	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
+	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
+	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
+	import type { MathouNews } from '$lib/mathoux/news';
+	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
 
 	interface Props {
 		/**
@@ -80,6 +85,10 @@
 	let loadError = $state(false);
 	/** Cartes que le serveur (ou la traduction) a écartées à ce chargement */
 	let skippedCount = $state(0);
+	/** Gain du Palotin renvoyé par le serveur en fin de séance (null : rien à montrer) */
+	let buddyGain = $state<BuddyGainView | null>(null);
+	// Nouveautés de la Chatterie, demandées une fois la dernière carte enregistrée
+	let mathouNews = $state<MathouNews | null>(null);
 
 	// Session stats
 	let correctCount = $state(0);
@@ -185,12 +194,32 @@
 				throw new Error('Impossible d’enregistrer la révision');
 			}
 
+			// Fin de séance : le serveur peut joindre le gain du Palotin (`buddy_xp`)
+			await readBuddyGain(response);
+
 			// Move to next card
 			await moveToNextCard();
 		} catch (error) {
 			console.error('Error submitting review:', error);
 			toaster.error('Erreur lors de la soumission');
 			isSubmitting = false;
+		}
+	}
+
+	/**
+	 * Gain du Palotin joint à une réponse. Champ absent, corps illisible ou
+	 * adresse qui n'en renvoie pas (paquet de chapitre) : rien, sans erreur.
+	 * La révision est déjà enregistrée : aucune panne du Palotin (lecture du
+	 * corps, cache, relecture) ne doit remonter comme un échec de soumission,
+	 * sinon l'élève renoterait la carte.
+	 */
+	async function readBuddyGain(response: Response) {
+		try {
+			const payload: unknown = await response.json();
+			const gain = await receiveBuddyGain(payload);
+			if (gain) buddyGain = gain;
+		} catch (error) {
+			console.error('Gain du Palotin illisible (révision enregistrée) :', error);
 		}
 	}
 
@@ -215,6 +244,8 @@
 	 */
 	function completeSession() {
 		sessionComplete = true;
+		// Toutes les révisions sont enregistrées : la Chatterie a-t-elle du nouveau ?
+		void fetchMathouNews().then((news) => (mathouNews = news));
 
 		const totalTime = Math.round((Date.now() - sessionStartTime) / 1000);
 
@@ -362,6 +393,20 @@
 				</div>
 				<Progress value={totalCards > 0 ? (correctCount / totalCards) * 100 : 0} class="h-3" />
 			</div>
+
+			<!-- Gain du Palotin -->
+			{#if buddyGain}
+				<div class="mt-6">
+					<BuddyGainCard gain={buddyGain} />
+				</div>
+			{/if}
+
+			<!-- Nouveautés de la Chatterie -->
+			{#if mathouNews}
+				<div class="mt-6">
+					<MathouNewsCard news={mathouNews} />
+				</div>
+			{/if}
 
 			<!-- Actions -->
 			<div class="mt-6 flex gap-3">

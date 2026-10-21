@@ -1,0 +1,1672 @@
+{
+	"template_id": "336451af-1329-4e38-adf3-01a857455c1d",
+	"titre": "Déterminer si deux fonctions affines ont des droites représentatives parallèles",
+	"sous_titre": null,
+	"consigne": null,
+	"grades": ["3"],
+	"type": "multiple_choice",
+	"theme": "Fonctions > Fonctions affines > Variations-Signe",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "3-066",
+			"libelle_point": "Utiliser une fonction affine donnée par son expression (calculer une image : f(3) = ?).",
+			"noeud_actuel": "Fonctions > Fonctions affines > coefficient directeur et ordonnée à l'origine",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "code « 3-044 » → « 3-066 »"
+		}
+	],
+	"nb_variations": 6,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a,b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "g(x)={{a}}x{{eval:c;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "parallèles"
+					},
+					{
+						"content": "**non** parallèles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 274,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 122,
+						"exemples": [
+							"f(x)=-9x+5",
+							"f(x)=-4x+3",
+							"f(x)=-4x+2",
+							"f(x)=6x+2",
+							"f(x)=-9x+6",
+							"f(x)=-9x+9",
+							"f(x)=4x+3",
+							"f(x)=7x+2",
+							"f(x)=8x+7",
+							"f(x)=2x+6",
+							"f(x)=-8x+6",
+							"f(x)=-4x+1"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 167,
+						"exemples": [
+							"g(x)=-9x+3",
+							"g(x)=-4x+2",
+							"g(x)=-9x-8",
+							"g(x)=-4x-8",
+							"g(x)=6x+3",
+							"g(x)=-9x+2",
+							"g(x)=-9x+5",
+							"g(x)=4x+5",
+							"g(x)=7x+5",
+							"g(x)=8x+6",
+							"g(x)=2x+3",
+							"g(x)=-8x+9"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["parallèles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 9$$\n\n$$g\\left( x \\right) = -9 x + 5$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "9",
+						"c": "5",
+						"expression1": "f(x)=-9x+9",
+						"expression2": "g(x)=-9x+5"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = -9 x + 3$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "3",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=-9x+3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 3$$\n\n$$g\\left( x \\right) = -4 x + 2$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2",
+						"expression1": "f(x)=-4x+3",
+						"expression2": "g(x)=-4x+2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = -9 x - 8$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "-8",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=-9x-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 2$$\n\n$$g\\left( x \\right) = -4 x - 8$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "2",
+						"c": "-8",
+						"expression1": "f(x)=-4x+2",
+						"expression2": "g(x)=-4x-8"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a,b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "g(x)={{c}}{{eval:a;+}}x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "parallèles"
+					},
+					{
+						"content": "**non** parallèles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 274,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 122,
+						"exemples": [
+							"f(x)=-9x+5",
+							"f(x)=-4x+3",
+							"f(x)=-4x+2",
+							"f(x)=6x+2",
+							"f(x)=-9x+6",
+							"f(x)=-9x+9",
+							"f(x)=4x+3",
+							"f(x)=7x+2",
+							"f(x)=8x+7",
+							"f(x)=2x+6",
+							"f(x)=-8x+6",
+							"f(x)=-4x+1"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 167,
+						"exemples": [
+							"g(x)=3-9x",
+							"g(x)=2-4x",
+							"g(x)=-8-9x",
+							"g(x)=-8-4x",
+							"g(x)=3+6x",
+							"g(x)=2-9x",
+							"g(x)=5-9x",
+							"g(x)=5+4x",
+							"g(x)=5+7x",
+							"g(x)=6+8x",
+							"g(x)=3+2x",
+							"g(x)=9-8x"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["parallèles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"−": "152/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 3 - 9 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "3",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=3-9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 3$$\n\n$$g\\left( x \\right) = 2 - 4 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2",
+						"expression1": "f(x)=-4x+3",
+						"expression2": "g(x)=2-4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = -8 - 9 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "-8",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=-8-9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 2$$\n\n$$g\\left( x \\right) = -8 - 4 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "2",
+						"c": "-8",
+						"expression1": "f(x)=-4x+2",
+						"expression2": "g(x)=-8-4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = 6 x + 2$$\n\n$$g\\left( x \\right) = 3 + 6 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["A. parallèles"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "3",
+						"expression1": "f(x)=6x+2",
+						"expression2": "g(x)=3+6x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a,b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "g(x)={{c}}x{{eval:b;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "parallèles"
+					},
+					{
+						"content": "**non** parallèles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 274,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 122,
+						"exemples": [
+							"f(x)=-9x+5",
+							"f(x)=-4x+3",
+							"f(x)=-4x+2",
+							"f(x)=6x+2",
+							"f(x)=-9x+6",
+							"f(x)=-9x+9",
+							"f(x)=4x+3",
+							"f(x)=7x+2",
+							"f(x)=8x+7",
+							"f(x)=2x+6",
+							"f(x)=-8x+6",
+							"f(x)=-4x+1"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 115,
+						"exemples": [
+							"g(x)=3x+5",
+							"g(x)=2x+3",
+							"g(x)=-8x+5",
+							"g(x)=-8x+2",
+							"g(x)=3x+2",
+							"g(x)=2x+6",
+							"g(x)=5x+9",
+							"g(x)=5x+3",
+							"g(x)=5x+2",
+							"g(x)=6x+7",
+							"g(x)=3x+6",
+							"g(x)=9x+6"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["non parallèles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 9$$\n\n$$g\\left( x \\right) = 5 x + 9$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "9",
+						"c": "5",
+						"expression1": "f(x)=-9x+9",
+						"expression2": "g(x)=5x+9"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 3 x + 5$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "3",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=3x+5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 3$$\n\n$$g\\left( x \\right) = 2 x + 3$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2",
+						"expression1": "f(x)=-4x+3",
+						"expression2": "g(x)=2x+3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = -8 x + 5$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "-8",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=-8x+5"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 2$$\n\n$$g\\left( x \\right) = -8 x + 2$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "2",
+						"c": "-8",
+						"expression1": "f(x)=-4x+2",
+						"expression2": "g(x)=-8x+2"
+					}
+				}
+			]
+		},
+		{
+			"variation": 4,
+			"graines": "1..300 (modèle réduit à la variation 4)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a,b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "g(x)={{b}}{{eval:c;+}}x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "parallèles"
+					},
+					{
+						"content": "**non** parallèles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 274,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 122,
+						"exemples": [
+							"f(x)=-9x+5",
+							"f(x)=-4x+3",
+							"f(x)=-4x+2",
+							"f(x)=6x+2",
+							"f(x)=-9x+6",
+							"f(x)=-9x+9",
+							"f(x)=4x+3",
+							"f(x)=7x+2",
+							"f(x)=8x+7",
+							"f(x)=2x+6",
+							"f(x)=-8x+6",
+							"f(x)=-4x+1"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 115,
+						"exemples": [
+							"g(x)=5+3x",
+							"g(x)=3+2x",
+							"g(x)=5-8x",
+							"g(x)=2-8x",
+							"g(x)=2+3x",
+							"g(x)=6+2x",
+							"g(x)=9+5x",
+							"g(x)=3+5x",
+							"g(x)=2+5x",
+							"g(x)=7+6x",
+							"g(x)=6+3x",
+							"g(x)=6+9x"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["non parallèles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "151/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 7,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 9$$\n\n$$g\\left( x \\right) = 9 + 5 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "9",
+						"c": "5",
+						"expression1": "f(x)=-9x+9",
+						"expression2": "g(x)=9+5x"
+					}
+				},
+				{
+					"role": "plus petite valeur (-9)",
+					"graine": 1,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 5 + 3 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "3",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=5+3x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 3$$\n\n$$g\\left( x \\right) = 3 + 2 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2",
+						"expression1": "f(x)=-4x+3",
+						"expression2": "g(x)=3+2x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 5 - 8 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "-8",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=5-8x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 2$$\n\n$$g\\left( x \\right) = 2 - 8 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "2",
+						"c": "-8",
+						"expression1": "f(x)=-4x+2",
+						"expression2": "g(x)=2-8x"
+					}
+				}
+			]
+		},
+		{
+			"variation": 5,
+			"graines": "1..300 (modèle réduit à la variation 5)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a,b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "g(x)={{eval:-(a)}}x{{eval:c;+}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "parallèles"
+					},
+					{
+						"content": "**non** parallèles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 274,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 122,
+						"exemples": [
+							"f(x)=-9x+5",
+							"f(x)=-4x+3",
+							"f(x)=-4x+2",
+							"f(x)=6x+2",
+							"f(x)=-9x+6",
+							"f(x)=-9x+9",
+							"f(x)=4x+3",
+							"f(x)=7x+2",
+							"f(x)=8x+7",
+							"f(x)=2x+6",
+							"f(x)=-8x+6",
+							"f(x)=-4x+1"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 167,
+						"exemples": [
+							"g(x)=9x+3",
+							"g(x)=4x+2",
+							"g(x)=9x-8",
+							"g(x)=4x-8",
+							"g(x)=-6x+3",
+							"g(x)=9x+2",
+							"g(x)=9x+5",
+							"g(x)=-4x+5",
+							"g(x)=-7x+5",
+							"g(x)=-8x+6",
+							"g(x)=-2x+3",
+							"g(x)=8x+9"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["non parallèles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 9 x + 3$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "3",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=9x+3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 3$$\n\n$$g\\left( x \\right) = 4 x + 2$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2",
+						"expression1": "f(x)=-4x+3",
+						"expression2": "g(x)=4x+2"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 9 x - 8$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "-8",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=9x-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 2$$\n\n$$g\\left( x \\right) = 4 x - 8$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "2",
+						"c": "-8",
+						"expression1": "f(x)=-4x+2",
+						"expression2": "g(x)=4x-8"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = 6 x + 2$$\n\n$$g\\left( x \\right) = -6 x + 3$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "3",
+						"expression1": "f(x)=6x+2",
+						"expression2": "g(x)=-6x+3"
+					}
+				}
+			]
+		},
+		{
+			"variation": 6,
+			"graines": "1..300 (modèle réduit à la variation 6)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "2..9;±"
+					},
+					{
+						"name": "b",
+						"expression": "1..9!a"
+					},
+					{
+						"name": "c",
+						"expression": "2..9;±!a,b"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "f(x)={{a}}x{{eval:b;+}}"
+					},
+					{
+						"name": "expression2",
+						"expression": "g(x)={{c}}{{eval:-(a);+}}x"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$${{expression1}}$$\n\n$${{expression2}}$$",
+				"reponses_brutes": [],
+				"choix_bruts": [
+					{
+						"content": "parallèles"
+					},
+					{
+						"content": "**non** parallèles"
+					}
+				]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 274,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": -9,
+						"max": 9,
+						"negatif_possible": true,
+						"nb_distinctes": 16,
+						"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 122,
+						"exemples": [
+							"f(x)=-9x+5",
+							"f(x)=-4x+3",
+							"f(x)=-4x+2",
+							"f(x)=6x+2",
+							"f(x)=-9x+6",
+							"f(x)=-9x+9",
+							"f(x)=4x+3",
+							"f(x)=7x+2",
+							"f(x)=8x+7",
+							"f(x)=2x+6",
+							"f(x)=-8x+6",
+							"f(x)=-4x+1"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 17,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 167,
+						"exemples": [
+							"g(x)=3+9x",
+							"g(x)=2+4x",
+							"g(x)=-8+9x",
+							"g(x)=-8+4x",
+							"g(x)=3-6x",
+							"g(x)=2+9x",
+							"g(x)=5+9x",
+							"g(x)=5-4x",
+							"g(x)=5-7x",
+							"g(x)=6-8x",
+							"g(x)=3-2x",
+							"g(x)=9+8x"
+						],
+						"nombres_contenus": {
+							"min": -9,
+							"max": 9,
+							"nb_distinctes": 16,
+							"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": true,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 1,
+						"valeurs": ["non parallèles"],
+						"nombres_contenus": null
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": null,
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": -9,
+				"max": 9,
+				"nb_distinctes": 17,
+				"valeurs": [-9, -8, -7, -6, -5, -4, -3, -2, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": true,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "multiple_choice",
+				"type_reponse": "QCM",
+				"nb_cases": 0,
+				"nb_choix": 2,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"parenthèses": "300/300",
+					"lettre dans les maths": "300/300",
+					"−": "148/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 14,
+					"max": 14
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9)",
+					"graine": 1,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = 3 + 9 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "3",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=3+9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 3$$\n\n$$g\\left( x \\right) = 2 + 4 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "3",
+						"c": "2",
+						"expression1": "f(x)=-4x+3",
+						"expression2": "g(x)=2+4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -9 x + 5$$\n\n$$g\\left( x \\right) = -8 + 9 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-9",
+						"b": "5",
+						"c": "-8",
+						"expression1": "f(x)=-9x+5",
+						"expression2": "g(x)=-8+9x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = -4 x + 2$$\n\n$$g\\left( x \\right) = -8 + 4 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "-4",
+						"b": "2",
+						"c": "-8",
+						"expression1": "f(x)=-4x+2",
+						"expression2": "g(x)=-8+4x"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Les droites représentatives de ces deux fonctions affines sont-elles parallèles ?\n\n$$f\\left( x \\right) = 6 x + 2$$\n\n$$g\\left( x \\right) = 3 - 6 x$$\n\n- A. parallèles\n- B. non parallèles",
+					"reponse": ["B. non parallèles"],
+					"variables": {
+						"a": "6",
+						"b": "2",
+						"c": "3",
+						"expression1": "f(x)=6x+2",
+						"expression2": "g(x)=3-6x"
+					}
+				}
+			]
+		}
+	]
+}

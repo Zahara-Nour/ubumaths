@@ -1,0 +1,293 @@
+{
+	"template_id": "7a1bce0f-7db4-4e93-a1ea-2bed457995d3",
+	"titre": "Ajouter des durées (2)",
+	"sous_titre": "en HMS (2)",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Durées > Calculer",
+	"mis_a_jour": "2026-10-01T06:17:45.943224+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-206",
+			"libelle_point": "Calculer sur des durées (1 h 40 min + 2 h 35 min = ?).",
+			"noeud_actuel": "Grandeurs et mesures > Durées > calcul de durées",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": "code « 6-157 » → « 6-206 »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..4"
+					},
+					{
+						"name": "b",
+						"expression": "1..4"
+					},
+					{
+						"name": "c",
+						"expression": "1..5"
+					},
+					{
+						"name": "d",
+						"expression": "1..5!{{eval:6-c}}"
+					},
+					{
+						"name": "q",
+						"expression": "eval:a+b+floor(((c*10)+(d*10))/60)"
+					},
+					{
+						"name": "r",
+						"expression": "eval:(c*10)+(d*10)-60*floor(((c*10)+(d*10))/60)"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n${{a}}~\\unit{h}~{{eval:c*10}}~\\unit{min} + {{b}}~\\unit{h}~{{eval:d*10}}~\\unit{min} = ?~\\unit{h}~?~\\unit{min}$",
+				"reponses_brutes": ["{{q}}", "{{r}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 195,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 4,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [1, 2, 3, 4]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [1, 2, 3, 4, 5]
+					}
+				},
+				{
+					"nom": "q",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "r",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [10, 20, 30, 40, 50]
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"case": 2,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 10,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 5,
+						"valeurs": [10, 20, 30, 40, 50]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 10, 20, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 2,
+				"max": 50,
+				"nb_distinctes": 13,
+				"valeurs": [2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 50,
+				"nb_distinctes": 14,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 2,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["h", "min"],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (50)",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$1~\\mathrm{h}~50~\\mathrm{min} + 3~\\mathrm{h}~50~\\mathrm{min} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["5", "40"],
+					"variables": {
+						"a": "1",
+						"b": "3",
+						"c": "5",
+						"d": "5",
+						"q": "5",
+						"r": "40"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$2~\\mathrm{h}~30~\\mathrm{min} + 2~\\mathrm{h}~50~\\mathrm{min} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["5", "20"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "3",
+						"d": "5",
+						"q": "5",
+						"r": "20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$1~\\mathrm{h}~10~\\mathrm{min} + 2~\\mathrm{h}~40~\\mathrm{min} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["3", "50"],
+					"variables": {
+						"a": "1",
+						"b": "2",
+						"c": "1",
+						"d": "4",
+						"q": "3",
+						"r": "50"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule.\n\n$2~\\mathrm{h}~10~\\mathrm{min} + 1~\\mathrm{h}~20~\\mathrm{min} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["3", "30"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "1",
+						"d": "2",
+						"q": "3",
+						"r": "30"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$4~\\mathrm{h}~40~\\mathrm{min} + 1~\\mathrm{h}~10~\\mathrm{min} = [?]~\\mathrm{h}~[?]~\\mathrm{min}$",
+					"reponse": ["5", "50"],
+					"variables": {
+						"a": "4",
+						"b": "1",
+						"c": "4",
+						"d": "1",
+						"q": "5",
+						"r": "50"
+					}
+				}
+			]
+		}
+	]
+}

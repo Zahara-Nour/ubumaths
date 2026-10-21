@@ -1,0 +1,204 @@
+{
+	"template_id": "1bd5fec6-12dc-4b04-9c30-6a09aa5fc3e9",
+	"titre": "Table d'addition'",
+	"sous_titre": "de 9",
+	"consigne": "Calcule.",
+	"grades": ["CP"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Additionner > Tables",
+	"mis_a_jour": "2026-09-29T18:05:37.023866+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "CP-018",
+			"libelle_point": "Connaître les tables d'addition : donner la somme de deux nombres (3 + 4 = ?).",
+			"noeud_actuel": "Nombres et calculs > Entiers : addition et soustraction > tables",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "0..9"
+					},
+					{
+						"name": "expression",
+						"expression": "a+9"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "$${{expression}}$$",
+				"reponses_brutes": ["eval:expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 10,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 0,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 10,
+						"valeurs": ["0+9", "1+9", "2+9", "3+9", "4+9", "5+9", "6+9", "7+9", "8+9", "9+9"],
+						"nombres_contenus": {
+							"min": 0,
+							"max": 9,
+							"nb_distinctes": 10,
+							"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 9,
+						"max": 18,
+						"negatif_possible": false,
+						"nb_distinctes": 10,
+						"valeurs": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 9,
+				"max": 18,
+				"nb_distinctes": 10,
+				"valeurs": [9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 18,
+				"nb_distinctes": 19,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 0,
+					"max": 0
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (18)",
+					"graine": 10,
+					"enonce": "$$9 + 9 = [?]$$",
+					"reponse": ["18"],
+					"variables": {
+						"a": "9",
+						"expression": "9+9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 1,
+					"enonce": "$$0 + 9 = [?]$$",
+					"reponse": ["9"],
+					"variables": {
+						"a": "0",
+						"expression": "0+9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "$$3 + 9 = [?]$$",
+					"reponse": ["12"],
+					"variables": {
+						"a": "3",
+						"expression": "3+9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "$$7 + 9 = [?]$$",
+					"reponse": ["16"],
+					"variables": {
+						"a": "7",
+						"expression": "7+9"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 8,
+					"enonce": "$$6 + 9 = [?]$$",
+					"reponse": ["15"],
+					"variables": {
+						"a": "6",
+						"expression": "6+9"
+					}
+				}
+			]
+		}
+	]
+}

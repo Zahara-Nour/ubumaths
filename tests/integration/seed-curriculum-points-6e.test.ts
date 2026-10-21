@@ -12,7 +12,10 @@
  * La preuve est INTÉGRALE : chaque point de la fixture doit se retrouver en
  * base avec TOUS ses attributs (chemin du nœud compris), rien d'autre sous les
  * codes 6-1xx, ET l'ensemble exact des 28 références. L'ancien seed 2020
- * (6-001…6-095) doit rester INTACT (R5 = B). Lecture ANONYME (B6).
+ * (6-001…6-095) doit rester INTACT (R5 = B). Lecture ANONYME (B6). Puis les scissions
+ * validées par David (migration `20261017090000_scission_points_programme`) : 8 points
+ * scindés (+9), un point ⚙ « tiers » (6-211) → 111 points, 39 références ; fixture
+ * transformée par docs/wip/arbre-notions/c5-scissions-generer.py.
  *
  * @vitest-environment node
  */
@@ -165,14 +168,14 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (101 points, 31 références après la passe)', () => {
+	it('la fixture est bien celle du document validé (111 points, 39 références après la passe et les scissions)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(101);
-		expect(fixture.references).toHaveLength(31);
-		expect(new Set(fixture.references).size).toBe(31);
+		expect(fixture.points).toHaveLength(111);
+		expect(fixture.references).toHaveLength(39);
+		expect(new Set(fixture.references).size).toBe(39);
 	});
 
-	it('les 101 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 111 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -187,7 +190,7 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(101);
+		expect(pointRows).toHaveLength(111);
 	});
 
 	it('les 28 références d’automatismes de la 6e visent EXACTEMENT les cibles du document', () => {
@@ -197,17 +200,17 @@ describe('Seed des points de la 6e (points + références d’automatismes)', ()
 		expect(actualCodes).toEqual([...fixture.references].sort());
 	});
 
-	it('architecture cible : objective_id NULL, rang NULL, fluence = les 2 points d’Automatismes, kind algorithme = pensée informatique', () => {
+	it('architecture cible : objective_id NULL, rang NULL, fluence = les points d’Automatismes, kind algorithme = pensée informatique', () => {
 		expect(pointRows.length).toBeGreaterThan(0);
 		expect(pointRows.every((r) => r.objective_id === null)).toBe(true);
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 
 		const fluents = pointRows.filter((r) => r.regime_acquisition === 'fluence');
-		expect(fluents.map((r) => r.code).sort()).toEqual(['6-144', '6-156', '6-199']);
+		expect(fluents.map((r) => r.code).sort()).toEqual(['6-144', '6-156', '6-199', '6-211']);
 		expect(fluents.every((r) => (r.rubrique ?? '').endsWith('> Automatismes'))).toBe(true);
 
 		const algos = pointRows.filter((r) => r.kind === 'algorithme');
-		expect(algos.map((r) => r.code).sort()).toEqual(['6-194', '6-195', '6-196', '6-197']);
+		expect(algos.map((r) => r.code).sort()).toEqual(['6-194', '6-195', '6-196', '6-197', '6-210']);
 	});
 
 	it("l'ancien seed 6e (2020) est INTACT : 95 points 6-0xx, toujours rattachés aux objectifs", () => {

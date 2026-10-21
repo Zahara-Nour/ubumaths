@@ -9,7 +9,7 @@
 	import { expressionToLatex } from '$lib/components/markdown/utils/math-utils';
 	import { readContentLocale } from '$lib/components/markdown/content-locale';
 	import { Figure } from '$lib/geometry-core/graph/figure';
-	import type { GeoSlider } from '$lib/geometry-core/types/elements';
+	import type { GeoElement, GeoSlider } from '$lib/geometry-core/types/elements';
 	import {
 		createTransformer,
 		type CoordinateTransformer
@@ -48,7 +48,11 @@
 		imageToSVG
 	} from '$lib/geometry-core/rendering/svg-primitives';
 	import { computeGridStep } from '$lib/geometry-core/viewport/grid';
-	import { findPointNear, findElementNear } from '$lib/geometry-core/interaction/hit-testing';
+	import {
+		findPointNear,
+		findElementNear,
+		findElementsNear
+	} from '$lib/geometry-core/interaction/hit-testing';
 	import { snapToGrid } from '$lib/geometry-core/interaction/snap';
 	import { numeric } from '$lib/geometry-core/types/geo-value';
 	import {
@@ -72,6 +76,19 @@
 		roughSegmentMarkHTML,
 		roughVectorHTML
 	} from '$lib/geometry-core/rendering/rough-geometry';
+	import type { PointDrag } from './point-drag';
+	import type { CanvasTool } from './canvas-tool';
+
+	/** L'aimantation d'un glisser délégué, en pixels (lot 3 de l'atelier, M2). */
+	const SNAP_PIXELS = 8;
+	/**
+	 * Le chemin, en pixels, sous lequel un glisser délégué n'écrit rien : un clic
+	 * qui tremble ne réécrit pas `(1/3 ; 2,25)` en `(0,3 ; 2,3)`.
+	 */
+	const DRAG_THRESHOLD_PIXELS = 4;
+
+	/** La tolérance d'un clic d'outil autour d'un point, en pixels (lot 3 de l'atelier, M5). */
+	const TOOL_PICK_PIXELS = { mouse: 8, touch: 20 } as const;
 
 	interface Props {
 		figure: Figure;
@@ -104,11 +121,31 @@
 		 */
 		objectsMovable?: boolean;
 		/**
+		 * Glisser DÉLÉGUÉ des points : la toile ne touche pas la figure, elle dit
+		 * où va le point saisi à qui la possède (vue Géométrie de l'atelier). Passe
+		 * avant `objectsMovable` : un point se glisse ainsi même objets figés.
+		 */
+		pointDrag?: PointDrag;
+		/**
+		 * Outil de construction DÉLÉGUÉ (barre d'outils de l'atelier) : un clic
+		 * va à l'outil, rien ne se glisse. Absent : la toile glisse comme avant.
+		 */
+		canvasTool?: CanvasTool;
+		/**
+		 * Les gestes de la vue au doigt et sur le fond (vue Géométrie de
+		 * l'atelier, M6) : deux doigts déplacent et zooment la vue, quel que soit
+		 * l'outil ; sans outil, un glisser sur le fond (souris ou doigt) la
+		 * déplace. Défaut false : les autres toiles gardent leurs gestes.
+		 */
+		viewGestures?: boolean;
+		/**
 		 * Calque dessiné SOUS les objets (repère d'une figure stockée), recalculé à
 		 * chaque déplacement ou zoom de la vue. Son contenu doit être du SVG
 		 * (composant en `<svelte:options namespace="svg" />`).
 		 */
 		underlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
+		/** Calque dessiné AU-DESSUS des objets (fantôme d'une construction en cours), en SVG. */
+		overlay?: Snippet<[{ viewport: Viewport; width: number; height: number }]>;
 	}
 
 	let {
@@ -127,7 +164,11 @@
 		renderMode = 'normal',
 		onViewportChange,
 		objectsMovable = true,
-		underlay
+		pointDrag,
+		canvasTool,
+		viewGestures = false,
+		underlay,
+		overlay
 	}: Props = $props();
 
 	// Langue du contenu (séparateur décimal des étiquettes), posée par MarkdownRenderer
@@ -140,11 +181,35 @@
 	let dragOffset: { dx: number; dy: number } | null = $state(null);
 	let hoveredId: string | null = $state(null);
 	let version = $state(0);
+	/** Un glisser délégué en cours (`pointDrag`) : la figure n'est pas touchée. */
+	let delegated = $state(false);
+	/**
+	 * Le geste délégué : son pointeur (les autres sont ignorés), où il a commencé
+	 * (pixels de l'écran), l'écart point − curseur (unités du repère), et s'il a
+	 * passé le seuil.
+	 */
+	let delegatedGesture: {
+		pointerId: number;
+		startX: number;
+		startY: number;
+		dx: number;
+		dy: number;
+		moved: boolean;
+	} | null = null;
+	/** Le dernier mouvement d'un glisser délégué, pas encore transmis (une fois par image). */
+	let pendingMove: { x: number; y: number } | null = null;
+	let moveFrame: number | null = null;
+	/** Un appui avec un outil (`canvasTool`) : un clic s'il ne bouge pas avant le relâcher. */
+	let toolPress: { pointerId: number; startX: number; startY: number; moved: boolean } | null =
+		null;
 
-	// Slider elements (reactive to version changes)
+	// Slider elements (reactive to version changes). Un curseur CACHÉ n'a pas de
+	// réglette : la vue Figure de l'atelier pilote les siens depuis les cartes
+	// (géométrie v2, S4), et `masque(s)` cache désormais aussi la réglette.
 	const sliders = $derived.by(() => {
 		void version; // depend on version so sliders update when figure changes
-		return figure.getElementsByType('slider') as GeoSlider[];
+		void externalVersion;
+		return figure.getElementsByType('slider').filter((s: GeoSlider) => s.visible);
 	});
 
 	function handleSliderChange(sliderId: string, newValue: number) {
@@ -182,6 +247,13 @@
 	let ppu = $state(initialPpu);
 	let isPanning = $state(false);
 	let spaceHeld = $state(false);
+	/** Le pointeur qui déplace la vue, et où il était (pixels de l'écran). */
+	let panPointer: { pointerId: number; lastX: number; lastY: number } | null = null;
+	/** Les doigts posés sur la toile (`viewGestures`), et où ils sont (pixels de l'écran). */
+	const touches = new Map<number, { x: number; y: number }>();
+	/** Deux doigts : la vue suit leur milieu et zoome comme leur écart (M6). */
+	let pinch: { ids: [number, number]; lastMid: { x: number; y: number }; lastDist: number } | null =
+		null;
 
 	// Zoom limits
 	// Bornes élargies autour de l'échelle initiale : une fenêtre d'en-tête de
@@ -389,14 +461,145 @@
 		return transformer.svgToMath(svgX, svgY);
 	}
 
+	/**
+	 * Capturer le pointeur. Un pointeur déjà levé (ou synthétique) lève une
+	 * erreur : le geste continue sans capture.
+	 */
+	function capture(e: PointerEvent) {
+		try {
+			svgRef?.setPointerCapture(e.pointerId);
+		} catch {
+			// Le pointeur n'est plus actif : rien à capturer
+		}
+	}
+
+	/** Commencer à déplacer la vue avec ce pointeur. */
+	function startPan(e: PointerEvent) {
+		isPanning = true;
+		panPointer = { pointerId: e.pointerId, lastX: e.clientX, lastY: e.clientY };
+		capture(e);
+		e.preventDefault();
+	}
+
+	function endPan() {
+		isPanning = false;
+		panPointer = null;
+	}
+
+	/** Le milieu (pixels de la toile) et l'écart des deux doigts du pincement. */
+	function pinchFrame(
+		ids: [number, number]
+	): { mid: { x: number; y: number }; dist: number } | null {
+		const a = touches.get(ids[0]);
+		const b = touches.get(ids[1]);
+		if (!a || !b || !svgRef) return null;
+		const rect = svgRef.getBoundingClientRect();
+		return {
+			mid: { x: (a.x + b.x) / 2 - rect.left, y: (a.y + b.y) / 2 - rect.top },
+			dist: Math.hypot(a.x - b.x, a.y - b.y)
+		};
+	}
+
+	/** Un second doigt se pose : le geste en cours tombe, la vue suit les deux doigts. */
+	function startPinch() {
+		const [first, second] = touches.keys();
+		const ids: [number, number] = [first, second];
+		const frame = pinchFrame(ids);
+		if (frame === null) return;
+		// Un appui d'outil devient un geste de vue : aucun clic au relâcher
+		if (toolPress !== null) toolPress.moved = true;
+		// Un glisser de la figure elle-même tombe : le point reste où il était
+		if (draggingId) {
+			figure.discard();
+			draggingId = null;
+			dragOffset = null;
+		}
+		endPan();
+		hoveredId = null;
+		canvasTool?.hover(null);
+		pinch = { ids, lastMid: frame.mid, lastDist: frame.dist };
+	}
+
+	/**
+	 * Les doigts ont bougé : le point du repère sous leur ancien milieu passe
+	 * sous le nouveau, l'échelle suit le rapport des écarts.
+	 */
+	function movePinch() {
+		if (pinch === null) return;
+		const frame = pinchFrame(pinch.ids);
+		if (frame === null) return;
+		const factor = pinch.lastDist > 0 ? frame.dist / pinch.lastDist : 1;
+		const newPpu = Math.max(MIN_PPU, Math.min(MAX_PPU, ppu * factor));
+		const anchor = transformer.svgToMath(pinch.lastMid.x, pinch.lastMid.y);
+		viewCenter = {
+			x: anchor.x - (frame.mid.x - width / 2) / newPpu,
+			y: anchor.y + (frame.mid.y - height / 2) / newPpu
+		};
+		ppu = newPpu;
+		pinch.lastMid = frame.mid;
+		pinch.lastDist = frame.dist;
+	}
+
+	/**
+	 * Un pointeur se lève (ou est perdu) : il quitte les doigts posés, le
+	 * pincement tombe. Sans outil, le doigt resté posé continue de déplacer la vue.
+	 */
+	function releaseTouch(e: PointerEvent) {
+		touches.delete(e.pointerId);
+		if (pinch === null || !pinch.ids.includes(e.pointerId)) return;
+		pinch = null;
+		const [remaining] = touches;
+		if (remaining === undefined || canvasTool || delegated) return;
+		isPanning = true;
+		panPointer = { pointerId: remaining[0], lastX: remaining[1].x, lastY: remaining[1].y };
+	}
+
 	function onPointerDown(e: PointerEvent) {
 		if (!interactive) return;
+		// Un second doigt pendant un glisser délégué : ignoré, pas de re-saisie
+		if (delegated) {
+			e.preventDefault();
+			return;
+		}
+
+		// Deux doigts déplacent et zooment la vue (M6) ; un troisième ne fait rien
+		if (viewGestures && e.pointerType === 'touch') {
+			touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+			if (touches.size >= 2) {
+				if (pinch === null && touches.size === 2) startPinch();
+				capture(e);
+				e.preventDefault();
+				return;
+			}
+		}
 
 		// Middle button or space held = start panning
 		if (e.button === 1 || spaceHeld) {
-			isPanning = true;
-			svgRef?.setPointerCapture(e.pointerId);
-			e.preventDefault();
+			startPan(e);
+			return;
+		}
+
+		if (canvasTool) {
+			// Un second doigt invalide l'appui en cours (pincement, paume) : aucun clic
+			if (toolPress !== null && toolPress.pointerId !== e.pointerId) {
+				toolPress.moved = true;
+				e.preventDefault();
+				return;
+			}
+			// Un appui d'outil : le clic part au relâcher, s'il n'a pas bougé
+			if (e.button === 0) {
+				toolPress = { pointerId: e.pointerId, startX: e.clientX, startY: e.clientY, moved: false };
+				capture(e);
+				e.preventDefault();
+			}
+			return;
+		}
+
+		if (pointDrag && startDelegatedDrag(e, pointDrag)) return;
+
+		// Un glisser sur le fond déplace la vue (M6)
+		if (viewGestures && e.button === 0) {
+			startPan(e);
 			return;
 		}
 
@@ -415,7 +618,7 @@
 				draggingId = pointId;
 				dragOffset = null;
 				figure.beginTransaction();
-				svgRef?.setPointerCapture(e.pointerId);
+				capture(e);
 				e.preventDefault();
 			} else if (
 				(el?.type === 'pointOnCurve' ||
@@ -430,7 +633,7 @@
 				draggingId = pointId;
 				dragOffset = null;
 				figure.beginTransaction();
-				svgRef?.setPointerCapture(e.pointerId);
+				capture(e);
 				e.preventDefault();
 			}
 		} else {
@@ -444,27 +647,140 @@
 					draggingId = elementId;
 					dragOffset = { dx: ax - math.x, dy: ay - math.y };
 					figure.beginTransaction();
-					svgRef?.setPointerCapture(e.pointerId);
+					capture(e);
 					e.preventDefault();
 				}
 			}
 		}
 	}
 
+	/**
+	 * Un glisser délégué commence-t-il ici ? Vrai aussi quand le point visé est
+	 * REFUSÉ (`grab` faux) : le geste s'arrête là, rien d'autre ne le reprend.
+	 */
+	function startDelegatedDrag(e: PointerEvent, drag: PointDrag): boolean {
+		const math = getMathCoords(e);
+		if (!math) return false;
+		const pointId = findPointNear(figure, math.x, math.y, 15 / ppu);
+		if (pointId === null) return false;
+		if (drag.grab(pointId)) {
+			// Saisi un peu à côté, le point ne saute pas sous le curseur
+			const position = figure.getPosition(pointId);
+			delegatedGesture = {
+				pointerId: e.pointerId,
+				startX: e.clientX,
+				startY: e.clientY,
+				dx: position ? geoToNumber(position.x) - math.x : 0,
+				dy: position ? geoToNumber(position.y) - math.y : 0,
+				moved: false
+			};
+			delegated = true;
+			capture(e);
+		}
+		e.preventDefault();
+		return true;
+	}
+
+	/** Le point se glisse-t-il (la main au survol) : par la figure, ou par `pointDrag`. */
+	function canDragPoint(el: GeoElement): boolean {
+		if (!interactive || canvasTool) return false;
+		if (pointDrag?.canGrab(el.id)) return true;
+		return objectsMovable && 'draggable' in el && el.draggable === true;
+	}
+
+	/**
+	 * Le point est-il en train d'être glissé ? Un glisser délégué demande à son
+	 * possesseur : la figure refaite en plein geste change les ids.
+	 */
+	function isDragged(el: GeoElement): boolean {
+		if (delegated) return pointDrag?.holds(el.id) ?? false;
+		return draggingId === el.id;
+	}
+
+	/** Ce pointeur est-il étranger au glisser délégué en cours ? */
+	function foreignPointer(e: PointerEvent): boolean {
+		return delegatedGesture !== null && e.pointerId !== delegatedGesture.pointerId;
+	}
+
+	// Une toile retirée en plein glisser ferme le geste
+	$effect(() => () => endDelegatedDrag());
+
+	/** Transmettre le dernier mouvement du glisser délégué. */
+	function flushDelegatedMove() {
+		if (moveFrame !== null) cancelAnimationFrame(moveFrame);
+		moveFrame = null;
+		const move = pendingMove;
+		pendingMove = null;
+		if (move !== null && delegated) pointDrag?.move(move.x, move.y, SNAP_PIXELS / ppu);
+	}
+
+	/** Fin d'un glisser délégué : le dernier mouvement part, puis le relâcher. */
+	function endDelegatedDrag() {
+		if (!delegated) return;
+		flushDelegatedMove();
+		delegated = false;
+		delegatedGesture = null;
+		pointDrag?.release();
+	}
+
 	function onPointerMove(e: PointerEvent) {
 		if (!interactive) return;
 
-		// Panning: move center by pointer delta
+		if (touches.has(e.pointerId)) touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+		if (pinch !== null) {
+			if (pinch.ids.includes(e.pointerId)) movePinch();
+			return;
+		}
+
+		// Panning: move center by pointer delta (suivi à la main : `movementX`
+		// manque aux doigts de certains navigateurs)
 		if (isPanning) {
+			if (panPointer === null || e.pointerId !== panPointer.pointerId) return;
+			const dx = e.clientX - panPointer.lastX;
+			const dy = e.clientY - panPointer.lastY;
+			panPointer.lastX = e.clientX;
+			panPointer.lastY = e.clientY;
 			viewCenter = {
-				x: viewCenter.x - e.movementX / ppu,
-				y: viewCenter.y + e.movementY / ppu // y inverted
+				x: viewCenter.x - dx / ppu,
+				y: viewCenter.y + dy / ppu // y inverted
 			};
 			return;
 		}
 
 		const math = getMathCoords(e);
 		if (!math) return;
+
+		if (canvasTool) {
+			const press = toolPress;
+			if (press !== null && press.pointerId === e.pointerId && !press.moved) {
+				const path = Math.hypot(e.clientX - press.startX, e.clientY - press.startY);
+				if (path >= DRAG_THRESHOLD_PIXELS) press.moved = true;
+			}
+			// Ce qu'un clic viserait, mis en évidence (M5) : le point, sinon l'objet le plus proche
+			const radius = toolPickRadius(e) / ppu;
+			hoveredId =
+				findPointNear(figure, math.x, math.y, radius) ??
+				findElementNear(figure, math.x, math.y, radius, viewport);
+			canvasTool.hover(math);
+			return;
+		}
+
+		// Au plus un mouvement par image : chacun recalcule tout l'atelier
+		if (delegated) {
+			const gesture = delegatedGesture;
+			if (gesture === null || e.pointerId !== gesture.pointerId) return;
+			if (!gesture.moved) {
+				const path = Math.hypot(e.clientX - gesture.startX, e.clientY - gesture.startY);
+				if (path < DRAG_THRESHOLD_PIXELS) return;
+				gesture.moved = true;
+			}
+			pendingMove = { x: math.x + gesture.dx, y: math.y + gesture.dy };
+			moveFrame ??= requestAnimationFrame(() => {
+				moveFrame = null;
+				flushDelegatedMove();
+			});
+			return;
+		}
 
 		if (draggingLabelId && labelDragStart) {
 			const MAX_LABEL_RADIUS = 30; // pixels
@@ -574,9 +890,41 @@
 		}
 	}
 
-	function onPointerCancel() {
+	/** La tolérance d'un clic d'outil, en pixels : plus large au doigt (M5). */
+	function toolPickRadius(e: PointerEvent): number {
+		return e.pointerType === 'touch' ? TOOL_PICK_PIXELS.touch : TOOL_PICK_PIXELS.mouse;
+	}
+
+	/** Le relâcher d'un appui d'outil : un clic, s'il n'a pas bougé. */
+	function endToolPress(e: PointerEvent, tool: CanvasTool) {
+		const press = toolPress;
+		if (press === null || press.pointerId !== e.pointerId) return;
+		toolPress = null;
+		if (press.moved) return;
+		const math = getMathCoords(e);
+		if (!math) return;
+		const radius = toolPickRadius(e) / ppu;
+		const pointId = findPointNear(figure, math.x, math.y, radius);
+		const elementIds = findElementsNear(figure, math.x, math.y, radius, viewport);
+		tool.click(math.x, math.y, pointId, SNAP_PIXELS / ppu, { elementIds, radius });
+	}
+
+	function onPointerLeave() {
+		if (!canvasTool) return;
+		hoveredId = null;
+		canvasTool.hover(null);
+	}
+
+	function onPointerCancel(e: PointerEvent) {
+		releaseTouch(e);
+		if (toolPress?.pointerId === e.pointerId) toolPress = null;
+		if (foreignPointer(e)) return;
+		// Un autre pointeur annulé (paume, doigt rejeté) : la vue continue de se déplacer
+		if (panPointer !== null && e.pointerId !== panPointer.pointerId) return;
+		// Le point délégué reste où il est arrivé : le geste se ferme (M7)
+		endDelegatedDrag();
 		if (draggingId) figure.discard();
-		isPanning = false;
+		endPan();
 		draggingId = null;
 		dragOffset = null;
 		draggingLabelId = null;
@@ -584,8 +932,9 @@
 	}
 
 	function onPointerUp(e: PointerEvent) {
+		releaseTouch(e);
 		if (isPanning) {
-			isPanning = false;
+			if (panPointer === null || e.pointerId === panPointer.pointerId) endPan();
 			return;
 		}
 
@@ -593,6 +942,16 @@
 			figure.commit();
 			draggingLabelId = null;
 			labelDragStart = null;
+			return;
+		}
+
+		if (canvasTool) {
+			endToolPress(e, canvasTool);
+			return;
+		}
+
+		if (delegated) {
+			if (!foreignPointer(e)) endDelegatedDrag();
 			return;
 		}
 
@@ -668,6 +1027,8 @@
 			spaceHeld = true;
 			e.preventDefault();
 		}
+		// Un glisser délégué : la figure n'a rien à annuler, son possesseur s'en charge
+		if (delegated) return;
 		// Undo: Ctrl+Z (or Cmd+Z on Mac)
 		if ((e.ctrlKey || e.metaKey) && e.code === 'KeyZ' && !e.shiftKey) {
 			e.preventDefault();
@@ -755,7 +1116,7 @@
 		draggingLabelId = elementId;
 		labelDragStart = { mx: e.clientX, my: e.clientY, dx: currentDx, dy: currentDy };
 		figure.beginTransaction();
-		svgRef?.setPointerCapture(e.pointerId);
+		capture(e);
 	}
 
 	function formatGrad(n: number): string {
@@ -765,10 +1126,14 @@
 	}
 
 	function onWindowBlur() {
+		toolPress = null;
+		endDelegatedDrag();
 		if (draggingId) figure.discard();
 		if (draggingLabelId) figure.discard();
 		spaceHeld = false;
-		isPanning = false;
+		endPan();
+		touches.clear();
+		pinch = null;
 		draggingId = null;
 		dragOffset = null;
 		draggingLabelId = null;
@@ -792,12 +1157,14 @@
 		aria-label="Figure de geometrie interactive"
 		class="geometry-canvas"
 		class:interactive
-		class:dragging={draggingId !== null}
+		class:dragging={draggingId !== null || delegated}
 		class:panning={isPanning || spaceHeld}
+		class:tool={canvasTool !== undefined}
 		onpointerdown={onPointerDown}
 		onpointermove={onPointerMove}
 		onpointerup={onPointerUp}
 		onpointercancel={onPointerCancel}
+		onpointerleave={onPointerLeave}
 		onwheel={onWheel}
 		ondblclick={onDblClick}
 	>
@@ -884,7 +1251,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -1821,9 +2188,9 @@
 								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 							/>
 						{:else if sty.pointShape === 'circle'}
 							<circle
@@ -1835,16 +2202,16 @@
 								stroke-width={sty.strokeWidth}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 							/>
 						{:else if sty.pointShape === 'cross'}
 							<g
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 								opacity={sty.opacity}
 							>
 								<line
@@ -1873,12 +2240,13 @@
 								style:fill={sty.color}
 								opacity={sty.opacity}
 								class="point"
-								class:draggable={interactive && objectsMovable && 'draggable' in el && el.draggable}
+								class:draggable={canDragPoint(el)}
 								class:hovered={hoveredId === el.id}
-								class:dragging={draggingId === el.id}
+								class:dragging={isDragged(el)}
 							/>
 						{/if}
-						{#if el.label}
+						<!-- Nom masqué (`labelHidden`, DSL `etiquette="aucune"`, carte de l'atelier) : le point reste -->
+						{#if el.label && !el.labelHidden}
 							{@const lx = svg.cx + (el.labelOffset?.dx ?? sty.pointSize + 4)}
 							{@const ly = svg.cy + (el.labelOffset?.dy ?? -(sty.pointSize + 2))}
 							<!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -1968,7 +2336,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2021,7 +2389,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2061,7 +2429,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2100,7 +2468,7 @@
 											? { dx: el.position!.x - math.x, dy: el.position!.y - math.y }
 											: null;
 										figure.beginTransaction();
-										svgRef?.setPointerCapture(e.pointerId);
+										capture(e);
 										e.preventDefault();
 										e.stopPropagation();
 									}
@@ -2123,6 +2491,11 @@
 				{/if}
 			{/each}
 		</g>
+
+		<!-- Calque au-dessus des objets (fantôme d'une construction en cours) -->
+		{#if overlay}
+			<g class="overlay">{@render overlay({ viewport, width, height })}</g>
+		{/if}
 	</svg>
 
 	{#if sliders.length > 0}
@@ -2193,6 +2566,11 @@
 
 	.geometry-canvas.interactive {
 		cursor: default;
+	}
+
+	/* Un outil de construction (atelier) : on vise, on ne saisit pas */
+	.geometry-canvas.interactive.tool {
+		cursor: crosshair;
 	}
 
 	.geometry-canvas.dragging {

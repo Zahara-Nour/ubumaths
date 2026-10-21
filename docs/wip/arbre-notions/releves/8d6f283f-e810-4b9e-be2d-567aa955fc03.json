@@ -1,0 +1,421 @@
+{
+	"template_id": "8d6f283f-e810-4b9e-be2d-567aa955fc03",
+	"titre": "Multiplier par 20",
+	"sous_titre": "Nombre à $2$ chiffres",
+	"consigne": null,
+	"grades": ["CE2"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Multiplier > Produit",
+	"mis_a_jour": "2026-09-29T18:05:35.060316+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : multiplication > calcul astucieux",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 2,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "11..15|15..20|25|30|40|50"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression1",
+						"expression": "a*20"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"11*20",
+							"12*20",
+							"13*20",
+							"14*20",
+							"15*20",
+							"16*20",
+							"17*20",
+							"18*20",
+							"19*20",
+							"20*20",
+							"25*20",
+							"30*20",
+							"40*20",
+							"50*20"
+						],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 50,
+							"nb_distinctes": 14,
+							"valeurs": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 220,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 500, 600, 800, 1000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 50,
+				"nb_distinctes": 14,
+				"valeurs": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 220,
+				"max": 1000,
+				"nb_distinctes": 14,
+				"valeurs": [220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 500, 600, 800, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 11,
+				"max": 1000,
+				"nb_distinctes": 28,
+				"valeurs": [
+					11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50, 220, 240, 260, 280, 300, 320, 340,
+					360, 380, 400, 500, 600, 800, 1000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 9,
+					"enonce": "Calcule.\n\n$$50 \\times 20 = [?]$$",
+					"reponse": ["1000"],
+					"variables": {
+						"a": "50",
+						"expression1": "50*20"
+					}
+				},
+				{
+					"role": "plus petite valeur (11)",
+					"graine": 27,
+					"enonce": "Calcule.\n\n$$11 \\times 20 = [?]$$",
+					"reponse": ["220"],
+					"variables": {
+						"a": "11",
+						"expression1": "11*20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$13 \\times 20 = [?]$$",
+					"reponse": ["260"],
+					"variables": {
+						"a": "13",
+						"expression1": "13*20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$16 \\times 20 = [?]$$",
+					"reponse": ["320"],
+					"variables": {
+						"a": "16",
+						"expression1": "16*20"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$40 \\times 20 = [?]$$",
+					"reponse": ["800"],
+					"variables": {
+						"a": "40",
+						"expression1": "40*20"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [
+					{
+						"name": "a",
+						"expression": "11..15|15..20|25|30|40|50"
+					}
+				],
+				"variables_variation": [
+					{
+						"name": "expression2",
+						"expression": "20*a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression2}}$$",
+				"reponses_brutes": ["{{eval:{{expression2}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 14,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 11,
+						"max": 50,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50]
+					}
+				},
+				{
+					"nom": "expression2",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 14,
+						"valeurs": [
+							"20*11",
+							"20*12",
+							"20*13",
+							"20*14",
+							"20*15",
+							"20*16",
+							"20*17",
+							"20*18",
+							"20*19",
+							"20*20",
+							"20*25",
+							"20*30",
+							"20*40",
+							"20*50"
+						],
+						"nombres_contenus": {
+							"min": 11,
+							"max": 50,
+							"nb_distinctes": 14,
+							"valeurs": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 2
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 220,
+						"max": 1000,
+						"negatif_possible": false,
+						"nb_distinctes": 14,
+						"valeurs": [220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 500, 600, 800, 1000]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 11,
+				"max": 50,
+				"nb_distinctes": 14,
+				"valeurs": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_reponse": {
+				"min": 220,
+				"max": 1000,
+				"nb_distinctes": 14,
+				"valeurs": [220, 240, 260, 280, 300, 320, 340, 360, 380, 400, 500, 600, 800, 1000],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 11,
+				"max": 1000,
+				"nb_distinctes": 28,
+				"valeurs": [
+					11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 25, 30, 40, 50, 220, 240, 260, 280, 300, 320, 340,
+					360, 380, 400, 500, 600, 800, 1000
+				],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (1000)",
+					"graine": 9,
+					"enonce": "Calcule.\n\n$$20 \\times 50 = [?]$$",
+					"reponse": ["1000"],
+					"variables": {
+						"a": "50",
+						"expression2": "20*50"
+					}
+				},
+				{
+					"role": "plus petite valeur (11)",
+					"graine": 27,
+					"enonce": "Calcule.\n\n$$20 \\times 11 = [?]$$",
+					"reponse": ["220"],
+					"variables": {
+						"a": "11",
+						"expression2": "20*11"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$20 \\times 13 = [?]$$",
+					"reponse": ["260"],
+					"variables": {
+						"a": "13",
+						"expression2": "20*13"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$20 \\times 16 = [?]$$",
+					"reponse": ["320"],
+					"variables": {
+						"a": "16",
+						"expression2": "20*16"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$20 \\times 40 = [?]$$",
+					"reponse": ["800"],
+					"variables": {
+						"a": "40",
+						"expression2": "20*40"
+					}
+				}
+			]
+		}
+	]
+}

@@ -42,6 +42,7 @@ import { BaseTypstGenerator } from './base-generator';
 import { escapeTypst } from '$lib/ubumark';
 import { renderTemplate } from '../templates';
 import {
+	printedStyleId,
 	resolveTemplate,
 	styleIdOf,
 	type ResolvedTemplate,
@@ -50,7 +51,7 @@ import {
 import { documentLabels, labelPlaceholders, type DocumentLabels } from '../labels';
 import { DATE_LOCALES, TYPST_LANGS, type ContentLocale } from '$lib/types/locale';
 import { localizedText, worksheetLocale } from '$lib/types/worksheets';
-import { CORRECTION_FONT_RULES, withCorrectionFonts } from '../correction-fonts';
+import { withTextSize, type TextSize } from '../text-size';
 import { documentFromTeacherCopy } from '$lib/worksheets/document/teacher-adapter';
 import {
 	renderDocumentPreamble,
@@ -87,7 +88,8 @@ export interface WorksheetGeneratorInput {
  * - `worksheet` : la fiche, énoncés seuls ;
  * - `answers` : les résultats seuls (`answers`), sans l'énoncé ;
  * - `correction` : le corrigé, toujours détaillé (ADR 0030), sans l'énoncé,
- *   en Shantell Sans et Chiphre Math (`correction-fonts.ts`).
+ *   chaque correction en Shantell Sans et Chiphre Math (`correction-fonts.ts`),
+ *   titres et bandeau dans la police du document.
  */
 export type WorksheetPdfMode = DocumentForm;
 
@@ -117,6 +119,11 @@ export interface WorksheetGeneratorOptions {
 	 * David, 2026-10-14). Sans effet hors de la fiche.
 	 */
 	inlineCorrections?: boolean;
+	/**
+	 * Taille du texte (accessibilité, `text-size.ts`) : le gabarit grandit et
+	 * passe sur une colonne au-delà de la taille normale. Normale par défaut.
+	 */
+	textSize?: TextSize;
 }
 
 /**
@@ -138,6 +145,8 @@ export interface GenerateTypstParams {
 	withCorrections?: 'answers' | 'correction';
 	/** Voir `WorksheetGeneratorOptions.inlineCorrections` */
 	inlineCorrections?: boolean;
+	/** Voir `WorksheetGeneratorOptions.textSize` */
+	textSize?: TextSize;
 }
 
 // ============================================================================
@@ -266,15 +275,20 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 		const { worksheet, template } = input;
 
 		// Le gabarit de la forme demandée, dans le style retenu pour la fiche
-		// (`style_id`, sinon `template_id`) ; le gabarit lu en base ne sert qu'à la
-		// fiche d'un style du prof.
-		const resolved = resolveTemplate(styleIdOf(worksheet), this.form, template?.template_content);
-		let typstContent = this.generateFromTemplate(input, resolved);
-
-		// Corrigé : Shantell Sans et Chiphre Math, posées après la police du document
-		if (this.pdfMode === 'correction' && this.options.correctionFonts !== false) {
-			typstContent = withCorrectionFonts(typstContent);
-		}
+		// (`style_id`) ; le gabarit lu en base ne sert qu'à la fiche d'un style du
+		// prof.
+		const custom = template?.template_content;
+		// « Fiche élève » en grande taille du texte : en paysage, sauf les Réponses
+		const styleId = printedStyleId(
+			styleIdOf(worksheet),
+			this.form,
+			this.options.textSize ?? 'normal',
+			custom
+		);
+		const resolved = resolveTemplate(styleId, this.form, custom);
+		// Corrigé : Shantell Sans et Chiphre Math sur chaque correction seulement,
+		// posées par le rendu des exercices (`render-exercise.ts`)
+		const typstContent = this.generateFromTemplate(input, resolved);
 
 		return {
 			typstContent,
@@ -290,7 +304,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 	 */
 	private generateFromTemplate(input: WorksheetGeneratorInput, resolved: ResolvedTemplate): string {
 		const { worksheet } = input;
-		const templateContent = resolved.content;
+		// À la taille du texte voulue, avant d'y placer les exercices (qui n'ont
+		// aucune taille fixe : ils suivent celle du texte)
+		const templateContent = withTextSize(resolved.content, this.options.textSize ?? 'normal');
 		const mode = this.pdfMode;
 		const ending = mode === 'worksheet' ? this.options.withCorrections : undefined;
 
@@ -383,11 +399,9 @@ export class WorksheetGenerator extends BaseTypstGenerator<WorksheetGeneratorInp
 			form_title: titled === 'worksheet' ? '' : this.correctionTitle(titled).toUpperCase(),
 			individual_copy_notice: this.individualCopyNotice(mode),
 			corrections,
-			// Polices du corrigé sur la partie corrigé seulement : les énoncés gardent la leur
-			correction_fonts:
-				ending === 'correction' && this.options.correctionFonts !== false
-					? CORRECTION_FONT_RULES
-					: '',
+			// Les polices du corrigé sont posées sur chaque correction (`render-exercise.ts`) ;
+			// la clé reste, vide, pour un gabarit enregistré qui la porterait encore
+			correction_fonts: '',
 			// Additional placeholders for specific templates
 			due_date: dueDate ? this.formattedDueDate(dueDate) : fillLine('3cm'),
 			exam_session: '',
@@ -483,7 +497,8 @@ export function generateWorksheetTypst(params: GenerateTypstParams): string {
 			correctionFonts: params.correctionFonts,
 			individualCopyNotice: params.individualCopyNotice,
 			withCorrections: params.withCorrections,
-			inlineCorrections: params.inlineCorrections
+			inlineCorrections: params.inlineCorrections,
+			textSize: params.textSize
 		}
 	);
 

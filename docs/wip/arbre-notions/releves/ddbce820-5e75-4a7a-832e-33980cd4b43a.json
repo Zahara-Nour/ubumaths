@@ -1,0 +1,282 @@
+{
+	"template_id": "ddbce820-5e75-4a7a-832e-33980cd4b43a",
+	"titre": "Calculer un produit",
+	"sous_titre": "Multiplier deux nombres décimaux inférieurs à $1$",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Décimaux > Multiplier > Produit",
+	"mis_a_jour": "2026-10-01T06:18:06.264111+00:00",
+	"points_candidats": [
+		{
+			"decision": "TAG",
+			"code": "6-118",
+			"libelle_point": "Calculer le produit de deux nombres décimaux",
+			"noeud_actuel": "Nombres et calculs > Décimaux : calculs > multiplication",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "2..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..2"
+					},
+					{
+						"name": "c",
+						"expression": "2..9"
+					},
+					{
+						"name": "d",
+						"expression": "1..2"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*10^(-b);d}}*{{eval:c*10^(-d);d}}"
+					}
+				],
+				"conditions": ["mod(a*c,10)!=0"],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}};d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 166,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 2,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 8,
+						"valeurs": [2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 2,
+						"negatif_possible": false,
+						"nb_distinctes": 2,
+						"valeurs": [1, 2]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 166,
+						"exemples": [
+							"0.02*0.09",
+							"0.4*0.06",
+							"0.2*0.02",
+							"0.4*0.2",
+							"0.8*0.6",
+							"0.02*0.03",
+							"0.02*0.07",
+							"0.7*0.07",
+							"0.8*0.08",
+							"0.09*0.8",
+							"0.06*0.06",
+							"0.02*0.9"
+						],
+						"nombres_contenus": {
+							"min": 0.02,
+							"max": 0.9,
+							"nb_distinctes": 16,
+							"valeurs": [
+								0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8,
+								0.9
+							],
+							"nature": "décimal",
+							"decimales_max": 2,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "décimal",
+						"decimales_max": 4,
+						"min": 0.0004,
+						"max": 0.81,
+						"negatif_possible": false,
+						"nb_distinctes": 75
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0.02,
+				"max": 0.9,
+				"nb_distinctes": 16,
+				"valeurs": [
+					0.02, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9
+				],
+				"nature": "décimal",
+				"decimales_max": 2,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 0.0004,
+				"max": 0.81,
+				"nb_distinctes": 75,
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0.0004,
+				"max": 0.9,
+				"nb_distinctes": 87,
+				"nature": "décimal",
+				"decimales_max": 4,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"×": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (0.9)",
+					"graine": 12,
+					"enonce": "Calcule.\n\n$$0{,}02 \\times 0{,}9 = [?]$$",
+					"reponse": ["0.018"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "9",
+						"d": "1",
+						"expression1": "0.02*0.9"
+					}
+				},
+				{
+					"role": "plus petite valeur (0.0004)",
+					"graine": 169,
+					"enonce": "Calcule.\n\n$$0{,}02 \\times 0{,}02 = [?]$$",
+					"reponse": ["0.0004"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "2",
+						"d": "2",
+						"expression1": "0.02*0.02"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$0{,}02 \\times 0{,}09 = [?]$$",
+					"reponse": ["0.0018"],
+					"variables": {
+						"a": "2",
+						"b": "2",
+						"c": "9",
+						"d": "2",
+						"expression1": "0.02*0.09"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$0{,}4 \\times 0{,}06 = [?]$$",
+					"reponse": ["0.024"],
+					"variables": {
+						"a": "4",
+						"b": "1",
+						"c": "6",
+						"d": "2",
+						"expression1": "0.4*0.06"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule.\n\n$$0{,}2 \\times 0{,}02 = [?]$$",
+					"reponse": ["0.004"],
+					"variables": {
+						"a": "2",
+						"b": "1",
+						"c": "2",
+						"d": "2",
+						"expression1": "0.2*0.02"
+					}
+				}
+			]
+		}
+	]
+}

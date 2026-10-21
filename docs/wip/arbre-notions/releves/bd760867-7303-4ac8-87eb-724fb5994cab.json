@@ -1,0 +1,189 @@
+{
+	"template_id": "bd760867-7303-4ac8-87eb-724fb5994cab",
+	"titre": "Ecrire un grand nombre entier avec des espaces",
+	"sous_titre": "Jusqu'à 7 chiffres",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Apprivoiser > Ecriture",
+	"mis_a_jour": "2026-09-29T20:53:54.02808+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : numération > écritures",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": "décision « TAG » → « PAS_DE_TAG_R1 » ; code « CM1-004 » → « ∅ »"
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "4..7"
+					},
+					{
+						"name": "expression",
+						"expression": "digits:a"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Réécris en espaçant correctement les chiffres.\n\n$$?$$",
+				"reponses_brutes": ["expression"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 299,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 4,
+						"max": 7,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [4, 5, 6, 7]
+					}
+				},
+				{
+					"nom": "expression",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1067,
+						"max": 9910037,
+						"negatif_possible": false,
+						"nb_distinctes": 299
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1067,
+						"max": 9910037,
+						"negatif_possible": false,
+						"nb_distinctes": 299
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 0,
+				"max": 9,
+				"nb_distinctes": 10,
+				"valeurs": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1067,
+				"max": 9910037,
+				"nb_distinctes": 299,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 0,
+				"max": 9910037,
+				"nb_distinctes": 309,
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 7
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 1,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 6,
+					"max": 6
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9910037)",
+					"graine": 73,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[9{}9{}1{}0{}0{}3{}7]$$",
+					"reponse": ["9910037"],
+					"variables": {
+						"a": "7",
+						"expression": "9910037"
+					}
+				},
+				{
+					"role": "plus petite valeur (0)",
+					"graine": 3,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[5{}1{}0{}5]$$",
+					"reponse": ["5105"],
+					"variables": {
+						"a": "4",
+						"expression": "5105"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[5{}7{}4{}7]$$",
+					"reponse": ["5747"],
+					"variables": {
+						"a": "4",
+						"expression": "5747"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[3{}5{}6{}7{}6]$$",
+					"reponse": ["35676"],
+					"variables": {
+						"a": "5",
+						"expression": "35676"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Réécris en espaçant correctement les chiffres.\n\n$$[2{}9{}9{}5{}0]$$",
+					"reponse": ["29950"],
+					"variables": {
+						"a": "5",
+						"expression": "29950"
+					}
+				}
+			]
+		}
+	]
+}

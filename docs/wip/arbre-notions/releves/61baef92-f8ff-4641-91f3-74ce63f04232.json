@@ -1,0 +1,237 @@
+{
+	"template_id": "61baef92-f8ff-4641-91f3-74ce63f04232",
+	"titre": "Calculer un quotient entier",
+	"sous_titre": "Le dividende est un nombre de dizaines (simple)",
+	"consigne": null,
+	"grades": ["CM1"],
+	"type": "fill_in_blanks",
+	"theme": "Entiers > Diviser > Quotient",
+	"mis_a_jour": "2026-09-29T20:53:22.709659+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R1",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Nombres et calculs > Entiers : division > quotient",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "haute",
+			"changement": ""
+		}
+	],
+	"nb_variations": 1,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "3..6"
+					},
+					{
+						"name": "b",
+						"expression": "3..5"
+					},
+					{
+						"name": "expression1",
+						"expression": "{{eval:a*b*10}}:{{b}}"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule.\n\n$${{expression1}}$$",
+				"reponses_brutes": ["{{eval:{{expression1}}}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 12,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 6,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [3, 4, 5, 6]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 3,
+						"max": 5,
+						"negatif_possible": false,
+						"nb_distinctes": 3,
+						"valeurs": [3, 4, 5]
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 12,
+						"valeurs": [
+							"120:3",
+							"120:4",
+							"150:3",
+							"150:5",
+							"160:4",
+							"180:3",
+							"200:4",
+							"200:5",
+							"240:4",
+							"250:5",
+							"300:5",
+							"90:3"
+						],
+						"nombres_contenus": {
+							"min": 3,
+							"max": 300,
+							"nb_distinctes": 12,
+							"valeurs": [3, 4, 5, 90, 120, 150, 160, 180, 200, 240, 250, 300],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 3
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 30,
+						"max": 60,
+						"negatif_possible": false,
+						"nb_distinctes": 4,
+						"valeurs": [30, 40, 50, 60]
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 3,
+				"max": 300,
+				"nb_distinctes": 12,
+				"valeurs": [3, 4, 5, 90, 120, 150, 160, 180, 200, 240, 250, 300],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"nombres_reponse": {
+				"min": 30,
+				"max": 60,
+				"nb_distinctes": 4,
+				"valeurs": [30, 40, 50, 60],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 2
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 3,
+				"max": 300,
+				"nb_distinctes": 16,
+				"valeurs": [3, 4, 5, 30, 40, 50, 60, 90, 120, 150, 160, 180, 200, 240, 250, 300],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 3
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": [],
+				"unite_attendue_dans_la_reponse": false,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 1,
+					"max": 1
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (300)",
+					"graine": 10,
+					"enonce": "Calcule.\n\n$$300 : 5 = [?]$$",
+					"reponse": ["60"],
+					"variables": {
+						"a": "6",
+						"b": "5",
+						"expression1": "300:5"
+					}
+				},
+				{
+					"role": "plus petite valeur (3)",
+					"graine": 2,
+					"enonce": "Calcule.\n\n$$120 : 3 = [?]$$",
+					"reponse": ["40"],
+					"variables": {
+						"a": "4",
+						"b": "3",
+						"expression1": "120:3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 1,
+					"enonce": "Calcule.\n\n$$120 : 4 = [?]$$",
+					"reponse": ["30"],
+					"variables": {
+						"a": "3",
+						"b": "4",
+						"expression1": "120:4"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 5,
+					"enonce": "Calcule.\n\n$$180 : 3 = [?]$$",
+					"reponse": ["60"],
+					"variables": {
+						"a": "6",
+						"b": "3",
+						"expression1": "180:3"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 7,
+					"enonce": "Calcule.\n\n$$150 : 5 = [?]$$",
+					"reponse": ["30"],
+					"variables": {
+						"a": "3",
+						"b": "5",
+						"expression1": "150:5"
+					}
+				}
+			]
+		}
+	]
+}

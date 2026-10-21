@@ -1,0 +1,922 @@
+{
+	"template_id": "64e55fc7-c2f2-41d9-a0e5-01ca9fe6750b",
+	"titre": "Calculer avec des unités",
+	"sous_titre": "L'unité est choisie par l'utilisateur",
+	"consigne": null,
+	"grades": ["6"],
+	"type": "fill_in_blanks",
+	"theme": "Grandeurs > Unités > Unités simples",
+	"mis_a_jour": "2026-10-01T06:17:55.0275+00:00",
+	"points_candidats": [
+		{
+			"decision": "PAS_DE_TAG_R3",
+			"code": "",
+			"libelle_point": "",
+			"noeud_actuel": "Grandeurs et mesures > Unités et conversions > unités simples",
+			"noeud_cible": "",
+			"multi_points": "",
+			"confiance": "moyenne",
+			"changement": ""
+		}
+	],
+	"nb_variations": 3,
+	"variations": [
+		{
+			"variation": 1,
+			"graines": "1..300 (modèle réduit à la variation 1)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[km]|{{a}}[hm]|{{a}}[dam]|{{a}}[dm]|{{a}}[cm]|{{a}}[mm]"
+					},
+					{
+						"name": "d",
+						"expression": "b[m]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$",
+				"reponses_brutes": ["{{eval:c+d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 227,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 54,
+						"exemples": [
+							"1[mm]",
+							"3[dm]",
+							"1[km]",
+							"3[km]",
+							"7[dm]",
+							"1[hm]",
+							"1[cm]",
+							"6[cm]",
+							"8[cm]",
+							"9[cm]",
+							"5[dm]",
+							"4[km]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": ["1[m]", "2[m]", "3[m]", "4[m]", "5[m]", "6[m]", "7[m]", "8[m]", "9[m]"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"1[mm] + 5[m]",
+							"3[dm] + 3[m]",
+							"1[km] + 5[m]",
+							"3[km] + 2[m]",
+							"7[dm] + 2[m]",
+							"1[hm] + 6[m]",
+							"1[cm] + 9[m]",
+							"6[cm] + 3[m]",
+							"8[cm] + 2[m]",
+							"9[cm] + 7[m]",
+							"5[dm] + 6[m]",
+							"1[mm] + 6[m]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"5001[mm]",
+							"33[dm]",
+							"1.005[km]",
+							"3.002[km]",
+							"27[dm]",
+							"1.06[hm]",
+							"901[cm]",
+							"306[cm]",
+							"208[cm]",
+							"709[cm]",
+							"65[dm]",
+							"6001[mm]"
+						],
+						"nombres_contenus": {
+							"min": 1.003,
+							"max": 9007,
+							"nb_distinctes": 227,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1.003,
+				"max": 9007,
+				"nb_distinctes": 227,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9007,
+				"nb_distinctes": 236,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["mm", "m", "dm", "km", "hm", "cm", "dam"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9007)",
+					"graine": 156,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$7~\\mathrm{mm} + 9~\\mathrm{m} = [?]$$",
+					"reponse": ["9007[mm]"],
+					"variables": {
+						"a": "7",
+						"b": "9",
+						"c": "7[mm]",
+						"d": "9[m]",
+						"expression1": "7[mm] + 9[m]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$1~\\mathrm{mm} + 5~\\mathrm{m} = [?]$$",
+					"reponse": ["5001[mm]"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1[mm]",
+						"d": "5[m]",
+						"expression1": "1[mm] + 5[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$3~\\mathrm{dm} + 3~\\mathrm{m} = [?]$$",
+					"reponse": ["33[dm]"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "3[dm]",
+						"d": "3[m]",
+						"expression1": "3[dm] + 3[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$1~\\mathrm{km} + 5~\\mathrm{m} = [?]$$",
+					"reponse": ["1.005[km]"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1[km]",
+						"d": "5[m]",
+						"expression1": "1[km] + 5[m]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$3~\\mathrm{km} + 2~\\mathrm{m} = [?]$$",
+					"reponse": ["3.002[km]"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3[km]",
+						"d": "2[m]",
+						"expression1": "3[km] + 2[m]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 2,
+			"graines": "1..300 (modèle réduit à la variation 2)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kg]|{{a}}[hg]|{{a}}[dag]|{{a}}[dg]|{{a}}[cg]|{{a}}[mg]"
+					},
+					{
+						"name": "d",
+						"expression": "b[g]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$",
+				"reponses_brutes": ["{{eval:c+d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 227,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 54,
+						"exemples": [
+							"1[mg]",
+							"3[dg]",
+							"1[kg]",
+							"3[kg]",
+							"7[dg]",
+							"1[hg]",
+							"1[cg]",
+							"6[cg]",
+							"8[cg]",
+							"9[cg]",
+							"5[dg]",
+							"4[kg]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": ["1[g]", "2[g]", "3[g]", "4[g]", "5[g]", "6[g]", "7[g]", "8[g]", "9[g]"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"1[mg] + 5[g]",
+							"3[dg] + 3[g]",
+							"1[kg] + 5[g]",
+							"3[kg] + 2[g]",
+							"7[dg] + 2[g]",
+							"1[hg] + 6[g]",
+							"1[cg] + 9[g]",
+							"6[cg] + 3[g]",
+							"8[cg] + 2[g]",
+							"9[cg] + 7[g]",
+							"5[dg] + 6[g]",
+							"1[mg] + 6[g]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"5001[mg]",
+							"33[dg]",
+							"1.005[kg]",
+							"3.002[kg]",
+							"27[dg]",
+							"1.06[hg]",
+							"901[cg]",
+							"306[cg]",
+							"208[cg]",
+							"709[cg]",
+							"65[dg]",
+							"6001[mg]"
+						],
+						"nombres_contenus": {
+							"min": 1.003,
+							"max": 9007,
+							"nb_distinctes": 227,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1.003,
+				"max": 9007,
+				"nb_distinctes": 227,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9007,
+				"nb_distinctes": 236,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["mg", "g", "dg", "kg", "hg", "cg", "dag"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9007)",
+					"graine": 156,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$7~\\mathrm{mg} + 9~\\mathrm{g} = [?]$$",
+					"reponse": ["9007[mg]"],
+					"variables": {
+						"a": "7",
+						"b": "9",
+						"c": "7[mg]",
+						"d": "9[g]",
+						"expression1": "7[mg] + 9[g]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$1~\\mathrm{mg} + 5~\\mathrm{g} = [?]$$",
+					"reponse": ["5001[mg]"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1[mg]",
+						"d": "5[g]",
+						"expression1": "1[mg] + 5[g]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$3~\\mathrm{dg} + 3~\\mathrm{g} = [?]$$",
+					"reponse": ["33[dg]"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "3[dg]",
+						"d": "3[g]",
+						"expression1": "3[dg] + 3[g]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$1~\\mathrm{kg} + 5~\\mathrm{g} = [?]$$",
+					"reponse": ["1.005[kg]"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1[kg]",
+						"d": "5[g]",
+						"expression1": "1[kg] + 5[g]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$3~\\mathrm{kg} + 2~\\mathrm{g} = [?]$$",
+					"reponse": ["3.002[kg]"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3[kg]",
+						"d": "2[g]",
+						"expression1": "3[kg] + 2[g]"
+					}
+				}
+			]
+		},
+		{
+			"variation": 3,
+			"graines": "1..300 (modèle réduit à la variation 3)",
+			"declarations": {
+				"variables_shared": [],
+				"variables_variation": [
+					{
+						"name": "a",
+						"expression": "1..9"
+					},
+					{
+						"name": "b",
+						"expression": "1..9"
+					},
+					{
+						"name": "c",
+						"expression": "{{a}}[kL]|{{a}}[hL]|{{a}}[daL]|{{a}}[dL]|{{a}}[cL]|{{a}}[mL]"
+					},
+					{
+						"name": "d",
+						"expression": "b[L]"
+					},
+					{
+						"name": "expression1",
+						"expression": "c + d"
+					}
+				],
+				"conditions": [],
+				"enonce_brut": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$${{expression1}}=?$$",
+				"reponses_brutes": ["{{eval:c+d}}"]
+			},
+			"tirages": 300,
+			"reussis": 300,
+			"echecs": 0,
+			"taux_echec": 0,
+			"enonces_distincts": 227,
+			"variables": [
+				{
+					"nom": "a",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "b",
+					"valeurs_tirees": {
+						"nature": "entier",
+						"decimales_max": 0,
+						"min": 1,
+						"max": 9,
+						"negatif_possible": false,
+						"nb_distinctes": 9,
+						"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9]
+					}
+				},
+				{
+					"nom": "c",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 54,
+						"exemples": [
+							"1[mL]",
+							"3[dL]",
+							"1[kL]",
+							"3[kL]",
+							"7[dL]",
+							"1[hL]",
+							"1[cL]",
+							"6[cL]",
+							"8[cL]",
+							"9[cL]",
+							"5[dL]",
+							"4[kL]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "d",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 9,
+						"valeurs": ["1[L]", "2[L]", "3[L]", "4[L]", "5[L]", "6[L]", "7[L]", "8[L]", "9[L]"],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				},
+				{
+					"nom": "expression1",
+					"valeurs_tirees": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"1[mL] + 5[L]",
+							"3[dL] + 3[L]",
+							"1[kL] + 5[L]",
+							"3[kL] + 2[L]",
+							"7[dL] + 2[L]",
+							"1[hL] + 6[L]",
+							"1[cL] + 9[L]",
+							"6[cL] + 3[L]",
+							"8[cL] + 2[L]",
+							"9[cL] + 7[L]",
+							"5[dL] + 6[L]",
+							"1[mL] + 6[L]"
+						],
+						"nombres_contenus": {
+							"min": 1,
+							"max": 9,
+							"nb_distinctes": 9,
+							"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+							"nature": "entier",
+							"decimales_max": 0,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 1
+						}
+					}
+				}
+			],
+			"reponse_attendue": [
+				{
+					"case": 1,
+					"valeurs": {
+						"nature": "texte ou expression",
+						"part_numerique": 0,
+						"nb_distinctes": 227,
+						"exemples": [
+							"5001[mL]",
+							"33[dL]",
+							"1.005[kL]",
+							"3.002[kL]",
+							"27[dL]",
+							"1.06[hL]",
+							"901[cL]",
+							"306[cL]",
+							"208[cL]",
+							"709[cL]",
+							"65[dL]",
+							"6001[mL]"
+						],
+						"nombres_contenus": {
+							"min": 1.003,
+							"max": 9007,
+							"nb_distinctes": 227,
+							"nature": "décimal",
+							"decimales_max": 3,
+							"negatif_possible": false,
+							"chiffres_partie_entiere_max": 4
+						}
+					}
+				}
+			],
+			"nombres_enonce": {
+				"min": 1,
+				"max": 9,
+				"nb_distinctes": 9,
+				"valeurs": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+				"nature": "entier",
+				"decimales_max": 0,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 1
+			},
+			"nombres_reponse": {
+				"min": 1.003,
+				"max": 9007,
+				"nb_distinctes": 227,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"nombres_choix_qcm": null,
+			"nombres_tous": {
+				"min": 1,
+				"max": 9007,
+				"nb_distinctes": 236,
+				"nature": "décimal",
+				"decimales_max": 3,
+				"negatif_possible": false,
+				"chiffres_partie_entiere_max": 4
+			},
+			"fractions_enonce": null,
+			"fractions_reponse": null,
+			"format": {
+				"type_modele": "fill_in_blanks",
+				"type_reponse": "saisie (math)",
+				"nb_cases": 1,
+				"nb_choix": 0,
+				"cases_prerempies": 0,
+				"answer_kind": [],
+				"forme_exigee": [],
+				"symboles_affiches": {
+					"=": "300/300",
+					"+": "300/300",
+					"case ?": "300/300"
+				},
+				"unites": ["mL", "L", "dL", "kL", "hL", "cL", "daL"],
+				"unite_attendue_dans_la_reponse": true,
+				"figures": {},
+				"mots_hors_maths": {
+					"min": 12,
+					"max": 12
+				},
+				"contexte_probable": false
+			},
+			"exemples": [
+				{
+					"role": "plus grande valeur (9007)",
+					"graine": 156,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$7~\\mathrm{mL} + 9~\\mathrm{L} = [?]$$",
+					"reponse": ["9007[mL]"],
+					"variables": {
+						"a": "7",
+						"b": "9",
+						"c": "7[mL]",
+						"d": "9[L]",
+						"expression1": "7[mL] + 9[L]"
+					}
+				},
+				{
+					"role": "plus petite valeur (1)",
+					"graine": 1,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$1~\\mathrm{mL} + 5~\\mathrm{L} = [?]$$",
+					"reponse": ["5001[mL]"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1[mL]",
+						"d": "5[L]",
+						"expression1": "1[mL] + 5[L]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 2,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$3~\\mathrm{dL} + 3~\\mathrm{L} = [?]$$",
+					"reponse": ["33[dL]"],
+					"variables": {
+						"a": "3",
+						"b": "3",
+						"c": "3[dL]",
+						"d": "3[L]",
+						"expression1": "3[dL] + 3[L]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 3,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$1~\\mathrm{kL} + 5~\\mathrm{L} = [?]$$",
+					"reponse": ["1.005[kL]"],
+					"variables": {
+						"a": "1",
+						"b": "5",
+						"c": "1[kL]",
+						"d": "5[L]",
+						"expression1": "1[kL] + 5[L]"
+					}
+				},
+				{
+					"role": "tirage",
+					"graine": 4,
+					"enonce": "Calcule. Tu peux choisir l'unité du résultat, mais n'oublie pas de l'écrire.\n\n$$3~\\mathrm{kL} + 2~\\mathrm{L} = [?]$$",
+					"reponse": ["3.002[kL]"],
+					"variables": {
+						"a": "3",
+						"b": "2",
+						"c": "3[kL]",
+						"d": "2[L]",
+						"expression1": "3[kL] + 2[L]"
+					}
+				}
+			]
+		}
+	]
+}

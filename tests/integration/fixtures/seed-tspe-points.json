@@ -3279,10 +3279,6 @@
 			"grade": "T_SPE"
 		},
 		{
-			"code": "3-030",
-			"grade": "T_SPE"
-		},
-		{
 			"code": "5-096",
 			"grade": "T_SPE"
 		},
@@ -3491,10 +3487,6 @@
 			"grade": "T_SPE"
 		},
 		{
-			"code": "3-022",
-			"grade": "T_SPE"
-		},
-		{
 			"code": "3-023",
 			"grade": "T_SPE"
 		},
@@ -3552,6 +3544,94 @@
 		},
 		{
 			"code": "3-056",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "2-280",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "2-401",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "2-402",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "3-058",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "3-060",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "3-061",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "3-062",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "4-076",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "4-077",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "4-079",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "4-080",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-112",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-113",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-114",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-121",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-128",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-129",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-135",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-137",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-138",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-139",
+			"grade": "T_SPE"
+		},
+		{
+			"code": "5-143",
 			"grade": "T_SPE"
 		}
 	]

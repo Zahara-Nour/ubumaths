@@ -1,0 +1,4091 @@
+{
+	"5": {
+		"general": [
+			{
+				"aspect": "nombres",
+				"borne": "Les nombres négatifs sont des décimaux relatifs ; seules l'addition et la soustraction de relatifs sont au programme de 5e (produit et quotient de relatifs : 4e).",
+				"detail": {
+					"ensemble": "décimaux relatifs (+, −) ; décimaux positifs (×, ÷)"
+				},
+				"source": "BO c4 p.7-9",
+				"force": "BO"
+			},
+			{
+				"aspect": "nombres",
+				"borne": "Les relatifs sont construits d'abord sur des entiers, puis sur des décimaux ; les décimaux relatifs rencontrés sont « simples ».",
+				"source": "Exemples 2026 p.10 ; Repères c4 2019 p.2",
+				"force": "accompagnement"
+			},
+			{
+				"aspect": "nombres",
+				"borne": "Fractions positives seulement : les rationnels relatifs (quotient d'entiers relatifs, opposé d'un rationnel) arrivent en 4e.",
+				"detail": {
+					"ensemble": "fractions positives"
+				},
+				"source": "BO c4 p.9",
+				"force": "déduite"
+			},
+			{
+				"aspect": "operandes",
+				"borne": "Pas d'exposant autre que 2 et 3 (carré et cube) ; puissances d'exposant entier naturel quelconque en 4e.",
+				"detail": {
+					"exposants": [2, 3]
+				},
+				"source": "BO c4 p.8-9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations limitées aux types x + b = c et ax = c, résolues par opérations inverses (pas de méthode algébrique : 4e).",
+				"detail": {
+					"liste": ["x + b = c", "ax = c"]
+				},
+				"source": "BO c4 p.9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Statistiques : moyenne simple seulement (moyenne pondérée, médiane, étendue : 4e).",
+				"source": "BO c4 p.16-17",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités : une seule épreuve, en situation d'équiprobabilité (expériences à deux épreuves : 4e).",
+				"source": "BO c4 p.17",
+				"force": "déduite"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Pas de translation, de théorème de Pythagore, de Thalès ni de trigonométrie (4e et 3e).",
+				"source": "BO c4 p.14-15",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Pensée informatique : variable seulement en lecture d'une donnée saisie ; boucle « répéter n fois » ; pas d'instruction conditionnelle (4e).",
+				"source": "BO c4 p.20",
+				"force": "BO"
+			}
+		],
+		"points": {
+			"5-001": {
+				"libelle": "Additionner, soustraire, multiplier et diviser pour résoudre des problèmes et contrôler la vraisemblance de son résultat.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Opérations sur les décimaux positifs (les opérations ×, ÷ sur les relatifs sont de 4e).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.7-9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Opérations sur les décimaux positifs (les opérations ×, ÷ sur les relatifs sont de 4e)."
+			},
+			"5-002": {
+				"libelle": "Connaitre le sens et les situations d'emploi de l'addition, de la soustraction, de la multiplication et de la division.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": []
+			},
+			"5-003": {
+				"libelle": "Diviser par un nombre décimal.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Diviseur décimal non entier, ramené à un diviseur entier (1,5 ÷ 0,3 = 15 ÷ 3 = 5).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "Exemples 2026 p.9",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-004": {
+				"libelle": "Enchainer des opérations.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Enchaînements des quatre opérations sur des décimaux positifs, avec ou sans parenthèses, à effectuer mentalement ou à la main (calculatrice exceptionnelle).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "Exemples 2026 p.9",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Exemples de réussite : 5 + 3 × 4 ; 10 − (1 + 6) ; 5,5 + 6 × 2,4 ; 12 − (5,3 + 3,8).",
+						"source": "Attendus 5e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-005": {
+				"libelle": "Traduire un problème en une seule expression (Léo achète 3 cahiers à 2 € et un stylo à 1 € : écris le calcul du prix).",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Une seule expression, avec ou sans parenthèses.",
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-006": {
+				"libelle": "Nommer un calcul : dire s'il est une somme ou un produit (3 + 4 × 5 est une somme).",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Nature du calcul : somme ou produit seulement (le vocabulaire complet — différence, quotient — est l'objet du point 4-004).",
+						"detail": {
+							"liste": ["somme", "produit"]
+						},
+						"source": "BO c4 p.7 ; 9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Le BO de 5e dit « distinguer sommes et produits, termes et facteurs » ; le vocabulaire quotient/différence n'est explicite qu'en 4e. Lecture déduite (texte implicite) : Nature du calcul : somme ou produit seulement (le vocabulaire complet — différence, quotient — est l'objet du point 4-004)."
+			},
+			"5-007": {
+				"libelle": "Connaitre et utiliser les priorités opératoires.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "× et ÷ prioritaires sur + et − ; parenthèses ; les puissances simples relèvent du point 5-032.",
+						"source": "Exemples 2026 p.9",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Décimaux positifs.",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.7-9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Décimaux positifs."
+			},
+			"5-008": {
+				"libelle": "Connaitre et utiliser la distributivité simple sur des exemples numériques.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Sur des exemples numériques : k(a + b) = ka + kb et k(a − b) = ka − kb (27 × 99 ; 1,5 × 0,7 + 1,5 × 0,3).",
+						"source": "Exemples 2026 p.9",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Décimaux positifs.",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.7-9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Décimaux positifs."
+			},
+			"5-009": {
+				"libelle": "Utiliser les notions de multiples et diviseurs.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers naturels ; vocabulaire « multiple de », « divisible par », « diviseur de » ; tables de multiplication ou division euclidienne.",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "Exemples 2026 p.9",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de nombres premiers ni de décomposition en facteurs premiers (simple prolongement culturel en 5e ; décomposition en 3e).",
+						"source": "BO c4 p.7 ; 11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : les Attendus 5e 2019 (p.3-4) demandent les nombres premiers ≤ 30 et la décomposition en facteurs premiers ; le BO en vigueur ne les met qu'en prolongement (5e) et en automatisme de 3e."
+			},
+			"5-010": {
+				"libelle": "Connaître le critère de divisibilité par 3 (4 518 est-il divisible par 3 ?).",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Critère de divisibilité par 3 sur des entiers naturels.",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-011": {
+				"libelle": "Mobiliser un algorithme dans le cadre du calcul numérique.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme de la division (recherche des diviseurs, nombre de diviseurs), Scratch ou tableur.",
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-012": {
+				"libelle": "Définir les nombres relatifs.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Relatifs construits d'abord entiers puis décimaux ; opposé défini par a + b = 0.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10 ; Repères c4 2019 p.2",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-013": {
+				"libelle": "Donner l'opposé d'un nombre relatif (opposé de −3 = ?).",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Opposé d'un décimal relatif ; −(−a) = a.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-014": {
+				"libelle": "Définir la notion de nombre positif, strictement positif, négatif, strictement négatif.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": []
+			},
+			"5-015": {
+				"libelle": "Utiliser les nombres relatifs pour représenter des grandeurs observables qui peuvent prendre des valeurs inférieures à zéro (température, temps, altitude, etc.), en particulier dans le cadre de la résolution de problèmes.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Contextes : température, temps, altitude, etc.",
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-016": {
+				"libelle": "Lire l'abscisse d'un point sur une droite graduée (nombres relatifs).",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Abscisses décimales relatives « simples » ; graduations en dixièmes, moitiés, quarts, tiers possibles.",
+						"source": "Exemples 2026 p.10 ; BO c4 p.8",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-017": {
+				"libelle": "Comparer deux nombres décimaux relatifs (−3,5 … −5).",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; méthode signe + distance à zéro, droite graduée en appui.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-018": {
+				"libelle": "Additionner deux nombres décimaux relatifs.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; règle établie d'abord sur des entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux à une ou deux décimales (automatisme du thème).",
+						"detail": {
+							"decimales": {
+								"max": 2
+							}
+						},
+						"source": "BO c4 p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Décimaux à une ou deux décimales (automatisme du thème)."
+			},
+			"5-019": {
+				"libelle": "Additionner plusieurs nombres décimaux relatifs.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; règle établie d'abord sur des entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux à une ou deux décimales (automatisme du thème).",
+						"detail": {
+							"decimales": {
+								"max": 2
+							}
+						},
+						"source": "BO c4 p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Décimaux à une ou deux décimales (automatisme du thème)."
+			},
+			"5-020": {
+				"libelle": "Soustraire deux nombres décimaux relatifs.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; règle établie d'abord sur des entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux à une ou deux décimales (automatisme du thème).",
+						"detail": {
+							"decimales": {
+								"max": 2
+							}
+						},
+						"source": "BO c4 p.7",
+						"force": "déduite"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Exemples : −9 + 6 ; −5,6 − 3 ; 4 − 9 ; −12 − (−2).",
+						"source": "Attendus 5e 2019 p.3",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Décimaux à une ou deux décimales (automatisme du thème)."
+			},
+			"5-021": {
+				"libelle": "Connaitre et justifier les situations dans lesquelles des parenthèses sont indispensables au sens des écritures.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Écritures du type (−2), −(−2), −(2 + 3), 3 + (−2), −(2 − 3).",
+						"source": "Exemples 2026 p.11",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-022": {
+				"libelle": "Simplifier l'écriture de sommes comportant des parenthèses.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Sommes avec parenthèses de décimaux relatifs, ex. (−3) + (−4) − (+5) − (−2) = −3 − 4 − 5 + 2.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.11",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Léger écart : la ressource 2016 (nombres relatifs) recommande d'éviter les écritures du type (+3) ; l'exemple 2026 utilise −(+5)."
+			},
+			"5-023": {
+				"libelle": "Enchainer additions et soustractions de décimaux relatifs.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; règle établie d'abord sur des entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux à une ou deux décimales (automatisme du thème).",
+						"detail": {
+							"decimales": {
+								"max": 2
+							}
+						},
+						"source": "BO c4 p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Décimaux à une ou deux décimales (automatisme du thème)."
+			},
+			"5-024": {
+				"libelle": "Résoudre des problèmes mobilisant addition et soustraction de nombres décimaux relatifs.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Addition et soustraction de décimaux relatifs seulement.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "BO c4 p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"5-025": {
+				"libelle": "Comparer des fractions.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions positives (rationnels relatifs : 4e).",
+						"detail": {
+							"ensemble": "fractions positives"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Dénominateurs quelconques ; méthode la plus adaptée (fractions égales, comparaison à 1, à 0,5). Automatismes : 2/7 et 5/7 ; 8/12 et 8/21 ; 3/4 et 7/18 ; 8/3 et 6/7.",
+						"detail": {
+							"denominateurs": "quelconques"
+						},
+						"source": "BO c4 p.8 ; Exemples 2026 p.12",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : Attendus 5e 2019 (p.2) et Repères 2019 (p.2) limitent aux dénominateurs « égaux ou multiples l'un de l'autre » ; le BO en vigueur ne pose pas cette limite (ex. 3/4 et 7/18). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle."
+			},
+			"5-026": {
+				"libelle": "Additionner des fractions de dénominateurs quelconques (2/3 + 1/4 = ?).",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions positives (rationnels relatifs : 4e).",
+						"detail": {
+							"ensemble": "fractions positives"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Dénominateurs quelconques ; dénominateur commun cherché parmi les multiples (3/8 + 7/6 ; 5/12 − 2/9). Automatismes : 3/5 + 4/5 ; 1 − 2/3 ; 4/7 − 2/21 ; 3 + 2/5 ; 2/5 + 1/4.",
+						"detail": {
+							"denominateurs": "quelconques (simples)"
+						},
+						"source": "BO c4 p.8 ; Exemples 2026 p.12",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e).",
+						"source": "BO c4 p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle."
+			},
+			"5-027": {
+				"libelle": "Résoudre des problèmes avec des additions et soustractions de fractions.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions positives (rationnels relatifs : 4e).",
+						"detail": {
+							"ensemble": "fractions positives"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Additions et soustractions de fractions seulement (multiplication et division : 4e).",
+						"source": "BO c4 p.8-9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e)."
+			},
+			"5-028": {
+				"libelle": "Découvrir la notion de puissance d'un nombre et sa notation dans le cas du carré et du cube.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Carré et cube d'un décimal positif seulement.",
+						"detail": {
+							"exposants": [2, 3],
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.8 ; Exemples 2026 p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"5-029": {
+				"libelle": "Connaitre les carrés des entiers de 0 à 12.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Carrés des entiers de 0 à 12.",
+						"detail": {
+							"min": 0,
+							"max": 12
+						},
+						"source": "BO c4 p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"5-030": {
+				"libelle": "Connaitre le cube de 10.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Le seul cube exigé est 10³ = 1 000.",
+						"detail": {
+							"liste": ["10³ = 1000"]
+						},
+						"source": "BO c4 p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"5-031": {
+				"libelle": "Savoir écrire un nombre sous la forme d'une puissance 2 ou 3.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Écrire « si possible » un nombre sous la forme a² et/ou a³ (64 = 8² = 4³) ; bases entières.",
+						"detail": {
+							"exposants": [2, 3]
+						},
+						"source": "Exemples 2026 p.12",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-032": {
+				"libelle": "Calculer la valeur numérique d'expressions contenant des puissances simples, additions, soustractions et produits.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Puissances d'exposant 2 ou 3, avec additions, soustractions et produits (pas de quotient) : 3 × 5² − 7 vs (3 × 5)² − 7.",
+						"detail": {
+							"exposants": [2, 3],
+							"liste": ["+", "−", "×"]
+						},
+						"source": "BO c4 p.8 ; Exemples 2026 p.12",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Bases décimales positives.",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.8-9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Bases décimales positives."
+			},
+			"5-033": {
+				"libelle": "Calculer la valeur d'une expression littérale contenant une puissance simple.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Un terme en x² ou x³ : A = 3x² − 7, (3x)² − 7.",
+						"detail": {
+							"exposants": [2, 3]
+						},
+						"source": "Exemples 2026 p.12",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Valeur substituée décimale positive (le carré d'un négatif suppose le produit de relatifs : 4e).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Valeur substituée décimale positive (le carré d'un négatif suppose le produit de relatifs : 4e)."
+			},
+			"5-034": {
+				"libelle": "Produire des formules pour un nombre : double, triple, carré, successeur, prédécesseur (triple de n : 3n ; successeur de n : n + 1).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Formules : double, triple, moitié, carré, successeur, prédécesseur (d'un nombre n).",
+						"detail": {
+							"liste": ["double", "triple", "moitié", "carré", "successeur", "prédécesseur"]
+						},
+						"source": "BO c4 p.8 ; Exemples 2026 p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"5-035": {
+				"libelle": "Calculer la valeur d'une expression littérale par substitution.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Valeurs substituées décimales positives (produit de relatifs : 4e) ; une ou deux lettres (7a, a + 17 pour a = 8 ; 3x + 5y pour x = 2, y = 1).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "Attendus 5e 2019 p.4",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Valeurs substituées décimales positives (produit de relatifs : 4e) ; une ou deux lettres (7a, a + 17 pour a = 8 ; 3x + 5y pour x = 2, y = 1)."
+			},
+			"5-036": {
+				"libelle": "Tester si une égalité entre expressions algébriques comportant une variable est vraie ou fausse.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Égalité comportant une seule variable.",
+						"detail": {
+							"liste": ["une variable"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : les Attendus 5e 2019 (p.4) admettent « une ou deux indéterminées » ; le BO en vigueur dit « une variable »."
+			},
+			"5-037": {
+				"libelle": "Déterminer si une expression littérale est une somme ou un produit.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Somme ou produit, selon la dernière opération à effectuer.",
+						"detail": {
+							"liste": ["somme", "produit"]
+						},
+						"source": "Exemples 2026 p.13",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-038": {
+				"libelle": "Exploiter les relations k(a + b) = ka + kb ou k(a − b) = ka − kb pour factoriser une expression littérale.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Distributivité simple seulement : k(a + b), k(a − b) (double distributivité : 3e).",
+						"source": "BO c4 p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Réduction de ax + bx avec a, b décimaux, attention au cas b = 1.",
+						"detail": {
+							"ensemble": "décimaux"
+						},
+						"source": "Exemples 2026 p.13",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Facteur k décimal positif (produit de relatifs : 4e).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Facteur k décimal positif (produit de relatifs : 4e)."
+			},
+			"5-039": {
+				"libelle": "Réduire une expression littérale de la forme ax + b, où a et b sont des nombres décimaux.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Forme ax + b, a et b décimaux (ex. 5,2x + 3,4x ; 2,4x − 2,1x).",
+						"detail": {
+							"ensemble": "décimaux"
+						},
+						"source": "BO c4 p.9 ; Attendus 5e 2019 p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Une seule lettre, termes du premier degré (x² n'apparaît qu'en automatisme de 4e : 3x × 2x = 6x²).",
+						"source": "BO c4 p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Les Attendus 5e 2019 (p.4) font simplifier 4x × 2x × 3x ; le BO en vigueur place ce type de produit en automatisme de 4e. Lecture déduite (texte implicite) : Une seule lettre, termes du premier degré (x² n'apparaît qu'en automatisme de 4e : 3x × 2x = 6x²)."
+			},
+			"5-040": {
+				"libelle": "Démontrer une propriété générale par le calcul littéral.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Propriétés d'entiers (somme de deux pairs, de trois consécutifs…).",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "Exemples 2026 p.13 ; Attendus 5e 2019 p.4",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-041": {
+				"libelle": "Utiliser un contre-exemple pour démontrer qu'une assertion est fausse.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": []
+			},
+			"5-042": {
+				"libelle": "Formuler des conjectures en s'appuyant sur un langage algorithmique ou un tableur.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": []
+			},
+			"5-043": {
+				"libelle": "Donner à la lettre le statut d'inconnue.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": []
+			},
+			"5-044": {
+				"libelle": "Modéliser par une équation du type x + b = c un problème relevant d'une addition à trou.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Type x + b = c seulement.",
+						"detail": {
+							"liste": ["x + b = c"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "a, b, c décimaux ou fractions simples ; méthode arithmétique (opération inverse), solution vérifiée.",
+						"detail": {
+							"ensemble": "décimaux, fractions simples"
+						},
+						"source": "Exemples 2026 p.13-14",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-045": {
+				"libelle": "Résoudre une équation du type x + b = c par l'opération inverse (x + 7 = 12 : x = 12 − 7).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Type x + b = c seulement.",
+						"detail": {
+							"liste": ["x + b = c"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "a, b, c décimaux ou fractions simples ; méthode arithmétique (opération inverse), solution vérifiée.",
+						"detail": {
+							"ensemble": "décimaux, fractions simples"
+						},
+						"source": "Exemples 2026 p.13-14",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-046": {
+				"libelle": "Lire l'abscisse d'un point sur une droite graduée.",
+				"rubrique": "Espace et géométrie > Repérage sur une droite et dans le plan",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Abscisses décimales (relatives, en lien avec le thème des relatifs).",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "BO c4 p.12 ; Exemples 2026 p.22",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-047": {
+				"libelle": "Lire les coordonnées d'un point dans un repère orthogonal.",
+				"rubrique": "Espace et géométrie > Repérage sur une droite et dans le plan",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Coordonnées décimales relatives simples ; vocabulaire origine, axes, abscisse, ordonnée.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.22 ; Attendus 5e 2019 p.9",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-048": {
+				"libelle": "Construire et mettre en relation différentes représentations en perspectives cavalières des solides suivants : pavé droit, cube, cylindre de révolution, prisme droit.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Solides : pavé droit, cube, cylindre de révolution, prisme droit.",
+						"detail": {
+							"liste": ["pavé droit", "cube", "cylindre de révolution", "prisme droit"]
+						},
+						"source": "BO c4 p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"5-049": {
+				"libelle": "Savoir mettre en relation une représentation en perspective cavalière et un patron d'un pavé, d'un prisme droit ou d'un cylindre de révolution.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pavé, prisme droit (base triangle ou parallélogramme), cylindre de révolution.",
+						"detail": {
+							"liste": ["pavé droit", "prisme droit", "cylindre de révolution"]
+						},
+						"source": "BO c4 p.12 ; Exemples 2026 p.22",
+						"force": "BO"
+					}
+				]
+			},
+			"5-050": {
+				"libelle": "Calculer le volume du cube, du pavé droit.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube, pavé droit.",
+						"detail": {
+							"liste": ["cube", "pavé droit"]
+						},
+						"source": "BO c4 p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"5-051": {
+				"libelle": "Convertir des unités de volume (m³, dm³, cm³).",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Unités de volume m³, dm³, cm³ (libellé).",
+						"detail": {
+							"liste": ["m³", "dm³", "cm³"]
+						},
+						"source": "BO c4 p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"5-052": {
+				"libelle": "Calculer l'aire du disque.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "A = πr².",
+						"source": "Exemples 2026 p.23",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-053": {
+				"libelle": "Calculer le volume du cylindre de révolution.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "V = πr²h (aire de base × hauteur).",
+						"source": "Exemples 2026 p.23",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-054": {
+				"libelle": "Définir le demi-tour, ou symétrie centrale.",
+				"rubrique": "Espace et géométrie > Transformations",
+				"bornes": []
+			},
+			"5-055": {
+				"libelle": "Connaitre les propriétés du demi-tour.",
+				"rubrique": "Espace et géométrie > Transformations",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Conservation de l'alignement, du parallélisme, des longueurs, des angles (admises).",
+						"source": "Exemples 2026 p.23",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-056": {
+				"libelle": "Connaitre les mesures des angles de l'équerre dont dispose l'élève (30° 60° 90° ou 45° 45° 90°).",
+				"rubrique": "Espace et géométrie > Angles > Automatismes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Équerres 30°-60°-90° ou 45°-45°-90°.",
+						"detail": {
+							"liste": ["30°", "45°", "60°", "90°"]
+						},
+						"source": "BO c4 p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"5-057": {
+				"libelle": "Caractériser le parallélisme par les angles : angles alternes internes, angles correspondants.",
+				"rubrique": "Espace et géométrie > Angles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Angles alternes-internes et correspondants (et leurs réciproques) seulement.",
+						"detail": {
+							"liste": ["alternes-internes", "correspondants"]
+						},
+						"source": "BO c4 p.13 ; Exemples 2026 p.24",
+						"force": "BO"
+					}
+				]
+			},
+			"5-058": {
+				"libelle": "Connaître la somme des angles d'un triangle (deux angles de 40° et 65° : le troisième ?).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Somme 180° ; calcul du 3e angle connaissant les deux autres ; cas particuliers équilatéral, isocèle, rectangle.",
+						"detail": {
+							"unites": "degré"
+						},
+						"source": "BO c4 p.13 ; Exemples 2026 p.24",
+						"force": "BO"
+					}
+				]
+			},
+			"5-059": {
+				"libelle": "Construire des triangles à partir de données partielles.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Données : trois longueurs (inégalité triangulaire), une longueur et deux angles, deux longueurs et un angle.",
+						"source": "Repères c4 2019 p.11 ; Attendus 5e 2019 p.10",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-060": {
+				"libelle": "Connaitre les propriétés des médiatrices et du cercle circonscrit dans le cas de triangles particuliers.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Triangles particuliers ; le triangle rectangle inscrit dans un demi-cercle est observé et admis (démontré en 4e).",
+						"source": "Exemples 2026 p.25",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-061": {
+				"libelle": "Calculer l'aire d'un triangle.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Aire = côté × hauteur associée ÷ 2.",
+						"source": "Exemples 2026 p.25",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-062": {
+				"libelle": "Définir une hauteur d'un triangle (quel segment est la hauteur issue de A ?).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"5-063": {
+				"libelle": "Savoir que les hauteurs d'un triangle sont concourantes.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"5-064": {
+				"libelle": "Définir une médiane d'un triangle (quel segment est la médiane issue de A ?).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [],
+				"remarque": "Contradiction : la ressource 2016 (géométrie plane) dit que les autres droites remarquables que les hauteurs « ne sont pas un attendu » ; le BO en vigueur inscrit les médianes en 5e."
+			},
+			"5-065": {
+				"libelle": "Démontrer qu'une médiane partage un triangle en deux triangles d'aires égales.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"5-066": {
+				"libelle": "Utiliser les propriétés des hauteurs et des médianes dans le cas de triangles particuliers.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"5-067": {
+				"libelle": "Définir le parallélogramme.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": []
+			},
+			"5-068": {
+				"libelle": "Construire des parallélogrammes.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": []
+			},
+			"5-069": {
+				"libelle": "Connaitre les propriétés caractéristiques des côtés opposés et des diagonales d'un parallélogramme.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": []
+			},
+			"5-070": {
+				"libelle": "Donner la nature d'un quadrilatère à l'aide d'une propriété de ses côtés ou de ses diagonales.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": []
+			},
+			"5-071": {
+				"libelle": "Définir les parallélogrammes particuliers (rectangle, losange, carré).",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Rectangle = parallélogramme ayant un angle droit ; losange = deux côtés consécutifs égaux ; carré = rectangle et losange.",
+						"source": "Exemples 2026 p.26",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-072": {
+				"libelle": "Connaitre les propriétés caractéristiques des parallélogrammes particuliers (rectangle, losange, carré).",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": []
+			},
+			"5-073": {
+				"libelle": "Savoir calculer l'aire d'un parallélogramme.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Aire = base × hauteur, à partir de l'aire du rectangle.",
+						"source": "Exemples 2026 p.26",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-074": {
+				"libelle": "Résoudre des problèmes faisant appel à des conversions d'unités de longueur et d'unités d'aires.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Unités de longueur et d'aire.",
+						"detail": {
+							"liste": ["longueur", "aire"]
+						},
+						"source": "BO c4 p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"5-075": {
+				"libelle": "Recueillir et organiser des données.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-076": {
+				"libelle": "Calculer des effectifs à partir de données.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-077": {
+				"libelle": "Lire une donnée sur un graphique (quelle est la valeur en 2020 ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-078": {
+				"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un tableau.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-079": {
+				"libelle": "Choisir une représentation adaptée à ce qu'il convient de mettre en avant.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-080": {
+				"libelle": "Calculer la moyenne simple d'une série de données (12, 15, 9, 14 → ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Moyenne simple seulement (pondérée : 4e).",
+						"source": "BO c4 p.16-17",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Données souvent entières ; la moyenne peut être non entière (329 SMS / 14 jours = 23,5).",
+						"source": "Exemples 2026 p.34",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : les Attendus 5e 2019 (p.5) demandent la moyenne « simple ou pondérée » ; le BO en vigueur met la pondérée en 4e."
+			},
+			"5-082": {
+				"libelle": "Utiliser le vocabulaire des probabilités dans des contextes concrets : expérience aléatoire, issue, évènement.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": []
+			},
+			"5-083": {
+				"libelle": "Attribuer des probabilités dans des cas simples (équiprobabilité).",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Une épreuve, équiprobabilité ; probabilité sous forme de fraction, de décimal ou de pourcentage.",
+						"detail": {
+							"liste": ["fraction", "décimal", "pourcentage"]
+						},
+						"source": "BO c4 p.17",
+						"force": "BO"
+					}
+				]
+			},
+			"5-084": {
+				"libelle": "Répéter matériellement une expérience aléatoire simple. Enregistrer les résultats observés dans un tableau d'effectifs et de fréquences.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Expérience simple réellement répétée (ex. vingt lancers d'une pièce ou d'un dé).",
+						"source": "Exemples 2026 p.35",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-085": {
+				"libelle": "Utiliser des proportions, des pourcentages.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Pourcentages simples : automatismes 1 %, 10 %, 50 % ; attendus 10 %, 25 %, 50 %.",
+						"detail": {
+							"liste": ["1 %", "10 %", "25 %", "50 %"]
+						},
+						"source": "BO c4 p.8 ; Attendus 5e 2019 p.6",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Sans coefficient multiplicateur (4e).",
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			},
+			"5-086": {
+				"libelle": "Calculer une proportion ou un pourcentage (part du tout : 12 sur 48 = ? %).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Proportion d'un effectif en pourcentage (ex. 6 voix sur 24 ; 22 sur 40).",
+						"source": "BO c4 p.18 ; Exemples 2026 p.40",
+						"force": "BO"
+					}
+				]
+			},
+			"5-087": {
+				"libelle": "Identifier des situations de proportionnalité dans des contextes concrets (prix, recettes, distances, échelles).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Contextes : prix, recettes, distances, échelles.",
+						"source": "BO c4 p.18",
+						"force": "BO"
+					}
+				]
+			},
+			"5-088": {
+				"libelle": "Utiliser un coefficient de proportionnalité dans des contextes concrets (prix unitaire, vitesse moyenne, échelle, etc.).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers, décimaux, fractions ou quotients, « mais doivent rester simples » ; unités conservées.",
+						"source": "Exemples 2026 p.40",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-089": {
+				"libelle": "Représenter une situation de proportionnalité par un tableau ou un graphique.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tableau à deux lignes (ou colonnes) associé à une situation concrète ; pas de tableau de nombres décontextualisé.",
+						"source": "Exemples 2026 p.40",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-090": {
+				"libelle": "Reconnaître une situation de proportionnalité à partir d'un tableau (quotients égaux).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Tableau à deux lignes (ou colonnes) associé à une situation concrète ; pas de tableau de nombres décontextualisé.",
+						"source": "Exemples 2026 p.40",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-091": {
+				"libelle": "Reconnaitre graphiquement qu'un nuage de points est ou n'est pas associé à une situation de proportionnalité entre données discrètes.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": []
+			},
+			"5-092": {
+				"libelle": "Employer l'expression « en fonction de » dans des contextes concrets ou mathématiques.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-093": {
+				"libelle": "Produire un tableau de valeurs.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-094": {
+				"libelle": "Lire une donnée dans un tableau de valeurs (quelle valeur correspond à 3 ?).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-095": {
+				"libelle": "Placer dans un repère orthogonal donné des points correspondant à un tableau de valeurs.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-096": {
+				"libelle": "Lire une donnée sur un graphique cartésien, courbe ou nuage de points (quelle est l'ordonnée du point d'abscisse 2 ?).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-097": {
+				"libelle": "Traduire la relation de dépendance entre deux grandeurs par un tableau de valeurs à partir d'une formule.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Formule donnée (distance de freinage, température ressentie…).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-098": {
+				"libelle": "Produire une formule simple représentant la dépendance de deux grandeurs.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "format",
+						"borne": "Formule simple (aire du carré de côté c ; volume d'un cylindre de rayon 3 cm en fonction de sa hauteur).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-099": {
+				"libelle": "Caractériser graphiquement la proportionnalité.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Droite passant par l'origine.",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-100": {
+				"libelle": "Manipuler des instructions simples et les séquencer.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : les Attendus 5e 2019 (niveau 1, p.12) incluent les instructions conditionnelles ; le BO en vigueur les met en 4e."
+			},
+			"5-101": {
+				"libelle": "Identifier les entrées et sorties d'un programme.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"5-102": {
+				"libelle": "Représenter des formules sous la forme d'une expression informatique dans un langage de programmation par blocs.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"5-103": {
+				"libelle": "Calculer la valeur de formules à l'aide d'une suite d'instruction dans un langage de programmation par blocs.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"5-104": {
+				"libelle": "Prévoir la valeur d'une expression informatique avant son exécution.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"5-105": {
+				"libelle": "Analyser un programme simple donné et modifier ses paramètres.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"5-106": {
+				"libelle": "Effectuer une boucle inconditionnelle simple permettant de répéter une séquence linéaire d'instructions un nombre précis de fois.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programmation par blocs ; variable en lecture d'une donnée saisie seulement ; pas d'instruction conditionnelle.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Boucle inconditionnelle simple « répéter n fois » d'une séquence linéaire.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"5-107": {
+				"libelle": "Exploiter les relations k(a + b) = ka + kb ou k(a − b) = ka − kb pour développer une expression littérale.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Distributivité simple seulement : k(a + b), k(a − b) (double distributivité : 3e).",
+						"source": "BO c4 p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Réduction de ax + bx avec a, b décimaux, attention au cas b = 1.",
+						"detail": {
+							"ensemble": "décimaux"
+						},
+						"source": "Exemples 2026 p.13",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Facteur k décimal positif (produit de relatifs : 4e).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Facteur k décimal positif (produit de relatifs : 4e)."
+			},
+			"5-108": {
+				"libelle": "Calculer le volume du prisme droit.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "V = aire de base × hauteur.",
+						"source": "Exemples 2026 p.23",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-109": {
+				"libelle": "Lire une donnée dans un tableau (combien d'élèves ont 12 ans ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-110": {
+				"libelle": "Lire une donnée sur un diagramme en barres (combien d'élèves ont 12 ans ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-111": {
+				"libelle": "Lire une donnée sur un diagramme circulaire (quelle part des élèves vient à vélo ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Diagramme circulaire sans mesure d'angle supérieure à 180° (diagramme semi-circulaire aussi).",
+						"source": "Attendus 5e 2019 p.5",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Borne issue des Attendus 2019 seulement (non contredite par le BO, mais non reprise par l'accompagnement 2026)."
+			},
+			"5-112": {
+				"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme en barres.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-113": {
+				"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un diagramme circulaire.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Diagramme circulaire sans mesure d'angle supérieure à 180° (diagramme semi-circulaire aussi).",
+						"source": "Attendus 5e 2019 p.5",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Borne issue des Attendus 2019 seulement (non contredite par le BO, mais non reprise par l'accompagnement 2026)."
+			},
+			"5-114": {
+				"libelle": "Représenter, sur papier ou à l'aide d'un tableur-grapheur, des données sous la forme d'un graphique cartésien.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-115": {
+				"libelle": "Savoir calculer l'aire de figures complexes.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Figures complexes construites à partir de parallélogrammes, triangles et disques.",
+						"source": "BO c4 p.13 ; Exemples 2026 p.26",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-116": {
+				"libelle": "Traduire une succession donnée d'opérations en une seule expression (ajoute 3 à 5, puis multiplie le résultat par 2 : écris le calcul).",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Une seule expression, avec ou sans parenthèses.",
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-117": {
+				"libelle": "Traduire un programme de calcul en une seule expression (choisis 5, ajoute 3, multiplie par 2 : écris l'expression).",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Une seule expression, avec ou sans parenthèses.",
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-118": {
+				"libelle": "Identifier les termes d'une somme ou les facteurs d'un produit.",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire : termes d'une somme, facteurs d'un produit.",
+						"detail": {
+							"liste": ["terme", "facteur"]
+						},
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-119": {
+				"libelle": "Connaître le critère de divisibilité par 9 (4 518 est-il divisible par 9 ?).",
+				"rubrique": "Nombres et calculs > Opérations",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Critère de divisibilité par 9 sur des entiers naturels.",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c4 p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"5-120": {
+				"libelle": "Donner la valeur absolue d'un nombre relatif (valeur absolue de −3 = ?).",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Valeur absolue admise en mots (« valeur absolue de −3 »), appui sur la droite graduée ; ni la notation |a| ni calcul sur |a| (|−3|, |x| = 3, |a − b| hors point).",
+						"detail": {
+							"formulation": "en mots",
+							"notation_barres": false,
+							"calcul_sur_valeur_absolue": false
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-1) ; d'après Exemples 2026 p.10",
+						"force": "décision"
+					}
+				],
+				"remarque": "Les Exemples 2026 disent que le terme « ne fait pas l'objet d'exercice » et que la notation n'est pas exigible, mais aussi que l'élève « donne la valeur absolue »."
+			},
+			"5-121": {
+				"libelle": "Placer sur une droite graduée un point d'abscisse relative donnée.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Abscisses décimales relatives « simples » ; graduations en dixièmes, moitiés, quarts, tiers possibles.",
+						"source": "Exemples 2026 p.10 ; BO c4 p.8",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-122": {
+				"libelle": "Ranger des nombres décimaux relatifs dans l'ordre croissant ou décroissant.",
+				"rubrique": "Nombres et calculs > Nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; méthode signe + distance à zéro, droite graduée en appui.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.10",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-123": {
+				"libelle": "Soustraire des fractions de dénominateurs quelconques (2/3 − 1/4 = ?).",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Fractions positives (rationnels relatifs : 4e).",
+						"detail": {
+							"ensemble": "fractions positives"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Dénominateurs quelconques ; dénominateur commun cherché parmi les multiples (3/8 + 7/6 ; 5/12 − 2/9). Automatismes : 3/5 + 4/5 ; 1 − 2/3 ; 4/7 − 2/21 ; 3 + 2/5 ; 2/5 + 1/4.",
+						"detail": {
+							"denominateurs": "quelconques (simples)"
+						},
+						"source": "BO c4 p.8 ; Exemples 2026 p.12",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e).",
+						"source": "BO c4 p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Contradiction : Attendus 5e 2019 (p.3) et Repères 2019 (p.2) limitent aux dénominateurs égaux ou multiples ; le BO en vigueur dit « dénominateurs quelconques » (et le libellé en prod aussi). Lecture déduite (texte implicite) : Fractions positives (rationnels relatifs : 4e). | La simplification du résultat n'est pas exigible (simplifier : 4e ; irréductible : 3e). Fractions recollées depuis le PDF (BO c4 p.8, Exemples 2026 p.12) : contrôle visuel par Claude décidé le 2026-10-18 (question c4-8), écarts signalés à David ; tant qu'il n'est pas fait, ces exemples ne servent pas à refuser un modèle."
+			},
+			"5-124": {
+				"libelle": "Produire des formules de grandeurs : aire, périmètre (aire d'un rectangle de longueur L et de largeur l : L × l).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Formules de grandeurs : aire, périmètre.",
+						"detail": {
+							"liste": ["aire", "périmètre"]
+						},
+						"source": "BO c4 p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"5-125": {
+				"libelle": "Modéliser par une équation du type ax = c un problème relevant d'une multiplication à trou.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Type ax = c seulement.",
+						"detail": {
+							"liste": ["ax = c"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "a, b, c décimaux ou fractions simples ; méthode arithmétique (opération inverse), solution vérifiée.",
+						"detail": {
+							"ensemble": "décimaux, fractions simples"
+						},
+						"source": "Exemples 2026 p.13-14",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Cas particuliers 2x = 0 et x/2 = 0 explicités.",
+						"source": "Exemples 2026 p.13",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "a et c positifs (le quotient de relatifs est de 4e).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : a et c positifs (le quotient de relatifs est de 4e)."
+			},
+			"5-126": {
+				"libelle": "Résoudre une équation du type ax = c par l'opération inverse (3x = 12 : x = 12 ÷ 3).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Type ax = c seulement.",
+						"detail": {
+							"liste": ["ax = c"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "a, b, c décimaux ou fractions simples ; méthode arithmétique (opération inverse), solution vérifiée.",
+						"detail": {
+							"ensemble": "décimaux, fractions simples"
+						},
+						"source": "Exemples 2026 p.13-14",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Cas particuliers 2x = 0 et x/2 = 0 explicités.",
+						"source": "Exemples 2026 p.13",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "a et c positifs (le quotient de relatifs est de 4e).",
+						"detail": {
+							"ensemble": "décimaux positifs"
+						},
+						"source": "BO c4 p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : a et c positifs (le quotient de relatifs est de 4e)."
+			},
+			"5-127": {
+				"libelle": "Placer sur une droite graduée un point d'abscisse donnée.",
+				"rubrique": "Espace et géométrie > Repérage sur une droite et dans le plan",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Abscisses décimales (relatives, en lien avec le thème des relatifs).",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "BO c4 p.12 ; Exemples 2026 p.22",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-128": {
+				"libelle": "Placer un point de coordonnées données dans un repère orthogonal.",
+				"rubrique": "Espace et géométrie > Repérage sur une droite et dans le plan",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Coordonnées décimales relatives simples ; vocabulaire origine, axes, abscisse, ordonnée.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.22 ; Attendus 5e 2019 p.9",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-129": {
+				"libelle": "Convertir des unités de contenance et passer d'une unité de volume à une unité de contenance (1 L = 1 dm³).",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "1 L = 1 dm³ ; 1 000 L = 1 m³ (ex. 33 cL en cm³ ; 1 500 cm³ en L).",
+						"source": "Exemples 2026 p.23 ; Attendus 5e 2019 p.7",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-130": {
+				"libelle": "Savoir démontrer la somme des angles d'un triangle (démontre que la somme vaut 180°, sur papier).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Preuve par les angles alternes-internes ou la symétrie centrale.",
+						"source": "Exemples 2026 p.24",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-131": {
+				"libelle": "Tracer une hauteur d'un triangle.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"5-132": {
+				"libelle": "Tracer une médiane d'un triangle.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"5-133": {
+				"libelle": "Construire un parallélogramme à l'aide d'une propriété de ses côtés ou de ses diagonales.",
+				"rubrique": "Espace et géométrie > Parallélogrammes",
+				"bornes": []
+			},
+			"5-134": {
+				"libelle": "Calculer une fréquence (sous forme décimale, fractionnaire ou de pourcentage).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Fréquence sous forme décimale, fractionnaire ou de pourcentage.",
+						"detail": {
+							"liste": ["décimale", "fraction", "pourcentage"]
+						},
+						"source": "BO c4 p.16",
+						"force": "BO"
+					}
+				]
+			},
+			"5-135": {
+				"libelle": "Interpréter les données d'un graphique (entre quelles années la valeur a-t-elle le plus augmenté ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-136": {
+				"libelle": "Interpréter les données d'un tableau (quel âge est le plus fréquent ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-137": {
+				"libelle": "Interpréter les données d'un diagramme en barres (quel âge est le plus fréquent ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-138": {
+				"libelle": "Interpréter les données d'un diagramme circulaire (quel moyen de transport est le plus utilisé ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-139": {
+				"libelle": "Interpréter la moyenne simple d'une série de données (une moyenne de 12 veut-elle dire que chacun a 12 ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"5-140": {
+				"libelle": "Appliquer une proportion ou un pourcentage à une quantité (25 % de 48 = ?).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Pourcentages simples : automatismes 1 %, 10 %, 50 % ; attendus 10 %, 25 %, 50 %.",
+						"detail": {
+							"liste": ["1 %", "10 %", "25 %", "50 %"]
+						},
+						"source": "BO c4 p.8 ; Attendus 5e 2019 p.6",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Sans coefficient multiplicateur (4e).",
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			},
+			"5-141": {
+				"libelle": "Reconnaître une situation de proportionnalité à partir d'un graphique (points alignés avec l'origine).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Points alignés avec l'origine.",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-142": {
+				"libelle": "Interpréter les données d'un tableau de valeurs (la grandeur augmente-t-elle quand x augmente ?).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-143": {
+				"libelle": "Interpréter les données d'un graphique cartésien, courbe ou nuage de points (pour quelles valeurs la grandeur dépasse-t-elle 10 ?).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pas de notation fonctionnelle exigible (le professeur peut introduire A(c) = c²).",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"5-144": {
+				"libelle": "Reconnaître un cube, un pavé représenté en perspective cavalière.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace > Automatismes",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cube et pavé seulement.",
+						"detail": {
+							"liste": ["cube", "pavé droit"]
+						},
+						"source": "BO c4 p.12",
+						"force": "BO"
+					}
+				]
+			}
+		}
+	},
+	"4": {
+		"general": [
+			{
+				"aspect": "nombres",
+				"borne": "Décimaux relatifs pour les quatre opérations ; rationnels relatifs (quotients d'entiers relatifs).",
+				"detail": {
+					"ensemble": "décimaux relatifs, rationnels"
+				},
+				"source": "BO c4 p.9",
+				"force": "BO"
+			},
+			{
+				"aspect": "operandes",
+				"borne": "Puissances d'exposant entier naturel seulement (a⁰ = 1) ; exposants négatifs et notation scientifique en 3e.",
+				"detail": {
+					"exposants": {
+						"min": 0
+					}
+				},
+				"source": "BO c4 p.9-10 ; Exemples 2026 p.17",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations du premier degré ax + b = c et ax + b = cx + d ; pas d'inéquation, pas d'équation produit (3e).",
+				"source": "BO c4 p.10-11",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Distributivité simple seulement ; double distributivité et identités remarquables en 3e.",
+				"source": "BO c4 p.10-11",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Racine carrée : définition et encadrement ; aucune propriété algébrique des racines (√a × √b…).",
+				"source": "BO c4 p.10 ; Repères c4 2019 p.4",
+				"force": "accompagnement"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Pas de théorème de Thalès ni de trigonométrie (3e) ; translation sans définition ponctuelle.",
+				"source": "BO c4 p.14-15 ; Exemples 2026 p.28",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+				"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+				"force": "décision",
+				"detail": {
+					"notation_enonce": true,
+					"notation_reponse": false,
+					"exclus": ["image", "antécédent", "f : x ↦"]
+				}
+			}
+		],
+		"points": {
+			"4-001": {
+				"libelle": "Multiplier deux nombres relatifs : d'abord dans le cas où un seul des facteurs est négatif, puis, grâce à la distributivité, dans le cas où les deux facteurs sont négatifs.",
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; introduit sur des entiers puis étendu aux décimaux non entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.14",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Exemples : −3 × 4 + 5 ; (7 − 9) × (−2) ; 2,4 × (−0,5).",
+						"source": "Exemples 2026 p.14 ; Attendus 4e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-002": {
+				"libelle": "Diviser deux nombres relatifs.",
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; introduit sur des entiers puis étendu aux décimaux non entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.14",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Exemples : −12,8 : 2 ; −63 : (−0,7) ; 7,2 : (−5).",
+						"source": "Attendus 4e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-003": {
+				"libelle": "Savoir calculer un enchainement d'opérations avec des nombres relatifs.",
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs ; introduit sur des entiers puis étendu aux décimaux non entiers.",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "Exemples 2026 p.14",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Quatre opérations avec priorités : (−3) + (−4) × (+7) ; −5(2 − 7).",
+						"source": "Exemples 2026 p.15",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-004": {
+				"libelle": "Nommer un enchaînement d'opérations avec le vocabulaire (somme, produit, quotient…) : (3 + 5) × 2 est « le produit de la somme de 3 et 5 par 2 ».",
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire somme, différence, produit, quotient.",
+						"detail": {
+							"liste": ["somme", "différence", "produit", "quotient"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"4-005": {
+				"libelle": "Simplifier une fraction.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Simplifier, sans exiger la forme irréductible (irréductible : 3e).",
+						"source": "BO c4 p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Contradiction : Attendus 4e 2019 (p.3) et Repères 2019 (p.4) font simplifier à l'aide des nombres premiers < 100 ; le BO en vigueur ne cite pas les nombres premiers en 4e. Lecture déduite (texte implicite) : Simplifier, sans exiger la forme irréductible (irréductible : 3e)."
+			},
+			"4-006": {
+				"libelle": "Définir la notion de nombre rationnel : le quotient de deux nombres entiers relatifs.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Quotient de deux entiers relatifs, dénominateur non nul ; un rationnel peut être entier, décimal, ou ni l'un ni l'autre.",
+						"detail": {
+							"ensemble": "rationnels"
+						},
+						"source": "BO c4 p.9 ; Exemples 2026 p.15",
+						"force": "BO"
+					}
+				]
+			},
+			"4-007": {
+				"libelle": "Exprimer l'opposé d'un nombre rationnel.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "−a/b = −(a/b), établi sur des exemples génériques.",
+						"source": "Exemples 2026 p.15",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-008": {
+				"libelle": "Calculer le produit de nombres rationnels.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Produit de deux rationnels (fractions relatives).",
+						"detail": {
+							"ensemble": "rationnels"
+						},
+						"source": "Exemples 2026 p.15",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-009": {
+				"libelle": "Calculer la fraction d'une fraction, d'un nombre ou d'une quantité (2/3 de 3/5 = ?).",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "La fraction d'une fraction se calcule par le produit (2/3 de 4/5 = 8/15).",
+						"source": "Exemples 2026 p.16",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-010": {
+				"libelle": "Définir l'inverse d'un nombre et connaitre sa notation.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inverse de a ≠ 0, noté 1/a.",
+						"source": "Exemples 2026 p.16",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-011": {
+				"libelle": "Déterminer l'inverse d'une fraction.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inverse de a/b (a, b non nuls) : b/a.",
+						"source": "Exemples 2026 p.16",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-012": {
+				"libelle": "Diviser des fractions.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Diviser par une fraction revient à multiplier par son inverse.",
+						"source": "Exemples 2026 p.16",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-013": {
+				"libelle": "Calculer la valeur d'expressions comportant plusieurs opérations avec des fractions.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Enchaînements avec priorités, ex. 7/4 − 3/4 × 9/8.",
+						"source": "Exemples 2026 p.16",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-014": {
+				"libelle": "Résoudre des problèmes mobilisant les opérations sur les fractions : addition, soustraction, multiplication, division, inverse.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Addition, soustraction, multiplication, division, inverse.",
+						"source": "BO c4 p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"4-015": {
+				"libelle": "Définir les puissances d'exposant positif d'un nombre a.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Exposant entier naturel ; a⁰ = 1 par convention ; pas d'exposant négatif.",
+						"detail": {
+							"exposants": {
+								"min": 0,
+								"ensemble": "entiers naturels"
+							}
+						},
+						"source": "BO c4 p.10 ; Exemples 2026 p.17",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : Attendus 4e 2019 (p.2) et ressource 2016 (puissances) placent les puissances de 10 d'exposant négatif, la notation scientifique et les préfixes nano→giga en 4e ; le BO en vigueur les place en 3e."
+			},
+			"4-016": {
+				"libelle": "Multiplier des puissances d'exposant entier naturel d'un même nombre entre elles.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "m, n entiers naturels.",
+						"detail": {
+							"exposants": {
+								"min": 0
+							}
+						},
+						"source": "Exemples 2026 p.17",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "format",
+						"borne": "aᵐ × aⁿ = aᵐ⁺ⁿ, découverte sur des exemples génériques.",
+						"source": "Exemples 2026 p.17",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.4) et ressource 2016 disent que la connaissance des formules générales sur les puissances « n'est pas un attendu » ; l'accompagnement 2026 donne les formules."
+			},
+			"4-017": {
+				"libelle": "Multiplier des puissances d'un même exposant entier naturel de deux nombres entre elles.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "m, n entiers naturels.",
+						"detail": {
+							"exposants": {
+								"min": 0
+							}
+						},
+						"source": "Exemples 2026 p.17",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "format",
+						"borne": "(ab)ⁿ = aⁿbⁿ.",
+						"source": "Exemples 2026 p.17",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.4) et ressource 2016 disent que la connaissance des formules générales sur les puissances « n'est pas un attendu » ; l'accompagnement 2026 donne les formules."
+			},
+			"4-018": {
+				"libelle": "Résoudre des problèmes faisant intervenir des puissances.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "m, n entiers naturels.",
+						"detail": {
+							"exposants": {
+								"min": 0
+							}
+						},
+						"source": "Exemples 2026 p.17",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-019": {
+				"libelle": "Comprendre et connaitre la définition de la racine carrée d'un nombre positif.",
+				"rubrique": "Nombres et calculs > Racine carrée",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Côté d'un carré d'aire carré parfait ≤ 144, mentalement ; carrés des entiers de 0 à 12.",
+						"detail": {
+							"max": 144
+						},
+						"source": "Exemples 2026 p.17 ; BO c4 p.10",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Racine carrée d'un nombre positif quelconque (√2, √20 dans le point) : « nombre entier positif » (Exemples 2026 p.17) est une coquille.",
+						"detail": {
+							"ensemble": "nombres positifs"
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-7) ; d'après BO c4 p.10",
+						"force": "décision"
+					}
+				],
+				"remarque": "La borne des carrés parfaits ≤ 144 vaut pour le calcul mental."
+			},
+			"4-020": {
+				"libelle": "Encadrer la racine carrée d'un entier par deux nombres entiers consécutifs.",
+				"rubrique": "Nombres et calculs > Racine carrée",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Racine d'un entier encadrée par deux entiers consécutifs (aire 20 cm² → entre 4 et 5).",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c4 p.10 ; Exemples 2026 p.17",
+						"force": "BO"
+					}
+				]
+			},
+			"4-021": {
+				"libelle": "Produire des formules et tester leur vraisemblance : nombres pairs/impairs (un nombre pair : 2n).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Pair : 2n ; impair : 2n + 1, n entier.",
+						"source": "Exemples 2026 p.18",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-022": {
+				"libelle": "Connaitre et utiliser la distributivité simple pour développer une expression algébrique.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Distributivité simple dans les quatre sens k(a + b), (a + b)k ; rôle du facteur −1 ; expressions à une variable pouvant contenir x² (x² − x = x(x − 1)).",
+						"source": "Exemples 2026 p.18",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de double distributivité (3e).",
+						"source": "BO c4 p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"4-023": {
+				"libelle": "Utiliser le calcul algébrique pour produire des démonstrations.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ex. équivalence de programmes de calcul, somme de 3 entiers consécutifs multiple de 3.",
+						"source": "Exemples 2026 p.18",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-024": {
+				"libelle": "Résoudre une équation du premier degré du type ax + b = c.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "ax + b = c avec a, b, c entiers relatifs (4x + 2 = 0 ; 5x − 7 = 3).",
+						"detail": {
+							"ensemble": "entiers relatifs"
+						},
+						"source": "Exemples 2026 p.18 ; Attendus 4e 2019 p.4",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : la ressource 2016 (calcul littéral) dit que la méthode algébrique de résolution « est explicitée en classe de 3e » ; le BO en vigueur la place en 4e."
+			},
+			"4-025": {
+				"libelle": "Résoudre une équation du premier degré du type ax + b = cx + d.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Coefficients entiers relatifs (2x + 5 = −x − 4 ; 5x − 6 = 3x + 2).",
+						"detail": {
+							"ensemble": "entiers relatifs"
+						},
+						"source": "Attendus 4e 2019 p.4",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Équation du premier degré à une inconnue (pas de produit nul ni de x² : 3e).",
+						"source": "BO c4 p.10-11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : la ressource 2016 (calcul littéral) dit que la méthode algébrique de résolution « est explicitée en classe de 3e » ; le BO en vigueur la place en 4e."
+			},
+			"4-026": {
+				"libelle": "Formuler des conjectures à l'aide d'un algorithme ou d'un tableur pour résoudre de manière exacte ou approchée une équation.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Résolution exacte ou approchée au tableur ou par algorithme.",
+						"source": "Exemples 2026 p.18",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-027": {
+				"libelle": "Reconnaitre des solides (pyramide, cône de révolution).",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pyramide, cône de révolution.",
+						"detail": {
+							"liste": ["pyramide", "cône de révolution"]
+						},
+						"source": "BO c4 p.14",
+						"force": "BO"
+					}
+				]
+			},
+			"4-028": {
+				"libelle": "Construire et mettre en relation différentes représentations des solides (pavé droit, cube, cylindre de révolution, prisme droit, pyramides et cônes de révolution).",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pavé droit, cube, cylindre de révolution, prisme droit, pyramides, cônes de révolution.",
+						"source": "BO c4 p.14",
+						"force": "BO"
+					}
+				]
+			},
+			"4-029": {
+				"libelle": "Connaître le volume d'une pyramide (V = B × h / 3).",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "V = aire de base × hauteur ÷ 3.",
+						"source": "Exemples 2026 p.27",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-030": {
+				"libelle": "Comprendre l'effet d'une translation.",
+				"rubrique": "Espace et géométrie > Parallélogrammes et translations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "La définition ponctuelle de la translation n'est pas au programme de 4e (elle l'est en 3e).",
+						"source": "Exemples 2026 p.28",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-031": {
+				"libelle": "Faire le lien entre la translation et les parallélogrammes, les angles.",
+				"rubrique": "Espace et géométrie > Parallélogrammes et translations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "La définition ponctuelle de la translation n'est pas au programme de 4e (elle l'est en 3e).",
+						"source": "Exemples 2026 p.28",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-032": {
+				"libelle": "Connaitre et utiliser les propriétés de conservations des translations.",
+				"rubrique": "Espace et géométrie > Parallélogrammes et translations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "La définition ponctuelle de la translation n'est pas au programme de 4e (elle l'est en 3e).",
+						"source": "Exemples 2026 p.28",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Conservation des distances et des angles (et du parallélisme, des aires).",
+						"source": "Exemples 2026 p.28 ; Attendus 4e 2019 p.8",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-033": {
+				"libelle": "Connaitre les trois théorèmes relatifs à la droite des milieux dans un triangle.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Les trois théorèmes : droite des milieux parallèle au 3e côté ; parallèle par un milieu coupe le 3e côté en son milieu ; segment des milieux = moitié du 3e côté.",
+						"source": "Exemples 2026 p.28",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-034": {
+				"libelle": "Connaitre le théorème de Pythagore.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Calculer un côté connaissant les deux autres ; résultat exact (√) ou approché à la calculatrice.",
+						"source": "Exemples 2026 p.28 ; Attendus 4e 2019 p.3",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Les Attendus 4e 2019 (p.9-10) ajoutent le cosinus et Thalès (triangles emboîtés) en 4e : contradiction avec le BO en vigueur (3e)."
+			},
+			"4-035": {
+				"libelle": "Mener un travail de logique sur la réciproque et la contraposée : savoir que si une propriété est vraie alors sa contraposée l'est aussi, sans pour autant que sa réciproque soit vraie.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"4-036": {
+				"libelle": "Caractériser un triangle rectangle à l'aide de son cercle circonscrit, par son inscription dans un demi-cercle dont le diamètre est un côté du triangle.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriété démontrée en 4e.",
+						"source": "Exemples 2026 p.29",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-037": {
+				"libelle": "Déterminer le centre du cercle circonscrit d'un triangle rectangle.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"4-038": {
+				"libelle": "Construire des rectangles sans équerre.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": []
+			},
+			"4-039": {
+				"libelle": "Calculer une moyenne pondérée dans le cas d'une série discrète de petits effectifs présentée sous forme de données brutes, d'un tableau ou d'un diagramme en barres.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Série discrète de petits effectifs ; données brutes, tableau ou diagramme en barres.",
+						"source": "BO c4 p.17",
+						"force": "BO"
+					}
+				]
+			},
+			"4-040": {
+				"libelle": "Déterminer la médiane d'une série de petit effectif présentée sous forme de données brutes (3, 7, 8, 12, 15 → ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Série de petit effectif en données brutes (effectif total ≤ 30, pair ou impair).",
+						"detail": {
+							"max": 30
+						},
+						"source": "BO c4 p.17 ; Attendus 4e 2019 p.5",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Médiane = toute valeur qui partage la série ordonnée en deux sous-séries de même effectif ; pour un effectif pair, elle n'est pas unique.",
+						"source": "Exemples 2026 p.36",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "format",
+						"borne": "Effectif pair : le correcteur accepte toute valeur comprise entre les deux valeurs centrales, bornes comprises (3, 7, 8, 12 : de 7 à 8) (ou le modèle ne tire que des effectifs impairs).",
+						"detail": {
+							"effectif_pair": "toute valeur entre les deux valeurs centrales, bornes comprises",
+							"alternative": "effectifs impairs seulement"
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-3), bornes précisées le 2026-10-20 ; d'après Exemples 2026 p.36",
+						"force": "décision"
+					}
+				],
+				"remarque": "Un modèle à effectif pair qui n'accepte que la demi-somme est à corriger."
+			},
+			"4-041": {
+				"libelle": "Calculer l'étendue d'une série présentée sous forme de données brutes, d'un tableau ou d'un diagramme.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Données brutes, tableau, diagramme en barres, diagramme circulaire.",
+						"source": "BO c4 p.17",
+						"force": "BO"
+					}
+				]
+			},
+			"4-042": {
+				"libelle": "Comprendre l'évolution de la médiane et de la moyenne quand on ajoute une valeur extrême.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"4-043": {
+				"libelle": "Résoudre des problèmes faisant intervenir les différents indicateurs.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"4-044": {
+				"libelle": "Résoudre des problèmes de comparaison de séries statistiques.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"4-045": {
+				"libelle": "Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonctions somme, moyenne, médiane, max, min, nb du tableur.",
+						"source": "Exemples 2026 p.36",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-046": {
+				"libelle": "Utiliser le vocabulaire et les notations ensemblistes pour décrire une expérience aléatoire dans des cas simples et définir la notion d'évènement.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Univers, évènements comme ensembles d'issues ; complémentaire, ∪, ∩, ∅.",
+						"source": "BO c4 p.17 ; Exemples 2026 p.37",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : la ressource 2016 (probabilités) dit que « la formalisation ensembliste n'est pas un attendu » ; le BO en vigueur l'inscrit en 4e."
+			},
+			"4-047": {
+				"libelle": "Définir : complémentaire, réunion, intersection, ensemble vide (évènement impossible).",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Univers, évènements comme ensembles d'issues ; complémentaire, ∪, ∩, ∅.",
+						"source": "BO c4 p.17 ; Exemples 2026 p.37",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : la ressource 2016 (probabilités) dit que « la formalisation ensembliste n'est pas un attendu » ; le BO en vigueur l'inscrit en 4e."
+			},
+			"4-048": {
+				"libelle": "Calculer la probabilité d'un évènement.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": []
+			},
+			"4-049": {
+				"libelle": "Calculer la probabilité d'un évènement dans des exemples simples d'expériences aléatoires à deux épreuves (par exemple, lancer de deux pièces, d'une pièce et d'un dé, de deux dés, etc.).",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux épreuves : deux pièces, une pièce et un dé, deux dés… ; issues équiprobables justifiées.",
+						"source": "BO c4 p.17",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Dénombrement par tableau ou arbre.",
+						"source": "Exemples 2026 p.37",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.7) mettent les deux épreuves en 3e « dans des cas très simples », avec des tableaux uniquement (« la notion d'arbre ne figurant pas au programme ») ; BO en vigueur (4e) et accompagnement 2026 (arbre admis)."
+			},
+			"4-050": {
+				"libelle": "À partir de la répétition d'une expérience aléatoire, réalisée matériellement ou simulée, comparer des graphiques de distributions (fréquentielle et probabiliste).",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": []
+			},
+			"4-051": {
+				"libelle": "Observer la fluctuation des fréquences pour un nombre de répétitions fixé de l'expérience aléatoire.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": []
+			},
+			"4-052": {
+				"libelle": "Utiliser des grandeurs quotients, avec ou sans unités.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Grandeurs quotients : €/L, €/kg, €/m, vitesse, masse volumique, consommation.",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-053": {
+				"libelle": "Comparer deux nombres ou deux grandeurs à l'aide de leur rapport ou ratio.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": []
+			},
+			"4-054": {
+				"libelle": "Exprimer la proportionnalité entre deux suites de nombres par des égalités de rapports ou sous forme de ratio.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "a/2 = b/3 = c/7 ; ratio 2 : 3 : 7.",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-055": {
+				"libelle": "Déterminer une quatrième proportionnelle.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Produit en croix (a/b = c/d ⇔ ad = bc), sans exclusivité des autres procédures.",
+						"source": "Exemples 2026 p.42",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-056": {
+				"libelle": "Calculer avec des pourcentages.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Automatismes : a % de c pour a = 100, 50, 25, 10, 1 ; 20 % de 120.",
+						"detail": {
+							"liste": [100, 50, 25, 10, 1]
+						},
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			},
+			"4-057": {
+				"libelle": "Traduire une augmentation de t % par un coefficient multiplicateur (+ 20 % → × 1,2).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Augmenter de t % = multiplier par 1 + t/100 (+15 % → × 1,15).",
+						"source": "Exemples 2026 p.43",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-058": {
+				"libelle": "Définir le coefficient multiplicateur.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": []
+			},
+			"4-059": {
+				"libelle": "Résoudre des problèmes de partage proportionnel.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Partage en parts proportionnelles à a, b (ou a, b, c) : ratio 5 : 11, 4 : 3 : 2.",
+						"source": "Exemples 2026 p.43",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-060": {
+				"libelle": "Appliquer un programme de calcul à plusieurs étapes à un nombre donné.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Programme à deux (plusieurs) étapes appliqué à un nombre « simple ».",
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			},
+			"4-061": {
+				"libelle": "Savoir retrouver le nombre de départ après avoir remonté un programme de calcul simple.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Programme de calcul simple.",
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			},
+			"4-062": {
+				"libelle": "Produire une formule littérale représentant la dépendance d'une grandeur en fonction d'une autre.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
+			},
+			"4-063": {
+				"libelle": "Représenter l'expression d'une grandeur en fonction d'une autre par un graphique.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
+			},
+			"4-064": {
+				"libelle": "Comprendre qu'une formule, un graphique ou un tableau de valeurs traduisent la dépendance d'une grandeur en fonction d'une autre.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
+			},
+			"4-065": {
+				"libelle": "Représenter des conditions simples.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Conditions simples avec les opérateurs <, > et =.",
+						"detail": {
+							"liste": ["<", ">", "="]
+						},
+						"source": "Exemples 2026 p.48",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-066": {
+				"libelle": "Écrire des instructions conditionnelles.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Conditions simples avec les opérateurs <, > et =.",
+						"detail": {
+							"liste": ["<", ">", "="]
+						},
+						"source": "Exemples 2026 p.48",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-067": {
+				"libelle": "Manipuler une variable.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Une seule variable (ex. accumulation dans une boucle).",
+						"source": "Exemples 2026 p.48",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-068": {
+				"libelle": "Écrire un programme simple donné pour réaliser un objectif ou résoudre un problème.",
+				"rubrique": "La pensée informatique",
+				"bornes": []
+			},
+			"4-069": {
+				"libelle": "Modifier un programme donné pour changer son comportement.",
+				"rubrique": "La pensée informatique",
+				"bornes": []
+			},
+			"4-070": {
+				"libelle": "Connaitre et utiliser la distributivité simple pour factoriser une expression algébrique.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Distributivité simple dans les quatre sens k(a + b), (a + b)k ; rôle du facteur −1 ; expressions à une variable pouvant contenir x² (x² − x = x(x − 1)).",
+						"source": "Exemples 2026 p.18",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de double distributivité (3e).",
+						"source": "BO c4 p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"4-071": {
+				"libelle": "Mettre en équation un problème à l'aide d'une équation du premier degré du type ax + b = cx + d.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Coefficients entiers relatifs (2x + 5 = −x − 4 ; 5x − 6 = 3x + 2).",
+						"detail": {
+							"ensemble": "entiers relatifs"
+						},
+						"source": "Attendus 4e 2019 p.4",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Équation du premier degré à une inconnue (pas de produit nul ni de x² : 3e).",
+						"source": "BO c4 p.10-11",
+						"force": "BO"
+					}
+				]
+			},
+			"4-072": {
+				"libelle": "Connaitre la réciproque et la contraposée du théorème de Pythagore.",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Le mot « contraposée » est attendu.",
+						"source": "Exemples 2026 p.28",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-073": {
+				"libelle": "Écrire l'enchaînement d'opérations décrit par une phrase (« le quotient de 12 par la somme de 2 et 4 » = ?).",
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire somme, différence, produit, quotient.",
+						"detail": {
+							"liste": ["somme", "différence", "produit", "quotient"]
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"4-074": {
+				"libelle": "Représenter la fraction d'une fraction ou d'une quantité (par un schéma).",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Représentation sur un carré unité ou un schéma en barres.",
+						"source": "Exemples 2026 p.16",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-075": {
+				"libelle": "Produire des formules et tester leur vraisemblance : aires de formes géométriques simples (aire d'un triangle de base b et de hauteur h).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Aires de formes géométriques simples (triangle de base b et hauteur h).",
+						"source": "BO c4 p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"4-076": {
+				"libelle": "Connaître le volume d'un cône de révolution (V = π r² h / 3).",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "V = πr²h ÷ 3.",
+						"source": "Exemples 2026 p.27",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-077": {
+				"libelle": "Interpréter la médiane d'une série de petit effectif (que dire des valeurs si la médiane vaut 8 ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Série de petit effectif en données brutes (effectif total ≤ 30, pair ou impair).",
+						"detail": {
+							"max": 30
+						},
+						"source": "BO c4 p.17 ; Attendus 4e 2019 p.5",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Médiane = toute valeur qui partage la série ordonnée en deux sous-séries de même effectif ; pour un effectif pair, elle n'est pas unique.",
+						"source": "Exemples 2026 p.36",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-078": {
+				"libelle": "Interpréter l'étendue d'une série (laquelle des deux classes a les notes les plus dispersées ?).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Données brutes, tableau, diagramme en barres, diagramme circulaire.",
+						"source": "BO c4 p.17",
+						"force": "BO"
+					}
+				]
+			},
+			"4-079": {
+				"libelle": "Calculer la probabilité de l'évènement contraire (P(non A) = 1 − P(A)).",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "P(non A) = 1 − P(A).",
+						"source": "BO c4 p.17",
+						"force": "BO"
+					}
+				]
+			},
+			"4-080": {
+				"libelle": "Traduire une diminution de t % par un coefficient multiplicateur (− 20 % → × 0,8).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Diminuer de t % = multiplier par 1 − t/100 (−20 % → × 0,8).",
+						"source": "Exemples 2026 p.43",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"4-081": {
+				"libelle": "Appliquer un programme de calcul à plusieurs étapes à une variable (écrire l'expression obtenue en fonction de x).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation fonctionnelle (A(c), p(t)) utilisable dans l'énoncé, jamais exigée dans la réponse ; vocabulaire image/antécédent et notation f : x ↦ réservés à la 3e.",
+						"detail": {
+							"notation_enonce": true,
+							"notation_reponse": false,
+							"exclus": ["image", "antécédent", "f : x ↦"]
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-6) ; d'après BO c4 p.18",
+						"force": "décision"
+					}
+				],
+				"remarque": "Le BO en vigueur (« utilisées progressivement dans tous les chapitres ») prime sur les Repères 2019 (« non formalisées en 4e »)."
+			},
+			"4-082": {
+				"libelle": "Somme des opposés : savoir que la somme de deux nombres opposés est nulle (−7,5 + 7,5 = 0).",
+				"rubrique": "Nombres et calculs > Opérations sur les nombres relatifs > Automatismes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Décimaux relatifs (−7,5 + 7,5 = 0).",
+						"detail": {
+							"ensemble": "décimaux relatifs"
+						},
+						"source": "BO c4 p.9",
+						"force": "BO"
+					}
+				]
+			}
+		}
+	},
+	"3": {
+		"general": [
+			{
+				"aspect": "nombres",
+				"borne": "Tous les nombres du cycle : décimaux relatifs, rationnels, racines carrées ; puissances d'exposant entier relatif.",
+				"source": "BO c4 p.10-11",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Aucune propriété algébrique des racines carrées n'est attendue (√20 n'a pas à être écrit 2√5).",
+				"source": "Repères c4 2019 p.4",
+				"force": "accompagnement"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Pas de rotation, d'homothétie, de triangles semblables, d'histogramme ni de repérage sur la sphère : présents dans les Attendus 3e 2019, absents du BO en vigueur.",
+				"source": "BO c4 p.15-20",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "« Aucune virtuosité calculatoire n'est attendue dans les développements et les factorisations. »",
+				"source": "Repères c4 2019 p.6",
+				"force": "accompagnement"
+			}
+		],
+		"points": {
+			"3-001": {
+				"libelle": "Mettre une fraction sous forme irréductible.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Forme irréductible par simplifications successives.",
+						"source": "Exemples 2026 p.18",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Automatismes : numérateur et dénominateur dans une même table (15/35 ; 63/14) ; exemples 2019 : 66/30, 12/51, 140/340.",
+						"source": "BO c4 p.11 ; Attendus 3e 2019 p.3",
+						"force": "BO"
+					}
+				]
+			},
+			"3-003": {
+				"libelle": "Résoudre des problèmes faisant appel à des fractions.",
+				"rubrique": "Nombres et calculs > Nombres rationnels",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Les quatre opérations sur les fractions.",
+						"source": "BO c4 p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"3-004": {
+				"libelle": "Définir les puissances d'exposant négatif d'un nombre.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "a⁻ⁿ = 1/aⁿ (a ≠ 0) ; a⁰ = 1.",
+						"detail": {
+							"exposants": {
+								"ensemble": "entiers relatifs"
+							}
+						},
+						"source": "Exemples 2026 p.19",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-005": {
+				"libelle": "Multiplier des puissances.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "aᵐ × aⁿ = aᵐ⁺ⁿ et aᵐ / aⁿ = aᵐ⁻ⁿ, m et n entiers relatifs, a non nul.",
+						"detail": {
+							"exposants": {
+								"ensemble": "entiers relatifs"
+							}
+						},
+						"source": "Exemples 2026 p.19",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "La puissance d'une puissance (aᵐ)ⁿ n'est pas citée.",
+						"source": "BO c4 p.10-11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.4) — « la connaissance des formules générales sur les produits ou quotients de puissances n'est pas un attendu » ; l'accompagnement 2026 donne les formules. Lecture déduite (texte implicite) : La puissance d'une puissance (aᵐ)ⁿ n'est pas citée."
+			},
+			"3-006": {
+				"libelle": "Déterminer la notation scientifique d'un nombre.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "A × 10ⁿ avec 1 ≤ A < 10 et n entier relatif, pour un nombre décimal.",
+						"detail": {
+							"exposants": {
+								"ensemble": "entiers relatifs"
+							}
+						},
+						"source": "Exemples 2026 p.19 ; ressource 2016 Puissances p.2",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-007": {
+				"libelle": "Résoudre des problèmes notamment en utilisant la notation scientifique.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Préfixes des puissances de dix de nano à giga, « en fonction des besoins ».",
+						"detail": {
+							"liste": ["nano", "micro", "milli", "kilo", "méga", "giga"]
+						},
+						"source": "BO c4 p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"3-008": {
+				"libelle": "Résoudre analytiquement des équations de la forme x² = a.",
+				"rubrique": "Nombres et calculs > Racine carrée",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "a > 0 : deux solutions −√a et √a ; a = 0 : une solution ; a < 0 : aucune ; ensemble des solutions explicité.",
+						"source": "Exemples 2026 p.20",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "format",
+						"borne": "Solutions exactes en √a, sans simplification exigée.",
+						"source": "Repères c4 2019 p.4",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Solutions exactes en √a, sans simplification exigée."
+			},
+			"3-009": {
+				"libelle": "Résoudre des problèmes utilisant la racine carrée.",
+				"rubrique": "Nombres et calculs > Racine carrée",
+				"bornes": []
+			},
+			"3-010": {
+				"libelle": "Factoriser un nombre entier positif : 60 = 2² × 3 × 5.",
+				"rubrique": "Nombres et calculs > Multiples et diviseurs > Automatismes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entier naturel (60 = 2² × 3 × 5 ; exemples 2019 : 306 ; 124 ; 2 220) ; au-delà, tableur ou programme.",
+						"detail": {
+							"ensemble": "entiers naturels"
+						},
+						"source": "BO c4 p.11 ; Attendus 3e 2019 p.3",
+						"force": "BO"
+					}
+				]
+			},
+			"3-011": {
+				"libelle": "Prendre l'opposé d'une expression : savoir que −(5 − 4x) = −5 + 4x.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique > Automatismes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "−(5 − 4x) = −5 + 4x.",
+						"source": "BO c4 p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"3-012": {
+				"libelle": "Simplifier des expressions produits ou des rapports comportant des facteurs communs.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Produits et rapports à facteurs communs : (a²b) × (bc) ; ab²/(a²b) ; πR²/(2πR).",
+						"source": "Exemples 2026 p.21",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-013": {
+				"libelle": "Utiliser la double distributivité pour développer des expressions.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "(a + b)(c + d), lien avec la distributivité simple ; ex. (2x − 3)(5x + 7).",
+						"source": "Exemples 2026 p.21 ; Attendus 3e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-014": {
+				"libelle": "Résoudre par le calcul une inéquation du premier degré du type ax ⩾ b (3x ⩾ 12).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Type ax ⩾ b (a non nul), pas ax + b ⩾ cx + d.",
+						"detail": {},
+						"source": "BO c4 p.11 ; Exemples 2026 p.21",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Les quatre sens d'inégalité (⩾, >, ⩽, <), a ≠ 0 éventuellement négatif (−2x < 6 dans le point).",
+						"detail": {
+							"liste": ["ax ⩾ b", "ax ⩽ b", "ax > b", "ax < b"],
+							"a_negatif": true
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-5) ; d'après BO c4 p.11 ; Exemples 2026 p.21",
+						"force": "décision"
+					},
+					{
+						"aspect": "format",
+						"borne": "Solutions représentées sur la droite graduée avec un crochet ; notation des intervalles « pas un enjeu ».",
+						"source": "Exemples 2026 p.21",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Le BO écrit ax ⩾ b, l'accompagnement 2026 écrit aussi ax > b ; ax ⩽ b s'écrit (−a)x ⩾ −b."
+			},
+			"3-015": {
+				"libelle": "Résoudre une équation produit nul.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "(ax + b)(cx + d) = 0, coefficients décimaux possibles ((2,5x − 7)(8x − 9,6) = 0).",
+						"source": "Exemples 2026 p.21 ; Attendus 3e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-016": {
+				"libelle": "Développer avec les identités remarquables ((x + 3)² = ?).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Les trois identités : (a + b)², (a − b)², (a − b)(a + b).",
+						"detail": {
+							"liste": ["(a+b)²", "(a−b)²", "(a−b)(a+b)"]
+						},
+						"source": "BO c4 p.11-12",
+						"force": "BO"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Exemples : (x + 6)(x − 6) ; (2x − 5)(2x + 5).",
+						"source": "Attendus 3e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-017": {
+				"libelle": "Pratiquer un raisonnement par analyse-synthèse dans le cadre d'une résolution d'équation.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Usage du symbole ⇔ limité et justifié.",
+						"source": "Exemples 2026 p.21",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-018": {
+				"libelle": "Définir la boule et la sphère.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": []
+			},
+			"3-019": {
+				"libelle": "Définir les grands cercles et le diamètre d'une sphère.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": []
+			},
+			"3-020": {
+				"libelle": "Visualiser et réaliser des sections de pavé parallèlement à une face, de cylindre parallèlement ou perpendiculairement à son axe, d'une boule.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pavé parallèlement à une face, cylindre parallèlement ou perpendiculairement à son axe, boule.",
+						"detail": {
+							"liste": ["pavé", "cylindre", "boule"]
+						},
+						"source": "BO c4 p.15",
+						"force": "BO"
+					}
+				],
+				"remarque": "Les ajouts des Exemples 2026 p.30 (cube parallèlement à une arête, pyramide et cône parallèlement à la base) sont hors point : liste du BO seulement."
+			},
+			"3-021": {
+				"libelle": "Connaitre et utiliser la formule du volume d'une boule de rayon donné.",
+				"rubrique": "Espace et géométrie > Représentation de l'espace",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "V = 4/3 πr³ (formule admise).",
+						"source": "Exemples 2026 p.30",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-022": {
+				"libelle": "Reconnaître une configuration où le théorème de Thalès s'applique : triangles emboîtés ou papillon, avec (BC) // (MN) (quelle configuration ? quels triangles ?).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Configurations des triangles emboîtés et du papillon seulement.",
+						"detail": {
+							"liste": ["triangles emboîtés", "papillon"]
+						},
+						"source": "BO c4 p.15",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : Attendus 4e 2019 (p.9) et Repères 2019 (p.11) placent Thalès (triangles emboîtés) en 4e ; le BO en vigueur le place en 3e."
+			},
+			"3-023": {
+				"libelle": "Connaître les lignes trigonométriques dans le triangle rectangle : écrire cosinus, sinus et tangente d'un angle (cos(B) = … / …).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Angle aigu d'un triangle rectangle ; cosinus, sinus, tangente.",
+						"detail": {
+							"liste": ["cos", "sin", "tan"]
+						},
+						"source": "BO c4 p.15 ; Exemples 2026 p.30",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : les Attendus 4e 2019 placent le cosinus en 4e ; le BO en vigueur met les trois lignes trigonométriques en 3e."
+			},
+			"3-024": {
+				"libelle": "Définir et utiliser la translation : définition ponctuelle avec parallélogramme.",
+				"rubrique": "Espace et géométrie > Translations et vecteurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Translation de vecteur AB : C a pour image l'unique D tel que ABDC soit un parallélogramme (éventuellement aplati).",
+						"source": "Exemples 2026 p.31",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.12) — « les définitions ponctuelles d'une translation… ne figurent pas au programme » et aucune connaissance sur l'objet vecteur ; le BO en vigueur les inscrit en 3e."
+			},
+			"3-025": {
+				"libelle": "Définir et utiliser les notions de vecteur, de vecteurs égaux, de vecteur nul, d'opposé d'un vecteur.",
+				"rubrique": "Espace et géométrie > Translations et vecteurs",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vecteur non nul : direction, sens, longueur ; représentation sur quadrillage.",
+						"source": "Exemples 2026 p.31",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.12) — « les définitions ponctuelles d'une translation… ne figurent pas au programme » et aucune connaissance sur l'objet vecteur ; le BO en vigueur les inscrit en 3e."
+			},
+			"3-026": {
+				"libelle": "Définir et utiliser la somme de deux vecteurs par enchainement de deux translations.",
+				"rubrique": "Espace et géométrie > Translations et vecteurs",
+				"bornes": []
+			},
+			"3-027": {
+				"libelle": "Découvrir et utiliser la relation de Chasles.",
+				"rubrique": "Espace et géométrie > Translations et vecteurs",
+				"bornes": []
+			},
+			"3-028": {
+				"libelle": "Calculer des effectifs cumulés croissants.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "À partir d'un tableau d'effectifs.",
+						"source": "Exemples 2026 p.37",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-029": {
+				"libelle": "Donner les quartiles d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Série donnée par un tableau d'effectifs ou un diagramme en barres ; médiane, Q1, Q3 via les effectifs cumulés croissants.",
+						"source": "BO c4 p.17 ; Exemples 2026 p.37",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Convention : Q1 (Q3) = plus petite valeur de la série dont l'effectif cumulé atteint 25 % (75 %) de l'effectif total (série 1 à 8 : Q1 = 2).",
+						"detail": {
+							"convention": "effectifs cumulés croissants",
+							"Q1_seuil": 0.25,
+							"Q3_seuil": 0.75
+						},
+						"source": "Décision de David, 2026-10-18 (question c4-2) ; d'après BO c4 p.17 ; Exemples 2026 p.37",
+						"force": "décision"
+					}
+				],
+				"remarque": "Un modèle qui calcule Q1 par interpolation ou par médiane de la demi-série, sans accepter cette valeur, est à corriger."
+			},
+			"3-030": {
+				"libelle": "Construire la boîte à moustaches d'une série statistique.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Minimum, Q1, médiane, Q3, maximum, avec échelle.",
+						"source": "Exemples 2026 p.37",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-032": {
+				"libelle": "Utiliser le tableur pour calculer une moyenne, une médiane et l'étendue d'une série statistique.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": []
+			},
+			"3-033": {
+				"libelle": "Connaitre et savoir appliquer la relation P(A ∪ B) + P(A ∩ B) = P(A) + P(B).",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équiprobabilité (cas favorables / cas possibles) ; évènements « ou », « et », « ou exclusif ».",
+						"source": "Exemples 2026 p.38",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-034": {
+				"libelle": "Simuler des expériences aléatoires indépendantes.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Expériences à deux épreuves indépendantes, représentées par arbre ou tableau.",
+						"source": "Exemples 2026 p.38",
+						"force": "accompagnement"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.7) excluent l'arbre ; l'accompagnement 2026 l'admet."
+			},
+			"3-035": {
+				"libelle": "Observer la stabilisation des fréquences lorsqu'on augmente le nombre de répétitions de l'expérience aléatoire, faire le lien entre fréquence et probabilité selon le nombre de répétitions.",
+				"rubrique": "Organisation et gestion de données et probabilités > Probabilités",
+				"bornes": []
+			},
+			"3-036": {
+				"libelle": "Traduire une augmentation en pourcentage.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Coefficient multiplicateur (1 + t/100) ou (1 − t/100).",
+						"source": "Exemples 2026 p.44",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-037": {
+				"libelle": "Relier la représentation graphique d'une situation de proportionnalité avec le théorème de Thalès.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": []
+			},
+			"3-039": {
+				"libelle": "Utiliser les différentes représentations d'une fonction : formule, graphique, tableau de valeurs.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Exemples de fonctions sans étude générale de la notion.",
+						"source": "BO c4 p.18",
+						"force": "BO"
+					}
+				]
+			},
+			"3-040": {
+				"libelle": "Définir et connaitre le vocabulaire : image, antécédents.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Images et antécédents à partir d'un graphique ou d'un tableau ; image par une expression littérale simple.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-041": {
+				"libelle": "Reconnaître une fonction linéaire (expression ou droite passant par l'origine).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "f(x) = ax, f : x ↦ ax ; droite passant par l'origine.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-042": {
+				"libelle": "Résoudre graphiquement une équation linéaire (f(x) = 6).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation f(x) = k avec f linéaire, lecture graphique.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"3-043": {
+				"libelle": "Relier fonctions linéaires et proportionnalité.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "f(x) = ax, f : x ↦ ax ; droite passant par l'origine.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-044": {
+				"libelle": "Reconnaître une fonction affine (expression ou droite).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "f(x) = ax + b, f : x ↦ ax + b.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-045": {
+				"libelle": "Lire graphiquement l'ordonnée à l'origine d'une fonction affine.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"3-046": {
+				"libelle": "Représenter la fonction carré.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction carré seulement (aucune autre fonction de référence).",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"3-047": {
+				"libelle": "Approfondir la notion de variables.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Plusieurs variables dans un même programme.",
+						"source": "Exemples 2026 p.49",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-048": {
+				"libelle": "Utiliser des conditions composées.",
+				"rubrique": "La pensée informatique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Un opérateur logique combinant deux conditions simples.",
+						"source": "Exemples 2026 p.49",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-049": {
+				"libelle": "Utiliser une boucle conditionnelle.",
+				"rubrique": "La pensée informatique",
+				"bornes": []
+			},
+			"3-050": {
+				"libelle": "Structurer des programmes.",
+				"rubrique": "La pensée informatique",
+				"bornes": []
+			},
+			"3-051": {
+				"libelle": "Écrire un programme donné pour réaliser un objectif ou résoudre un problème.",
+				"rubrique": "La pensée informatique",
+				"bornes": []
+			},
+			"3-052": {
+				"libelle": "Diviser des puissances.",
+				"rubrique": "Nombres et calculs > Puissances",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "aᵐ × aⁿ = aᵐ⁺ⁿ et aᵐ / aⁿ = aᵐ⁻ⁿ, m et n entiers relatifs, a non nul.",
+						"detail": {
+							"exposants": {
+								"ensemble": "entiers relatifs"
+							}
+						},
+						"source": "Exemples 2026 p.19",
+						"force": "accompagnement"
+					},
+					{
+						"aspect": "autre",
+						"borne": "La puissance d'une puissance (aᵐ)ⁿ n'est pas citée.",
+						"source": "BO c4 p.10-11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Contradiction : Repères 2019 (p.4) — « la connaissance des formules générales sur les produits ou quotients de puissances n'est pas un attendu » ; l'accompagnement 2026 donne les formules. Lecture déduite (texte implicite) : La puissance d'une puissance (aᵐ)ⁿ n'est pas citée."
+			},
+			"3-053": {
+				"libelle": "Résoudre graphiquement des équations de la forme x² = a.",
+				"rubrique": "Nombres et calculs > Racine carrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Résolution graphique par la fonction carré.",
+						"source": "Exemples 2026 p.20 ; BO c4 p.20",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-054": {
+				"libelle": "Utiliser la double distributivité pour factoriser des expressions dont le facteur est apparent.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Facteur commun apparent, notamment pour se ramener à une équation produit nul.",
+						"source": "BO c4 p.11 ; Exemples 2026 p.21",
+						"force": "BO"
+					}
+				]
+			},
+			"3-055": {
+				"libelle": "Connaitre et appliquer la réciproque et la contraposée du théorème de Thalès (configurations des triangles emboités et configuration dite du papillon).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Configurations des triangles emboîtés et du papillon seulement.",
+						"detail": {
+							"liste": ["triangles emboîtés", "papillon"]
+						},
+						"source": "BO c4 p.15",
+						"force": "BO"
+					}
+				]
+			},
+			"3-056": {
+				"libelle": "Donner la médiane d'une série donnée sous forme de tableau d'effectifs ou de diagramme en barres.",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Série donnée par un tableau d'effectifs ou un diagramme en barres ; médiane, Q1, Q3 via les effectifs cumulés croissants.",
+						"source": "BO c4 p.17 ; Exemples 2026 p.37",
+						"force": "BO"
+					}
+				]
+			},
+			"3-057": {
+				"libelle": "Résoudre graphiquement une inéquation du premier degré du type ax ⩾ b.",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Type ax ⩾ b seulement (a non nul, éventuellement négatif), pas ax + b ⩾ cx + d.",
+						"detail": {
+							"liste": ["ax ⩾ b", "ax ⩽ b", "ax > b", "ax < b"]
+						},
+						"source": "BO c4 p.11 ; Exemples 2026 p.21",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Solutions représentées sur la droite graduée avec un crochet ; notation des intervalles « pas un enjeu ».",
+						"source": "Exemples 2026 p.21",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-058": {
+				"libelle": "Factoriser avec les identités remarquables (x² − 9 = ?).",
+				"rubrique": "Nombres et calculs > Calcul littéral et algébrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Les trois identités : (a + b)², (a − b)², (a − b)(a + b).",
+						"detail": {
+							"liste": ["(a+b)²", "(a−b)²", "(a−b)(a+b)"]
+						},
+						"source": "BO c4 p.11-12",
+						"force": "BO"
+					},
+					{
+						"aspect": "faits",
+						"borne": "Exemples : x² − 64 ; 4x² − 49 ; 16x² − 144.",
+						"source": "Attendus 3e 2019 p.3",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-059": {
+				"libelle": "Écrire l'égalité des rapports du théorème de Thalès dans une configuration donnée (AM/AB = … = …).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Configurations des triangles emboîtés et du papillon seulement.",
+						"detail": {
+							"liste": ["triangles emboîtés", "papillon"]
+						},
+						"source": "BO c4 p.15",
+						"force": "BO"
+					}
+				]
+			},
+			"3-060": {
+				"libelle": "Appliquer le théorème de Thalès pour calculer une longueur (AM = 3, AB = 5, BC = 7 : calcule MN).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Configurations des triangles emboîtés et du papillon seulement.",
+						"detail": {
+							"liste": ["triangles emboîtés", "papillon"]
+						},
+						"source": "BO c4 p.15",
+						"force": "BO"
+					}
+				]
+			},
+			"3-061": {
+				"libelle": "Utiliser les lignes trigonométriques pour calculer une longueur ou un angle dans un triangle rectangle (BC = 6, angle B = 40° : calcule AB).",
+				"rubrique": "Espace et géométrie > Triangles",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Angle aigu d'un triangle rectangle ; cosinus, sinus, tangente.",
+						"detail": {
+							"liste": ["cos", "sin", "tan"]
+						},
+						"source": "BO c4 p.15 ; Exemples 2026 p.30",
+						"force": "BO"
+					},
+					{
+						"aspect": "unites",
+						"borne": "Angles en degrés ; calculatrice pour les valeurs.",
+						"source": "Exemples 2026 p.30",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : Angles en degrés ; calculatrice pour les valeurs."
+			},
+			"3-062": {
+				"libelle": "Lire une boîte à moustaches (médiane, quartiles, étendue).",
+				"rubrique": "Organisation et gestion de données et probabilités > Statistiques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Minimum, Q1, médiane, Q3, maximum, avec échelle.",
+						"source": "Exemples 2026 p.37",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-063": {
+				"libelle": "Traduire une diminution en pourcentage.",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Coefficient multiplicateur (1 + t/100) ou (1 − t/100).",
+						"source": "Exemples 2026 p.44",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-064": {
+				"libelle": "Utiliser une fonction linéaire donnée par son expression (calculer une image : f(3) = ?).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Image par une fonction linéaire d'expression littérale simple.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-065": {
+				"libelle": "Résoudre graphiquement une inéquation linéaire (f(x) ⩽ 6).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Inéquation linéaire ax > b (a ≠ 0, b quelconque), graphiquement.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-066": {
+				"libelle": "Utiliser une fonction affine donnée par son expression (calculer une image : f(3) = ?).",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Image par une fonction affine d'expression littérale simple.",
+						"source": "Exemples 2026 p.45",
+						"force": "accompagnement"
+					}
+				]
+			},
+			"3-067": {
+				"libelle": "Lire graphiquement le coefficient directeur d'une fonction affine.",
+				"rubrique": "Proportionnalité, fonctions > Fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique.",
+						"source": "BO c4 p.20",
+						"force": "BO"
+					}
+				]
+			},
+			"3-068": {
+				"libelle": "Appliquer, dans des cas simples, une augmentation exprimée en pourcentage sans utiliser le coefficient multiplicateur (120 € augmenté de 20 % : 120 + 24 = 144 €).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité > Automatismes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Cas simples, sans coefficient multiplicateur (120 € + 20 % = 120 + 24).",
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			},
+			"3-069": {
+				"libelle": "Appliquer, dans des cas simples, une diminution exprimée en pourcentage sans utiliser le coefficient multiplicateur (120 € diminué de 20 % : 120 − 24 = 96 €).",
+				"rubrique": "Proportionnalité, fonctions > Proportionnalité > Automatismes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Cas simples, sans coefficient multiplicateur (120 € + 20 % = 120 + 24).",
+						"source": "BO c4 p.19",
+						"force": "BO"
+					}
+				]
+			}
+		}
+	}
+}
