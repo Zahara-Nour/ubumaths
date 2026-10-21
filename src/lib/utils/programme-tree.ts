@@ -193,15 +193,21 @@ export function countArchivedPoints(tree: ProgrammeBranch[]): number {
 /**
  * L'arbre sans ses points archivés. Une notion (ou une branche) qui ne gardait
  * que des archivés disparaît : elle n'a plus de point visible pour ce niveau.
+ *
+ * `keep` : archivés à garder quand même — ceux déjà cochés ou tagués, qu'on
+ * doit pouvoir décocher (sinon ils resteraient invisibles et inamovibles).
  */
-export function hideArchivedPoints(tree: ProgrammeBranch[]): ProgrammeBranch[] {
+export function hideArchivedPoints(
+	tree: ProgrammeBranch[],
+	keep: ReadonlySet<string> = new Set()
+): ProgrammeBranch[] {
 	return tree
 		.map((branch) => ({
 			...branch,
 			notions: branch.notions
 				.map((notion) => ({
 					...notion,
-					points: notion.points.filter((p) => p.archived_at === null)
+					points: notion.points.filter((p) => p.archived_at === null || keep.has(p.id))
 				}))
 				.filter((notion) => notion.points.length > 0)
 		}))

@@ -275,7 +275,7 @@ describe('Séance neuve — activités choisies avant enregistrement', () => {
 	it('cumule les points cochés à la main et ceux des activités', async () => {
 		const teacher = await TestData.profile().withRole('teacher').create();
 		const klass = (await TestData.class().create()) as { id: string };
-		const manuel = await makePoint();
+		const { pointId: manuel } = await makeNewPoint();
 		const { pointId: auto, notionId } = await makeNewPoint();
 		const template = await makeTaggedTemplate([auto], notionId);
 
@@ -287,6 +287,21 @@ describe('Séance neuve — activités choisies avant enregistrement', () => {
 		const cov = await coverageOf(entryId!);
 		expect(cov.get(manuel)).toBe('manual');
 		expect(cov.get(auto)).toBe('auto');
+	});
+
+	it('n’écrit pas un ancien point coché à la main, mais garde les neufs (Q2, B2)', async () => {
+		const teacher = await TestData.profile().withRole('teacher').create();
+		const klass = (await TestData.class().create()) as { id: string };
+		const ancien = await makePoint();
+		const { pointId: neuf } = await makeNewPoint();
+
+		const { entryId } = await createEntry(teacher.id, klass.id, {
+			coveredPointIds: `${ancien},${neuf}`
+		});
+
+		const cov = await coverageOf(entryId!);
+		expect(cov.has(ancien)).toBe(false);
+		expect(cov.get(neuf)).toBe('manual');
 	});
 
 	it('crée la séance même sans activité', async () => {

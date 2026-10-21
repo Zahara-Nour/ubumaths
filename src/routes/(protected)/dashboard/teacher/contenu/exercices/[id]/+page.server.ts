@@ -1,7 +1,8 @@
 import type { PageServerLoad } from './$types';
 import { error, redirect } from '@sveltejs/kit';
 import { getExercise } from '$lib/server/exercises';
-import { getCurriculumTree, type CurriculumTreeTheme } from '$lib/server/curriculum';
+import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
+import type { ProgrammeBranch } from '$lib/utils/programme-tree';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger(
@@ -40,14 +41,6 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		assignmentCount = assignments.length;
 	}
 
-	// Curriculum trees for the exercise's grades + its existing tags (for tagging UI)
-	const grades = (result.data.grades ?? []) as string[];
-	const curriculumByGrade: { grade: string; tree: CurriculumTreeTheme[] }[] = [];
-	for (const g of grades) {
-		const tree = await getCurriculumTree(locals.supabase, g);
-		if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
-	}
-
 	const { data: tagRows, error: tagRowsError } = await locals.supabase
 		.from('exercise_curriculum_points')
 		.select('point_id')
@@ -58,6 +51,15 @@ export const load: PageServerLoad = async ({ locals, params, fetch }) => {
 		throw error(500, 'Impossible de charger les données');
 	}
 	const taggedPointIds = (tagRows ?? []).map((r) => r.point_id);
+
+	// Arbre du programme de chaque niveau de l'exercice ; un archivé déjà tagué
+	// reste visible pour pouvoir le retirer.
+	const grades = (result.data.grades ?? []) as string[];
+	const curriculumByGrade: { grade: string; tree: ProgrammeBranch[] }[] = [];
+	for (const g of grades) {
+		const tree = await getProgrammeTreeKeeping(locals.supabase, g, taggedPointIds);
+		if (tree.length > 0) curriculumByGrade.push({ grade: g, tree });
+	}
 
 	return {
 		exercise: result.data,

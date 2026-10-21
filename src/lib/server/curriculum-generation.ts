@@ -21,3 +21,36 @@ export interface PointGeneration {
 export function isProgrammePoint(point: PointGeneration | null | undefined): boolean {
 	return typeof point?.node_id === 'string';
 }
+
+/**
+ * Génération d'un point avant de le cocher ou de le taguer : un ancien point n'est plus
+ * proposé par aucun écran, l'API le refuse aussi. `introuvable` : absent, ou illisible.
+ */
+export async function readPointGeneration(
+	supabase: App.Locals['supabase'],
+	pointId: string
+): Promise<'programme' | 'ancien' | 'introuvable'> {
+	const { data, error } = await supabase
+		.from('curriculum_points')
+		.select('id, node_id')
+		.eq('id', pointId)
+		.maybeSingle();
+	if (error) throw new Error(`Point illisible : ${error.message}`);
+	if (!data) return 'introuvable';
+	return isProgrammePoint(data) ? 'programme' : 'ancien';
+}
+
+/** Parmi ces identifiants, ceux des points neufs (les autres sont écartés). */
+export async function keepProgrammePointIds(
+	supabase: App.Locals['supabase'],
+	pointIds: string[]
+): Promise<string[]> {
+	if (pointIds.length === 0) return [];
+	const { data, error } = await supabase
+		.from('curriculum_points')
+		.select('id, node_id')
+		.in('id', pointIds);
+	if (error) throw new Error(`Points illisibles : ${error.message}`);
+	const neufs = new Set((data ?? []).filter(isProgrammePoint).map((p) => p.id));
+	return pointIds.filter((id) => neufs.has(id));
+}

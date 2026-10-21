@@ -49,7 +49,7 @@
 	import { genericFunctionsConfig as toGenericFunctionsConfig } from '$lib/components/markdown/utils/math-utils';
 	import type { ExerciseShareToken } from '$lib/exercises/types';
 	import { getExerciseContentSafe } from '$lib/exercises/types';
-	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import ProgrammePointLabel from '$lib/components/programme/ProgrammePointLabel.svelte';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
 	import { exerciseCapitalPairs } from '$lib/questions/capital-pairs';
 
@@ -106,8 +106,9 @@
 	const initialTags: Record<string, boolean> = {};
 	for (const pid of initialTaggedIds) initialTags[pid] = true;
 	let taggedSet = $state<Record<string, boolean>>(initialTags);
-	let openTagThemes = $state<Record<string, boolean>>({});
-	let openTagItems = $state<Record<string, boolean>>({});
+	// Clé « niveau:nœud » : une même branche peut s'afficher sous deux niveaux de l'exercice.
+	let openTagBranches = $state<Record<string, boolean>>({});
+	let openTagNotions = $state<Record<string, boolean>>({});
 
 	function isTagged(pointId: string): boolean {
 		return taggedSet[pointId] === true;
@@ -120,6 +121,8 @@
 				headers: body ? { 'Content-Type': 'application/json' } : undefined,
 				body: body ? JSON.stringify(body) : undefined
 			});
+			// Retirer un tag qui ne l'est déjà plus (autre onglet) : l'état voulu est atteint.
+			if (method === 'DELETE' && res.status === 404) return true;
 			if (!res.ok) {
 				const j = await res.json().catch(() => ({}));
 				toaster.error(j?.error ?? 'Une erreur est survenue');
@@ -625,42 +628,44 @@
 						<p class="text-sm font-semibold text-muted-foreground">Niveau {grade}</p>
 					{/if}
 					<div class="space-y-1">
-						{#each tree as theme (theme.id)}
+						{#each tree as branch (branch.id)}
+							{@const branchKey = `${grade}:${branch.id}`}
 							<div class="rounded-md border">
 								<button
 									class="flex w-full items-center gap-2 p-2 text-left text-sm font-medium"
-									onclick={() => (openTagThemes[theme.id] = !openTagThemes[theme.id])}
+									onclick={() => (openTagBranches[branchKey] = !openTagBranches[branchKey])}
 								>
-									{#if openTagThemes[theme.id]}
+									{#if openTagBranches[branchKey]}
 										<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{:else}
 										<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 									{/if}
-									<InlineMarkdown content={theme.name} />
+									{branch.name}
 								</button>
-								{#if openTagThemes[theme.id]}
+								{#if openTagBranches[branchKey]}
 									<div class="space-y-1 border-t p-2 pl-4">
-										{#each theme.objectives as item (item.id)}
+										{#each branch.notions as notion (notion.id)}
+											{@const notionKey = `${grade}:${notion.id}`}
 											<div>
 												<button
 													class="flex w-full items-center gap-2 py-1 text-left text-sm"
-													onclick={() => (openTagItems[item.id] = !openTagItems[item.id])}
+													onclick={() => (openTagNotions[notionKey] = !openTagNotions[notionKey])}
 												>
-													{#if openTagItems[item.id]}
+													{#if openTagNotions[notionKey]}
 														<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
 													{:else}
 														<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
 													{/if}
-													<span class="font-medium"><InlineMarkdown content={item.name} /></span>
+													<span class="font-medium">{notion.name}</span>
 												</button>
-												{#if openTagItems[item.id]}
+												{#if openTagNotions[notionKey]}
 													<div class="space-y-1 py-1 pl-6">
-														{#each item.points as point (point.id)}
+														{#each notion.points as point (point.id)}
 															<MyCheckbox
 																checked={isTagged(point.id)}
 																onchange={() => toggleTag(point.id)}
 															>
-																<InlineMarkdown content={point.name} />
+																<ProgrammePointLabel {point} />
 															</MyCheckbox>
 														{/each}
 													</div>
