@@ -5,18 +5,18 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, PR D en cours (phase 0 validée)._
+_Mis à jour le 2026-10-21, après #1589 (étape 3, D mergée)._
 
-- **État** : C5 étape 3. Faits : #1060, #1577 (B1), #1581 (B2), #1583 (B3). **D en cours** : « Ma progression »
-  élève sur branche > notion (`getNotionsProgression`, page `/dashboard/student/notions/[id]`, ancienne
-  `/objectifs/[id]` → redirection, tuile sans ✨, lien notion du deck avec `?depuis=programme`). Pas en prod.
-- **Prochaine action** : merger D (PR ouverte, revues faites) ; puis F, E, étape 4 (destructive : arrêt).
+- **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D : « Ma
+  progression » élève par branche > notion, page `/dashboard/student/notions/[id]`, ✨ retiré, points sans modèle
+  comptés). Pas en prod (aucun `deploy:prod` depuis B1).
+- **Prochaine action** : **F** — phase 0 à faire valider ; puis E, étape 4 (destructive : arrêt).
 - **En attente de David** : rien. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
   d'intégration : tags d'exercice AVANT rangements ; PR en conflit = pas de CI `pull_request` ; MySelect affiche le
-  LaTeX en brut.
-- **Worktree / branche** : `ubumaths-wt-arbre-notions` · `refactor/arbre-bascule-d`.
+  LaTeX en brut ; pas de test de rendu des pages élève de D (calcul seul).
+- **Worktree / branche** : aucun (D nettoyé).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1225,3 +1225,4 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   point acquis sans modèle tagué perdait son badge d'état. Mineurs : `break`, commentaire faux de
   `objectifs/+page.server.ts`, lecture d'état non filtrée par `.in()` justifiée (jusqu'à ~240 identifiants). Pas
   de test de rendu des deux pages (calcul testé, rendu non).
+- **2026-10-21 — #1589 mergée (D).** CI verte au premier essai.
