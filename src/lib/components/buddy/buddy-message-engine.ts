@@ -26,6 +26,7 @@ const CONTEXT_EXPRESSION_MAP: Record<BuddyMessageContext, BuddyExpression> = {
 	streak_14: 'excited',
 	streak_30: 'excited',
 	streak_lost: 'determined',
+	long_absence: 'sad',
 	level_up: 'excited',
 	theme_fractions: 'thinking',
 	theme_geometry: 'thinking',

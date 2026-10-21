@@ -7,6 +7,7 @@ couvre:
   - 'src/lib/server/buddy-*.ts'
   - src/lib/server/validation/buddy.ts
   - src/lib/types/buddy.ts
+  - src/lib/utils/buddy-absence.ts
   - src/lib/utils/buddy-constance.ts
   - src/lib/utils/buddy-xp.ts
   - 'src/routes/api/student/buddy/**'
@@ -236,7 +237,9 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   a la place (`calculateConstanceBonus`). Les 4e a 7e jours se comptent sans nouvelle recompense.
 - **Constance** = semaines tenues d'affilee (`current_streak`, record `longest_streak`). La semaine
   en cours ne casse rien avant sa fin ; une semaine finie sous 3 jours (ou sautee) remet la
-  Constance a 0, avec une replique (`streak_lost`, « la semaine n'a pas eu ses trois jours »).
+  Constance a 0, avec une replique (`streak_lost`, « la semaine n'a pas eu ses trois jours »), sauf
+  au retour d'une longue absence : « tu m'as manque » la remplace (voir
+  [Retour apres une longue absence](#retour-apres-une-longue-absence-2026-10-21)).
 - **Affichage** (`BuddyStatusPanel`) : « Constance Royale : N semaines », « Cette semaine : x jours
   sur 3 » (x plafonne a 3) et « Record : N semaines ». Le badge du widget montre N. La valeur
   affichee est recalculee pour le jour courant (`displayedConstance`) : une Constance perdue mais
@@ -265,7 +268,7 @@ Le mot affiche est celui du lore : **Constance Royale** (`lore.learning.streak`)
   le jour ; `newStreak` = la Constance apres lui ; `streakBonusXp` = la recompense de la semaine
   tenue ; `constanceWeekStart` / `constanceDaysThisWeek` en plus, quand le jour a ete compte, pour
   mettre le widget a jour sans rechargement (`updateBuddyConstanceOptimistic`).
-- **Perte** : le Palotin est determine (« on repart »), jamais triste. Pas de punition mecanique : l'XP acquise reste.
+- **Perte** : le Palotin est determine (« on repart »), pas triste (il ne l'est qu'au retour d'une longue absence). Pas de punition mecanique : l'XP acquise reste.
 - **La Constance est un bonus d'XP**, pas une condition.
 
 ### Protection du streak
@@ -355,6 +358,27 @@ la bulle dit « 2 Mathoux font la sieste. » avec le lien « Aller à la Chatter
 Palotin salue. La salutation attend la réponse, pour ne jamais précéder l'annonce. Sur la Chatterie
 elle-même, ni appel ni annonce. Durées : `buddy-timing.ts`. Détail : [mathoux.md](mathoux.md).
 
+### Retour apres une longue absence (2026-10-21)
+
+Decide par David le 2026-10-21 :
+
+- L'eleve revient sur son tableau de bord **21 jours ou plus** apres son dernier passage
+  (`LONG_ABSENCE_DAYS`, `src/lib/utils/buddy-absence.ts` ; 14 attraperait les petites vacances).
+  Jour UTC, comme la Constance. Son Palotin est **triste** (`sad`) et dit « tu m'as manque »
+  (contexte `long_absence`, trois repliques par Palotin, neutres en genre), **une seule fois**.
+- Le layout `dashboard/student/+layout.server.ts` enregistre le passage du jour a chaque chargement
+  (`recordVisitAndCheckLongAbsence`, fonction SQL `record_student_visit` au client service) et ne
+  transmet que `longAbsence` (oui/non), jamais le jour. Passage enregistre meme sans Palotin ;
+  sans Palotin au chargement, `longAbsence` est faux (celui choisi ensuite est tout neuf).
+- La Constance perdue pendant l'absence est remise a zero comme d'habitude, mais sa replique
+  `streak_lost` ne s'affiche pas : « tu m'as manque » la remplace. L'annonce de la Chatterie suit la
+  bulle, sans salutation (`BuddyWidget`, `welcomeBackContext`).
+- Premier passage (aucun jour enregistre) : rien. Ecriture du passage en echec : rien (mieux vaut
+  rater un « tu m'as manque » que le repeter a chaque visite).
+- Pourquoi une donnee neuve : `student_buddies.last_activity_date` est le dernier jour
+  **travaille** (un eleve qui passe sans travailler ne la change pas) ; `auth.users.last_sign_in_at`
+  ne bouge pas tant que la session reste ouverte.
+
 ### Images
 
 `BuddyAvatar` charge `/images/buddies/<palotin>-<expression>.svg` (`static/images/buddies/`).
@@ -365,8 +389,7 @@ copier `final/*.svg`) ; journal : `docs/wip/palotins-svg-progress.md`.
 - **7 expressions** : `neutral`, `happy`, `sad`, `thinking`, `excited`, `encouraging`,
   `determined`. Apres une erreur (`incorrect`) et une Constance perdue (`streak_lost`), le Palotin
   est **determine** (sourire en coin ; Giron leve le poing, Pile rebat ses cartes, Cotice tourne la
-  page), jamais triste. `sad` est garde pour une longue absence de l'eleve (contexte pas encore
-  cree).
+  page), pas triste. `sad` est reserve au retour d'une longue absence (`long_absence`).
 - **Animation au repos dans le SVG** : respiration, clignement, chapeau, geste propre a chacun,
   rythmes differents par Palotin.
 - **Reaction quand l'expression arrive** (CSS du composant, rejouee par `{#key}`) : bond
@@ -400,6 +423,7 @@ Banque de messages par Palotin, par contexte. Pioche aleatoire avec rotation ant
 | Commentaire par theme math (~8 themes) | 16          | 48         |
 | Reaction carte VIP (par rarete)        | 8           | 24         |
 | Onboarding / presentation              | 3           | 9          |
+| Retour apres une longue absence        | 3           | 9          |
 | **Total**                              | **~107**    | **~321**   |
 
 Les messages peuvent etre generes par batch via ChatGPT en lui donnant la personnalite de chaque Palotin.
@@ -524,6 +548,22 @@ jour travaille qu'une fois (une seule recompense de semaine tenue), et la remise
 Constance perdue est reevaluee sur la ligne relue (un jour travaille arrive entre-temps n'est pas
 efface). Jour « aujourd'hui » : jour UTC,
 celui du plafond.
+
+### Table `student_last_visits` (2026-10-21)
+
+```
+student_last_visits
+├── student_id (FK profiles, PK, ON DELETE CASCADE)
+└── last_visit_date (date, jour UTC du dernier passage sur le tableau de bord)
+```
+
+Lisible par le serveur seul : RLS sans aucune policy, droits retires a `anon` et `authenticated`
+(ni l'eleve, ni le prof, ni l'admin). `record_student_visit(p_student_id, p_today) → date` (SECURITY
+INVOKER, `service_role` seul) enregistre le jour et rend le jour du passage precedent (NULL au
+premier) ; atomique, le jour enregistre ne recule jamais. Migration
+`20261021210000_palotin_dernier_passage.sql`, preuve `tests/integration/palotin-dernier-passage.test.ts`.
+Export RGPD : `gaming.dernier_passage` (`api/account/export`, lu au client service, filtre sur
+l'identite de la session) ; mentionne dans `legal/confidentialite` (§ 3.2).
 
 ### Table `buddy_skins`
 

@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1584._
+_Mis à jour le 2026-10-21, PR 2 en cours._
 
-- **État** : PR 1 #1584 mergée, `db:migrate` fait (ACL vérifiées en prod : postgres + service_role seuls, RLS, 0 policy). `db:types` PAS encore lancé.
-- **Prochaine action** : PR 2 dans un nouveau worktree `palotins-absence` : `pnpm db:types` d'abord, puis `record_student_visit` au chargement de `dashboard/student/+layout.server.ts`, `longAbsence` → `BuddyWidget`, contexte `long_absence` → `sad` (remplace `streak_lost`), répliques, export RGPD, doc `buddy-palotins.md`. Revue `code-reviewer` + `security-auditor`.
-- **Décidé (2026-10-21)** : le jour du dernier passage va dans l'export RGPD (`api/account/export`), lu au client service, filtré sur l'élève lui-même.
-- **En attente de David** : ligne proposée pour `legal/confidentialite` (« jour de ton dernier passage, pour que ton Palotin remarque ton retour », supprimé avec le compte) — incluse en PR 2 sauf avis contraire.
-- **Pièges en cours** : base locale avec `20261021200000` (mathoux, autre worktree) → `supabase migration up` refuse ; migration appliquée à la main (psql + `schema_migrations`). `p_student_id` = `user.id` de session, `p_today` = `utcDay()` : jamais lus dans la requête.
-- **Worktree / branche** : aucun (`../ubumaths-wt-palotins-absence` retiré après #1584).
+- **État** : PR 1 #1584 mergée et migrée ; `db:types` fait. PR 2 codée (passage enregistré au layout, `longAbsence` → `BuddyWidget`, `long_absence` → `sad`, répliques, export RGPD `gaming.dernier_passage`, ligne `legal/confidentialite` § 3.2, doc `buddy-palotins.md`), tests verts, check 0 erreur.
+- **Prochaine action** : PR 2 ouverte → revue `code-reviewer` + `security-auditor`, CI verte → merge. Puis noter la vérification manuelle et archiver le journal (fin de chantier).
+- **En attente de David** : formulation de la ligne de confidentialité, adaptée au registre de la page (« Jour du dernier passage sur le tableau de bord » / « Que le Palotin remarque le retour de l'élève après une longue absence (supprimé avec le compte) »).
+- **Pièges en cours** : base locale avec `20261021200000` (mathoux, autre worktree) → `supabase migration up` refuse ; migration appliquée à la main. `record_student_visit` est typée `Returns: string` mais rend NULL au premier passage (géré par `isLongAbsence`).
+- **Worktree / branche** : `../ubumaths-wt-palotins-absence`, `feat/palotins-absence-2`.
 
 ## Décisions de David (2026-10-21)
 

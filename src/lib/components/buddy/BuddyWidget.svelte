@@ -25,10 +25,12 @@
 
 	interface Props {
 		streakLost?: boolean;
+		/** Retour après une longue absence : « tu m'as manqué » remplace la Constance perdue */
+		longAbsence?: boolean;
 		onChangePalotin?: () => void;
 	}
 
-	let { streakLost = false, onChangePalotin }: Props = $props();
+	let { streakLost = false, longAbsence = false, onChangePalotin }: Props = $props();
 
 	const buddy = $derived(studentCache.getBuddySync());
 	// Constance Royale (semaines tenues d'affilée), 0 si elle est perdue
@@ -131,14 +133,14 @@
 	 * tard, l'annonce aurait sinon été précédée d'une salutation qu'elle aurait
 	 * coupée.
 	 */
-	async function greetOrAnnounceChatterie(mountedAt: number, afterStreakLost: boolean) {
+	async function greetOrAnnounceChatterie(mountedAt: number, afterWelcomeBack: boolean) {
 		const announcement = await fetchChatterieAnnouncement();
 		if (!buddy) return;
-		// Après une Constance perdue, sa bulle passe d'abord, et pas de salutation
-		const minDelay = afterStreakLost ? 1000 + BUBBLE_DURATION : GREETING_DELAY;
+		// Après la réplique du retour (absence, Constance perdue), sa bulle passe d'abord, et pas de salutation
+		const minDelay = afterWelcomeBack ? 1000 + BUBBLE_DURATION : GREETING_DELAY;
 		const wait = Math.max(0, minDelay - (Date.now() - mountedAt));
 		if (!announcement) {
-			if (afterStreakLost) return;
+			if (afterWelcomeBack) return;
 			greetingTimer = setTimeout(() => showMessage('idle'), wait);
 			return;
 		}
@@ -148,6 +150,16 @@
 				label: 'Aller à la Chatterie'
 			});
 		}, wait);
+	}
+
+	/**
+	 * Réplique du retour : « tu m'as manqué » après une longue absence ; la
+	 * Constance perdue pendant cette absence reste remise à zéro, mais sa
+	 * réplique ne s'affiche pas (décision du 2026-10-21).
+	 */
+	function welcomeBackContext(): BuddyMessageContext | null {
+		if (longAbsence) return 'long_absence';
+		return streakLost ? 'streak_lost' : null;
 	}
 
 	/** Sur la Chatterie elle-même, l'annonce n'a pas lieu d'être (et la page a déjà calculé). */
@@ -182,12 +194,14 @@
 	}
 
 	onMount(() => {
-		// Au montage : la Constance perdue, puis les nouveautés ou les Mathoux en sieste, sinon une salutation
+		// Au montage : la réplique du retour (longue absence, sinon Constance perdue), puis les
+		// nouveautés ou les Mathoux en sieste, sinon une salutation
 		if (buddy) {
-			if (streakLost) setTimeout(() => showMessage('streak_lost'), 1000);
+			const welcomeBack = welcomeBackContext();
+			if (welcomeBack) setTimeout(() => showMessage(welcomeBack), 1000);
 			if (!isOnChatterie()) {
-				void greetOrAnnounceChatterie(Date.now(), streakLost);
-			} else if (!streakLost) {
+				void greetOrAnnounceChatterie(Date.now(), welcomeBack !== null);
+			} else if (!welcomeBack) {
 				greetingTimer = setTimeout(() => showMessage('idle'), GREETING_DELAY);
 			}
 		}

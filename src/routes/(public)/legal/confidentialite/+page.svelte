@@ -115,6 +115,13 @@
 							<td>Points et progression</td>
 							<td>Gamification</td>
 						</tr>
+						<tr>
+							<td>Jour du dernier passage sur le tableau de bord</td>
+							<td>
+								Que le Palotin remarque le retour de l'élève après une longue absence (supprimé avec
+								le compte)
+							</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -266,6 +273,10 @@
 						<tr>
 							<td>Données pédagogiques</td>
 							<td>Supprimées avec le profil, après 5 ans sans activité</td>
+						</tr>
+						<tr>
+							<td>Jour du dernier passage sur le tableau de bord</td>
+							<td>Remplacé à chaque passage, supprimé avec le profil</td>
 						</tr>
 						<tr>
 							<td>Conversations avec le tuteur IA</td>

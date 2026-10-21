@@ -21,6 +21,7 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { rateLimit } from '$lib/server/middleware/rateLimit';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import { createServerLogger } from '$lib/utils/logger';
 
 const logger = createServerLogger('api/account/export');
@@ -61,7 +62,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			testSessionsResult,
 			tutorConversationsResult,
 			mathouxResult,
-			buddyResult
+			buddyResult,
+			lastVisitResult
 		] = await Promise.all([
 			// Profile data
 			supabase.from('profiles').select('*').eq('id', userId).single(),
@@ -203,6 +205,15 @@ export const GET: RequestHandler = async ({ locals }) => {
 					'palotin_type, level, xp, xp_earned_today, last_xp_date, current_streak, longest_streak, last_activity_date, constance_days_this_week, constance_week_start, themes_explored, equipped_skin_id, change_count, created_at, updated_at'
 				)
 				.eq('student_id', userId)
+				.maybeSingle(),
+
+			// Jeux — jour du dernier passage (Palotin triste au retour, 2026-10-21). Lisible
+			// par le serveur seul (aucune policy) : lu au client service, filtré sur
+			// l'identité de la SESSION.
+			createServiceRoleClient()
+				.from('student_last_visits')
+				.select('last_visit_date')
+				.eq('student_id', userId)
 				.maybeSingle()
 		]);
 
@@ -224,6 +235,10 @@ export const GET: RequestHandler = async ({ locals }) => {
 
 		if (buddyResult.error) {
 			throw new Error(`student_buddies illisible : ${buddyResult.error.message}`);
+		}
+
+		if (lastVisitResult.error) {
+			throw new Error(`student_last_visits illisible : ${lastVisitResult.error.message}`);
 		}
 
 		// Step 4: Build export object
@@ -309,7 +324,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 			gaming: {
 				player_stats: gamePlayerResult.data || null,
 				mathoux: mathouxResult.data || [],
-				palotin: buddyResult.data || null
+				palotin: buddyResult.data || null,
+				dernier_passage: lastVisitResult.data?.last_visit_date ?? null
 			},
 
 			// Rewards & Economy

@@ -124,7 +124,11 @@
 
 <!-- Buddy Widget (always visible for students with a buddy) -->
 {#if buddyChosen}
-	<BuddyWidget streakLost={data.streakLost} onChangePalotin={() => (showChangeModal = true)} />
+	<BuddyWidget
+		streakLost={data.streakLost}
+		longAbsence={data.longAbsence}
+		onChangePalotin={() => (showChangeModal = true)}
+	/>
 {/if}
 
 <!-- Change Palotin Modal -->

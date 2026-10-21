@@ -47,6 +47,12 @@ vi.mock('$lib/server/middleware/auth', () => ({
 	})
 }));
 
+// Client service : seul lecteur du jour du dernier passage (aucune policy)
+const serviceClient = vi.hoisted(() => ({ current: null as unknown }));
+vi.mock('$lib/server/serviceRoleClient', () => ({
+	createServiceRoleClient: () => serviceClient.current
+}));
+
 // Mock rate limiter
 vi.mock('$lib/server/middleware/rateLimit', () => ({
 	rateLimit: vi.fn()
@@ -183,7 +189,7 @@ function setupMockSupabase() {
 		}
 	});
 
-	mockSupabase = {
+	const build = () => ({
 		from: vi.fn((table: string) => {
 			// Determine the data for this table
 			const getData = () => {
@@ -200,6 +206,8 @@ function setupMockSupabase() {
 						return mockMathoux;
 					case 'student_buddies':
 						return mockBuddy;
+					case 'student_last_visits':
+						return { last_visit_date: '2026-10-20' };
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -257,8 +265,10 @@ function setupMockSupabase() {
 				select: selectFn
 			};
 		})
-	};
+	});
 
+	mockSupabase = build();
+	serviceClient.current = build();
 	return mockSupabase;
 }
 
@@ -431,6 +441,26 @@ describe('GET /api/account/export', () => {
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
 		});
 
+		// Jour du dernier passage (Palotin triste au retour, 2026-10-21) : lisible par le
+		// serveur seul, donc lu au client service, filtré sur l'identité de la session
+		test('contient le jour du dernier passage, lu au client service pour l’appelant', async () => {
+			const response = await GET(createMockEvent() as never);
+			const data = await response.json();
+
+			expect(data.gaming.dernier_passage).toBe('2026-10-20');
+			const service = serviceClient.current as typeof mockSupabase;
+			const appel = service.from.mock.calls.findIndex(
+				(c: unknown[]) => c[0] === 'student_last_visits'
+			);
+			expect(appel).toBeGreaterThanOrEqual(0);
+			const chaine = service.from.mock.results[appel].value;
+			const eq = chaine.select.mock.results[0].value.eq;
+			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);
+			expect(
+				mockSupabase.from.mock.calls.some((c: unknown[]) => c[0] === 'student_last_visits')
+			).toBe(false);
+		});
+
 		test('le profil exporte le consentement parental et la déclaration d’âge', async () => {
 			const response = await GET(createMockEvent() as never);
 			const data = await response.json();
@@ -528,10 +558,13 @@ describe('GET /api/account/export', () => {
 
 	// Un export qui omettrait une table sur une panne serait faux : 500, l'élève réessaie
 	describe('Lecture en échec', () => {
-		test.each(['student_mathoux', 'student_buddies'])('%s illisible → 500', async (table) => {
-			failingTables.add(table);
-			await expect(GET(createMockEvent() as never)).rejects.toMatchObject({ status: 500 });
-		});
+		test.each(['student_mathoux', 'student_buddies', 'student_last_visits'])(
+			'%s illisible → 500',
+			async (table) => {
+				failingTables.add(table);
+				await expect(GET(createMockEvent() as never)).rejects.toMatchObject({ status: 500 });
+			}
+		);
 	});
 
 	describe('Security', () => {
