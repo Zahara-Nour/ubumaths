@@ -1,13 +1,17 @@
 <script lang="ts">
 	import { lore } from '$lib/config/lore';
 	import { enhance } from '$app/forms';
+	import { resolve } from '$app/paths';
 	import { Button } from '$lib/components/ui/button';
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card';
+	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import { AlertCircle, CheckCircle2, Clock, GraduationCap, School, User } from '@lucide/svelte';
 
 	let { data, form } = $props();
 
 	let isSubmitting = $state(false);
+	// Case explicite exigée pour un niveau soumis au consentement (vérifiée aussi au serveur).
+	let consentChecked = $state(false);
 
 	// Format grade for display
 	function formatGrade(grade: string | null): string {
@@ -86,7 +90,9 @@
 			<!-- Valid consent request -->
 			<Card>
 				<CardHeader>
-					<CardTitle class="text-xl">Consentement parental requis</CardTitle>
+					<CardTitle class="text-xl">
+						{data.consentRequired ? 'Consentement parental requis' : 'Confirmez votre adresse'}
+					</CardTitle>
 				</CardHeader>
 				<CardContent class="space-y-6">
 					<!-- Student info -->
@@ -118,24 +124,31 @@
 						</ul>
 					</div>
 
-					<!-- RGPD explanation -->
-					<div class="border-l-4 border-amber-400 bg-amber-50 p-4">
-						<p class="text-sm text-amber-800">
-							<strong>Conformément au RGPD (Article 8)</strong>, votre consentement est requis car
-							votre enfant a moins de 15 ans pour utiliser cette plateforme éducative.
-						</p>
-					</div>
+					{#if data.consentRequired}
+						<!-- RGPD explanation -->
+						<div class="border-l-4 border-amber-400 bg-amber-50 p-4">
+							<p class="text-sm text-amber-800">
+								<strong>Conformément au RGPD (Article 8)</strong>, votre consentement est requis car
+								votre enfant a moins de 15 ans pour utiliser cette plateforme éducative.
+							</p>
+						</div>
 
-					<!-- What they're consenting to -->
-					<div class="space-y-2">
-						<h3 class="font-medium">En autorisant l'accès, vous permettez à votre enfant de :</h3>
-						<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
-							<li>Réaliser des {lore.learning.exercise}s de mathématiques</li>
-							<li>Suivre sa progression scolaire</li>
-							<li>Communiquer avec son enseignant</li>
-							<li>Participer aux activités pédagogiques de la plateforme</li>
-						</ul>
-					</div>
+						<!-- What they're consenting to -->
+						<div class="space-y-2">
+							<h3 class="font-medium">En autorisant l'accès, vous permettez à votre enfant de :</h3>
+							<ul class="ml-4 list-disc space-y-1 text-sm text-muted-foreground">
+								<li>Réaliser des {lore.learning.exercise}s de mathématiques</li>
+								<li>Suivre sa progression scolaire</li>
+								<li>Communiquer avec son enseignant</li>
+								<li>Participer aux activités pédagogiques de la plateforme</li>
+							</ul>
+						</div>
+					{:else}
+						<p class="text-sm text-muted-foreground">
+							Votre adresse servira à réinitialiser le mot de passe de votre enfant en cas d'oubli.
+							Aucun autre courriel ne vous sera envoyé.
+						</p>
+					{/if}
 
 					<!-- Expiry notice -->
 					<div class="flex items-center gap-2 text-sm text-muted-foreground">
@@ -162,20 +175,36 @@
 							};
 						}}
 					>
-						<Button type="submit" class="w-full" size="lg" disabled={isSubmitting}>
+						{#if data.consentRequired}
+							<div class="mb-4">
+								<input type="hidden" name="consent" value={consentChecked ? 'true' : 'false'} />
+								<MyCheckbox bind:checked={consentChecked}>
+									Je suis le parent ou le responsable légal de {getStudentName()} et j'autorise son inscription
+									sur Chiphre.
+								</MyCheckbox>
+							</div>
+						{/if}
+						<Button
+							type="submit"
+							class="w-full"
+							size="lg"
+							disabled={isSubmitting || (data.consentRequired && !consentChecked)}
+						>
 							{#if isSubmitting}
 								<span class="animate-pulse">Traitement en cours...</span>
 							{:else}
 								<CheckCircle2 class="mr-2 h-5 w-5" />
-								J'autorise l'accès
+								{data.consentRequired ? "J'autorise l'accès" : 'Je confirme mon adresse'}
 							{/if}
 						</Button>
 					</form>
 
-					<p class="text-center text-xs text-muted-foreground">
-						En cliquant sur ce bouton, vous acceptez que votre enfant utilise Chiphre dans le cadre
-						de son éducation.
-					</p>
+					{#if data.consentRequired}
+						<p class="text-center text-xs text-muted-foreground">
+							En cliquant sur ce bouton, vous acceptez que votre enfant utilise Chiphre dans le
+							cadre de son éducation.
+						</p>
+					{/if}
 				</CardContent>
 			</Card>
 		{/if}
@@ -186,7 +215,9 @@
 				Si vous n'avez pas demandé ce consentement, vous pouvez fermer cette page en toute sécurité.
 			</p>
 			<p class="mt-2">
-				<a href="/privacy" class="text-blue-600 hover:underline">Politique de confidentialité</a>
+				<a href={resolve('/legal/confidentialite')} class="text-blue-600 hover:underline"
+					>Politique de confidentialité</a
+				>
 			</p>
 		</div>
 	</div>

@@ -581,6 +581,10 @@ authenticated` ne part qu'après le `deploy:prod` qui livre la route (sinon la p
   ce trigger y manquait (aucun profil créé pour un nouveau compte) jusqu'à
   `20260826100000_recreate_on_auth_user_created_trigger`. Après un travail sur l'auth, vérifier en
   lecture seule les triggers de `auth.users` en prod.
+- **GoTrue écrit `app_metadata` APRÈS l'INSERT** d'un compte (UPDATE dans la même transaction) :
+  un trigger BEFORE INSERT sur `auth.users` ne voit pas les `app_metadata` posées par
+  `auth.admin.createUser`. Pour les lire, un trigger de contrainte `deferrable initially deferred`
+  qui relit la ligne au commit (`guard_child_account_domain_trg`, 2026-10-21).
 - **`jsonb` réordonne les clés.** Relire une colonne `jsonb` et la comparer par `JSON.stringify` à ce
   qu'on a envoyé échoue dès qu'une clé est ajoutée, alors que l'écriture a réussi : comparer une
   sérialisation à clés triées.
@@ -612,4 +616,4 @@ Le schéma part du baseline `20260616220000_baseline_schema.sql` (anciennes migr
 
 ---
 
-Vérifié contre le code le 2026-10-11 (passage `student_last_visits` : 2026-10-21).
+Vérifié contre le code le 2026-10-11 (passages `student_last_visits` et `app_metadata` de GoTrue : 2026-10-21).

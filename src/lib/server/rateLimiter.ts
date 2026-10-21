@@ -635,6 +635,37 @@ export async function checkSignupRateLimitByEmail(email: string): Promise<RateLi
 }
 
 /**
+ * Comptes d'enfants créés par un même parent (écran « J'inscris mon enfant »).
+ *
+ * Plafond décidé par David (Q5, 2026-10-21) : 5 comptes par adresse de parent et par
+ * 24 h — une fratrie passe, une création en masse non. S'ajoute à la limite par IP
+ * ({@link checkSignupRateLimitByIP}).
+ */
+export async function checkChildSignupRateLimitByParentEmail(
+	parentEmail: string
+): Promise<RateLimitResult> {
+	if (!parentEmail) {
+		logger.warn('Missing parent email for child signup rate limit check');
+		return { allowed: true }; // Fail open
+	}
+
+	const key = `ratelimit:signup:parent:${parentEmail.toLowerCase().trim()}`;
+
+	const result = await checkRateLimitWithMessage(
+		key,
+		5,
+		86400, // 24 heures
+		"Trop d'inscriptions pour cette adresse aujourd'hui. Réessayer demain."
+	);
+
+	if (!result.allowed) {
+		logger.warn('Child signup rate limit exceeded by parent email', { email: maskKey(key) });
+	}
+
+	return result;
+}
+
+/**
  * Check password-reset rate limit by email (finding H7).
  *
  * Prevents email-bombing a specific address and exhausting the Brevo quota

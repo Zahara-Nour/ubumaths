@@ -22,6 +22,7 @@ import * as Brevo from '@getbrevo/brevo';
 import { env } from '$env/dynamic/private';
 import { createServerLogger } from '$lib/utils/logger';
 import { isChildAccountEmail } from '$lib/utils/child-account';
+import type { ChildRegistrationEmailData } from '$lib/email-templates/child-registration';
 
 const logger = createServerLogger('server/email/brevo');
 
@@ -183,6 +184,28 @@ export async function sendConsentEmail(
 		getConsentEmailHtml(data),
 		getConsentEmailText(data),
 		replyToEmail
+	);
+}
+
+/**
+ * Courriel au parent qui vient d'inscrire son enfant : identifiant + lien unique
+ * (consentement ou confirmation d'adresse).
+ */
+export async function sendChildRegistrationEmail(
+	toEmail: string,
+	data: ChildRegistrationEmailData
+): Promise<EmailSendResult> {
+	const {
+		getChildRegistrationSubject,
+		getChildRegistrationEmailHtml,
+		getChildRegistrationEmailText
+	} = await import('$lib/email-templates/child-registration');
+
+	return sendEmail(
+		toEmail,
+		getChildRegistrationSubject(data),
+		getChildRegistrationEmailHtml(data),
+		getChildRegistrationEmailText(data)
 	);
 }
 

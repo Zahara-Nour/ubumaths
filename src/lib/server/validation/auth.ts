@@ -5,7 +5,11 @@
 import { z } from 'zod';
 import { formDataTransforms } from './common';
 import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
-import { isChildAccountEmail, normalizeLoginIdentifier } from '$lib/utils/child-account';
+import {
+	childLoginBase,
+	isChildAccountEmail,
+	normalizeLoginIdentifier
+} from '$lib/utils/child-account';
 
 /**
  * SECURITY (finding H6): the server-side password policy was dead code — real
@@ -74,6 +78,49 @@ export const registerFormSchema = z
 		email: formDataTransforms.email.refine((email) => !isChildAccountEmail(email), {
 			message: 'Utilise une adresse email réelle'
 		}),
+		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
+		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
+		classCode: z.string().trim().min(1, 'Code de classe requis').max(64),
+		acceptTerms: z
+			.string()
+			.optional()
+			.transform((v) => v === 'true' || v === 'on' || v === '1')
+			.refine((v) => v === true, {
+				message: 'Acceptation des CGU et de la politique de confidentialité requise'
+			})
+	})
+	.refine((d) => d.password === d.confirmPassword, {
+		message: 'Les mots de passe ne correspondent pas',
+		path: ['confirmPassword']
+	})
+	.superRefine((d, ctx) => enforcePasswordPolicy(d.password, ctx));
+
+/**
+ * Inscription d'un enfant par son parent (page /auth/register/parent).
+ *
+ * Prénom seul (minimisation, décision 7) ; il doit garder au moins une lettre latine une
+ * fois replié, sinon aucun identifiant n'est possible. L'adresse du parent est un CONTACT
+ * (lien de consentement, mot de passe oublié), jamais un identifiant de connexion.
+ */
+export const parentRegisterFormSchema = z
+	.object({
+		childFirstname: z
+			.string()
+			.trim()
+			.min(1, 'Prénom requis')
+			.max(50)
+			.refine((name) => childLoginBase(name) !== null, {
+				message: 'Le prénom doit contenir au moins une lettre de l’alphabet latin'
+			}),
+		parentEmail: z
+			.string()
+			.trim()
+			.toLowerCase()
+			.max(254)
+			.email('Adresse email invalide')
+			.refine((email) => !isChildAccountEmail(email), {
+				message: 'Utilisez votre adresse email réelle'
+			}),
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
 		classCode: z.string().trim().min(1, 'Code de classe requis').max(64),

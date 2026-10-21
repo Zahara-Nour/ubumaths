@@ -54,3 +54,39 @@ export function normalizeLoginIdentifier(raw: string): string | null {
 export function isChildAccountEmail(email: string): boolean {
 	return email.trim().toLowerCase().endsWith(`@${CHILD_ACCOUNT_DOMAIN}`);
 }
+
+/**
+ * Prénom saisi par le parent → racine de l'identifiant : `Noélie` → `noelie`,
+ * `Jean-Marc` → `jeanmarc`. Les chiffres sont retirés (le suffixe en ajoute) et la racine
+ * est bornée à 20 caractères pour rester facile à taper. `null` s'il ne reste aucune lettre.
+ */
+export function childLoginBase(firstname: string): string | null {
+	const base = foldToLoginId(firstname).replace(/[0-9]/g, '').slice(0, 20);
+	return base === '' ? null : base;
+}
+
+/**
+ * Choisit un identifiant libre : la racine + 2 chiffres au hasard (`noelie42`) ; si les 100
+ * sont pris, 3 chiffres, et ainsi de suite (jamais de refus). `taken` = identifiants déjà
+ * utilisés (sans le domaine).
+ */
+export function pickChildLoginId(
+	base: string,
+	taken: ReadonlySet<string>,
+	random: () => number = Math.random
+): string {
+	for (let digits = 2; ; digits++) {
+		const count = 10 ** digits;
+		const free: string[] = [];
+		for (let n = 0; n < count; n++) {
+			const candidate = base + String(n).padStart(digits, '0');
+			if (!taken.has(candidate)) free.push(candidate);
+		}
+		if (free.length > 0) return free[Math.floor(random() * free.length)];
+	}
+}
+
+/** Identifiant → adresse du compte (`noelie42` → `noelie42@eleves.chiph.re`). */
+export function childAccountEmail(loginId: string): string {
+	return `${loginId}@${CHILD_ACCOUNT_DOMAIN}`;
+}
