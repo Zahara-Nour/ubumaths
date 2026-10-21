@@ -13,6 +13,7 @@ import Login from '../auth/login/+page.svelte';
 import Register from '../auth/register/+page.svelte';
 import ResetPassword from '../auth/reset-password/+page.svelte';
 import UpdatePassword from '../auth/update-password/+page.svelte';
+import ParentResetPassword from '../auth/reset-password/parent/+page.svelte';
 import PendingApproval from '../auth/pending-approval/+page.svelte';
 import Game2048 from '../games/2048/+page.svelte';
 import Mathemo from '../games/mathemo/+page.svelte';
@@ -51,7 +52,18 @@ const PAGES: [string, RenderPage, RegExp][] = [
 	],
 	[
 		'nouveau mot de passe',
-		async () => await render(UpdatePassword, { props: { form: null } }),
+		async () =>
+			await render(UpdatePassword, {
+				props: { data: { needsCurrentPassword: true, mustChange: false }, form: null } as never
+			}),
+		/^Nouveau mot de passe$/
+	],
+	[
+		'nouveau mot de passe (parent)',
+		async () =>
+			await render(ParentResetPassword, {
+				props: { data: { tokenHash: 'abc' }, form: null } as never
+			}),
 		/^Nouveau mot de passe$/
 	],
 	[
@@ -82,7 +94,13 @@ describe('titre de niveau 1 des pages publiques', () => {
 	// Plus un mot d'anglais sur le parcours « mot de passe oublié »
 	it.each<[string, RenderPage]>([
 		['mot de passe oublié', async () => await render(ResetPassword, { props: { form: null } })],
-		['nouveau mot de passe', async () => await render(UpdatePassword, { props: { form: null } })]
+		[
+			'nouveau mot de passe',
+			async () =>
+				await render(UpdatePassword, {
+					props: { data: { needsCurrentPassword: true, mustChange: false }, form: null } as never
+				})
+		]
 	])('%s : entièrement en français', async (_nom, renderPage) => {
 		const screen = await renderPage();
 		const text = screen.container.textContent ?? '';
