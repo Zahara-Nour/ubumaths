@@ -1235,3 +1235,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   points de la branche ET du niveau ; classe sans niveau → « Le niveau de cette classe n'est pas renseigné. ».
   **Q1** : étiquette = la notion. **Q2** : « capacité » → « point » dans les textes affichés seulement. Accès : rien
   ne change, pas de migration.
+- **2026-10-21 — F : revues.** security-auditor : 0 bloquant ni important (`branch` en uuid strict, plus d'entrée
+  libre dans un filtre PostgREST ; cas « élève hors classe → 404 » ajouté). code-reviewer : 0 bloquant ni important ;
+  corrigé : le filtre `grade` des requêtes est asserté (2 tests rouges sans lui). Laissés, notés : LaTeX brut dans
+  les infobulles ; carte liée à un ANCIEN point du niveau + un point neuf d'un autre niveau → la colonne de l'autre
+  niveau apparaît (règle « aucun point du niveau → tous ») ; `branchId` inconnu → courbe vide sans erreur.
+  Écart à la phase 0 signalé à David : règle `keepLinksOfGrade` gardée (carte d'un autre niveau sans point du
+  niveau de la classe = colonne gardée).
