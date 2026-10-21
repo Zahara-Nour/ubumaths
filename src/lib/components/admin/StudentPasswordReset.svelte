@@ -20,6 +20,9 @@
 	let password = $state<string | null>(null);
 
 	function onOpenChange(next: boolean) {
+		// Pendant la requête, la fenêtre reste : fermée, le mot de passe provisoire serait
+		// appliqué sans jamais être vu (revue de la PR 3, n° 3).
+		if (!next && isResetting) return;
 		open = next;
 		if (!next) password = null;
 	}
@@ -74,8 +77,8 @@
 	</div>
 </div>
 
-<Dialog.Root {open} {onOpenChange}>
-	<Dialog.Content class="max-w-md">
+<Dialog.Root bind:open={() => open, onOpenChange}>
+	<Dialog.Content class="max-w-md" showCloseButton={!isResetting}>
 		<Dialog.Header>
 			<Dialog.Title>Réinitialiser le mot de passe</Dialog.Title>
 			<Dialog.Description>
