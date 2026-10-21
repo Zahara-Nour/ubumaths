@@ -5,13 +5,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21 : refonte des SVG des Palotins lancée._
+_Mis à jour le 2026-10-21 : la refonte des SVG devient son propre chantier._
 
-- **État** : boucle terminée (#1471, #1475, #1476, #1484, en prod v0.43.0). **Refonte des SVG en cours** : David a choisi le 2026-10-21 le style « affiche de cabaret » (Steinlen) + la pièce héraldique portée sur le vêtement (écusson gironné d'or et de sable pour Giron, pile d'or en plastron pour Pile, cotice d'or en écharpe pour Cotice). Comparatif : https://claude.ai/artifact/Qxf2d25VYn5JiFvLQ1knKg
-- **Prochaine action** : animation au repos validée par David (réactions aussi) ; les 18 expressions animées sont en tête du comparatif, en attente de sa validation. Ensuite : worktree + PR qui remplace `static/images/buddies/` (18 SVG) et ajoute les réactions (bond, tressaut, affaissement) dans `BuddyAvatar`, avec le générateur dans `scripts/` ; vérifier « réduire les animations » dans une `<img>`.
-- **Règles de dessin (David)** : pas de spirale (gidouille) sur le ventre, réservée au Père Ubu ; traits fins (contours ≈ 1,8 sur 100, réduits de 40 % le 2026-10-21) ; essai « affermi » (tête plus petite, yeux en amande, ombre au lieu des joues roses) écarté par David le 2026-10-21 : on garde la version affiche d'avant ; joyeux, formes pas trop simples ; aucun doigt levé seul au milieu du poing (Cotice tient un livre, Giron fait un 👍 pouce au bord) ; avatar affiché en rond 60 / 80-100 px, garder mains et pièces loin du bord.
+- **État** : boucle terminée (#1471, #1475, #1476, #1484, en prod v0.43.0). La refonte des images (style, 18 expressions animées) a son chantier : **`palotins-svg`**, journal `docs/wip/palotins-svg-progress.md` sur la branche `feat/palotins-svg` (worktree `../ubumaths-wt-palotins-svg`) → `/reprendre palotins-svg`.
+- **Prochaine action** : ici, aucune. Clôture à faire : verser le durable dans `docs/systeme/buddy-palotins.md` et archiver ce journal.
 - **Pièges en cours** : le forfait de 10 cartes compte aussi les réponses d'Entraînement et de flash (borné par le plafond de 100 pansées/jour). Aucune séance d'élève depuis le 2026-10-18 : la boucle n'a jamais tourné sur de vrais élèves.
-- **Worktree / branche** : aucun pour l'instant ; le générateur retenu (`gen.mjs` ; `gen2.mjs` = essai écarté) est dans le scratchpad de la session `palotins`.
+- **Worktree / branche** : aucun pour ce chantier.
 
 ## Décisions de David (2026-10-18)
 
