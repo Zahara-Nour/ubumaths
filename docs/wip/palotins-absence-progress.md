@@ -5,13 +5,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, avant la PR 1._
+_Mis à jour le 2026-10-21, après #1584._
 
-- **État** : PR 1 (migration) en cours : table `student_last_visits` + fonction `record_student_visit`, test d'intégration vert (13 rouges sans la migration).
-- **Prochaine action** : PR 1 ouverte, CI, merge, `db:migrate`, `db:types` ; puis PR 2 (le code).
-- **En attente de David** : export RGPD (art. 15) — l'export lit sous RLS, donc ne contiendra pas le jour du dernier passage : l'y ajouter par le client service (PR 2), ou l'exclure explicitement ? Et le mentionner dans `legal/confidentialite` ?
-- **Pièges en cours** : la base locale porte `20261021200000` (mathoux, autre worktree) → `supabase migration up` refuse ; migration appliquée à la main par psql + ligne dans `supabase_migrations.schema_migrations`.
-- **Worktree / branche** : `../ubumaths-wt-palotins-absence` · `feat/palotins-absence`.
+- **État** : PR 1 #1584 mergée, `db:migrate` fait (ACL vérifiées en prod : postgres + service_role seuls, RLS, 0 policy). `db:types` PAS encore lancé.
+- **Prochaine action** : PR 2 dans un nouveau worktree `palotins-absence` : `pnpm db:types` d'abord, puis `record_student_visit` au chargement de `dashboard/student/+layout.server.ts`, `longAbsence` → `BuddyWidget`, contexte `long_absence` → `sad` (remplace `streak_lost`), répliques, export RGPD, doc `buddy-palotins.md`. Revue `code-reviewer` + `security-auditor`.
+- **Décidé (2026-10-21)** : le jour du dernier passage va dans l'export RGPD (`api/account/export`), lu au client service, filtré sur l'élève lui-même.
+- **En attente de David** : ligne proposée pour `legal/confidentialite` (« jour de ton dernier passage, pour que ton Palotin remarque ton retour », supprimé avec le compte) — incluse en PR 2 sauf avis contraire.
+- **Pièges en cours** : base locale avec `20261021200000` (mathoux, autre worktree) → `supabase migration up` refuse ; migration appliquée à la main (psql + `schema_migrations`). `p_student_id` = `user.id` de session, `p_today` = `utcDay()` : jamais lus dans la requête.
+- **Worktree / branche** : aucun (`../ubumaths-wt-palotins-absence` retiré après #1584).
 
 ## Décisions de David (2026-10-21)
 
