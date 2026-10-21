@@ -45,7 +45,7 @@ export interface TemplateProgrammeTags {
 
 interface TagRow {
 	point_id: string;
-	curriculum_points: { node_id: string | null; grade: string | null } | null;
+	curriculum_points: ProgrammePointRow | null;
 }
 
 // Functions
@@ -75,7 +75,7 @@ export async function loadTemplateProgrammeTags(
 ): Promise<TemplateProgrammeTags> {
 	const { data: tagData, error: tagError } = await supabase
 		.from('question_template_points')
-		.select('point_id, curriculum_points(node_id, grade)')
+		.select(`point_id, curriculum_points(${PROGRAMME_POINT_COLS})`)
 		.eq('template_id', template.id);
 	if (tagError) throw new Error(`Tags du modèle illisibles : ${tagError.message}`);
 
@@ -96,7 +96,14 @@ export async function loadTemplateProgrammeTags(
 		.select(PROGRAMME_POINT_COLS)
 		.in('node_id', nodeIds);
 	if (pointError) throw new Error(`Points du programme illisibles : ${pointError.message}`);
+	// Un point tagué hors des choix (rangement changé depuis) reste visible : l'admin voit ce
+	// qu'il remplace. Les triggers l'interdisent pour les écritures neuves.
 	const points = (pointData ?? []) as ProgrammePointRow[];
+	for (const t of tags) {
+		if (t.curriculum_points && !points.some((p) => p.id === t.point_id)) {
+			points.push(t.curriculum_points);
+		}
+	}
 
 	const selectedByGrade = new Map<string, string>();
 	for (const t of tags) {

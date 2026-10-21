@@ -109,25 +109,31 @@
 		Object.fromEntries(data.programmeTags.programmes.map((p) => [p.grade, p.selectedPointId]))
 	);
 	let savingGrade = $state<string | null>(null);
+	let selectRevision = $state(0);
 
 	const taggedCount = $derived(Object.values(selectedByGrade).filter((id) => id !== null).length);
 
-	async function tagApi(url: string, method: string, body?: unknown): Promise<boolean> {
+	/** Rend le statut HTTP (0 sur erreur réseau) ; toast d'erreur sauf statut toléré. */
+	async function tagApi(
+		url: string,
+		method: string,
+		body?: unknown,
+		tolerated: number[] = []
+	): Promise<number> {
 		try {
 			const res = await fetch(url, {
 				method,
 				headers: body ? { 'Content-Type': 'application/json' } : undefined,
 				body: body ? JSON.stringify(body) : undefined
 			});
-			if (!res.ok) {
+			if (!res.ok && !tolerated.includes(res.status)) {
 				const j = await res.json().catch(() => ({}));
 				toaster.error(j?.error ?? 'Une erreur est survenue');
-				return false;
 			}
-			return true;
+			return res.status;
 		} catch {
 			toaster.error('Erreur réseau');
-			return false;
+			return 0;
 		}
 	}
 
@@ -140,22 +146,27 @@
 		savingGrade = grade;
 		try {
 			if (previous !== null) {
-				const removed = await tagApi(
+				// 404 : le tag n'est déjà plus en base (autre onglet, autre admin) — c'est retiré.
+				const status = await tagApi(
 					`/api/teacher/curriculum/template-tags?template_id=${id}&point_id=${previous}`,
-					'DELETE'
+					'DELETE',
+					undefined,
+					[404]
 				);
-				if (!removed) return;
+				if (status !== 200 && status !== 404) return;
 				selectedByGrade[grade] = null;
 			}
 			if (next !== null) {
-				const added = await tagApi('/api/teacher/curriculum/template-tags', 'POST', {
+				const status = await tagApi('/api/teacher/curriculum/template-tags', 'POST', {
 					template_id: id,
 					point_id: next
 				});
-				if (added) selectedByGrade[grade] = next;
+				if (status >= 200 && status < 300) selectedByGrade[grade] = next;
 			}
 		} finally {
 			savingGrade = null;
+			// Le menu garde le choix cliqué même refusé : on le reconstruit sur l'état réel.
+			selectRevision += 1;
 		}
 	}
 
@@ -248,13 +259,15 @@
 						<div class="text-sm font-semibold text-muted-foreground">
 							{gradeLabel(programme.grade)}
 						</div>
-						<MySelect
-							items={pointItems(programme.points)}
-							value={selectedByGrade[programme.grade] ?? NONE}
-							disabled={savingGrade !== null}
-							triggerAriaLabel={`Point de ${gradeLabel(programme.grade)}`}
-							onValueChange={(value: string) => changeTag(programme.grade, value)}
-						/>
+						{#key selectRevision}
+							<MySelect
+								items={pointItems(programme.points)}
+								value={selectedByGrade[programme.grade] ?? NONE}
+								disabled={savingGrade !== null}
+								triggerAriaLabel={`Point de ${gradeLabel(programme.grade)}`}
+								onValueChange={(value: string) => changeTag(programme.grade, value)}
+							/>
+						{/key}
 						{#if chosen}
 							<div class="text-sm">
 								<code class="font-mono text-[11px] text-muted-foreground">{chosen.code}</code>

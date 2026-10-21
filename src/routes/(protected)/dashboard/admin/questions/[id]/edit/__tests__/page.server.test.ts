@@ -89,8 +89,13 @@ async function loadWith(nodeId: string | null, tags: unknown[]) {
 	return { fake, result };
 }
 
+/** Tag lu avec son point (colonnes du programme) ; un ancien point n'a ni nœud ni programme. */
 function tag(pointId: string, nodeId: string | null, grade: string | null) {
-	return { point_id: pointId, curriculum_points: { node_id: nodeId, grade } };
+	const known = POINTS.find((p) => p.id === pointId);
+	return {
+		point_id: pointId,
+		curriculum_points: known ?? { ...point(pointId, '0-000', 'X', 'aucun'), node_id: nodeId, grade }
+	};
 }
 
 // ============================================================================
@@ -148,7 +153,17 @@ describe('édition d’un modèle — tags par programme (étape 3 de C5)', () =
 			.on('question_template_points')
 			.flatMap((q) => q.calls)
 			.find((c) => c.method === 'select');
-		expect(String(select?.args[0])).toMatch(/curriculum_points\(node_id, grade\)/);
+		expect(String(select?.args[0])).toMatch(/curriculum_points\([^)]*node_id[^)]*grade/);
 		expect(String(select?.args[0])).not.toMatch(/objective/);
+	});
+
+	it('tag posé sur un point hors des choix (nœud d’un autre rangement) : il reste visible', async () => {
+		const ailleurs = point('p-ailleurs', '4-099', '4', 'autre-notion');
+		const { result } = await loadWith('sous-notion', [
+			{ point_id: ailleurs.id, curriculum_points: ailleurs }
+		]);
+		const quatrieme = result.programmeTags.programmes.find((p) => p.grade === '4');
+		expect(quatrieme?.selectedPointId).toBe('p-ailleurs');
+		expect(quatrieme?.points.map((p) => p.code)).toEqual(['4-010', '4-099']);
 	});
 });

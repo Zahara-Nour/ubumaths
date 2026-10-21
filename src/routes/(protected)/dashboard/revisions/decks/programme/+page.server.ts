@@ -17,6 +17,9 @@ import { isProgrammePoint } from '$lib/server/curriculum-generation';
 import { loadNodesWithAncestors } from '$lib/server/programme-tree';
 import { placeOfNode } from '$lib/utils/programme-tree';
 import type { ClassificationNode } from '$lib/types/database-helpers';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('(protected)/dashboard/revisions/decks/programme/+page.server');
 
 /**
  * Sous-ensemble des CapacityBadge utilisé côté Programme : un template seul
@@ -191,7 +194,8 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 			const nodes = await loadNodesWithAncestors(locals.supabase, nodeIds);
 			nodeById = new Map(nodes.map((n) => [n.id, n]));
 		} catch (err) {
-			throw error(500, err instanceof Error ? err.message : 'Arbre des notions illisible');
+			logger.error('Arbre des notions illisible :', err);
+			throw error(500, 'Arbre des notions illisible');
 		}
 	}
 
