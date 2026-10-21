@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-10-21, PR M1 bis + M2 ouverte (pas encore mergée)._
 
-- **État** : PR M1 bis + M2 en cours sur `feat/inscription-parent-plafonds` : identifiant à 3 chiffres (M2), plafond de 5 comptes d'enfant par classe et par 24 h, comptés en base (M1 bis), lien au parent de « Mot de passe oublié » envoyé après la réponse (`runAfterResponse`, `waitUntil` de `@vercel/functions`). Aucune migration, aucun accès changé.
+- **État** : PR M1 bis + M2 en cours sur `feat/inscription-parent-plafonds` : identifiant à 3 chiffres (M2), plafond de 5 inscriptions par classe et par 24 h, seau atomique du limiteur (M1 bis), lien au parent de « Mot de passe oublié » envoyé après la réponse (`runAfterResponse`, `waitUntil` de `@vercel/functions`). Aucune migration, aucun accès changé.
 - **Prochaine action** : revue (`code-reviewer` + `security-auditor`, auth), CI verte → merge ; puis le `deploy:prod` est débloqué (sur demande de David).
 - **En attente de David** : couper le suivi des clics Brevo (F-c).
 - **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `oxlint --fix` du pre-commit réécrit les tests (les relancer après commit) ; `waitUntil` ne fait rien hors Vercel (la tâche tourne quand même).
@@ -332,7 +332,11 @@ Questions (recos entre parenthèses) :
 Réponses de David (2026-10-21, « ok pour les recos ») : **Q1** comptes réellement créés, en base
 sur 24 h ; **Q2** garder 5, relever si besoin ; **Q3** ajouter `@vercel/functions`.
 
-Réalisation : le compteur lit `class_members` (entrées dans la classe depuis 24 h, tout statut)
-puis compte les profils du domaine fictif — l'appartenance ne vit pas dans `profiles.class_ids`.
-Deux inscriptions simultanées peuvent dépasser le plafond d'une unité (pas de verrou) : accepté,
-le plafond borne une création en masse, pas un compte à l'unité près.
+Réalisation, puis changement après l'audit de sécurité de #1597 : le premier jet comptait en
+base (`class_members` entrés depuis 24 h × profils du domaine fictif). L'audit a montré deux
+contournements : l'enfant peut quitter sa classe (policy `students_can_leave`), ce qui efface sa
+ligne et vide le compteur ; des inscriptions simultanées lisaient toutes « 4 » et passaient.
+**David (2026-10-21) : compteur atomique** — seau `checkChildSignupRateLimitByClass` (5 / 24 h,
+`check_and_increment_rate_limit`, fermé en panne), pris juste avant la création. Écart accepté
+avec Q1 : un mot de passe que GoTrue refuse alors que notre politique l'acceptait consomme une
+place (rare).

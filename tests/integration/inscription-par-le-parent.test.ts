@@ -13,8 +13,8 @@
  *   4. classe fermée → refus, aucun compte laissé derrière ;
  *   5. demande au parent en attente, `email_count` à 0 puis 1 une fois le courriel parti ;
  *   6. une 6e reste soumise au consentement (lecture seule avant le clic du parent) ;
- *   7. plafond de classe (M1 bis) : seuls les comptes d'enfant de CETTE classe, entrés depuis
- *      moins de 24 h, sont comptés.
+ *   7. plafond de classe (M1 bis) : le seau `check_and_increment_rate_limit` tient sous des
+ *      inscriptions simultanées (10 en même temps → exactement 5 passent).
  *
  * @vitest-environment node
  */
@@ -28,7 +28,6 @@ import { getPostgresClient } from '../helpers/database/postgres-client';
 import { TestData } from '../helpers/database/test-data-factory';
 import type { Database } from '$lib/types/database';
 import {
-	countRecentChildAccounts,
 	createChildAccount,
 	createParentRequest,
 	markParentEmailSent
@@ -196,31 +195,24 @@ describe('inscription par le parent', () => {
 		expect((await lire()).data?.email_count).toBe(1);
 	});
 
-	it('plafond de classe : compte les enfants de CETTE classe entrés depuis moins de 24 h', async () => {
-		const cls = await classe(true);
-		const autre = await classe(true);
-		expect(await countRecentChildAccounts(service, cls.id)).toBe(0);
-
-		const a = await inscrire(cls.join_code);
-		const b = await inscrire(cls.join_code);
-		const c = await inscrire(autre.join_code);
-		if (!a.ok || !b.ok || !c.ok) throw new Error('inscription refusée');
-		expect(await countRecentChildAccounts(service, cls.id)).toBe(2);
-
-		// Un élève inscrit seul, avec une vraie adresse, n'entre pas dans le plafond.
-		const eleve = await TestData.profile().withRole('student').create();
-		const { error } = await service
-			.from('class_members')
-			.insert({ class_id: cls.id, student_id: eleve.id, status: 'active' });
-		if (error) throw new Error(`class_members : ${error.message}`);
-		expect(await countRecentChildAccounts(service, cls.id)).toBe(2);
-
-		// Entré il y a plus de 24 h : sorti de la fenêtre.
-		const pg = await getPostgresClient();
-		await pg.query(
-			`update class_members set joined_at = now() - interval '25 hours' where student_id = $1`,
-			[a.userId]
-		);
-		expect(await countRecentChildAccounts(service, cls.id)).toBe(1);
+	it('plafond de classe : 10 inscriptions simultanées, exactement 5 passent', async () => {
+		// Même clé et mêmes bornes que checkChildSignupRateLimitByClass.
+		const key = `ratelimit:signup:class:${crypto.randomUUID()}`;
+		try {
+			const reponses = await Promise.all(
+				Array.from({ length: 10 }, () =>
+					service.rpc('check_and_increment_rate_limit', {
+						p_key: key,
+						p_max_count: 5,
+						p_window_seconds: 86400
+					})
+				)
+			);
+			const passees = reponses.filter((r) => r.data?.[0]?.allowed === true);
+			expect(reponses.every((r) => r.error === null)).toBe(true);
+			expect(passees).toHaveLength(5);
+		} finally {
+			await service.from('rate_limits').delete().eq('key', key);
+		}
 	});
 });

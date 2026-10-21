@@ -8,7 +8,7 @@
  * DÉROULÉ :
  * 1. Validation (Zod), limites de débit par IP et par adresse du parent (5 / 24 h).
  * 2. Code de classe vérifié (RPC service) AVANT toute création, puis plafond de la classe
- *    (5 comptes d'enfant / 24 h, comptés en base).
+ *    (5 inscriptions / 24 h, seau atomique).
  * 3. Compte de l'enfant créé par le serveur, identifiant `prenom` + 3 chiffres
  *    (`$lib/server/child-registration`) → profil approuvé dans la classe ; lecture seule
  *    tant que le consentement manque.
@@ -23,14 +23,13 @@ import { fail, redirect } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import {
+	checkChildSignupRateLimitByClass,
 	checkChildSignupRateLimitByParentEmail,
 	checkSignupRateLimitByIP
 } from '$lib/server/rateLimiter';
 import { validateFormData, parentRegisterFormSchema } from '$lib/server/validation';
 import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
 import {
-	CLASS_DAILY_CHILD_LIMIT,
-	countRecentChildAccounts,
 	createChildAccount,
 	createParentRequest,
 	deleteChildAccount,
@@ -105,18 +104,10 @@ export const actions = {
 		}
 
 		// Plafond de la classe (M1 bis) : un code de classe qui circule ne doit pas ouvrir une
-		// création en masse. Compteur illisible → refus (fermé en panne).
-		const recentInClass = await countRecentChildAccounts(service, classId);
-		if (recentInClass === null) {
-			return fail(500, { error: SERVER_ERROR, ...echo });
-		}
-		if (recentInClass >= CLASS_DAILY_CHILD_LIMIT) {
-			logger.warn('Plafond de classe atteint pour les inscriptions par le parent');
-			return fail(429, {
-				error:
-					"Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou prévenir le professeur.",
-				...echo
-			});
+		// création en masse. Seau atomique, fermé en cas de panne.
+		const classLimit = await checkChildSignupRateLimitByClass(classId);
+		if (!classLimit.allowed) {
+			return fail(429, { error: classLimit.message, ...echo });
 		}
 
 		// 4. Compte de l'enfant

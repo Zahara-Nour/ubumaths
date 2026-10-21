@@ -681,6 +681,34 @@ export async function checkChildSignupRateLimitByParentEmail(
 }
 
 /**
+ * « J'inscris mon enfant » : plafond par classe (M1 bis, David, 2026-10-21).
+ *
+ * Au plus 5 inscriptions par classe et par 24 h : un code de classe qui circule n'ouvre pas une
+ * création en masse. Pensé pour les petits groupes d'Akadada ; à relever si une école donne le
+ * code à toute une classe le même soir. Un seau atomique, pris juste avant la création, et non
+ * un comptage des comptes en base (audit de la PR #1597) : un enfant qui quitte sa classe
+ * effaçait sa ligne de `class_members`, et des inscriptions simultanées lisaient toutes le
+ * même compte. Fermé en cas de panne.
+ */
+export async function checkChildSignupRateLimitByClass(classId: string): Promise<RateLimitResult> {
+	const message =
+		"Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou prévenir le professeur.";
+	if (!classId) {
+		logger.warn('Missing class id for child signup rate limit check');
+		return { allowed: false, message }; // Fermé : jamais de création sans classe
+	}
+
+	const key = `ratelimit:signup:class:${classId}`;
+	const result = await checkRateLimitWithMessage(key, 5, 86400, message, true);
+
+	if (!result.allowed) {
+		logger.warn('Child signup rate limit exceeded by class', { classId });
+	}
+
+	return result;
+}
+
+/**
  * « Changer mon mot de passe » : essais de l'ancien mot de passe, par compte.
  *
  * Seau distinct de la connexion (revue de la PR 3, n° 5) : des essais ratés ici ne doivent

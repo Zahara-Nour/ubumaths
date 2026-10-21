@@ -331,10 +331,11 @@ minimisation), mot de passe de l'enfant, son adresse et les CGU (`parentRegister
 Limite par IP → code vérifié par `resolve_open_class_by_code` avant toute création → plafond par
 adresse du parent (`checkChildSignupRateLimitByParentEmail`, 5 / 24 h, **fermé** en cas de panne,
 clé `mailboxKey` : sans `+tag` ni points Gmail ; compté après le code, qu'un code mal tapé ne
-consomme pas) → plafond de la classe (`countRecentChildAccounts`, au plus
-`CLASS_DAILY_CHILD_LIMIT` = 5 comptes d'enfant entrés dans la classe depuis 24 h, comptés en base
-sur les comptes réellement créés ; 6e → 429 « Trop d'inscriptions dans cette classe
-aujourd'hui… » ; compteur illisible → refus) → `createChildAccount` :
+consomme pas) → plafond de la classe (`checkChildSignupRateLimitByClass`, 5 / 24 h, seau
+atomique pris juste avant la création, **fermé** en cas de panne ; 6e → 429 « Trop d'inscriptions
+dans cette classe aujourd'hui… ». Pas un comptage des comptes en base : un enfant qui quitte sa
+classe efface sa ligne de `class_members`, et des inscriptions simultanées liraient le même
+compte — audit de #1597) → `createChildAccount` :
 identifiant `prenom` + 3 chiffres au hasard (4 si les 1 000 sont pris ; les comptes plus anciens
 à 2 chiffres gardent le leur), compte créé par
 `auth.admin.createUser` (adresse fictive confirmée d'office, `app_metadata.child_account`), profil

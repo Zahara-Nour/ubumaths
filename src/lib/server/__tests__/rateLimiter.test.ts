@@ -45,7 +45,8 @@ import {
 	checkNotificationMarkRateLimit,
 	checkNotificationDeleteRateLimit,
 	checkElevationRateLimitByIP,
-	checkElevationRateLimitByEmail
+	checkElevationRateLimitByEmail,
+	checkChildSignupRateLimitByClass
 } from '../rateLimiter';
 
 // ============================================================================
@@ -1308,6 +1309,35 @@ describe('Rate Limiter (Database-backed)', () => {
 				expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(true);
 			}
 			expect((await checkElevationRateLimitByEmail('admin@example.com')).allowed).toBe(false);
+		});
+	});
+
+	// M1 bis : seau atomique par classe (audit de la PR #1597 : un comptage en base se vidait
+	// quand l'enfant quittait la classe, et des inscriptions simultanées le dépassaient).
+	describe('Plafond de classe des inscriptions par le parent (5 / 24 h)', () => {
+		it('5 inscriptions passent, la 6e est refusée avec le message prévu', async () => {
+			for (let i = 0; i < 5; i++) {
+				expect((await checkChildSignupRateLimitByClass('classe-a')).allowed).toBe(true);
+			}
+			const blocked = await checkChildSignupRateLimitByClass('classe-a');
+			expect(blocked.allowed).toBe(false);
+			expect(blocked.message).toBe(
+				"Trop d'inscriptions dans cette classe aujourd'hui. Réessayer demain ou prévenir le professeur."
+			);
+		});
+
+		it('chaque classe a son propre seau', async () => {
+			for (let i = 0; i < 5; i++) await checkChildSignupRateLimitByClass('classe-a');
+			expect((await checkChildSignupRateLimitByClass('classe-b')).allowed).toBe(true);
+		});
+
+		it.each(['error', 'throw'] as const)('base en panne (%s) : refus', async (mode) => {
+			rpcFailure = mode;
+			expect((await checkChildSignupRateLimitByClass('classe-a')).allowed).toBe(false);
+		});
+
+		it('classe absente : refus', async () => {
+			expect((await checkChildSignupRateLimitByClass('')).allowed).toBe(false);
 		});
 	});
 });
