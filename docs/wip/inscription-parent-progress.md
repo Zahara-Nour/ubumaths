@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-21, phase 0 de la PR 3 proposée._
 
-- **État** : PR 1 (#1585) et PR 2 (#1592) mergées, migration en prod ; code pas en prod (attend un `deploy:prod`). PR 3 : phase 0 écrite (§ PR 3), **pas validée**.
-- **Prochaine action** : validation de la phase 0 de la PR 3 par David, puis tests rouges.
-- **En attente de David** : questions R1-R4 (§ PR 3) ; toujours M2, M1 bis, F1 (§ PR 2).
+- **État** : PR 1 (#1585) et PR 2 (#1592) mergées, migration en prod ; code pas en prod (attend un `deploy:prod`). PR 3 : phase 0 **validée** (R1-R4 = recommandations), implémentation en cours.
+- **Prochaine action** : tests rouges de la PR 3, puis implémentation.
+- **En attente de David** : M2, M1 bis, F1 (§ PR 2).
 - **Pièges en cours** : GoTrue écrit `app_metadata` APRÈS l'INSERT (trigger différé) ; la règle commune donne 30 j de grâce → retirés par `createChildAccount` ; reset d'un enfant : jamais vers `@eleves.chiph.re`.
 - **Worktree / branche** : `../ubumaths-wt-inscription-parent` · `feat/inscription-parent-mots-de-passe`.
 
@@ -180,7 +180,10 @@ Revues (2026-10-21) :
   propriétaire (préexistant). F3 (1re/Tle = `granted`) : décision prise. F4 : documenté dans
   `rgpd.md`. F5 : oracle de code identique à `/auth/register`.
 
-## PR 3 — mots de passe (phase 0, 2026-10-21, à valider)
+## PR 3 — mots de passe (phase 0, 2026-10-21, validée)
+
+David (2026-10-21) : « je suis tes recos » → R1 rien ne part sans adresse confirmée · R2 page
+dédiée sans session · R3 changement obligatoire · R4 tous les élèves, jamais prof ni admin.
 
 ### Constats dans le code
 
