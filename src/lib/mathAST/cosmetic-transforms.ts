@@ -1566,6 +1566,11 @@ function applyFullASTPipeline(ast: MathNode, options: CheckFormOptions = {}): Ma
  *
  * A leading explicit `+` (positive node) wrapping a number is also accepted.
  *
+ * Des parenthèses de groupement autour du nombre ou de son signe (`(-3)`,
+ * `-(3)`) n'en font pas un calcul : la contrainte `brackets` les juge ensuite
+ * (« parenthèses inutiles »). Un séparateur décimal sans chiffre d'un côté
+ * (`.5`, `5{,}`) est refusé (BIPM § 5.4.4, décision de David du 2026-10-21).
+ *
  * Rejects fractions, sums, products, scientific notation, variables, etc.
  * Those must go through `requiredForm` to be accepted in a non-simple shape.
  *
@@ -1573,16 +1578,37 @@ function applyFullASTPipeline(ast: MathNode, options: CheckFormOptions = {}): Ma
  * @returns true if the answer is a simple (possibly negative) number
  */
 export function isSimpleNumberLatex(latex: string): boolean {
-	// Virgule décimale nue (`3,14`) lue comme `3{,}14` ; un couple `(3,14)` reste refusé
-	const parsed = parseLatexSafe(bareDecimalCommaToPoint(latex.trim()));
+	// Virgule décimale nue (`3,14`) lue comme `3{,}14`
+	const trimmed = latex.trim();
+	const parsed = parseLatexSafe(bareDecimalCommaToPoint(trimmed));
 	if (!parsed.ast || parsed.errors.length > 0) return false;
 
-	let node: MathNode = parsed.ast;
-	// Peel a single leading sign wrapper (-x / +x).
-	if (node.type === 'opposite' || node.type === 'positive') {
-		node = node.operand;
+	// Un seul signe, entre des parenthèses inutiles : `((-3))`, `-(3)` ; pas `-(-3)`
+	const node = withoutParentheses(withoutSign(withoutParentheses(parsed.ast)));
+	// Un couple `(3,14)` reste refusé : entre parenthèses, la virgule nue sépare
+	if (trimmed.includes('(') && /(^|[^{]),/.test(trimmed)) return false;
+	return isWrittenNumber(node);
+}
+
+/** Nœud débarrassé des parenthèses de groupement qui l'entourent (`((x))` → `x`) */
+function withoutParentheses(node: MathNode): MathNode {
+	let current = node;
+	while (
+		current.type === 'delimiter' &&
+		current.delimiters === 'parentheses' &&
+		current.semantic === 'grouping'
+	) {
+		current = current.content;
 	}
-	return node.type === 'number';
+	return current;
+}
+
+/**
+ * Un nombre écrit avec un chiffre de chaque côté du séparateur décimal :
+ * `.5` et `5{,}` (lus `.5` et `5.`) ne sont pas des écritures de nombre (BIPM § 5.4.4)
+ */
+function isWrittenNumber(node: MathNode): boolean {
+	return node.type === 'number' && !node.value.startsWith('.') && !node.value.endsWith('.');
 }
 
 /**
@@ -1632,8 +1658,8 @@ export function isNumberOrNumberFractionLatex(latex: string): boolean {
 	const node = withoutSign(parsed.ast);
 	return (
 		node.type === 'division' &&
-		withoutSign(node.numerator).type === 'number' &&
-		withoutSign(node.denominator).type === 'number'
+		isWrittenNumber(withoutSign(node.numerator)) &&
+		isWrittenNumber(withoutSign(node.denominator))
 	);
 }
 
@@ -1664,8 +1690,8 @@ export function isQuantityValueLatex(latex: string): boolean {
 	if (node.type === 'division') {
 		return (
 			node.displayStyle === 'fraction' &&
-			node.numerator.type === 'number' &&
-			node.denominator.type === 'number'
+			isWrittenNumber(node.numerator) &&
+			isWrittenNumber(node.denominator)
 		);
 	}
 
@@ -1673,10 +1699,10 @@ export function isQuantityValueLatex(latex: string): boolean {
 		const { base, superscript: exponent } = node.right;
 		const exponentValue = exponent.type === 'opposite' ? exponent.operand : exponent;
 		return (
-			node.left.type === 'number' &&
+			isWrittenNumber(node.left) &&
 			base.type === 'number' &&
 			base.value === '10' &&
-			exponentValue.type === 'number'
+			isWrittenNumber(exponentValue)
 		);
 	}
 

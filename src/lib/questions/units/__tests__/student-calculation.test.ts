@@ -162,19 +162,24 @@ describe('case à unité — calcul faux, refusé ou illisible', () => {
 // ============================================================================
 
 describe('case à unité — la partie numérique suit le mode « nombre simple »', () => {
-	it('(−3) m pour −3 m : forme demandée, comme (−3) sans unité', () => {
+	it('(−3) m pour −3 m : juste, parenthèses inutiles, comme (−3) sans unité', () => {
 		expect(submit('(-3)' + typed('m'), '-3\\unit{m}')).toMatchObject({
+			isCorrect: true,
+			status: 'unoptimal_form',
+			feedback: 'Il y a des parenthèses inutiles.'
+		});
+	});
+
+	// BIPM § 5.4.4 : un chiffre de chaque côté du séparateur décimal
+	it.each([
+		['.5' + typed('m'), '0.5\\unit{m}'],
+		['5{,}' + typed('m'), '5\\unit{m}']
+	])('%s pour %s : forme refusée, comme sans unité', (answer, expected) => {
+		expect(submit(answer, expected)).toMatchObject({
 			isCorrect: false,
 			status: 'bad_form',
 			feedback: FORM_MESSAGE
 		});
-	});
-
-	it.each([
-		['.5' + typed('m'), '0.5\\unit{m}'],
-		['5{,}' + typed('m'), '5\\unit{m}']
-	])('%s pour %s : juste, comme sans unité', (answer, expected) => {
-		expect(submit(answer, expected)).toMatchObject({ isCorrect: true });
 	});
 });
 

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1573._
+_Mis à jour le 2026-10-21 : PR « nombre simple » codée, PR à ouvrir._
 
-- **État** : PR 1-3 (#1543, #1545, #1547) et PR 2 bis (#1573, calcul écrit dans une case à unité) mergées. Rien en prod (pas de `deploy:prod`).
-- **Prochaine action** : PR « nombre simple » (validée) : corriger `isSimpleNumberLatex` — `(−3)` perfectible « parenthèses inutiles », `.5` et `5,` refusés (BIPM) ; cases avec et sans unité, mesurée sur les modèles publiés. Puis fin de chantier (versement, journal archivé).
-- **En attente de David** : suppression du dossier non suivi `src/lib/questions/units/__tests__/tmp/` (sondes jetables) du worktree, qui bloque son retrait.
-- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général (« Valeur incorrecte. » jamais montré) ; messages d'unité validés (ne pas reformuler) ; mineurs laissés : `5 m × 10^3` juste, `6÷2 m` → « pas la bonne grandeur ».
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `refactor/correction-cases-unite-decoupage` (mergée, à retirer après accord sur `tmp/`).
+- **État** : PR 1-3 (#1543, #1545, #1547) et PR 2 bis (#1573) mergées. PR « nombre simple » codée (`isSimpleNumberLatex`), tests verts, oracle inchangé. Rien en prod.
+- **Prochaine action** : ouvrir la PR, revue `code-reviewer` opus, CI, merger ; puis fin de chantier (versement, journal archivé).
+- **En attente de David** : rien.
+- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général ; messages d'unité validés (ne pas reformuler) ; mineurs laissés : `5 m × 10^3` juste, `6÷2 m` → « pas la bonne grandeur ».
+- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `fix/correction-cases-unite-nombre-simple`.
 
 ## Historique
 
@@ -228,3 +228,18 @@ scientifique en plus. Validé : mode « nombre simple » + notation scientifique
 ### 2026-10-21 — #1573 mergée (PR 2 bis)
 
 - CI verte (16 contrôles), mergée. Doc : `grandeurs.md`, `questions.md`, `mathast/README.md`.
+
+### 2026-10-21 — PR « nombre simple » codée
+
+- Sondes jetables (`units/__tests__/tmp/`) supprimées avec l'accord de David.
+- Mesuré avant : `(-3)` FAUX `bad_form` (sans unité et à unité ; juste perfectible en case positionnelle) ;
+  `.5`, `5{,}`, `5.` JUSTES (sans unité et à unité ; `bad_form` en case positionnelle) ; `{,}5`, `5,` illisibles.
+- `isSimpleNumberLatex` : parenthèses de groupement retirées autour du nombre ou de son signe (`(-3)`,
+  `((-3))`, `-(3)` ; pas `-(-3)`) → juste perfectible « Il y a des parenthèses inutiles. » ; nombre dont la
+  valeur commence ou finit par `.` refusé (`isWrittenNumber`, aussi dans les fractions et la notation
+  scientifique de `isNumberOrNumberFractionLatex` / `isQuantityValueLatex`).
+- Piège trouvé : `bareDecimalCommaToPoint` relit le couple `(3,14)` en `(3.14)` ; il n'était refusé que par
+  les parenthèses → refus gardé (virgule nue + parenthèse dans la saisie).
+- Oracle des 25 modèles à unité : 0 verdict changé (sa batterie n'a ni `(-3)` ni `.5`). Aucune réponse
+  d'élève en prod : l'effet ne peut pas être mesuré sur de vraies saisies.
+- Doc : `questions.md` (point 4 de la correction).

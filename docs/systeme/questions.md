@@ -285,7 +285,10 @@ Statuts (`ValidationStatus`) : `correct` (1), `unoptimal_form` (½), `bad_form` 
 4. **Forme** selon la case : texte → rien ; `requiredForm` → seulement les violations cosmétiques ;
    grandeur → la partie numérique (`studentValueLatex`, la saisie sans ses unités : `2\times3`
    pour `2\times3\,m`) doit être un nombre simple, une fraction ou une notation scientifique ; `precision` / `rulesSuffice` →
-   nombre simple (fraction admise en `rulesSuffice`) ; `acceptCombinatorialNotation`,
+   nombre simple (fraction admise en `rulesSuffice`) — `isSimpleNumberLatex` : un nombre, un signe ; entre
+   parenthèses inutiles (`(-3)`), il reste juste mais perfectible (`brackets`) ; un séparateur décimal sans
+   chiffre d'un côté (`.5`, `5{,}`) est `bad_form` (BIPM § 5.4.4), y compris dans une fraction ou une
+   notation scientifique (décisions de David du 2026-10-21) ; `acceptCombinatorialNotation`,
    `acceptDecimal`, `angleModulo` → exceptions documentées dans `types.ts` ; sinon **mode exact** :
    `checkFormUnified` passe réponse et attendu dans le même pipeline de retouches cosmétiques
    (`cosmetic-transforms.ts`) puis les compare.
