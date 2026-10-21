@@ -12,6 +12,7 @@ couvre:
   - src/lib/server/serviceRoleClient.ts
   - src/lib/server/rateLimiter.ts
   - src/lib/server/response-floor.ts
+  - src/lib/server/after-response.ts
   - src/lib/server/csrfHandle.ts
   - src/lib/server/passwordPolicy.ts
   - src/lib/server/validateRedirectUrl.ts
