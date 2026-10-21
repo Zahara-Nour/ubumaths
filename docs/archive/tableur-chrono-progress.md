@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, avant la PR._
+_Mis à jour le 2026-10-21, après #1586 (mergée) — chantier clos._
 
-- **État** : limite du test `formules-tableur.test.ts` (ECARTYPE de 200 valeurs) passée de 150 à 400 ms · **Prochaine action** : PR, CI, merge, puis archiver ce journal · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-tableur-chrono` · `test/tableur-chrono`
+- **État** : limite du test `formules-tableur.test.ts` (ECARTYPE de 200 valeurs) passée de 150 à 400 ms · **Prochaine action** : aucune (clos) · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-tableur-chrono` · `test/tableur-chrono`
 
 ## Historique
 
