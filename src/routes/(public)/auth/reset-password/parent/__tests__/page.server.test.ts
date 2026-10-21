@@ -93,7 +93,7 @@ describe('action setPassword', () => {
 	});
 
 	it('compte ou jeton absent, mal formé ou démesuré → 400', async () => {
-		const mauvais = [
+		const mauvais: Record<string, string>[] = [
 			{ token: T },
 			{ userId: U },
 			{ userId: 'abc', token: T },
