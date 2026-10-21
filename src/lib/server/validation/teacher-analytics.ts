@@ -25,9 +25,9 @@ export const knowledgeGridQuerySchema = z.object({
 		.transform((v) => v === 'true')
 });
 
-/** Query : ?theme=NOM_BO&weeks=8 pour Widget B. */
+/** Query : ?branch=<uuid d'une branche de l'arbre>&weeks=8 pour Widget B. */
 export const retentionQuerySchema = z.object({
-	theme: z.string().trim().min(1).max(200),
+	branch: z.string().uuid('Invalid branch ID'),
 	weeks: z.coerce.number().int().min(1).max(26).default(8)
 });
 

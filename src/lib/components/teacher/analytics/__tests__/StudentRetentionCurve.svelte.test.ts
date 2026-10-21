@@ -34,7 +34,8 @@ describe('StudentRetentionCurve', () => {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice',
-			theme: 'NUM'
+			branchId: 'b-nombres',
+			branchName: 'Nombres'
 		});
 		await expect.element(page.getByText(/Pas assez de reviews/)).toBeVisible();
 	});
@@ -51,20 +52,23 @@ describe('StudentRetentionCurve', () => {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice',
-			theme: 'NUM'
+			branchId: 'b-nombres',
+			branchName: 'Nombres'
 		});
 		await expect.element(page.getByText(/5 reviews sur la période/)).toBeVisible();
 	});
 
-	it('includes student name and theme in title', async () => {
+	it('includes student name and branch in title, asks the branch', async () => {
 		mockFetch({ points: [] });
 		await render(StudentRetentionCurve, {
 			classId: 'class-1',
 			studentId: 'student-1',
 			studentName: 'Alice Martin',
-			theme: 'NUMÉRATION'
+			branchId: 'b-nombres',
+			branchName: 'Nombres et calculs'
 		});
 		await expect.element(page.getByText('Rétention de Alice Martin')).toBeVisible();
-		await expect.element(page.getByText('NUMÉRATION')).toBeVisible();
+		await expect.element(page.getByText('Nombres et calculs')).toBeVisible();
+		expect(vi.mocked(globalThis.fetch).mock.calls[0][0]).toContain('?branch=b-nombres');
 	});
 });

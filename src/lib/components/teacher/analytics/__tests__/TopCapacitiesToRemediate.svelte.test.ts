@@ -24,13 +24,13 @@ describe('TopCapacitiesToRemediate', () => {
 		} as Response);
 	}
 
-	it('renders rows with skill name, theme badge, percentage', async () => {
+	it('renders rows with point name, notion badge, percentage', async () => {
 		mockFetch({
 			rows: [
 				{
 					point_id: 'cap1',
 					point_name: 'Calcul fractions',
-					theme_code: 'CALC',
+					notion_name: 'Fractions',
 					students_concerned: [{ student_id: 's1', display_name: 'Alice', badge: 'a_remedier' }],
 					remediate_pct: 75
 				}
@@ -38,6 +38,7 @@ describe('TopCapacitiesToRemediate', () => {
 		});
 		await render(TopCapacitiesToRemediate, { classId: 'class-1' });
 		await expect.element(page.getByText('Calcul fractions')).toBeVisible();
+		await expect.element(page.getByText('Fractions', { exact: true })).toBeVisible();
 		await expect
 			.element(page.getByText(new RegExp(`75% des ${lore.entities.student}s concernés`)))
 			.toBeVisible();

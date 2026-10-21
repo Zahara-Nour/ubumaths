@@ -16,8 +16,8 @@ const sampleGrid = {
 		{ id: 's2', display_name: 'Bob Dupont' }
 	],
 	capacities: [
-		{ id: 'cap1', name: 'Additionner', theme_code: 'NUM', theme_name: 'Nombres' },
-		{ id: 'cap2', name: 'Soustraire', theme_code: 'NUM', theme_name: 'Nombres' }
+		{ id: 'cap1', name: 'Additionner', notion_name: 'Entiers' },
+		{ id: 'cap2', name: 'Comparer $\\frac{1}{2}$ et $\\frac{1}{3}$', notion_name: 'Fractions' }
 	],
 	cells: {
 		's1:cap1': 'acquise_en_memoire',
@@ -49,13 +49,16 @@ describe('ClassCapacityGrid', () => {
 		} as Response);
 	}
 
-	it('renders student names and capacity names after fetch', async () => {
+	it('renders student names, point names and notions after fetch', async () => {
 		mockFetch(sampleGrid);
 		await render(ClassCapacityGrid, { classId: 'class-1' });
 		await expect.element(page.getByText('Alice Martin')).toBeVisible();
 		await expect.element(page.getByText('Bob Dupont')).toBeVisible();
 		await expect.element(page.getByText('Additionner')).toBeVisible();
-		await expect.element(page.getByText('Soustraire')).toBeVisible();
+		// Le nom du point est rendu (LaTeX compris), sous l'étiquette de sa notion.
+		await expect.element(page.getByText(/^Comparer/)).toBeVisible();
+		expect(document.querySelector('thead math-span')).not.toBeNull();
+		await expect.element(page.getByText('Fractions')).toBeVisible();
 	});
 
 	it('shows empty state when class has no students', async () => {
@@ -74,7 +77,7 @@ describe('ClassCapacityGrid', () => {
 			columnStats: {}
 		});
 		await render(ClassCapacityGrid, { classId: 'class-1' });
-		await expect.element(page.getByText(/Aucune capacité famille A/)).toBeVisible();
+		await expect.element(page.getByText(/Aucun point du programme travaillé/)).toBeVisible();
 	});
 
 	it('renders column stats (% acquise / % à remédier)', async () => {

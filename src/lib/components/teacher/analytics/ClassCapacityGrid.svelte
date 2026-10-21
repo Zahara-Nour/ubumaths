@@ -1,8 +1,8 @@
 <!--
-	Widget A — Grille élève × capacité famille A.
+	Widget A — Grille élève × point du programme (points neufs, dans l'ordre de l'arbre).
 
 	Affiche un badge FSRS par cellule (🆘 / 🔁 / ⏳ / ✅ / ◯).
-	Toggles : "Trier par % acquise desc", "Inclure tout le cycle".
+	Toggles : "Trier par % acquise desc", "Tout le niveau".
 	Mode projection (anonymisation) reçu via prop pour cohérence page.
 -->
 <script lang="ts">
@@ -10,6 +10,7 @@
 	import { ArrowUpDown, AlertCircle, RefreshCw, Clock, CheckCircle, Circle } from '@lucide/svelte';
 	import { Button } from '$lib/components/ui/button';
 	import { Skeleton } from '$lib/components/ui/skeleton';
+	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
 	import { Badge } from '$lib/components/ui/badge';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import * as Card from '$lib/components/ui/card';
@@ -22,8 +23,7 @@
 	interface ClassCapacity {
 		id: string;
 		name: string;
-		theme_code: string | null;
-		theme_name: string | null;
+		notion_name: string | null;
 	}
 	interface GridData {
 		students: ClassStudent[];
@@ -103,11 +103,13 @@
 	<Card.Header>
 		<div class="flex flex-wrap items-center justify-between gap-2">
 			<div>
-				<Card.Title>Grille capacités × {lore.entities.student}s</Card.Title>
-				<Card.Description>État actuel agrégé via FSRS-6 (famille A).</Card.Description>
+				<Card.Title>Grille points × {lore.entities.student}s</Card.Title>
+				<Card.Description
+					>État actuel agrégé via FSRS-6, points rangés dans l’ordre du programme.</Card.Description
+				>
 			</div>
 			<div class="flex flex-wrap items-center gap-3">
-				<MyCheckbox bind:checked={includeAllCycle} label="Tout le cycle" />
+				<MyCheckbox bind:checked={includeAllCycle} label="Tout le niveau" />
 				<Button
 					variant="ghost"
 					size="sm"
@@ -115,7 +117,7 @@
 					aria-pressed={sortByAcquired}
 				>
 					<ArrowUpDown class="mr-2 h-4 w-4" />
-					{sortByAcquired ? 'Tri : % acquise' : 'Tri : ordre BO'}
+					{sortByAcquired ? 'Tri : % acquise' : 'Tri : ordre du programme'}
 				</Button>
 			</div>
 		</div>
@@ -136,13 +138,13 @@
 			</p>
 		{:else if orderedCapacities.length === 0}
 			<p class="py-8 text-center text-sm text-muted-foreground">
-				Aucune capacité famille A travaillée pour le moment.
+				Aucun point du programme travaillé pour le moment.
 			</p>
 		{:else}
 			<div class="overflow-x-auto">
 				<table
 					class="w-full border-collapse text-sm"
-					aria-label="Grille capacités × {lore.entities.student}s"
+					aria-label="Grille points × {lore.entities.student}s"
 				>
 					<thead>
 						<tr class="border-b border-border">
@@ -155,9 +157,11 @@
 									title={cap.name}
 								>
 									<div class="flex flex-col items-center gap-0.5">
-										<span class="line-clamp-2 max-w-[5rem]">{cap.name}</span>
-										{#if cap.theme_code}
-											<Badge variant="outline" class="text-[0.6rem]">{cap.theme_code}</Badge>
+										<span class="line-clamp-2 max-w-[5rem]"
+											><InlineMarkdown content={cap.name} /></span
+										>
+										{#if cap.notion_name}
+											<Badge variant="outline" class="text-[0.6rem]">{cap.notion_name}</Badge>
 										{/if}
 									</div>
 								</th>

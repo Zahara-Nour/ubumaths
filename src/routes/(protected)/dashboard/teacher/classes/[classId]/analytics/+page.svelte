@@ -42,10 +42,13 @@
 	// svelte-ignore state_referenced_locally
 	let selectedStudentId = $state<string>(data.students[0]?.id ?? '');
 	// svelte-ignore state_referenced_locally
-	let selectedTheme = $state<string>(data.themes[0]?.code ?? '');
+	let selectedBranchId = $state<string>(data.branches[0]?.id ?? '');
 
 	const studentItems = $derived(data.students.map((s) => ({ value: s.id, label: s.display_name })));
-	const themeItems = $derived(data.themes.map((t) => ({ value: t.code, label: t.name })));
+	const branchItems = $derived(data.branches.map((b) => ({ value: b.id, label: b.name })));
+	const selectedBranchName = $derived(
+		data.branches.find((b) => b.id === selectedBranchId)?.name ?? '?'
+	);
 	const selectedStudentName = $derived(
 		data.students.find((s) => s.id === selectedStudentId)?.display_name ?? '?'
 	);
@@ -139,7 +142,8 @@
 					<Card.Header>
 						<Card.Title>Détail par {lore.entities.student}</Card.Title>
 						<Card.Description>
-							Rétention sur un thème + distribution des grades sur les 7 derniers jours.
+							Rétention sur une branche du programme + distribution des grades sur les 7 derniers
+							jours.
 						</Card.Description>
 						<div class="mt-3 flex flex-wrap gap-3">
 							<div class="min-w-[12rem]">
@@ -150,28 +154,41 @@
 									placeholder="Choisir un {lore.entities.student}"
 								/>
 							</div>
-							<div class="min-w-[12rem]">
-								<MySelect
-									type="single"
-									items={themeItems}
-									bind:value={selectedTheme}
-									placeholder="Choisir un thème BO"
-								/>
-							</div>
+							{#if branchItems.length > 0}
+								<div class="min-w-[12rem]">
+									<MySelect
+										type="single"
+										items={branchItems}
+										bind:value={selectedBranchId}
+										placeholder="Choisir une branche"
+									/>
+								</div>
+							{/if}
 						</div>
 					</Card.Header>
 					<Card.Content>
-						{#if selectedStudentId && selectedTheme}
+						{#if selectedStudentId}
 							<div class="grid gap-6 lg:grid-cols-2">
-								<StudentRetentionCurve
-									classId={data.classId}
-									studentId={selectedStudentId}
-									studentName={anonymized
-										? `${lore.entities.student} sélectionné`
-										: selectedStudentName}
-									theme={selectedTheme}
-									{refreshNonce}
-								/>
+								{#if !data.grade}
+									<p class="py-4 text-center text-sm text-muted-foreground">
+										Le niveau de votre {lore.entities.class} n'est pas renseigné.
+									</p>
+								{:else if selectedBranchId}
+									<StudentRetentionCurve
+										classId={data.classId}
+										studentId={selectedStudentId}
+										studentName={anonymized
+											? `${lore.entities.student} sélectionné`
+											: selectedStudentName}
+										branchId={selectedBranchId}
+										branchName={selectedBranchName}
+										{refreshNonce}
+									/>
+								{:else}
+									<p class="py-4 text-center text-sm text-muted-foreground">
+										Aucune branche du programme pour ce niveau.
+									</p>
+								{/if}
 								<StudentGradeHistogram
 									classId={data.classId}
 									studentId={selectedStudentId}
@@ -183,7 +200,7 @@
 							</div>
 						{:else}
 							<p class="py-4 text-center text-sm text-muted-foreground">
-								Sélectionnez un {lore.entities.student} et un thème pour afficher le détail.
+								Sélectionnez un {lore.entities.student} pour afficher le détail.
 							</p>
 						{/if}
 					</Card.Content>

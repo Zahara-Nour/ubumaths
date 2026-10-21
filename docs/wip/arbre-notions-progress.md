@@ -10,13 +10,13 @@ _Mis à jour le 2026-10-21, après #1589 (étape 3, D mergée)._
 - **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3), #1589 (D : « Ma
   progression » élève par branche > notion, page `/dashboard/student/notions/[id]`, ✨ retiré, points sans modèle
   comptés). Pas en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **F** — phase 0 à faire valider ; puis E, étape 4 (destructive : arrêt).
+- **Prochaine action** : **F** (analytique) en cours, phase 0 validée ; puis E, étape 4 (destructive : arrêt).
 - **En attente de David** : rien. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
   d'intégration : tags d'exercice AVANT rangements ; PR en conflit = pas de CI `pull_request` ; MySelect affiche le
   LaTeX en brut ; pas de test de rendu des pages élève de D (calcul seul).
-- **Worktree / branche** : aucun (D nettoyé).
+- **Worktree / branche** : `ubumaths-wt-arbre-notions` / `refactor/arbre-bascule-f`.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1226,3 +1226,19 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   `objectifs/+page.server.ts`, lecture d'état non filtrée par `.in()` justifiée (jusqu'à ~240 identifiants). Pas
   de test de rendu des deux pages (calcul testé, rendu non).
 - **2026-10-21 — #1589 mergée (D).** CI verte au premier essai.
+- **2026-10-21 — Étape 3, PR F (analytique), phase 0 validée par David** (« je suis tes recos », worktree
+  `ubumaths-wt-arbre-notions`, branche `refactor/arbre-bascule-f`). Constat : les trois lectures de l'onglet
+  Connaissances passent par `curriculum_objectives!inner` → ne voient que les ANCIENS points (prod : 1026 tags
+  anciens, 847 neufs). Décidé : grille et Top = points neufs non archivés (règle `keepLinksOfGrade` gardée, niveau lu
+  sur le point), colonnes dans l'ordre de l'arbre, nom rendu par `InlineMarkdown` ; « Tout le niveau » = points neufs
+  du niveau ; rétention : sélecteur « Branche » (branches du niveau de la classe, 4 à 12 en prod), `?branch=<uuid>`,
+  points de la branche ET du niveau ; classe sans niveau → « Le niveau de cette classe n'est pas renseigné. ».
+  **Q1** : étiquette = la notion. **Q2** : « capacité » → « point » dans les textes affichés seulement. Accès : rien
+  ne change, pas de migration.
+- **2026-10-21 — F : revues.** security-auditor : 0 bloquant ni important (`branch` en uuid strict, plus d'entrée
+  libre dans un filtre PostgREST ; cas « élève hors classe → 404 » ajouté). code-reviewer : 0 bloquant ni important ;
+  corrigé : le filtre `grade` des requêtes est asserté (2 tests rouges sans lui). Laissés, notés : LaTeX brut dans
+  les infobulles ; carte liée à un ANCIEN point du niveau + un point neuf d'un autre niveau → la colonne de l'autre
+  niveau apparaît (règle « aucun point du niveau → tous ») ; `branchId` inconnu → courbe vide sans erreur.
+  Écart à la phase 0 signalé à David : règle `keepLinksOfGrade` gardée (carte d'un autre niveau sans point du
+  niveau de la classe = colonne gardée).

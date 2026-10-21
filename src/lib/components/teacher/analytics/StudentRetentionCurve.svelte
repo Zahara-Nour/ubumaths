@@ -1,6 +1,6 @@
 <!--
 	Widget B — Courbe rétention (retrievability moyenne par semaine, 8 dernières semaines)
-	pour un élève × un thème BO.
+	pour un élève × une branche de l'arbre des notions.
 
 	SVG inline minimaliste.
 -->
@@ -18,11 +18,12 @@
 		classId: string;
 		studentId: string;
 		studentName: string;
-		theme: string;
+		branchId: string;
+		branchName: string;
 		refreshNonce?: number;
 	}
 
-	let { classId, studentId, studentName, theme, refreshNonce = 0 }: Props = $props();
+	let { classId, studentId, studentName, branchId, branchName, refreshNonce = 0 }: Props = $props();
 
 	let points = $state<RetentionPoint[]>([]);
 	let loading = $state(false);
@@ -32,7 +33,7 @@
 		loading = true;
 		error = null;
 		try {
-			const url = `/api/teacher/classes/${classId}/analytics/knowledge-retention/${studentId}?theme=${encodeURIComponent(theme)}`;
+			const url = `/api/teacher/classes/${classId}/analytics/knowledge-retention/${studentId}?branch=${encodeURIComponent(branchId)}`;
 			const res = await fetch(url);
 			if (!res.ok) {
 				const body = await res.json().catch(() => ({}));
@@ -51,7 +52,7 @@
 	$effect(() => {
 		void classId;
 		void studentId;
-		void theme;
+		void branchId;
 		void refreshNonce;
 		void load();
 	});
@@ -86,7 +87,7 @@
 	<Card.Header>
 		<Card.Title>Rétention de {studentName}</Card.Title>
 		<Card.Description>
-			Retrievability moyenne par semaine (8 dernières) sur le thème <strong>{theme}</strong>.
+			Retrievability moyenne par semaine (8 dernières) sur la branche <strong>{branchName}</strong>.
 		</Card.Description>
 	</Card.Header>
 
@@ -97,7 +98,7 @@
 			<p class="text-sm text-destructive">⚠ {error}</p>
 		{:else if !hasData}
 			<p class="py-8 text-center text-sm text-muted-foreground">
-				Pas assez de reviews sur ce thème ({totalReviews} review{totalReviews > 1 ? 's' : ''} récente{totalReviews >
+				Pas assez de reviews sur cette branche ({totalReviews} review{totalReviews > 1 ? 's' : ''} récente{totalReviews >
 				1
 					? 's'
 					: ''}).
