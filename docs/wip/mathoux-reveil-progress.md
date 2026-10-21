@@ -6,14 +6,17 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, au démarrage._
+_Mis à jour le 2026-10-21, PR prête (revues faites)._
 
-- **État** : `db:types` fait (colonne `asleep`). Code à écrire.
-- **Prochaine action** : tests rouges puis code (mémoire qui retient la sieste, nouveauté `wake`,
-  export RGPD), revues, PR.
-- **En attente de David** : rien (validé le 2026-10-21 : « je valide tout »).
-- **Pièges en cours** : un Mathou « de la seule mémoire » s'affiche sans sieste : ne jamais
-  l'annoncer réveillé.
+- **État** : code + tests (unitaires, intégration : endormi sans annonce puis réveil annoncé une
+  fois) + doc ; `code-reviewer` (important corrigé : siestes concurrentes testées) et
+  `security-auditor` : **aucun bloquant**.
+- **Prochaine action** : PR → CI verte → merge → vérification manuelle notée → nettoyage worktree.
+  Aucune migration dans cette PR.
+- **En attente de David** : rien.
+- **Pièges en cours** : limites acceptées et documentées (sieste du dernier écrivain en
+  concurrence ; Mathou qui perd puis retrouve ses points) ; réveil + étoile → seul le réveil est
+  dit (comme croissance + étoile).
 - **Worktree / branche** : `../ubumaths-wt-mathoux-reveil` · `feat/mathoux-reveil`.
 
 ## Comportements (validés par David le 2026-10-21)
