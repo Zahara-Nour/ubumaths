@@ -9,6 +9,9 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import type { RequestEvent } from '@sveltejs/kit';
 
 vi.mock('$lib/server/buddy-queries', () => ({ recordStudentPresence: vi.fn() }));
+vi.mock('$lib/utils/logger', () => ({
+	createServerLogger: () => ({ info: vi.fn(), error: vi.fn(), warn: vi.fn(), debug: vi.fn() })
+}));
 
 import { recordStudentPresence } from '$lib/server/buddy-queries';
 import { forgetPresences, studentPresenceHandle } from '../studentPresenceHandle';
@@ -22,6 +25,7 @@ function makeEvent(options: {
 	routeId: string | null;
 	role?: 'student' | 'teacher' | 'admin';
 	userId?: string;
+	status?: string;
 }) {
 	const set = vi.fn();
 	const userId = options.userId ?? STUDENT;
@@ -29,7 +33,10 @@ function makeEvent(options: {
 		route: { id: options.routeId },
 		cookies: { get: vi.fn(), set },
 		locals: options.role
-			? { user: { id: userId }, profile: { id: userId, role: options.role } }
+			? {
+					user: { id: userId },
+					profile: { id: userId, role: options.role, status: options.status ?? 'approved' }
+				}
 			: { user: null, profile: null }
 	} as unknown as RequestEvent;
 	return { event, set };
@@ -81,6 +88,44 @@ describe('studentPresenceHandle', () => {
 		);
 		expect(recordStudentPresence).toHaveBeenCalledWith(STUDENT);
 		expect(recordStudentPresence).toHaveBeenCalledWith(OTHER);
+	});
+
+	it('écriture qui lève (client service, réseau) : la page s’affiche quand même', async () => {
+		vi.mocked(recordStudentPresence).mockRejectedValue(new Error('réseau coupé'));
+		await run(makeEvent({ routeId: '/(protected)/dashboard', role: 'student' }).event);
+		expect(recordStudentPresence).toHaveBeenCalledTimes(1);
+	});
+
+	it('deux requêtes simultanées : une écriture, et les deux attendent sa fin', async () => {
+		let finish: () => void = () => {};
+		vi.mocked(recordStudentPresence).mockReturnValue(
+			new Promise<void>((done) => {
+				finish = done;
+			})
+		);
+		const resolveA = vi.fn().mockResolvedValue(new Response('a'));
+		const resolveB = vi.fn().mockResolvedValue(new Response('b'));
+		const pageA = studentPresenceHandle({
+			event: makeEvent({ routeId: '/(protected)/dashboard', role: 'student' }).event,
+			resolve: resolveA
+		});
+		const pageB = studentPresenceHandle({
+			event: makeEvent({ routeId: '/(protected)/dashboard/student', role: 'student' }).event,
+			resolve: resolveB
+		});
+		await Promise.resolve();
+		expect(resolveA).not.toHaveBeenCalled();
+		expect(resolveB).not.toHaveBeenCalled();
+		finish();
+		await Promise.all([pageA, pageB]);
+		expect(recordStudentPresence).toHaveBeenCalledTimes(1);
+		expect(resolveA).toHaveBeenCalledTimes(1);
+		expect(resolveB).toHaveBeenCalledTimes(1);
+	});
+
+	it.each(['pending', 'rejected'])('élève au compte %s : rien', async (status) => {
+		await run(makeEvent({ routeId: '/(protected)/dashboard', role: 'student', status }).event);
+		expect(recordStudentPresence).not.toHaveBeenCalled();
 	});
 
 	it.each([
