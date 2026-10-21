@@ -10,8 +10,7 @@ _Mis à jour le 2026-10-21, PR D en cours (phase 0 validée)._
 - **État** : C5 étape 3. Faits : #1060, #1577 (B1), #1581 (B2), #1583 (B3). **D en cours** : « Ma progression »
   élève sur branche > notion (`getNotionsProgression`, page `/dashboard/student/notions/[id]`, ancienne
   `/objectifs/[id]` → redirection, tuile sans ✨, lien notion du deck avec `?depuis=programme`). Pas en prod.
-- **Prochaine action** : finir D (tests client, doc `couvre:`, revues code-reviewer + security-auditor, PR) ; puis
-  F, E, étape 4 (destructive : arrêt).
+- **Prochaine action** : merger D (PR ouverte, revues faites) ; puis F, E, étape 4 (destructive : arrêt).
 - **En attente de David** : rien. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
 - **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) ; nettoyage
@@ -1219,3 +1218,10 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   (alerte dès qu'un niveau valide ne rend aucun point) ; notion inconnue ou hors niveau → 404. **Q1** : les points
   sans modèle tagué comptent, marqués « Pas encore d'entraînement ici ». **Q2** : nouvelle route `notions/[id]`.
   **Q3** : ✨ maîtrisé retiré. Accès : rien ne change (arbre lisible par tous, état propre à l'élève).
+- **2026-10-21 — D : revues.** security-auditor : 0 bloquant ni important (état filtré par l'élève, RLS en double
+  défense ; `?depuis=` comparé à une constante ; `question_template_points` et `curriculum_point_automatismes`
+  lisibles par tout connecté). code-reviewer : 2 importants corrigés — le lien de notion du deck menait à une 404
+  pour un point d'un autre niveau, archivé, ou un élève sans niveau (`notionLinkable`, 3 tests rouges avant) ; un
+  point acquis sans modèle tagué perdait son badge d'état. Mineurs : `break`, commentaire faux de
+  `objectifs/+page.server.ts`, lecture d'état non filtrée par `.in()` justifiée (jusqu'à ~240 identifiants). Pas
+  de test de rendu des deux pages (calcul testé, rendu non).
