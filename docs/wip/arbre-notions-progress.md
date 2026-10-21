@@ -5,22 +5,22 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1577 (étape 3, B1 mergée)._
+_Mis à jour le 2026-10-21, après #1581 (étape 3, B2 mergée)._
 
-- **État** : C5 étape 3 (bascule du code). Fait : #1060 (page Programme) et #1577 (B1 : couverture auto, deck
-  Programme, Palotin par branche, tags admin d'un modèle par programme). PR A abandonnée (fonctions SQL sans appelant,
-  parties à l'étape 4). Pas encore en prod (aucun `deploy:prod` depuis).
-- **Prochaine action** : **B2** dans un worktree neuf : cahier de texte, avancement et tags d'un exercice sur l'arbre
-  branche > notion > points ; `getCurriculumTree` disparaît ; tests de page à écrire d'abord (aucun aujourd'hui). Puis
-  D (élève : progression, `COVERED_GRADES`, `/student/objectifs`) et F (analytique), puis E (scripts de rattachement,
-  Q8), puis étape 4 (suppression, destructive : arrêt).
-- **En attente de David** : rien sur B2 (phase 0 validée le 2026-10-21) ; signalé : 11 modèles sans corrigé ;
-  c9d6c5db attend une règle de correction.
-- **Pièges en cours** : un test d'intégration qui pose des points ANCIENS asserte l'ancien comportement (10 rouges en CI
-  sur B1) → décors en points neufs (branche > notion, modèle rangé) ; une PR en conflit ne lance PAS la CI
-  `pull_request` (fusionner `origin/main`, pas de push forcé) ; MySelect affiche le LaTeX en brut.
-- **Worktree / branche** : `ubumaths-wt-arbre-notions`, `refactor/arbre-bascule-b2` (B2 en cours, phase 0
-  validée le 2026-10-21, cf. entrée du jour).
+- **État** : C5 étape 3 (bascule du code). Fait : #1060 (page Programme), #1577 (B1) et #1581 (B2 : cahier de
+  texte, Avancement et tags d'exercice sur branche > notion > points ; `getCurriculumTree` supprimé ; tags d'exercice
+  limités aux notions de rangement, règle 1). Pas encore en prod (aucun `deploy:prod` depuis B1).
+- **Prochaine action** : **D** dans un worktree neuf (élève : progression, `COVERED_GRADES`, `/student/objectifs`),
+  phase 0 à présenter ; puis F (analytique), E (scripts de rattachement, Q8), étape 4 (suppression, destructive : arrêt).
+- **En attente de David** : 3 points de revue B2 à trancher — l'API accepte de cocher / taguer un point neuf
+  ARCHIVÉ (les écrans ne le proposent pas) ; un 404 au DELETE est traité « déjà retiré » même si c'est un refus RLS ;
+  l'Avancement compte les archivés travaillés dans « vus / total ». Signalés avant : 11 modèles sans corrigé ;
+  c9d6c5db attend une règle de correction. 📌 Futur chantier non décidé : écran de rangement des exercices.
+- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud ou sa notion (trigger) →
+  décors d'intégration : `makeTaggedExercise` range l'exercice ; un test qui pose des points ANCIENS asserte l'ancien
+  comportement ; une PR en conflit ne lance PAS la CI `pull_request` (fusionner `origin/main`) ; MySelect affiche le
+  LaTeX en brut.
+- **Worktree / branche** : aucun (B2 nettoyé).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1188,3 +1188,7 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   programmes : 326, 10) ; non rangé (51) → « Cet exercice n'est rangé dans aucune notion : aucun point du programme
   ne peut lui être associé. » ; rangé sans point compatible → « Aucun point du programme de ses niveaux sur les
   notions où il est rangé. » ; Q1 tient. 📌 Futur chantier, non décidé : un écran de rangement des exercices.
+- **2026-10-21 — #1581 mergée (B2).** Revues : code-reviewer (0 bloquant ; corrigés : panne de lecture journalisée,
+  test du chemin d'erreur de la création, tags d'un niveau retiré visibles) et security-auditor (0 bloquant ni
+  important ; corrigés : lecture par lots de 100, message générique au DELETE). Intégration : 5 cas nouveaux rouges
+  sur `origin/main`, 67/67 sur la branche. 3 points laissés à David (cf. « Reprendre ici »).
