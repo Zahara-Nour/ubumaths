@@ -99,10 +99,12 @@ MODIFS = {
     'f92d63a6': mf92d63a6_addition,
 }
 
+# Niveaux des modèles neufs dans « Fractions › Calculer › Addition et Soustraction » : les suivants
+# libres (1 à 7 pris), dans l'ordre des niveaux des origines (3, 4, 7). Tranché par David le 2026-10-21.
 SCISSIONS = {
-    '71ee6212': ('e100ea6c-c52e-4f35-aec5-df72768d2041', m71ee6212_soustraction),
-    'ae988cc8': ('2af592ca-d9a9-4539-8d2d-80729a51a5e4', mae988cc8_soustraction),
-    'f92d63a6': ('4e1ed43e-33ee-423b-b475-4d3674e2b3e0', mf92d63a6_soustraction),
+    '71ee6212': ('e100ea6c-c52e-4f35-aec5-df72768d2041', m71ee6212_soustraction, 9),
+    'ae988cc8': ('2af592ca-d9a9-4539-8d2d-80729a51a5e4', mae988cc8_soustraction, 8),
+    'f92d63a6': ('4e1ed43e-33ee-423b-b475-4d3674e2b3e0', mf92d63a6_soustraction, 10),
 }
 
 ENTETE = """-- ============================================================================
@@ -124,7 +126,9 @@ ENTETE = """-- =================================================================
 --
 -- Garde : chaque modèle doit avoir EXACTEMENT le contenu relevé le 2026-10-21 (titre, sous-titre,
 -- variations, partie commune, specs, options), être au nœud et aux niveaux relevés, et ne porter
--- aucun tag du CP à la 3e ; les identifiants des modèles neufs doivent être libres.
+-- aucun tag du CP à la 3e ; les identifiants des modèles neufs doivent être libres, ainsi que leur
+-- catégorie : même thème, domaine et sous-domaine que l'origine, niveaux 8 à 10 (deux modèles
+-- publiés ne partagent pas une catégorie, idx_question_templates_unique_category).
 --
 -- Données d'élèves : aucune ne tient à ces modèles (relevé du 2026-10-21, lecture seule : 0 carte
 -- SRS, 0 tentative de compétence, 0 tentative d'évaluation, 0 réponse de test, 0 activité de

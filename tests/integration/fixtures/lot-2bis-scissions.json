@@ -336,8 +336,16 @@
 				],
 				"options": null
 			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Calculer",
+				"subdomain": "Addition et Soustraction",
+				"level": 4,
+				"status": "published"
+			},
 			"scission": {
 				"id": "e100ea6c-c52e-4f35-aec5-df72768d2041",
+				"niveau": 9,
 				"tag": {
 					"grade": "5",
 					"code": "5-123"
@@ -673,8 +681,16 @@
 				],
 				"options": null
 			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Calculer",
+				"subdomain": "Addition et Soustraction",
+				"level": 3,
+				"status": "published"
+			},
 			"scission": {
 				"id": "2af592ca-d9a9-4539-8d2d-80729a51a5e4",
+				"niveau": 8,
 				"tag": {
 					"grade": "5",
 					"code": "5-123"
@@ -1072,8 +1088,16 @@
 					}
 				}
 			},
+			"categorie": {
+				"theme": "Fractions",
+				"domain": "Calculer",
+				"subdomain": "Addition et Soustraction",
+				"level": 7,
+				"status": "published"
+			},
 			"scission": {
 				"id": "4e1ed43e-33ee-423b-b475-4d3674e2b3e0",
+				"niveau": 10,
 				"tag": {
 					"grade": "5",
 					"code": "5-123"

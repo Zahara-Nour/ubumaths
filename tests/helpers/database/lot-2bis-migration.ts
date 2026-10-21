@@ -48,13 +48,28 @@ interface Modele {
 	tag: { grade: string; code: string };
 	avant: Contenu;
 	apres: Contenu;
+	/**
+	 * Catégorie relevée en prod (lot de scissions) : le modèle neuf la copie, sauf le niveau, et deux
+	 * modèles publiés ne partagent pas une catégorie (idx_question_templates_unique_category).
+	 */
+	categorie?: Categorie;
 	/** Lot de scissions : le modèle neuf qui reçoit l'autre partie du contenu. */
-	scission?: { id: string; tag: { grade: string; code: string }; contenu: Contenu };
+	scission?: { id: string; niveau: number; tag: { grade: string; code: string }; contenu: Contenu };
+}
+
+interface Categorie {
+	theme: string;
+	domain: string;
+	subdomain: string | null;
+	level: number;
+	status: string;
 }
 
 interface Neuf {
 	id: string;
 	origine: string;
+	/** Niveau du modèle neuf dans la catégorie de son origine. */
+	niveau: number;
 	tag: { grade: string; code: string };
 	contenu: Contenu;
 }
@@ -86,6 +101,7 @@ const AVANT = '2026-01-02T03:04:05.000Z';
 /** Colonnes propres à chaque modèle : un modèle neuf copie toutes les AUTRES de son origine. */
 const PROPRES = [
 	'id',
+	'level',
 	'title',
 	'description',
 	'variations',
@@ -140,6 +156,15 @@ async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Pro
 				m.avant.test_specs === null ? null : JSON.stringify(m.avant.test_specs)
 			]
 		);
+		if (m.categorie) {
+			const c = m.categorie;
+			await pg.query(
+				`update public.question_templates
+				    set theme = $2, domain = $3, subdomain = $4, level = $5, status = $6
+				  where id = $1`,
+				[m.id, c.theme, c.domain, c.subdomain, c.level, c.status]
+			);
+		}
 	}
 	await pg.query(
 		'alter table public.question_templates enable trigger update_question_templates_updated_at'
@@ -176,7 +201,10 @@ async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promis
 	};
 }
 
-/** Modèles neufs dont une colonne non propre diffère de celle de leur origine (« id.colonne »). */
+/**
+ * Modèles neufs dont une colonne non propre diffère de celle de leur origine, ou dont le niveau n'est
+ * pas le leur (« id.colonne »).
+ */
 async function colonnesCopiees(pg: Client, neufs: Neuf[]): Promise<string[]> {
 	const ecartes: string[] = [];
 	for (const x of neufs) {
@@ -193,6 +221,7 @@ async function colonnesCopiees(pg: Client, neufs: Neuf[]): Promise<string[]> {
 			ecartes.push(`${x.id} absent`);
 			continue;
 		}
+		if (neuf.level !== x.niveau) ecartes.push(`${x.id}.level`);
 		for (const colonne of Object.keys(origine)) {
 			if (PROPRES.includes(colonne)) continue;
 			if (canonique(neuf[colonne]) !== canonique(origine[colonne]))
@@ -284,7 +313,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 		});
 
 		it.runIf(avecNeufs)(
-			'chaque modèle neuf copie toutes les autres colonnes de son origine (nœud, niveaux, statut, auteur…)',
+			'chaque modèle neuf a son niveau et copie toutes les autres colonnes de son origine (nœud, statut, auteur…)',
 			() => {
 				expect(copies).toEqual([]);
 			}
@@ -421,11 +450,28 @@ export function decrireLotModifier(lot: LotModifier): void {
 						pg.query(
 							`insert into public.question_templates
 							 select (jsonb_populate_record(null::public.question_templates,
-							         to_jsonb(q) || jsonb_build_object('id', $2::uuid))).*
+							         to_jsonb(q) || jsonb_build_object('id', $2::uuid, 'status', 'draft'))).*
 							   from public.question_templates q where q.id = $1`,
 							[neufs[0].origine, neufs[0].id]
 						),
 					/identifiants des modèles neufs déjà pris : 1/
+				);
+			}
+		);
+
+		it.runIf(avecNeufs)(
+			'la catégorie d’un modèle neuf déjà prise par un modèle publié fait échouer la migration',
+			async () => {
+				await echoue(
+					() =>
+						pg.query(
+							`insert into public.question_templates
+							 select (jsonb_populate_record(null::public.question_templates,
+							         to_jsonb(q) || jsonb_build_object('id', gen_random_uuid(), 'level', $2::integer))).*
+							   from public.question_templates q where q.id = $1`,
+							[neufs[0].origine, neufs[0].niveau]
+						),
+					/catégories des modèles neufs déjà prises : 1/
 				);
 			}
 		);
