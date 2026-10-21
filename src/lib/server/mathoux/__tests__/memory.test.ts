@@ -336,6 +336,69 @@ describe('rememberMathoux', () => {
 		);
 	});
 
+	it('concurrence au réveil : un autre calcul a déjà écrit « éveillé » → plus rien, réveil annoncé une fois', async () => {
+		// Lu endormi ; entre-temps un autre calcul a écrit la ligne éveillée (et l'a annoncé)
+		let updates = 0;
+		const { client, queries } = buildMock((query) => {
+			if (isWrite(query, 'update')) {
+				updates += 1;
+				return { data: [], error: null };
+			}
+			return {
+				data: {
+					notion_id: 'n1',
+					best_stage: 'matou',
+					starred_grades: [],
+					asleep: false,
+					updated_at: T1
+				},
+				error: null
+			};
+		});
+		const written = await rememberMathoux(
+			client,
+			STUDENT,
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [], asleep: false }],
+			new Map([['n1', stored({ bestStage: 'matou', starredGrades: [], asleep: true })]])
+		);
+		expect(updates).toBe(1);
+		expect(queries.filter((q) => isWrite(q, 'update'))).toHaveLength(1);
+		// Rien écrit par CET appel : pas de second « s'est réveillé »
+		expect(written).toEqual(new Map());
+	});
+
+	it('concurrence aux siestes opposées : la sieste est celle du dernier qui écrit, stade et étoiles jamais en baisse', async () => {
+		// Lu éveillé ; un autre calcul a écrit entre-temps grand matou ★ 2nde, éveillé ; celui-ci
+		// voit le Mathou endormi : il réécrit la sieste, sans faire redescendre le reste
+		let updates = 0;
+		const { client, queries } = buildMock((query) => {
+			if (isWrite(query, 'update')) {
+				updates += 1;
+				return { data: updates === 1 ? [] : [{ notion_id: 'n1' }], error: null };
+			}
+			return {
+				data: {
+					notion_id: 'n1',
+					best_stage: 'grand_matou',
+					starred_grades: ['2'],
+					asleep: false,
+					updated_at: T1
+				},
+				error: null
+			};
+		});
+		await rememberMathoux(
+			client,
+			STUDENT,
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [], asleep: true }],
+			new Map([['n1', stored({ bestStage: 'matou', starredGrades: [], asleep: false })]])
+		);
+		const writes = queries.filter((q) => isWrite(q, 'update'));
+		expect(callOf(writes[1], 'update')).toEqual([
+			{ best_stage: 'grand_matou', starred_grades: ['2'], asleep: true }
+		]);
+	});
+
 	it('une écriture en échec lève (l’appelant journalise, l’affichage tient)', async () => {
 		const { client } = buildMock(() => ({ data: null, error: { message: 'refus' } }));
 		await expect(

@@ -115,7 +115,11 @@ Une ligne par élève et par notion : `best_stage` (chaton, matou, grand matou),
   nouveau** (`memoryUpdates` : Mathou né sans ligne, stade ou étoile gagnés, sieste qui change
   dans un sens ou dans l'autre). La sieste n'est pas un acquis : la fusion garde celle du calcul
   qui écrit. Un Mathou **de la seule mémoire** (aucun point travaillable) garde sa sieste
-  mémorisée : affiché sans sieste, il serait sinon annoncé réveillé à tort. Une panne
+  mémorisée : affiché sans sieste, il serait sinon annoncé réveillé à tort. Limites acceptées (rares, sans
+  dommage) : en concurrence, la sieste est celle du **dernier** calcul qui écrit (un calcul parti
+  avant un réveil peut réécrire « endormi » ; le réveil est alors annoncé une seconde fois au calcul
+  suivant) ; un Mathou qui perd tous ses points travaillables puis les retrouve peut être annoncé
+  réveillé. Une panne
   d'écriture est journalisée et ne change pas l'affichage.
 - **Jamais en baisse, même en concurrence** (`rememberMathoux`, `src/lib/server/mathoux/memory.ts`) :
   les lignes neuves partent en **un** insert groupé `ON CONFLICT DO NOTHING` (toutes les colonnes
