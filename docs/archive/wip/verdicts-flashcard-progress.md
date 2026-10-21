@@ -1,14 +1,8 @@
 # Chantier verdicts-flashcard — couleur des cases au recto de la FlashCard
 
-## Reprendre ici
-
-_Mis à jour le 2026-10-21, PR ouverte._
-
-- **État** : correctif codé, tests verts, PR ouverte ; revue `code-reviewer` (opus) sur la PR.
-- **Prochaine action** : CI verte + revue → merge, puis note dans `verifications-manuelles.md`, journal archivé.
-- **En attente de David** : rien.
-- **Pièges en cours** : ambre = couleur déjà choisie pour les cases sans unité (`InputState.unoptimal`).
-- **Worktree / branche** : `../ubumaths-wt-verdicts-flashcard` · `fix/verdicts-flashcard`.
+> **Chantier clos le 2026-10-21** (#1578 mergée, CI verte, revue opus sans bloquant). Durable versé
+> dans [questions.md](../../systeme/questions.md) (§ 4, couleur des cases au recto). Vérification
+> manuelle notée dans `docs/wip/verifications-manuelles.md`. Pas en prod (pas de `deploy:prod`).
 
 ## Historique
 
@@ -39,3 +33,8 @@ forme ou vide.
   (`FlashCard-couleurs-cases.svelte.test.ts`).
 - Commentaires « Compute Engine » → mathAST (`answer-validator.ts`, `validation-rule-evaluator.ts`,
   `questions/index.ts`, `types.ts`, `feedback.ts`).
+
+### 2026-10-21 — #1578 mergée
+
+- Revue opus : 0 bloquant. Corrigé : titres de tests qui décrivaient encore la comparaison textuelle.
+  Noté : intervalles en `intervalForm: 'strict'`, écriture juste à reprendre → rouge (comme son score).
