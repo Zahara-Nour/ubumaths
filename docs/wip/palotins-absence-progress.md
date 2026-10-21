@@ -8,8 +8,8 @@
 _Mis à jour le 2026-10-21, avant la PR 1._
 
 - **État** : PR 1 (migration) en cours : table `student_last_visits` + fonction `record_student_visit`, test d'intégration vert (13 rouges sans la migration).
-- **Prochaine action** : revue `security-auditor`, PR, merge, `db:migrate`, `db:types` ; puis PR 2 (le code).
-- **En attente de David** : rien.
+- **Prochaine action** : PR 1 ouverte, CI, merge, `db:migrate`, `db:types` ; puis PR 2 (le code).
+- **En attente de David** : export RGPD (art. 15) — l'export lit sous RLS, donc ne contiendra pas le jour du dernier passage : l'y ajouter par le client service (PR 2), ou l'exclure explicitement ? Et le mentionner dans `legal/confidentialite` ?
 - **Pièges en cours** : la base locale porte `20261021200000` (mathoux, autre worktree) → `supabase migration up` refuse ; migration appliquée à la main par psql + ligne dans `supabase_migrations.schema_migrations`.
 - **Worktree / branche** : `../ubumaths-wt-palotins-absence` · `feat/palotins-absence`.
 
@@ -38,3 +38,7 @@ _Mis à jour le 2026-10-21, avant la PR 1._
 - **Giron** : « Te revoilà ! Tu m'as manqué, tu sais ! » · « Ça faisait long sans toi ! Content de te revoir ! » · « Par ma chandelle verte, tu m'as manqué ! »
 - **Pile** : « Te voilà de retour… tu m'as manqué, en silence. » · « Le temps passait plus lentement sans toi. » · « Tu m'as manqué. On reprend doucement ? »
 - **Cotice** : « Ah, enfin ! Tu m'as trop manqué ! » · « J'ai cru que tu m'avais oublié ! Tu m'as manqué ! » · « Cornegidouille, tu m'as manqué ! »
+
+## Revue `security-auditor` (PR 1, 2026-10-21)
+
+Aucun finding bloquant. Droits vérifiés en base locale : `relacl` et `proacl` = postgres + service_role seulement (les default privileges sont bien retirés par les REVOKE). Moyen : export RGPD et page de confidentialité (question posée à David). Faible : tests prof/admin sans écriture (même REVOKE), `student_id` sans contrainte de rôle (seul le serveur écrit).
