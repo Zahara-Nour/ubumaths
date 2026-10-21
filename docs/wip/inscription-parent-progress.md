@@ -37,3 +37,7 @@ aujourd'hui la seule connexion est courriel + mot de passe (Google désactivé).
    reçoit seulement des liens) ; le bilan reste le PDF envoyé par le prof.
 9. **Noélie** s'inscrit dès maintenant par l'écran actuel avec **l'adresse de son parent telle
    quelle** (un seul enfant → pas d'alias) ; son compte n'aura pas à être converti.
+10. **Écran « Je m'inscris » (élève seul)** : l'élève soumis au consentement donne l'adresse d'un
+    parent ; le lien de consentement part **après approbation de l'adresse par le prof** (un clic
+    dans son tableau de bord) — jamais directement sur une adresse fournie par l'enfant (RGPD
+    art. 8 : efforts raisonnables de vérification).
