@@ -44,7 +44,7 @@ Le passage n'était noté que par le `load` du layout `/dashboard/student/*` :
 
 ## Découpage
 
-- **PR 1 (donnée)** : migration `20261021230000_palotin_retour_a_feter.sql` (ADD COLUMN), test
+- **PR 1 (donnée)** : migration `20261022100000_palotin_retour_a_feter.sql` (ADD COLUMN), test
   d'intégration `tests/integration/palotin-retour-a-feter.test.ts`.
 - **PR 2 (code)**, après `db:migrate` + `db:types` : présence dans le hook, lecture au layout,
   route d'acquittement, widget, export RGPD, doc `docs/systeme/buddy-palotins.md`.

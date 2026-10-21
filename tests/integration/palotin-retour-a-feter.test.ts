@@ -2,7 +2,7 @@
  * Palotin « tu m'as manqué » : jour du retour à fêter, lisible par le serveur seul
  * ================================================================================
  *
- * Migration 20261021230000. Question d'accès tranchée par David le 2026-10-21 :
+ * Migration 20261022100000. Question d'accès tranchée par David le 2026-10-21 :
  * personne de plus. `welcome_back_on` vit dans `student_last_visits`, que seul
  * le serveur (client service) lit et écrit ; le navigateur n'en reçoit que
  * « retour à fêter oui/non ».
