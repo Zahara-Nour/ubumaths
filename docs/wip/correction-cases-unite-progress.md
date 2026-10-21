@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21 : PR « nombre simple » codée, PR à ouvrir._
+_Mis à jour le 2026-10-21, après #1574._
 
-- **État** : PR 1-3 (#1543, #1545, #1547) et PR 2 bis (#1573) mergées. PR « nombre simple » codée (`isSimpleNumberLatex`), tests verts, oracle inchangé. Rien en prod.
-- **Prochaine action** : ouvrir la PR, revue `code-reviewer` opus, CI, merger ; puis fin de chantier (versement, journal archivé).
-- **En attente de David** : rien.
-- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général ; messages d'unité validés (ne pas reformuler) ; mineurs laissés : `5 m × 10^3` juste, `6÷2 m` → « pas la bonne grandeur ».
-- **Worktree / branche** : `../ubumaths-wt-correction-cases-unite` · `fix/correction-cases-unite-nombre-simple`.
+- **État** : PR 1-3 (#1543, #1545, #1547), PR 2 bis (#1573) et PR « nombre simple » (#1574) mergées. Code du chantier terminé. Rien en prod (pas de `deploy:prod`).
+- **Prochaine action** : fin de chantier — versement du durable dans `docs/systeme/` (`grandeurs.md`, `questions.md`), journal archivé (commit doc direct sur `main`).
+- **En attente de David** : traiter ou non le désaccord validateur / `blank-verdicts` (case `precision` sans `rulesSuffice` : `(3{,}1)` juste perfectible mais rouge en FlashCard, antérieur au chantier).
+- **Pièges en cours** : toute réponse fausse d'une case à unité affiche le message général ; messages d'unité validés (ne pas reformuler).
+- **Worktree / branche** : aucun (worktree retiré après #1574) ; la suite est 100 % doc, sur `main`.
 
 ## Historique
 
@@ -246,3 +246,7 @@ scientifique en plus. Validé : mode « nombre simple » + notation scientifique
 - Revue opus (#1574) : 0 bloquant. Corrigé : le garde-fou du couple prenait l'espace `\,` pour une virgule
   (`(1\,000)`, `(-3\,)` refusés). Laissé (antérieur, hors diff) : case `precision` sans `rulesSuffice`,
   `blank-verdicts` compare le texte → `(3{,}1)` juste perfectible au validateur mais rouge en FlashCard.
+
+### 2026-10-21 — #1574 mergée (PR « nombre simple »)
+
+- CI verte, mergée. Doc : `questions.md`.
