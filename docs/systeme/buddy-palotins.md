@@ -371,9 +371,11 @@ copier `final/*.svg`) ; journal : `docs/wip/palotins-svg-progress.md`.
   rythmes differents par Palotin.
 - **Reaction quand l'expression arrive** (CSS du composant, rejouee par `{#key}`) : bond
   (`happy`), tressaut (`excited`), affaissement puis retour (`determined`).
-- **Moins d'animations** : `prefersReducedMotion` (`svelte/motion`) → version
-  `<palotin>-<expression>-fixe.svg`, sans reaction. Une `<img>` ne transmet pas la preference au
-  SVG (Chromium : le SVG anime continue de bouger), d'ou les 21 versions fixes.
+- **Moins d'animations** : `<picture><source media="(prefers-reduced-motion: reduce)">` →
+  version `<palotin>-<expression>-fixe.svg` ; la regle CSS `@media` coupe aussi la reaction. Une
+  `<img>` ne transmet pas la preference au SVG (Chromium : le SVG anime continue de bouger), d'ou
+  les 21 versions fixes. Choix laisse au navigateur, pas a `prefersReducedMotion` : cote serveur il
+  vaut `false`, et Svelte ne corrige pas `src` a l'hydratation.
 - Repli en cercle colore si l'image manque.
 
 ---

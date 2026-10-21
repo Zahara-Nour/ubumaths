@@ -8,7 +8,6 @@
 -->
 
 <script lang="ts">
-	import { prefersReducedMotion } from 'svelte/motion';
 	import type { PalotinType } from '$lib/config/buddy-messages';
 	import type { BuddyExpression } from '$lib/types/buddy';
 
@@ -32,12 +31,10 @@
 	const sizeClass = $derived(
 		size === 'sm' ? 'h-[60px] w-[60px]' : 'h-[80px] w-[80px] md:h-[100px] md:w-[100px]'
 	);
-	// Moins d'animations : version fixe, car une <img> ne transmet pas la préférence au SVG
-	const reduceMotion = $derived(prefersReducedMotion.current);
-	const imagePath = $derived(
-		`/images/buddies/${palotin}-${expression}${reduceMotion ? '-fixe' : ''}.${IMAGE_EXTENSION}`
-	);
-	const reactionClass = $derived(reduceMotion ? '' : (REACTION[expression] ?? ''));
+	const imagePath = $derived(`/images/buddies/${palotin}-${expression}.${IMAGE_EXTENSION}`);
+	// Moins d'animations : une <img> ne transmet pas la préférence au SVG, d'où une version fixe,
+	// choisie par le navigateur (<source media>) : pas de décalage avec le rendu serveur
+	const fixedPath = $derived(`/images/buddies/${palotin}-${expression}-fixe.${IMAGE_EXTENSION}`);
 	// Image en échec : le repli ne vaut que pour elle, une autre expression retente
 	let failedPath = $state<string | null>(null);
 	const imageError = $derived(failedPath === imagePath);
@@ -59,12 +56,15 @@
 	{#if !imageError}
 		<!-- {#key} recrée l'image à chaque expression : la réaction se rejoue -->
 		{#key imagePath}
-			<img
-				src={imagePath}
-				alt="Palotin {palotin}"
-				class="{sizeClass} rounded-full object-cover {reactionClass}"
-				onerror={() => (failedPath = imagePath)}
-			/>
+			<picture>
+				<source media="(prefers-reduced-motion: reduce)" srcset={fixedPath} />
+				<img
+					src={imagePath}
+					alt="Palotin {palotin}"
+					class="{sizeClass} rounded-full object-cover {REACTION[expression] ?? ''}"
+					onerror={() => (failedPath = imagePath)}
+				/>
+			</picture>
 		{/key}
 	{:else}
 		<!-- Fallback: colored circle with initial -->
