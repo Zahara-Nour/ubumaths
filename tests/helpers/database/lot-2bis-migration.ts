@@ -12,6 +12,10 @@
  * copies portant les VRAIS identifiants, avec leur contenu, leur nœud et leurs niveaux d'avant —
  * puis rejouent la migration **depuis son fichier**, dans une transaction annulée à la fin. Les
  * triggers de garde des tags restent actifs : chaque tag posé a passé la règle du nœud.
+ *
+ * Un lot de SCISSIONS (lot D) crée en plus, pour chaque modèle, un modèle neuf (`scission` de la
+ * fixture) : absent avant, présent après avec son contenu, son tag et toutes les autres colonnes de
+ * son origine, supprimé par le rollback — qui refuse si une donnée d'élève y tient.
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -44,6 +48,15 @@ interface Modele {
 	tag: { grade: string; code: string };
 	avant: Contenu;
 	apres: Contenu;
+	/** Lot de scissions : le modèle neuf qui reçoit l'autre partie du contenu. */
+	scission?: { id: string; tag: { grade: string; code: string }; contenu: Contenu };
+}
+
+interface Neuf {
+	id: string;
+	origine: string;
+	tag: { grade: string; code: string };
+	contenu: Contenu;
 }
 
 interface Etat {
@@ -59,6 +72,8 @@ export interface LotModifier {
 	fixture: string;
 	/** Nombre de modèles du lot validé. */
 	taille: number;
+	/** Nombre de modèles neufs (lot de scissions). */
+	neufs?: number;
 }
 
 // ============================================================================
@@ -67,6 +82,19 @@ export interface LotModifier {
 
 /** Date de modification fabriquée : elle doit avancer (le contenu change). */
 const AVANT = '2026-01-02T03:04:05.000Z';
+
+/** Colonnes propres à chaque modèle : un modèle neuf copie toutes les AUTRES de son origine. */
+const PROPRES = [
+	'id',
+	'title',
+	'description',
+	'variations',
+	'shared',
+	'test_specs',
+	'options',
+	'created_at',
+	'updated_at'
+];
 
 // ============================================================================
 // FONCTIONS
@@ -148,6 +176,32 @@ async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promis
 	};
 }
 
+/** Modèles neufs dont une colonne non propre diffère de celle de leur origine (« id.colonne »). */
+async function colonnesCopiees(pg: Client, neufs: Neuf[]): Promise<string[]> {
+	const ecartes: string[] = [];
+	for (const x of neufs) {
+		const r = await pg.query<{
+			neuf: Record<string, unknown> | null;
+			origine: Record<string, unknown>;
+		}>(
+			`select (select to_jsonb(q) from public.question_templates q where q.id = $1) as neuf,
+			        (select to_jsonb(q) from public.question_templates q where q.id = $2) as origine`,
+			[x.id, x.origine]
+		);
+		const { neuf, origine } = r.rows[0];
+		if (!neuf) {
+			ecartes.push(`${x.id} absent`);
+			continue;
+		}
+		for (const colonne of Object.keys(origine)) {
+			if (PROPRES.includes(colonne)) continue;
+			if (canonique(neuf[colonne]) !== canonique(origine[colonne]))
+				ecartes.push(`${x.id}.${colonne}`);
+		}
+	}
+	return ecartes;
+}
+
 /** Écriture canonique (clés triées) : jsonb ne garde pas l'ordre des clés. */
 function canonique(valeur: unknown): string {
 	if (Array.isArray(valeur)) return `[${valeur.map(canonique).join(',')}]`;
@@ -175,12 +229,19 @@ export function decrireLotModifier(lot: LotModifier): void {
 	const ids = modeles.map((m) => m.id);
 	const n = lot.taille;
 	const avecOptions = modeles.some((m) => 'options' in m.avant);
+	const neufs: Neuf[] = modeles.flatMap((m) =>
+		m.scission ? [{ ...m.scission, origine: m.id }] : []
+	);
+	const idsNeufs = neufs.map((x) => x.id);
+	const tous = [...ids, ...idsNeufs];
+	const avecNeufs = neufs.length > 0;
 
 	describe(`Lot 2 bis, ${lot.nom} (migration de données)`, () => {
 		let pg: Client;
 		let pose: Etat;
 		let apres: Etat;
 		let annule: Etat;
+		let copies: string[];
 
 		beforeAll(async () => {
 			await cleanupAllTestData();
@@ -189,11 +250,12 @@ export function decrireLotModifier(lot: LotModifier): void {
 
 			await pg.query('begin');
 			await poserEtatProd(pg, prof.id, modeles);
-			pose = await lireEtat(pg, ids, avecOptions);
+			pose = await lireEtat(pg, tous, avecOptions);
 			await pg.query(readFileSync(lot.migration, 'utf-8'));
-			apres = await lireEtat(pg, ids, avecOptions);
+			apres = await lireEtat(pg, tous, avecOptions);
+			copies = await colonnesCopiees(pg, neufs);
 			await pg.query(extractRollback(lot.migration));
-			annule = await lireEtat(pg, ids, avecOptions);
+			annule = await lireEtat(pg, tous, avecOptions);
 		}, 60_000);
 
 		afterAll(async () => {
@@ -204,18 +266,35 @@ export function decrireLotModifier(lot: LotModifier): void {
 		it(`la fixture est le lot validé (${n} modèles, chacun modifié et tagué)`, () => {
 			expect(modeles).toHaveLength(n);
 			expect(modeles.filter((m) => canonique(m.avant) === canonique(m.apres))).toEqual([]);
+			expect(neufs).toHaveLength(lot.neufs ?? 0);
 		});
 
 		it('l’état posé est bien celui de la prod (garde du test)', () => {
 			expect(ecarts(modeles, pose, (m) => m.avant)).toEqual([]);
+			expect(idsNeufs.filter((id) => pose.contenus.has(id))).toEqual([]);
 		});
 
 		it('chaque modèle a EXACTEMENT son nouveau contenu', () => {
 			expect(ecarts(modeles, apres, (m) => m.apres)).toEqual([]);
 		});
 
+		it.runIf(avecNeufs)('chaque modèle neuf existe avec EXACTEMENT son contenu', () => {
+			const lus = neufs.filter((x) => canonique(apres.contenus.get(x.id)) !== canonique(x.contenu));
+			expect(lus.map((x) => x.id)).toEqual([]);
+		});
+
+		it.runIf(avecNeufs)(
+			'chaque modèle neuf copie toutes les autres colonnes de son origine (nœud, niveaux, statut, auteur…)',
+			() => {
+				expect(copies).toEqual([]);
+			}
+		);
+
 		it('les modèles portent EXACTEMENT les tags du lot, rien de plus', () => {
-			const attendus = modeles.map((m) => `${m.id}§${m.tag.grade}§${m.tag.code}`).sort();
+			const attendus = [
+				...modeles.map((m) => `${m.id}§${m.tag.grade}§${m.tag.code}`),
+				...neufs.map((x) => `${x.id}§${x.tag.grade}§${x.tag.code}`)
+			].sort();
 			expect(apres.tags).toEqual(attendus);
 		});
 
@@ -226,16 +305,19 @@ export function decrireLotModifier(lot: LotModifier): void {
 		it('le rollback écrit dans la migration rend le contenu d’avant et retire les tags', () => {
 			expect(annule.tags).toEqual([]);
 			expect(ecarts(modeles, annule, (m) => m.avant)).toEqual([]);
+			expect(idsNeufs.filter((id) => annule.contenus.has(id))).toEqual([]);
 		});
 	});
 
 	describe(`Lot 2 bis, ${lot.nom} : les branches d’échec de la migration`, () => {
 		let pg: Client;
 		let auteur: string;
+		let eleve: string;
 
 		beforeAll(async () => {
 			await cleanupAllTestData();
 			auteur = (await TestData.profile().withRole('teacher').create()).id;
+			eleve = (await TestData.profile().withRole('student').create()).id;
 			pg = await getPostgresClient();
 		});
 
@@ -330,5 +412,66 @@ export function decrireLotModifier(lot: LotModifier): void {
 				await pg.query('rollback');
 			}
 		});
+
+		it.runIf(avecNeufs)(
+			'un identifiant de modèle neuf déjà pris fait échouer la migration',
+			async () => {
+				await echoue(
+					() =>
+						pg.query(
+							`insert into public.question_templates
+							 select (jsonb_populate_record(null::public.question_templates,
+							         to_jsonb(q) || jsonb_build_object('id', $2::uuid))).*
+							   from public.question_templates q where q.id = $1`,
+							[neufs[0].origine, neufs[0].id]
+						),
+					/identifiants des modèles neufs déjà pris : 1/
+				);
+			}
+		);
+
+		it.runIf(avecNeufs)(
+			'le rollback refuse si un modèle neuf a été retouché depuis la migration',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query(
+							`update public.question_templates set title = title || ' (revu)' where id = $1`,
+							[neufs[0].id]
+						),
+					new RegExp(
+						`rollback : ${neufs.length - 1} modèle\\(s\\) neuf\\(s\\) sur ${neufs.length} portent encore le contenu de la migration`
+					)
+				);
+			}
+		);
+
+		it.runIf(avecNeufs)(
+			'le rollback refuse si une donnée d’élève tient à un modèle neuf (la suppression l’emporterait)',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query(
+							`insert into public.skill_attempts (student_id, source, template_id, success)
+							 values ($1, 'auto', $2, true)`,
+							[eleve, neufs[0].id]
+						),
+					/rollback : 1 donnée\(s\) d'élève tiennent aux modèles neufs/
+				);
+			}
+		);
+
+		/** Joue la migration, altère, puis vérifie que le rollback refuse avec `message`. */
+		async function apresMigration(alterer: () => Promise<unknown>, message: RegExp): Promise<void> {
+			await pg.query('begin');
+			try {
+				await poserEtatProd(pg, auteur, modeles);
+				await pg.query(readFileSync(lot.migration, 'utf-8'));
+				await alterer();
+				await expect(pg.query(extractRollback(lot.migration))).rejects.toThrow(message);
+			} finally {
+				await pg.query('rollback');
+			}
+		}
 	});
 }
