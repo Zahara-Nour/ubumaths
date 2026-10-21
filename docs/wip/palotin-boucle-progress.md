@@ -9,9 +9,9 @@ _Mis à jour le 2026-10-21 : refonte des SVG des Palotins lancée._
 
 - **État** : boucle terminée (#1471, #1475, #1476, #1484, en prod v0.43.0). **Refonte des SVG en cours** : David a choisi le 2026-10-21 le style « affiche de cabaret » (Steinlen) + la pièce héraldique portée sur le vêtement (écusson gironné d'or et de sable pour Giron, pile d'or en plastron pour Pile, cotice d'or en écharpe pour Cotice). Comparatif : https://claude.ai/artifact/Qxf2d25VYn5JiFvLQ1knKg
 - **Prochaine action** : dessiner les 6 expressions × 3 Palotins dans ce style, puis branche + PR qui remplace les 18 fichiers de `static/images/buddies/` (générateur à verser dans `scripts/`).
-- **Règles de dessin (David)** : pas de spirale (gidouille) sur le ventre, réservée au Père Ubu ; traits fins (contours ≈ 1,8 sur 100, réduits de 40 % le 2026-10-21) ; style affermi, pas enfantin (tête plus petite et longue, yeux en amande, sourcils effilés, ombre franche au lieu de joues roses) ; joyeux, formes pas trop simples ; aucun doigt levé seul au milieu du poing (Cotice tient un livre, Giron fait un 👍 pouce au bord) ; avatar affiché en rond 60 / 80-100 px, garder mains et pièces loin du bord.
+- **Règles de dessin (David)** : pas de spirale (gidouille) sur le ventre, réservée au Père Ubu ; traits fins (contours ≈ 1,8 sur 100, réduits de 40 % le 2026-10-21) ; essai « affermi » (tête plus petite, yeux en amande, ombre au lieu des joues roses) écarté par David le 2026-10-21 : on garde la version affiche d'avant ; joyeux, formes pas trop simples ; aucun doigt levé seul au milieu du poing (Cotice tient un livre, Giron fait un 👍 pouce au bord) ; avatar affiché en rond 60 / 80-100 px, garder mains et pièces loin du bord.
 - **Pièges en cours** : le forfait de 10 cartes compte aussi les réponses d'Entraînement et de flash (borné par le plafond de 100 pansées/jour). Aucune séance d'élève depuis le 2026-10-18 : la boucle n'a jamais tourné sur de vrais élèves.
-- **Worktree / branche** : aucun pour l'instant ; le générateur (`gen.mjs` + `gen2.mjs` pour la version affermie) est dans le scratchpad de la session `palotins`.
+- **Worktree / branche** : aucun pour l'instant ; le générateur retenu (`gen.mjs` ; `gen2.mjs` = essai écarté) est dans le scratchpad de la session `palotins`.
 
 ## Décisions de David (2026-10-18)
 
