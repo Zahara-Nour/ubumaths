@@ -349,8 +349,13 @@ describe('buildMathouCollection', () => {
 // Mémoire : un Mathou ne rapetisse jamais (§ 9, « Changement d'année et oubli »)
 // =============================================================================
 
-function memory(entries: Record<string, MathouMemory>): Map<string, MathouMemory> {
-	return new Map(Object.entries(entries));
+/** Mémoire de test ; `asleep` faux sauf mention. */
+function memory(
+	entries: Record<string, Omit<MathouMemory, 'asleep'> & { asleep?: boolean }>
+): Map<string, MathouMemory> {
+	return new Map(
+		Object.entries(entries).map(([id, entry]) => [id, { asleep: false, ...entry }] as const)
+	);
 }
 
 describe('buildMathouCollection avec la mémoire', () => {
@@ -557,7 +562,7 @@ describe('isPointLost (seuil de réussites atteint, mais pas acquis)', () => {
 });
 
 describe('memoryUpdates', () => {
-	function collectionOf(acquired: boolean, mem: Map<string, MathouMemory>) {
+	function collectionOf(acquired: boolean, mem: Map<string, MathouMemory>, napping = false) {
 		return buildMathouCollection({
 			points: [
 				{ id: 'p1', nodeId: 'n-ent', grade: '2' },
@@ -565,7 +570,7 @@ describe('memoryUpdates', () => {
 			],
 			nodes: NODES,
 			progress: progress({ p1: { hasSuccess: true, isAcquired: acquired } }),
-			nappingPointIds: new Set(),
+			nappingPointIds: new Set(napping ? ['p1'] : []),
 			memory: mem
 		});
 	}
@@ -573,7 +578,7 @@ describe('memoryUpdates', () => {
 	it('un Mathou né sans mémoire est à retenir ; une silhouette jamais', () => {
 		const mem = new Map<string, MathouMemory>();
 		expect(memoryUpdates(collectionOf(true, mem), mem)).toEqual([
-			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: ['2'] }
+			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: ['2'], asleep: false }
 		]);
 	});
 
@@ -590,7 +595,7 @@ describe('memoryUpdates', () => {
 	it('une nouvelle étoile ou un meilleur stade → la ligne complète, étoiles comprises', () => {
 		const mem = memory({ 'n-ent': { bestStage: 'chaton', starredGrades: ['6'] } });
 		expect(memoryUpdates(collectionOf(true, mem), mem)).toEqual([
-			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: ['6', '2'] }
+			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: ['6', '2'], asleep: false }
 		]);
 	});
 
@@ -603,8 +608,37 @@ describe('memoryUpdates', () => {
 		});
 		expect(collection.races[0].mathoux[0].stars).toEqual([]);
 		expect(memoryUpdates(collection, new Map())).toEqual([
-			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: [] }
+			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: [], asleep: false }
 		]);
+	});
+
+	it('il s’endort → la ligne est réécrite endormie ; il se réveille → éveillée', () => {
+		const awake = memory({ 'n-ent': { bestStage: 'grand_matou', starredGrades: ['2'] } });
+		expect(memoryUpdates(collectionOf(true, awake, true), awake)).toEqual([
+			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: ['2'], asleep: true }
+		]);
+		const asleep = memory({
+			'n-ent': { bestStage: 'grand_matou', starredGrades: ['2'], asleep: true }
+		});
+		expect(memoryUpdates(collectionOf(true, asleep), asleep)).toEqual([
+			{ notionId: 'n-ent', bestStage: 'grand_matou', starredGrades: ['2'], asleep: false }
+		]);
+	});
+
+	it('même sieste qu’en mémoire → aucune écriture', () => {
+		const asleep = memory({
+			'n-ent': { bestStage: 'grand_matou', starredGrades: ['2'], asleep: true }
+		});
+		expect(memoryUpdates(collectionOf(true, asleep, true), asleep)).toEqual([]);
+	});
+
+	it('Mathou de la seule mémoire (aucun point travaillable) : sa sieste mémorisée ne bouge pas', () => {
+		const mem = memory({ 'n-frac': { bestStage: 'matou', starredGrades: [], asleep: true } });
+		const collection = collectionOf(false, mem);
+		const frac = collection.races.flatMap((r) => r.mathoux).find((m) => m.notionId === 'n-frac');
+		expect(frac?.workablePoints).toBe(0);
+		expect(frac?.asleep).toBe(false);
+		expect(memoryUpdates(collection, mem).map((u) => u.notionId)).not.toContain('n-frac');
 	});
 });
 
@@ -612,10 +646,16 @@ describe('mergeMemory', () => {
 	it('garde le meilleur stade et l’union des étoiles, dans l’ordre de la scolarité', () => {
 		expect(
 			mergeMemory(
-				{ bestStage: 'grand_matou', starredGrades: ['1_SPE'] },
-				{ bestStage: 'matou', starredGrades: ['2', '1_SPE'] }
+				{ bestStage: 'grand_matou', starredGrades: ['1_SPE'], asleep: false },
+				{ bestStage: 'matou', starredGrades: ['2', '1_SPE'], asleep: false }
 			)
-		).toEqual({ bestStage: 'grand_matou', starredGrades: ['2', '1_SPE'] });
+		).toEqual({ bestStage: 'grand_matou', starredGrades: ['2', '1_SPE'], asleep: false });
+	});
+
+	it('la sieste est celle du calcul (le second), pas un maximum', () => {
+		const stored = { bestStage: 'matou' as const, starredGrades: [], asleep: true };
+		expect(mergeMemory(stored, { ...stored, asleep: false }).asleep).toBe(false);
+		expect(mergeMemory({ ...stored, asleep: false }, stored).asleep).toBe(true);
 	});
 });
 

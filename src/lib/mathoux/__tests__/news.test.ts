@@ -46,8 +46,13 @@ function collectionOf(...mathoux: Mathou[]): MathouCollection {
 	};
 }
 
-function memoryOf(entries: Record<string, MathouMemory>): Map<string, MathouMemory> {
-	return new Map(Object.entries(entries));
+/** Mémoire de test ; `asleep` faux sauf mention. */
+function memoryOf(
+	entries: Record<string, Omit<MathouMemory, 'asleep'> & { asleep?: boolean }>
+): Map<string, MathouMemory> {
+	return new Map(
+		Object.entries(entries).map(([id, entry]) => [id, { asleep: false, ...entry }] as const)
+	);
 }
 
 /** Ce calcul a écrit chaque Mathou, en remplaçant la ligne de `memory` (absente : insérée). */
@@ -140,7 +145,7 @@ describe('mathouNews', () => {
 		const news = mathouNews(
 			collection,
 			new Map(),
-			new Map([['n1', { bestStage: 'chaton', starredGrades: [] }]])
+			new Map([['n1', { bestStage: 'chaton', starredGrades: [], asleep: false }]])
 		);
 		expect(news.items).toEqual([expect.objectContaining({ kind: 'growth', stage: 'matou' })]);
 	});
@@ -150,7 +155,7 @@ describe('mathouNews', () => {
 		const news = mathouNews(
 			collection,
 			memoryOf({ n1: { bestStage: 'chaton', starredGrades: [] } }),
-			new Map([['n1', { bestStage: 'matou', starredGrades: [] }]])
+			new Map([['n1', { bestStage: 'matou', starredGrades: [], asleep: false }]])
 		);
 		expect(news.items).toEqual([expect.objectContaining({ kind: 'star', newStars: ['5'] })]);
 	});
@@ -204,6 +209,76 @@ describe('mathouNews', () => {
 		]);
 	});
 
+	it('réveil : il dormait au calcul précédent, il ne dort plus', () => {
+		const collection = collectionOf(mathou('n1', 'matou'));
+		const news = newsAll(
+			collection,
+			memoryOf({ n1: { bestStage: 'matou', starredGrades: [], asleep: true } })
+		);
+		expect(news.items).toEqual([
+			{
+				kind: 'wake',
+				notionId: 'n1',
+				name: 'Nom n1',
+				raceIndex: 2,
+				stage: 'matou',
+				newStars: []
+			}
+		]);
+	});
+
+	it('il s’endort : rien à annoncer', () => {
+		const collection = collectionOf({ ...mathou('n1', 'matou'), asleep: true });
+		const news = newsAll(collection, memoryOf({ n1: { bestStage: 'matou', starredGrades: [] } }));
+		expect(news.total).toBe(0);
+	});
+
+	it('il grandit en se réveillant : une seule nouveauté, la croissance', () => {
+		const collection = collectionOf(mathou('n1', 'grand_matou'));
+		const news = newsAll(
+			collection,
+			memoryOf({ n1: { bestStage: 'matou', starredGrades: [], asleep: true } })
+		);
+		expect(news.items).toEqual([expect.objectContaining({ kind: 'growth' })]);
+	});
+
+	it('réveil et nouvelle étoile : le réveil, étoiles jointes', () => {
+		const collection = collectionOf(mathou('n1', 'matou', ['4']));
+		const news = newsAll(
+			collection,
+			memoryOf({ n1: { bestStage: 'matou', starredGrades: [], asleep: true } })
+		);
+		expect(news.items).toEqual([expect.objectContaining({ kind: 'wake', newStars: ['4'] })]);
+	});
+
+	it('Mathou de la seule mémoire (aucun point travaillable) : jamais annoncé réveillé', () => {
+		const collection = collectionOf({ ...mathou('n1', 'matou'), workablePoints: 0 });
+		const news = newsAll(
+			collection,
+			memoryOf({ n1: { bestStage: 'matou', starredGrades: [], asleep: true } })
+		);
+		expect(news.total).toBe(0);
+	});
+
+	it('ordre : naissances, croissances, réveils, étoiles', () => {
+		const collection = collectionOf(
+			mathou('star', 'matou', ['4']),
+			mathou('wake', 'matou'),
+			mathou('grow', 'matou'),
+			mathou('born', 'chaton')
+		);
+		const news = newsAll(
+			collection,
+			memoryOf({
+				star: { bestStage: 'matou', starredGrades: [] },
+				wake: { bestStage: 'matou', starredGrades: [], asleep: true },
+				grow: { bestStage: 'chaton', starredGrades: [] }
+			})
+		);
+		expect(news.total).toBe(4);
+		expect(news.items.map((item) => item.kind)).toEqual(['birth', 'growth', 'wake']);
+	});
+
 	it('naissance et étoile : pas de stade d’avant', () => {
 		const collection = collectionOf(mathou('n1', 'chaton'), mathou('n2', 'matou', ['4']));
 		const news = newsAll(collection, memoryOf({ n2: { bestStage: 'matou', starredGrades: [] } }));
@@ -231,6 +306,8 @@ describe('mathouNews', () => {
 		expect(
 			mathouxSummarySchema.safeParse(summary({ ...growth, previousStage: 'tigre' })).success
 		).toBe(false);
+		const { previousStage: _, ...wake } = { ...growth, kind: 'wake' };
+		expect(mathouxSummarySchema.safeParse(summary(wake)).success).toBe(true);
 	});
 });
 
@@ -274,6 +351,15 @@ describe('phrases', () => {
 		expect(newsItemPhrase(item({ kind: 'star', stage: 'grand_matou', newStars: ['5', '4'] }))).toBe(
 			'Pile-Poil gagne les étoiles ★ 5e ★ 4e !'
 		);
+	});
+
+	it('réveil : « … s’est réveillé ! »', () => {
+		expect(newsItemPhrase(item({ kind: 'wake', stage: 'matou' }))).toBe(
+			'Pile-Poil s’est réveillé !'
+		);
+		expect(
+			newsItemPhrase(item({ kind: 'wake', stage: 'matou', name: 'le Mathou des Fractions' }))
+		).toBe('Le Mathou des Fractions s’est réveillé !');
 	});
 
 	it('reste : « et 1 autre » / « et 4 autres »', () => {

@@ -564,13 +564,20 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 				rememberMathoux(
 					service,
 					id,
-					[{ notionId: notionVecteurs, bestStage: 'grand_matou', starredGrades: [GRADE] }],
+					[
+						{
+							notionId: notionVecteurs,
+							bestStage: 'grand_matou',
+							starredGrades: [GRADE],
+							asleep: false
+						}
+					],
 					vide
 				),
 				rememberMathoux(
 					service,
 					id,
-					[{ notionId: notionVecteurs, bestStage: 'chaton', starredGrades: ['2'] }],
+					[{ notionId: notionVecteurs, bestStage: 'chaton', starredGrades: ['2'], asleep: false }],
 					vide
 				)
 			]);
@@ -590,7 +597,8 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 				{
 					notionId: notionVecteurs,
 					bestStage: 'grand_matou',
-					starredGrades: ['2', GRADE, GRADE_TLE]
+					starredGrades: ['2', GRADE, GRADE_TLE],
+					asleep: false
 				}
 			],
 			perimee
@@ -598,7 +606,14 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		await rememberMathoux(
 			service,
 			id,
-			[{ notionId: notionVecteurs, bestStage: 'matou', starredGrades: ['2', GRADE, '6'] }],
+			[
+				{
+					notionId: notionVecteurs,
+					bestStage: 'matou',
+					starredGrades: ['2', GRADE, '6'],
+					asleep: false
+				}
+			],
 			perimee
 		);
 		expect(await storedMemory(id, notionVecteurs)).toMatchObject({
@@ -649,6 +664,39 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		});
 	});
 
+	it('réveil : endormi sans annonce, puis « réveillé » annoncé une fois (mémoire `asleep`)', async () => {
+		const { id, client } = await newStudent(GRADE);
+		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });
+		await loadMathouCollectionWithNews(client, id, GRADE); // naissance, consommée
+
+		// p1 perdu : il s'endort ; la mémoire le retient, rien n'est annoncé
+		await setState(id, pointIds.p1, {
+			is_acquired: false,
+			total_successes: 2,
+			distinct_template_successes: 2
+		});
+		const endormi = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(endormi.news).toEqual({ firstVisit: false, total: 0, items: [] });
+		const { data: dort } = await service
+			.from('student_mathoux')
+			.select('asleep')
+			.eq('student_id', id)
+			.eq('notion_id', notionFractions)
+			.single();
+		expect(dort?.asleep).toBe(true);
+
+		// p1 de nouveau acquis : il se réveille, annoncé une fois
+		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 3 });
+		const reveil = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(reveil.news).toMatchObject({
+			firstVisit: false,
+			total: 1,
+			items: [{ kind: 'wake', notionId: notionFractions, stage: 'matou' }]
+		});
+		const encore = await loadMathouCollectionWithNews(client, id, GRADE);
+		expect(encore.news.total).toBe(0);
+	});
+
 	it('nouveautés : deux calculs en parallèle n’annoncent la naissance qu’une fois en tout', async () => {
 		const { id, client } = await newStudent(GRADE);
 		await setState(id, pointIds.p1, { is_acquired: true, total_successes: 2 });
@@ -670,18 +718,20 @@ describe('Chatterie : collection calculée aux droits de l’élève', () => {
 		const a = await rememberMathoux(
 			service,
 			id,
-			[{ notionId: notionFractions, bestStage: 'chaton', starredGrades: [] }],
+			[{ notionId: notionFractions, bestStage: 'chaton', starredGrades: [], asleep: false }],
 			vide
 		);
 		const b = await rememberMathoux(
 			service,
 			id,
-			[{ notionId: notionFractions, bestStage: 'matou', starredGrades: [] }],
+			[{ notionId: notionFractions, bestStage: 'matou', starredGrades: [], asleep: false }],
 			vide
 		);
 		expect(a).toEqual(new Map([[notionFractions, null]]));
 		// B a remplacé la ligne de A : pas une seconde naissance
-		expect(b).toEqual(new Map([[notionFractions, { bestStage: 'chaton', starredGrades: [] }]]));
+		expect(b).toEqual(
+			new Map([[notionFractions, { bestStage: 'chaton', starredGrades: [], asleep: false }]])
+		);
 		const mathou = (stage: 'chaton' | 'matou'): MathouCollection => ({
 			races: [
 				{

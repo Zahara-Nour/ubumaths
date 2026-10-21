@@ -25,7 +25,7 @@ import {
 } from './collection-logic';
 
 // Types
-export type MathouNewsKind = 'birth' | 'growth' | 'star';
+export type MathouNewsKind = 'birth' | 'growth' | 'wake' | 'star';
 
 export interface MathouNewsItem {
 	kind: MathouNewsKind;
@@ -53,7 +53,7 @@ export interface MathouNews {
 /** Nouveautés détaillées au plus ; le reste se dit « et N autres ». */
 export const MAX_NEWS_ITEMS = 3;
 
-const KIND_ORDER: Record<MathouNewsKind, number> = { birth: 0, growth: 1, star: 2 };
+const KIND_ORDER: Record<MathouNewsKind, number> = { birth: 0, growth: 1, wake: 2, star: 3 };
 
 const STAGE_NOUN: Record<MathouStage, string> = {
 	chaton: 'chaton',
@@ -85,6 +85,8 @@ export function mathouNews(
 		let kind: MathouNewsKind | null;
 		if (!have) kind = 'birth';
 		else if (bestGrowth<MathouStage>(have.bestStage, stage) !== have.bestStage) kind = 'growth';
+		// Réveil : il dormait au calcul précédent ; jamais pour un Mathou de la seule mémoire
+		else if (have.asleep && !mathou.asleep && mathou.workablePoints > 0) kind = 'wake';
 		else kind = newStars.length > 0 ? 'star' : null;
 		if (!kind) continue;
 		news.push({
@@ -121,6 +123,8 @@ export function newsItemPhrase(item: MathouNewsItem): string {
 				: `Un ${noun} est arrivé à la Chatterie : ${item.name} !`;
 		case 'growth':
 			return `${capitalize(item.name)} est devenu un ${noun} !`;
+		case 'wake':
+			return `${capitalize(item.name)} s’est réveillé !`;
 		case 'star': {
 			const stars = item.newStars.map((grade) => `★ ${starGradeLabel(grade)}`).join(' ');
 			const word = item.newStars.length > 1 ? 'les étoiles' : 'l’étoile';

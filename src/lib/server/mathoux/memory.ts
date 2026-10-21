@@ -70,7 +70,7 @@ export class MathouMemoryWriteError extends Error {
 }
 
 const TABLE = 'student_mathoux';
-const COLUMNS = 'notion_id, best_stage, starred_grades, updated_at';
+const COLUMNS = 'notion_id, best_stage, starred_grades, asleep, updated_at';
 
 /** Essais d'une mise à jour conditionnelle avant d'abandonner (journalisé). */
 const MAX_ATTEMPTS = 3;
@@ -79,6 +79,7 @@ type MemoryRow = {
 	notion_id: string;
 	best_stage: string;
 	starred_grades: string[];
+	asleep: boolean;
 	updated_at: string;
 };
 
@@ -91,6 +92,7 @@ function toStored(row: MemoryRow): StoredMathouMemory | null {
 	return {
 		bestStage: row.best_stage,
 		starredGrades: row.starred_grades ?? [],
+		asleep: row.asleep,
 		updatedAt: row.updated_at
 	};
 }
@@ -157,7 +159,8 @@ export async function rememberMathoux(
 					student_id: studentId,
 					notion_id: update.notionId,
 					best_stage: update.bestStage,
-					starred_grades: update.starredGrades
+					starred_grades: update.starredGrades,
+					asleep: update.asleep
 				})),
 				{ onConflict: 'student_id,notion_id', ignoreDuplicates: true, defaultToNull: false }
 			)
@@ -209,7 +212,11 @@ export async function rememberMathoux(
 
 /** La mémoire seule, sans `updatedAt`. */
 function toMemory(stored: StoredMathouMemory): MathouMemory {
-	return { bestStage: stored.bestStage, starredGrades: stored.starredGrades };
+	return {
+		bestStage: stored.bestStage,
+		starredGrades: stored.starredGrades,
+		asleep: stored.asleep
+	};
 }
 
 /** Relit des lignes de mémoire (client service, après un conflit). */
@@ -249,7 +256,11 @@ async function updateUntilStable(
 		const merged = mergeMemory(current, update);
 		const { data, error } = await service
 			.from(TABLE)
-			.update({ best_stage: merged.bestStage, starred_grades: merged.starredGrades })
+			.update({
+				best_stage: merged.bestStage,
+				starred_grades: merged.starredGrades,
+				asleep: merged.asleep
+			})
 			.eq('student_id', studentId)
 			.eq('notion_id', update.notionId)
 			.eq('updated_at', current.updatedAt)

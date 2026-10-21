@@ -109,6 +109,7 @@ const mockMathoux = [
 		notion_id: 'notion-1',
 		best_stage: 'grand_matou',
 		starred_grades: ['2', '1_SPE'],
+		asleep: false,
 		first_seen_at: '2026-10-01T10:00:00Z',
 		updated_at: '2026-10-18T10:00:00Z'
 	}
@@ -405,7 +406,7 @@ describe('GET /api/account/export', () => {
 			expect(appel).toBeGreaterThanOrEqual(0);
 			const chaine = mockSupabase.from.mock.results[appel].value;
 			expect(chaine.select.mock.calls[0][0]).toBe(
-				'notion_id, best_stage, starred_grades, first_seen_at, updated_at'
+				'notion_id, best_stage, starred_grades, asleep, first_seen_at, updated_at'
 			);
 			const eq = chaine.select.mock.results[0].value.eq;
 			expect(eq).toHaveBeenCalledWith('student_id', TEST_USER.id);

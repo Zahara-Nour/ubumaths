@@ -33,6 +33,7 @@
 	const REACTION: Record<MathouNewsKind, MathouReaction> = {
 		birth: 'apparition',
 		growth: 'bond',
+		wake: 'reveil',
 		star: 'bond'
 	};
 

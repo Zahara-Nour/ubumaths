@@ -189,11 +189,11 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.limit(1000)
 				.limit(5000, { referencedTable: 'tutor_messages' }),
 
-			// Jeux — mémoire des Mathoux (Chatterie) : meilleur stade et étoiles par notion.
+			// Jeux — mémoire des Mathoux (Chatterie) : meilleur stade, étoiles et sieste par notion.
 			// Une ligne par notion (440 au plus) : sous le plafond de 1 000 lignes.
 			supabase
 				.from('student_mathoux')
-				.select('notion_id, best_stage, starred_grades, first_seen_at, updated_at')
+				.select('notion_id, best_stage, starred_grades, asleep, first_seen_at, updated_at')
 				.eq('student_id', userId),
 
 			// Jeux — le Palotin de l'élève (une ligne par élève ; décision de David, 2026-10-18)

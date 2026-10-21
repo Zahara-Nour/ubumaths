@@ -362,7 +362,15 @@ describe('loadMathouCollection', () => {
 				student_point_state: () =>
 					ok([{ point_id: 'p1', is_acquired: false, total_successes: 2, last_success_at: null }]),
 				student_mathoux: () =>
-					ok([{ notion_id: 'n1', best_stage: 'matou', starred_grades: [], updated_at: T0 }])
+					ok([
+						{
+							notion_id: 'n1',
+							best_stage: 'matou',
+							starred_grades: [],
+							asleep: false,
+							updated_at: T0
+						}
+					])
 			})
 		);
 		const collection = await loadMathouCollection(supabase, STUDENT, '1_SPE');
@@ -379,7 +387,7 @@ describe('loadMathouCollection', () => {
 		expect(rememberMathoux).toHaveBeenCalledWith(
 			SERVICE_CLIENT,
 			STUDENT,
-			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [] }],
+			[{ notionId: 'n1', bestStage: 'matou', starredGrades: [], asleep: false }],
 			new Map()
 		);
 	});
@@ -388,7 +396,15 @@ describe('loadMathouCollection', () => {
 		const { supabase } = buildMock(
 			nominalHandlers({
 				student_mathoux: () =>
-					ok([{ notion_id: 'n1', best_stage: 'matou', starred_grades: [], updated_at: T0 }])
+					ok([
+						{
+							notion_id: 'n1',
+							best_stage: 'matou',
+							starred_grades: [],
+							asleep: false,
+							updated_at: T0
+						}
+					])
 			})
 		);
 		await loadMathouCollection(supabase, STUDENT, '1_SPE');
@@ -425,12 +441,20 @@ describe('loadMathouCollection', () => {
 
 	it('nouveautés : une croissance par rapport à la mémoire lue', async () => {
 		vi.mocked(rememberMathoux).mockResolvedValue(
-			new Map([['n1', { bestStage: 'chaton', starredGrades: [] }]])
+			new Map([['n1', { bestStage: 'chaton', starredGrades: [], asleep: false }]])
 		);
 		const { supabase } = buildMock(
 			nominalHandlers({
 				student_mathoux: () =>
-					ok([{ notion_id: 'n1', best_stage: 'chaton', starred_grades: [], updated_at: T0 }])
+					ok([
+						{
+							notion_id: 'n1',
+							best_stage: 'chaton',
+							starred_grades: [],
+							asleep: false,
+							updated_at: T0
+						}
+					])
 			})
 		);
 		const { news } = await loadMathouCollectionWithNews(supabase, STUDENT, '1_SPE');
@@ -481,7 +505,13 @@ describe('loadMathouCollection', () => {
 				question_template_points: () => ok([]),
 				student_mathoux: () =>
 					ok([
-						{ notion_id: 'n2', best_stage: 'grand_matou', starred_grades: ['2'], updated_at: T0 }
+						{
+							notion_id: 'n2',
+							best_stage: 'grand_matou',
+							starred_grades: ['2'],
+							asleep: false,
+							updated_at: T0
+						}
 					])
 			})
 		);
