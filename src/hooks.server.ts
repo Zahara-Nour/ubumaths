@@ -1,5 +1,6 @@
 import '$lib/zod-locale';
 import { accountStatusHandle } from '$lib/server/accountStatusHandle';
+import { passwordChangeHandle } from '$lib/server/passwordChangeHandle';
 import { PUBLIC_SUPABASE_URL } from '$env/static/public';
 import { supabaseConnectSources, supabaseCspSource } from '$lib/server/csp';
 import { handle as supabaseHandle } from '$lib/server/supabase';
@@ -396,6 +397,7 @@ export const handle: Handle = sequence(
 	redirectHandle,
 	userProfileHandle,
 	accountStatusHandle,
+	passwordChangeHandle,
 	adminElevationHandle,
 	csrfHandle,
 	securityHeadersHandle,

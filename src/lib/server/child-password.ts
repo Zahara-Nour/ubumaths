@@ -19,7 +19,7 @@ import { randomInt } from 'node:crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '$lib/types/database';
 import { createAnonymousSupabase } from '$lib/server/anonymous-supabase';
-import { CHILD_ACCOUNT_DOMAIN, isChildAccountEmail } from '$lib/utils/child-account';
+import { childLoginIdOf, isChildAccountEmail } from '$lib/utils/child-account';
 import { createServerLogger } from '$lib/utils/logger';
 
 // Types
@@ -217,10 +217,6 @@ export function isFreshEmailLinkSession(amr: unknown, nowSeconds: number): boole
 	);
 }
 
-function loginIdOf(email: string): string {
-	return email.slice(0, -`@${CHILD_ACCOUNT_DOMAIN}`.length);
-}
-
 /**
  * À qui envoyer le lien pour l'enfant de cette adresse fictive : l'adresse du parent de la
  * demande la plus récente, si elle est confirmée (`granted`, R1). Sinon, rien.
@@ -262,7 +258,7 @@ export async function findChildResetTarget(
 		ok: true,
 		userId: profile.id,
 		firstname: profile.firstname ?? '',
-		loginId: loginIdOf(email),
+		loginId: childLoginIdOf(email) ?? '',
 		parentEmail: request.parent_email
 	};
 }
@@ -317,7 +313,7 @@ export async function setChildPasswordFromToken(
 		}
 
 		const firstname = (user.user_metadata?.firstname as string | undefined) ?? '';
-		return { ok: true, firstname, loginId: loginIdOf(user.email.toLowerCase()) };
+		return { ok: true, firstname, loginId: childLoginIdOf(user.email) ?? '' };
 	} finally {
 		// `local` : seule la session du lien, pas celles de l'enfant.
 		const { error: signOutError } = await ephemeral.auth.signOut({ scope: 'local' });
@@ -340,4 +336,16 @@ export async function setProvisionalPassword(
 		return { ok: false, reason: 'server_error' };
 	}
 	return { ok: true, password };
+}
+
+/**
+ * « Changer mon mot de passe » : l'ancien mot de passe est-il le bon ? Vérifié sur un client
+ * jetable, dont la session est aussitôt fermée (celle de l'élève n'est pas touchée).
+ */
+export async function verifyCurrentPassword(email: string, password: string): Promise<boolean> {
+	const ephemeral = createAnonymousSupabase();
+	const { error } = await ephemeral.auth.signInWithPassword({ email, password });
+	if (error) return false;
+	await ephemeral.auth.signOut({ scope: 'local' });
+	return true;
 }

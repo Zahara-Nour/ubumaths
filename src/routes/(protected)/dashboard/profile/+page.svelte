@@ -9,7 +9,7 @@
 	- Informations utilisateur (avatar, nom, email, rôle)
 	- Préférences (mode sombre, taille du texte) — accessibles aussi via le
 	  menu hamburger sur mobile et via le header sur desktop
-	- Compte (GDPR Art. 20 : export, GDPR Art. 17 : suppression)
+	- Compte (mot de passe, GDPR Art. 20 : export, GDPR Art. 17 : suppression)
 	- Bouton de déconnexion
 
 	Migré depuis l'ancien dropdown de l'avatar (Phase 3 refonte sidebar).
@@ -24,7 +24,19 @@
 	import { fontSize } from '$lib/stores/fontSize.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { submitLogoutForm } from '$lib/utils/auth';
-	import { LogOut, Download, Loader2, Trash2, Sun, Moon, Minus, Plus } from '@lucide/svelte';
+	import { childLoginIdOf } from '$lib/utils/child-account';
+	import { resolve } from '$app/paths';
+	import {
+		LogOut,
+		Download,
+		Loader2,
+		Trash2,
+		Sun,
+		Moon,
+		Minus,
+		Plus,
+		KeyRound
+	} from '@lucide/svelte';
 
 	let { data }: { data: LayoutData } = $props();
 
@@ -36,6 +48,9 @@
 				? lore.entities.teacher
 				: 'Administrateur'
 	);
+
+	// Enfant inscrit par son parent : son adresse est fictive, il connaît son identifiant.
+	const loginId = $derived(childLoginIdOf(data.profile.email));
 
 	let isExporting = $state(false);
 	let accountDeletionDialogOpen = $state(false);
@@ -108,7 +123,9 @@
 				{data.profile.firstname ?? ''}
 				{data.profile.lastname ?? ''}
 			</p>
-			<p class="text-sm text-muted-foreground">{data.profile.email}</p>
+			<p class="text-sm text-muted-foreground">
+				{loginId ? `Identifiant : ${loginId}` : data.profile.email}
+			</p>
 			<span
 				class="inline-block rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary"
 			>
@@ -164,6 +181,11 @@
 	>
 		<h2 class="mb-4 text-lg font-semibold">Compte</h2>
 		<div class="flex flex-wrap gap-3">
+			<Button variant="outline" href={`${resolve('/auth/update-password')}?depuis=profil`}>
+				<KeyRound class="mr-2 h-4 w-4" aria-hidden="true" />
+				Changer mon mot de passe
+			</Button>
+
 			<Button variant="outline" onclick={handleExport} disabled={isExporting}>
 				{#if isExporting}
 					<Loader2 class="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />

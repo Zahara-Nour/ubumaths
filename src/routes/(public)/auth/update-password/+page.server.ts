@@ -12,10 +12,15 @@
  * 5. Server updates password via Supabase
  * 6. Redirect to home (user is logged in)
  *
+ * Also reached from the profile (« Changer mon mot de passe », PR 3) and forced after a
+ * provisional password set by the teacher (`passwordChangeHandle`, R3).
+ *
  * SECURITY:
  * - Requires valid session (created by /auth/confirm)
  * - Server-side password update ensures security
  * - Password validation before update
+ * - Current password required, unless the session comes from a recent email link or the
+ *   password is a provisional one: a session left open is not enough
  */
 import { redirect, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types';
@@ -23,10 +28,30 @@ import { createServerLogger } from '$lib/utils/logger';
 import { updatePasswordSchema } from '$lib/server/validation/auth';
 import { validateFormData } from '$lib/server/validation/common';
 import { authErrorToFrench } from '$lib/server/auth/auth-error-fr';
+import {
+	MUST_CHANGE_PASSWORD,
+	isFreshEmailLinkSession,
+	mustChangePassword,
+	verifyCurrentPassword
+} from '$lib/server/child-password';
+import { createServiceRoleClient } from '$lib/server/serviceRoleClient';
+import { checkLoginRateLimitByEmail } from '$lib/server/rateLimiter';
 
 const logger = createServerLogger('auth/update-password/+page.server.ts');
 
-export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
+type SessionUser = { id: string; email?: string; app_metadata?: Record<string, unknown> };
+
+/** L'ancien mot de passe est-il exigé ? Non avec un provisoire ou au retour d'un lien récent. */
+async function requiresCurrentPassword(
+	supabase: App.Locals['supabase'],
+	user: SessionUser
+): Promise<boolean> {
+	if (mustChangePassword(user)) return false;
+	const { data } = await supabase.auth.getClaims();
+	return !isFreshEmailLinkSession(data?.claims?.amr, Math.floor(Date.now() / 1000));
+}
+
+export const load: PageServerLoad = async ({ locals: { safeGetSession, supabase } }) => {
 	// Check if user has a valid session (should have been created by /auth/confirm)
 	const { user } = await safeGetSession();
 
@@ -37,7 +62,10 @@ export const load: PageServerLoad = async ({ locals: { safeGetSession } }) => {
 	}
 
 	// User has valid session, allow them to update password
-	return {};
+	return {
+		needsCurrentPassword: await requiresCurrentPassword(supabase, user),
+		mustChange: mustChangePassword(user)
+	};
 };
 
 export const actions = {
@@ -75,8 +103,22 @@ export const actions = {
 			});
 		}
 
+		if (await requiresCurrentPassword(supabase, user)) {
+			const currentPassword = String(formData.get('currentPassword') ?? '');
+			if (!currentPassword || currentPassword.length > 128 || !user.email) {
+				return fail(400, { error: 'Mot de passe actuel requis.' });
+			}
+			const limit = await checkLoginRateLimitByEmail(user.email);
+			if (!limit.allowed) {
+				return fail(429, { error: limit.message ?? 'Trop de tentatives. Réessayer plus tard.' });
+			}
+			if (!(await verifyCurrentPassword(user.email, currentPassword))) {
+				return fail(400, { error: 'Mot de passe actuel incorrect.' });
+			}
+		}
+
 		// Update password
-		logger.info('Updating password for user:', user.email);
+		logger.info('Updating password');
 
 		const { error } = await supabase.auth.updateUser({
 			password
@@ -88,6 +130,21 @@ export const actions = {
 			return fail(400, {
 				error: authErrorToFrench(error, 'Impossible de changer le mot de passe. Réessayer.')
 			});
+		}
+
+		// Mot de passe provisoire remplacé : la marque se lève par la clé service
+		// (`app_metadata` n'est pas modifiable par l'élève). Sans elle, il resterait bloqué.
+		if (mustChangePassword(user)) {
+			const { error: flagError } = await createServiceRoleClient().auth.admin.updateUserById(
+				user.id,
+				{ app_metadata: { [MUST_CHANGE_PASSWORD]: false } }
+			);
+			if (flagError) {
+				logger.error('Must-change flag not cleared:', flagError.message);
+				return fail(500, {
+					error: 'Mot de passe changé, mais une erreur est survenue. Réessayer.'
+				});
+			}
 		}
 
 		logger.info('Password updated successfully');

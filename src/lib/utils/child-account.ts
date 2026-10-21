@@ -55,6 +55,12 @@ export function isChildAccountEmail(email: string): boolean {
 	return email.trim().toLowerCase().endsWith(`@${CHILD_ACCOUNT_DOMAIN}`);
 }
 
+/** Identifiant d'une adresse du domaine fictif (`noelie42@…` → `noelie42`), `null` sinon. */
+export function childLoginIdOf(email: string | null | undefined): string | null {
+	if (!email || !isChildAccountEmail(email)) return null;
+	return email.trim().toLowerCase().slice(0, -`@${CHILD_ACCOUNT_DOMAIN}`.length);
+}
+
 /**
  * Prénom saisi par le parent → racine de l'identifiant : `Noélie` → `noelie`,
  * `Jean-Marc` → `jeanmarc`. Les chiffres sont retirés (le suffixe en ajoute) et la racine
