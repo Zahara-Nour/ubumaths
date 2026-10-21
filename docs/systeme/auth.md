@@ -17,6 +17,7 @@ couvre:
   - src/lib/server/private-response.ts
   - src/lib/utils/session-cookies.ts
   - src/lib/server/validation/auth.ts
+  - src/lib/utils/child-account.ts
   - src/lib/server/validation/admin-elevation.ts
   - src/lib/server/google/oauth.ts
   - src/lib/server/google/encryption.ts
@@ -37,7 +38,7 @@ couvre:
 > Remplace les 11 fichiers de [`auth/`](../archive/systeme-2026-06/auth/README.md) (juin 2026, archivés, antérieurs au modèle
 > mono-professeur). En cas de désaccord, **cette page et le code font foi**.
 >
-> Vérifié contre le code le 2026-10-10.
+> Vérifié contre le code le 2026-10-21.
 
 ## À quoi ça sert
 
@@ -55,10 +56,10 @@ Trois rôles (`profiles.role`, enum `user_role`) :
 
 Le mot « auth » recouvre **deux processus sans rapport** — ne jamais les confondre :
 
-| Processus                         | Ce que c'est                                                                      | Donne une session ? |
-| --------------------------------- | --------------------------------------------------------------------------------- | ------------------- |
-| **Connexion** (Supabase Auth)     | Un utilisateur se connecte : e-mail + mot de passe (Google : désactivé).          | **Oui**             |
-| **Autorisation Google Classroom** | Le prof autorise Chiphre à appeler les API Google (OAuth 2.0 + PKCE). Désactivée. | **Non**             |
+| Processus                         | Ce que c'est                                                                              | Donne une session ? |
+| --------------------------------- | ----------------------------------------------------------------------------------------- | ------------------- |
+| **Connexion** (Supabase Auth)     | Un utilisateur se connecte : e-mail (ou identifiant) + mot de passe (Google : désactivé). | **Oui**             |
+| **Autorisation Google Classroom** | Le prof autorise Chiphre à appeler les API Google (OAuth 2.0 + PKCE). Désactivée.         | **Non**             |
 
 Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/google/auth/callback` (Classroom).
 
@@ -76,6 +77,7 @@ Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/googl
 | `src/lib/server/middleware/rateLimit.ts`          | Limiteur **en mémoire** (par instance), utilisé par quelques API (`account/delete`, `search`…).                                                                                                                                                                           |
 | `src/lib/server/validation/auth.ts`               | Zod : `loginFormSchema`, `registerFormSchema`, `requestPasswordResetSchema`, `updatePasswordSchema`…                                                                                                                                                                      |
 | `src/lib/server/passwordPolicy.ts`                | `validatePasswordPolicy`, appliquée par les schémas d'inscription et de changement de mot de passe.                                                                                                                                                                       |
+| `src/lib/utils/child-account.ts`                  | Compte d'un enfant inscrit par son parent : `CHILD_ACCOUNT_DOMAIN` (`eleves.chiph.re`), `normalizeLoginIdentifier` (identifiant → adresse fictive), `isChildAccountEmail` (garde des envois).                                                                             |
 | `src/lib/server/validateRedirectUrl.ts`           | Anti open-redirect pour les paramètres `next`.                                                                                                                                                                                                                            |
 | `src/lib/server/private-response.ts`              | `mustStayPrivate` / `PRIVATE_NO_STORE` : pas de cache partagé pour une réponse connectée ou qui pose un cookie.                                                                                                                                                           |
 | `src/lib/server/auth/cron.ts`                     | `verifyCronAuth(request)` : `Bearer <CRON_SECRET>` seul pour `/api/cron/*` (`x-vercel-cron`, falsifiable, n'ouvre plus rien).                                                                                                                                             |
@@ -153,13 +155,29 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 - **E-mail + mot de passe** (`/auth/login`, action `login`) : Zod → limite par IP **et** par
   e-mail → `signInWithPassword` côté serveur (les cookies sont posés par le handle). Toute
   erreur rend le **même** message « Identifiants invalides. » (pas d'énumération des comptes).
+  Le champ « Adresse email ou identifiant » accepte aussi l'**identifiant** d'un enfant inscrit
+  par son parent (`noelie42`) : une saisie sans `@` est ramenée à `[a-z0-9]` (sans accent ni
+  majuscule) puis changée en `noelie42@eleves.chiph.re` par `loginFormSchema`
+  (`normalizeLoginIdentifier`). Le formulaire réaffiche la saisie brute, jamais l'adresse fictive.
 - **Google** : `googleSignIn` et `/auth/callback` sont **coupés côté serveur** tant que
   `GOOGLE_LOGIN_ENABLED` vaut `false` (la plateforme a quitté le domaine Google Workspace de
   l'ancienne école). La plomberie reste : domaine `@voltairedoha.com` imposé, profil manquant
   créé par le client service (`student`, `pending`, sans école), `next` passé par
   `validateRedirectUrl`.
 - **Mot de passe oublié** : `/auth/reset-password` (Zod, limites IP + e-mail, réponse neutre)
-  → e-mail → `/auth/confirm?type=recovery` → `/auth/update-password`.
+  → e-mail → `/auth/confirm?type=recovery` → `/auth/update-password`. Une adresse du domaine
+  fictif ne déclenche aucun envoi (même réponse neutre).
+
+### Le domaine fictif `eleves.chiph.re`
+
+Un enfant sans adresse a un compte Supabase à l'adresse `<identifiant>@eleves.chiph.re`. Ce
+domaine ne reçoit rien : il est **absent du DNS** (NXDOMAIN, vérifié le 2026-10-21) ; un
+enregistrement « null MX » (`MX 0 .`) est à poser chez OVH pour qu'un futur joker `*.chiph.re`
+ne le rende pas livrable. **Aucun courriel ne part vers ce domaine** : `sendEmail` (Brevo, donc
+bienvenue et consentement) le refuse, `/auth/reset-password` ne le transmet pas à GoTrue,
+`/auth/register` refuse une telle adresse. Reste ouvert : un appel direct à l'API GoTrue
+(`/auth/v1/signup`, `/auth/v1/recover`) passe à côté de ces gardes — à fermer côté base avec la
+création des comptes d'enfants. Chantier : [inscription-parent](../wip/inscription-parent-progress.md).
 
 ## Profils, statuts et création de compte
 
@@ -312,6 +330,7 @@ connexion : aucune session n'est créée.
    choix assumé : une panne de la table ne bloque pas les connexions d'une classe.
 8. **Les redirections venues de l'URL** (`next`, `redirect`) passent par `validateRedirectUrl`
    ou une liste blanche équivalente.
+9. **Rien n'est envoyé au domaine fictif** `eleves.chiph.re` (`isChildAccountEmail`).
 
 ## Comment étendre
 
@@ -364,7 +383,8 @@ d'intégration obligatoires, et relire [rls-echecs-silencieux](../pratiques/rls-
 | `src/lib/server/middleware/__tests__/requireAdmin.test.ts`, `student-access.test.ts`                                                                                                    | Gardes API.                                                                                                  |
 | `src/lib/server/__tests__/csrfHandle.test.ts`, `private-response.test.ts`, `validateRedirectUrl.test.ts`, `rateLimiter.test.ts`                                                         | Défenses transverses.                                                                                        |
 | `src/lib/server/auth/__tests__/cron.test.ts`, `auth-error-fr.test.ts`                                                                                                                   | Secret cron, messages traduits.                                                                              |
-| `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics.                                                                                         |
+| `src/routes/(public)/auth/{login,reset-password,update-password}/__tests__/`                                                                                                            | Formulaires publics ; connexion par identifiant (`login-identifiant.test.ts`).                               |
+| `src/lib/utils/__tests__/child-account.test.ts`, `src/lib/server/email/__tests__/brevo-domaine-fictif.test.ts`                                                                          | Identifiant → adresse fictive ; aucun envoi vers le domaine fictif.                                          |
 | `src/routes/__tests__/login-redirect.test.ts`                                                                                                                                           | `/login` → `/auth/login`.                                                                                    |
 | `tests/integration/admin-elevation.test.ts`                                                                                                                                             | Le client admin agit bien en tant qu'admin sous RLS.                                                         |
 | `tests/integration/student-self-registration.test.ts`, `security-signup-anchor.test.ts`                                                                                                 | `handle_new_user`, code de classe.                                                                           |

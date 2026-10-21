@@ -5,6 +5,7 @@
 import { z } from 'zod';
 import { formDataTransforms } from './common';
 import { validatePasswordPolicy } from '$lib/server/passwordPolicy';
+import { isChildAccountEmail, normalizeLoginIdentifier } from '$lib/utils/child-account';
 
 /**
  * SECURITY (finding H6): the server-side password policy was dead code — real
@@ -26,10 +27,17 @@ function enforcePasswordPolicy(password: string, ctx: z.RefinementCtx): void {
 // ============================================================================
 
 /**
- * Login form schema
+ * Login form schema. Le champ `email` reçoit une adresse OU l'identifiant d'un enfant
+ * (`noelie42`), changé en adresse du domaine fictif (`$lib/utils/child-account`).
  */
 export const loginFormSchema = z.object({
-	email: formDataTransforms.email,
+	email: z
+		.string()
+		.max(254, 'Identifiant trop long')
+		.transform((value) => normalizeLoginIdentifier(value) ?? '')
+		.pipe(
+			z.string().min(1, 'Adresse ou identifiant requis').email('Adresse ou identifiant invalide')
+		),
 	password: z.string().min(1, 'Mot de passe requis')
 });
 
@@ -61,7 +69,11 @@ export const registerFormSchema = z
 		// an orphaned auth.users row with no profile (email permanently burned).
 		firstname: z.string().trim().min(1, 'Prénom requis').max(50),
 		lastname: z.string().trim().min(1, 'Nom requis').max(50),
-		email: formDataTransforms.email,
+		// Le domaine fictif est réservé aux comptes créés par le serveur (inscription par le
+		// parent) : un signUp y enverrait la confirmation pour rien et squatterait l'identifiant.
+		email: formDataTransforms.email.refine((email) => !isChildAccountEmail(email), {
+			message: 'Utilise une adresse email réelle'
+		}),
 		password: z.string().min(8, 'Le mot de passe doit contenir au moins 8 caractères').max(72),
 		confirmPassword: z.string().min(1, 'Confirmation du mot de passe requise'),
 		classCode: z.string().trim().min(1, 'Code de classe requis').max(64),

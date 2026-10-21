@@ -16,6 +16,7 @@ import { fail } from '@sveltejs/kit';
 import type { Actions } from './$types';
 import { createServerLogger } from '$lib/utils/logger';
 import { requestPasswordResetSchema } from '$lib/server/validation/auth';
+import { isChildAccountEmail } from '$lib/utils/child-account';
 import {
 	checkPasswordResetRateLimitByEmail,
 	checkPasswordResetRateLimitByIP
@@ -55,6 +56,13 @@ export const actions = {
 		]);
 		if (!ipLimit.allowed || !emailLimit.allowed) {
 			logger.warn('Password reset rate limited');
+			return GENERIC_SUCCESS;
+		}
+
+		// L'adresse d'un enfant inscrit par son parent est fictive : GoTrue y enverrait le
+		// lien pour rien. Même réponse neutre (pas d'énumération).
+		if (isChildAccountEmail(email)) {
+			logger.info('Password reset skipped: child account address');
 			return GENERIC_SUCCESS;
 		}
 

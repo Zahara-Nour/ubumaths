@@ -21,6 +21,7 @@
 import * as Brevo from '@getbrevo/brevo';
 import { env } from '$env/dynamic/private';
 import { createServerLogger } from '$lib/utils/logger';
+import { isChildAccountEmail } from '$lib/utils/child-account';
 
 const logger = createServerLogger('server/email/brevo');
 
@@ -80,6 +81,12 @@ export async function sendEmail(
 	textContent?: string,
 	replyTo?: string
 ): Promise<EmailSendResult> {
+	// L'adresse d'un enfant inscrit par son parent est fictive : rien ne doit y partir.
+	if (isChildAccountEmail(to)) {
+		logger.warn('[Brevo] Envoi refusé : adresse du domaine fictif');
+		return { success: false, error: 'Adresse fictive : aucun courriel envoyé' };
+	}
+
 	try {
 		const client = getBrevoClient();
 		const sender = getSenderConfig();

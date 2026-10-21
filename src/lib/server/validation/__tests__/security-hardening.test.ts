@@ -37,6 +37,16 @@ describe('H6 — password policy is enforced server-side', () => {
 		expect(strong.success).toBe(true);
 	});
 
+	it('refuse à l’inscription une adresse du domaine fictif des comptes d’enfants', () => {
+		const res = registerFormSchema.safeParse({
+			...base,
+			email: 'Noelie42@Eleves.Chiph.re',
+			password: 'Str0ng!Pass',
+			confirmPassword: 'Str0ng!Pass'
+		});
+		expect(res.success).toBe(false);
+	});
+
 	it('rejects a weak password on update-password', () => {
 		const weak = updatePasswordSchema.safeParse({
 			password: '12345678',

@@ -18,7 +18,7 @@
  *
  * AUTHENTICATION METHODS:
  * 1. Google OAuth - Initiates OAuth flow with Google provider
- * 2. Email/Password - Traditional authentication method
+ * 2. Email (or child login id, see $lib/utils/child-account)/Password
  *
  * FLOW (Email/Password):
  * 1. User submits form (POST to /login?/login)
@@ -128,10 +128,13 @@ export const actions = {
 	login: async ({ request, locals: { supabase }, getClientAddress }) => {
 		// Extract and validate form data
 		const formData = await request.formData();
+		// Saisie brute (adresse ou identifiant) renvoyée au formulaire : jamais l'adresse
+		// fictive qu'en tire le schéma.
+		const typedIdentifier = String(formData.get('email') ?? '').slice(0, 254);
 
 		const validation = validateFormData(loginFormSchema, formData);
 		if (!validation.success) {
-			return fail(400, { errors: validation.errors });
+			return fail(400, { errors: validation.errors, email: typedIdentifier });
 		}
 
 		const { email, password } = validation.data;
@@ -140,12 +143,12 @@ export const actions = {
 		const ip = getClientAddress();
 		const ipLimit = await checkLoginRateLimitByIP(ip);
 		if (!ipLimit.allowed) {
-			return fail(429, { error: ipLimit.message, email });
+			return fail(429, { error: ipLimit.message, email: typedIdentifier });
 		}
 
 		const emailLimit = await checkLoginRateLimitByEmail(email);
 		if (!emailLimit.allowed) {
-			return fail(429, { error: emailLimit.message, email });
+			return fail(429, { error: emailLimit.message, email: typedIdentifier });
 		}
 
 		// Sign in on the server - this is the key!
@@ -163,7 +166,7 @@ export const actions = {
 			// disclosing registered emails (enumeration). Return a fixed generic string.
 			return fail(400, {
 				error: 'Identifiants invalides.',
-				email // Preserve email for convenience
+				email: typedIdentifier // Preserve what was typed for convenience
 			});
 		}
 

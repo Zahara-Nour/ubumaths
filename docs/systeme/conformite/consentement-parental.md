@@ -21,6 +21,11 @@ couvre:
 > non 30 jours) ; emails via **Brevo** (et non Gmail) ; **19** endpoints protégés (et non ~12). Voir
 > [`README.md`](README.md) §4.
 
+> **Domaine fictif (2026-10-21)** : `sendEmail` (`src/lib/server/email/brevo.ts`) refuse toute
+> adresse `@eleves.chiph.re` (compte d'un enfant inscrit par son parent, voir
+> [auth.md](../auth.md#le-domaine-fictif-eleveschiphre)) : le courriel de consentement part
+> toujours à l'adresse du parent.
+
 > Migrations citées : antérieures au baseline, archivées sous `supabase/migrations_archive/` ; le
 > schéma courant est dans `supabase/migrations/20260616220000_baseline_schema.sql`.
 
