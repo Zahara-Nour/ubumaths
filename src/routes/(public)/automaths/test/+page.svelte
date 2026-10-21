@@ -27,6 +27,8 @@
 	import { toSubmission, type Submission } from '$lib/questions/submission';
 	import { toDisplayInstance, unitKeysOf } from '$lib/questions/public-question';
 	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
+	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
+	import type { MathouNews } from '$lib/mathoux/news';
 
 	let { data }: { data: PageData } = $props();
 
@@ -54,6 +56,8 @@
 	let isSubmitting = $state(false);
 	/** Gain du Palotin de la dernière séance enregistrée (null : rien à montrer) */
 	let buddyGain = $state<BuddyGainView | null>(null);
+	/** Nouveautés de la Chatterie après la dernière séance enregistrée (null : rien à montrer) */
+	let mathouNews = $state<MathouNews | null>(null);
 
 	/**
 	 * Parse URL parameters and initialize test session
@@ -221,6 +225,7 @@
 	function handleSeriesRestart() {
 		if (!testSession) return;
 		buddyGain = null;
+		mathouNews = null;
 		try {
 			seriesItems = generateSeriesItems(testSession.categories, {
 				excludeCourseCards: !!assignmentId
@@ -334,6 +339,7 @@
 	async function handleTestComplete(result: TestResult) {
 		// Nouvelle fin de séance : le gain précédent ne vaut plus
 		buddyGain = null;
+		mathouNews = null;
 		// Évaluation notée : rien n'est corrigé ici, la copie part au serveur
 		if (attemptId) {
 			pendingSubmission = toSubmission(attemptPositions, result.answers);
@@ -365,6 +371,10 @@
 					result.sessionId = data.sessionId;
 					// Gain du Palotin : montré sur l'écran de résultats, widget mis à jour
 					buddyGain = await receiveBuddyGain(data);
+					// Séance enregistrée, acquisition à jour : la Chatterie a-t-elle du nouveau ?
+					// Pas pour les flash-cards (aucun écran pour l'afficher : la demander la
+					// consommerait, le Palotin la dira) ni l'aperçu d'évaluation du prof
+					if (!assignmentId && result.mode !== 'flash') mathouNews = await fetchMathouNews();
 				} else {
 					console.error('Failed to save test results:', await response.text());
 					// 401 = visiteur non connecté : rien à enregistrer, rien à signaler
@@ -493,6 +503,7 @@
 					collectOnly={!!attemptId}
 					showResults={!attemptId}
 					{buddyGain}
+					{mathouNews}
 				/>
 			{/key}
 		{:else if testSession.mode === 'course'}
@@ -506,6 +517,7 @@
 				showResults={!attemptId}
 				unitKeys={attemptUnitKeys}
 				{buddyGain}
+				{mathouNews}
 			/>
 		{:else if testSession.mode === 'flash' && !assignmentId}
 			<!-- Forme « Flash-cards » : nouvelles questions = nouveau composant -->

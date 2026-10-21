@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { render } from 'vitest-browser-svelte';
 import TestResults from '../TestResults.svelte';
 import type { TestResult } from '$lib/types/test';
+import type { MathouNews } from '$lib/mathoux/news';
 
 /**
  * Cartes de cours (#617) : hors score, comptées à part (décision 2026-09-28).
@@ -90,5 +91,44 @@ describe('TestResults — gain du Palotin', () => {
 	it('aucun gain : rien sur le Palotin', async () => {
 		const { container } = await render(TestResults, { result: result(), ...noop });
 		expect(container.textContent).not.toContain('a gagné');
+	});
+});
+
+describe('TestResults — nouveautés de la Chatterie', () => {
+	const mathouNews: MathouNews = {
+		firstVisit: false,
+		total: 1,
+		items: [
+			{
+				kind: 'birth',
+				notionId: 'n1',
+				name: 'Pile-Poil',
+				raceIndex: 0,
+				stage: 'chaton',
+				newStars: []
+			}
+		]
+	};
+
+	it('Entraînement : la naissance est annoncée, avec le lien vers la Chatterie', async () => {
+		const { container } = await render(TestResults, { result: result(), ...noop, mathouNews });
+		expect(container.textContent).toContain('Un chaton est né à la Chatterie : Pile-Poil !');
+		const link = container.querySelector('[data-testid="mathou-news-card"] a');
+		expect(link?.getAttribute('href')).toBe('/dashboard/student/chatterie');
+	});
+
+	it('évaluation : rien, même si des nouveautés étaient passées', async () => {
+		const { container } = await render(TestResults, {
+			result: result(),
+			...noop,
+			inEvaluation: true,
+			mathouNews
+		});
+		expect(container.querySelector('[data-testid="mathou-news-card"]')).toBeNull();
+	});
+
+	it('aucune nouveauté : pas de carte', async () => {
+		const { container } = await render(TestResults, { result: result(), ...noop });
+		expect(container.querySelector('[data-testid="mathou-news-card"]')).toBeNull();
 	});
 });

@@ -38,6 +38,9 @@
 		type SessionCard
 	} from '$lib/srs/review-source';
 	import BuddyGainCard from '$lib/components/buddy/BuddyGainCard.svelte';
+	import MathouNewsCard from '$lib/components/mathoux/MathouNewsCard.svelte';
+	import { fetchMathouNews } from '$lib/components/mathoux/mathou-news';
+	import type { MathouNews } from '$lib/mathoux/news';
 	import { receiveBuddyGain, type BuddyGainView } from '$lib/components/buddy/buddy-gain';
 
 	interface Props {
@@ -84,6 +87,8 @@
 	let skippedCount = $state(0);
 	/** Gain du Palotin renvoyé par le serveur en fin de séance (null : rien à montrer) */
 	let buddyGain = $state<BuddyGainView | null>(null);
+	// Nouveautés de la Chatterie, demandées une fois la dernière carte enregistrée
+	let mathouNews = $state<MathouNews | null>(null);
 
 	// Session stats
 	let correctCount = $state(0);
@@ -239,6 +244,8 @@
 	 */
 	function completeSession() {
 		sessionComplete = true;
+		// Toutes les révisions sont enregistrées : la Chatterie a-t-elle du nouveau ?
+		void fetchMathouNews().then((news) => (mathouNews = news));
 
 		const totalTime = Math.round((Date.now() - sessionStartTime) / 1000);
 
@@ -391,6 +398,13 @@
 			{#if buddyGain}
 				<div class="mt-6">
 					<BuddyGainCard gain={buddyGain} />
+				</div>
+			{/if}
+
+			<!-- Nouveautés de la Chatterie -->
+			{#if mathouNews}
+				<div class="mt-6">
+					<MathouNewsCard news={mathouNews} />
 				</div>
 			{/if}
 

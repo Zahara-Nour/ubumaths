@@ -9,7 +9,7 @@ couvre:
 
 # Mathoux — la Chatterie de Faustroll
 
-> Vérifié contre le code le 2026-10-20 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres). Spécification validée par David :
+> Vérifié contre le code le 2026-10-21 (Mathoux v1, mémoire comprise, « Faire grandir » v1.1, noms propres, annonce des nouveautés v1.2). Spécification validée par David :
 > [mathoux-conception.md § 9](../wip/mathoux-conception.md).
 
 ## À quoi ça sert
@@ -128,16 +128,17 @@ prochaine révision due). Sans Entraînement possible (aucun modèle publié lis
 
 ## Code
 
-| Fichier                                                | Rôle                                                                                                                        |
-| ------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------- |
-| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                   |
-| `src/lib/mathoux/mathou-noms.ts`                       | les noms propres des Mathoux, par nom de notion                                                                             |
-| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover }`                                                                        |
-| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection` : les lectures, la logique pure, puis la mémoire                                                     |
-| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux`                                                                  |
-| `src/lib/components/mathoux/`                          | `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette), le dessin `mathou-dessin.ts`, les races `mathou-races.ts` |
-| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                               |
-| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs, pour le Palotin                                                                                |
+| Fichier                                                | Rôle                                                                                                                                                                                |
+| ------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `src/lib/mathoux/collection-logic.ts`                  | logique pure : stades, noms, regroupement, Entraînement « Faire grandir », phrases (importable au client)                                                                           |
+| `src/lib/mathoux/mathou-noms.ts`                       | les noms propres des Mathoux, par nom de notion                                                                                                                                     |
+| `src/lib/mathoux/summary.ts`                           | schéma Zod du résumé `{ born, napping, toDiscover, news }`                                                                                                                          |
+| `src/lib/mathoux/news.ts`                              | logique pure des nouveautés (naissance, croissance, étoile) et leurs phrases                                                                                                        |
+| `src/lib/server/mathoux/collection.ts`                 | `loadMathouCollection(WithNews)` : les lectures, la logique pure, la mémoire, puis les nouveautés                                                                                   |
+| `src/lib/server/mathoux/memory.ts`                     | lecture (élève) et écriture (service) de `student_mathoux` ; rend les notions que l'appel a écrites                                                                                 |
+| `src/lib/components/mathoux/`                          | `MathouAvatar` (SVG paramétré : race, stade, sieste, silhouette), le dessin `mathou-dessin.ts`, les races `mathou-races.ts` ; `MathouNewsCard` et `fetchMathouNews` (fin de séance) |
+| `dashboard/student/chatterie/+page.{server.ts,svelte}` | la page ; `unavailable` si une lecture échoue                                                                                                                                       |
+| `api/student/mathoux/+server.ts`                       | `GET` élève : les compteurs et les nouveautés, pour le Palotin et la fin de séance                                                                                                  |
 
 ### Lectures et RLS
 
@@ -213,13 +214,41 @@ propre fond : il se lit pareil en clair et en sombre.
 
 ## Le Palotin, gardien de la Chatterie
 
-`BuddyWidget` demande le résumé au montage (s'il y a un Palotin). Si au moins un Mathou fait la
+`BuddyWidget` demande le résumé au montage (s'il y a un Palotin). S'il y a une **nouveauté** (voir
+plus bas), il l'annonce d'abord, avec le même lien et la même bulle ; sinon, si au moins un Mathou fait la
 sieste, il dit « 2 Mathoux font la sieste. » (« 1 Mathou fait la sieste. »), avec le lien « Aller à
 la Chatterie » ; la bulle reste 20 s au lieu de 5 et vit dans une zone `aria-live="polite"`. Sinon,
 le Palotin salue : la salutation **attend la réponse**, pour qu'une réponse tardive ne la fasse pas
 précéder l'annonce. Après une Constance perdue, l'annonce vient après sa bulle, sans salutation.
 Sur la Chatterie elle-même, le widget ne demande rien et n'annonce rien : la page a déjà calculé,
 et le lien mènerait à elle-même. Réponse en échec ou mal formée (Zod) → pas d'annonce.
+
+## Annonce des nouveautés en fin de séance (v1.2)
+
+Spécification validée par David le 2026-10-21 ([journal](../wip/mathoux-annonce-progress.md)).
+
+- **Nouveauté** = un Mathou dont **ce calcul** a écrit la ligne de mémoire : `rememberMathoux` rend
+  les notions qu'il a réellement insérées ou mises à jour ; une ligne déjà écrite par un autre calcul
+  (la page, le widget, un autre onglet) n'en est pas une. Une nouveauté n'est donc **jamais annoncée
+  deux fois** (prouvé en intégration, deux calculs en parallèle), et une écriture en panne n'annonce
+  rien. Genre, un par Mathou : **naissance** (aucune ligne avant) > **croissance** (stade au-dessus
+  du mémorisé, étoiles jointes) > **étoile** (de nouvelles étoiles seules) (`mathouNews`, `news.ts`).
+- **Phrases** : « Un chaton est né à la Chatterie : Pile-Poil ! » (« Un matou est arrivé… » si né
+  plus grand), « Pile-Poil est devenu un grand matou ! », « Pile-Poil gagne l'étoile ★ 2nde ! ». 3 au
+  plus, naissances d'abord, puis « Et 2 autres nouveautés à la Chatterie. ». **Premier calcul** de
+  l'élève (mémoire vide) avec plusieurs Mathoux : une seule phrase, « 7 Mathoux t'attendent à la
+  Chatterie ! ».
+- **Où** : `GET /api/student/mathoux` rend `news` avec les compteurs. La fin de séance la demande
+  (`fetchMathouNews`) **après** l'enregistrement, quand l'acquisition est à jour : Entraînement et
+  Course (`automaths/test`, carte `MathouNewsCard` dans `TestResults` sous celle du Palotin), révision
+  (`ReviewSession`). Les résultats s'affichent d'abord, l'annonce suit. Jamais demandée après une
+  **évaluation** (ni l'aperçu du prof) ni après des **flash-cards** (aucun écran pour la montrer) :
+  la nouveauté reste en attente, et le Palotin la dit à la prochaine page de l'espace élève (s'il y
+  en a un ; sinon la page de la Chatterie la montre). Sans Palotin, la carte s'affiche quand même ;
+  compte non élève (403), panne ou réponse mal formée : rien.
+- **Limite connue** : le widget, la page de la Chatterie ou un autre onglet qui calculent entre la
+  séance et son écran de fin « consomment » la nouveauté ; elle est alors dite par eux, ou vue sur la
+  page.
 
 ## La page
 
@@ -237,5 +266,5 @@ le nom de la notion, pas celui du Mathou. Aucun mot interdit par le Compendium (
 
 ## Hors v1
 
-Annonce d'un nouveau chaton en fin de séance, combats (réécriture de Navadra), accessoires en
-gidouilles, vue de la Chatterie par le professeur.
+Combats (réécriture de Navadra), accessoires en gidouilles, vue de la Chatterie par le professeur.
+(L'annonce des nouveautés en fin de séance est livrée en v1.2, ci-dessus.)
