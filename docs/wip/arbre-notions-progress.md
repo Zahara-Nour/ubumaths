@@ -5,24 +5,21 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1581 (étape 3, B2 mergée)._
+_Mis à jour le 2026-10-21, après #1583 (étape 3, B3 mergée)._
 
-- **État** : C5 étape 3 (bascule du code). Fait : #1060 (page Programme), #1577 (B1) et #1581 (B2 : cahier de
-  texte, Avancement et tags d'exercice sur branche > notion > points ; `getCurriculumTree` supprimé ; tags d'exercice
-  limités aux notions de rangement, règle 1). Pas encore en prod (aucun `deploy:prod` depuis B1).
-- **Prochaine action** : **B3** (petite PR, worktree neuf, tests d'abord), validée par David le 2026-10-21 :
-  (1) POST `coverage` / `exercise-tags` et création de séance refusent un point neuf ARCHIVÉ (400 « Point
-  archivé » ; décocher / retirer reste permis) ; (2) commentaire dans les deux DELETE : 404 = « déjà retiré », la
-  RLS (`is_teacher_or_admin`, toutes lignes) ne peut pas refuser le professeur ; (3) Avancement : archivés travaillés
-  affichés (« archivé ») mais hors « vus / total » et du pourcentage. Puis **D** (élève : progression,
-  `COVERED_GRADES`, `/student/objectifs`), F, E, étape 4 (destructive : arrêt).
-- **En attente de David** : rien sur B3. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
+- **État** : C5 étape 3 (bascule du code). Fait : #1060, #1577 (B1), #1581 (B2), #1583 (B3 : point archivé refusé
+  à l'API, à la création de séance et à la couverture AUTO — qui écarte aussi les anciens points des tags
+  d'exercice ; Avancement : archivés hors « vus / total », ratio masqué si 0/0). Pas en prod (aucun `deploy:prod`
+  depuis B1).
+- **Prochaine action** : **D** (élève : progression, `COVERED_GRADES`, `/student/objectifs`) — phase 0 à faire
+  valider ; puis F, E, étape 4 (destructive : arrêt).
+- **En attente de David** : rien. Signalés avant : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51 non rangés).
-- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud ou sa notion (trigger) →
-  décors d'intégration : `makeTaggedExercise` range l'exercice ; un test qui pose des points ANCIENS asserte l'ancien
-  comportement ; une PR en conflit ne lance PAS la CI `pull_request` (fusionner `origin/main`) ; MySelect affiche le
-  LaTeX en brut.
-- **Worktree / branche** : `ubumaths-wt-arbre-notions` · `refactor/arbre-bascule-b3` (B3 en revue).
+- **Pièges en cours** : un exercice ne prend un point neuf que s'il est rangé sur son nœud (trigger) → décors :
+  ranger l'exercice ; nettoyage : tags d'exercice AVANT rangements (sinon la garde laisse rangements et nœuds, et
+  `rangements-modeles-exercices` casse) ; un test sur points ANCIENS asserte l'ancien comportement ; PR en conflit
+  = pas de CI `pull_request` ; MySelect affiche le LaTeX en brut.
+- **Worktree / branche** : aucun (B3 nettoyé).
 
 ## Tranché avec David (2026-10-06)
 
@@ -1212,3 +1209,4 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   CI : `rangements-modeles-exercices` rouge (garde « rangements déjà présents ») — le nettoyage de
   `journal-pending-activities` retirait les rangements AVANT les tags : la garde de la règle 1 les refusait, la
   suppression des points emportait les tags en cascade, rangements et nœuds restaient. Tags d'abord ; 75/75 deux fois.
+- **2026-10-21 — #1583 mergée (B3).** CI verte au 2e essai (correctif du nettoyage d'intégration).
