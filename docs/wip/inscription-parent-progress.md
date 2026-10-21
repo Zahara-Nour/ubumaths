@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-21, après #1585._
 
 - **État** : phase 0 validée (Q1-Q6 : David suit mes recommandations). **PR 1 mergée (#1585)** : connexion par identifiant (`src/lib/utils/child-account.ts`), aucun courriel vers `@eleves.chiph.re`. Pas en prod.
 - **Prochaine action** : PR 2 — écran « J'inscris mon enfant » + lien unique au parent (phase 0 ci-dessous, § « J'inscris mon enfant »). Worktree à recréer : `feat/inscription-parent-ecran`.
-- **En attente de David** : null MX chez OVH (`eleves.chiph.re. MX 0 .` + `v=spf1 -all`), avant la PR 2 en prod.
+- **En attente de David** : rien. (Null MX chez OVH : **facultatif**, décidé le 2026-10-21 — le domaine absent du DNS suffit.)
 - **Pièges en cours** : compte de l'enfant créé côté serveur (`auth.admin.createUser`, confirmé), jamais `signUp` ; **fermer côté base** un `signUp` GoTrue direct sur `@eleves.chiph.re` (squat d'identifiant, audit PR 1) ; identifiant généré par la même normalisation que la connexion (`normalizeLoginIdentifier`) et unicité sur la forme repliée ; question d'accès avant tout SQL ; tests d'intégration + `code-reviewer` + `security-auditor`.
 - **Worktree / branche** : aucun (celui de la PR 1 supprimé).
 
@@ -145,6 +145,6 @@ par adresse de parent et par 24 h · Q6 adresse du parent lue par le prof et l'a
 - `/auth/login` accepte adresse ou identifiant ; Brevo, `/auth/reset-password` et
   `/auth/register` refusent le domaine fictif.
 - Revues : `code-reviewer` (3 mineurs, 2 corrigés, le 3e = PR 3) ; `security-auditor` (aucun
-  bloquant ; Moyen 1 — `signUp` GoTrue direct → PR 2 ; Faible 2 — null MX absent → David/OVH ;
+  bloquant ; Moyen 1 — `signUp` GoTrue direct → PR 2 ; Faible 2 — null MX absent → facultatif (David, 2026-10-21) ;
   Faible 3 — même normalisation à la création → PR 2). Mesure prod : 83 comptes, aucune adresse
   en majuscules → personne ne perd sa connexion.

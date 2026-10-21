@@ -171,9 +171,9 @@ vers `/auth/login` (tests : `src/routes/__tests__/login-redirect.test.ts`,
 ### Le domaine fictif `eleves.chiph.re`
 
 Un enfant sans adresse a un compte Supabase à l'adresse `<identifiant>@eleves.chiph.re`. Ce
-domaine ne reçoit rien : il est **absent du DNS** (NXDOMAIN, vérifié le 2026-10-21) ; un
-enregistrement « null MX » (`MX 0 .`) est à poser chez OVH pour qu'un futur joker `*.chiph.re`
-ne le rende pas livrable. **Aucun courriel ne part vers ce domaine** : `sendEmail` (Brevo, donc
+domaine ne reçoit rien : il est **absent du DNS** (NXDOMAIN, vérifié le 2026-10-21). Un
+enregistrement « null MX » (`MX 0 .`) chez OVH est une précaution **facultative** (David,
+2026-10-21) : il ne servirait que si un futur joker `*.chiph.re` faisait exister le domaine. **Aucun courriel ne part vers ce domaine** : `sendEmail` (Brevo, donc
 bienvenue et consentement) le refuse, `/auth/reset-password` ne le transmet pas à GoTrue,
 `/auth/register` refuse une telle adresse. Reste ouvert : un appel direct à l'API GoTrue
 (`/auth/v1/signup`, `/auth/v1/recover`) passe à côté de ces gardes — à fermer côté base avec la
