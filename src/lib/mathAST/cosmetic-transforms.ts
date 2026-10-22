@@ -1824,7 +1824,7 @@ export function checkForm(
 		violations.push({ id: 'zeros', severity });
 	}
 
-	// checkSpaces (detection only)
+	// Espaces des milliers (détection seule)
 	if (checkSpacesViolation(answerLatex) && (constraints['spaces'] ?? 'warn') !== 'off') {
 		const severity = (constraints['spaces'] ?? 'warn') as 'strict' | 'warn';
 		violations.push({ id: 'spaces', severity });

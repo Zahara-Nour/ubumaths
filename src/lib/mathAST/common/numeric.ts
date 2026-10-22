@@ -351,19 +351,3 @@ export function evaluateNumeric(expr: MathNode, varName: string, varValue: numbe
 			return null;
 	}
 }
-
-/**
- * Evaluate an expression with a substitution (convenience wrapper).
- *
- * @param expr - The expression to evaluate
- * @param varName - The variable name to substitute
- * @param value - The value to substitute
- * @returns The numeric result or null
- */
-export function evaluateWithSubstitution(
-	expr: MathNode,
-	varName: string,
-	value: number
-): number | null {
-	return evaluateNumeric(expr, varName, value);
-}

@@ -2,13 +2,12 @@
  * Integration Tests for Pattern Matching System
  *
  * Tests the integration between:
- * - Exp class pattern matching methods (matches, extract, simplifyWith)
+ * - Pattern matching primitives (match, applyRules) used as matches / extract / simplifyWith
  * - Pre-built rule sets (arithmeticRules, powerRules, allPatternRules)
  * - Pattern builder (P namespace)
  */
 
 import { describe, it, expect } from 'vitest';
-import { Exp } from '../../exp';
 import { P } from '../builder';
 import {
 	arithmeticRules,
@@ -21,9 +20,9 @@ import {
 	allPatternRules
 } from '../rule-sets';
 import { applyRules } from '../rule';
-import { nodesEqual } from '../match';
+import { match, nodesEqual } from '../match';
 import { getBindingNode } from '../types';
-import type { BindingValue } from '../types';
+import type { BindingValue, Pattern, Rule } from '../types';
 import {
 	number,
 	variable,
@@ -40,6 +39,25 @@ import {
 	piConstant
 } from '../../factory';
 import type { TypeContext } from '../../numtype/types';
+import type { MathNode } from '../../types';
+import { parseLatex } from '../../parser';
+import { toLatex } from '../../latex-generator';
+
+/** Vrai si le motif filtre le nœud. */
+function matches(node: MathNode, pattern: Pattern): boolean {
+	return match(pattern, node).success;
+}
+
+/** Captures du filtrage, ou `null` si le motif ne filtre pas le nœud. */
+function extract(node: MathNode, pattern: Pattern): Map<string, BindingValue> | null {
+	const result = match(pattern, node);
+	return result.success ? new Map(result.bindings) : null;
+}
+
+/** Règles appliquées jusqu'au point fixe (par priorité décroissante). */
+function simplifyWith(node: MathNode, rules: readonly Rule[], maxIterations?: number): MathNode {
+	return applyRules([...rules], node, maxIterations);
+}
 
 /** Affirme que l'extraction a réussi, puis rétrécit les captures. */
 function expectBindings(bindings: Map<string, BindingValue> | null): Map<string, BindingValue> {
@@ -50,77 +68,77 @@ function expectBindings(bindings: Map<string, BindingValue> | null): Map<string,
 
 describe('Pattern Matching Integration', () => {
 	// ===========================================================================
-	// Exp.matches()
+	// matches() (helper local)
 	// ===========================================================================
 
-	describe('Exp.matches()', () => {
+	describe('matches()', () => {
 		it('matches addition with zero on right', () => {
-			const expr = Exp.parse('x + 0');
-			expect(expr.matches(P.add(P._('a'), P.num(0)))).toBe(true);
+			const expr = parseLatex('x + 0');
+			expect(matches(expr, P.add(P._('a'), P.num(0)))).toBe(true);
 		});
 
 		it('matches addition with zero on left', () => {
-			const expr = Exp.parse('0 + x');
-			expect(expr.matches(P.add(P.num(0), P._('a')))).toBe(true);
+			const expr = parseLatex('0 + x');
+			expect(matches(expr, P.add(P.num(0), P._('a')))).toBe(true);
 		});
 
 		it('does not match when pattern differs', () => {
-			const expr = Exp.parse('x + 0');
-			expect(expr.matches(P.mul(P._('a'), P.num(0)))).toBe(false);
+			const expr = parseLatex('x + 0');
+			expect(matches(expr, P.mul(P._('a'), P.num(0)))).toBe(false);
 		});
 
 		it('matches multiplication pattern', () => {
-			const expr = Exp.parse('x \\cdot 1');
-			expect(expr.matches(P.mul(P._('a'), P.num(1)))).toBe(true);
+			const expr = parseLatex('x \\cdot 1');
+			expect(matches(expr, P.mul(P._('a'), P.num(1)))).toBe(true);
 		});
 
 		it('matches power pattern', () => {
-			const expr = Exp.parse('x^2');
-			expect(expr.matches(P.pow(P._('base'), P._('exp')))).toBe(true);
+			const expr = parseLatex('x^2');
+			expect(matches(expr, P.pow(P._('base'), P._('exp')))).toBe(true);
 		});
 
 		it('matches division pattern', () => {
-			const expr = Exp.parse('\\frac{a}{b}');
-			expect(expr.matches(P.div(P._('num'), P._('den')))).toBe(true);
+			const expr = parseLatex('\\frac{a}{b}');
+			expect(matches(expr, P.div(P._('num'), P._('den')))).toBe(true);
 		});
 
 		it('matches nested patterns', () => {
 			// Note: (x + y) is parsed as a delimiter containing addition
 			// So we need to match the delimiter wrapping the addition
-			const expr = Exp.parse('(x + y) \\cdot z');
-			expect(expr.matches(P.mul(P.paren(P.add(P._('a'), P._('b'))), P._('c')))).toBe(true);
+			const expr = parseLatex('(x + y) \\cdot z');
+			expect(matches(expr, P.mul(P.paren(P.add(P._('a'), P._('b'))), P._('c')))).toBe(true);
 		});
 
 		it('matches negation pattern', () => {
-			const expr = Exp.parse('-x');
-			expect(expr.matches(P.neg(P._('x')))).toBe(true);
+			const expr = parseLatex('-x');
+			expect(matches(expr, P.neg(P._('x')))).toBe(true);
 		});
 
 		it('matches double negation pattern', () => {
-			const expr = Exp.parse('--x');
-			expect(expr.matches(P.neg(P.neg(P._('x'))))).toBe(true);
+			const expr = parseLatex('--x');
+			expect(matches(expr, P.neg(P.neg(P._('x'))))).toBe(true);
 		});
 
 		it('matches pattern with constraint', () => {
-			const expr = Exp.parse('5 + 0');
-			expect(expr.matches(P.add(P._('n', P.isNumber()), P.num(0)))).toBe(true);
+			const expr = parseLatex('5 + 0');
+			expect(matches(expr, P.add(P._('n', P.isNumber()), P.num(0)))).toBe(true);
 		});
 
 		it('does not match when constraint fails', () => {
-			const expr = Exp.parse('x + 0');
+			const expr = parseLatex('x + 0');
 			// Variable x does not satisfy isNumber constraint
-			expect(expr.matches(P.add(P._('n', P.isNumber()), P.num(0)))).toBe(false);
+			expect(matches(expr, P.add(P._('n', P.isNumber()), P.num(0)))).toBe(false);
 		});
 	});
 
 	// ===========================================================================
-	// Exp.extract()
+	// extract() (helper local)
 	// ===========================================================================
 
-	describe('Exp.extract()', () => {
+	describe('extract()', () => {
 		it('extracts bindings from addition', () => {
-			const expr = Exp.parse('x + 5');
-			const bindings = expr.extract(P.add(P._('left'), P._('right')));
+			const expr = parseLatex('x + 5');
+			const bindings = extract(expr, P.add(P._('left'), P._('right')));
 
 			expect(bindings).not.toBeNull();
 			expect(getBindingNode(expectBindings(bindings), 'left')?.type).toBe('variable');
@@ -128,8 +146,8 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		it('extracts single binding', () => {
-			const expr = Exp.parse('x + 0');
-			const bindings = expr.extract(P.add(P._('x'), P.num(0)));
+			const expr = parseLatex('x + 0');
+			const bindings = extract(expr, P.add(P._('x'), P.num(0)));
 
 			const node = getBindingNode(expectBindings(bindings), 'x');
 			expect(node?.type).toBe('variable');
@@ -139,15 +157,15 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		it('returns null for non-matching pattern', () => {
-			const expr = Exp.parse('x + 5');
-			const bindings = expr.extract(P.mul(P._('a'), P._('b')));
+			const expr = parseLatex('x + 5');
+			const bindings = extract(expr, P.mul(P._('a'), P._('b')));
 
 			expect(bindings).toBeNull();
 		});
 
 		it('extracts bindings from power expression', () => {
-			const expr = Exp.parse('x^2');
-			const bindings = expr.extract(P.pow(P._('base'), P._('exp')));
+			const expr = parseLatex('x^2');
+			const bindings = extract(expr, P.pow(P._('base'), P._('exp')));
 
 			expect(bindings).not.toBeNull();
 			expect(getBindingNode(expectBindings(bindings), 'base')?.type).toBe('variable');
@@ -155,8 +173,8 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		it('extracts bindings from fraction', () => {
-			const expr = Exp.parse('\\frac{a+b}{c}');
-			const bindings = expr.extract(P.div(P._('num'), P._('den')));
+			const expr = parseLatex('\\frac{a+b}{c}');
+			const bindings = extract(expr, P.div(P._('num'), P._('den')));
 
 			expect(bindings).not.toBeNull();
 			expect(getBindingNode(expectBindings(bindings), 'num')?.type).toBe('addition');
@@ -164,199 +182,199 @@ describe('Pattern Matching Integration', () => {
 		});
 
 		it('binds same wildcard twice only if values match', () => {
-			const expr1 = Exp.parse('\\frac{x}{x}');
-			const bindings1 = expr1.extract(P.div(P._('a'), P._('a')));
+			const expr1 = parseLatex('\\frac{x}{x}');
+			const bindings1 = extract(expr1, P.div(P._('a'), P._('a')));
 			expect(bindings1).not.toBeNull();
 
-			const expr2 = Exp.parse('\\frac{x}{y}');
-			const bindings2 = expr2.extract(P.div(P._('a'), P._('a')));
+			const expr2 = parseLatex('\\frac{x}{y}');
+			const bindings2 = extract(expr2, P.div(P._('a'), P._('a')));
 			expect(bindings2).toBeNull();
 		});
 	});
 
 	// ===========================================================================
-	// Exp.simplifyWith()
+	// simplifyWith() (helper local)
 	// ===========================================================================
 
-	describe('Exp.simplifyWith()', () => {
+	describe('simplifyWith()', () => {
 		describe('with arithmeticRules', () => {
 			it('simplifies x + 0 to x', () => {
-				const expr = Exp.parse('x + 0');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('x + 0');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies 0 + x to x', () => {
-				const expr = Exp.parse('0 + x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('0 + x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies x - 0 to x', () => {
-				const expr = Exp.parse('x - 0');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('x - 0');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies 0 - x to -x', () => {
-				const expr = Exp.parse('0 - x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('0 - x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('-x');
+				expect(toLatex(simplified)).toBe('-x');
 			});
 
 			it('simplifies x * 1 to x', () => {
-				const expr = Exp.parse('x \\cdot 1');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('x \\cdot 1');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies 1 * x to x', () => {
-				const expr = Exp.parse('1 \\cdot x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('1 \\cdot x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies x * 0 to 0', () => {
-				const expr = Exp.parse('x \\cdot 0');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('x \\cdot 0');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('0');
+				expect(toLatex(simplified)).toBe('0');
 			});
 
 			it('simplifies 0 * x to 0', () => {
-				const expr = Exp.parse('0 \\cdot x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('0 \\cdot x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('0');
+				expect(toLatex(simplified)).toBe('0');
 			});
 
 			it('simplifies x / 1 to x', () => {
-				const expr = Exp.parse('\\frac{x}{1}');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('\\frac{x}{1}');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies 0 / x to 0 (x nonzero)', () => {
-				const expr = Exp.parse('\\frac{0}{5}');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('\\frac{0}{5}');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('0');
+				expect(toLatex(simplified)).toBe('0');
 			});
 
 			it('simplifies x / x to 1', () => {
-				const expr = Exp.parse('\\frac{a}{a}');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('\\frac{a}{a}');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('1');
+				expect(toLatex(simplified)).toBe('1');
 			});
 
 			it('does not simplify 0 / 0', () => {
-				const expr = Exp.parse('\\frac{0}{0}');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('\\frac{0}{0}');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
 				// Should remain unchanged because condition fails
-				expect(simplified.latex).toBe('\\dfrac{0}{0}');
+				expect(toLatex(simplified)).toBe('\\dfrac{0}{0}');
 			});
 
 			it('simplifies --x to x', () => {
-				const expr = Exp.parse('--x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('--x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies x - x to 0', () => {
-				const expr = Exp.parse('x - x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('x - x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('0');
+				expect(toLatex(simplified)).toBe('0');
 			});
 
 			it('simplifies +x to x', () => {
-				const expr = Exp.parse('+x');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('+x');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies nested expression: (x + 0) * 1', () => {
-				const expr = Exp.parse('(x + 0) \\cdot 1');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('(x + 0) \\cdot 1');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
 				// Parentheses are preserved as structural elements
 				// Inner expression simplifies: x + 0 -> x
 				// Outer expression: (x) * 1 -> (x)
-				expect(simplified.latex).toBe('\\left( x \\right)');
+				expect(toLatex(simplified)).toBe('\\left( x \\right)');
 			});
 
 			it('simplifies deeply nested expression', () => {
 				// ((a + 0) - 0) * 1
-				const expr = Exp.parse('((a + 0) - 0) \\cdot 1');
-				const simplified = expr.simplifyWith(arithmeticRules);
+				const expr = parseLatex('((a + 0) - 0) \\cdot 1');
+				const simplified = simplifyWith(expr, arithmeticRules);
 
 				// Parentheses are preserved, inner expressions simplify
-				expect(simplified.latex).toBe('\\left( \\left( a \\right) \\right)');
+				expect(toLatex(simplified)).toBe('\\left( \\left( a \\right) \\right)');
 			});
 		});
 
 		describe('with powerRules', () => {
 			it('simplifies x^1 to x', () => {
-				const expr = Exp.parse('x^1');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('x^1');
+				const simplified = simplifyWith(expr, powerRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies x^0 to 1 (x nonzero)', () => {
-				const expr = Exp.parse('5^0');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('5^0');
+				const simplified = simplifyWith(expr, powerRules);
 
-				expect(simplified.latex).toBe('1');
+				expect(toLatex(simplified)).toBe('1');
 			});
 
 			it('simplifies a^0 to 1 (variable)', () => {
-				const expr = Exp.parse('a^0');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('a^0');
+				const simplified = simplifyWith(expr, powerRules);
 
-				expect(simplified.latex).toBe('1');
+				expect(toLatex(simplified)).toBe('1');
 			});
 
 			it('does not simplify 0^0', () => {
-				const expr = Exp.parse('0^0');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('0^0');
+				const simplified = simplifyWith(expr, powerRules);
 
 				// Should remain unchanged because condition fails
 				// Note: Single digit exponent doesn't need braces
-				expect(simplified.latex).toBe('0^0');
+				expect(toLatex(simplified)).toBe('0^0');
 			});
 
 			it('simplifies 1^x to 1', () => {
-				const expr = Exp.parse('1^x');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('1^x');
+				const simplified = simplifyWith(expr, powerRules);
 
-				expect(simplified.latex).toBe('1');
+				expect(toLatex(simplified)).toBe('1');
 			});
 
 			it('simplifies 1^100 to 1', () => {
-				const expr = Exp.parse('1^{100}');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('1^{100}');
+				const simplified = simplifyWith(expr, powerRules);
 
-				expect(simplified.latex).toBe('1');
+				expect(toLatex(simplified)).toBe('1');
 			});
 
 			it('simplifies (x+y)^1 to (x+y)', () => {
-				const expr = Exp.parse('(x + y)^1');
-				const simplified = expr.simplifyWith(powerRules);
+				const expr = parseLatex('(x + y)^1');
+				const simplified = simplifyWith(expr, powerRules);
 
 				// The parentheses are preserved as they are structural
-				expect(simplified.latex).toBe('\\left( x + y \\right)');
+				expect(toLatex(simplified)).toBe('\\left( x + y \\right)');
 			});
 
 			it('simplifies (-1)^2 to 1 (literal even exponent)', () => {
@@ -963,58 +981,58 @@ describe('Pattern Matching Integration', () => {
 
 		describe('with allPatternRules', () => {
 			it('simplifies x^1 + 0 to x', () => {
-				const expr = Exp.parse('x^1 + 0');
-				const simplified = expr.simplifyWith(allPatternRules);
+				const expr = parseLatex('x^1 + 0');
+				const simplified = simplifyWith(expr, allPatternRules);
 
-				expect(simplified.latex).toBe('x');
+				expect(toLatex(simplified)).toBe('x');
 			});
 
 			it('simplifies (x * 1)^0 to 1', () => {
-				const expr = Exp.parse('(x \\cdot 1)^0');
-				const simplified = expr.simplifyWith(allPatternRules);
+				const expr = parseLatex('(x \\cdot 1)^0');
+				const simplified = simplifyWith(expr, allPatternRules);
 
-				expect(simplified.latex).toBe('1');
+				expect(toLatex(simplified)).toBe('1');
 			});
 
 			it('simplifies complex expression', () => {
 				// ((a + 0) * 1)^1 / 1
-				const expr = Exp.parse('\\frac{((a + 0) \\cdot 1)^1}{1}');
-				const simplified = expr.simplifyWith(allPatternRules);
+				const expr = parseLatex('\\frac{((a + 0) \\cdot 1)^1}{1}');
+				const simplified = simplifyWith(expr, allPatternRules);
 
 				// Parentheses are preserved, inner expressions simplify
-				expect(simplified.latex).toBe('\\left( \\left( a \\right) \\right)');
+				expect(toLatex(simplified)).toBe('\\left( \\left( a \\right) \\right)');
 			});
 
 			it('simplifies expression with zero multiplication', () => {
 				// (complex expr) * 0 should become 0
-				const expr = Exp.parse('(x^2 + 3x - 5) \\cdot 0');
-				const simplified = expr.simplifyWith(allPatternRules);
+				const expr = parseLatex('(x^2 + 3x - 5) \\cdot 0');
+				const simplified = simplifyWith(expr, allPatternRules);
 
-				expect(simplified.latex).toBe('0');
+				expect(toLatex(simplified)).toBe('0');
 			});
 
 			it('simplifies double negation in nested expression', () => {
 				// (--a) + 0 -> (a)
-				const expr = Exp.parse('(--a) + 0');
-				const simplified = expr.simplifyWith(allPatternRules);
+				const expr = parseLatex('(--a) + 0');
+				const simplified = simplifyWith(expr, allPatternRules);
 
 				// Parentheses are preserved
-				expect(simplified.latex).toBe('\\left( a \\right)');
+				expect(toLatex(simplified)).toBe('\\left( a \\right)');
 			});
 		});
 
 		describe('with maxIterations', () => {
 			it('respects maxIterations limit', () => {
 				// Use expression without parentheses to avoid preserved delimiters
-				const expr = Exp.parse('x + 0 + 0 + 0 + 0 + 0');
+				const expr = parseLatex('x + 0 + 0 + 0 + 0 + 0');
 
 				// With very few iterations, might not fully simplify
-				const _partialSimplified = expr.simplifyWith(arithmeticRules, 2);
+				const _partialSimplified = simplifyWith(expr, arithmeticRules, 2);
 
 				// With enough iterations, should fully simplify
-				const fullySimplified = expr.simplifyWith(arithmeticRules, 100);
+				const fullySimplified = simplifyWith(expr, arithmeticRules, 100);
 
-				expect(fullySimplified.latex).toBe('x');
+				expect(toLatex(fullySimplified)).toBe('x');
 			});
 		});
 	});
@@ -1099,41 +1117,41 @@ describe('Pattern Matching Integration', () => {
 
 	describe('Edge Cases', () => {
 		it('handles empty expression correctly', () => {
-			const expr = Exp.number('0');
-			const simplified = expr.simplifyWith(allPatternRules);
+			const expr = number('0');
+			const simplified = simplifyWith(expr, allPatternRules);
 
-			expect(simplified.latex).toBe('0');
+			expect(toLatex(simplified)).toBe('0');
 		});
 
 		it('handles variables only', () => {
-			const expr = Exp.variable('x');
-			const simplified = expr.simplifyWith(allPatternRules);
+			const expr = variable('x');
+			const simplified = simplifyWith(expr, allPatternRules);
 
-			expect(simplified.latex).toBe('x');
+			expect(toLatex(simplified)).toBe('x');
 		});
 
 		it('handles deeply nested parentheses', () => {
-			const expr = Exp.parse('(((x + 0)))');
-			const simplified = expr.simplifyWith(arithmeticRules);
+			const expr = parseLatex('(((x + 0)))');
+			const simplified = simplifyWith(expr, arithmeticRules);
 
 			// Parentheses are preserved but inner expression simplified
-			expect(simplified.node.type).toBe('delimiter');
+			expect(simplified.type).toBe('delimiter');
 		});
 
 		it('handles expression with no applicable rules', () => {
-			const expr = Exp.parse('x + y + z');
-			const simplified = expr.simplifyWith(allPatternRules);
+			const expr = parseLatex('x + y + z');
+			const simplified = simplifyWith(expr, allPatternRules);
 
 			// Should remain unchanged
-			expect(simplified.latex).toBe('x + y + z');
+			expect(toLatex(simplified)).toBe('x + y + z');
 		});
 
 		it('immutability: original expression unchanged', () => {
-			const original = Exp.parse('x + 0');
-			const simplified = original.simplifyWith(arithmeticRules);
+			const original = parseLatex('x + 0');
+			const simplified = simplifyWith(original, arithmeticRules);
 
-			expect(original.latex).toBe('x + 0');
-			expect(simplified.latex).toBe('x');
+			expect(toLatex(original)).toBe('x + 0');
+			expect(toLatex(simplified)).toBe('x');
 		});
 	});
 
@@ -1144,34 +1162,34 @@ describe('Pattern Matching Integration', () => {
 	describe('Real-World Scenarios', () => {
 		it('simplifies polynomial with identity terms', () => {
 			// x^2 + 0 should simplify to x^2
-			const expr = Exp.parse('x^2 + 0');
-			const simplified = expr.simplifyWith(allPatternRules);
+			const expr = parseLatex('x^2 + 0');
+			const simplified = simplifyWith(expr, allPatternRules);
 
 			// Single digit exponent doesn't need braces
-			expect(simplified.latex).toBe('x^2');
+			expect(toLatex(simplified)).toBe('x^2');
 		});
 
 		it('simplifies fraction that equals 1', () => {
-			const expr = Exp.parse('\\frac{2x + 1}{2x + 1}');
-			const simplified = expr.simplifyWith(arithmeticRules);
+			const expr = parseLatex('\\frac{2x + 1}{2x + 1}');
+			const simplified = simplifyWith(expr, arithmeticRules);
 
-			expect(simplified.latex).toBe('1');
+			expect(toLatex(simplified)).toBe('1');
 		});
 
 		it('simplifies power of product', () => {
 			// (ab)^1 -> (ab)
-			const expr = Exp.parse('(a b)^1');
-			const simplified = expr.simplifyWith(powerRules);
+			const expr = parseLatex('(a b)^1');
+			const simplified = simplifyWith(expr, powerRules);
 
 			// Parentheses are preserved
-			expect(simplified.latex).toBe('\\left( a b \\right)');
+			expect(toLatex(simplified)).toBe('\\left( a b \\right)');
 		});
 
 		it('handles subtraction that results in zero', () => {
-			const expr = Exp.parse('(a + b) - (a + b)');
-			const simplified = expr.simplifyWith(arithmeticRules);
+			const expr = parseLatex('(a + b) - (a + b)');
+			const simplified = simplifyWith(expr, arithmeticRules);
 
-			expect(simplified.latex).toBe('0');
+			expect(toLatex(simplified)).toBe('0');
 		});
 	});
 });

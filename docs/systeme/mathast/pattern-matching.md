@@ -128,9 +128,6 @@ if (b) {
 }
 ```
 
-Côté `Exp` (`exp.ts`) : `Exp.parse(latex).matches(motif)`, `.extract(motif)` (liaisons ou
-`null`), `.simplifyWith(règles, maxIterations?)`.
-
 ### Algorithme (`match.ts`)
 
 1. **Aiguillage** sur `pattern.type` (joker, littéral, binaire, fonction, somme/produit…),

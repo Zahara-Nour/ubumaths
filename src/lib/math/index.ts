@@ -16,7 +16,6 @@ import {
 } from '$lib/mathAST/parser';
 import { evaluate } from '$lib/mathAST/eval';
 import { evaluateNodeToApproximatedNumber } from '$lib/mathAST/eval/evaluate';
-import { normalize, denormalize } from '$lib/mathAST/normal';
 import { toLatex, areEquivalent as areEquivalentNodes } from '$lib/mathAST';
 import type { EvalValue } from '$lib/mathAST/eval/types';
 import type { MathNode } from '$lib/mathAST/types';
@@ -24,8 +23,6 @@ import type { AnswerAssumptions } from '$lib/mathAST/assumptions';
 import { bareDecimalCommaToPoint, expectsSeparatorComma } from '$lib/mathAST/decimal-comma';
 import { separateSpacedCapitals } from '$lib/mathAST/parser/latex/point-names';
 
-// Re-export evaluateWithModifiers from mathAST (already implemented there)
-export { evaluateWithModifiers } from '$lib/mathAST/eval';
 export type { AnswerAssumptionKind, AnswerAssumptions } from '$lib/mathAST/assumptions';
 
 // Intervals (re-export for convenience)
@@ -177,28 +174,6 @@ export function areEquivalent(
 	}
 
 	return areEquivalentNodes(result1.ast, result2.ast, options);
-}
-
-/**
- * Simplify a LaTeX expression without evaluating to a number.
- *
- * @param latex - LaTeX expression
- * @returns Simplified LaTeX expression
- *
- * @example
- * simplifyExpression('2x + 3x')  // '5x'
- */
-export function simplifyExpression(latex: string): string {
-	try {
-		const ast = parseLatex(stripLatexSpacing(latex));
-		const normalForm = normalize(ast);
-		const simplified = denormalize(normalForm);
-		return toLatex(simplified);
-	} catch (error) {
-		throw new Error(
-			`Failed to simplify expression "${latex}": ${error instanceof Error ? error.message : String(error)}`
-		);
-	}
 }
 
 /**

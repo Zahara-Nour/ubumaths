@@ -16,14 +16,46 @@
  *   ignoraient la réduction ;
  * - **`Exp.hash` contredisait `Exp.isEquivalent`**, alors que sa docstring
  *   promet le contraire.
+ *
+ * (La classe `Exp` a été supprimée depuis — code mort, chantier simplify-carte ;
+ * ses deux méthodes sont reprises ici par `isEquivalent` et `hashOf`.)
  */
 
 import { describe, it, expect } from 'vitest';
 import { areEquivalent } from '../../equivalence';
 import { parseCustom } from '../../parser/custom';
 import { parseLatex } from '../../parser';
-import { Exp } from '../../exp';
-import { isZeroExpression, isOneExpression } from '../normalize';
+import type { MathNode } from '../../types';
+import {
+	equivalenceForm,
+	equivalenceForms,
+	isZeroExpression,
+	isOneExpression,
+	normalize
+} from '../normalize';
+import { hashNormalForm, normalFormsEquivalent } from '../hash';
+
+/**
+ * Décideur d'équivalence : formes d'équivalence (trigonométrie réduite, repli
+ * sur les formes non réduites quand la réduction annule un dénominateur), puis
+ * comparaison des formes normales.
+ */
+function isEquivalent(a: MathNode, b: MathNode): boolean {
+	const [formA, formB] = equivalenceForms(a, b);
+	return normalFormsEquivalent(formA, formB);
+}
+
+/**
+ * Empreinte du décideur : celle de la forme d'équivalence, ou celle de la
+ * forme normale quand la réduction annule un dénominateur.
+ */
+function hashOf(node: MathNode): string {
+	try {
+		return hashNormalForm(equivalenceForm(node));
+	} catch {
+		return hashNormalForm(normalize(node));
+	}
+}
 
 // =============================================================================
 // Le délai d'interruption couvre la réduction
@@ -78,10 +110,10 @@ describe('réflexivité, même quand la réduction annule un dénominateur', () 
 		expect(areEquivalent(node, node)).toBe(true);
 	});
 
-	it.each(degenerees)('Exp.isEquivalent ne jette pas sur %s', (input) => {
-		const exp = Exp.from(parseCustom(input));
-		expect(() => exp.isEquivalent(parseCustom(input))).not.toThrow();
-		expect(exp.isEquivalent(parseCustom(input))).toBe(true);
+	it.each(degenerees)('isEquivalent ne jette pas sur %s', (input) => {
+		const exp = parseCustom(input);
+		expect(() => isEquivalent(exp, parseCustom(input))).not.toThrow();
+		expect(isEquivalent(exp, parseCustom(input))).toBe(true);
 	});
 
 	it('et la réduction continue de fonctionner à côté', () => {
@@ -121,23 +153,23 @@ describe('isZeroExpression et isOneExpression décident comme areEquivalent', ()
 });
 
 // =============================================================================
-// Exp.hash tient sa promesse
+// L'empreinte tient sa promesse
 // =============================================================================
 
-describe('Exp.hash et Exp.isEquivalent disent la même chose', () => {
+describe('empreinte et équivalence disent la même chose', () => {
 	it.each([
 		['sin(x)^2', '1-cos(x)^2'],
 		['tan(x)', 'sin(x)/cos(x)'],
 		['sec(x)^2-1', 'tan(x)^2'],
 		['x^2+2x+1', '(x+1)^2']
 	])('%s et %s : même hash et équivalents', (a, b) => {
-		const expA = Exp.from(parseCustom(a));
-		const expB = Exp.from(parseCustom(b));
-		expect(expA.isEquivalent(parseCustom(b))).toBe(true);
-		expect(expA.hash).toBe(expB.hash);
+		const expA = parseCustom(a);
+		const expB = parseCustom(b);
+		expect(isEquivalent(expA, parseCustom(b))).toBe(true);
+		expect(hashOf(expA)).toBe(hashOf(expB));
 	});
 
 	it('deux expressions différentes gardent deux hash différents', () => {
-		expect(Exp.from(parseCustom('sin(x)')).hash).not.toBe(Exp.from(parseCustom('cos(x)')).hash);
+		expect(hashOf(parseCustom('sin(x)'))).not.toBe(hashOf(parseCustom('cos(x)')));
 	});
 });
