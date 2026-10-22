@@ -235,7 +235,7 @@ Avertissements pour : tracé à main levée (`:322`), compas `lever/coucher/reto
 21 ignorés (208)**, 1,5 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
 `converter.test.ts` (`:231`, `:287`, `:326`), faute du dossier `extern/instrumenpoche-main`.
 
-| Fichier (`src/lib/constructions-v2/…`)              | Cas (≈) | Couvre                                                                                                                                                  |
+| Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                  |
 | --------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `core/__tests__/choreographies-integration.test.ts` | 48      | décorateurs dans l'exécuteur, nombre et suite des sous-étapes de chaque voie, étiquettes, stub `double_perpendiculaire`, `bissectrice(α)`, `transporte` |
 | `core/__tests__/transporte-choreography.test.ts`    | 7       | 4 modes de direction, angle plat, angle aigu, mesure conservée                                                                                          |
@@ -296,18 +296,18 @@ Faits relevés dans le code le 2026-10-22.
 
 ### Commentaires et docs périmés
 
-| Affirmation                                                                                                                 | Réalité                                                                   |
-| --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
-| `cercle_circonscrit.ts:18-27` : 13 sous-étapes                                                                              | 17 (la médiatrice est passée à 6), test int. :446                         |
-| `mediatrice.ts:6` : « two short arcs (120°) »                                                                               | quatre petits arcs (`mediatrice.ts:332-380`)                              |
-| `visibility.ts:36` : « via `@avec_X` »                                                                                      | syntaxe `+X` / `-X`                                                       |
-| `parallele.ts:804` : « compas de centre A, rayon \|BP\| … PAQB »                                                            | arcs en P (rayon \|AB\|) puis en B (rayon \|PA\|), `parallele.ts:261-297` |
-| `registry.ts:17-18` : `scripts/generate-construction-docs.ts` produit `methodes-de-construction.md`                         | ni le script ni la page n'existent                                        |
-| `resolve.ts:12`, `types.ts:10-11` : renvoient à `docs/wip/v1-choreographies-phase0-tdd.md` et à un plan `~/.claude/plans/…` | absents                                                                   |
-| `README.md` (§ 2) : `Timeline` « (runes) » ; son `couvre:` omet `src/routes/api/constructions/**`                           | `timeline.svelte.ts:4` « No $state »                                      |
-| `archive/wip/v1-choreographies-substeps-progress.md:219` : `ctx.sub` non implémenté, `cercle_circonscrit` en stub           | implémentés (§ 4)                                                         |
-| même journal `:221` : `transporte` en 6 sous-étapes                                                                         | 7                                                                         |
-| `archive/wip/constructions-v2/progress.md:151` : « les constructions JSON existantes fonctionnent toujours »                | `/constructions/[id]` affiche « n'est plus supporté »                     |
+| Affirmation                                                                                                                                 | Réalité                                                                   |
+| ------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| `cercle_circonscrit.ts:18-27` : 13 sous-étapes                                                                                              | 17 (la médiatrice est passée à 6), test int. :446                         |
+| `mediatrice.ts:6` : « two short arcs (120°) »                                                                                               | quatre petits arcs (`mediatrice.ts:332-380`)                              |
+| `visibility.ts:36` : « via `@avec_X` »                                                                                                      | syntaxe `+X` / `-X`                                                       |
+| `parallele.ts:804` : « compas de centre A, rayon \|BP\| … PAQB »                                                                            | arcs en P (rayon \|AB\|) puis en B (rayon \|PA\|), `parallele.ts:261-297` |
+| `registry.ts:17-18` : un script `generate-construction-docs.ts` (dossier `scripts`) produirait `methodes-de-construction.md`                | ni le script ni la page n'existent                                        |
+| `resolve.ts:12`, `types.ts:10-11` : renvoient à une spec `v1-choreographies-phase0-tdd.md` (ex-`docs/wip`) et à un plan `~/.claude/plans/…` | absents                                                                   |
+| `README.md` (§ 2) : `Timeline` « (runes) » ; son `couvre:` omet `src/routes/api/constructions/**`                                           | `timeline.svelte.ts:4` « No $state »                                      |
+| `archive/wip/v1-choreographies-substeps-progress.md:219` : `ctx.sub` non implémenté, `cercle_circonscrit` en stub                           | implémentés (§ 4)                                                         |
+| même journal `:221` : `transporte` en 6 sous-étapes                                                                                         | 7                                                                         |
+| `archive/wip/constructions-v2/progress.md:151` : « les constructions JSON existantes fonctionnent toujours »                                | `/constructions/[id]` affiche « n'est plus supporté »                     |
 
 ### Ce que l'ancien `src/lib/constructions/` fournit encore
 
