@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23 : lot 3 validé (§ 33), en cours._
+_Mis à jour le 2026-10-23 : lot 3 fait (§ 33-34), revue en cours, PR à ouvrir._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom ; **Q6** (§ 25-26) : trois fonctions numériques (valeur sûre `number | null` en rationnels, variante ±∞/échec, `compile` pour les boucles), aucun résultat changé ; bug `sin²` des limites trouvé ; **Q7** (§ 27) : code mort supprimé dans un premier lot à part, classe `Exp` entière comprise.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 12 tranchées sur 12. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
 - **Lot code mort** (§ 28) : **mergé (#1610)** — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
 - **Ordre des lots validé** (§ 29, révisé § 30) : 1b moteur → 3 `réduire`/`auto` → 4 contrat de `tidy` → 5 formes par contexte → 6 valeurs approchées → 7 renommages. Lot 1a sondé (§ 30) : rien pour l'élève (vecteurs exotiques → 1b, QCM = code mort → 1b, attendu mal écrit = voulu).
 - **Lot 1b** (§ 31-32) : **mergé (#1613)** — égalité de l'Atelier, vecteurs / matrices, parité comparés par `equivalenceForms` ; code mort QCM retiré.
-- **Lot 3** (§ 33) : comportements validés le 2026-10-23 ; tests rouges puis correctif, branche `refactor/simplify-carte-reduire`.
-- **Prochaine action** : tests rouges du lot 3 (`réduire`, `auto`, fractions Q4, `simplify` sans factorisation), puis correctif.
+- **Lot 3** (§ 33-34) : fait sur `refactor/simplify-carte-reduire` — `réduire` et `auto` sans `normalize`, fractions Q4, `simplify` sans factorisation ; tous les tests verts.
+- **Prochaine action** : revue `code-reviewer` opus, puis PR, CI, merge ; ensuite lot 4 (contrat de `tidy`, S1-S4, E1-E2).
 - **En attente de David** : rien.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée », à changer avec E2 (§ 15).
 - **Worktree / branche** : `ubumaths-wt-simplify-carte` · `refactor/simplify-carte-reduire`.
@@ -535,3 +535,12 @@ Branche `refactor/simplify-carte-reduire`, worktree `ubumaths-wt-simplify-carte`
 - **Q3** : valeurs remarquables (`cos(π/3) → 1/2`) reportées à un lot à part.
 - **`simplify`** ne factorise plus (règles `algebraicSimplifyRules` retirées) ; panel de référence mis à jour.
 - **Hors lot** (lot 4, contrat de `tidy`) : décimaux (S1), `x/x` et `e^{ln x}` sans condition (S3). `développer` inchangé (sa rédaction passe déjà par `explainExpansion`).
+
+## 34. Lot 3 fait (branche `refactor/simplify-carte-reduire`)
+
+- Tests rouges (29, commit `ed4aa8682`) puis correctif (`b7601e400`). Nouveau module `pedagogical-simplify/reduce-steps.ts` : `tidyAsSteps` (étapes `tidy-*`, celles qui ne retirent que des parenthèses de groupement sont tues), `simplifyPolynomialFractions` (Q4, une et plusieurs lettres), `expandIfShorter` (garde : une somme à développer doit exister, sinon `normalize` ferait passer `cos(−x) → cos(x)` sous « On réduit »).
+- Ce que `normalize` faisait en silence et qu'il a fallu rendre en règles nommées : `ln(exp(x))`, `exp(ln(x))`, `exp(a)·exp(b)` (`expFunctionRules`), parité et période trig (`trigNegativeAngleRules`, `trigPeriodicRules`), `|−x|`, `||x||` (`absReduceRules`).
+- Mesuré sur le panel : `auto` rend ce que rend `simplify` sur 46 lignes sur 49 (avant : 38) ; restent 3 écarts de capacité (`√(x²)`, `(eˣ)³`, `xᵃxᵇ`). Écritures changées, voulues : `1/√2 → √2/2` et `(6/8)x → 3x/4` (celles de `tidy`, comme `simplify`).
+- `segment-length-sans-option` : l'empreinte d'avant les longueurs garde sa valeur, l'écart voulu (`simplify x²+2x+1`) est déclaré dans le test.
+- Docs : panel (tables + section des divergences 11 → 3), README mathAST, `pattern-matching.md`, ADR 0007 (précision Q4).
+- Serveur de test : `http://localhost:5178/atelier` (worktree `ubumaths-wt-simplify-carte`).
