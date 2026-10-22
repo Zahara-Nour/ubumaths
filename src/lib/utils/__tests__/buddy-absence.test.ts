@@ -4,7 +4,7 @@
  */
 
 import { describe, expect, it } from 'vitest';
-import { isLongAbsence, isWelcomeBackDue } from '../buddy-absence';
+import { isLongAbsence, isWelcomeBackDue, lastExpiredWelcomeBackDay } from '../buddy-absence';
 
 describe('isLongAbsence', () => {
 	it('tout premier passage : pas triste', () => {
@@ -63,5 +63,18 @@ describe('isWelcomeBackDue', () => {
 	it('jour à venir ou illisible : rien à fêter', () => {
 		expect(isWelcomeBackDue('2026-10-22', '2026-10-21')).toBe(false);
 		expect(isWelcomeBackDue('pas-un-jour', '2026-10-21')).toBe(false);
+	});
+});
+
+describe('lastExpiredWelcomeBackDay', () => {
+	it('7 jours avant : le premier jour qui n’est plus à fêter', () => {
+		expect(lastExpiredWelcomeBackDay('2026-10-28')).toBe('2026-10-21');
+		expect(isWelcomeBackDue('2026-10-21', '2026-10-28')).toBe(false);
+		expect(isWelcomeBackDue('2026-10-22', '2026-10-28')).toBe(true);
+	});
+
+	it('par-dessus la fin d’année ; jour illisible : null', () => {
+		expect(lastExpiredWelcomeBackDay('2027-01-04')).toBe('2026-12-28');
+		expect(lastExpiredWelcomeBackDay('n’importe quoi')).toBeNull();
 	});
 });

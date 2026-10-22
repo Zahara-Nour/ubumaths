@@ -283,8 +283,8 @@
 						<tr>
 							<td>Jour du retour après une longue absence</td>
 							<td>
-								Effacé dès que le Palotin a salué le retour, sans effet après 7 jours, supprimé avec
-								le profil
+								Effacé dès que le Palotin a salué le retour, ou au plus tard au premier passage
+								après 7 jours ; supprimé avec le profil
 							</td>
 						</tr>
 						<tr>

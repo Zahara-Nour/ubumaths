@@ -190,7 +190,7 @@ last_played_at    -> Dernier acces
 student_id        -> Identite eleve (supprimee avec le profil, ON DELETE CASCADE)
 last_visit_date   -> Jour UTC de la derniere page vue (hors API), remplace chaque jour de presence
 welcome_back_on   -> Jour du retour apres 21 jours d'absence, efface des que le Palotin l'a salue,
-                     sans effet apres 7 jours
+                     ou au plus tard au premier passage apres 7 jours
 ```
 
 Lisible par le serveur seul (RLS sans policy, droits retires a anon et authenticated) ; le navigateur

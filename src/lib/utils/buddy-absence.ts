@@ -8,7 +8,8 @@
  *
  * Présence notée sur toute page vue (docs/wip/palotins-presence-progress.md) :
  * le retour est souvent détecté loin du Palotin ; il est fêté à la première
- * apparition du Palotin dans les 7 jours, puis oublié.
+ * apparition du Palotin dans les 7 jours, puis oublié — et effacé au premier
+ * passage qui suit.
  */
 
 // Constantes
@@ -51,4 +52,15 @@ export function isWelcomeBackDue(welcomeBackOn: string | null, today: string): b
 	if (welcomeBackOn === null) return false;
 	const days = daysBetween(welcomeBackOn, today);
 	return days !== null && days >= 0 && days < WELCOME_BACK_DAYS;
+}
+
+/**
+ * Dernier jour de retour qui n'est plus à fêter `today` (`today` moins
+ * `WELCOME_BACK_DAYS` jours) : un retour noté ce jour-là ou avant est à effacer.
+ * Null si `today` est illisible.
+ */
+export function lastExpiredWelcomeBackDay(today: string): string | null {
+	const time = Date.parse(`${today}T00:00:00Z`);
+	if (Number.isNaN(time)) return null;
+	return new Date(time - WELCOME_BACK_DAYS * DAY_MS).toISOString().slice(0, 10);
 }

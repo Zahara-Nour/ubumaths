@@ -32,7 +32,11 @@ import {
 	weekStartOf,
 	type ConstanceReset
 } from '$lib/utils/buddy-constance';
-import { isLongAbsence, isWelcomeBackDue } from '$lib/utils/buddy-absence';
+import {
+	isLongAbsence,
+	isWelcomeBackDue,
+	lastExpiredWelcomeBackDay
+} from '$lib/utils/buddy-absence';
 
 // Types
 type ServiceClient = SupabaseClient<Database>;
@@ -509,7 +513,9 @@ export async function addExploredTheme(studentId: string, theme: string): Promis
  * d'autre que le serveur (décision du 2026-10-21). `studentId` vient de la
  * session, le jour est calculé ici. `record_student_visit` ne rend l'ancien
  * jour qu'à un seul de deux appels simultanés : le retour n'est noté qu'une
- * fois. Panne : journalisée, sans lever (la page s'affiche quand même).
+ * fois. Au premier passage d'un nouveau jour, un retour resté non fêté
+ * `WELCOME_BACK_DAYS` jours est effacé (aucune tâche planifiée : décision du
+ * 2026-10-22). Panne : journalisée, sans lever (la page s'affiche quand même).
  */
 export async function recordStudentPresence(studentId: string): Promise<void> {
 	const today = todayUtc();
@@ -522,7 +528,10 @@ export async function recordStudentPresence(studentId: string): Promise<void> {
 		logger.error('❌ [buddy-queries] Présence non enregistrée :', error);
 		return;
 	}
-	if (!isLongAbsence(data, today)) return;
+	if (!isLongAbsence(data, today)) {
+		if (data !== null && data < today) await forgetExpiredWelcomeBack(studentId, today);
+		return;
+	}
 
 	const { data: rows, error: welcomeError } = await service
 		.from('student_last_visits')
@@ -532,6 +541,21 @@ export async function recordStudentPresence(studentId: string): Promise<void> {
 	if (welcomeError || rows?.length !== 1) {
 		logger.error('❌ [buddy-queries] Retour à fêter non noté :', welcomeError ?? 'aucune ligne');
 	}
+}
+
+/**
+ * Efface un retour noté il y a `WELCOME_BACK_DAYS` jours ou plus, jamais fêté :
+ * il ne le sera plus. Client service ; panne journalisée, sans lever.
+ */
+async function forgetExpiredWelcomeBack(studentId: string, today: string): Promise<void> {
+	const expired = lastExpiredWelcomeBackDay(today);
+	if (expired === null) return;
+	const { error } = await createServiceRoleClient()
+		.from('student_last_visits')
+		.update({ welcome_back_on: null })
+		.eq('student_id', studentId)
+		.lte('welcome_back_on', expired);
+	if (error) logger.error('❌ [buddy-queries] Retour périmé non effacé :', error);
 }
 
 /**

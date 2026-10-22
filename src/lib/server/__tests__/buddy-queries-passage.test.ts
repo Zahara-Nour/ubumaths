@@ -9,6 +9,7 @@
  * (docs/wip/palotins-presence-progress.md).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { isWelcomeBackDue } from '$lib/utils/buddy-absence';
 import { utcDay } from '$lib/utils/buddy-constance';
 
 // Client service factice : `rpc` et une chaîne `from()` qui note ses appels
@@ -16,7 +17,7 @@ const service = vi.hoisted(() => {
 	const calls: { method: string; args: unknown[] }[] = [];
 	let result: { data: unknown; error: unknown } = { data: null, error: null };
 	const chain: Record<string, unknown> = {};
-	for (const method of ['from', 'update', 'select', 'eq', 'not', 'maybeSingle']) {
+	for (const method of ['from', 'update', 'select', 'eq', 'not', 'lte', 'maybeSingle']) {
 		chain[method] = (...args: unknown[]) => {
 			calls.push({ method, args });
 			return chain;
@@ -80,10 +81,34 @@ describe('recordStudentPresence', () => {
 		expect(called('eq')).toEqual([['student_id', STUDENT]]);
 	});
 
-	it('dernier passage il y a 20 jours : rien à fêter', async () => {
+	it('dernier passage il y a 20 jours : rien à fêter, le retour périmé est effacé', async () => {
 		service.rpc.mockResolvedValue({ data: daysAgo(20), error: null });
 		await recordStudentPresence(STUDENT);
+		expect(called('update')).toEqual([[{ welcome_back_on: null }]]);
+		expect(called('eq')).toEqual([['student_id', STUDENT]]);
+		expect(called('lte')).toEqual([['welcome_back_on', daysAgo(7)]]);
+	});
+
+	it('premier passage du jour : efface un retour d’il y a 7 jours, pas de 6', async () => {
+		service.rpc.mockResolvedValue({ data: daysAgo(1), error: null });
+		await recordStudentPresence(STUDENT);
+		const [[, expired]] = called('lte') as [string, string][];
+		expect(isWelcomeBackDue(expired, utcDay())).toBe(false);
+		expect(isWelcomeBackDue(daysAgo(6), utcDay())).toBe(true);
+		expect(expired).toBe(daysAgo(7));
+	});
+
+	it('déjà passé aujourd’hui (autre instance) : aucune écriture', async () => {
+		service.rpc.mockResolvedValue({ data: utcDay(), error: null });
+		await recordStudentPresence(STUDENT);
 		expect(called('update')).toEqual([]);
+	});
+
+	it('retour périmé non effacé : journalisé, ne lève pas', async () => {
+		service.rpc.mockResolvedValue({ data: daysAgo(3), error: null });
+		service.setResult({ data: null, error: { message: 'panne' } });
+		await expect(recordStudentPresence(STUDENT)).resolves.toBeUndefined();
+		expect(console.error).toHaveBeenCalled();
 	});
 
 	it('tout premier passage (aucun jour enregistré) : rien à fêter', async () => {

@@ -375,7 +375,8 @@ Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588)
   `src/lib/utils/buddy-absence.ts` ; 14 attraperait les petites vacances), jour UTC comme la
   Constance → le serveur note `student_last_visits.welcome_back_on` = aujourd'hui. Le retour est
   souvent detecte loin du Palotin : il reste **a feter pendant 7 jours** (`WELCOME_BACK_DAYS`,
-  `isWelcomeBackDue`), puis il est oublie.
+  `isWelcomeBackDue`), puis il est oublie : **efface** au premier passage d'un jour suivant
+  (`recordStudentPresence`, `welcome_back_on <= lastExpiredWelcomeBackDay`), sans tache planifiee.
 - **Bulle** : le layout `dashboard/student/+layout.server.ts` **lit** le retour a feter
   (`isWelcomeBackPending`, sans rien ecrire : un prechargement au survol ne consomme rien) et ne
   transmet que `longAbsence` (oui/non), jamais un jour ; faux sans Palotin (celui choisi ensuite
@@ -388,6 +389,9 @@ Decide par David le 2026-10-21 (presence notee partout : meme jour, apres #1588)
   bulle, sans salutation (`BuddyWidget`, `welcomeBackContext`).
 - Premier passage (aucun jour enregistre) : rien. Presence ou retour non ecrits : rien (journalise,
   la page s'affiche).
+- **Ecart accepte** (David, 2026-10-22) : `record_student_visit` puis la note de `welcome_back_on`
+  sont deux ecritures. Si la seconde echoue apres la premiere, le jour du passage est deja avance :
+  le retour **n'est pas fete** (journalise). Pas de migration pour les reunir.
 - **Acces** : `student_last_visits` (jour du dernier passage, retour a feter) n'est lisible que par
   le serveur (RLS sans policy, droits retires a anon et authenticated) ; exportee dans l'export RGPD
   (`dernier_passage`, `retour_a_feter`), supprimee avec le profil.
