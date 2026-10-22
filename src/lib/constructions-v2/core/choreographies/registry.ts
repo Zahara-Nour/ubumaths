@@ -13,9 +13,6 @@
  * Adding a new constraint to an existing builtin :
  *   1. Add a new `VOIES_<BUILTIN>_<CONSTRAINT>` export.
  *   2. Reference it in the same row below.
- *
- * Auto-generated docs : `pnpm tsx scripts/generate-construction-docs.ts`
- * reads this registry and produces `docs/systeme/geometrie/methodes-de-construction.md`.
  */
 
 import type { ChoreographyRegistry } from './types';

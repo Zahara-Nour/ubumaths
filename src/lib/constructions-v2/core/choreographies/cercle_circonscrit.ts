@@ -16,15 +16,15 @@
  * animation.
  *
  * Sub-step layout for the canonical voie `mediatrices` :
- *   SS1..SS4  — sub-mediatrice(A, B) : 4 sub-steps (2 compass-draw + fade-in + ruler).
- *   SS5       — line-fade-in m1 (the mediatrice line, after its ruler trace).
- *   SS6..SS9  — sub-mediatrice(B, C) : 4 sub-steps.
- *   SS10      — line-fade-in m2.
- *   SS11      — point-fade-in O (intersection of m1 and m2).
- *   SS12      — compass-measure |OA| (compass at O, opens to A).
- *   SS13      — compass-draw the circumscribed circle (full 360° sweep at O).
+ *   SS1..SS6   — sub-mediatrice(A, B) : 6 sub-steps (4 compass-draw + fade-in + ruler).
+ *   SS7        — line-fade-in m1 (the mediatrice line, after its ruler trace).
+ *   SS8..SS13  — sub-mediatrice(B, C) : 6 sub-steps.
+ *   SS14       — line-fade-in m2.
+ *   SS15       — point-fade-in O (intersection of m1 and m2).
+ *   SS16       — compass-measure |OA| (compass at O, opens to A).
+ *   SS17       — compass-draw the circumscribed circle (full 360° sweep at O).
  *
- * Total : 13 sub-steps for a single `cercle_circonscrit @euclide` statement.
+ * Total : 17 sub-steps for a single `cercle_circonscrit @euclide` statement.
  */
 
 import { exact } from '$lib/geometry-core/types/geo-value';

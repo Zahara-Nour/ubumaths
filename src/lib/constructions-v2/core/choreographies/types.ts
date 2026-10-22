@@ -8,8 +8,7 @@
  * `mediatrice.euclide.arcs_egaux` voie which animates 2 equal compass arcs
  * + intersection + ruler.
  *
- * See `/Users/david/.claude/plans/reflective-munching-catmull.md` for the V1
- * design and `docs/wip/v1-choreographies-phase0-tdd.md` for the spec.
+ * Reference : `docs/systeme/geometrie/constructions.md`.
  */
 
 import type { Figure } from '$lib/geometry-core/graph/figure';

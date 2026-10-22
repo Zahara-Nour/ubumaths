@@ -105,7 +105,6 @@ export class ConstructionExecutor {
 	private _stepDurations: number[] = [];
 	private _instrumentStates = new Map<InstrumentType, InstrumentState>();
 	private _currentInstruction: string | null = null;
-	private _speedFactor = 1;
 	private _lastStepNewElementIds: string[] = [];
 	private _lastStepNewPointIds: string[] = [];
 	/** Line / ray ids created in the last step. Animated with a simple fade-in
@@ -194,7 +193,6 @@ export class ConstructionExecutor {
 	load(script: string): void {
 		this._loadError = null;
 		this._program = parseDsl(script);
-		this._speedFactor = 1;
 		this._currentInstruction = null;
 		this._instrumentStates.clear();
 		this._lastStepNewElementIds = [];
@@ -521,56 +519,6 @@ export class ConstructionExecutor {
 		return { ids, coords };
 	}
 
-	/**
-	 * Inspect `stepper.nextStatement` and, if it is a decorated assignment to
-	 * a choreographed builtin, resolve the decorator triple + look up the
-	 * Voie. Stores result in `_currentDecoratorTriple` / `_currentVoie` for
-	 * use by the animation pipeline (Phase 4+).
-	 *
-	 * Errors from `resolveDecorators` (unknown decorator, conflicting
-	 * categories, …) are propagated as `DslRuntimeError` so the existing
-	 * `_loadError` mechanism surfaces them in the player UI.
-	 */
-	private resolveCurrentDecorators(): void {
-		this._currentDecoratorTriple = null;
-		this._currentVoie = null;
-		const stmt = this.stepper?.nextStatement;
-		if (!stmt || stmt.kind !== 'assignment') return;
-		const decorators = stmt.decorators;
-		if (!decorators || decorators.length === 0) return;
-		// Identify the called builtin name : RHS must be a function call.
-		const value = stmt.value;
-		if (value.kind !== 'call') {
-			throw new DslRuntimeError(
-				{
-					summary: `Les décorateurs ne s'appliquent qu'aux appels de builtin (ligne ${stmt.line}).`,
-					hint: 'Exemple : `d = mediatrice(A, B) @euclide`.'
-				},
-				stmt.line
-			);
-		}
-		const builtinName = value.name;
-		if (!CHOREOGRAPHED_BUILTINS.has(builtinName)) {
-			throw new DslRuntimeError(
-				{
-					summary: `Le builtin \`${builtinName}\` n'a pas de chorégraphie déclarée.`,
-					hint: `Builtins V1 : ${[...CHOREOGRAPHED_BUILTINS].join(', ')}.`
-				},
-				stmt.line
-			);
-		}
-		try {
-			const triple = resolveDecorators(decorators, builtinName);
-			this._currentDecoratorTriple = triple;
-			this._currentVoie = lookupVoie(triple, builtinName);
-		} catch (e) {
-			if (e instanceof DecoratorResolveError) {
-				throw new DslRuntimeError({ summary: e.message, hint: e.hint }, stmt.line);
-			}
-			throw e;
-		}
-	}
-
 	/** Currently-active decorator triple (null if step has no decorators). */
 	get currentDecoratorTriple(): DecoratorTriple | null {
 		return this._currentDecoratorTriple;
@@ -593,7 +541,6 @@ export class ConstructionExecutor {
 		if (!this.stepper) return;
 		this.stepper.reset();
 		this._currentInstruction = null;
-		this._speedFactor = 1;
 		this._instrumentStates.clear();
 		this._lastStepNewElementIds = [];
 		this._lastStepNewPointIds = [];
@@ -740,13 +687,9 @@ export class ConstructionExecutor {
 				break;
 			}
 
-			case 'vitesse': {
-				const factor = resolveNumberArg(args.positional[0]);
-				if (factor && factor > 0) {
-					this._speedFactor = factor;
-				}
+			case 'vitesse':
+				// Pris en compte à la pré-simulation (durées des pas), rien à faire ici
 				break;
-			}
 
 			case 'cacher': {
 				const instrName = args.positional[0] ? resolveStringArg(args.positional[0]) : undefined;

@@ -17,7 +17,8 @@
 	import InlineFormatted from './InlineFormatted.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import type { EditorView } from '@codemirror/view';
-	import type { Extension } from '@codemirror/state';
+	import type { Extension, StateEffectType } from '@codemirror/state';
+	import { BUILTIN_NAMES, MATH_FUNCTIONS } from '$lib/geometry-core/dsl/builtins';
 
 	interface Props {
 		value?: string;
@@ -55,8 +56,7 @@
 	let parseErrorLines = $state<number[]>([]);
 	let runtimeError = $state<RuntimeErrorInfo | null>(null);
 	let validationTimeoutId: number | null = null;
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	let errorLineEffectType: { of: (value: number[]) => any } | null = null;
+	let errorLineEffectType: StateEffectType<number[]> | null = null;
 
 	function refreshErrorHighlight(): void {
 		const lines = [...parseErrorLines];
@@ -113,25 +113,7 @@
 		}
 	}
 
-	// DSL keywords for syntax highlighting
-	const GEOMETRY_KEYWORDS = new Set([
-		'point',
-		'milieu',
-		'segment',
-		'droite',
-		'demidroite',
-		'cercle',
-		'symetrie',
-		'rotation',
-		'translation',
-		'homothetie',
-		'intersection',
-		'angle',
-		'angle_polaire',
-		'marque_segment',
-		'mesure',
-		'style'
-	]);
+	// Mots-clés du DSL pour la coloration (les builtins viennent de `BUILTIN_NAMES`)
 	const CONTROL_KEYWORDS = new Set([
 		'macro',
 		'retourne',
@@ -145,7 +127,6 @@
 		'et',
 		'ou'
 	]);
-	const MATH_FUNCTIONS = new Set(['sqrt', 'abs', 'sin', 'cos', 'tan', 'asin', 'acos', 'atan']);
 
 	async function initEditor(): Promise<void> {
 		if (!browser || !editorContainer) return;
@@ -205,7 +186,7 @@
 					if (stream.match(/[a-zA-Z_]\w*/)) {
 						const word = stream.current();
 						if (CONTROL_KEYWORDS.has(word)) return 'keyword';
-						if (GEOMETRY_KEYWORDS.has(word)) return 'typeName';
+						if (BUILTIN_NAMES.has(word)) return 'typeName';
 						if (MATH_FUNCTIONS.has(word)) return 'function(definition)';
 						return 'variableName';
 					}

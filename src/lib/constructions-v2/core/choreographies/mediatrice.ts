@@ -3,20 +3,22 @@
  *
  * V1 voies under `@euclide` :
  *
- * - `arcs_egaux` (default, Euclid I.10) : two short arcs (120°) of equal
- *   radius `r = 0.7 × |AB|` centered at A and B intersect at two points
- *   equidistant from A and B. A ruler placed on these two points traces
- *   the perpendicular bisector.
+ * - `arcs_egaux` (default, Euclid I.10) : four small arcs (30° each) of
+ *   equal radius `r = 0.7 × |AB|`, two centered at A and two at B, cross
+ *   at two points equidistant from A and B. A ruler placed on these two
+ *   points traces the perpendicular bisector.
  *
  * - `cercles_rayon_ab` : variation where `r = |AB|` exactly. Visually
  *   neater (each circle would pass through the other endpoint if drawn
  *   in full) ; same sub-step structure, different radius factor.
  *
- * Both voies expand into 4 sequential sub-steps :
- *   SS1 — compass at A traces arc 1
- *   SS2 — compass at B traces arc 2
- *   SS3 — the 2 intersection points fade in
- *   SS4 — ruler + pencil trace a segment between the 2 intersections
+ * Both voies expand into 6 sequential sub-steps :
+ *   SS1 — compass at A traces a small arc on one side
+ *   SS2 — compass at A traces a small arc on the other side
+ *   SS3 — compass at B traces a small arc on one side
+ *   SS4 — compass at B traces a small arc on the other side
+ *   SS5 — the 2 intersection points fade in
+ *   SS6 — ruler + pencil trace a segment between the 2 intersections
  *         while the final median line fades in.
  */
 

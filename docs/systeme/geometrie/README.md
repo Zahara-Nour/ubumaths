@@ -9,6 +9,7 @@ couvre:
   - 'src/routes/(protected)/constructions/**'
   - 'src/routes/(public)/construction-demo/**'
   - 'src/routes/(public)/geometry-demo/**'
+  - 'src/routes/api/constructions/**'
   - 'src/routes/api/construction-demo-scripts/**'
   - 'src/lib/server/geometry-figures.ts'
   - 'src/lib/server/validation/geometry-figures.ts'
