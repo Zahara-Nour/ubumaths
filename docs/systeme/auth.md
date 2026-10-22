@@ -70,6 +70,59 @@ Le mot « auth » recouvre **deux processus sans rapport** — ne jamais les con
 
 Deux callbacks différents : `/auth/callback` (connexion Google) ≠ `/api/google/auth/callback` (Classroom).
 
+## Vue d'ensemble : les parcours d'un élève
+
+Trois questions **indépendantes**, à ne pas mélanger :
+
+1. **Le compte** : avec quoi l'élève se connecte (vraie adresse ou identifiant).
+2. **Le statut** : le prof doit-il approuver le compte avant qu'il serve (§ « Le statut du compte ») ?
+3. **Le consentement parental** : faut-il l'accord d'un parent pour l'accès complet (§ « Consentement parental ») ?
+
+### Comment naît un compte élève
+
+| Situation                                     | Écran                                               | Connexion                                                                                  | Statut                                        |
+| --------------------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------------------------------------------- |
+| **A. Élève seul, code de classe valide**      | « Je m'inscris » `/auth/register`                   | son adresse + mot de passe (après le clic de confirmation reçu à cette adresse)            | **approuvé** d'office, inscrit dans la classe |
+| **A′. Même chose avec l'adresse d'un parent** | « Je m'inscris »                                    | l'adresse **du parent** sert d'adresse de connexion ; c'est lui qui reçoit la confirmation | approuvé d'office                             |
+| **B. Parent pour un enfant sans adresse**     | « J'inscris mon enfant » `/auth/register/parent`    | **identifiant** (`noelie042`) + mot de passe choisi par le parent ; aucune confirmation    | approuvé d'office, inscrit dans la classe     |
+| **C. Sans code, ou code faux**                | « Je m'inscris »                                    | son adresse                                                                                | **en attente** : bloqué jusqu'à l'approbation |
+| **D. Élève importé par l'admin**              | import admin, puis inscription avec la même adresse | son adresse                                                                                | approuvé, déjà dans ses classes               |
+
+Google est coupé (`GOOGLE_LOGIN_ENABLED`). Derrière l'identifiant du cas B, une adresse fictive
+`…@eleves.chiph.re` qui ne reçoit rien : aucun courriel n'y part jamais (§ « Le domaine fictif »).
+
+### Le consentement parental
+
+**Concernés** : tout niveau **sauf 1re et terminale** (primaire, collège, 2nde et niveau inconnu
+compris ; question d'âge en 2nde). Le prof peut dispenser un élève. **Sans consentement**, l'élève
+est en **lecture seule** : il travaille, mais le social et les échanges (messages, marché, jeux…)
+sont bloqués.
+
+| Situation       | Avant la lecture seule                        | Comment le lien part au parent                                                              |
+| --------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| **A, A′, C, D** | **30 jours** d'accès complet (délai de grâce) | **le prof** saisit l'adresse du parent dans sa page des consentements et envoie le lien     |
+| **B**           | **aucun** : lecture seule dès la création     | **automatiquement** : un seul courriel au parent, avec l'identifiant de l'enfant et le lien |
+
+Le lien `/consent/[token]` recueille le consentement (case explicite). En 1re/Tle par l'écran du
+parent (cas B), le même lien sert seulement à **confirmer l'adresse du parent**. Le parent n'a
+**jamais de compte** et ne voit rien du compte de l'enfant.
+
+### Mot de passe oublié
+
+| Compte                           | Qui peut le remettre                                                                                                                                                                     |
+| -------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Adresse réelle** (A, A′, C, D) | l'élève : « Mot de passe oublié » envoie le lien **à l'adresse du compte** (donc au parent en A′)                                                                                        |
+| **Identifiant** (B)              | **le parent** : « Mot de passe oublié » avec l'identifiant → lien à son adresse, **seulement s'il a déjà cliqué son lien de consentement** ; sinon rien ne part, le prof prend le relais |
+| **Tous**                         | **le prof** : « Réinitialiser » dans le panneau de l'élève → mot de passe provisoire affiché une fois, à changer à la connexion suivante                                                 |
+| **Tous**                         | **l'élève** connecté : « Changer mon mot de passe » sur son profil (ancien mot de passe exigé)                                                                                           |
+
+**Reporté** (2026-10-22) : dans les cas A et C, l'élève donnerait lui-même l'adresse de son
+parent à l'inscription, le lien partant après approbation du prof (§ « Inscription par le
+parent », fin). Aujourd'hui, c'est le prof qui saisit cette adresse.
+
+Détail de chaque chemin dans les sections qui suivent ; règle du consentement :
+[conformite/](conformite/README.md).
+
 ## Carte du code
 
 | Fichier                                           | Rôle                                                                                                                                                                                                                                                                                                                                                    |
