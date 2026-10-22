@@ -170,3 +170,18 @@ describe('`.simplifier` reçoit vraiment les étapes', () => {
 		expect(result.kind).toBe('commande');
 	});
 });
+
+// Rien à simplifier (`2(x+3)`, `x²+2x+1` depuis le lot 3 de simplify-carte) :
+// la ligne montrait le bloc du terminal, « Simplified: … Custom: … Hash: 2*V(x)+6 »
+// (vu par David le 2026-10-23)
+describe('rien à simplifier', () => {
+	it.each([
+		['.simplifier 2(x+3)', '2 \\left( x + 3 \\right)'],
+		['.simplifier x^2+2x+1', 'x^2 + 2 x + 1'],
+		['.simplifier x^2-4', 'x^2 - 4']
+	])('%s : l’expression en LaTeX, pas le bloc du terminal', (input, latex) => {
+		const result = stepsOf(input);
+		expect(result.latex).toBe(latex);
+		expect(result.steps).toBeUndefined();
+	});
+});

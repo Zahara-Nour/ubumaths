@@ -2545,6 +2545,11 @@ function runCommand(session: CalcSession, input: string): CalcResult {
 				...summaryField(simplified)
 			};
 		}
+		// Rien à simplifier (`2(x+3)`, `x²+2x+1`) : l'expression du moteur en
+		// LaTeX, jamais le bloc du terminal (« Custom: … Hash: 2*V(x)+6 »)
+		if (result.success && result.ast !== undefined) {
+			return { kind: 'commande', input, output: rendered.text, latex: toLatex(result.ast) };
+		}
 	}
 
 	// ⚠️ `.variations` rendait le bloc d'un terminal (`{-2}/{(2x-1)^2}`, `-inf`,
