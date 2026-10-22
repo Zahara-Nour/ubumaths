@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, D3 en discussion (§ 19, sondage ; rien de tranché)._
+_Mis à jour le 2026-10-22, après D3 (§ 19)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 5 tranchées (E1, § 10, E2, D1, D2), 7 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (en cours : D3, sondage au § 19 ; David demande ce qu'on attend de l'Atelier pour une expression numérique / littérale) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : D3-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 6 tranchées (E1, § 10, E2, D1, D2, D3), 6 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : D4, à présenter, pas à appliquer) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -366,7 +366,7 @@ Sondé avant décision (test jetable, supprimé) : `reducedDerivative` (`variati
 
 **Décision** : dans le tableau de variations, f′ passe par `factoriser` (lycée) ; quotient → numérateur factorisé, dénominateur tel quel ; étape « On factorise pour étudier le signe ». Rien ne se factorise (Δ < 0) → reste développé, signe de a. Ordre des facteurs : celui du noyau (décision du 2026-10-11), ordre interne d'un facteur gardé (`x(2 + x)eˣ`) — accepté tel quel.
 
-## 19. D3 : sondage (2026-10-22) — NON TRANCHÉE
+## 19. D3 : expression tapée dans Calcul (David, 2026-10-22 : « numérique calculé, littéral mis au propre en gardant l'ordre »)
 
 ⚠️ Une première version de ce paragraphe (commit `b29d1d119`) consignait D3 comme décidée : erreur, David avait écrit « go pour D3 » pour qu'on la lui présente, pas pour la valider.
 
@@ -375,3 +375,13 @@ Sondé avant décision (test jetable, supprimé) : `reducedDerivative` (`variati
 **Aucune variante actuelle ne « met au propre en gardant l'ordre »** : `tidy` et `tidyWithoutReordering` rangent (`2x+3`, `x^2-2x+3`) ; `tidyTerms` garde l'ordre de la somme mais donne encore `x/x → 1` et `0.5x → x/2`. Toute option autre que « telle quelle » attend le lot du contrat de `tidy` (S1-S3 + option d'ordre). Détail : `sqrt(8)x` → `2x√2` par `tidyTerms`, `2√2x` par `tidyWithoutReordering`.
 
 Question de David en retour (2026-10-22) : qu'attend-on de l'Atelier pour une expression numérique, pour une expression littérale ?
+
+**Mesuré (22 saisies par `runInput`, test jetable supprimé).** Numérique : calculé, exact (`1/3+1/6 → 1/2`, `1/(1+√2) → √2−1`, `e^{ln 2} → 2`), mais `0.1+0.2 → 3/10` (la garde décimale de `readable` regarde le résultat, déjà fraction : écart à S1). Littéral : rendu tel que tapé, rien de mis au propre (`2x+3x`, `x*2`, `x+0`, `ln(eˣ)`, `(x²−1)/(x+1)` inchangés). `docs/systeme/atelier.md` ne dit rien du but ; seul le commentaire de `readable` le justifie (protection contre `tidy`).
+
+**Comparaison donnée à David (de mémoire, non vérifiée en ligne).** Mathematica, Maple, SymPy : simplification automatique minimale à la saisie (termes semblables, neutres, `x/x → 1`), le reste sur commande (`Simplify`, `Cancel`). GeoGebra CAS, TI-Nspire : simplifient beaucoup plus (rationalisation, fractions, identités) ; GeoGebra a un bouton « Garder la saisie ». Aucun ne laisse `2x+3x` tel quel.
+
+**Décision** :
+
+- **expression numérique** : calculée (valeur exacte), décimal tapé → résultat décimal (S1 : `0,1+0,2 → 0,3`), garde « résultat trop long » conservée ;
+- **expression littérale** : mise au propre (`tidy`), **ordre de l'élève gardé** : `3+2*x → 3 + 2x`, `2x+3x → 5x`, `x*2 → 2x`, `x+0 → x` ; `x/x` reste (S3), `0,5x` reste décimal (S1), aucune identité ni simplification de fraction (`ln(eˣ)`, `(x²−1)/(x+1)` inchangés : c'est le rôle de `.simplifier`, `.développer`, `.factoriser`).
+- Réalisable après le lot du contrat de `tidy` (S1-S3 + option d'ordre) ; la garde « variable » de `readable` saute alors.
