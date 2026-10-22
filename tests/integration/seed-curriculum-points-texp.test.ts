@@ -12,6 +12,10 @@
  * (chemin du nœud compris), rien d'autre au grade 'T_EXP', et aucune référence
  * (l'ancien seed est supprimé). Lecture ANONYME (B6).
  *
+ * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
+ * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 176 points ; fixture transformée par
+ * docs/wip/passe-lycee/generer-migration.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -163,14 +167,14 @@ describe('Seed des points de Maths expertes', () => {
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (153 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (176 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(153);
+		expect(fixture.points).toHaveLength(176);
 		expect(fixture.points.every((p) => p.grade === 'T_EXP')).toBe(true);
 		expect(fixture.references).toEqual([]);
 	});
 
-	it('les 153 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 176 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -185,7 +189,7 @@ describe('Seed des points de Maths expertes', () => {
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(153);
+		expect(pointRows).toHaveLength(176);
 	});
 
 	it('aucune référence d’automatismes au grade T_EXP (A1 = non)', () => {
@@ -203,11 +207,11 @@ describe('Seed des points de Maths expertes', () => {
 		const problemes = pointRows.filter(
 			(r) => r.exigence === 'approfondissement' && r.kind !== 'algorithme'
 		);
-		expect(problemes).toHaveLength(28);
+		expect(problemes).toHaveLength(36); // 28, coupés par la passe lycée
 		expect(problemes.every((r) => r.kind === 'savoir_faire')).toBe(true);
 		// Démonstrations (sans « possibles ») : attendues.
 		const demos = pointRows.filter((r) => r.kind === 'demonstration');
-		expect(demos).toHaveLength(16);
+		expect(demos).toHaveLength(18);
 		expect(demos.every((r) => r.exigence === 'attendu')).toBe(true);
 	});
 });

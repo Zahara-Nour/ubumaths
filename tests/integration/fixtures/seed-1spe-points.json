@@ -18,7 +18,20 @@
 			"code": "1SPE-202",
 			"grade": "1_SPE",
 			"display_order": 2,
-			"name": "Identifier le statut des égalités (identité, équation) et celui des lettres utilisées (variable, inconnue, paramètre)",
+			"name": "Identifier le statut des égalités (identité, équation)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Vocabulaire ensembliste et logique",
+			"branche": "Logique",
+			"notion": "Proposition mathématique",
+			"sous_notion": "statut des lettres et des égalités"
+		},
+		{
+			"code": "1SPE-366",
+			"grade": "1_SPE",
+			"display_order": 3,
+			"name": "Identifier le statut des lettres utilisées (variable, inconnue, paramètre)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -30,7 +43,7 @@
 		{
 			"code": "1SPE-203",
 			"grade": "1_SPE",
-			"display_order": 3,
+			"display_order": 4,
 			"name": "Repérer les quantifications implicites dans certaines propositions, particulièrement dans les propositions conditionnelles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -43,7 +56,7 @@
 		{
 			"code": "1SPE-204",
 			"grade": "1_SPE",
-			"display_order": 4,
+			"display_order": 5,
 			"name": "Formuler la négation de propositions quantifiées",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -56,7 +69,7 @@
 		{
 			"code": "1SPE-205",
 			"grade": "1_SPE",
-			"display_order": 5,
+			"display_order": 6,
 			"name": "Produire un raisonnement par contraposée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -69,8 +82,21 @@
 		{
 			"code": "1SPE-206",
 			"grade": "1_SPE",
-			"display_order": 6,
-			"name": "Générer une liste en extension ou par ajouts successifs",
+			"display_order": 7,
+			"name": "Générer une liste en extension",
+			"kind": "algorithme",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algorithmique et programmation > Notion de liste",
+			"branche": "Algorithmique",
+			"notion": "Listes",
+			"sous_notion": "créer une liste"
+		},
+		{
+			"code": "1SPE-367",
+			"grade": "1_SPE",
+			"display_order": 8,
+			"name": "Générer une liste par ajouts successifs",
 			"kind": "algorithme",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -82,7 +108,7 @@
 		{
 			"code": "1SPE-207",
 			"grade": "1_SPE",
-			"display_order": 7,
+			"display_order": 9,
 			"name": "Générer une liste en compréhension",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -95,7 +121,7 @@
 		{
 			"code": "1SPE-208",
 			"grade": "1_SPE",
-			"display_order": 8,
+			"display_order": 10,
 			"name": "Manipuler des éléments d'une liste (ajouter, supprimer, etc.) et leurs indices",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -108,7 +134,7 @@
 		{
 			"code": "1SPE-209",
 			"grade": "1_SPE",
-			"display_order": 9,
+			"display_order": 11,
 			"name": "Parcourir une liste",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -121,7 +147,7 @@
 		{
 			"code": "1SPE-210",
 			"grade": "1_SPE",
-			"display_order": 10,
+			"display_order": 12,
 			"name": "Itérer sur les éléments d'une liste",
 			"kind": "algorithme",
 			"exigence": "attendu",
@@ -132,10 +158,88 @@
 			"sous_notion": "parcourir une liste"
 		},
 		{
+			"code": "1SPE-432",
+			"grade": "1_SPE",
+			"display_order": 13,
+			"name": "Déterminer graphiquement le signe d'une fonction",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Fonctions et représentations",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "signe"
+		},
+		{
+			"code": "1SPE-433",
+			"grade": "1_SPE",
+			"display_order": 14,
+			"name": "Tracer une droite donnée par un point et son coefficient directeur",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Fonctions et représentations",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": "équations de droites"
+		},
+		{
+			"code": "1SPE-434",
+			"grade": "1_SPE",
+			"display_order": 15,
+			"name": "Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Fonctions et représentations",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "coefficient directeur et ordonnée à l'origine"
+		},
+		{
 			"code": "1SPE-211",
 			"grade": "1_SPE",
-			"display_order": 11,
-			"name": "Exemples de modes de génération d'une suite : explicite $u_n = f(n)$, par une relation de récurrence $u_{n+1} = f(u_n)$, par un algorithme, par des motifs géométriques",
+			"display_order": 16,
+			"name": "Exemples de modes de génération d'une suite : explicite $u_n = f(n)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1SPE-368",
+			"grade": "1_SPE",
+			"display_order": 17,
+			"name": "Exemples de modes de génération d'une suite : par une relation de récurrence $u_{n+1} = f(u_n)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1SPE-369",
+			"grade": "1_SPE",
+			"display_order": 18,
+			"name": "Exemples de modes de génération d'une suite : par un algorithme",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-370",
+			"grade": "1_SPE",
+			"display_order": 19,
+			"name": "Exemples de modes de génération d'une suite : par des motifs géométriques",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -147,7 +251,7 @@
 		{
 			"code": "1SPE-212",
 			"grade": "1_SPE",
-			"display_order": 12,
+			"display_order": 20,
 			"name": "Notations : $u(n)$, $u_n$, $(u(n))$, $(u_n)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -160,8 +264,34 @@
 		{
 			"code": "1SPE-213",
 			"grade": "1_SPE",
-			"display_order": 13,
-			"name": "Suites arithmétiques : exemples, définition, calcul du terme général",
+			"display_order": 21,
+			"name": "Suites arithmétiques : exemples, définition",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "définition"
+		},
+		{
+			"code": "1SPE-371",
+			"grade": "1_SPE",
+			"display_order": 22,
+			"name": "Suites arithmétiques : calcul du terme général",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": "terme général"
+		},
+		{
+			"code": "1SPE-214",
+			"grade": "1_SPE",
+			"display_order": 23,
+			"name": "Suites arithmétiques : lien avec l'étude d'évolutions successives à accroissements constants",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -171,10 +301,10 @@
 			"sous_notion": null
 		},
 		{
-			"code": "1SPE-214",
+			"code": "1SPE-372",
 			"grade": "1_SPE",
-			"display_order": 14,
-			"name": "Suites arithmétiques : lien avec l'étude d'évolutions successives à accroissements constants ; lien avec les fonctions affines",
+			"display_order": 24,
+			"name": "Suites arithmétiques : lien avec les fonctions affines",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -186,7 +316,7 @@
 		{
 			"code": "1SPE-215",
 			"grade": "1_SPE",
-			"display_order": 15,
+			"display_order": 25,
 			"name": "Suites arithmétiques : calcul de $1 + 2 + \\cdots + n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -199,21 +329,34 @@
 		{
 			"code": "1SPE-216",
 			"grade": "1_SPE",
-			"display_order": 16,
-			"name": "Suites géométriques : exemples, définition, calcul du terme général",
+			"display_order": 26,
+			"name": "Suites géométriques : exemples, définition",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Algèbre > Suites numériques, modèles discrets",
 			"branche": "Suites",
 			"notion": "Suites géométriques",
-			"sous_notion": null
+			"sous_notion": "définition"
+		},
+		{
+			"code": "1SPE-373",
+			"grade": "1_SPE",
+			"display_order": 27,
+			"name": "Suites géométriques : calcul du terme général",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": "terme général"
 		},
 		{
 			"code": "1SPE-217",
 			"grade": "1_SPE",
-			"display_order": 17,
-			"name": "Suites géométriques : lien avec l'étude d'évolutions successives à taux constant ; lien avec la fonction exponentielle",
+			"display_order": 28,
+			"name": "Suites géométriques : lien avec l'étude d'évolutions successives à taux constant",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -223,9 +366,22 @@
 			"sous_notion": null
 		},
 		{
+			"code": "1SPE-374",
+			"grade": "1_SPE",
+			"display_order": 29,
+			"name": "Suites géométriques : lien avec la fonction exponentielle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "croissance et décroissance exponentielles"
+		},
+		{
 			"code": "1SPE-218",
 			"grade": "1_SPE",
-			"display_order": 18,
+			"display_order": 30,
 			"name": "Suites géométriques : calcul de $1 + q + \\cdots + q^n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -238,7 +394,7 @@
 		{
 			"code": "1SPE-219",
 			"grade": "1_SPE",
-			"display_order": 19,
+			"display_order": 31,
 			"name": "Sens de variation d'une suite",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -251,7 +407,7 @@
 		{
 			"code": "1SPE-220",
 			"grade": "1_SPE",
-			"display_order": 20,
+			"display_order": 32,
 			"name": "Sur des exemples, introduction intuitive de la notion de limite, finie ou infinie, ou de l'absence de limite d'une suite",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -264,8 +420,8 @@
 		{
 			"code": "1SPE-221",
 			"grade": "1_SPE",
-			"display_order": 21,
-			"name": "Passer d'un registre à l'autre pour une suite : de l'énoncé en langage naturel à l'expression algébrique, de l'expression algébrique à la représentation graphique (nuage de points) et inversement",
+			"display_order": 33,
+			"name": "Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -275,10 +431,49 @@
 			"sous_notion": "représentation graphique"
 		},
 		{
+			"code": "1SPE-375",
+			"grade": "1_SPE",
+			"display_order": 34,
+			"name": "Passer d'un registre à l'autre pour une suite : de l'énoncé en langage naturel à l'expression algébrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1SPE-435",
+			"grade": "1_SPE",
+			"display_order": 35,
+			"name": "Proposer, modéliser une situation permettant de générer une suite de nombres",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
+		},
+		{
 			"code": "1SPE-222",
 			"grade": "1_SPE",
-			"display_order": 22,
-			"name": "Déterminer une relation explicite ou une relation de récurrence pour une suite définie par un motif géométrique, par une question de dénombrement",
+			"display_order": 36,
+			"name": "Déterminer une relation explicite pour une suite définie par un motif géométrique, par une question de dénombrement",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1SPE-376",
+			"grade": "1_SPE",
+			"display_order": 37,
+			"name": "Déterminer une relation de récurrence pour une suite définie par un motif géométrique, par une question de dénombrement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -290,8 +485,34 @@
 		{
 			"code": "1SPE-223",
 			"grade": "1_SPE",
-			"display_order": 23,
-			"name": "Calculer des termes d'une suite définie explicitement, par récurrence ou par un algorithme",
+			"display_order": 38,
+			"name": "Calculer des termes d'une suite définie explicitement",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1SPE-377",
+			"grade": "1_SPE",
+			"display_order": 39,
+			"name": "Calculer des termes d'une suite définie par récurrence",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "explicite ou par récurrence"
+		},
+		{
+			"code": "1SPE-378",
+			"grade": "1_SPE",
+			"display_order": 40,
+			"name": "Calculer des termes d'une suite définie par un algorithme",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -303,7 +524,7 @@
 		{
 			"code": "1SPE-224",
 			"grade": "1_SPE",
-			"display_order": 24,
+			"display_order": 41,
 			"name": "Pour une suite arithmétique, calculer le terme général",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -316,7 +537,7 @@
 		{
 			"code": "1SPE-225",
 			"grade": "1_SPE",
-			"display_order": 25,
+			"display_order": 42,
 			"name": "Pour une suite géométrique, calculer le terme général",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -329,7 +550,7 @@
 		{
 			"code": "1SPE-226",
 			"grade": "1_SPE",
-			"display_order": 26,
+			"display_order": 43,
 			"name": "Pour une suite arithmétique, calculer la somme de termes consécutifs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -342,7 +563,7 @@
 		{
 			"code": "1SPE-227",
 			"grade": "1_SPE",
-			"display_order": 27,
+			"display_order": 44,
 			"name": "Pour une suite géométrique, calculer la somme de termes consécutifs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -355,7 +576,7 @@
 		{
 			"code": "1SPE-228",
 			"grade": "1_SPE",
-			"display_order": 28,
+			"display_order": 45,
 			"name": "Pour une suite arithmétique, déterminer le sens de variation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -368,7 +589,7 @@
 		{
 			"code": "1SPE-229",
 			"grade": "1_SPE",
-			"display_order": 29,
+			"display_order": 46,
 			"name": "Pour une suite géométrique, déterminer le sens de variation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -381,8 +602,21 @@
 		{
 			"code": "1SPE-230",
 			"grade": "1_SPE",
-			"display_order": 30,
-			"name": "Modéliser un phénomène discret à croissance linéaire par une suite arithmétique, un phénomène discret à croissance exponentielle par une suite géométrique",
+			"display_order": 47,
+			"name": "Modéliser un phénomène discret à croissance linéaire par une suite arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Modèles d'évolution",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-379",
+			"grade": "1_SPE",
+			"display_order": 48,
+			"name": "Modéliser un phénomène discret à croissance exponentielle par une suite géométrique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -394,7 +628,7 @@
 		{
 			"code": "1SPE-231",
 			"grade": "1_SPE",
-			"display_order": 31,
+			"display_order": 49,
 			"name": "Conjecturer, dans des cas simples, la limite éventuelle d'une suite",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -407,7 +641,7 @@
 		{
 			"code": "1SPE-232",
 			"grade": "1_SPE",
-			"display_order": 32,
+			"display_order": 50,
 			"name": "Calcul du terme général d'une suite arithmétique",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -420,7 +654,7 @@
 		{
 			"code": "1SPE-233",
 			"grade": "1_SPE",
-			"display_order": 33,
+			"display_order": 51,
 			"name": "Calcul du terme général d'une suite géométrique",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -433,7 +667,7 @@
 		{
 			"code": "1SPE-234",
 			"grade": "1_SPE",
-			"display_order": 34,
+			"display_order": 52,
 			"name": "Calcul de $1 + 2 + \\cdots + n$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -446,7 +680,7 @@
 		{
 			"code": "1SPE-235",
 			"grade": "1_SPE",
-			"display_order": 35,
+			"display_order": 53,
 			"name": "Calcul de $1 + q + \\cdots + q^n$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -459,8 +693,21 @@
 		{
 			"code": "1SPE-236",
 			"grade": "1_SPE",
-			"display_order": 36,
-			"name": "Calcul de termes d'une suite, de sommes de termes",
+			"display_order": 54,
+			"name": "Calcul de termes d'une suite",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-380",
+			"grade": "1_SPE",
+			"display_order": 55,
+			"name": "Calcul de sommes de termes",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -472,7 +719,7 @@
 		{
 			"code": "1SPE-237",
 			"grade": "1_SPE",
-			"display_order": 37,
+			"display_order": 56,
 			"name": "Calcul de seuil",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -485,7 +732,7 @@
 		{
 			"code": "1SPE-238",
 			"grade": "1_SPE",
-			"display_order": 38,
+			"display_order": 57,
 			"name": "Calcul de factorielle",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -498,7 +745,7 @@
 		{
 			"code": "1SPE-239",
 			"grade": "1_SPE",
-			"display_order": 39,
+			"display_order": 58,
 			"name": "Liste des premiers termes d'une suite : suites de Syracuse, suite de Fibonacci",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -511,7 +758,7 @@
 		{
 			"code": "1SPE-240",
 			"grade": "1_SPE",
-			"display_order": 40,
+			"display_order": 59,
 			"name": "Tour de Hanoï",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -524,8 +771,21 @@
 		{
 			"code": "1SPE-241",
 			"grade": "1_SPE",
-			"display_order": 41,
-			"name": "Somme des $n$ premiers carrés, des $n$ premiers cubes",
+			"display_order": 60,
+			"name": "Somme des $n$ premiers carrés",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Suites numériques, modèles discrets",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-381",
+			"grade": "1_SPE",
+			"display_order": 61,
+			"name": "Somme des $n$ premiers cubes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -537,7 +797,7 @@
 		{
 			"code": "1SPE-242",
 			"grade": "1_SPE",
-			"display_order": 42,
+			"display_order": 62,
 			"name": "Remboursement d'un emprunt par annuités constantes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -550,7 +810,7 @@
 		{
 			"code": "1SPE-243",
 			"grade": "1_SPE",
-			"display_order": 43,
+			"display_order": 63,
 			"name": "Forme développée d'une fonction polynôme du second degré ; coefficients",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -563,8 +823,8 @@
 		{
 			"code": "1SPE-244",
 			"grade": "1_SPE",
-			"display_order": 44,
-			"name": "Fonction polynôme du second degré donnée sous forme factorisée ; racines, signe",
+			"display_order": 64,
+			"name": "Fonction polynôme du second degré donnée sous forme factorisée ; racines",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -574,10 +834,36 @@
 			"sous_notion": null
 		},
 		{
+			"code": "1SPE-382",
+			"grade": "1_SPE",
+			"display_order": 65,
+			"name": "Fonction polynôme du second degré donnée sous forme factorisée ; signe",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "signe"
+		},
+		{
 			"code": "1SPE-245",
 			"grade": "1_SPE",
-			"display_order": 45,
-			"name": "Expression de la somme et du produit des racines",
+			"display_order": 66,
+			"name": "Expression de la somme des racines",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "somme et produit des racines"
+		},
+		{
+			"code": "1SPE-383",
+			"grade": "1_SPE",
+			"display_order": 67,
+			"name": "Expression du produit des racines",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -589,7 +875,7 @@
 		{
 			"code": "1SPE-246",
 			"grade": "1_SPE",
-			"display_order": 46,
+			"display_order": 68,
 			"name": "Forme canonique d'une fonction polynôme du second degré",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -602,8 +888,21 @@
 		{
 			"code": "1SPE-247",
 			"grade": "1_SPE",
-			"display_order": 47,
-			"name": "Calcul des coordonnées du sommet d'une parabole ; axe de symétrie",
+			"display_order": 69,
+			"name": "Calcul des coordonnées du sommet d'une parabole",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1SPE-384",
+			"grade": "1_SPE",
+			"display_order": 70,
+			"name": "Axe de symétrie d'une parabole",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -615,8 +914,34 @@
 		{
 			"code": "1SPE-248",
 			"grade": "1_SPE",
-			"display_order": 48,
-			"name": "Discriminant ; factorisation éventuelle ; résolution d'une équation du second degré",
+			"display_order": 71,
+			"name": "Discriminant d'une fonction polynôme du second degré",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+			"branche": "Algèbre",
+			"notion": "Équations : second degré",
+			"sous_notion": "discriminant"
+		},
+		{
+			"code": "1SPE-385",
+			"grade": "1_SPE",
+			"display_order": 72,
+			"name": "Factorisation éventuelle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "formes"
+		},
+		{
+			"code": "1SPE-386",
+			"grade": "1_SPE",
+			"display_order": 73,
+			"name": "Résolution d'une équation du second degré",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -628,7 +953,7 @@
 		{
 			"code": "1SPE-249",
 			"grade": "1_SPE",
-			"display_order": 49,
+			"display_order": 74,
 			"name": "Signe d'une fonction polynôme du second degré",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -641,7 +966,7 @@
 		{
 			"code": "1SPE-250",
 			"grade": "1_SPE",
-			"display_order": 50,
+			"display_order": 75,
 			"name": "Résolution d'une inéquation du second degré",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -654,7 +979,7 @@
 		{
 			"code": "1SPE-251",
 			"grade": "1_SPE",
-			"display_order": 51,
+			"display_order": 76,
 			"name": "Étudier le signe d'une fonction polynôme du second degré donnée sous forme factorisée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -667,7 +992,7 @@
 		{
 			"code": "1SPE-252",
 			"grade": "1_SPE",
-			"display_order": 52,
+			"display_order": 77,
 			"name": "Déterminer les fonctions polynômes du second degré s'annulant en deux nombres réels distincts",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -680,7 +1005,7 @@
 		{
 			"code": "1SPE-253",
 			"grade": "1_SPE",
-			"display_order": 53,
+			"display_order": 78,
 			"name": "Factoriser une fonction polynôme du second degré, en diversifiant les stratégies : racine évidente, détection des racines par leur somme et leur produit, identité remarquable, application des formules générales",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -693,7 +1018,7 @@
 		{
 			"code": "1SPE-254",
 			"grade": "1_SPE",
-			"display_order": 54,
+			"display_order": 79,
 			"name": "Choisir une forme adaptée (développée réduite, canonique, factorisée) d'une fonction polynôme du second degré dans le cadre de la résolution d'un problème (équation, inéquation, optimisation, variations)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -706,7 +1031,7 @@
 		{
 			"code": "1SPE-255",
 			"grade": "1_SPE",
-			"display_order": 55,
+			"display_order": 80,
 			"name": "Résolution de l'équation du second degré",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -719,8 +1044,21 @@
 		{
 			"code": "1SPE-256",
 			"grade": "1_SPE",
-			"display_order": 56,
-			"name": "Factorisation d'un polynôme du troisième degré admettant une racine et résolution de l'équation associée",
+			"display_order": 81,
+			"name": "Factorisation d'un polynôme du troisième degré admettant une racine",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+			"branche": "Nombres complexes",
+			"notion": "Équations polynomiales",
+			"sous_notion": "degré 3 et factorisation"
+		},
+		{
+			"code": "1SPE-387",
+			"grade": "1_SPE",
+			"display_order": 82,
+			"name": "Résolution de l'équation associée à un polynôme du troisième degré admettant une racine",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -732,7 +1070,7 @@
 		{
 			"code": "1SPE-257",
 			"grade": "1_SPE",
-			"display_order": 57,
+			"display_order": 83,
 			"name": "Factorisation de $x^n - 1$ par $x - 1$, de $x^n - a^n$ par $x - a$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -745,7 +1083,7 @@
 		{
 			"code": "1SPE-258",
 			"grade": "1_SPE",
-			"display_order": 58,
+			"display_order": 84,
 			"name": "Déterminer deux nombres réels connaissant leur somme $s$ et leur produit $p$ comme racines de la fonction polynôme $x \\mapsto x^2 - sx + p$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -758,8 +1096,21 @@
 		{
 			"code": "1SPE-259",
 			"grade": "1_SPE",
-			"display_order": 59,
-			"name": "Taux de variation ; sécantes à la courbe représentative d'une fonction en un point donné",
+			"display_order": 85,
+			"name": "Taux de variation",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "taux de variation"
+		},
+		{
+			"code": "1SPE-388",
+			"grade": "1_SPE",
+			"display_order": 86,
+			"name": "Sécantes à la courbe représentative d'une fonction en un point donné",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -771,7 +1122,7 @@
 		{
 			"code": "1SPE-260",
 			"grade": "1_SPE",
-			"display_order": 60,
+			"display_order": 87,
 			"name": "Nombre dérivé d'une fonction en un point, comme limite du taux de variation ; notation $f'(a)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -784,8 +1135,21 @@
 		{
 			"code": "1SPE-261",
 			"grade": "1_SPE",
-			"display_order": 61,
-			"name": "Tangente à la courbe représentative d'une fonction en un point, comme « limite des sécantes » ; pente ; équation $y = f(a) + f'(a)(x - a)$",
+			"display_order": 88,
+			"name": "Tangente à la courbe représentative d'une fonction en un point, comme « limite des sécantes » ; pente",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "tangente"
+		},
+		{
+			"code": "1SPE-389",
+			"grade": "1_SPE",
+			"display_order": 89,
+			"name": "Équation : la tangente à la courbe représentative de $f$ au point d'abscisse $a$ est la droite d'équation $y = f(a) + f'(a)(x - a)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -797,8 +1161,21 @@
 		{
 			"code": "1SPE-262",
 			"grade": "1_SPE",
-			"display_order": 62,
-			"name": "Approximation linéaire : fonction affine tangente $x \\mapsto f(a) + f'(a)(x - a)$ et approximation de $f(a + h)$ par $f(a) + f'(a)h$",
+			"display_order": 90,
+			"name": "Approximation linéaire : fonction affine tangente $x \\mapsto f(a) + f'(a)(x - a)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "approximation affine"
+		},
+		{
+			"code": "1SPE-390",
+			"grade": "1_SPE",
+			"display_order": 91,
+			"name": "Approximation linéaire : approximation de $f(a + h)$ par $f(a) + f'(a)h$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -810,7 +1187,7 @@
 		{
 			"code": "1SPE-263",
 			"grade": "1_SPE",
-			"display_order": 63,
+			"display_order": 92,
 			"name": "Fonction dérivable sur un intervalle ; fonction dérivée",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -823,8 +1200,47 @@
 		{
 			"code": "1SPE-264",
 			"grade": "1_SPE",
-			"display_order": 64,
-			"name": "Fonction dérivée des fonctions carré, cube, inverse, racine carrée",
+			"display_order": 93,
+			"name": "Fonction dérivée de la fonction carré",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "1SPE-391",
+			"grade": "1_SPE",
+			"display_order": 94,
+			"name": "Fonction dérivée de la fonction cube",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "1SPE-392",
+			"grade": "1_SPE",
+			"display_order": 95,
+			"name": "Fonction dérivée de la fonction inverse",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "1SPE-393",
+			"grade": "1_SPE",
+			"display_order": 96,
+			"name": "Fonction dérivée de la fonction racine carrée",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -836,8 +1252,47 @@
 		{
 			"code": "1SPE-265",
 			"grade": "1_SPE",
-			"display_order": 65,
-			"name": "Opérations sur les fonctions dérivables : somme, produit, inverse, quotient",
+			"display_order": 97,
+			"name": "Opérations sur les fonctions dérivables : somme",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "opérations sur les dérivées"
+		},
+		{
+			"code": "1SPE-394",
+			"grade": "1_SPE",
+			"display_order": 98,
+			"name": "Opérations sur les fonctions dérivables : produit",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "opérations sur les dérivées"
+		},
+		{
+			"code": "1SPE-395",
+			"grade": "1_SPE",
+			"display_order": 99,
+			"name": "Opérations sur les fonctions dérivables : inverse",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "opérations sur les dérivées"
+		},
+		{
+			"code": "1SPE-396",
+			"grade": "1_SPE",
+			"display_order": 100,
+			"name": "Opérations sur les fonctions dérivables : quotient",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -849,7 +1304,7 @@
 		{
 			"code": "1SPE-266",
 			"grade": "1_SPE",
-			"display_order": 66,
+			"display_order": 101,
 			"name": "Pour $n$ dans $\\mathbb{Z}$, fonction dérivée de la fonction $x \\mapsto x^n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -862,7 +1317,7 @@
 		{
 			"code": "1SPE-267",
 			"grade": "1_SPE",
-			"display_order": 67,
+			"display_order": 102,
 			"name": "Fonction valeur absolue : étude de la dérivabilité en 0",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -875,8 +1330,21 @@
 		{
 			"code": "1SPE-268",
 			"grade": "1_SPE",
-			"display_order": 68,
-			"name": "Calculer un taux de variation, la pente d'une sécante",
+			"display_order": 103,
+			"name": "Calculer un taux de variation",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "taux de variation"
+		},
+		{
+			"code": "1SPE-397",
+			"grade": "1_SPE",
+			"display_order": 104,
+			"name": "Calculer la pente d'une sécante",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -888,7 +1356,7 @@
 		{
 			"code": "1SPE-269",
 			"grade": "1_SPE",
-			"display_order": 69,
+			"display_order": 105,
 			"name": "Interpréter le nombre dérivé en contexte : pente d'une tangente, vitesse instantanée, cout marginal, etc.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -901,7 +1369,7 @@
 		{
 			"code": "1SPE-270",
 			"grade": "1_SPE",
-			"display_order": 70,
+			"display_order": 106,
 			"name": "Déterminer graphiquement un nombre dérivé par la pente de la tangente",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -914,7 +1382,7 @@
 		{
 			"code": "1SPE-271",
 			"grade": "1_SPE",
-			"display_order": 71,
+			"display_order": 107,
 			"name": "Construire la tangente en un point à une courbe représentative connaissant le nombre dérivé",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -927,7 +1395,7 @@
 		{
 			"code": "1SPE-272",
 			"grade": "1_SPE",
-			"display_order": 72,
+			"display_order": 108,
 			"name": "Déterminer l'équation de la tangente en un point à la courbe représentative d'une fonction",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -940,7 +1408,7 @@
 		{
 			"code": "1SPE-273",
 			"grade": "1_SPE",
-			"display_order": 73,
+			"display_order": 109,
 			"name": "Calculer une valeur approchée de $f(a + h)$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -953,7 +1421,7 @@
 		{
 			"code": "1SPE-274",
 			"grade": "1_SPE",
-			"display_order": 74,
+			"display_order": 110,
 			"name": "Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -966,7 +1434,7 @@
 		{
 			"code": "1SPE-275",
 			"grade": "1_SPE",
-			"display_order": 75,
+			"display_order": 111,
 			"name": "Équation de la tangente en un point à une courbe représentative",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -979,7 +1447,7 @@
 		{
 			"code": "1SPE-276",
 			"grade": "1_SPE",
-			"display_order": 76,
+			"display_order": 112,
 			"name": "La fonction racine carrée n'est pas dérivable en 0",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -992,8 +1460,21 @@
 		{
 			"code": "1SPE-277",
 			"grade": "1_SPE",
-			"display_order": 77,
-			"name": "Fonction dérivée de la fonction carrée, de la fonction inverse",
+			"display_order": 113,
+			"name": "Fonction dérivée de la fonction carrée",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Dérivation",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "fonctions dérivées"
+		},
+		{
+			"code": "1SPE-398",
+			"grade": "1_SPE",
+			"display_order": 114,
+			"name": "Fonction dérivée de la fonction inverse",
 			"kind": "demonstration",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1005,7 +1486,7 @@
 		{
 			"code": "1SPE-278",
 			"grade": "1_SPE",
-			"display_order": 78,
+			"display_order": 115,
 			"name": "Fonction dérivée d'un produit",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1018,7 +1499,7 @@
 		{
 			"code": "1SPE-279",
 			"grade": "1_SPE",
-			"display_order": 79,
+			"display_order": 116,
 			"name": "Écrire la liste des coefficients directeurs des sécantes pour un pas donné",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1031,8 +1512,21 @@
 		{
 			"code": "1SPE-280",
 			"grade": "1_SPE",
-			"display_order": 80,
-			"name": "Représentation algébrique et graphique de fonctions paires, impaires ; traduction géométrique",
+			"display_order": 117,
+			"name": "Représentation algébrique de fonctions paires, impaires",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "parité"
+		},
+		{
+			"code": "1SPE-399",
+			"grade": "1_SPE",
+			"display_order": 118,
+			"name": "Représentation graphique de fonctions paires, impaires ; traduction géométrique",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1044,8 +1538,21 @@
 		{
 			"code": "1SPE-281",
 			"grade": "1_SPE",
-			"display_order": 81,
-			"name": "Lien entre le sens de variation d'une fonction dérivable sur un intervalle et le signe de sa fonction dérivée ; caractérisation des fonctions constantes",
+			"display_order": 119,
+			"name": "Lien entre le sens de variation d'une fonction dérivable sur un intervalle et le signe de sa fonction dérivée",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "variations et extremums"
+		},
+		{
+			"code": "1SPE-400",
+			"grade": "1_SPE",
+			"display_order": 120,
+			"name": "Caractérisation des fonctions constantes",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1057,7 +1564,7 @@
 		{
 			"code": "1SPE-282",
 			"grade": "1_SPE",
-			"display_order": 82,
+			"display_order": 121,
 			"name": "Nombre dérivé en un extrémum, tangente à la courbe représentative",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1070,8 +1577,21 @@
 		{
 			"code": "1SPE-283",
 			"grade": "1_SPE",
-			"display_order": 83,
-			"name": "Étudier les variations d'une fonction ; déterminer les extrémums",
+			"display_order": 122,
+			"name": "Étudier les variations d'une fonction",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+			"branche": "Fonctions",
+			"notion": "Dérivation",
+			"sous_notion": "variations et extremums"
+		},
+		{
+			"code": "1SPE-401",
+			"grade": "1_SPE",
+			"display_order": 123,
+			"name": "Déterminer les extrémums",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1083,7 +1603,7 @@
 		{
 			"code": "1SPE-284",
 			"grade": "1_SPE",
-			"display_order": 84,
+			"display_order": 124,
 			"name": "Résoudre un problème d'optimisation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1096,7 +1616,7 @@
 		{
 			"code": "1SPE-285",
 			"grade": "1_SPE",
-			"display_order": 85,
+			"display_order": 125,
 			"name": "Exploiter les variations d'une fonction pour établir une inégalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1109,7 +1629,7 @@
 		{
 			"code": "1SPE-286",
 			"grade": "1_SPE",
-			"display_order": 86,
+			"display_order": 126,
 			"name": "Étudier la position relative de deux courbes représentatives",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1122,8 +1642,8 @@
 		{
 			"code": "1SPE-287",
 			"grade": "1_SPE",
-			"display_order": 87,
-			"name": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : variations, extrémum, allure selon le signe du coefficient de $x^2$",
+			"display_order": 127,
+			"name": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : variations",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1133,9 +1653,35 @@
 			"sous_notion": null
 		},
 		{
+			"code": "1SPE-402",
+			"grade": "1_SPE",
+			"display_order": 128,
+			"name": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : extrémum",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-403",
+			"grade": "1_SPE",
+			"display_order": 129,
+			"name": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : allure selon le signe du coefficient de $x^2$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
 			"code": "1SPE-288",
 			"grade": "1_SPE",
-			"display_order": 88,
+			"display_order": 130,
 			"name": "Méthode de Newton, en se limitant à des cas favorables",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1148,7 +1694,7 @@
 		{
 			"code": "1SPE-289",
 			"grade": "1_SPE",
-			"display_order": 89,
+			"display_order": 131,
 			"name": "Définition de la fonction exponentielle comme unique fonction dérivable sur $\\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$ (existence et unicité admises) ; notation $\\exp(x)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1161,8 +1707,21 @@
 		{
 			"code": "1SPE-290",
 			"grade": "1_SPE",
-			"display_order": 90,
-			"name": "Pour tous réels $x$ et $y$, $\\exp(x + y) = \\exp(x)\\exp(y)$ et $\\exp(x)\\exp(-x) = 1$",
+			"display_order": 132,
+			"name": "Pour tous réels $x$ et $y$, $\\exp(x + y) = \\exp(x)\\exp(y)$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction exponentielle",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "propriétés algébriques"
+		},
+		{
+			"code": "1SPE-404",
+			"grade": "1_SPE",
+			"display_order": 133,
+			"name": "$\\exp(x)\\exp(-x) = 1$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1174,7 +1733,7 @@
 		{
 			"code": "1SPE-291",
 			"grade": "1_SPE",
-			"display_order": 91,
+			"display_order": 134,
 			"name": "Nombre $e$ ; notation $e^x$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1187,8 +1746,8 @@
 		{
 			"code": "1SPE-292",
 			"grade": "1_SPE",
-			"display_order": 92,
-			"name": "Signe, sens de variation et courbe représentative de la fonction exponentielle",
+			"display_order": 135,
+			"name": "Signe de la fonction exponentielle",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1198,9 +1757,35 @@
 			"sous_notion": null
 		},
 		{
+			"code": "1SPE-405",
+			"grade": "1_SPE",
+			"display_order": 136,
+			"name": "Sens de variation de la fonction exponentielle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction exponentielle",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "variations"
+		},
+		{
+			"code": "1SPE-406",
+			"grade": "1_SPE",
+			"display_order": 137,
+			"name": "Courbe représentative de la fonction exponentielle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction exponentielle",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "courbe"
+		},
+		{
 			"code": "1SPE-293",
 			"grade": "1_SPE",
-			"display_order": 93,
+			"display_order": 138,
 			"name": "Lien avec les suites géométriques",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1213,7 +1798,7 @@
 		{
 			"code": "1SPE-294",
 			"grade": "1_SPE",
-			"display_order": 94,
+			"display_order": 139,
 			"name": "Transformer une expression en utilisant les propriétés algébriques de la fonction exponentielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1226,7 +1811,7 @@
 		{
 			"code": "1SPE-295",
 			"grade": "1_SPE",
-			"display_order": 95,
+			"display_order": 140,
 			"name": "Pour $a$ réel, dérivée de la fonction $t \\mapsto e^{at}$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1239,8 +1824,21 @@
 		{
 			"code": "1SPE-296",
 			"grade": "1_SPE",
-			"display_order": 96,
-			"name": "Pour une valeur numérique strictement positive de $k$, représenter graphiquement les fonctions $t \\mapsto e^{-kt}$ et $t \\mapsto e^{kt}$",
+			"display_order": 141,
+			"name": "Pour une valeur numérique strictement positive de $k$, représenter graphiquement la fonction $t \\mapsto e^{-kt}$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonction exponentielle",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "courbe"
+		},
+		{
+			"code": "1SPE-407",
+			"grade": "1_SPE",
+			"display_order": 142,
+			"name": "Pour une valeur numérique strictement positive de $k$, représenter graphiquement la fonction $t \\mapsto e^{kt}$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1252,7 +1850,7 @@
 		{
 			"code": "1SPE-297",
 			"grade": "1_SPE",
-			"display_order": 97,
+			"display_order": 143,
 			"name": "Modéliser une situation par une croissance, une décroissance exponentielle (évolution d'un capital à taux fixe, décroissance radioactive)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1265,7 +1863,7 @@
 		{
 			"code": "1SPE-298",
 			"grade": "1_SPE",
-			"display_order": 98,
+			"display_order": 144,
 			"name": "Construction de l'exponentielle par la méthode d'Euler",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1278,7 +1876,7 @@
 		{
 			"code": "1SPE-299",
 			"grade": "1_SPE",
-			"display_order": 99,
+			"display_order": 145,
 			"name": "Détermination d'une valeur approchée de $e$ à l'aide de la suite $\\left(\\left(1 + \\tfrac{1}{n}\\right)^n\\right)$",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1291,7 +1889,7 @@
 		{
 			"code": "1SPE-300",
 			"grade": "1_SPE",
-			"display_order": 100,
+			"display_order": 146,
 			"name": "Unicité d'une fonction $f$ dérivable sur $\\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1304,7 +1902,7 @@
 		{
 			"code": "1SPE-301",
 			"grade": "1_SPE",
-			"display_order": 101,
+			"display_order": 147,
 			"name": "Pour tous réels $x$ et $y$, $\\exp(x + y) = \\exp(x)\\exp(y)$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1317,7 +1915,7 @@
 		{
 			"code": "1SPE-302",
 			"grade": "1_SPE",
-			"display_order": 102,
+			"display_order": 148,
 			"name": "La fonction exponentielle est strictement positive et croissante",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1330,8 +1928,34 @@
 		{
 			"code": "1SPE-303",
 			"grade": "1_SPE",
-			"display_order": 103,
-			"name": "Cercle trigonométrique ; longueur d'arc ; radian",
+			"display_order": 149,
+			"name": "Cercle trigonométrique",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Trigonométrie",
+			"branche": "Fonctions",
+			"notion": "Fonctions trigonométriques",
+			"sous_notion": "cercle et radians"
+		},
+		{
+			"code": "1SPE-408",
+			"grade": "1_SPE",
+			"display_order": 150,
+			"name": "Longueur d'arc",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Trigonométrie",
+			"branche": "Fonctions",
+			"notion": "Fonctions trigonométriques",
+			"sous_notion": "cercle et radians"
+		},
+		{
+			"code": "1SPE-409",
+			"grade": "1_SPE",
+			"display_order": 151,
+			"name": "Radian",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1343,7 +1967,7 @@
 		{
 			"code": "1SPE-304",
 			"grade": "1_SPE",
-			"display_order": 104,
+			"display_order": 152,
 			"name": "Enroulement de la droite sur le cercle trigonométrique ; image d'un nombre réel",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1356,8 +1980,21 @@
 		{
 			"code": "1SPE-305",
 			"grade": "1_SPE",
-			"display_order": 105,
-			"name": "Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle ; valeurs remarquables",
+			"display_order": 153,
+			"name": "Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Trigonométrie",
+			"branche": "Fonctions",
+			"notion": "Fonctions trigonométriques",
+			"sous_notion": "cosinus et sinus d'un réel"
+		},
+		{
+			"code": "1SPE-410",
+			"grade": "1_SPE",
+			"display_order": 154,
+			"name": "Cosinus et sinus d'un nombre réel : valeurs remarquables",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1369,7 +2006,7 @@
 		{
 			"code": "1SPE-306",
 			"grade": "1_SPE",
-			"display_order": 106,
+			"display_order": 155,
 			"name": "Placer un point sur le cercle trigonométrique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1382,7 +2019,7 @@
 		{
 			"code": "1SPE-307",
 			"grade": "1_SPE",
-			"display_order": 107,
+			"display_order": 156,
 			"name": "Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de $x$, les cosinus et sinus d'angles associés à $x$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1395,8 +2032,21 @@
 		{
 			"code": "1SPE-308",
 			"grade": "1_SPE",
-			"display_order": 108,
-			"name": "Calcul de $\\cos\\left(\\tfrac{\\pi}{4}\\right)$, $\\sin\\left(\\tfrac{\\pi}{4}\\right)$, $\\cos\\left(\\tfrac{\\pi}{3}\\right)$, $\\sin\\left(\\tfrac{\\pi}{3}\\right)$",
+			"display_order": 157,
+			"name": "Calcul de $\\cos\\left(\\tfrac{\\pi}{4}\\right)$, $\\sin\\left(\\tfrac{\\pi}{4}\\right)$",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Trigonométrie",
+			"branche": "Fonctions",
+			"notion": "Fonctions trigonométriques",
+			"sous_notion": "cosinus et sinus d'un réel"
+		},
+		{
+			"code": "1SPE-411",
+			"grade": "1_SPE",
+			"display_order": 158,
+			"name": "Calcul de $\\cos\\left(\\tfrac{\\pi}{3}\\right)$, $\\sin\\left(\\tfrac{\\pi}{3}\\right)$",
 			"kind": "demonstration",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1408,7 +2058,7 @@
 		{
 			"code": "1SPE-309",
 			"grade": "1_SPE",
-			"display_order": 109,
+			"display_order": 159,
 			"name": "Approximation de $\\pi$ par la méthode d'Archimède",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1421,8 +2071,21 @@
 		{
 			"code": "1SPE-310",
 			"grade": "1_SPE",
-			"display_order": 110,
-			"name": "Produit scalaire à partir de la projection orthogonale et de la formule avec le cosinus",
+			"display_order": 160,
+			"name": "Produit scalaire à partir de la projection orthogonale",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sous_notion": "expressions du produit scalaire"
+		},
+		{
+			"code": "1SPE-412",
+			"grade": "1_SPE",
+			"display_order": 161,
+			"name": "Produit scalaire à partir de la formule avec le cosinus",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1434,7 +2097,7 @@
 		{
 			"code": "1SPE-311",
 			"grade": "1_SPE",
-			"display_order": 111,
+			"display_order": 162,
 			"name": "Caractérisation de l'orthogonalité",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1447,8 +2110,21 @@
 		{
 			"code": "1SPE-312",
 			"grade": "1_SPE",
-			"display_order": 112,
-			"name": "Bilinéarité, symétrie",
+			"display_order": 163,
+			"name": "Produit scalaire : bilinéarité",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sous_notion": "propriétés"
+		},
+		{
+			"code": "1SPE-413",
+			"grade": "1_SPE",
+			"display_order": 164,
+			"name": "Produit scalaire : symétrie",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1460,8 +2136,8 @@
 		{
 			"code": "1SPE-313",
 			"grade": "1_SPE",
-			"display_order": 113,
-			"name": "En base orthonormée, expression du produit scalaire et de la norme, critère d'orthogonalité",
+			"display_order": 165,
+			"name": "En base orthonormée, expression du produit scalaire",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1471,9 +2147,35 @@
 			"sous_notion": "expressions du produit scalaire"
 		},
 		{
+			"code": "1SPE-414",
+			"grade": "1_SPE",
+			"display_order": 166,
+			"name": "En base orthonormée, expression de la norme",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sous_notion": "expressions du produit scalaire"
+		},
+		{
+			"code": "1SPE-415",
+			"grade": "1_SPE",
+			"display_order": 167,
+			"name": "En base orthonormée, critère d'orthogonalité",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sous_notion": "propriétés"
+		},
+		{
 			"code": "1SPE-314",
 			"grade": "1_SPE",
-			"display_order": 114,
+			"display_order": 168,
 			"name": "Expression des coordonnées dans une base orthonormée en termes de produits scalaires avec les vecteurs de la base",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1486,8 +2188,21 @@
 		{
 			"code": "1SPE-315",
 			"grade": "1_SPE",
-			"display_order": 115,
-			"name": "Développement de $\\lVert\\vec{u} + \\vec{v}\\rVert^2$ et $\\lVert\\vec{u} - \\vec{v}\\rVert^2$",
+			"display_order": 169,
+			"name": "Développement de $\\lVert\\vec{u} + \\vec{v}\\rVert^2$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sous_notion": "angles et longueurs"
+		},
+		{
+			"code": "1SPE-416",
+			"grade": "1_SPE",
+			"display_order": 170,
+			"name": "Développement de $\\lVert\\vec{u} - \\vec{v}\\rVert^2$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1499,7 +2214,7 @@
 		{
 			"code": "1SPE-316",
 			"grade": "1_SPE",
-			"display_order": 116,
+			"display_order": 171,
 			"name": "Formule d'Al-Kashi",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1512,7 +2227,7 @@
 		{
 			"code": "1SPE-317",
 			"grade": "1_SPE",
-			"display_order": 117,
+			"display_order": 172,
 			"name": "Transformation de l'expression $\\vec{MA} \\cdot \\vec{MB}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1525,7 +2240,7 @@
 		{
 			"code": "1SPE-318",
 			"grade": "1_SPE",
-			"display_order": 118,
+			"display_order": 173,
 			"name": "Utiliser le produit scalaire pour démontrer une orthogonalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1538,7 +2253,7 @@
 		{
 			"code": "1SPE-319",
 			"grade": "1_SPE",
-			"display_order": 119,
+			"display_order": 174,
 			"name": "Utiliser le produit scalaire pour calculer un angle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1551,7 +2266,7 @@
 		{
 			"code": "1SPE-320",
 			"grade": "1_SPE",
-			"display_order": 120,
+			"display_order": 175,
 			"name": "Utiliser le produit scalaire pour calculer une longueur dans le plan",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1564,7 +2279,7 @@
 		{
 			"code": "1SPE-321",
 			"grade": "1_SPE",
-			"display_order": 121,
+			"display_order": 176,
 			"name": "En vue de la résolution d'un problème, calculer le produit scalaire de deux vecteurs en choisissant une méthode adaptée (projection orthogonale, coordonnées, normes et angle, normes)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1575,9 +2290,22 @@
 			"sous_notion": "expressions du produit scalaire"
 		},
 		{
+			"code": "1SPE-436",
+			"grade": "1_SPE",
+			"display_order": 177,
+			"name": "Utiliser le produit scalaire pour résoudre un problème géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+			"branche": "Géométrie",
+			"notion": "Produit scalaire",
+			"sous_notion": null
+		},
+		{
 			"code": "1SPE-322",
 			"grade": "1_SPE",
-			"display_order": 122,
+			"display_order": 178,
 			"name": "Formule d'Al-Kashi (démonstration avec le produit scalaire)",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1590,7 +2318,7 @@
 		{
 			"code": "1SPE-323",
 			"grade": "1_SPE",
-			"display_order": 123,
+			"display_order": 179,
 			"name": "Ensemble des points $M$ tels que $\\vec{MA} \\cdot \\vec{MB} = 0$ (démonstration avec le produit scalaire)",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1603,7 +2331,7 @@
 		{
 			"code": "1SPE-324",
 			"grade": "1_SPE",
-			"display_order": 124,
+			"display_order": 180,
 			"name": "Loi des sinus",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1616,7 +2344,7 @@
 		{
 			"code": "1SPE-325",
 			"grade": "1_SPE",
-			"display_order": 125,
+			"display_order": 181,
 			"name": "Concourance des hauteurs d'un triangle",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1629,7 +2357,7 @@
 		{
 			"code": "1SPE-326",
 			"grade": "1_SPE",
-			"display_order": 126,
+			"display_order": 182,
 			"name": "Les médianes d'un triangle concourent au centre de gravité",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1642,8 +2370,21 @@
 		{
 			"code": "1SPE-327",
 			"grade": "1_SPE",
-			"display_order": 127,
-			"name": "Vecteur normal à une droite ; le vecteur de coordonnées $(a\\,;\\,b)$ est normal à la droite d'équation $ax + by + c = 0$",
+			"display_order": 183,
+			"name": "Vecteur normal à une droite",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Géométrie repérée",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": "vecteur normal et équation de droite"
+		},
+		{
+			"code": "1SPE-417",
+			"grade": "1_SPE",
+			"display_order": 184,
+			"name": "Le vecteur de coordonnées $(a\\,;\\,b)$ est normal à la droite d'équation $ax + by + c = 0$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1655,7 +2396,7 @@
 		{
 			"code": "1SPE-328",
 			"grade": "1_SPE",
-			"display_order": 128,
+			"display_order": 185,
 			"name": "Projection orthogonale d'un point sur une droite",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1668,7 +2409,7 @@
 		{
 			"code": "1SPE-329",
 			"grade": "1_SPE",
-			"display_order": 129,
+			"display_order": 186,
 			"name": "Équation de cercle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1681,7 +2422,7 @@
 		{
 			"code": "1SPE-330",
 			"grade": "1_SPE",
-			"display_order": 130,
+			"display_order": 187,
 			"name": "Déterminer une équation cartésienne d'une droite connaissant un point et un vecteur normal",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1694,7 +2435,7 @@
 		{
 			"code": "1SPE-331",
 			"grade": "1_SPE",
-			"display_order": 131,
+			"display_order": 188,
 			"name": "Déterminer les coordonnées du projeté orthogonal d'un point sur une droite",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1707,8 +2448,21 @@
 		{
 			"code": "1SPE-332",
 			"grade": "1_SPE",
-			"display_order": 132,
-			"name": "Déterminer et utiliser l'équation d'un cercle donné par son centre et son rayon",
+			"display_order": 189,
+			"name": "Déterminer l'équation d'un cercle donné par son centre et son rayon",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Géométrie repérée",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": "équation de cercle"
+		},
+		{
+			"code": "1SPE-418",
+			"grade": "1_SPE",
+			"display_order": 190,
+			"name": "Utiliser l'équation d'un cercle donné par son centre et son rayon",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1720,8 +2474,8 @@
 		{
 			"code": "1SPE-333",
 			"grade": "1_SPE",
-			"display_order": 133,
-			"name": "Reconnaitre une équation de cercle, déterminer centre et rayon",
+			"display_order": 191,
+			"name": "Reconnaitre une équation de cercle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1731,9 +2485,35 @@
 			"sous_notion": "équation de cercle"
 		},
 		{
+			"code": "1SPE-419",
+			"grade": "1_SPE",
+			"display_order": 192,
+			"name": "Équation de cercle : déterminer centre et rayon",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Géométrie repérée",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": "équation de cercle"
+		},
+		{
+			"code": "1SPE-437",
+			"grade": "1_SPE",
+			"display_order": 193,
+			"name": "Utiliser un repère pour étudier une configuration",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Géométrie repérée",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": null
+		},
+		{
 			"code": "1SPE-334",
 			"grade": "1_SPE",
-			"display_order": 134,
+			"display_order": 194,
 			"name": "Recherche de l'ensemble des points équidistants de l'axe des abscisses et d'un point donné",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1746,8 +2526,21 @@
 		{
 			"code": "1SPE-335",
 			"grade": "1_SPE",
-			"display_order": 135,
-			"name": "Déterminer l'intersection d'un cercle ou d'une parabole d'équation $y = ax^2 + bx + c$ avec une droite parallèle à un axe",
+			"display_order": 195,
+			"name": "Déterminer l'intersection d'un cercle avec une droite parallèle à un axe",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Géométrie > Géométrie repérée",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-420",
+			"grade": "1_SPE",
+			"display_order": 196,
+			"name": "Déterminer l'intersection d'une parabole d'équation $y = ax^2 + bx + c$ avec une droite parallèle à un axe",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -1759,7 +2552,7 @@
 		{
 			"code": "1SPE-336",
 			"grade": "1_SPE",
-			"display_order": 136,
+			"display_order": 197,
 			"name": "Indépendance de deux évènements",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1772,8 +2565,21 @@
 		{
 			"code": "1SPE-337",
 			"grade": "1_SPE",
-			"display_order": 137,
-			"name": "Partition de l'univers (systèmes complets d'évènements) ; formule des probabilités totales",
+			"display_order": 198,
+			"name": "Partition de l'univers (systèmes complets d'évènements)",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "probabilités totales"
+		},
+		{
+			"code": "1SPE-421",
+			"grade": "1_SPE",
+			"display_order": 199,
+			"name": "Formule des probabilités totales",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1785,8 +2591,34 @@
 		{
 			"code": "1SPE-338",
 			"grade": "1_SPE",
-			"display_order": 138,
-			"name": "Succession de deux épreuves indépendantes ; représentation par un arbre ou un tableau",
+			"display_order": 200,
+			"name": "Succession de deux épreuves indépendantes",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1SPE-422",
+			"grade": "1_SPE",
+			"display_order": 201,
+			"name": "Succession de deux épreuves indépendantes : représentation par un arbre",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1SPE-423",
+			"grade": "1_SPE",
+			"display_order": 202,
+			"name": "Succession de deux épreuves indépendantes : représentation par un tableau",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1798,7 +2630,7 @@
 		{
 			"code": "1SPE-339",
 			"grade": "1_SPE",
-			"display_order": 139,
+			"display_order": 203,
 			"name": "Pour $n \\leqslant 4$, répétition de $n$ épreuves de Bernoulli indépendantes et identiques",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1811,7 +2643,7 @@
 		{
 			"code": "1SPE-340",
 			"grade": "1_SPE",
-			"display_order": 140,
+			"display_order": 204,
 			"name": "Dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1824,8 +2656,21 @@
 		{
 			"code": "1SPE-341",
 			"grade": "1_SPE",
-			"display_order": 141,
-			"name": "Savoir utiliser ou justifier l'indépendance de deux évènements",
+			"display_order": 205,
+			"name": "Savoir utiliser l'indépendance de deux évènements",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "indépendance"
+		},
+		{
+			"code": "1SPE-424",
+			"grade": "1_SPE",
+			"display_order": 206,
+			"name": "Savoir justifier l'indépendance de deux évènements",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1837,8 +2682,21 @@
 		{
 			"code": "1SPE-342",
 			"grade": "1_SPE",
-			"display_order": 142,
-			"name": "Représenter la succession de deux épreuves indépendantes par un arbre ou un tableau",
+			"display_order": 207,
+			"name": "Représenter la succession de deux épreuves indépendantes par un arbre",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1SPE-425",
+			"grade": "1_SPE",
+			"display_order": 208,
+			"name": "Représenter la succession de deux épreuves indépendantes par un tableau",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1850,8 +2708,21 @@
 		{
 			"code": "1SPE-343",
 			"grade": "1_SPE",
-			"display_order": 143,
-			"name": "Pour $n \\leqslant 4$, représenter l'arbre associé à la répétition de $n$ épreuves de Bernoulli indépendantes et identiques afin de calculer des probabilités",
+			"display_order": 209,
+			"name": "Pour $n \\leqslant 4$, représenter l'arbre associé à la répétition de $n$ épreuves de Bernoulli indépendantes et identiques",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1SPE-426",
+			"grade": "1_SPE",
+			"display_order": 210,
+			"name": "Pour $n \\leqslant 4$, calculer des probabilités associées à la répétition de $n$ épreuves de Bernoulli indépendantes et identiques",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1863,8 +2734,21 @@
 		{
 			"code": "1SPE-344",
 			"grade": "1_SPE",
-			"display_order": 144,
-			"name": "Méthode de Monte-Carlo : estimation de l'aire sous la parabole, estimation du nombre $\\pi$",
+			"display_order": 211,
+			"name": "Méthode de Monte-Carlo : estimation de l'aire sous la parabole",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+			"branche": "Statistiques",
+			"notion": "Échantillonnage",
+			"sous_notion": "simulation"
+		},
+		{
+			"code": "1SPE-427",
+			"grade": "1_SPE",
+			"display_order": 212,
+			"name": "Méthode de Monte-Carlo : estimation du nombre $\\pi$",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -1876,7 +2760,7 @@
 		{
 			"code": "1SPE-345",
 			"grade": "1_SPE",
-			"display_order": 145,
+			"display_order": 213,
 			"name": "Exemples de succession de plusieurs épreuves indépendantes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1889,7 +2773,7 @@
 		{
 			"code": "1SPE-346",
 			"grade": "1_SPE",
-			"display_order": 146,
+			"display_order": 214,
 			"name": "Exemples de marches aléatoires",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1902,7 +2786,7 @@
 		{
 			"code": "1SPE-347",
 			"grade": "1_SPE",
-			"display_order": 147,
+			"display_order": 215,
 			"name": "Variable aléatoire réelle : modélisation du résultat numérique d'une expérience aléatoire ; formalisation comme fonction définie sur l'univers et à valeurs réelles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1915,7 +2799,7 @@
 		{
 			"code": "1SPE-348",
 			"grade": "1_SPE",
-			"display_order": 148,
+			"display_order": 216,
 			"name": "Loi d'une variable aléatoire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1928,7 +2812,7 @@
 		{
 			"code": "1SPE-349",
 			"grade": "1_SPE",
-			"display_order": 149,
+			"display_order": 217,
 			"name": "Espérance d'une variable aléatoire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1941,7 +2825,7 @@
 		{
 			"code": "1SPE-350",
 			"grade": "1_SPE",
-			"display_order": 150,
+			"display_order": 218,
 			"name": "Variance, écart type d'une variable aléatoire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1954,7 +2838,7 @@
 		{
 			"code": "1SPE-351",
 			"grade": "1_SPE",
-			"display_order": 151,
+			"display_order": 219,
 			"name": "Linéarité de l'espérance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1967,7 +2851,7 @@
 		{
 			"code": "1SPE-352",
 			"grade": "1_SPE",
-			"display_order": 152,
+			"display_order": 220,
 			"name": "Formule de König-Huygens",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1980,8 +2864,47 @@
 		{
 			"code": "1SPE-353",
 			"grade": "1_SPE",
-			"display_order": 153,
-			"name": "Interpréter en situation et utiliser les notations $\\{X = a\\}$, $\\{X \\leqslant a\\}$, $P(X = a)$, $P(X \\leqslant a)$ ; passer du registre de la langue naturelle au registre symbolique et inversement",
+			"display_order": 221,
+			"name": "Interpréter en situation les notations $\\{X = a\\}$, $\\{X \\leqslant a\\}$, $P(X = a)$, $P(X \\leqslant a)$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "loi d'une variable aléatoire"
+		},
+		{
+			"code": "1SPE-428",
+			"grade": "1_SPE",
+			"display_order": 222,
+			"name": "Utiliser les notations $\\{X = a\\}$, $\\{X \\leqslant a\\}$, $P(X = a)$, $P(X \\leqslant a)$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "loi d'une variable aléatoire"
+		},
+		{
+			"code": "1SPE-429",
+			"grade": "1_SPE",
+			"display_order": 223,
+			"name": "Passer du registre de la langue naturelle au registre symbolique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": "loi d'une variable aléatoire"
+		},
+		{
+			"code": "1SPE-430",
+			"grade": "1_SPE",
+			"display_order": 224,
+			"name": "Passer du registre symbolique au registre de la langue naturelle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1993,7 +2916,7 @@
 		{
 			"code": "1SPE-354",
 			"grade": "1_SPE",
-			"display_order": 154,
+			"display_order": 225,
 			"name": "Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2006,7 +2929,7 @@
 		{
 			"code": "1SPE-355",
 			"grade": "1_SPE",
-			"display_order": 155,
+			"display_order": 226,
 			"name": "Déterminer la loi de probabilité d'une variable aléatoire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2019,7 +2942,7 @@
 		{
 			"code": "1SPE-356",
 			"grade": "1_SPE",
-			"display_order": 156,
+			"display_order": 227,
 			"name": "Calculer une espérance",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2032,7 +2955,7 @@
 		{
 			"code": "1SPE-357",
 			"grade": "1_SPE",
-			"display_order": 157,
+			"display_order": 228,
 			"name": "Calculer une variance, un écart type",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2045,7 +2968,7 @@
 		{
 			"code": "1SPE-358",
 			"grade": "1_SPE",
-			"display_order": 158,
+			"display_order": 229,
 			"name": "Utiliser la notion d'espérance dans une résolution de problème (mise pour un jeu équitable, etc.)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2058,8 +2981,21 @@
 		{
 			"code": "1SPE-359",
 			"grade": "1_SPE",
-			"display_order": 159,
-			"name": "Algorithme renvoyant l'espérance, la variance ou l'écart type d'une variable aléatoire",
+			"display_order": 230,
+			"name": "Algorithme renvoyant l'espérance d'une variable aléatoire",
+			"kind": "algorithme",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+			"branche": "Probabilités",
+			"notion": "Variables aléatoires",
+			"sous_notion": null
+		},
+		{
+			"code": "1SPE-431",
+			"grade": "1_SPE",
+			"display_order": 231,
+			"name": "Algorithme renvoyant la variance ou l'écart type d'une variable aléatoire",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -2071,7 +3007,7 @@
 		{
 			"code": "1SPE-360",
 			"grade": "1_SPE",
-			"display_order": 160,
+			"display_order": 232,
 			"name": "Fréquence d'apparition des lettres d'un texte donné, en français, en anglais",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -2084,7 +3020,7 @@
 		{
 			"code": "1SPE-361",
 			"grade": "1_SPE",
-			"display_order": 161,
+			"display_order": 233,
 			"name": "Pour $X$ variable aléatoire, étude de la fonction du second degré $x \\mapsto E\\big((X - x)^2\\big)$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -2097,7 +3033,7 @@
 		{
 			"code": "1SPE-362",
 			"grade": "1_SPE",
-			"display_order": 162,
+			"display_order": 234,
 			"name": "Simuler une variable aléatoire avec Python ou un tableur",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2110,7 +3046,7 @@
 		{
 			"code": "1SPE-363",
 			"grade": "1_SPE",
-			"display_order": 163,
+			"display_order": 235,
 			"name": "Lire, comprendre et écrire une fonction Python renvoyant la moyenne d'un échantillon de taille $n$ d'une variable aléatoire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2123,7 +3059,7 @@
 		{
 			"code": "1SPE-364",
 			"grade": "1_SPE",
-			"display_order": 164,
+			"display_order": 236,
 			"name": "Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2136,7 +3072,7 @@
 		{
 			"code": "1SPE-365",
 			"grade": "1_SPE",
-			"display_order": 165,
+			"display_order": 237,
 			"name": "Simuler, avec Python ou un tableur, $N$ échantillons de taille $n$ d'une variable aléatoire d'espérance $\\mu$ et d'écart type $\\sigma$ ; si $m$ désigne la moyenne d'un échantillon, calculer la proportion des cas où l'écart entre $m$ et $\\mu$ est inférieur ou égal à $\\tfrac{2\\sigma}{\\sqrt{n}}$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2630,6 +3566,138 @@
 		},
 		{
 			"code": "5-143",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "1SPE-432",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "1SPE-433",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "1SPE-434",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-395",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-403",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-404",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-405",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-406",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-407",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-408",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-409",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-410",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-411",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-412",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-427",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-428",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-447",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-448",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-481",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-482",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-483",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-484",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-488",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-489",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-490",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-491",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "2-492",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "3-045",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "3-067",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "5-017",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "5-086",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "5-140",
+			"grade": "1_SPE"
+		},
+		{
+			"code": "6-133",
 			"grade": "1_SPE"
 		}
 	]

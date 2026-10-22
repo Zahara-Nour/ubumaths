@@ -18,6 +18,10 @@
  * références (l'ancien seed, supprimé en étape 4, n'est plus vérifié).
  * Lecture ANONYME (B6).
  *
+ * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
+ * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 178 points ; fixture transformée par
+ * docs/wip/passe-lycee/generer-migration.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -171,14 +175,14 @@ describe('Seed des points de Tle complémentaire (points + références)', () =>
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (129 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (178 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(129);
+		expect(fixture.points).toHaveLength(178);
 		expect(fixture.points.every((p) => p.grade === 'T_COMP')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(90);
 	});
 
-	it('les 129 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 178 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -193,7 +197,7 @@ describe('Seed des points de Tle complémentaire (points + références)', () =>
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(129);
+		expect(pointRows).toHaveLength(178);
 	});
 
 	it('les références du grade T_COMP visent EXACTEMENT les cibles du document (liste de 1re comprise)', () => {
@@ -215,19 +219,20 @@ describe('Seed des points de Tle complémentaire (points + références)', () =>
 	it('décisions E1, démonstrations possibles et D1 : kinds, exigences, régime', () => {
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
 		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
-		// E1 : les 10 Exemples d'algorithme sont des approfondissements.
+		// E1 : les 13 Exemples d'algorithme (10, coupés par la passe lycée) sont des approfondissements.
 		const algos = pointRows.filter((r) => r.kind === 'algorithme');
-		expect(algos).toHaveLength(10);
+		expect(algos).toHaveLength(13);
 		expect(algos.every((r) => r.exigence === 'approfondissement')).toBe(true);
 		// Démonstrations « possibles » (décision David du 2026-10-04) : non exigibles.
 		const demos = pointRows.filter((r) => r.kind === 'demonstration');
-		expect(demos).toHaveLength(12);
+		expect(demos).toHaveLength(15);
 		expect(demos.every((r) => r.exigence === 'approfondissement')).toBe(true);
-		// D1 : déciles et rapport interdécile, seul contenu propre aux Thèmes d'étude.
+		// D1 : déciles et rapport interdécile, seul contenu propre aux Thèmes d'étude (deux points
+		// depuis la passe lycée).
 		const d1 = pointRows.filter(
 			(r) => r.kind === 'connaissance' && r.exigence === 'approfondissement'
 		);
-		expect(d1.map((r) => r.code)).toEqual(['TCOMP-202']);
-		expect(pointRows.filter((r) => r.exigence === 'approfondissement')).toHaveLength(23);
+		expect(d1.map((r) => r.code).sort()).toEqual(['TCOMP-202', 'TCOMP-331']);
+		expect(pointRows.filter((r) => r.exigence === 'approfondissement')).toHaveLength(30);
 	});
 });

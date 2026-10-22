@@ -18,6 +18,10 @@
  * (chemin du nœud compris), rien d'autre au grade 'T_TECHNO', l'ensemble exact des
  * références. Lecture ANONYME (B6).
  *
+ * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
+ * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 92 points ; fixture transformée par
+ * docs/wip/passe-lycee/generer-migration.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -170,14 +174,14 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (69 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (92 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(69);
+		expect(fixture.points).toHaveLength(92);
 		expect(fixture.points.every((p) => p.grade === 'T_TECHNO')).toBe(true);
-		expect(fixture.references).toHaveLength(95);
+		expect(fixture.references).toHaveLength(119);
 	});
 
-	it('les 69 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 92 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -192,7 +196,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(69);
+		expect(pointRows).toHaveLength(92);
 	});
 
 	it('les références du grade T_TECHNO visent EXACTEMENT les cibles du document', () => {
@@ -201,12 +205,19 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 			.sort();
 		const expected = fixture.references.map((r) => `${r.code}|${r.grade}`).sort();
 		expect(actual).toEqual(expected);
-		expect(actual).toHaveLength(95);
+		expect(actual).toHaveLength(119);
 		// Aucune référence ne vise l'ancien seed (grade NULL).
 		expect(refRows.every((r) => pointsById.get(r.point_id)?.grade !== null)).toBe(true);
 		const codes = new Set(actual.map((s) => s.split('|')[0]));
-		// Une seule auto-référence : l'indice de base 100.
-		expect([...codes].filter((c) => c.startsWith('TTECHNO-'))).toEqual(['TTECHNO-015']);
+		// Auto-références : l'indice de base 100 et son morceau « calculer un indice » (TTECHNO-073),
+		// puis, depuis la passe lycée, la raison d'une suite géométrique (TTECHNO-023, l. 405) et le
+		// point ⚙ « isoler une variable dans une inégalité » (TTECHNO-092).
+		expect([...codes].filter((c) => c.startsWith('TTECHNO-')).sort()).toEqual([
+			'TTECHNO-015',
+			'TTECHNO-023',
+			'TTECHNO-073',
+			'TTECHNO-092'
+		]);
 		// Entretien : tout le bloc Algorithmique de 1re (1TECHNO-003…013) est référencé.
 		const algo1re = Array.from(
 			{ length: 11 },
@@ -219,10 +230,13 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 
 	it('décisions T1 et T3 : série dans la rubrique, Situations algorithmiques en approfondissement', () => {
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
-		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
-		// T3 : les 8 algorithmes, et eux seuls, sont des approfondissements.
+		// Seul le point ⚙ de la passe lycée (Automatismes) est en fluence.
+		expect(
+			pointRows.filter((r) => r.regime_acquisition !== 'diversite').map((r) => r.code)
+		).toEqual(['TTECHNO-092']);
+		// T3 : les 13 algorithmes (8, coupés par la passe lycée), et eux seuls, sont des approfondissements.
 		const algos = pointRows.filter((r) => r.kind === 'algorithme');
-		expect(algos).toHaveLength(8);
+		expect(algos).toHaveLength(13);
 		expect(algos.every((r) => r.exigence === 'approfondissement')).toBe(true);
 		expect(
 			pointRows.filter((r) => r.kind !== 'algorithme').every((r) => r.exigence === 'attendu')
@@ -230,7 +244,7 @@ describe('Seed des points de Tle technologique (points + références)', () => {
 		// T1 : la série est dite dans la rubrique ; pas de bloc Algorithmique propre à la Tle.
 		expect(
 			pointRows.filter((r) => (r.rubrique ?? '').startsWith('Activités géométriques (série STD2A)'))
-		).toHaveLength(14);
+		).toHaveLength(17);
 		expect(pointRows.some((r) => (r.rubrique ?? '').startsWith('Algorithmique'))).toBe(false);
 	});
 });

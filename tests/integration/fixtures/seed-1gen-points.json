@@ -2,9 +2,48 @@
 	"version": "2026-10-09.16",
 	"points": [
 		{
-			"code": "1GEN-001",
+			"code": "1GEN-062",
 			"grade": "1_GEN",
 			"display_order": 1,
+			"name": "Déterminer graphiquement le signe d'une fonction",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Fonctions et représentations",
+			"branche": "Fonctions",
+			"notion": "Généralités sur les fonctions",
+			"sous_notion": "signe"
+		},
+		{
+			"code": "1GEN-063",
+			"grade": "1_GEN",
+			"display_order": 2,
+			"name": "Tracer une droite donnée par un point et son coefficient directeur",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Fonctions et représentations",
+			"branche": "Géométrie",
+			"notion": "Géométrie repérée",
+			"sous_notion": "équations de droites"
+		},
+		{
+			"code": "1GEN-064",
+			"grade": "1_GEN",
+			"display_order": 3,
+			"name": "Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "fluence",
+			"rubrique": "Automatismes > Fonctions et représentations",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "coefficient directeur et ordonnée à l'origine"
+		},
+		{
+			"code": "1GEN-001",
+			"grade": "1_GEN",
+			"display_order": 4,
 			"name": "Deux caractères qualitatifs : exemples d'analyse du croisement de deux caractères par représentation graphique (diagrammes en barres, diagrammes circulaires)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -17,7 +56,7 @@
 		{
 			"code": "1GEN-002",
 			"grade": "1_GEN",
-			"display_order": 2,
+			"display_order": 5,
 			"name": "Deux caractères quantitatifs : représentation par un nuage de points",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -30,7 +69,7 @@
 		{
 			"code": "1GEN-003",
 			"grade": "1_GEN",
-			"display_order": 3,
+			"display_order": 6,
 			"name": "Ajustement affine",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -43,7 +82,7 @@
 		{
 			"code": "1GEN-004",
 			"grade": "1_GEN",
-			"display_order": 4,
+			"display_order": 7,
 			"name": "Point moyen",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -56,7 +95,7 @@
 		{
 			"code": "1GEN-005",
 			"grade": "1_GEN",
-			"display_order": 5,
+			"display_order": 8,
 			"name": "Interpolation, extrapolation",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -69,7 +108,7 @@
 		{
 			"code": "1GEN-006",
 			"grade": "1_GEN",
-			"display_order": 6,
+			"display_order": 9,
 			"name": "Utiliser un tableur pour représenter des données sous forme de tableau ou de diagramme",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -82,8 +121,21 @@
 		{
 			"code": "1GEN-007",
 			"grade": "1_GEN",
-			"display_order": 7,
-			"name": "Déterminer et utiliser un ajustement affine pour interpoler ou extrapoler des valeurs inconnues",
+			"display_order": 10,
+			"name": "Déterminer un ajustement affine",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse de l'information chiffrée",
+			"branche": "Statistiques",
+			"notion": "Statistique à deux variables",
+			"sous_notion": "ajustement affine"
+		},
+		{
+			"code": "1GEN-045",
+			"grade": "1_GEN",
+			"display_order": 11,
+			"name": "Utiliser un ajustement affine pour interpoler ou extrapoler des valeurs inconnues",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -95,7 +147,7 @@
 		{
 			"code": "1GEN-008",
 			"grade": "1_GEN",
-			"display_order": 8,
+			"display_order": 12,
 			"name": "Savoir calculer les coordonnées d'un point moyen",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -108,7 +160,7 @@
 		{
 			"code": "1GEN-009",
 			"grade": "1_GEN",
-			"display_order": 9,
+			"display_order": 13,
 			"name": "Indépendance de deux évènements",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -121,7 +173,7 @@
 		{
 			"code": "1GEN-010",
 			"grade": "1_GEN",
-			"display_order": 10,
+			"display_order": 14,
 			"name": "Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -134,8 +186,21 @@
 		{
 			"code": "1GEN-011",
 			"grade": "1_GEN",
-			"display_order": 11,
-			"name": "Représenter par un arbre de probabilités la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$ afin de calculer des probabilités",
+			"display_order": 15,
+			"name": "Représenter par un arbre de probabilités la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes aléatoires",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "épreuves indépendantes successives"
+		},
+		{
+			"code": "1GEN-046",
+			"grade": "1_GEN",
+			"display_order": 16,
+			"name": "Calculer des probabilités associées à la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -147,8 +212,21 @@
 		{
 			"code": "1GEN-012",
 			"grade": "1_GEN",
-			"display_order": 12,
-			"name": "Savoir utiliser ou justifier l'indépendance de deux évènements",
+			"display_order": 17,
+			"name": "Savoir utiliser l'indépendance de deux évènements",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes aléatoires",
+			"branche": "Probabilités",
+			"notion": "Probabilités conditionnelles",
+			"sous_notion": "indépendance"
+		},
+		{
+			"code": "1GEN-047",
+			"grade": "1_GEN",
+			"display_order": 18,
+			"name": "Savoir justifier l'indépendance de deux évènements",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -160,7 +238,7 @@
 		{
 			"code": "1GEN-013",
 			"grade": "1_GEN",
-			"display_order": 13,
+			"display_order": 19,
 			"name": "Suites arithmétiques : définition par la relation de récurrence",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -173,7 +251,7 @@
 		{
 			"code": "1GEN-014",
 			"grade": "1_GEN",
-			"display_order": 14,
+			"display_order": 20,
 			"name": "Suites arithmétiques : explicitation du terme de rang $n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -186,7 +264,7 @@
 		{
 			"code": "1GEN-015",
 			"grade": "1_GEN",
-			"display_order": 15,
+			"display_order": 21,
 			"name": "Suites arithmétiques : sens de variation",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -199,7 +277,7 @@
 		{
 			"code": "1GEN-016",
 			"grade": "1_GEN",
-			"display_order": 16,
+			"display_order": 22,
 			"name": "Suites arithmétiques : représentation graphique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -212,8 +290,21 @@
 		{
 			"code": "1GEN-017",
 			"grade": "1_GEN",
-			"display_order": 17,
-			"name": "Reconnaitre un phénomène discret ou continu de croissance linéaire et savoir le modéliser",
+			"display_order": 23,
+			"name": "Reconnaitre un phénomène discret ou continu de croissance linéaire",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+			"branche": "Suites",
+			"notion": "Modèles d'évolution",
+			"sous_notion": null
+		},
+		{
+			"code": "1GEN-048",
+			"grade": "1_GEN",
+			"display_order": 24,
+			"name": "Savoir modéliser un phénomène discret ou continu de croissance linéaire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -225,8 +316,21 @@
 		{
 			"code": "1GEN-018",
 			"grade": "1_GEN",
-			"display_order": 18,
-			"name": "Calculer un terme de rang donné d'une suite arithmétique définie par une relation fonctionnelle ou une relation de récurrence",
+			"display_order": 25,
+			"name": "Calculer un terme de rang donné d'une suite arithmétique définie par une relation fonctionnelle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+			"branche": "Suites",
+			"notion": "Suites arithmétiques",
+			"sous_notion": null
+		},
+		{
+			"code": "1GEN-049",
+			"grade": "1_GEN",
+			"display_order": 26,
+			"name": "Calculer un terme de rang donné d'une suite arithmétique définie par une relation de récurrence",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -238,8 +342,21 @@
 		{
 			"code": "1GEN-019",
 			"grade": "1_GEN",
-			"display_order": 19,
-			"name": "Réaliser et exploiter la représentation graphique des termes d'une suite arithmétique",
+			"display_order": 27,
+			"name": "Réaliser la représentation graphique des termes d'une suite arithmétique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1GEN-050",
+			"grade": "1_GEN",
+			"display_order": 28,
+			"name": "Exploiter la représentation graphique des termes d'une suite arithmétique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -251,8 +368,21 @@
 		{
 			"code": "1GEN-020",
 			"grade": "1_GEN",
-			"display_order": 20,
-			"name": "Réaliser et exploiter la représentation graphique d'une fonction affine",
+			"display_order": 29,
+			"name": "Réaliser la représentation graphique d'une fonction affine",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+			"branche": "Fonctions",
+			"notion": "Fonctions affines",
+			"sous_notion": "expression et droite"
+		},
+		{
+			"code": "1GEN-051",
+			"grade": "1_GEN",
+			"display_order": 30,
+			"name": "Exploiter la représentation graphique d'une fonction affine",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -264,7 +394,7 @@
 		{
 			"code": "1GEN-021",
 			"grade": "1_GEN",
-			"display_order": 21,
+			"display_order": 31,
 			"name": "Résoudre un problème de seuil dans le cas d'une croissance linéaire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -277,8 +407,47 @@
 		{
 			"code": "1GEN-022",
 			"grade": "1_GEN",
-			"display_order": 22,
-			"name": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : allure de la courbe, axe de symétrie, coordonnées du sommet en lien avec la symétrie, tableau de variation de la fonction",
+			"display_order": 32,
+			"name": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : allure de la courbe",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1GEN-052",
+			"grade": "1_GEN",
+			"display_order": 33,
+			"name": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : axe de symétrie",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1GEN-053",
+			"grade": "1_GEN",
+			"display_order": 34,
+			"name": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : coordonnées du sommet en lien avec la symétrie",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "parabole"
+		},
+		{
+			"code": "1GEN-054",
+			"grade": "1_GEN",
+			"display_order": 35,
+			"name": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : tableau de variation de la fonction",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -290,20 +459,33 @@
 		{
 			"code": "1GEN-023",
 			"grade": "1_GEN",
-			"display_order": 23,
-			"name": "Racines et signe d'un polynôme de degré 2 donné sous forme factorisée (le calcul des racines à l'aide du discriminant ne figure pas au programme)",
+			"display_order": 36,
+			"name": "Racines d'un polynôme de degré 2 donné sous forme factorisée (le calcul des racines à l'aide du discriminant ne figure pas au programme)",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
 			"branche": "Fonctions",
 			"notion": "Second degré",
-			"sous_notion": null
+			"sous_notion": "racines"
+		},
+		{
+			"code": "1GEN-055",
+			"grade": "1_GEN",
+			"display_order": 37,
+			"name": "Signe d'un polynôme de degré 2 donné sous forme factorisée",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+			"branche": "Fonctions",
+			"notion": "Second degré",
+			"sous_notion": "signe"
 		},
 		{
 			"code": "1GEN-024",
 			"grade": "1_GEN",
-			"display_order": 24,
+			"display_order": 38,
 			"name": "Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme $x \\mapsto ax^2$, $x \\mapsto ax^2 + c$, $x \\mapsto a(x - x_1)(x - x_2)$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -316,7 +498,7 @@
 		{
 			"code": "1GEN-025",
 			"grade": "1_GEN",
-			"display_order": 25,
+			"display_order": 39,
 			"name": "Déterminer des éléments caractéristiques de la fonction $x \\mapsto ax^2 + bx + c$ (aucune formule n'est attendue ; l'axe de symétrie se détermine par exemple en résolvant $f(x) = c$)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -329,7 +511,7 @@
 		{
 			"code": "1GEN-026",
 			"grade": "1_GEN",
-			"display_order": 26,
+			"display_order": 40,
 			"name": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -342,7 +524,7 @@
 		{
 			"code": "1GEN-027",
 			"grade": "1_GEN",
-			"display_order": 27,
+			"display_order": 41,
 			"name": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -355,7 +537,7 @@
 		{
 			"code": "1GEN-028",
 			"grade": "1_GEN",
-			"display_order": 28,
+			"display_order": 42,
 			"name": "Suites géométriques à termes strictement positifs : définition par relation de récurrence",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -368,7 +550,7 @@
 		{
 			"code": "1GEN-029",
 			"grade": "1_GEN",
-			"display_order": 29,
+			"display_order": 43,
 			"name": "Suites géométriques : explicitation du terme de rang $n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -381,7 +563,7 @@
 		{
 			"code": "1GEN-030",
 			"grade": "1_GEN",
-			"display_order": 30,
+			"display_order": 44,
 			"name": "Suites géométriques : sens de variation",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -394,7 +576,7 @@
 		{
 			"code": "1GEN-031",
 			"grade": "1_GEN",
-			"display_order": 31,
+			"display_order": 45,
 			"name": "Suites géométriques : représentation graphique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -407,7 +589,7 @@
 		{
 			"code": "1GEN-032",
 			"grade": "1_GEN",
-			"display_order": 32,
+			"display_order": 46,
 			"name": "Fonction $x \\mapsto a^x$ ($a > 0$, $x \\geqslant 0$)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -420,7 +602,7 @@
 		{
 			"code": "1GEN-033",
 			"grade": "1_GEN",
-			"display_order": 33,
+			"display_order": 47,
 			"name": "Fonctions $x \\mapsto a^x$ : propriétés algébriques (admises, par extension des propriétés des puissances entières)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -433,7 +615,7 @@
 		{
 			"code": "1GEN-034",
 			"grade": "1_GEN",
-			"display_order": 34,
+			"display_order": 48,
 			"name": "Fonctions $x \\mapsto a^x$ : variations",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -446,7 +628,7 @@
 		{
 			"code": "1GEN-035",
 			"grade": "1_GEN",
-			"display_order": 35,
+			"display_order": 49,
 			"name": "Fonctions $x \\mapsto a^x$ : représentation graphique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -459,7 +641,7 @@
 		{
 			"code": "1GEN-036",
 			"grade": "1_GEN",
-			"display_order": 36,
+			"display_order": 50,
 			"name": "Fonctions $x \\mapsto a^x$ : cas particulier de l'exposant $\\frac{1}{n}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -472,7 +654,7 @@
 		{
 			"code": "1GEN-037",
 			"grade": "1_GEN",
-			"display_order": 37,
+			"display_order": 51,
 			"name": "Taux d'évolution moyen correspondant à $n$ évolutions successives",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -485,8 +667,21 @@
 		{
 			"code": "1GEN-038",
 			"grade": "1_GEN",
-			"display_order": 38,
-			"name": "Reconnaitre un phénomène discret ou continu de croissance ou décroissance exponentielle et savoir le modéliser",
+			"display_order": 52,
+			"name": "Reconnaitre un phénomène discret ou continu de croissance ou décroissance exponentielle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "croissance et décroissance exponentielles"
+		},
+		{
+			"code": "1GEN-056",
+			"grade": "1_GEN",
+			"display_order": 53,
+			"name": "Savoir modéliser un phénomène discret ou continu de croissance ou décroissance exponentielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -498,8 +693,21 @@
 		{
 			"code": "1GEN-039",
 			"grade": "1_GEN",
-			"display_order": 39,
-			"name": "Calculer un terme de rang donné d'une suite géométrique définie par une relation fonctionnelle ou une relation de récurrence",
+			"display_order": 54,
+			"name": "Calculer un terme de rang donné d'une suite géométrique définie par une relation fonctionnelle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+			"branche": "Suites",
+			"notion": "Suites géométriques",
+			"sous_notion": null
+		},
+		{
+			"code": "1GEN-057",
+			"grade": "1_GEN",
+			"display_order": 55,
+			"name": "Calculer un terme de rang donné d'une suite géométrique définie par une relation de récurrence",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -511,7 +719,7 @@
 		{
 			"code": "1GEN-040",
 			"grade": "1_GEN",
-			"display_order": 40,
+			"display_order": 56,
 			"name": "Calculer un taux d'évolution moyen",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -524,8 +732,21 @@
 		{
 			"code": "1GEN-041",
 			"grade": "1_GEN",
-			"display_order": 41,
-			"name": "Réaliser et exploiter la représentation graphique des termes d'une suite géométrique",
+			"display_order": 57,
+			"name": "Réaliser la représentation graphique des termes d'une suite géométrique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+			"branche": "Suites",
+			"notion": "Généralités sur les suites",
+			"sous_notion": "représentation graphique"
+		},
+		{
+			"code": "1GEN-058",
+			"grade": "1_GEN",
+			"display_order": 58,
+			"name": "Exploiter la représentation graphique des termes d'une suite géométrique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -537,8 +758,21 @@
 		{
 			"code": "1GEN-042",
 			"grade": "1_GEN",
-			"display_order": 42,
-			"name": "Réaliser et exploiter la représentation graphique d'une fonction exponentielle",
+			"display_order": 59,
+			"name": "Réaliser la représentation graphique d'une fonction exponentielle",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "fonctions x ↦ aˣ"
+		},
+		{
+			"code": "1GEN-059",
+			"grade": "1_GEN",
+			"display_order": 60,
+			"name": "Exploiter la représentation graphique d'une fonction exponentielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -550,7 +784,7 @@
 		{
 			"code": "1GEN-043",
 			"grade": "1_GEN",
-			"display_order": 43,
+			"display_order": 61,
 			"name": "Estimer les ordres de grandeur d'une quantité en croissance ou décroissance exponentielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -563,8 +797,34 @@
 		{
 			"code": "1GEN-044",
 			"grade": "1_GEN",
-			"display_order": 44,
-			"name": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle par le calcul, à l'aide d'une représentation graphique ou en utilisant un outil numérique",
+			"display_order": 62,
+			"name": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle par le calcul",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+			"branche": "Suites",
+			"notion": "Modèles d'évolution",
+			"sous_notion": "seuil"
+		},
+		{
+			"code": "1GEN-060",
+			"grade": "1_GEN",
+			"display_order": 63,
+			"name": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle à l'aide d'une représentation graphique",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+			"branche": "Suites",
+			"notion": "Modèles d'évolution",
+			"sous_notion": "seuil"
+		},
+		{
+			"code": "1GEN-061",
+			"grade": "1_GEN",
+			"display_order": 64,
+			"name": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle en utilisant un outil numérique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1021,6 +1281,98 @@
 		},
 		{
 			"code": "5-143",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "1GEN-062",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "1GEN-063",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "1GEN-064",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-395",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-427",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-428",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-447",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-448",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-481",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-482",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-483",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-484",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-488",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-489",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-490",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-491",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "2-492",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "3-045",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "3-067",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "5-017",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "5-086",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "5-140",
+			"grade": "1_GEN"
+		},
+		{
+			"code": "6-133",
 			"grade": "1_GEN"
 		}
 	]

@@ -21,6 +21,10 @@
  * références (l'ancien seed, supprimé en étape 4, n'est plus vérifié).
  * Lecture ANONYME (B6).
  *
+ * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
+ * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 294 points ; fixture transformée par
+ * docs/wip/passe-lycee/generer-migration.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -177,14 +181,14 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (201 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (294 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(201);
+		expect(fixture.points).toHaveLength(294);
 		expect(fixture.points.every((p) => p.grade === '2')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(50);
 	});
 
-	it('les 201 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 294 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -199,7 +203,7 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(201);
+		expect(pointRows).toHaveLength(294);
 	});
 
 	it('les références d’automatismes du grade 2 visent EXACTEMENT les cibles du document', () => {
@@ -229,22 +233,24 @@ describe('Seed des points de 2de (points + références d’automatismes)', () =
 
 	it('architecture cible et décisions L1-L3 (L2 corrigée par E1) : kinds, exigences, régime', () => {
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
-		// Seuls les deux points ⚙ de la partie Automatismes sont en fluence.
+		// Seuls les points ⚙ de la partie Automatismes sont en fluence (deux du C5, quatre de la
+		// passe lycée).
 		expect(
 			pointRows
 				.filter((r) => r.regime_acquisition !== 'diversite')
 				.map((r) => r.code)
 				.sort()
-		).toEqual(['2-401', '2-402']);
+		).toEqual(['2-401', '2-402', '2-489', '2-490', '2-491', '2-492']);
 
-		// L1 : tout le bloc Algorithmique et programmation (2-218…2-234) en algorithme.
-		const bloc = pointRows.filter((r) => r.display_order >= 18 && r.display_order <= 34);
-		expect(bloc).toHaveLength(17);
+		// L1 : tout le bloc Algorithmique et programmation (2-218…2-234 et leurs morceaux de la passe
+		// lycée, rangs 28 à 49) en algorithme.
+		const bloc = pointRows.filter((r) => r.display_order >= 28 && r.display_order <= 49);
+		expect(bloc).toHaveLength(22);
 		expect(bloc.every((r) => r.kind === 'algorithme')).toBe(true);
 		// L2 corrigée par E1 (migration du seed 1re spé) : les 10 Exemples d'algorithme hors
 		// bloc sont des approfondissements ; le bloc reste attendu.
 		const exemples = pointRows
-			.filter((r) => r.kind === 'algorithme' && (r.display_order < 18 || r.display_order > 34))
+			.filter((r) => r.kind === 'algorithme' && (r.display_order < 28 || r.display_order > 49))
 			.map((r) => r.code)
 			.sort();
 		expect(exemples).toEqual([

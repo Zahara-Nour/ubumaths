@@ -27,6 +27,7 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { extractRollback } from '../helpers/database/migration-rollback';
 import { readNodePaths } from '../helpers/database/classification-paths';
 import { insertProdCopies } from '../helpers/database/prod-copies';
+import { undoLaterMigrations } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -86,6 +87,7 @@ describe('Rangements des modèles et des exercices (migration de données)', () 
 		pg = await getPostgresClient();
 
 		await pg.query('begin');
+		await undoLaterMigrations(pg);
 		await pg.query(extractRollback(NETTOYAGE));
 		// L'état de la prod : les modèles et exercices de la correspondance, plus « debug ».
 		await insertProdCopies(pg, {
@@ -222,6 +224,7 @@ describe('Rangements : les branches d’échec de la migration', () => {
 	it('TOUT ou RIEN : un modèle manquant fait échouer la migration (présence partielle)', async () => {
 		await pg.query('begin');
 		try {
+			await undoLaterMigrations(pg);
 			await pg.query(extractRollback(NETTOYAGE));
 			const presents = fixture.modeles.slice(1).map((m) => m.id);
 			await pg.query(

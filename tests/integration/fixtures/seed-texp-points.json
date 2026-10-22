@@ -5,7 +5,20 @@
 			"code": "TEXP-201",
 			"grade": "T_EXP",
 			"display_order": 1,
-			"name": "Ensemble $\\mathbb{C}$ des nombres complexes. Partie réelle et partie imaginaire",
+			"name": "Ensemble $\\mathbb{C}$ des nombres complexes",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+			"branche": "Nombres complexes",
+			"notion": "Forme algébrique",
+			"sous_notion": "calculs"
+		},
+		{
+			"code": "TEXP-354",
+			"grade": "T_EXP",
+			"display_order": 2,
+			"name": "Partie réelle et partie imaginaire",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -17,7 +30,7 @@
 		{
 			"code": "TEXP-202",
 			"grade": "T_EXP",
-			"display_order": 2,
+			"display_order": 3,
 			"name": "Opérations sur les nombres complexes",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -30,7 +43,7 @@
 		{
 			"code": "TEXP-203",
 			"grade": "T_EXP",
-			"display_order": 3,
+			"display_order": 4,
 			"name": "Conjugaison. Propriétés algébriques de la conjugaison",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -43,7 +56,7 @@
 		{
 			"code": "TEXP-204",
 			"grade": "T_EXP",
-			"display_order": 4,
+			"display_order": 5,
 			"name": "Inverse d'un nombre complexe non nul",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -56,7 +69,7 @@
 		{
 			"code": "TEXP-205",
 			"grade": "T_EXP",
-			"display_order": 5,
+			"display_order": 6,
 			"name": "Formule du binôme dans $\\mathbb{C}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -69,7 +82,7 @@
 		{
 			"code": "TEXP-206",
 			"grade": "T_EXP",
-			"display_order": 6,
+			"display_order": 7,
 			"name": "Effectuer des calculs algébriques avec des nombres complexes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -82,7 +95,7 @@
 		{
 			"code": "TEXP-207",
 			"grade": "T_EXP",
-			"display_order": 7,
+			"display_order": 8,
 			"name": "Résoudre une équation linéaire $az = b$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -95,7 +108,7 @@
 		{
 			"code": "TEXP-208",
 			"grade": "T_EXP",
-			"display_order": 8,
+			"display_order": 9,
 			"name": "Résoudre une équation simple faisant intervenir $z$ et $\\bar{z}$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -108,8 +121,34 @@
 		{
 			"code": "TEXP-209",
 			"grade": "T_EXP",
-			"display_order": 9,
-			"name": "Conjugué d'un produit, d'un inverse, d'une puissance entière",
+			"display_order": 10,
+			"name": "Conjugué d'un produit",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+			"branche": "Nombres complexes",
+			"notion": "Forme algébrique",
+			"sous_notion": "conjugaison"
+		},
+		{
+			"code": "TEXP-355",
+			"grade": "T_EXP",
+			"display_order": 11,
+			"name": "Conjugué d'un inverse",
+			"kind": "demonstration",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+			"branche": "Nombres complexes",
+			"notion": "Forme algébrique",
+			"sous_notion": "conjugaison"
+		},
+		{
+			"code": "TEXP-356",
+			"grade": "T_EXP",
+			"display_order": 12,
+			"name": "Conjugué d'une puissance entière",
 			"kind": "demonstration",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -121,7 +160,7 @@
 		{
 			"code": "TEXP-210",
 			"grade": "T_EXP",
-			"display_order": 10,
+			"display_order": 13,
 			"name": "Formule du binôme",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -134,8 +173,21 @@
 		{
 			"code": "TEXP-211",
 			"grade": "T_EXP",
-			"display_order": 11,
-			"name": "Image d'un nombre complexe. Image du conjugué",
+			"display_order": 14,
+			"name": "Image d'un nombre complexe",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+			"branche": "Nombres complexes",
+			"notion": "Interprétation géométrique",
+			"sous_notion": "affixes et distances"
+		},
+		{
+			"code": "TEXP-357",
+			"grade": "T_EXP",
+			"display_order": 15,
+			"name": "Image du conjugué",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -147,8 +199,21 @@
 		{
 			"code": "TEXP-212",
 			"grade": "T_EXP",
-			"display_order": 12,
-			"name": "Affixe d'un point, d'un vecteur",
+			"display_order": 16,
+			"name": "Affixe d'un point",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+			"branche": "Nombres complexes",
+			"notion": "Interprétation géométrique",
+			"sous_notion": "affixes et distances"
+		},
+		{
+			"code": "TEXP-358",
+			"grade": "T_EXP",
+			"display_order": 17,
+			"name": "Affixe d'un vecteur",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -160,8 +225,21 @@
 		{
 			"code": "TEXP-213",
 			"grade": "T_EXP",
-			"display_order": 13,
-			"name": "Module d'un nombre complexe. Interprétation géométrique",
+			"display_order": 18,
+			"name": "Module d'un nombre complexe",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+			"branche": "Nombres complexes",
+			"notion": "Module et argument",
+			"sous_notion": "module"
+		},
+		{
+			"code": "TEXP-359",
+			"grade": "T_EXP",
+			"display_order": 19,
+			"name": "Module d'un nombre complexe : interprétation géométrique",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -173,7 +251,7 @@
 		{
 			"code": "TEXP-214",
 			"grade": "T_EXP",
-			"display_order": 14,
+			"display_order": 20,
 			"name": "Relation $|z|^2 = z\\bar{z}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -186,8 +264,21 @@
 		{
 			"code": "TEXP-215",
 			"grade": "T_EXP",
-			"display_order": 15,
-			"name": "Module d'un produit, d'un inverse",
+			"display_order": 21,
+			"name": "Module d'un produit",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+			"branche": "Nombres complexes",
+			"notion": "Module et argument",
+			"sous_notion": "module"
+		},
+		{
+			"code": "TEXP-360",
+			"grade": "T_EXP",
+			"display_order": 22,
+			"name": "Module d'un inverse",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -199,7 +290,7 @@
 		{
 			"code": "TEXP-216",
 			"grade": "T_EXP",
-			"display_order": 16,
+			"display_order": 23,
 			"name": "Ensemble $\\mathbb{U}$ des nombres complexes de module $1$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -212,7 +303,7 @@
 		{
 			"code": "TEXP-217",
 			"grade": "T_EXP",
-			"display_order": 17,
+			"display_order": 24,
 			"name": "Stabilité de $\\mathbb{U}$ par produit et passage à l'inverse",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -225,8 +316,21 @@
 		{
 			"code": "TEXP-218",
 			"grade": "T_EXP",
-			"display_order": 18,
-			"name": "Arguments d'un nombre complexe non nul. Interprétation géométrique",
+			"display_order": 25,
+			"name": "Arguments d'un nombre complexe non nul",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+			"branche": "Nombres complexes",
+			"notion": "Module et argument",
+			"sous_notion": "argument"
+		},
+		{
+			"code": "TEXP-361",
+			"grade": "T_EXP",
+			"display_order": 26,
+			"name": "Arguments d'un nombre complexe non nul : interprétation géométrique",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -238,7 +342,7 @@
 		{
 			"code": "TEXP-219",
 			"grade": "T_EXP",
-			"display_order": 19,
+			"display_order": 27,
 			"name": "Forme trigonométrique d'un nombre complexe",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -251,7 +355,7 @@
 		{
 			"code": "TEXP-220",
 			"grade": "T_EXP",
-			"display_order": 20,
+			"display_order": 28,
 			"name": "Déterminer le module d'un nombre complexe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -264,7 +368,7 @@
 		{
 			"code": "TEXP-221",
 			"grade": "T_EXP",
-			"display_order": 21,
+			"display_order": 29,
 			"name": "Déterminer les arguments d'un nombre complexe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -277,7 +381,7 @@
 		{
 			"code": "TEXP-222",
 			"grade": "T_EXP",
-			"display_order": 22,
+			"display_order": 30,
 			"name": "Représenter un nombre complexe par un point",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -290,7 +394,7 @@
 		{
 			"code": "TEXP-223",
 			"grade": "T_EXP",
-			"display_order": 23,
+			"display_order": 31,
 			"name": "Déterminer l'affixe d'un point",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -303,7 +407,7 @@
 		{
 			"code": "TEXP-224",
 			"grade": "T_EXP",
-			"display_order": 24,
+			"display_order": 32,
 			"name": "Formule $|z|^2 = z\\bar{z}$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -316,7 +420,7 @@
 		{
 			"code": "TEXP-225",
 			"grade": "T_EXP",
-			"display_order": 25,
+			"display_order": 33,
 			"name": "Module d'un produit",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -329,7 +433,7 @@
 		{
 			"code": "TEXP-226",
 			"grade": "T_EXP",
-			"display_order": 26,
+			"display_order": 34,
 			"name": "Module d'une puissance",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -342,7 +446,7 @@
 		{
 			"code": "TEXP-227",
 			"grade": "T_EXP",
-			"display_order": 27,
+			"display_order": 35,
 			"name": "Suite de nombres complexes définie par $z_{n+1} = az_n + b$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -355,7 +459,7 @@
 		{
 			"code": "TEXP-228",
 			"grade": "T_EXP",
-			"display_order": 28,
+			"display_order": 36,
 			"name": "Inégalité triangulaire pour deux nombres complexes ; cas d'égalité",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -368,7 +472,7 @@
 		{
 			"code": "TEXP-229",
 			"grade": "T_EXP",
-			"display_order": 29,
+			"display_order": 37,
 			"name": "Étude expérimentale de l'ensemble de Mandelbrot, d'ensembles de Julia",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -381,7 +485,7 @@
 		{
 			"code": "TEXP-230",
 			"grade": "T_EXP",
-			"display_order": 30,
+			"display_order": 38,
 			"name": "Formules d'addition à partir du produit scalaire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -394,7 +498,7 @@
 		{
 			"code": "TEXP-231",
 			"grade": "T_EXP",
-			"display_order": 31,
+			"display_order": 39,
 			"name": "Formules de duplication à partir du produit scalaire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -407,7 +511,7 @@
 		{
 			"code": "TEXP-232",
 			"grade": "T_EXP",
-			"display_order": 32,
+			"display_order": 40,
 			"name": "Exponentielle imaginaire, notation $e^{i\\theta}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -420,7 +524,7 @@
 		{
 			"code": "TEXP-233",
 			"grade": "T_EXP",
-			"display_order": 33,
+			"display_order": 41,
 			"name": "Relation fonctionnelle de l'exponentielle imaginaire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -433,7 +537,7 @@
 		{
 			"code": "TEXP-234",
 			"grade": "T_EXP",
-			"display_order": 34,
+			"display_order": 42,
 			"name": "Forme exponentielle d'un nombre complexe",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -446,8 +550,21 @@
 		{
 			"code": "TEXP-235",
 			"grade": "T_EXP",
-			"display_order": 35,
-			"name": "Formules d'Euler : $\\cos(\\theta) = \\frac{1}{2}(e^{i\\theta} + e^{-i\\theta})$, $\\sin(\\theta) = \\frac{1}{2i}(e^{i\\theta} - e^{-i\\theta})$",
+			"display_order": 43,
+			"name": "Formule d'Euler : $\\cos(\\theta) = \\frac{1}{2}(e^{i\\theta} + e^{-i\\theta})$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+			"branche": "Nombres complexes",
+			"notion": "Formes trigo. et exponentielle",
+			"sous_notion": "formules d'Euler"
+		},
+		{
+			"code": "TEXP-362",
+			"grade": "T_EXP",
+			"display_order": 44,
+			"name": "Formule d'Euler : $\\sin(\\theta) = \\frac{1}{2i}(e^{i\\theta} - e^{-i\\theta})$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -459,7 +576,7 @@
 		{
 			"code": "TEXP-236",
 			"grade": "T_EXP",
-			"display_order": 36,
+			"display_order": 45,
 			"name": "Formule de Moivre : $\\cos(n\\theta) + i\\sin(n\\theta) = (\\cos(\\theta) + i\\sin(\\theta))^n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -472,7 +589,7 @@
 		{
 			"code": "TEXP-237",
 			"grade": "T_EXP",
-			"display_order": 37,
+			"display_order": 46,
 			"name": "Passer de la forme algébrique d'un nombre complexe à sa forme trigonométrique ou exponentielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -485,7 +602,7 @@
 		{
 			"code": "TEXP-238",
 			"grade": "T_EXP",
-			"display_order": 38,
+			"display_order": 47,
 			"name": "Passer de la forme trigonométrique ou exponentielle d'un nombre complexe à sa forme algébrique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -498,7 +615,7 @@
 		{
 			"code": "TEXP-239",
 			"grade": "T_EXP",
-			"display_order": 39,
+			"display_order": 48,
 			"name": "Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -511,20 +628,33 @@
 		{
 			"code": "TEXP-240",
 			"grade": "T_EXP",
-			"display_order": 40,
-			"name": "Utiliser les formules d'Euler et de Moivre pour transformer des expressions trigonométriques, dans des contextes divers (intégration, suites, etc.)",
+			"display_order": 49,
+			"name": "Utiliser les formules d'Euler pour transformer des expressions trigonométriques, dans des contextes divers (intégration, suites, etc.)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
 			"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
 			"branche": "Nombres complexes",
 			"notion": "Formes trigo. et exponentielle",
-			"sous_notion": null
+			"sous_notion": "formules d'Euler"
+		},
+		{
+			"code": "TEXP-363",
+			"grade": "T_EXP",
+			"display_order": 50,
+			"name": "Utiliser la formule de Moivre pour transformer des expressions trigonométriques, dans des contextes divers (intégration, suites, etc.)",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+			"branche": "Nombres complexes",
+			"notion": "Formes trigo. et exponentielle",
+			"sous_notion": "formule de Moivre"
 		},
 		{
 			"code": "TEXP-241",
 			"grade": "T_EXP",
-			"display_order": 41,
+			"display_order": 51,
 			"name": "Utiliser les formules d'Euler et de Moivre pour calculer des puissances de nombres complexes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -537,7 +667,7 @@
 		{
 			"code": "TEXP-242",
 			"grade": "T_EXP",
-			"display_order": 42,
+			"display_order": 52,
 			"name": "Démonstration d'une des formules d'addition",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -550,7 +680,7 @@
 		{
 			"code": "TEXP-243",
 			"grade": "T_EXP",
-			"display_order": 43,
+			"display_order": 53,
 			"name": "Solutions complexes d'une équation du second degré à coefficients réels",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -563,7 +693,7 @@
 		{
 			"code": "TEXP-244",
 			"grade": "T_EXP",
-			"display_order": 44,
+			"display_order": 54,
 			"name": "Factorisation de $z^n - a^n$ par $z - a$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -576,7 +706,7 @@
 		{
 			"code": "TEXP-245",
 			"grade": "T_EXP",
-			"display_order": 45,
+			"display_order": 55,
 			"name": "Si $P$ est un polynôme et $P(a) = 0$, factorisation de $P$ par $z - a$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -589,7 +719,7 @@
 		{
 			"code": "TEXP-246",
 			"grade": "T_EXP",
-			"display_order": 46,
+			"display_order": 56,
 			"name": "Un polynôme de degré $n$ admet au plus $n$ racines",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -602,7 +732,7 @@
 		{
 			"code": "TEXP-247",
 			"grade": "T_EXP",
-			"display_order": 47,
+			"display_order": 57,
 			"name": "Résoudre une équation polynomiale de degré $2$ à coefficients réels",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -615,7 +745,7 @@
 		{
 			"code": "TEXP-248",
 			"grade": "T_EXP",
-			"display_order": 48,
+			"display_order": 58,
 			"name": "Résoudre une équation de degré $3$ à coefficients réels dont une racine est connue",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -628,7 +758,7 @@
 		{
 			"code": "TEXP-249",
 			"grade": "T_EXP",
-			"display_order": 49,
+			"display_order": 59,
 			"name": "Factoriser un polynôme dont une racine est connue",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -641,7 +771,7 @@
 		{
 			"code": "TEXP-250",
 			"grade": "T_EXP",
-			"display_order": 50,
+			"display_order": 60,
 			"name": "Factorisation de $z^n - a^n$ par $z - a$ (démonstration)",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -654,7 +784,7 @@
 		{
 			"code": "TEXP-251",
 			"grade": "T_EXP",
-			"display_order": 51,
+			"display_order": 61,
 			"name": "Factorisation de $P(z)$ par $z - a$ si $P(a) = 0$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -667,7 +797,7 @@
 		{
 			"code": "TEXP-252",
 			"grade": "T_EXP",
-			"display_order": 52,
+			"display_order": 62,
 			"name": "Le nombre de solutions d'une équation polynomiale est inférieur ou égal à son degré",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -680,8 +810,21 @@
 		{
 			"code": "TEXP-253",
 			"grade": "T_EXP",
-			"display_order": 53,
-			"name": "Racines carrées d'un nombre complexe, équation du second degré à coefficients complexes",
+			"display_order": 63,
+			"name": "Racines carrées d'un nombre complexe",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Équations polynomiales",
+			"branche": "Nombres complexes",
+			"notion": "Équations polynomiales",
+			"sous_notion": "second degré"
+		},
+		{
+			"code": "TEXP-364",
+			"grade": "T_EXP",
+			"display_order": 64,
+			"name": "Équation du second degré à coefficients complexes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -693,7 +836,7 @@
 		{
 			"code": "TEXP-254",
 			"grade": "T_EXP",
-			"display_order": 54,
+			"display_order": 65,
 			"name": "Formules de Viète",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -706,7 +849,7 @@
 		{
 			"code": "TEXP-255",
 			"grade": "T_EXP",
-			"display_order": 55,
+			"display_order": 66,
 			"name": "Résolution par radicaux de l'équation de degré $3$",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -719,8 +862,21 @@
 		{
 			"code": "TEXP-256",
 			"grade": "T_EXP",
-			"display_order": 56,
-			"name": "Interprétation géométrique du module et d'un argument de $\\frac{c-a}{b-a}$",
+			"display_order": 67,
+			"name": "Interprétation géométrique du module de $\\frac{c-a}{b-a}$",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+			"branche": "Nombres complexes",
+			"notion": "Interprétation géométrique",
+			"sous_notion": "angles et quotient"
+		},
+		{
+			"code": "TEXP-365",
+			"grade": "T_EXP",
+			"display_order": 68,
+			"name": "Interprétation géométrique d'un argument de $\\frac{c-a}{b-a}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -732,7 +888,7 @@
 		{
 			"code": "TEXP-257",
 			"grade": "T_EXP",
-			"display_order": 57,
+			"display_order": 69,
 			"name": "Racines $n$-ièmes de l'unité. Description de l'ensemble $\\mathbb{U}_n$ des racines $n$-ièmes de l'unité",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -745,7 +901,7 @@
 		{
 			"code": "TEXP-258",
 			"grade": "T_EXP",
-			"display_order": 58,
+			"display_order": 70,
 			"name": "Représentation géométrique de l'ensemble $\\mathbb{U}_n$ des racines $n$-ièmes de l'unité",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -758,7 +914,7 @@
 		{
 			"code": "TEXP-259",
 			"grade": "T_EXP",
-			"display_order": 59,
+			"display_order": 71,
 			"name": "Racines $n$-ièmes de l'unité, cas particuliers : $n = 2, 3, 4$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -771,7 +927,7 @@
 		{
 			"code": "TEXP-260",
 			"grade": "T_EXP",
-			"display_order": 60,
+			"display_order": 72,
 			"name": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer un alignement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -784,7 +940,7 @@
 		{
 			"code": "TEXP-261",
 			"grade": "T_EXP",
-			"display_order": 61,
+			"display_order": 73,
 			"name": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer une orthogonalité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -797,7 +953,7 @@
 		{
 			"code": "TEXP-262",
 			"grade": "T_EXP",
-			"display_order": 62,
+			"display_order": 74,
 			"name": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des longueurs",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -810,7 +966,7 @@
 		{
 			"code": "TEXP-263",
 			"grade": "T_EXP",
-			"display_order": 63,
+			"display_order": 75,
 			"name": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des angles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -823,7 +979,7 @@
 		{
 			"code": "TEXP-264",
 			"grade": "T_EXP",
-			"display_order": 64,
+			"display_order": 76,
 			"name": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour déterminer des ensembles de points",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -836,7 +992,7 @@
 		{
 			"code": "TEXP-265",
 			"grade": "T_EXP",
-			"display_order": 65,
+			"display_order": 77,
 			"name": "Utiliser les racines de l'unité dans l'étude de configurations liées aux polygones réguliers",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -849,7 +1005,7 @@
 		{
 			"code": "TEXP-266",
 			"grade": "T_EXP",
-			"display_order": 66,
+			"display_order": 78,
 			"name": "Détermination de l'ensemble $\\mathbb{U}_n$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -862,8 +1018,21 @@
 		{
 			"code": "TEXP-267",
 			"grade": "T_EXP",
-			"display_order": 67,
-			"name": "Lignes trigonométriques de $\\frac{2\\pi}{5}$, construction du pentagone régulier à la règle et au compas",
+			"display_order": 79,
+			"name": "Lignes trigonométriques de $\\frac{2\\pi}{5}$",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+			"branche": "Nombres complexes",
+			"notion": "Interprétation géométrique",
+			"sous_notion": "racines de l'unité"
+		},
+		{
+			"code": "TEXP-366",
+			"grade": "T_EXP",
+			"display_order": 80,
+			"name": "Construction du pentagone régulier à la règle et au compas",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -875,7 +1044,7 @@
 		{
 			"code": "TEXP-268",
 			"grade": "T_EXP",
-			"display_order": 68,
+			"display_order": 81,
 			"name": "Somme des racines $n$-ièmes de l'unité",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -888,7 +1057,7 @@
 		{
 			"code": "TEXP-269",
 			"grade": "T_EXP",
-			"display_order": 69,
+			"display_order": 82,
 			"name": "Racines $n$-ièmes d'un nombre complexe",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -901,7 +1070,7 @@
 		{
 			"code": "TEXP-270",
 			"grade": "T_EXP",
-			"display_order": 70,
+			"display_order": 83,
 			"name": "Transformation de Fourier discrète",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -914,7 +1083,7 @@
 		{
 			"code": "TEXP-271",
 			"grade": "T_EXP",
-			"display_order": 71,
+			"display_order": 84,
 			"name": "Divisibilité dans $\\mathbb{Z}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -927,7 +1096,7 @@
 		{
 			"code": "TEXP-272",
 			"grade": "T_EXP",
-			"display_order": 72,
+			"display_order": 85,
 			"name": "Division euclidienne d'un élément de $\\mathbb{Z}$ par un élément de $\\mathbb{N}^*$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -940,7 +1109,7 @@
 		{
 			"code": "TEXP-273",
 			"grade": "T_EXP",
-			"display_order": 73,
+			"display_order": 86,
 			"name": "Congruences dans $\\mathbb{Z}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -953,7 +1122,7 @@
 		{
 			"code": "TEXP-274",
 			"grade": "T_EXP",
-			"display_order": 74,
+			"display_order": 87,
 			"name": "Compatibilité des congruences avec les opérations",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -966,7 +1135,7 @@
 		{
 			"code": "TEXP-275",
 			"grade": "T_EXP",
-			"display_order": 75,
+			"display_order": 88,
 			"name": "PGCD de deux entiers",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -979,7 +1148,7 @@
 		{
 			"code": "TEXP-276",
 			"grade": "T_EXP",
-			"display_order": 76,
+			"display_order": 89,
 			"name": "Algorithme d'Euclide",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -992,7 +1161,7 @@
 		{
 			"code": "TEXP-277",
 			"grade": "T_EXP",
-			"display_order": 77,
+			"display_order": 90,
 			"name": "Couples d'entiers premiers entre eux",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1005,7 +1174,7 @@
 		{
 			"code": "TEXP-278",
 			"grade": "T_EXP",
-			"display_order": 78,
+			"display_order": 91,
 			"name": "Théorème de Bézout",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1018,7 +1187,7 @@
 		{
 			"code": "TEXP-279",
 			"grade": "T_EXP",
-			"display_order": 79,
+			"display_order": 92,
 			"name": "Théorème de Gauss",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1031,7 +1200,7 @@
 		{
 			"code": "TEXP-280",
 			"grade": "T_EXP",
-			"display_order": 80,
+			"display_order": 93,
 			"name": "Nombres premiers",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1044,7 +1213,7 @@
 		{
 			"code": "TEXP-281",
 			"grade": "T_EXP",
-			"display_order": 81,
+			"display_order": 94,
 			"name": "L'ensemble des nombres premiers est infini",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1057,7 +1226,7 @@
 		{
 			"code": "TEXP-282",
 			"grade": "T_EXP",
-			"display_order": 82,
+			"display_order": 95,
 			"name": "Existence et unicité de la décomposition d'un entier en produit de facteurs premiers",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1070,7 +1239,7 @@
 		{
 			"code": "TEXP-283",
 			"grade": "T_EXP",
-			"display_order": 83,
+			"display_order": 96,
 			"name": "Petit théorème de Fermat",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1083,7 +1252,7 @@
 		{
 			"code": "TEXP-284",
 			"grade": "T_EXP",
-			"display_order": 84,
+			"display_order": 97,
 			"name": "Déterminer les diviseurs d'un entier",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1096,7 +1265,7 @@
 		{
 			"code": "TEXP-285",
 			"grade": "T_EXP",
-			"display_order": 85,
+			"display_order": 98,
 			"name": "Déterminer le PGCD de deux entiers",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1109,7 +1278,7 @@
 		{
 			"code": "TEXP-286",
 			"grade": "T_EXP",
-			"display_order": 86,
+			"display_order": 99,
 			"name": "Résoudre une congruence $ax \\equiv b \\,[n]$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1122,7 +1291,7 @@
 		{
 			"code": "TEXP-287",
 			"grade": "T_EXP",
-			"display_order": 87,
+			"display_order": 100,
 			"name": "Déterminer un inverse de $a$ modulo $n$ lorsque $a$ et $n$ sont premiers entre eux",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1135,7 +1304,7 @@
 		{
 			"code": "TEXP-288",
 			"grade": "T_EXP",
-			"display_order": 88,
+			"display_order": 101,
 			"name": "Établir des tests de divisibilité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1148,7 +1317,7 @@
 		{
 			"code": "TEXP-289",
 			"grade": "T_EXP",
-			"display_order": 89,
+			"display_order": 102,
 			"name": "Utiliser des tests de divisibilité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1161,7 +1330,7 @@
 		{
 			"code": "TEXP-290",
 			"grade": "T_EXP",
-			"display_order": 90,
+			"display_order": 103,
 			"name": "Étudier la primalité de certains nombres",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1174,7 +1343,7 @@
 		{
 			"code": "TEXP-291",
 			"grade": "T_EXP",
-			"display_order": 91,
+			"display_order": 104,
 			"name": "Étudier des problèmes de chiffrement",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1187,7 +1356,7 @@
 		{
 			"code": "TEXP-292",
 			"grade": "T_EXP",
-			"display_order": 92,
+			"display_order": 105,
 			"name": "Résoudre des équations diophantiennes simples",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1200,7 +1369,7 @@
 		{
 			"code": "TEXP-293",
 			"grade": "T_EXP",
-			"display_order": 93,
+			"display_order": 106,
 			"name": "Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \\in \\mathbb{Z}^2$",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1213,7 +1382,7 @@
 		{
 			"code": "TEXP-294",
 			"grade": "T_EXP",
-			"display_order": 94,
+			"display_order": 107,
 			"name": "Théorème de Gauss (démonstration)",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1226,7 +1395,7 @@
 		{
 			"code": "TEXP-295",
 			"grade": "T_EXP",
-			"display_order": 95,
+			"display_order": 108,
 			"name": "L'ensemble des nombres premiers est infini (démonstration)",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1239,7 +1408,7 @@
 		{
 			"code": "TEXP-296",
 			"grade": "T_EXP",
-			"display_order": 96,
+			"display_order": 109,
 			"name": "Algorithme d'Euclide de calcul du PGCD de deux nombres",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1252,7 +1421,7 @@
 		{
 			"code": "TEXP-297",
 			"grade": "T_EXP",
-			"display_order": 97,
+			"display_order": 110,
 			"name": "Calcul d'un couple de Bézout par l'algorithme d'Euclide",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1265,7 +1434,7 @@
 		{
 			"code": "TEXP-298",
 			"grade": "T_EXP",
-			"display_order": 98,
+			"display_order": 111,
 			"name": "Crible d'Ératosthène",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1278,7 +1447,7 @@
 		{
 			"code": "TEXP-299",
 			"grade": "T_EXP",
-			"display_order": 99,
+			"display_order": 112,
 			"name": "Décomposition en facteurs premiers",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1291,7 +1460,7 @@
 		{
 			"code": "TEXP-300",
 			"grade": "T_EXP",
-			"display_order": 100,
+			"display_order": 113,
 			"name": "Détermination des racines rationnelles d'un polynôme à coefficients entiers",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1304,7 +1473,7 @@
 		{
 			"code": "TEXP-301",
 			"grade": "T_EXP",
-			"display_order": 101,
+			"display_order": 114,
 			"name": "Lemme chinois et applications à des situations concrètes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1317,7 +1486,7 @@
 		{
 			"code": "TEXP-302",
 			"grade": "T_EXP",
-			"display_order": 102,
+			"display_order": 115,
 			"name": "Démonstrations du petit théorème de Fermat",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1330,8 +1499,47 @@
 		{
 			"code": "TEXP-303",
 			"grade": "T_EXP",
-			"display_order": 103,
-			"name": "Problèmes de codage (codes barres, code ISBN, clé du Rib, code Insee)",
+			"display_order": 116,
+			"name": "Problèmes de codage : codes barres",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Arithmétique",
+			"branche": "Arithmétique",
+			"notion": "Congruences",
+			"sous_notion": null
+		},
+		{
+			"code": "TEXP-367",
+			"grade": "T_EXP",
+			"display_order": 117,
+			"name": "Problèmes de codage : code ISBN",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Arithmétique",
+			"branche": "Arithmétique",
+			"notion": "Congruences",
+			"sous_notion": null
+		},
+		{
+			"code": "TEXP-368",
+			"grade": "T_EXP",
+			"display_order": 118,
+			"name": "Problèmes de codage : clé du Rib",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Arithmétique",
+			"branche": "Arithmétique",
+			"notion": "Congruences",
+			"sous_notion": null
+		},
+		{
+			"code": "TEXP-369",
+			"grade": "T_EXP",
+			"display_order": 119,
+			"name": "Problèmes de codage : code Insee",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -1343,7 +1551,7 @@
 		{
 			"code": "TEXP-304",
 			"grade": "T_EXP",
-			"display_order": 104,
+			"display_order": 120,
 			"name": "Étude de tests de primalité : notion de témoin, nombres de Carmichaël",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1356,8 +1564,34 @@
 		{
 			"code": "TEXP-305",
 			"grade": "T_EXP",
-			"display_order": 105,
-			"name": "Problèmes de chiffrement (affine, Vigenère, Hill, RSA)",
+			"display_order": 121,
+			"name": "Problèmes de chiffrement affine",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Arithmétique",
+			"branche": "Arithmétique",
+			"notion": "Congruences",
+			"sous_notion": "chiffrement"
+		},
+		{
+			"code": "TEXP-370",
+			"grade": "T_EXP",
+			"display_order": 122,
+			"name": "Problèmes de chiffrement de Vigenère",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Arithmétique",
+			"branche": "Arithmétique",
+			"notion": "Congruences",
+			"sous_notion": "chiffrement"
+		},
+		{
+			"code": "TEXP-371",
+			"grade": "T_EXP",
+			"display_order": 123,
+			"name": "Problèmes de chiffrement de Hill",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -1369,8 +1603,21 @@
 		{
 			"code": "TEXP-306",
 			"grade": "T_EXP",
-			"display_order": 106,
-			"name": "Recherche de nombres premiers particuliers (Mersenne, Fermat)",
+			"display_order": 124,
+			"name": "Recherche de nombres premiers particuliers : Mersenne",
+			"kind": "savoir_faire",
+			"exigence": "approfondissement",
+			"regime_acquisition": "diversite",
+			"rubrique": "Arithmétique",
+			"branche": "Arithmétique",
+			"notion": "Nombres premiers",
+			"sous_notion": null
+		},
+		{
+			"code": "TEXP-372",
+			"grade": "T_EXP",
+			"display_order": 125,
+			"name": "Recherche de nombres premiers particuliers : Fermat",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
 			"regime_acquisition": "diversite",
@@ -1382,7 +1629,7 @@
 		{
 			"code": "TEXP-307",
 			"grade": "T_EXP",
-			"display_order": 107,
+			"display_order": 126,
 			"name": "Exemples simples de codes correcteurs",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1395,7 +1642,7 @@
 		{
 			"code": "TEXP-308",
 			"grade": "T_EXP",
-			"display_order": 108,
+			"display_order": 127,
 			"name": "Étude du système cryptographique RSA",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1408,7 +1655,7 @@
 		{
 			"code": "TEXP-309",
 			"grade": "T_EXP",
-			"display_order": 109,
+			"display_order": 128,
 			"name": "Détermination des triplets pythagoriciens",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1421,7 +1668,7 @@
 		{
 			"code": "TEXP-310",
 			"grade": "T_EXP",
-			"display_order": 110,
+			"display_order": 129,
 			"name": "Étude des sommes de deux carrés par les entiers de Gauss",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1434,7 +1681,7 @@
 		{
 			"code": "TEXP-311",
 			"grade": "T_EXP",
-			"display_order": 111,
+			"display_order": 130,
 			"name": "Étude de l'équation de Pell-Fermat",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1447,7 +1694,7 @@
 		{
 			"code": "TEXP-312",
 			"grade": "T_EXP",
-			"display_order": 112,
+			"display_order": 131,
 			"name": "Graphe, sommets, arêtes",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1460,8 +1707,21 @@
 		{
 			"code": "TEXP-313",
 			"grade": "T_EXP",
-			"display_order": 113,
+			"display_order": 132,
 			"name": "Exemple du graphe complet",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Graphes et matrices",
+			"branche": "Graphes",
+			"notion": "Vocabulaire des graphes",
+			"sous_notion": "sommets, arêtes, degré"
+		},
+		{
+			"code": "TEXP-373",
+			"grade": "T_EXP",
+			"display_order": 133,
+			"name": "Sommets adjacents",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1473,8 +1733,21 @@
 		{
 			"code": "TEXP-314",
 			"grade": "T_EXP",
-			"display_order": 114,
-			"name": "Sommets adjacents, degré, ordre d'un graphe",
+			"display_order": 134,
+			"name": "Degré",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Graphes et matrices",
+			"branche": "Graphes",
+			"notion": "Vocabulaire des graphes",
+			"sous_notion": "sommets, arêtes, degré"
+		},
+		{
+			"code": "TEXP-374",
+			"grade": "T_EXP",
+			"display_order": 135,
+			"name": "Ordre d'un graphe",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1486,7 +1759,7 @@
 		{
 			"code": "TEXP-315",
 			"grade": "T_EXP",
-			"display_order": 115,
+			"display_order": 136,
 			"name": "Chaîne, longueur d'une chaîne",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1499,7 +1772,7 @@
 		{
 			"code": "TEXP-316",
 			"grade": "T_EXP",
-			"display_order": 116,
+			"display_order": 137,
 			"name": "Graphe connexe",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1512,7 +1785,7 @@
 		{
 			"code": "TEXP-317",
 			"grade": "T_EXP",
-			"display_order": 117,
+			"display_order": 138,
 			"name": "Notion de matrice (tableau de nombres réels)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1525,8 +1798,34 @@
 		{
 			"code": "TEXP-318",
 			"grade": "T_EXP",
-			"display_order": 118,
-			"name": "Matrice carrée, matrice colonne, matrice ligne",
+			"display_order": 139,
+			"name": "Matrice carrée",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Graphes et matrices",
+			"branche": "Matrices",
+			"notion": "Calcul matriciel",
+			"sous_notion": null
+		},
+		{
+			"code": "TEXP-375",
+			"grade": "T_EXP",
+			"display_order": 140,
+			"name": "Matrice colonne",
+			"kind": "connaissance",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Graphes et matrices",
+			"branche": "Matrices",
+			"notion": "Calcul matriciel",
+			"sous_notion": null
+		},
+		{
+			"code": "TEXP-376",
+			"grade": "T_EXP",
+			"display_order": 141,
+			"name": "Matrice ligne",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1538,7 +1837,7 @@
 		{
 			"code": "TEXP-319",
 			"grade": "T_EXP",
-			"display_order": 119,
+			"display_order": 142,
 			"name": "Opérations sur les matrices",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1551,7 +1850,7 @@
 		{
 			"code": "TEXP-320",
 			"grade": "T_EXP",
-			"display_order": 120,
+			"display_order": 143,
 			"name": "Inverse d'une matrice carrée",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1564,7 +1863,7 @@
 		{
 			"code": "TEXP-321",
 			"grade": "T_EXP",
-			"display_order": 121,
+			"display_order": 144,
 			"name": "Puissances d'une matrice carrée",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1577,7 +1876,7 @@
 		{
 			"code": "TEXP-322",
 			"grade": "T_EXP",
-			"display_order": 122,
+			"display_order": 145,
 			"name": "Représentation matricielle : matrice d'adjacence d'un graphe",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1590,7 +1889,7 @@
 		{
 			"code": "TEXP-323",
 			"grade": "T_EXP",
-			"display_order": 123,
+			"display_order": 146,
 			"name": "Représentation matricielle des transformations géométriques du plan",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1603,7 +1902,7 @@
 		{
 			"code": "TEXP-324",
 			"grade": "T_EXP",
-			"display_order": 124,
+			"display_order": 147,
 			"name": "Représentation matricielle des systèmes linéaires",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1616,7 +1915,7 @@
 		{
 			"code": "TEXP-325",
 			"grade": "T_EXP",
-			"display_order": 125,
+			"display_order": 148,
 			"name": "Représentation matricielle des suites récurrentes",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1629,7 +1928,7 @@
 		{
 			"code": "TEXP-326",
 			"grade": "T_EXP",
-			"display_order": 126,
+			"display_order": 149,
 			"name": "Exemples de calcul de puissances de matrices carrées d'ordre $2$ ou $3$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1642,7 +1941,7 @@
 		{
 			"code": "TEXP-327",
 			"grade": "T_EXP",
-			"display_order": 127,
+			"display_order": 150,
 			"name": "Suite de matrices colonnes $(U_n)$ vérifiant une relation de récurrence du type $U_{n+1} = AU_n + C$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1655,7 +1954,7 @@
 		{
 			"code": "TEXP-328",
 			"grade": "T_EXP",
-			"display_order": 128,
+			"display_order": 151,
 			"name": "Graphe orienté pondéré associé à une chaîne de Markov à deux ou trois états",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1668,7 +1967,7 @@
 		{
 			"code": "TEXP-329",
 			"grade": "T_EXP",
-			"display_order": 129,
+			"display_order": 152,
 			"name": "Chaîne de Markov à deux ou trois états",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1681,7 +1980,7 @@
 		{
 			"code": "TEXP-330",
 			"grade": "T_EXP",
-			"display_order": 130,
+			"display_order": 153,
 			"name": "Distribution initiale d'une chaîne de Markov, représentée par une matrice ligne $\\pi_0$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1694,8 +1993,8 @@
 		{
 			"code": "TEXP-331",
 			"grade": "T_EXP",
-			"display_order": 131,
-			"name": "Matrice de transition d'une chaîne de Markov, graphe pondéré associé",
+			"display_order": 154,
+			"name": "Matrice de transition d'une chaîne de Markov",
 			"kind": "connaissance",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",
@@ -1707,7 +2006,7 @@
 		{
 			"code": "TEXP-332",
 			"grade": "T_EXP",
-			"display_order": 132,
+			"display_order": 155,
 			"name": "Pour une chaîne de Markov à deux ou trois états de matrice $P$, interprétation du coefficient $(i, j)$ de $P^n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1720,7 +2019,7 @@
 		{
 			"code": "TEXP-333",
 			"grade": "T_EXP",
-			"display_order": 133,
+			"display_order": 156,
 			"name": "Distribution d'une chaîne de Markov après $n$ transitions, représentée comme la matrice ligne $\\pi_0 P^n$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1733,7 +2032,7 @@
 		{
 			"code": "TEXP-334",
 			"grade": "T_EXP",
-			"display_order": 134,
+			"display_order": 157,
 			"name": "Distributions invariantes d'une chaîne de Markov à deux ou trois états",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1746,7 +2045,7 @@
 		{
 			"code": "TEXP-335",
 			"grade": "T_EXP",
-			"display_order": 135,
+			"display_order": 158,
 			"name": "Modéliser une situation par un graphe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1759,7 +2058,7 @@
 		{
 			"code": "TEXP-336",
 			"grade": "T_EXP",
-			"display_order": 136,
+			"display_order": 159,
 			"name": "Modéliser une situation par une matrice",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1772,7 +2071,7 @@
 		{
 			"code": "TEXP-337",
 			"grade": "T_EXP",
-			"display_order": 137,
+			"display_order": 160,
 			"name": "Associer un graphe orienté pondéré à une chaîne de Markov à deux ou trois états",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1785,7 +2084,7 @@
 		{
 			"code": "TEXP-338",
 			"grade": "T_EXP",
-			"display_order": 138,
+			"display_order": 161,
 			"name": "Calculer l'inverse d'une matrice carrée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1798,7 +2097,7 @@
 		{
 			"code": "TEXP-339",
 			"grade": "T_EXP",
-			"display_order": 139,
+			"display_order": 162,
 			"name": "Calculer les puissances d'une matrice carrée",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1811,7 +2110,7 @@
 		{
 			"code": "TEXP-340",
 			"grade": "T_EXP",
-			"display_order": 140,
+			"display_order": 163,
 			"name": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour résoudre un système linéaire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1824,7 +2123,7 @@
 		{
 			"code": "TEXP-341",
 			"grade": "T_EXP",
-			"display_order": 141,
+			"display_order": 164,
 			"name": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une suite récurrente linéaire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1837,7 +2136,7 @@
 		{
 			"code": "TEXP-342",
 			"grade": "T_EXP",
-			"display_order": 142,
+			"display_order": 165,
 			"name": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour calculer le nombre de chemins de longueur donnée entre deux sommets d'un graphe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1850,7 +2149,7 @@
 		{
 			"code": "TEXP-343",
 			"grade": "T_EXP",
-			"display_order": 143,
+			"display_order": 166,
 			"name": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : calculer des probabilités",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1863,7 +2162,7 @@
 		{
 			"code": "TEXP-344",
 			"grade": "T_EXP",
-			"display_order": 144,
+			"display_order": 167,
 			"name": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : déterminer une probabilité invariante",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1876,7 +2175,7 @@
 		{
 			"code": "TEXP-345",
 			"grade": "T_EXP",
-			"display_order": 145,
+			"display_order": 168,
 			"name": "Expression du nombre de chemins de longueur $n$ reliant deux sommets d'un graphe à l'aide de la puissance $n$-ième de la matrice d'adjacence",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1889,7 +2188,7 @@
 		{
 			"code": "TEXP-346",
 			"grade": "T_EXP",
-			"display_order": 146,
+			"display_order": 169,
 			"name": "Pour une chaîne de Markov, expression de la probabilité de passer de l'état $i$ à l'état $j$ en $n$ transitions",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1902,7 +2201,7 @@
 		{
 			"code": "TEXP-347",
 			"grade": "T_EXP",
-			"display_order": 147,
+			"display_order": 170,
 			"name": "Pour une chaîne de Markov, expression de la matrice ligne représentant la distribution après $n$ transitions",
 			"kind": "demonstration",
 			"exigence": "attendu",
@@ -1915,7 +2214,7 @@
 		{
 			"code": "TEXP-348",
 			"grade": "T_EXP",
-			"display_order": 148,
+			"display_order": 171,
 			"name": "Étude de graphes eulériens",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1928,7 +2227,7 @@
 		{
 			"code": "TEXP-349",
 			"grade": "T_EXP",
-			"display_order": 149,
+			"display_order": 172,
 			"name": "Interpolation polynomiale",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1941,7 +2240,7 @@
 		{
 			"code": "TEXP-350",
 			"grade": "T_EXP",
-			"display_order": 150,
+			"display_order": 173,
 			"name": "Marche aléatoire sur un graphe. Étude asymptotique",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1954,7 +2253,7 @@
 		{
 			"code": "TEXP-351",
 			"grade": "T_EXP",
-			"display_order": 151,
+			"display_order": 174,
 			"name": "Modèle de diffusion d'Ehrenfest",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1967,7 +2266,7 @@
 		{
 			"code": "TEXP-352",
 			"grade": "T_EXP",
-			"display_order": 152,
+			"display_order": 175,
 			"name": "Modèle « proie-prédateur » discrétisé : évolution couplée de deux suites récurrentes",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",
@@ -1980,7 +2279,7 @@
 		{
 			"code": "TEXP-353",
 			"grade": "T_EXP",
-			"display_order": 153,
+			"display_order": 176,
 			"name": "Algorithme PageRank",
 			"kind": "savoir_faire",
 			"exigence": "approfondissement",

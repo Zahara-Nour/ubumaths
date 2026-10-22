@@ -1,0 +1,424 @@
+Programme de mathématiques intégré à l'enseignement
+scientifique en classe de première générale
+Sommaire
+
+Préambule général
+   Intentions majeures
+   Lignes directrices pour l'enseignement
+   Organisation du programme
+Contenus d'enseignement
+   Automatismes
+   Analyse de l'information chiffrée
+   Phénomènes aléatoires
+   Phénomènes d'évolution, modélisation par des fonctions
+   Variation linéaire
+   Modélisation quadratique
+   Variation exponentielle
+
+
+
+Préambule général
+Intentions majeures
+Le programme du module spécifique consacré à un enseignement mathématique intégré à l'enseignement scientifique de la
+classe de première de la voie générale est conçu avec les intentions suivantes :
+ − consolider la culture mathématique de tous les élèves et leur assurer le socle de connaissances et de compétences
+    mathématiques qui leur sera nécessaire pour réussir dans leur vie sociale, citoyenne et professionnelle, quel que soit le
+    parcours de formation qu'ils choisiront par la suite ;
+ − réconcilier avec les mathématiques les élèves qui ont perdu le gout et l'intérêt pour cette discipline ;
+ − communiquer le plaisir de les pratiquer à travers des activités mettant en valeur leur efficacité et éclairer sur la place
+    qu'elles jouent dans le monde contemporain ;
+ − assurer les bases nécessaires à la compréhension de phénomènes quantitatifs tels qu'ils sont mobilisés dans les différents
+    champs disciplinaires et tels qu'ils permettent d'éclairer certains débats actuels ;
+ − permettre à chaque élève d'appréhender la pertinence des démarches mathématiques et de développer des aptitudes
+    intellectuelles comme la rigueur, la logique, l'esprit critique mais aussi l'inventivité et la créativité.
+En raison de leur choix de spécialité ou d'options, les élèves de première de la voie générale ont des projets d'orientation
+divers qui les conduiront en terminale à une fréquentation plus ou moins importante des mathématiques. Cette variété des
+profils d'élèves induit une mise en œuvre différenciée prenant en compte l'hétérogénéité de leurs besoins et de leurs intérêts.
+
+Lignes directrices pour l'enseignement
+Attitudes développées
+L'enseignement des mathématiques participe à la formation intellectuelle des élèves en contribuant au développement
+d'attitudes propices à la poursuite d'études, mais aussi à l'exercice responsable de la citoyenneté. Parmi elles, peuvent
+notamment être mentionnés la persévérance dans la recherche d'une solution, l'esprit critique, l'engagement réfléchi dans un
+débat, le souci d'argumenter sa pensée par un raisonnement logique, la qualité d'expression écrite et orale, l'esprit de
+collaboration dans un travail d'équipe.
+La résolution d'exercices et de problèmes, individuellement ou en groupe, l'organisation de réflexions et d'échanges
+scientifiques pour valider un résultat ou une méthode sont des occasions fécondes pour développer ces attitudes
+indispensables à la formation de chaque individu et à la responsabilité du citoyen.
+Les élèves prennent conscience que les mathématiques sont vivantes et en perpétuelle évolution, qu'elles s'inscrivent dans un
+cadre historique mais aussi dans la société actuelle. Il s'agit en particulier :
+ − d'insérer des éléments d'histoire des mathématiques et des sciences ;
+ − de présenter des faits d'actualité liés aux mathématiques ;
+ − de faire connaitre à tous les élèves des études supérieures et des métiers où les mathématiques sont utilisées.
+
+Compétences mathématiques
+Dans le prolongement des cycles précédents, le travail en mathématiques s'appuie sur six compétences essentielles :
+ − chercher, expérimenter, en particulier à l'aide d'outils logiciels ;
+ − modéliser, faire une simulation, valider ou invalider un modèle ;
+ − représenter, choisir un cadre (numérique, algébrique, géométrique), changer de registre ;
+ − raisonner, démontrer, trouver des résultats partiels et les mettre en perspective ;
+ − calculer, appliquer des techniques et mettre en œuvre des algorithmes ;
+ − communiquer un résultat par oral ou par écrit, expliquer une démarche.
+La résolution de problèmes offre un cadre privilégié pour travailler ces six compétences tout en développant des aptitudes
+transversales.
+Résolution de problèmes et automatismes
+La résolution de problèmes, centrale dans l'activité mathématique, est au cœur de ce programme qui privilégie une
+introduction des contenus mathématiques à travers des situations appropriées, puis leur mobilisation dans le cadre de
+problèmes qui les mettent en jeu.
+Ces problèmes contribuent à donner du sens aux notions étudiées. Ils sont le plus souvent issus des autres disciplines, de la vie
+courante ou citoyenne, mais peuvent aussi être internes aux mathématiques. Les professeurs de mathématiques sont invités à
+travailler avec les professeurs des disciplines concernées afin de favoriser les articulations et les transferts, et consolider ainsi
+les acquis des élèves.
+Les activités engagées en classe s'articulent autour du triptyque manipuler - verbaliser - abstraire. La manipulation peut être
+concrète ou virtuelle, prenant appui sur des instruments ou des objets réels ou des outils numériques tels qu'une calculatrice,
+un tableur, un logiciel de géométrie dynamique ou de programmation.
+Il convient de garder à l'esprit que la phase de manipulation ne constitue pas une fin en soi. Comme la verbalisation qui
+l'accompagne ou y fait suite, la manipulation n'est qu'une étape permettant de dégager un contenu mathématique qui fait
+l'objet d'une institutionnalisation bien identifiée.
+L'approche par résolution de problèmes est particulièrement propice à la mise en œuvre de la compétence modéliser, en
+recherchant un modèle adapté à la situation étudiée ou en s'assurant de la bonne compréhension et de la validité d'un modèle
+donné. La compétence représenter, en vue de schématiser les données d'un problème, facilite la recherche d'une stratégie
+efficace pour sa résolution.
+Les problèmes étudiés sont choisis de façon à mobiliser régulièrement la compétence raisonner. Parmi eux, les problèmes avec
+prise d'initiative permettent de travailler la compétence chercher et de renforcer la capacité à résoudre un problème dont
+l'énoncé n'indique pas la méthode de résolution. Ces derniers doivent faire l'objet d'un entrainement suffisamment régulier
+pour permettre aux élèves d'y accéder plus facilement en prenant conscience de certaines similitudes entre des situations
+différentes relevant d'une même démarche mathématique.
+Progressivement, l'élève procède par analogie en rattachant une situation particulière à une classe plus générale de problèmes
+ou en adaptant une méthode connue à la situation étudiée. La disponibilité d'esprit nécessaire à ces étapes essentielles
+suppose des connaissances, des procédures et des stratégies automatisées. Ainsi, l'installation de réflexes intellectuels en
+matière de calcul et d'interprétation des données facilite la résolution de problèmes, en libérant l'esprit des considérations de
+mise en œuvre technique.
+La ritualisation, par exemple au début de chaque séance, d'activités courtes consacrées au calcul ou à la lecture et au
+traitement de l'information chiffrée favorise la stabilisation des connaissances et des méthodes étudiées dans les classes
+antérieures. Il ne s'agit pas de réduire les mathématiques à des activités répétitives, mais de permettre un ancrage solide des
+fondamentaux immédiatement mobilisables pour résoudre des problèmes.
+Dans la partie automatismes du programme sont énumérées les connaissances et les capacités relevant du double objectif
+d'assurer le fondement d'une culture mathématique nécessaire à chaque futur citoyen et de développer des réflexes
+mathématiques utiles à la poursuite d'études.
+
+Diversité de l’activité mathématique
+La mise en œuvre du programme doit permettre aux élèves d'acquérir des connaissances, des méthodes et des démarches
+spécifiques et d’en percevoir la construction mathématique.
+La diversité des activités concerne aussi bien les contextes (internes aux mathématiques ou liés à des situations issues de la vie
+quotidienne ou d'autres disciplines) que les types de tâches qui peuvent être proposées : « questions flash » pour favoriser
+l'acquisition d'automatismes, exercices d'application et d'entrainement pour stabiliser et consolider les connaissances,
+exercices et problèmes favorisant les prises d'initiatives, mises au point collectives d'une solution, productions d'écrits
+individuels ou collectifs, etc.
+Si la classe est le lieu privilégié pour la mise en activité des élèves, les travaux hors du temps scolaire sont indispensables pour
+consolider les apprentissages. Leur fréquence, leur longueur et leur nature sont adaptées à la charge de travail des élèves, en
+tenant compte de la nature pluridisciplinaire de leur formation. L’enseignant veillera à choisir des énoncés encourageant les
+élèves à chercher. Individuels ou collectifs, à l'écrit ou à l'oral, ces travaux sont conçus de façon à prendre en compte la
+diversité des aptitudes des élèves et visent la mémorisation, la maitrise des savoir-faire, le réinvestissement de démarches ou
+de méthodes.
+
+Évaluation des acquis des élèves
+L’évaluation joue un rôle clé dans la régulation des apprentissages, tant pour l’enseignant que pour l’élève, pour lequel elle
+participe pleinement au développement de son autonomie et à son engagement dans les apprentissages. Elle revêt différentes
+modalités mais conserve toujours une visée formative ; pour cela, les élèves sont informés en amont des éléments évalués.
+L’évaluation doit permettre de repérer les acquis des élèves en lien avec les six compétences mathématiques : chercher,
+modéliser, représenter, raisonner, calculer, communiquer.
+L’évaluation doit faire prendre conscience des réussites et des progrès. Le retour sur l’évaluation est un moment clé du
+processus d’apprentissage. Il ne se limite pas à une correction collective, mais vise à valoriser les démarches pertinentes, même
+si elles ne mènent pas immédiatement à la bonne réponse, mettre en lumière les erreurs fréquentes, pour aider les élèves à les
+comprendre et à y remédier, proposer des pistes de progrès aux élèves. Ce retour permet aussi à l’enseignant de réguler sa
+progression, de revoir certains points du programme ou de proposer d’autres approches pédagogiques.
+
+Activités algorithmiques et numériques
+Le développement d'un mode de pensée algorithmique est constitutif de la formation mathématique.
+L'enseignement des mathématiques comprend une composante informatique qui recouvre l'algorithmique, la programmation
+et la pratique du tableur. Cette dimension s'inscrit de manière transversale dans le cours de mathématiques et repose sur la
+connaissance d'un nombre limité d'éléments de syntaxe et de fonctions spécifiques à l'outil utilisé. De ce point de vue, le
+recours au tableur ou à un logiciel de programmation offre aussi une voie de différenciation.
+Parallèlement, l'utilisation d'un logiciel de géométrie dynamique enrichit le cours de mathématiques d'illustrations ou de
+simulations propices à l'appropriation des concepts.
+Dans certaines situations, le recours à un outil de calcul permet de se libérer de contraintes techniques afin de mieux se
+concentrer sur l'activité de modélisation de la situation et d'interprétation des résultats obtenus. L'utilisation d'un logiciel
+intégrant des fonctionnalités graphiques, de calcul numérique ou d'outils statistiques participe à l'appropriation des concepts.
+
+Place de l'oral
+Comme toutes les disciplines, les mathématiques contribuent au développement des compétences orales, notamment à
+travers la pratique de l'argumentation. Celle-ci conduit à préciser sa réflexion et à expliciter sa démarche de manière à
+convaincre. Elle permet à chacun de faire évoluer sa pensée, jusqu'à la remettre en cause si nécessaire, pour accéder
+progressivement à la vérité par la preuve. Des situations variées se prêtent à la pratique de l'oral en mathématiques : la
+reformulation par l'élève d'un énoncé ou d'une démarche, les échanges interactifs lors de la construction du cours, les mises en
+commun après un temps de recherche, les corrections d'exercices, les travaux de groupe, les exposés individuels ou à plusieurs
+(éventuellement sous forme de vidéo), etc.
+En mathématiques, l'oral mobilise à la fois le langage naturel et le langage symbolique dans ses différents registres (graphiques,
+formules, calculs).
+
+Trace écrite
+Disposer d'une trace de cours claire, explicite et structurée est une aide essentielle à l'apprentissage des mathématiques.
+Faisant suite aux étapes importantes de recherche, d'appropriation individuelle ou collective, de présentation commentée ou
+de débats, la trace écrite récapitule de façon organisée les connaissances, les méthodes et les stratégies étudiées en classe.
+Explicitant les liens entre les différentes notions ainsi que leurs objectifs, gagnant à être enrichie par des exemples et des
+schémas, elle constitue pour l'élève une référence vers laquelle il peut se tourner autant que de besoin, tout au long du cycle
+terminal. Sa consultation régulière (notamment au moment de la recherche d'exercices et de problèmes) favorise à la fois la
+mémorisation et le développement de compétences. Les professeurs doivent avoir le souci de la bonne qualité mathématique
+et rédactionnelle des traces écrites figurant au tableau et dans les cahiers d'élèves. En particulier, il est essentiel de bien
+distinguer le statut des énoncés (définition, propriété - admise ou démontrée -, démonstration).
+
+Organisation du programme
+Le programme est structuré autour de trois parties thématiques :
+ − analyse de l'information chiffrée (statistiques) ;
+ − phénomènes aléatoires (probabilités conditionnelles, indépendance) ;
+ − phénomènes d'évolution (analyse : suites, fonctions, exponentielles) ;
+et d'une partie transversale :
+ − automatismes (lecture et production de graphiques, traitement de données, calcul numérique et algébrique).
+Les trois parties thématiques sont organisées selon deux colonnes : « Situations et problèmes » et « Contenus
+mathématiques ». Seuls sont exigibles des élèves les contenus mathématiques de la colonne de droite, mobilisés dans les
+capacités attendues.
+Le programme repose sur des mises en situation et des problèmes issus des disciplines enseignées au lycée, mais aussi de la vie
+quotidienne ou de la vie citoyenne, qui peuvent, selon le choix de l'enseignant, motiver l'introduction des notions étudiées ou
+les illustrer. Les professeurs ont la possibilité de choisir d'autres situations que celles proposées dans la colonne de gauche.
+Selon les projets et les centres d'intérêt des élèves, il est possible de proposer des rapprochements avec d'autres disciplines
+qui ne sont pas mentionnées dans ce programme (littérature, arts plastiques, etc.).
+
+Contenus d'enseignement
+Automatismes
+Cette partie du programme vise à construire et à entretenir des habiletés dans les domaines du calcul, de l’information chiffrée
+et des représentations graphiques. Il s’agit d'automatiser le recours à des connaissances, des procédures, des méthodes et des
+stratégies, afin de permettre aux élèves de les mobiliser plus rapidement et de favoriser leur réussite dans l’apprentissage des
+mathématiques. Leur acquisition développe également l’esprit critique des élèves par une meilleure maitrise des chiffres et du
+calcul et leur permet une meilleure lecture et compréhension des représentations de données dont les graphiques.
+Les capacités attendues énoncées ci-dessous n’ont pas vocation à faire l’objet d’un chapitre d’enseignement spécifique car les
+notions qui les sous-tendent ont été travaillées dans les classes antérieures et doivent être entretenues et consolidées au cours
+de l’année. Cependant les nouvelles notions du programme peuvent donner lieu également à un travail d’automatisation tout
+le long de l’année Elles relèvent d’un entrainement régulier privilégiant l'activité mentale. Les différents thèmes proposés
+doivent être travaillés tout au long de l’année et la présentation par blocs thématiques ne signifie pas, bien au contraire, qu’il
+faille les aborder les uns après les autres. Les modalités de mise en œuvre peuvent être variées, prendre appui sur différents
+supports et ne pas se limiter au format de QCM. Les entrainements peuvent se faire à l’oral, à l’écrit, individuellement ou en
+groupe, utilisant éventuellement des outils numériques de vidéoprojection, de recensement instantané des réponses, etc.
+À la liste ci-dessous s’ajoute la liste des automatismes travaillés en classe de seconde, qui doivent être entretenus en classe de
+première.
+Évolutions et variations
+ −   Appliquer un taux d’évolution pour calculer une valeur finale ou initiale.
+ −   Calculer un taux d’évolution, l’exprimer en pourcentage.
+ −   Calculer le taux d’évolution équivalent à plusieurs évolutions successives.
+ −   Calculer un taux d’évolution réciproque.
+
+Calcul numérique et algébrique
+ − Déterminer les solutions d’une équation produit nul.
+ − Déterminer le signe d’une expression du premier degré, d’une expression factorisée du second degré.
+ − Développer, factoriser, réduire une expression algébrique simple.
+
+Fonctions et représentations
+ −   Résoudre graphiquement une équation, une inéquation du type : ƒ (𝑥) = k, ƒ (𝑥) < k, etc.
+ −   Déterminer graphiquement le signe d’une fonction ou son tableau de variations.
+ −   Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur.
+ −   Lire graphiquement l’équation réduite d’une droite.
+ −   Déterminer le coefficient directeur d’une droite à partir des coordonnées de deux de ses points.
+
+Statistiques
+ − Lire un graphique, un histogramme, un diagramme en barres ou circulaire, un diagramme en boite ou toute autre
+   représentation (repérer l’origine du repère, les unités de graduations ou les échelles, etc.).
+ − Passer du graphique aux données et vice-versa.
+ − Calculer et interpréter des indicateurs statistiques pour une série statistique.
+
+Probabilités
+ − Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d’effectifs
+   ou d’arbres pondérés.
+ − Distinguer P(A ∩ B), PA (B), PB (A).
+
+Analyse de l'information chiffrée
+L'analyse de l'information chiffrée portant sur des problématiques d'actualité (développement durable, changement
+climatique, biodiversité, économie, démographie, santé publique, etc.) permet d'éclairer les élèves sur certains débats actuels
+et de développer le sens critique.
+En prolongement des programmes des classes antérieures dans lesquels ont été introduits des indicateurs utiles pour l'analyse
+d'un unique caractère statistique, cette partie aborde l'analyse statistique bivariée. Il s'agit d'une première sensibilisation aux
+bases de données.
+Certaines données étudiées peuvent être issues de ressources d'autres enseignements dispensés au lycée (enseignement
+scientifique, enseignement moral et civique, enseignement de spécialité). Les possibilités offertes par l'informatique
+permettent le stockage et la manipulation de données massives. Certaines de ces données sont disponibles sur des sites
+institutionnels comme ceux de l'Institut national de la statistique et des études économiques (Insee), de l'Institut national
+d'études démographiques (Ined) ou dans le catalogue data.gouv des données de l'administration. D'autres figurent dans des
+rapports publics comme ceux du Groupe d'experts intergouvernemental sur l'évolution du climat (Giec).
+L'analyse bivariée cherche à étudier les éventuelles relations entre deux caractères. Elle doit s'illustrer en utilisant des
+représentations de données réelles, qui peuvent aussi s'obtenir par le traitement à l'aide d'un tableur de fichiers d'une taille
+raisonnable.
+
+                    Situations et problèmes                                             Contenus mathématiques
+
+Analyse croisée de couples de caractères (exemples : genre, âge,      Analyse statistique de deux caractères qualitatifs.
+revenus, indicateurs de santé, indicateurs financiers,                Tableau croisé d'effectifs.
+température, niveau des océans, proportion de gaz à effet de          Exemples d'analyse du croisement de deux caractères par
+serre, etc., avec regroupement par classes pour les caractères        représentation graphique (diagrammes en barres, diagrammes
+quantitatifs).                                                        circulaires).
+Les données peuvent être présentées sous la forme d'un tableau        Analyse statistique de deux caractères quantitatifs.
+ou d'un diagramme obtenu à partir d'un fichier de données en
+                                                                      Représentation par un nuage de points.
+utilisant un tableur.
+                                                                      Ajustement affine, point moyen.
+Les données peuvent être issues des domaines de la santé, de
+l’économie, de la gestion, des sciences sociales, etc. ; elles        Interpolation, extrapolation.
+peuvent être chronologiques (par exemple l’évolution de la
+population d’une ville en fonction du temps).
+
+
+Capacités attendues
+ − Utiliser un tableur pour représenter des données sous forme de tableau ou de diagramme.
+ − Déterminer et utiliser un ajustement affine pour interpoler ou extrapoler des valeurs inconnues.
+ − Savoir calculer les coordonnées d’un point moyen.
+Plusieurs ajustements sont proposés (au jugé, droite de Mayer, moindres carrés) mais aucune connaissance théorique n’est
+attendue.
+Phénomènes aléatoires
+La notion de probabilité conditionnelle permet d'introduire de manière intuitive celle de l'indépendance : deux évènements A
+et B sont dits indépendants si la probabilité conditionnelle de A sachant B est égale à la probabilité de A (sous réserve de la
+non-nullité de celle de B).
+Grâce à des outils numériques, on simule une succession de tirages aléatoires indépendants (par exemple, des tirages avec
+remise dans une urne) afin de poursuivre l'approche vulgarisée de la loi des grands nombres initiée en classe de seconde.
+Comme en classe de seconde, on insiste sur le fait qu’une loi de probabilité est une hypothèse du modèle choisi et ne se
+démontre pas. Le choix du modèle peut résulter d’hypothèses implicites d’équiprobabilité ou d’une application d’une version
+vulgarisée de la loi des grands nombres. Dans tous les cas, on distingue nettement le modèle probabiliste abstrait et la situation
+réelle.
+La possibilité de présenter des problèmes simples relatifs à des jeux de hasard datant du XVIIIe siècle confère à cette partie
+une dimension historique.
+
+                    Situations et problèmes                                            Contenus mathématiques
+ Sciences de la vie                                                   Probabilité conditionnelle.
+Tests médicaux : faux positifs et faux négatifs.                      Indépendance de deux évènements.
+ Théorie des jeux                                                     Probabilité associée à la répétition d’épreuves aléatoires
+Modélisation ou simulation de jeux simples : pile ou face, jeu de     identiques et indépendantes de Bernoulli.
+« croix ou pile » de d'Alembert, jeu de pierre-feuille-ciseaux, jeu
+du lièvre et de la tortue, jeu du « passe-dix » (problème du
+grand-duc de Toscane).
+Stratégie gagnante au jeu de Monty Hall.
+ Histoire des mathématiques
+Traduction en langage des probabilités de la correspondance
+épistolaire entre Fermat et Pascal à propos du problème des
+partis.
+
+
+Capacités attendues
+ − Calculer des probabilités conditionnelles à l'aide d'un tableau croisé d'effectifs ou d'un arbre pondéré.
+ − Représenter par un arbre de probabilités la répétition de n épreuves aléatoires identiques et indépendantes de Bernoulli
+   avec n ⩽ 4 afin de calculer des probabilités.
+ − Savoir utiliser ou justifier l’indépendance de deux évènements.
+
+Phénomènes d'évolution, modélisation par des fonctions
+Cette partie est consacrée à des notions mathématiques permettant de modéliser des phénomènes en évolution : les suites,
+qui modélisent des grandeurs dont l'évolution est discrète, et les fonctions, qui modélisent des grandeurs dont l'évolution est
+continue.
+L'objectif est d'appréhender plusieurs modèles classiques d'évolution, la variation linéaire, la modélisation quadratique et la
+variation exponentielle, sans exclure la présentation d'autres modèles.
+La compréhension et l'interrogation critique des modèles étudiés permettent de développer des capacités de raisonnement et
+d'argumentation. Leur mise en pratique, tant dans des situations internes qu'externes aux mathématiques, permet de consolider
+des habiletés en matière de calcul, d'analyse et de production de graphiques ainsi que dans l'utilisation d'outils numériques.
+Les deux modes de génération d'une suite, par récurrence et explicite, peuvent être introduits lors de la résolution de
+problèmes. On peut, par exemple, prendre appui sur des motifs géométriques ou sur un contexte historique, comme le
+problème de remboursement d'une dette posé par Euler dans Introduction à l'analyse infinitésimale.
+
+Lors des premières modélisations d'une grandeur discrète par une suite, on veille à utiliser la notation fonctionnelle 𝑢(𝑛),
+préalablement à la notation indicielle 𝑢𝑛 .
+
+Variation linéaire
+Les suites arithmétiques et les fonctions affines modélisent des grandeurs discrètes ou continues dont le taux d'accroissement
+est constant. Les fonctions affines, déjà étudiées en classe de seconde, peuvent faire l'objet d'un travail succinct. Les
+professeurs peuvent mettre en parallèle le sens de variation des fonctions affines et celui des suites arithmétiques.
+
+                    Situations et problèmes                                            Contenus mathématiques
+ Éducation économique, financière et budgétaire                        Suites arithmétiques
+Placement à intérêts simples, croissance d'un poste budgétaire.       Définition par la relation de récurrence.
+Dénombrement.                                                         Explicitation du terme de rang 𝑛.
+Motifs géométriques évolutifs en forme de T ou de croix, carré        Sens de variation.
+bordé.                                                                Représentation graphique.
+ Physique                                                               Fonctions affines
+Correspondance entre degrés Celsius et Fahrenheit.                    L'objectif est de remobiliser les connaissances abordées en
+                                                                      classe de seconde : représentation graphique, sens de
+ Économie                                                           variation, lien entre le taux d'accroissement et le coefficient
+Modélisation de l'offre et de la demande par des fonctions          directeur de la droite représentative.
+affines, point d'équilibre.
+ Enseignement moral et civique
+Modélisation du barème de l'impôt sur le revenu par une
+fonction affine par morceaux (taux marginal, taux moyen).
+ Sciences de la Terre
+Modèle linéaire de l'évolution du niveau moyen des océans.
+
+
+Capacités attendues
+ − Reconnaitre un phénomène discret ou continu de croissance linéaire et savoir le modéliser.
+ − Calculer un terme de rang donné d'une suite arithmétique définie par une relation fonctionnelle ou une relation de
+   récurrence.
+ − Réaliser et exploiter la représentation graphique des termes d'une suite arithmétique ou d'une fonction affine.
+ − Résoudre un problème de seuil dans le cas d'une croissance linéaire.
+
+Modélisation quadratique
+Les fonctions polynômes de degré 2 permettent de modéliser des dépendances non linéaires simples. Elles présentent l’intérêt
+d’offrir des exemples de non monotonie, de maximum ou de minimum.
+
+                   Situations et problèmes                                           Contenus mathématiques
+ Physique                                                          Fonctions polynômes de degré 2 :
+Mouvement parabolique                                              - Éléments caractéristiques de la courbe : allure de la courbe,
+ Architecture-art                                                    axe de symétrie, coordonnées du sommet en lien avec la
+Forme d’un pont suspendu, filin qui soutient le tablier d’un pont,   symétrie, tableau de variation de la fonction.
+arche d’un viaduc                                                  - Racines et signe d’un polynôme de degré 2 donné sous forme
+                                                                     factorisée (le calcul des racines à l’aide du discriminant ne
+ Économie
+                                                                     figure pas au programme).
+Évolution d’un chiffre d’affaires en fonction du prix unitaire
+ Sciences de la vie
+Croissance puis décroissance d’une population, sur un intervalle
+de temps restreint
+ Enseignement moral et civique
+Modèle simple de fiscalité
+
+
+Capacités attendues
+
+ − Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme : 𝑥 ↦ a𝑥², 𝑥 ↦ a𝑥² + c,
+   𝑥 ↦ a (𝑥 – 𝑥1) (𝑥 – 𝑥2).
+ − Déterminer des éléments caractéristiques de la fonction 𝑥 ↦ a𝑥² + b𝑥 + c. Aucune formule n’est attendue. On
+   déterminera l’axe de symétrie par exemple en résolvant l’équation ƒ (𝑥) = c.
+ − Utiliser la forme factorisée (en produit de facteurs du premier degré) d’un polynôme de degré 2 pour trouver ses racines et
+   étudier son signe.
+
+Variation exponentielle
+Les suites géométriques modélisent des grandeurs discrètes dont le taux d'évolution est constant. Les fonctions exponentielles
+sont présentées comme un prolongement des suites géométriques de raison positive à des valeurs non entières positives.
+Dans le cadre d'une approche différenciée de cette introduction, il est possible :
+ − de se limiter au recours à la calculatrice pour obtenir la valeur de a𝑥 pour tout réel positif 𝑥 ;
+ − de « compléter » le nuage de points représentant une suite géométrique pour obtenir la courbe d'une fonction
+   continue ;
+ − d'ajouter des « points intermédiaires » à ce nuage par dichotomies successives (moyenne arithmétique des abscisses et
+   moyenne géométrique des ordonnées) à l'aide d'un tableur ;
+ − de commencer par définir la racine 𝑛-ième d'un réel positif, puis de construire les puissances à exposant rationnel positif
+   afin de conserver les propriétés des fonctions puissances entières étudiées en seconde.
+Les propriétés algébriques des fonctions exponentielles sont admises, par extension des propriétés des puissances entières.
+Les professeurs peuvent mettre en parallèle le sens de variation des fonctions exponentielles et celui des suites géométriques.
+
+                   Situations et problèmes                                           Contenus mathématiques
+ Sciences de la vie                                                  Suites géométriques à termes strictement positifs
+Élimination d'une substance dans le sang.                           Définition par relation de récurrence.
+ Dénombrement                                                       Explicitation du terme de rang 𝑛.
+Motifs géométriques évolutifs (triangle de Sierpinski, etc.).       Sens de variation.
+Éducation économique, financière et budgétaire.                     Représentation graphique.
+Emprunt, placement à intérêts composés, gestion d'une dette,
+croissance d'un poste budgétaire.
+  Éducation économique, financière et budgétaire                    Fonctions exponentielles
+Valeur au bout d'une fraction d'annuité d'un capital placé à       Introduction de la fonction 𝑥 ↦ a𝑥 (a > 0, 𝑥 ⩾ 0).
+intérêts composés à taux annuel constant.                          Propriétés algébriques (admises, par extension des propriétés
+  Économie, géographie                                             des puissances entières).
+Analyse comparée de l'accroissement d'une population et des        Variations.
+ressources alimentaires (modèle de Malthus).                       Représentation graphique.
+  Sciences sociales                                                                             1
+                                                                   Cas particulier de l'exposant .
+Modélisation simplifiée de la propagation d'une rumeur                                          𝑛
+(cascades verticales).                                             Taux d'évolution moyen correspondant à 𝑛 évolutions
+  Physique et sciences de la vie et de la Terre                    successives.
+Nombre de noyaux radioactifs présents dans un échantillon au
+bout d'une fraction de demi-vie.
+Applications à la médecine et à la datation par le carbone 14.
+  Sciences de la vie
+Taux de reproduction R0 d'un virus lors d'une épidémie.
+
+
+Capacités attendues
+ − Reconnaitre un phénomène discret ou continu de croissance ou décroissance exponentielle et savoir le modéliser.
+ − Calculer un terme de rang donné d'une suite géométrique définie par une relation fonctionnelle ou une relation de
+   récurrence.
+ − Calculer un taux d'évolution moyen.
+ − Réaliser et exploiter la représentation graphique des termes d'une suite géométrique ou d'une fonction exponentielle.
+ − Estimer les ordres de grandeur d’une quantité en croissance ou décroissance exponentielle.
+ − Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle par le calcul, à l'aide d'une
+   représentation graphique ou en utilisant un outil numérique.
+

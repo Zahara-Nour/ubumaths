@@ -137,6 +137,7 @@ contenait `pnpm db:seed-riche` (classes `LOCAL…`), il la recrée aussi.
 | `supabase-client.ts`      | `createAuthenticatedClient(email, password = DEFAULT_TEST_PASSWORD)` : vrai `signInWithPassword`, donc `auth.uid()` réel                                                                                                                                     |
 | `postgres-client.ts`      | `getPostgresClient()` (connexion `pg` directe, port 54322 : schéma `auth`, catalogue, transactions), `insertAuthUser()`, `deleteAuthUser()`, `closePostgresClient()`                                                                                         |
 | `migration-rollback.ts`   | `extractRollback(migrationPath)` : extrait et **exécute** le rollback écrit en commentaire (`-- ROLLBACK:BEGIN` … `-- ROLLBACK:END`) d'une migration de données                                                                                              |
+| `later-migrations.ts`     | `undoLaterMigrations(pg)` : joue, dans la transaction du test, le rollback des migrations de données **postérieures** (liste `LATER`, la plus récente d'abord) avant de rejouer celui d'une ancienne migration                                               |
 | `prod-copies.ts`          | `insertProdCopies()` : copies minimales de modèles / exercices de prod avec leurs vrais identifiants                                                                                                                                                         |
 | `classification-paths.ts` | `readNodePaths()`, `nodeIdByPath()` : nœuds de l'arbre des notions par chemin                                                                                                                                                                                |
 
@@ -190,7 +191,11 @@ par `createAuthenticatedClient`.
   [rls-echecs-silencieux.md](rls-echecs-silencieux.md).
 - **Preuve rouge** : un test de migration doit **échouer sans la migration** (CLAUDE.md
   §Migrations, condition 2). Pour une migration de données, `extractRollback` rejoue le rollback
-  documenté : on vérifie l'état avant / après.
+  documenté : on vérifie l'état avant / après. Quand une migration de données plus récente
+  s'appuie sur ce qu'une ancienne a créé, le test de l'ancienne rejoue d'abord le rollback de la
+  récente (`undoLaterMigrations`, à compléter à chaque nouvelle migration de ce genre), et ses
+  vérifications d'état final se **chaînent** : son état « après » doit être l'état « avant » de la
+  récente (exemple : `scission-points-programme.test.ts` et la passe lycée).
 - **Nouvelle fonction `SECURITY DEFINER`** exécutable par `authenticated` ou `anon` : le garde-fou
   `tests/integration/garde-fonctions-security-definer.test.ts` exige une entrée justifiée dans
   `tests/integration/fixtures/fonctions-definer-verifiees.ts` et un `search_path` finissant par
