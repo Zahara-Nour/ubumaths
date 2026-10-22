@@ -7,6 +7,7 @@ import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
 import { createServerLogger } from '$lib/utils/logger';
+import { canAuthorConstructions } from '$lib/server/constructions-access';
 
 const logger = createServerLogger('(protected)/constructions/[id]/+page.server');
 
@@ -28,7 +29,7 @@ export interface ConstructionDetail {
 }
 
 export const load: PageServerLoad = async ({ params, parent, locals: { supabase } }) => {
-	const { user } = await parent();
+	const { user, profile } = await parent();
 	if (!user) throw error(401, 'Non autorisé');
 	const id = validateUuidParam(params.id);
 
@@ -70,6 +71,7 @@ export const load: PageServerLoad = async ({ params, parent, locals: { supabase 
 	return {
 		construction: construction as unknown as ConstructionDetail,
 		userId: user.id,
-		isOwner: construction.author_id === user.id
+		isOwner: construction.author_id === user.id,
+		canAuthor: canAuthorConstructions(profile?.role)
 	};
 };

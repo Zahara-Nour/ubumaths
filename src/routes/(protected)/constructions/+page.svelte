@@ -111,16 +111,18 @@
 				Visualisez des constructions geometriques animees etape par etape
 			</p>
 		</div>
-		<div class="flex flex-col gap-2 sm:flex-row">
-			<Button variant="outline" href="/constructions/conversion">
-				<FileUp class="mr-2 h-4 w-4" />
-				Importer XML
-			</Button>
-			<Button href="/constructions/new">
-				<Plus class="mr-2 h-4 w-4" />
-				Nouvelle construction
-			</Button>
-		</div>
+		{#if data.canAuthor}
+			<div class="flex flex-col gap-2 sm:flex-row">
+				<Button variant="outline" href="/constructions/conversion">
+					<FileUp class="mr-2 h-4 w-4" />
+					Importer XML
+				</Button>
+				<Button href="/constructions/new">
+					<Plus class="mr-2 h-4 w-4" />
+					Nouvelle construction
+				</Button>
+			</div>
+		{/if}
 	</div>
 
 	<!-- Stats Cards -->
@@ -161,10 +163,12 @@
 							Creez votre premiere construction geometrique
 						</p>
 					</div>
-					<Button href="/constructions/new">
-						<Plus class="mr-2 h-4 w-4" />
-						Creer une construction
-					</Button>
+					{#if data.canAuthor}
+						<Button href="/constructions/new">
+							<Plus class="mr-2 h-4 w-4" />
+							Creer une construction
+						</Button>
+					{/if}
 				</Card.Content>
 			</Card.Root>
 		{:else}
@@ -212,12 +216,14 @@
 												Visualiser
 											</a>
 										</DropdownMenu.Item>
-										<DropdownMenu.Item>
-											<a href="/constructions/{construction.id}/edit" class="flex items-center">
-												<Edit class="mr-2 h-4 w-4" />
-												Modifier
-											</a>
-										</DropdownMenu.Item>
+										{#if data.canAuthor}
+											<DropdownMenu.Item>
+												<a href="/constructions/{construction.id}/edit" class="flex items-center">
+													<Edit class="mr-2 h-4 w-4" />
+													Modifier
+												</a>
+											</DropdownMenu.Item>
+										{/if}
 										<DropdownMenu.Separator />
 										<DropdownMenu.Item
 											onclick={() => handleDelete(construction)}

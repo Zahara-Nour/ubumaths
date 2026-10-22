@@ -8,7 +8,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
 import { constructionScriptSchema } from '$lib/constructions';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -93,10 +94,10 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 /**
  * PUT /api/constructions/[id]
  * Update construction
- * Only the owner can update
+ * Only the owner can update, and only if teacher or admin (RLS enforces the same rule)
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
-	const { user } = await requireAuth(locals);
+	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Validate UUID
 	const idValidation = uuidSchema.safeParse(params.id);
@@ -155,6 +156,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.select()
 		.single();
 
+	// Un refus RLS rend zéro ligne : `.single()` répond PGRST116
+	if (updateError?.code === 'PGRST116') {
+		throw error(404, 'Construction introuvable');
+	}
 	if (updateError) {
 		logger.error('Error updating construction:', updateError);
 		throw error(500, 'Impossible de modifier la construction');
@@ -196,15 +201,19 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		throw error(403, 'Seul l’auteur peut supprimer cette construction');
 	}
 
-	// Delete construction
-	const { error: deleteError } = await locals.supabase
+	// Delete construction (un refus RLS rend zéro ligne, sans erreur)
+	const { data: deleted, error: deleteError } = await locals.supabase
 		.from('constructions')
 		.delete()
-		.eq('id', params.id);
+		.eq('id', params.id)
+		.select('id');
 
 	if (deleteError) {
 		logger.error('Error deleting construction:', deleteError);
 		throw error(500, 'Impossible de supprimer la construction');
+	}
+	if (!deleted || deleted.length === 0) {
+		throw error(404, 'Construction introuvable');
 	}
 
 	return json({ success: true });

@@ -6,6 +6,7 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { createServerLogger } from '$lib/utils/logger';
+import { canAuthorConstructions } from '$lib/server/constructions-access';
 
 const logger = createServerLogger('(protected)/constructions/+page.server');
 
@@ -33,7 +34,7 @@ export interface ConstructionListItem {
 }
 
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
-	const { user } = await parent();
+	const { user, profile } = await parent();
 	if (!user) throw error(401, 'Non autorisé');
 
 	const { data: constructions, error: constructionsError } = await supabase
@@ -64,6 +65,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 
 	return {
 		constructions: constructions ?? [],
-		userId: user.id
+		userId: user.id,
+		canAuthor: canAuthorConstructions(profile?.role)
 	};
 };

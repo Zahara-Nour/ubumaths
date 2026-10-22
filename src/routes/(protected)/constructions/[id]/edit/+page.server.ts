@@ -1,10 +1,12 @@
 import type { PageServerLoad } from './$types';
 import { error } from '@sveltejs/kit';
 import { validateUuidParam } from '$lib/server/validation/params';
+import { requireRoles } from '$lib/server/middleware/auth';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
 
-export const load: PageServerLoad = async ({ params, parent, locals: { supabase } }) => {
-	const { user } = await parent();
-	if (!user) throw error(401, 'Non autorisé');
+export const load: PageServerLoad = async ({ params, locals }) => {
+	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
+	const { supabase } = locals;
 	const id = validateUuidParam(params.id);
 
 	const { data: construction, error: queryError } = await supabase
