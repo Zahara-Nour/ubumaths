@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après les décisions E1 et E2 (§ 14-15)._
+_Mis à jour le 2026-10-22, après les décisions E1, E2 et § 10 (§ 14-16)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Source scratchpad perdue au `/clear` : pour la modifier, `Artifact read` puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (§ 10 ensuite) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : § 10 (règles partagées) · partie décimale de 4 chiffres (§ 15) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16).
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (D1 ensuite) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -344,4 +344,8 @@ Précision de David : le juge est paramétrable, chaque règle vaut `strict`, `w
 
 Effets prévus : `hasIntegerSpacingViolation` (`cosmetic-transforms.ts:142`) ne signale plus un nombre de 4 chiffres sans espace (une espace mal placée reste une faute) ; `toLatex` espace les entiers dès 5 chiffres ; les 3 `it.fails` de `tidy-passe-le-juge.test.ts` doivent alors passer : `1024` et `2469/20` (4 chiffres) sont acceptés tels quels, `30000` est écrit `30 000`.
 
-Reste ouvert : la **partie décimale** suit la même règle aujourd'hui (`hasDecimalSpacingViolation`, `:164`, exige l'espace dès 4 décimales : `0,123 4`). Question posée à David : même assouplissement à 4 décimales (`0,1234` accepté) ?
+**Partie décimale** (David : « oui pour les décimales ») : même règle, chaque côté de la virgule compté à part. `hasDecimalSpacingViolation` (`:164`) n'exige plus l'espace à 4 décimales : `0,1234` et `0,123 4` acceptés, `0,12 34` reste une faute, `0,12345` reçoit une remarque ; les corrections écrivent `0,1234` et `0,123 45`. Source : brochure SI du BIPM, « lorsqu'il n'y a que quatre chiffres avant ou après le séparateur décimal, il est d'usage de ne pas isoler un chiffre par une espace ».
+
+## 16. § 10 : où vit la définition commune (David, 2026-10-22 : « module partagé »)
+
+**Décision : un module de règles partagé.** Chaque règle de superflu (parenthèses, signes, neutres, absorbants, fractions, radicaux) est écrite une fois, avec son identifiant de contrainte et son message. `tidy` les applique toutes en silence, puis fait ses calculs et son rangement ; le juge les rejoue une à une pour nommer la faute. Restent propres à `tidy` : calculs et rangement. Restent propres au juge : écritures équivalentes (`BA` = `AB`), comparaison à l'attendu, contraintes de consigne. Rejeté : « `tidy` sert de juge » (signalerait `3+x`, réécrirait `400+80`, ne nomme pas la faute). Précédents : `brackets` déjà commun ; la génération des questions réutilise quatre règles du juge.
