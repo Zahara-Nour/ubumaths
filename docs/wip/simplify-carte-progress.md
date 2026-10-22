@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, recommandations S1-S4 écrites, rien de tranché._
+_Mis à jour le 2026-10-22, S1-S4 tranchées par David._
 
-- **État** : phase 0. Relevé fait (§ 1-4) ; David a répondu à Q1 et Q2 (§ 6) ; mon analyse et 4 questions de suite en § 6. Aucun code touché.
-- **Prochaine action** : David tranche S1-S4 (recommandations en fin de § 6), puis table « contexte → forme cible » (§ 6, piste B).
-- **En attente de David** : S1-S4 (fin de § 6 : registre décimal gardé, ordre des sommes en option, domaine prudent par défaut, 4e test « ne cache aucune leçon » qui sort les identités de `tidy` vers `réduire` avec étapes) ; § 5 Q4-Q7.
+- **État** : phase 0. Relevé fait (§ 1-4) ; Q1-Q2 répondues ; **S1-S4 validées** (fin de § 6, « Décisions S1-S4 »). Aucun code touché.
+- **Prochaine action** : table « contexte d'affichage → forme cible » (§ 6, piste B), relevé des contextes en cours, puis validation par David.
+- **En attente de David** : § 5 Q3-Q7 (Q3 probablement réglée par S4 : `réduire` = `tidy` + identités avec étapes, sans `normalize`).
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
 - **Worktree / branche** : aucun (doc seule, sur `main`).
 
@@ -158,9 +158,22 @@ Livrable suivant : la table « contexte d'affichage → forme cible », dressée
 - **S3 — perte de domaine** (`x/x`, `e^{ln x}`) : simplifier sous hypothèse déclarée, et sinon rendre la condition à l'appelant (qui l'affiche ou garde la forme) ?
 - **S4 — les trois tests** et les verdicts du tableau : à valider ligne à ligne.
 
-### Recommandations (2026-10-22), en attente de David
+### Recommandations (2026-10-22) — validées par David le 2026-10-22
 
 - **S1** : garder le registre — `0,5+0,25 → 0,75`, `x×0,5 → 0,5x` ; fraction seulement si un opérande est une fraction ou si le résultat n'a pas d'écriture décimale finie (`1/3+0,5 → 5/6`). ⚠️ Revient sur §A.1 de la spec (décision du 2026-09-20) ; vérifier l'interaction avec le mode décimal.
 - **S2** : l'ordre dans un **produit** (`x·3 → 3x`) reste dans `tidy` ; l'ordre des termes d'une **somme** devient une option, `order: 'canonical' | 'kept'`, canonique par défaut (garde les décisions #893, #1195, #1559) ; `tidyTerms` et `tidyWithoutReordering` deviennent `tidy({ order: 'kept' })`.
 - **S3** : par défaut, `tidy` ne fait aucune simplification qui perd le domaine (`x/x` reste) ; avec des hypothèses déclarées (énoncé, domaine de f, type de la variable), il la fait ; une variante explicite rend `{ result, conditions }` pour afficher « pour x ≠ 0 ».
 - **S4** : ajouter un **4e test — ne cache aucune leçon**. `tidy` est appliqué en silence à chaque étape affichée : ce qu'il fait n'est jamais expliqué. Les identités (`ln(eˣ)`, `sin²+cos²`, `√(x²) = |x|`, valeurs remarquables) vont donc dans `réduire` **avec une étape nommée**, dépendant du niveau, pas dans `tidy`. `tidy` garde l'arithmétique et la structure : parenthèses, signes, neutres, absorbants, termes semblables, fractions numériques. Ça corrige le tableau de la piste A.
+
+### Décisions S1-S4 (David, 2026-10-22)
+
+David valide les quatre recommandations telles quelles. Contrat de `tidy` qui en découle :
+
+- **Ce que `tidy` fait** : arithmétique et structure — parenthèses et signes inutiles, neutres et absorbants, termes semblables, calculs numériques, fractions numériques simplifiées, ordre dans un produit (`x·3 → 3x`).
+- **Ce qu'il ne fait pas** : développer, factoriser, changer de registre (décimal gardé, S1 ; unités et notation scientifique gardées), perdre le domaine sans hypothèse (S3), appliquer une identité qu'on enseigne (S4).
+- **Options** : `order: 'canonical' | 'kept'` pour les termes d'une somme, canonique par défaut (S2) ; hypothèses déclarées (S3) ; variante `{ result, conditions }` (S3).
+- **Les identités** (`ln(eˣ) → x`, `sin²+cos²`, `√(x²) = |x|`, valeurs remarquables `cos(π/3)`) : dans `réduire`, avec une étape nommée et selon le niveau (S4).
+
+Tableau de la piste A corrigé par S4 : les lignes `ln(eˣ)`, `sin²+cos²`, `cos(−x)`, `√(x²)`, valeurs remarquables passent de « `tidy` » à « `réduire` avec étape » ; `|−3| → 3` et `sin(0)` (calcul numérique pur) restent à trancher dans la table de la piste B selon le niveau.
+
+À vérifier avant de coder S1 : l'interaction avec le mode décimal (`project_mode-decimal`) et les tests qui assertent `0,5+0,25 → 3/4` (§A.1 de `tidy-spec.md`, décision du 2026-09-20 renversée).
