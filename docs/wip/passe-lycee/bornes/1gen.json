@@ -175,7 +175,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : la même puce du BO ajoute « ou son tableau de variations » ; cette partie n'est pas dans le libellé (non corrigé)."
+				"remarque": "La même puce du BO ajoute « ou son tableau de variations » : cette partie est portée par 2-349 (« Relier représentation graphique et tableau de variations »), que les automatismes de 1re référencent."
 			},
 			"1GEN-063": {
 				"libelle": "Tracer une droite donnée par un point et son coefficient directeur",

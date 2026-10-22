@@ -31,7 +31,6 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 
 - **1SPE-243** (forme développée ; coefficients), **1SPE-247** (coordonnées du sommet), **1SPE-384** (axe de symétrie) : absents du texte de 1re spé ; **1SPE-250** (inéquation du second degré) : seulement dans la parenthèse d'une capacité.
 - **1SPE-221** (« nuage de points » ajouté), **1SPE-354** (« définir … et donner ses valeurs possibles » au lieu de « modéliser »), **1SPE-364** (« calculer l'écart » au lieu d'« étudier la distance »).
-- **1SPE-432**, **1SPE-433** : puces d'automatismes recopiées en partie seulement (« ou son tableau de variations », « par son équation réduite » manquent).
 
 ## Questions ouvertes (`questions-spe.json`)
 

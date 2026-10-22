@@ -28,7 +28,6 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 ## Libellés qui ne collent plus au BO (signalés, rien corrigé)
 
 - **1GEN-029**, **1GEN-030**, **1GEN-031** : le BO range ces contenus sous « Suites géométriques à termes strictement positifs » ; seul 1GEN-028 le redit (la borne s'applique à tous les points de suites géométriques).
-- **1GEN-062** : la puce du BO dit « le signe d'une fonction **ou son tableau de variations** » ; la seconde partie n'est pas dans le libellé.
 
 ## Questions ouvertes (`questions-2de-1gen.json`)
 

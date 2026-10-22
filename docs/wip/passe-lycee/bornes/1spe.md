@@ -31,7 +31,6 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 
 - **1SPE-243** (forme développée ; coefficients), **1SPE-247** (coordonnées du sommet), **1SPE-384** (axe de symétrie) : absents du texte de 1re spé ; **1SPE-250** (inéquation du second degré) : seulement dans la parenthèse d'une capacité.
 - **1SPE-221** (« nuage de points » ajouté), **1SPE-354** (« définir … et donner ses valeurs possibles » au lieu de « modéliser »), **1SPE-364** (« calculer l'écart » au lieu d'« étudier la distance »).
-- **1SPE-432**, **1SPE-433** : puces d'automatismes recopiées en partie seulement (« ou son tableau de variations », « par son équation réduite » manquent).
 
 ## Questions ouvertes (`questions-spe.json`)
 
@@ -431,10 +430,10 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 
 - **1SPE-432** — Déterminer graphiquement le signe d'une fonction
   - Lecture graphique du signe d'une fonction sur sa courbe. — _BO 1re spé p.5_ (BO)
-  - ⚠ libellé : la puce du BO (p.5) est « Déterminer graphiquement le signe d'une fonction ou son tableau de variations » ; le libellé n'en garde que le signe.
+  - La puce du BO (p.5) ajoute « ou son tableau de variations » : cette partie est portée par 2-349 (« Relier représentation graphique et tableau de variations »), que les automatismes de 1re référencent.
 - **1SPE-433** — Tracer une droite donnée par un point et son coefficient directeur
   - Droite donnée par un point et son coefficient directeur, tracée dans un repère. — _BO 1re spé p.5_ (BO)
-  - ⚠ libellé : la puce du BO (p.5) est « Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur » ; le libellé n'en garde que la seconde partie.
+  - La puce du BO (p.5) dit aussi « par son équation réduite » : cette partie est portée par 2-316 (« Tracer une droite connaissant son équation réduite »), que les automatismes de 1re référencent.
 - **1SPE-434** — Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points
   - Coefficient directeur (yB − yA)/(xB − xA) à partir des coordonnées de deux points (xA ≠ xB). — _BO 1re spé p.5_ (BO)
 

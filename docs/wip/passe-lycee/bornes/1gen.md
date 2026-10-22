@@ -28,7 +28,6 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 ## Libellés qui ne collent plus au BO (signalés, rien corrigé)
 
 - **1GEN-029**, **1GEN-030**, **1GEN-031** : le BO range ces contenus sous « Suites géométriques à termes strictement positifs » ; seul 1GEN-028 le redit (la borne s'applique à tous les points de suites géométriques).
-- **1GEN-062** : la puce du BO dit « le signe d'une fonction **ou son tableau de variations** » ; la seconde partie n'est pas dans le libellé.
 
 ## Questions ouvertes (`questions-2de-1gen.json`)
 
@@ -71,7 +70,7 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 
 - **1GEN-062** — Déterminer graphiquement le signe d'une fonction
   - Lecture graphique, fonction donnée par sa courbe. — _BO 1re ES p.4_ (BO)
-  - ⚠ ⚠ libellé : la même puce du BO ajoute « ou son tableau de variations » ; cette partie n'est pas dans le libellé (non corrigé).
+  - La même puce du BO ajoute « ou son tableau de variations » : cette partie est portée par 2-349 (« Relier représentation graphique et tableau de variations »), que les automatismes de 1re référencent.
 - **1GEN-063** — Tracer une droite donnée par un point et son coefficient directeur
   - Droite donnée par un point et son coefficient directeur. — _BO 1re ES p.4_ (BO)
 - **1GEN-064** — Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points

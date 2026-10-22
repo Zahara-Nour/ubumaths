@@ -47,7 +47,7 @@ pt('1GEN-008')
 
 # ---------- Automatismes ----------
 pt('1GEN-062', b('autre', "Lecture graphique, fonction donnée par sa courbe.", 4),
-   rem="⚠ libellé : la même puce du BO ajoute « ou son tableau de variations » ; cette partie n'est pas dans le libellé (non corrigé).")
+   rem="La même puce du BO ajoute « ou son tableau de variations » : cette partie est portée par 2-349 (« Relier représentation graphique et tableau de variations »), que les automatismes de 1re référencent.")
 pt('1GEN-063', b('autre', "Droite donnée par un point et son coefficient directeur.", 4))
 pt('1GEN-064', b('autre', "Coordonnées de deux points de la droite.", 4))
 

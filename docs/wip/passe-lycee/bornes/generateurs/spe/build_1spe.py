@@ -355,9 +355,9 @@ P['1SPE-365'] = ([b('autre', "N échantillons de taille n simulés (Python ou ta
 
 # ---------- Automatismes > Fonctions et représentations (BO p.4-5)
 P['1SPE-432'] = ([b('figures', "Lecture graphique du signe d'une fonction sur sa courbe.", 5)],
-                 "⚠ libellé : la puce du BO (p.5) est « Déterminer graphiquement le signe d'une fonction ou son tableau de variations » ; le libellé n'en garde que le signe.")
+                 "La puce du BO (p.5) ajoute « ou son tableau de variations » : cette partie est portée par 2-349 (« Relier représentation graphique et tableau de variations »), que les automatismes de 1re référencent.")
 P['1SPE-433'] = ([b('figures', "Droite donnée par un point et son coefficient directeur, tracée dans un repère.", 5)],
-                 "⚠ libellé : la puce du BO (p.5) est « Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur » ; le libellé n'en garde que la seconde partie.")
+                 "La puce du BO (p.5) dit aussi « par son équation réduite » : cette partie est portée par 2-316 (« Tracer une droite connaissant son équation réduite »), que les automatismes de 1re référencent.")
 P['1SPE-434'] = ([b('autre', "Coefficient directeur (yB − yA)/(xB − xA) à partir des coordonnées de deux points (xA ≠ xB).", 5)], None)
 
 rows = [r for r in csv.DictReader(open(ROOT + 'points-lycee.csv')) if r['grade'] == G]

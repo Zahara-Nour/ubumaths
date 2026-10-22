@@ -287,7 +287,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : la puce du BO (p.5) est « Déterminer graphiquement le signe d'une fonction ou son tableau de variations » ; le libellé n'en garde que le signe."
+				"remarque": "La puce du BO (p.5) ajoute « ou son tableau de variations » : cette partie est portée par 2-349 (« Relier représentation graphique et tableau de variations »), que les automatismes de 1re référencent."
 			},
 			"1SPE-433": {
 				"libelle": "Tracer une droite donnée par un point et son coefficient directeur",
@@ -300,7 +300,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : la puce du BO (p.5) est « Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur » ; le libellé n'en garde que la seconde partie."
+				"remarque": "La puce du BO (p.5) dit aussi « par son équation réduite » : cette partie est portée par 2-316 (« Tracer une droite connaissant son équation réduite »), que les automatismes de 1re référencent."
 			},
 			"1SPE-434": {
 				"libelle": "Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points",
