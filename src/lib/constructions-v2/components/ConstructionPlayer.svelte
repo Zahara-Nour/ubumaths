@@ -64,6 +64,8 @@
 	let tl = $state<TimelineState>(createInitialTimelineState());
 	let figureVersion = $state(0);
 	let currentInstruction = $state<string | null>(null);
+	// Consigne de la sous-étape chorégraphiée en cours (`SubStep.instruction`)
+	let currentSubStepInstruction = $state<string | null>(null);
 	let currentFigure = $state<Figure>(new Figure());
 	let currentInstrumentStates = $state(new Map<string, InstrumentState>());
 	let animatingIds = $state<string[]>([]);
@@ -139,7 +141,20 @@
 		currentFigure = executor.figure;
 		currentInstrumentStates = new Map(executor.instrumentStates);
 		currentInstruction = executor.currentInstruction;
+		currentSubStepInstruction = executor.currentSubStep?.instruction ?? null;
 		figureVersion++;
+	}
+
+	/**
+	 * Pas de fin de lecture : applique la visibilité finale laissée en attente
+	 * par la dernière sous-étape chorégraphiée. Ce pas vide `currentSubStep` :
+	 * la consigne de la dernière sous-étape jouée reste affichée.
+	 */
+	function drainFinalVisibility() {
+		const lastSubStepInstruction = currentSubStepInstruction;
+		executor.step();
+		syncState();
+		currentSubStepInstruction = lastSubStepInstruction;
 	}
 
 	function handleStepChange(stepIndex: number) {
@@ -195,8 +210,7 @@
 		const justReachedEnd = tl.progress < 1 && state.progress >= 1 && state.stepCount > 0;
 		tl = state;
 		if (justReachedEnd) {
-			executor.step();
-			syncState();
+			drainFinalVisibility();
 		}
 	}
 
@@ -230,8 +244,7 @@
 		// When scrubbing to the very end, drain any pending visibility
 		// (final reveal of the principal line for chorégraphié statements).
 		if (progress >= 1) {
-			executor.step();
-			syncState();
+			drainFinalVisibility();
 		}
 	}
 
@@ -300,8 +313,7 @@
 					executor.hideAutoInstruments();
 					// Drain any pending visibility from the last chorégraphié
 					// sub-step so the principal line is revealed at end.
-					executor.step();
-					syncState();
+					drainFinalVisibility();
 				} else if (autoPlay) {
 					timeline?.play();
 				}
@@ -353,9 +365,17 @@
 			{/if}
 		</div>
 
-		{#if currentInstruction}
+		{#if currentInstruction || currentSubStepInstruction}
 			<div class="mt-2 rounded-md bg-muted p-2 text-sm text-muted-foreground">
-				{currentInstruction}
+				{#if currentInstruction}
+					<p data-testid="consigne-auteur">{currentInstruction}</p>
+				{/if}
+				{#if currentSubStepInstruction}
+					<p class="text-xs" class:mt-1={currentInstruction}>
+						<span aria-hidden="true">↳</span>
+						<span data-testid="consigne-sous-etape">{currentSubStepInstruction}</span>
+					</p>
+				{/if}
 			</div>
 		{/if}
 

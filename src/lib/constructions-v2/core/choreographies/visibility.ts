@@ -34,7 +34,7 @@ const TRACE_STYLE = { dash: 'dashed', opacity: 0.4 } as const;
 
 /**
  * Default per-mode visible-tag set. Tags absent here are hidden by the
- * base mode unless explicitly included via `@avec_X`.
+ * base mode unless explicitly included via the `+X` modifier (and removed via `-X`).
  */
 const DEFAULT_VISIBLE_TAGS: Record<Visibilite, ReadonlySet<TraceTag>> = {
 	epure: new Set(),
@@ -108,7 +108,7 @@ function applyTraceStyle(figure: Figure, id: string): void {
 	const merged = {
 		...el,
 		style: {
-			...(el.style ?? {}),
+			...el.style,
 			dash: TRACE_STYLE.dash,
 			opacity: TRACE_STYLE.opacity
 		}

@@ -10,8 +10,8 @@
  *   P and Q.
  *
  * - `double_perpendiculaire` : perpendicular through P to (AB) → line e ;
- *   then perpendicular through P to e → parallel to (AB). Requires
- *   composition (`ctx.sub`) — left as stub for V1.
+ *   then perpendicular through P to e → parallel to (AB). Not implemented
+ *   yet (stub) ; `ctx.sub` now exists to compose the two perpendiculars.
  */
 
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
@@ -801,7 +801,7 @@ export const VOIES_PARALLELE_EUCLIDE: readonly Voie[] = [
 		nom_humain: 'Parallélogramme d’Euclide (I.31)',
 		source: 'Euclide, Éléments I.31',
 		description:
-			'Compas de centre `P` et rayon `|AB|` ; compas de centre `A` et rayon `|BP|`. Leur intersection `Q` forme un parallélogramme `PAQB`. La règle `P→Q` trace la parallèle.',
+			'Compas de centre `P` et rayon `|AB|` ; compas de centre `B` et rayon `|PA|`. Leur intersection `Q` forme un parallélogramme `PABQ`. La règle `P→Q` trace la parallèle.',
 		defaut: true,
 		choreography: parallelogrammeChoreography
 	},
@@ -810,7 +810,7 @@ export const VOIES_PARALLELE_EUCLIDE: readonly Voie[] = [
 		nom_humain: 'Double perpendiculaire',
 		source: 'Variante moderne',
 		description:
-			'Tracer la perpendiculaire à `(AB)` par `P` (droite auxiliaire `e`), puis la perpendiculaire à `e` par `P` : c’est la parallèle à `(AB)`. Nécessite `ctx.sub` — non implémentée en V1.',
+			'Tracer la perpendiculaire à `(AB)` par `P` (droite auxiliaire `e`), puis la perpendiculaire à `e` par `P` : c’est la parallèle à `(AB)`. Pas encore implémentée.',
 		defaut: false,
 		choreography: NOT_YET_IMPLEMENTED
 	}

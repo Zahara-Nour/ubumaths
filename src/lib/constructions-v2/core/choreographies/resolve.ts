@@ -9,7 +9,7 @@
  * methods not declared for the (builtin, contrainte) pair all raise
  * `DecoratorResolveError` with explicit hints.
  *
- * See `docs/wip/v1-choreographies-phase0-tdd.md` section P0.3 for the spec.
+ * Reference : `docs/systeme/geometrie/constructions.md`.
  */
 
 import {

@@ -20,18 +20,6 @@ export interface InstrumentState {
 	rotateX?: number;
 }
 
-/** Metadata for a construction script. */
-export interface ConstructionMeta {
-	title?: string;
-	description?: string;
-	canvasWidth?: number;
-	canvasHeight?: number;
-}
-
-/** Known directive names. */
-export type DirectiveName =
-	'pause' | 'instrument' | 'instruction' | 'vitesse' | 'cacher' | 'montrer';
-
 /** Start/end positions for instrument movement animation. */
 export interface InstrumentMove {
 	fromX: number;

@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1615._
+_Mis à jour le 2026-10-23, lot 2 en cours._
 
-- **État** : lot 1 sécurité **livré** — #1615 mergée, migration `20261022200000` appliquée en prod (policies relues). Le code (API, pages) part au prochain `deploy:prod` ; d'ici là, un élève qui tenterait de créer reçoit une erreur 500 de la base (refus RLS), pas un 403.
-- **Prochaine action** : choisir le lot suivant avec David (aucun worktree ouvert).
-- **En attente de David** : le choix du lot 2. Proposé : consignes des sous-étapes affichées + convertisseur `@cacher` → `masque` + ménage (commentaires périmés, code mort, `any`) ; puis parallèle double perpendiculaire + formes `(P, d)` décorées ; `@mesure` (rapporteur) = chantier à part.
-- **Pièges en cours** : aucun.
-- **Worktree / branche** : aucun (supprimé après #1615). Lot suivant : `git worktree add -b feat/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
+- **État** : lot 2 « consignes, `masque`, ménage » — phase 0 validée par David le 2026-10-23 (ci-dessous). Tests d'abord, puis code.
+- **Prochaine action** : tests rouges (consignes affichées, convertisseur `masque`/`montre`), puis implémentation, puis ménage.
+- **En attente de David** : rien.
+- **Pièges en cours** : 3 constructions en prod ont des `@cacher("T_3")`/`@cacher("arc_9")` sans effet (identifiants IEP sans nom DSL) — **non réparées** (choix de David), à ré-importer un jour depuis leur XML.
+- **Worktree / branche** : `../ubumaths-wt-constructions` · `feat/constructions-consignes-masque`.
 
 ---
 
@@ -45,3 +45,31 @@ Migration : **additive au sens du risque** (resserre deux policies, aucune donn�
 - API : `POST` et `PUT` → `requireRoles(CONSTRUCTION_AUTHOR_ROLES)` (`src/lib/server/constructions-access.ts`) ; `DELETE` avec `.select()` (zéro ligne → 404).
 - Pages : `/constructions/new` et `/constructions/[id]/edit` → 403 pour un élève ; boutons « nouvelle », « importer XML », « modifier » masqués (`canAuthor`). Test `src/routes/api/constructions/__tests__/ecriture-reservee.test.ts` : 6 rouges sans le correctif, 10/10 verts avec.
 - Revues : `security-auditor` aucun finding bloquant ; `code-reviewer` → PUT refusé par la RLS = 404, assertions 200/201 strictes, DELETE à zéro ligne testé (11/11).
+
+## Lot 2 — Consignes, `masque`, ménage (2026-10-23)
+
+Inventaire de départ : [constructions.md](../systeme/geometrie/constructions.md) § Fonctions manquantes, Dette de code, Commentaires périmés.
+
+### Phase 0 — validée par David le 2026-10-23
+
+**A. Consignes des sous-étapes affichées** (`SubStep.instruction`, ~60 consignes écrites, jamais affichées)
+
+1. Pendant une sous-étape qui porte une consigne, le lecteur l'affiche ; elle suit le curseur (avancer, reculer, recommencer).
+2. Instruction non chorégraphiée, ou sous-étape sans consigne : rien de plus ; la consigne de sous-étape disparaît au pas suivant.
+3. **Deux lignes** (choix de David) : la consigne `@instruction` de l'auteur reste en haut, celle de la sous-étape dessous, plus petite.
+4. Construction en erreur : figure partielle comme aujourd'hui ; consigne = celle du dernier pas joué.
+
+**B. Convertisseur** : un point « masquer » / « montrer » de l'XML IEP → `masque(A)` / `montre(A)` (au lieu de `@cacher("A")` / `@montrer("A")`, sans effet). Instruments inchangés (`@cacher`). Les 3 constructions déjà en prod ne sont **pas** réparées (choix de David) : leurs arguments sont des identifiants IEP (`T_3`, `arc_9`) sans nom dans le script.
+
+**C. Ménage sans changement de comportement** : code mort (`resolveCurrentDecorators`, `_speedFactor`, `ConstructionMeta`, `DirectiveName`) ; `any` de `ScriptEditor.svelte` ; coloration de l'éditeur tirée de `BUILTIN_NAMES` (seul changement visible) ; commentaires périmés du code et `couvre:` du README ; `constructions.md` mis à jour. Journaux d'archive inchangés.
+
+**Hors lot** (choix de David) : les deux défauts de l'API des scripts de démo → lot à part (revue sécurité).
+
+Revue : `code-reviewer` (Sonnet).
+
+### Réalisé (2026-10-23)
+
+- **A** : `ConstructionPlayer.svelte` lit `executor.currentSubStep?.instruction` dans `syncState()` et l'affiche sous la consigne de l'auteur (« ↳ », plus petit). Test `components/__tests__/ConstructionPlayer-consignes.svelte.test.ts` : 4 rouges sans le code, 4/4 verts avec (rendu réel, curseur avant/arrière).
+- **B** : `converter.ts` écrit `masque(A)` / `montre(A)`. 2 tests dans `converter.test.ts` (sortie + point réellement masqué à l'exécution) : rouges sans le correctif, verts avec.
+- **C** : code mort retiré, `any` de l'éditeur → `StateEffectType<number[]>`, coloration tirée de `BUILTIN_NAMES` / `MATH_FUNCTIONS` (sur-ensemble strict de l'ancienne liste, aucun mot ne change de couleur), 7 commentaires corrigés, `constructions.md` recalé (numéros de ligne, lignes réglées retirées, les 3 constructions de prod notées).
+- `check:incremental` 0 erreur · `types:cliquet` tenu · `lint:fast` propre · `test:server constructions-v2` 189 ✓ / 21 ignorés.

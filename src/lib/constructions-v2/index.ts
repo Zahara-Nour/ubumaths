@@ -14,7 +14,7 @@ export type { TimelineState, TimelineUpdateFn } from './core/timeline.svelte';
 export { partialSegment, partialCircle, partialArc, interpolate } from './core/animator';
 
 // Types
-export type { InstrumentType, InstrumentState, ConstructionMeta, DirectiveName } from './types';
+export type { InstrumentType, InstrumentState } from './types';
 export { createDefaultInstrumentState } from './types';
 
 // Constants
