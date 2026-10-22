@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après les décisions E1, E2, § 10 et D1 (§ 14-17)._
+_Mis à jour le 2026-10-22, après les décisions E1, E2, § 10, D1 et D2 (§ 14-18)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17), f′ finale en `auto`, dernière étape « On réduit ».
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (D2 ensuite) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : D2-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (D3 ensuite) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : D3-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -355,3 +355,13 @@ Effets prévus : `hasIntegerSpacingViolation` (`cosmetic-transforms.ts:142`) ne 
 **Décision : politique `auto`, en dernière étape « On réduit ».** Les étapes gardent l'ordre de la règle (`2x(x+1) + x²`), la dernière étape développe seulement si l'écriture raccourcit (`3x² + 2x`), et ne factorise jamais (décision de fusion) : `5(x+1)⁴` reste tel quel. Quotient : le numérateur est réduit, le dénominateur n'est pas développé (`((x+1) − x)/(x+1)²` → `1/(x+1)²`). Une autre forme se demande par l'énoncé (D4).
 
 À vérifier par un test avant de s'appuyer dessus : qu'`auto` donne bien ces trois résultats aujourd'hui (il partage le défaut de `réduire`, qui développe, § 3).
+
+**Révision de D1 (même jour).** Sondé : `tidy` additionne `xeˣ + 2xeˣ → 3xeˣ` mais laisse `eˣ + xeˣ` (mettre `eˣ` en facteur = factoriser, interdit à `tidy`) ; avec `auto` (qui ne factorise jamais, décision de fusion du 2026-09-21, ADR 0007), `f = xeˣ` aurait pour réponse finale `eˣ + xeˣ`. David : « je ne trouve pas normal que f′ affiche eˣ + xeˣ ». Il a choisi l'option (a) : « je veux un minimum de réduction ».
+
+**Décision D1 révisée** : la réponse finale de f′ n'utilise PAS la politique `auto` (dont la règle reste intacte : elle vise le calcul sans but, f′ en a un). Forme propre à la dérivée : réduite (développer seulement si plus court, numérateur d'un quotient réduit, dénominateur gardé) **+ exponentielle commune mise en facteur**, rien d'autre de factorisé. `xeˣ → (x + 1)eˣ`, `x²eˣ → (x² + 2x)eˣ`, `(x² − 3)eˣ → (x² + 2x − 3)eˣ`, `x²(x + 1) → 3x² + 2x`. Même règle que celle prévue pour la primitive (§ 7).
+
+## 18. D2 : f′ dans un tableau de variations (David, 2026-10-22 : « comme tu proposes »)
+
+Sondé avant décision (test jetable, supprimé) : `reducedDerivative` (`variations/display.ts:23`) affiche `eˣ + xeˣ` pour `xeˣ`, `2xeˣ + eˣ(x² − 3)` pour `(x² − 3)eˣ`, `(1 − x²)/(x²+1)²` pour `x/(x²+1)`. La politique `factoriser` au lycée (ADR 0024) donne `(x + 1)eˣ`, `(x − 1)(x + 3)eˣ`, `(1 − x)(1 + x)`, et factorise les racines irrationnelles : `x² − 2 → (x − √2)(x + √2)`. Laisse `x² + 1`, `x² − 2x + 5` (Δ < 0). Ma première version de D2 (« coefficients rationnels seulement ») était fausse.
+
+**Décision** : dans le tableau de variations, f′ passe par `factoriser` (lycée) ; quotient → numérateur factorisé, dénominateur tel quel ; étape « On factorise pour étudier le signe ». Rien ne se factorise (Δ < 0) → reste développé, signe de a. Ordre des facteurs : celui du noyau (décision du 2026-10-11), ordre interne d'un facteur gardé (`x(2 + x)eˣ`) — accepté tel quel.
