@@ -76,6 +76,32 @@ const lnQuotient = createRule(
 );
 
 // =============================================================================
+// La fonction exp écrite exp(…)
+// =============================================================================
+
+// `exp(x)` n'est pas `e^x` pour les motifs : sans `normalize`, `réduire` et
+// `auto` ne savaient plus réduire `ln(exp(x))` (chantier simplify-carte § 33).
+// Les noms sont ceux des étapes de `normalize` qu'elles remplacent : l'élève
+// garde les mêmes titres.
+
+/** ln(exp(x)) = x */
+const lnExpFunction = createRule(P.func('ln', [P.func('exp', [P._('x')])]), P._('x'), {
+	name: 'ln-exp-inverse'
+});
+
+/** exp(ln(x)) = x */
+const expFunctionLn = createRule(P.func('exp', [P.func('ln', [P._('x')])]), P._('x'), {
+	name: 'exp-ln-inverse'
+});
+
+/** exp(a) · exp(b) = exp(a + b) */
+const expProduct = createRule(
+	P.mul(P.func('exp', [P._('a')]), P.func('exp', [P._('b')])),
+	P.func('exp', [P.add(P._('a'), P._('b'))]),
+	{ name: 'exp-product' }
+);
+
+// =============================================================================
 // Exports
 // =============================================================================
 
@@ -87,4 +113,11 @@ export const logExpRules: readonly Rule[] = [
 	lnPow,
 	lnProduct,
 	lnQuotient
+] as const;
+
+/** La fonction écrite `exp(…)` : réciproque de ln, produit. Lues par le moteur pédagogique. */
+export const expFunctionRules: readonly Rule[] = [
+	lnExpFunction,
+	expFunctionLn,
+	expProduct
 ] as const;

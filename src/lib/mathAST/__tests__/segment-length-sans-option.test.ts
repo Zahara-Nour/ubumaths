@@ -31,6 +31,19 @@ const BEFORE: Readonly<Record<string, unknown>> = JSON.parse(
 	)
 );
 
+/**
+ * Les changements VOULUS depuis l'empreinte, qui la remplacent clé par clé :
+ * - `simplify` ne factorise plus `x²+2x+1` (ADR 0007, chantier simplify-carte § 33).
+ */
+const CHANGED_SINCE: Readonly<Record<string, unknown>> = {
+	'simplify x^2+2x+1': 'x^2 + 2 x + 1'
+};
+
+/** La valeur attendue : l'empreinte, sauf changement voulu. */
+function expected(key: string): unknown {
+	return key in CHANGED_SINCE ? CHANGED_SINCE[key] : BEFORE[key];
+}
+
 const EXPRESSIONS = [
 	'2x+3x',
 	'(x+1)^2-x^2',
@@ -70,7 +83,7 @@ describe('sans option : tidy, simplify, getVariables comme avant le chantier', (
 	it.each(EXPRESSIONS)('%s', (latex) => {
 		const node = parseLatex(latex);
 		expect(toLatex(tidy(node))).toBe(BEFORE[`tidy ${latex}`]);
-		expect(toLatex(simplify(node).result)).toBe(BEFORE[`simplify ${latex}`]);
+		expect(toLatex(simplify(node).result)).toBe(expected(`simplify ${latex}`));
 		expect([...getVariables(node)].sort()).toEqual(BEFORE[`vars ${latex}`]);
 	});
 });

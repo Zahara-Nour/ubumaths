@@ -148,3 +148,10 @@ export const absSimplifyRules: readonly Rule[] = [
 	absPositive,
 	absNegative
 ] as const;
+
+/**
+ * Ce que `normalize` faisait en silence pour `réduire` et `auto`, qui ne
+ * passent plus par lui (chantier simplify-carte § 33) : `|−x| = |x|`,
+ * `||x|| = |x|`.
+ */
+export const absReduceRules: readonly Rule[] = [absNegation, absIdempotent] as const;

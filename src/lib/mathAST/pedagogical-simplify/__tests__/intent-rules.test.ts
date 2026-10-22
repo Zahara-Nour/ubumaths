@@ -69,12 +69,13 @@ describe('selectRulesForIntent — developper', () => {
 });
 
 describe('selectRulesForIntent — reduire', () => {
-	it('excludes both factoring and expansion rules', () => {
+	it('excludes both factoring and expansion rules, and finishes with tidy, not normalize', () => {
 		const { rules, useNormalize } = selectRulesForIntent('reduire', DEFAULT_V1_FLAGS);
 		const names = ruleNamesOf([...rules]);
 		expect(names.has('diff-squares-symbolic')).toBe(false);
 		expect(names.has('expand-sum-squared')).toBe(false);
-		expect(useNormalize).toBe(true);
+		// normalize développe tout : `2(x+3) → 2x+6` (chantier simplify-carte § 33)
+		expect(useNormalize).toBe(false);
 	});
 
 	it('includes pythagorean (always-true identity) when trig enabled', () => {
@@ -84,18 +85,30 @@ describe('selectRulesForIntent — reduire', () => {
 });
 
 describe('selectRulesForIntent — auto', () => {
-	it('uses normalize and includes neither expansion rules nor numeric factoring (ambiguous)', () => {
+	it('has the rules of reduire : no factoring at all, no expansion rule, no normalize', () => {
 		const { rules, useNormalize } = selectRulesForIntent('auto', DEFAULT_V1_FLAGS);
 		const names = ruleNamesOf([...rules]);
-		// Numeric factoring (e.g. x²-4 → (x+2)(x-2)) is ambiguous in 'auto' → excluded
-		expect(names.has('diff-squares-numeric')).toBe(false);
-		expect(names.has('sum-cubes-numeric')).toBe(false);
-		expect(names.has('diff-cubes-numeric')).toBe(false);
-		// Expansion rules also excluded (auto is "tidy up only")
+		// `auto` ne factorise jamais (ADR 0007) : les identités symboliques
+		// faisaient l'aller-retour `x²+2x+1 → (x+1)² → x²+2x+1` à l'écran
+		for (const name of [
+			'diff-squares-numeric',
+			'sum-cubes-numeric',
+			'diff-cubes-numeric',
+			'diff-squares-symbolic',
+			'perfect-square-trinomial',
+			'sum-cubes-symbolic',
+			'diff-cubes-symbolic'
+		]) {
+			expect(names.has(name)).toBe(false);
+		}
+		// Le développement « seulement si plus court » est rédigé à part (reduce-steps.ts)
 		expect(names.has('expand-sum-squared')).toBe(false);
 		// But pythagorean (unambiguous identity) is included
 		expect(names.has('pythagorean')).toBe(true);
-		expect(useNormalize).toBe(true);
+		expect(useNormalize).toBe(false);
+		expect(names).toEqual(
+			ruleNamesOf([...selectRulesForIntent('reduire', DEFAULT_V1_FLAGS).rules])
+		);
 	});
 });
 

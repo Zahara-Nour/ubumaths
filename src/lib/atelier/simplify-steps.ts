@@ -104,7 +104,11 @@ export function simplifySteps(expression: string): SimplifiedSteps | null {
 		const summary = summaryOf(
 			steps,
 			collapseRepeats(
-				renderer.renderAll(result.steps, { schoolLevel: 'lycee', verbosity: 'summarized' })
+				// `auto` qui développe a sa rédaction résumée, celle de `.développer`
+				renderer.renderAll(result.summary ?? result.steps, {
+					schoolLevel: 'lycee',
+					verbosity: 'summarized'
+				})
 			)
 		);
 

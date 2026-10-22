@@ -215,6 +215,3 @@ export const algebraicExpandingRules: Rule[] = [
 	expandSumSquared,
 	expandDiffSquared
 ];
-
-/** Rules used by simplify pipeline — factoring only (expanding is inverse) */
-export const algebraicSimplifyRules: Rule[] = [...algebraicFactoringRules];

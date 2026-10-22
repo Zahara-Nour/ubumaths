@@ -24,6 +24,10 @@ vocabulaire). `pattern/rule-sets/index.ts` le dit : « The `simplify()` pipeline
 - `auto` ≠ `réduire` : sa spec case par case est `docs/systeme/mathast/tidy-spec.md` §C (colonne « attendu »).
 - `auto` **ne factorise jamais** : garder `(x+1)²` est de la conservation, produire `(x+1)²` depuis
   `x²+2x+1` répond à une autre consigne.
+  - **Précision (David, 2026-10-22, Q4 du chantier simplify-carte)** : la règle vise le
+    **résultat**, pas les étapes. Une étape peut factoriser pour simplifier une fraction, si le
+    facteur commun disparaît ensuite : `(x²−1)/(x+1) = (x−1)(x+1)/(x+1) = x−1`, pour `x ≠ −1`
+    (condition affichée). Mise en œuvre le 2026-10-23 (`pedagogical-simplify/reduce-steps.ts`).
 - `développer` contient `réduire` (« développer et réduire »), l'inverse est faux.
 - **Les règles définissent ce qui est atteignable** : ce qu'on ne sait pas expliquer en étapes, on ne
   le fait pas. Les étapes de `normalize` ne sont pas pédagogiques.

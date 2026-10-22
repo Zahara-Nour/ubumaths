@@ -147,7 +147,7 @@ describe('auto : une fraction de polynômes se simplifie en montrant la factoris
 
 	it('une fraction sans facteur commun reste', () => {
 		const { text, steps } = run('(x+1)/{x-1}', 'auto');
-		expect(text).toBe('{x+1}/{x-1}');
+		expect(text).toBe(toCustom(parseCustom('(x+1)/{x-1}')));
 		expect(steps).toEqual([]);
 	});
 });

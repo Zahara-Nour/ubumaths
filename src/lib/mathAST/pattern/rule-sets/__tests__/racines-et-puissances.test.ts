@@ -83,9 +83,9 @@ describe('ce qui ne doit pas changer', () => {
 	it.each([
 		['\\sqrt{x^2}', '\\left| x \\right|'],
 		['\\sqrt{8}', '2 \\sqrt{2}'],
-		// L'intention `reduire` ecrit le coefficient devant : ce n'est pas le meme
-		// choix que `simplify`, et ce test le pinne tel quel.
-		['\\frac{1}{\\sqrt{2}}', '\\dfrac{1}{2} \\sqrt{2}']
+		// `reduire` finit par `tidy`, comme `simplify` : il écrit `√2/2` (avant,
+		// normalize écrivait le coefficient devant, `½√2` ; chantier simplify-carte § 33)
+		['\\frac{1}{\\sqrt{2}}', '\\dfrac{\\sqrt{2}}{2}']
 	])('%s → %s', (source, attendu) => {
 		expect(reduire(source)).toBe(attendu);
 	});
