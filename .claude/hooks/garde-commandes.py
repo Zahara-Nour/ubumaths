@@ -207,9 +207,10 @@ for brut in segments:
         # tourne quand même, et supprimer la branche distante d'une PR ouverte la FERME
         # sans merge (#1601, 2026-10-22).
         supprime_distante = verbe == "push" and (
-            re.search(r"\s(?:--delete|-d)\s", reste) or any(a.startswith(":") for a in arguments)
+            re.search(r"\s(?:--delete(?:=\S*)?|-d)\s", reste) or any(a.lstrip("+").startswith(":") for a in arguments)
         )
-        supprime_locale = verbe == "branch" and re.search(r"\s(?:-d|-D|--delete)\s", reste)
+        # Options groupées comprises (`-vd`, `-fd`)
+        supprime_locale = verbe == "branch" and re.search(r"\s(?:-[a-zA-Z]*[dD][a-zA-Z]*|--delete)\s", reste)
         if merge_de_pr_vu and (supprime_distante or supprime_locale):
             refuser("pas de suppression de branche dans la même commande que `gh pr merge` : s'il échoue, supprimer la branche distante ferme la PR sans merge. Lire `MERGED` (`gh pr view <n> --json state -q .state`), puis supprimer dans une commande séparée.")
 
@@ -227,17 +228,16 @@ for brut in segments:
 
         # Rebaser une branche déjà poussée sur une AUTRE branche réécrit ses commits
         # publiés : seul un push --force passerait (#1603, 2026-10-22). Tirer sa propre
-        # branche en rebase (sans refspec, ou la même) ne réécrit que le local.
+        # branche en rebase (sans refspec, la même, ou HEAD) ne réécrit que le local.
+        # « Poussée » = le distant la connaît : pas l'upstream, que `git worktree add -b
+        # x … origin/main` règle sur origin/main pour une branche jamais poussée.
         if (
             verbe == "pull"
             and ici_branche not in ("", "main", "HEAD")
             and "--no-rebase" not in reste
             and re.search(r"\s(?:--rebase(?:=\S+)?|-r)\s", reste)
-            and any(a.split(":")[0] not in ("", ici_branche) for a in arguments[1:])
-            and (
-                git_dans(lieu, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}")
-                or git_dans(lieu, "rev-parse", "-q", "--verify", f"refs/remotes/origin/{ici_branche}")
-            )
+            and any(a.split(":")[0] not in ("", "HEAD", ici_branche) for a in arguments[1:])
+            and git_dans(lieu, "rev-parse", "-q", "--verify", f"refs/remotes/origin/{ici_branche}")
         ):
             refuser("branche déjà poussée : jamais `git pull --rebase` d'une autre branche dessus, il réécrit les commits publiés et seul un push --force passerait. Pour la remettre à jour : `git merge origin/main` (ou rien, GitHub merge quand même).")
 

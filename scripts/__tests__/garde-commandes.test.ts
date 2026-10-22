@@ -88,6 +88,9 @@ describe('garde-commandes — git : enchaînements et options qui perdent du tra
 		refuse('gh pr merge 12 --merge && git push origin -d feat/x', /MERGED/);
 		refuse('gh pr merge 12 --merge && git push origin :feat/x', /MERGED/);
 		refuse('gh pr merge 12 --merge && git branch -d feat/x', /MERGED/);
+		refuse('gh pr merge 12 --merge && git branch -vd feat/x', /MERGED/);
+		refuse('gh pr merge 12 --merge && git push origin --delete=feat/x', /MERGED/);
+		refuse('gh pr merge 12 --merge && git push origin +:feat/x', /MERGED/);
 	});
 
 	it('la même suppression, seule, passe', () => {

@@ -159,6 +159,15 @@ describe('main partagé — passe', () => {
 		passe('git pull --rebase origin main', chantier);
 	});
 
+	it("même avec l'upstream origin/main que lui donne `git worktree add -b x … origin/main`", () => {
+		git(chantier, 'config', 'remote.origin.url', join(racine, 'distant.git'));
+		git(chantier, 'config', 'remote.origin.fetch', '+refs/heads/*:refs/remotes/origin/*');
+		git(chantier, 'update-ref', 'refs/remotes/origin/main', 'HEAD');
+		git(chantier, 'config', 'branch.feat/x.remote', 'origin');
+		git(chantier, 'config', 'branch.feat/x.merge', 'refs/heads/main');
+		passe('git pull --rebase origin main', chantier);
+	});
+
 	it('tout, sur une branche de chantier', () => {
 		passe('git pull', chantier);
 		passe('git merge origin/main', chantier);
@@ -187,6 +196,7 @@ describe('branche de chantier déjà poussée (#1603)', () => {
 	it('laisse tirer sa propre branche, et fusionner main', () => {
 		passe('git pull --rebase', chantier);
 		passe('git pull --rebase origin feat/x', chantier);
+		passe('git pull --rebase origin HEAD', chantier);
 		passe('git pull origin main', chantier);
 		passe('git merge origin/main', chantier);
 	});
