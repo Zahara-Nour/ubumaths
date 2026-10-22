@@ -5,8 +5,7 @@
  * Un modèle porte au plus UN point par programme (règle 2, en base), choisi parmi les points
  * posés sur le nœud du modèle ou sur la notion de ce nœud (règle 1). L'écran propose donc un
  * choix par programme. Un modèle sans nœud ne peut pas être tagué (décision (a)) : l'écran
- * demande de le ranger d'abord. Les tags des anciens points (thème → objectif) restent en base
- * jusqu'à l'étape 4 de C5, mais ne s'affichent plus.
+ * demande de le ranger d'abord. Un tag dont le point est illisible (jointure nulle) ne s'affiche pas.
  */
 import { describe, it, expect } from 'vitest';
 import { load } from '../+page.server';
@@ -89,20 +88,16 @@ async function loadWith(nodeId: string | null, tags: unknown[]) {
 	return { fake, result };
 }
 
-/** Tag lu avec son point (colonnes du programme) ; un ancien point n'a ni nœud ni programme. */
-function tag(pointId: string, nodeId: string | null, grade: string | null) {
-	const known = POINTS.find((p) => p.id === pointId);
-	return {
-		point_id: pointId,
-		curriculum_points: known ?? { ...point(pointId, '0-000', 'X', 'aucun'), node_id: nodeId, grade }
-	};
+/** Tag lu avec son point (colonnes du programme) ; un point inconnu du décor est illisible. */
+function tag(pointId: string) {
+	return { point_id: pointId, curriculum_points: POINTS.find((p) => p.id === pointId) ?? null };
 }
 
 // ============================================================================
 // TESTS
 // ============================================================================
 
-describe('édition d’un modèle — tags par programme (étape 3 de C5)', () => {
+describe('édition d’un modèle — tags par programme', () => {
 	it('un choix par programme du modèle (son niveau et les suivants), points du nœud et de sa notion', async () => {
 		const { result } = await loadWith('sous-notion', []);
 
@@ -119,11 +114,8 @@ describe('édition d’un modèle — tags par programme (étape 3 de C5)', () =
 		expect(cinquieme?.points.map((p) => p.code)).toEqual(['5-026']);
 	});
 
-	it('le tag neuf posé est le choix du programme ; l’ancien tag est ignoré', async () => {
-		const { result } = await loadWith('sous-notion', [
-			tag('p5-b', 'sous-notion', '5'),
-			tag('p-ancien', null, null)
-		]);
+	it('le tag posé est le choix du programme ; un tag au point illisible est ignoré', async () => {
+		const { result } = await loadWith('sous-notion', [tag('p5-b'), tag('p-masque')]);
 		const cinquieme = result.programmeTags.programmes[0];
 		expect(cinquieme.selectedPointId).toBe('p5-b');
 		expect(result.programmeTags.taggedCount).toBe(1);
@@ -135,7 +127,7 @@ describe('édition d’un modèle — tags par programme (étape 3 de C5)', () =
 			'p5-archive'
 		);
 
-		const avecTag = await loadWith('sous-notion', [tag('p5-archive', 'sous-notion', '5')]);
+		const avecTag = await loadWith('sous-notion', [tag('p5-archive')]);
 		const cinquieme = avecTag.result.programmeTags.programmes[0];
 		expect(cinquieme.selectedPointId).toBe('p5-archive');
 		expect(cinquieme.points.find((p) => p.id === 'p5-archive')?.archived).toBe(true);

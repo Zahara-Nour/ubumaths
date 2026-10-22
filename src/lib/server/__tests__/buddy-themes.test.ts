@@ -4,9 +4,8 @@
  *
  * Le thème d'une réponse est la BRANCHE de l'arbre des notions où se range le
  * point que valide la question : `question_template_points` → `curriculum_points`
- * → nœud (sous-notion ou notion) → … → branche. Les tags des anciens points
- * (thème → objectif) ne comptent plus. Une question sans point neuf n'a pas de
- * thème, sans erreur.
+ * → nœud (sous-notion ou notion) → … → branche. Une question sans point lisible
+ * n'a pas de thème, sans erreur.
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import type { SupabaseClient } from '@supabase/supabase-js';
@@ -90,7 +89,7 @@ describe('fetchTemplateThemeIds', () => {
 		expect(themes.has(TEMPLATE_C)).toBe(false);
 	});
 
-	it('ancien point (sans nœud) ou point illisible : pas de thème', async () => {
+	it('point sans nœud lu ou point illisible : pas de thème', async () => {
 		rows = [link(TEMPLATE_A, null), link(TEMPLATE_B, null, false)];
 		const themes = await fetchTemplateThemeIds(fakeSupabase(), [TEMPLATE_A, TEMPLATE_B]);
 		expect(themes.size).toBe(0);

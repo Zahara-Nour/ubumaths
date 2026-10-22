@@ -9,7 +9,7 @@
  *      apparaissent (un point sur une sous-notion compte pour sa notion) ;
  *   4. les archivés se masquent et se comptent ; travaillés, ils restent hors du
  *      « vus / total » de l'Avancement (B3, 2026-10-21) ;
- *   5. un ancien point (sans nœud) n'apparaît jamais ;
+ *   5. un point sans niveau n'apparaît jamais ;
  *   7. aucun point → arbre vide.
  */
 
