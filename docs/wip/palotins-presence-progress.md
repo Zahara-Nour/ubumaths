@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1599 (PR 2 #1600 ouverte, CI verte sur 5d98a25db)._
+_Mis à jour le 2026-10-22, après #1599 (PR 2 #1600 ouverte, points (a)-(c) faits)._
 
 - **État** : PR 1 #1599 mergée, `db:migrate` + `db:types` faits. PR 2 #1600 (`feat/palotins-presence-2`) : revues faites, CI verte. David a validé les 4 points le 2026-10-22.
-- **Prochaine action** (dans #1600, avant merge) : (a) effacer `welcome_back_on` vieux de ≥ 7 jours au premier passage suivant, dans `recordStudentPresence` (+ 2 tests dans `buddy-queries-passage.test.ts`) ; (b) Confidentialité § 7, ligne du retour → « Effacé dès que le Palotin a salué le retour, ou au plus tard au premier passage après 7 jours ; supprimé avec le profil » (+ rgpd.md / aipd si même phrase) ; (c) noter l'écart accepté dans `buddy-palotins.md` : si la 2e écriture échoue après le RPC, le retour n'est pas fêté ; (d) tests, `check:incremental`, `docs:check-a-jour --depuis origin/main`, push, CI verte → merger.
+- **Prochaine action** : CI verte sur `1d8bc5489` → merger #1600. Points (a)-(c) faits dans `1d8bc5489` : retour périmé effacé au premier passage d'un nouveau jour (`forgetExpiredWelcomeBack`, `lastExpiredWelcomeBackDay`, 6 tests, rouges sans le code), Confidentialité § 7 + `rgpd.md` (AIPD sans cette phrase), écart de la 2e écriture dans `buddy-palotins.md`.
 - **Décisions validées** : mémoire serveur (pas de cookie) ; texte § 3.2 tel quel ; effacement réel au passage suivant (pas de tâche planifiée) ; écart de la 2e écriture accepté (pas de migration).
 - **Après merge** : « Reprendre ici », `docs/wip/verifications-manuelles.md`, pointer `palotins-absence-progress.md` vers ce chantier, `git worktree remove` + `git branch -d` des 2 branches.
 - **Pièges en cours** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté). Ne pas mettre `Claude-Session:` dans les commits.
