@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-10-22, fin de session (après #1609)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12).
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Source scratchpad perdue au `/clear` : pour la modifier, `Artifact read` puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
 - **Prochaine action** : David répond aux 12 questions de la page ; ensuite plan de lots (fin de la page).
 - **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
@@ -321,3 +321,13 @@ Pourquoi : historique — `normalize` était la forme de comparaison ; l'ADR 000
 **Rectification (David, 2026-10-22)** : ces identités étaient autorisées dans `normalize` par la convention du 2026-09-20 (`docs/systeme/mathast/convention-equivalence.md` § « La règle » et « Conséquence pratique ») : équivalence sur l'**intersection des domaines** ; une règle qui **élargit** le domaine est permise (`e^{ln x} → x`, `(√x)² → x`, `x/x → 1`), une règle qui le **restreint** est probablement fausse. `ln(xy) → ln x + ln y` et `ln(x/y)` restreignent : connus, laissés tels quels (décision du 2026-10-08, même doc § `\ln(x^2)`). Mes marques « ⚠️ perd x > 0 » ci-dessus sont donc à lire : juste pour **comparer** ; le problème n'est que pour **afficher** (S3 : dire « pour x > 0 » ou hypothèse déclarée). L'argument du § 9 tient, sur ce seul terrain.
 
 **`normalize` dans `evaluate` ?** (question de David, 2026-10-22, sondé) — `evaluate` exact ne traite que les expressions sans variable (`eval/evaluate.ts:1489`). Là, le surplus de `normalize` est du calcul exact voulu : `1/(1+√2) → √2−1`, `(√2+1)² → 3+2√2`, `√2·√3 → √6`, `cos(π/3) → 1/2`, `e^{ln 2} → 2` (`tidy` ne fait rien de tout ça) ; ni domaine ni étapes en jeu. Défauts d'écriture seulement : `½√2`, `⅔π` (d'où les `readable` / `tidyKeepingValue` derrière), `0,5+0,25 → 3/4` (contraire à S1), aucune borne (`(1+1/1000)^{1000}` → fraction de 6 012 caractères). Proposé : `normalize` calcule, une écriture finale commune met au propre (style `tidy`, décimal gardé, renoncement au-delà d'une taille). **Nuance au § 9** : retirer `normalize` de l'affichage des expressions **avec variable** ; pour une valeur exacte constante, il calcule, seule l'écriture change.
+
+## 13. Où mettre au propre une valeur exacte (David, 2026-10-22 : « ok pour A »)
+
+Question de David : appeler `tidy` à la fin d'`evaluate` plutôt que d'enchaîner deux fonctions ?
+
+Constat : `evaluate` (mode exact) calcule par `normalize`/`denormalize` et rend une forme de calcul (`(1/3)·π`, `(1/2)·√2`) ; chaque affichage la remet au propre à sa façon (Atelier : `readable`, `atelier/render.ts:139`, `tidy` + 4 gardes — décimal, notation scientifique, variable, unité — plus le résultat trop long). `evaluate` a ≈ 40 fichiers appelants, dont beaucoup de calculs internes (solveur, racines, domaines, limites, intégration, tableur) ; leur dépendance à la forme rendue n'est PAS mesurée.
+
+Options : **A** une seule fonction « valeur exacte à afficher » (`evaluate` puis mise au propre), appelée par tous les affichages, `evaluate` inchangé pour les calculs internes ; **B** `tidy` dans `evaluate` lui-même, après le nouveau contrat (S1, S3), appelant par appelant.
+
+**Décision : A.** B reste possible plus tard. Les 4 gardes de `readable` disparaissent avec S1 et S3.
