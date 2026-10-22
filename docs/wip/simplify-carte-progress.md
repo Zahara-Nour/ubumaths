@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-22, après Q5 (§ 24)._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 10 tranchées (E1, § 10, E2, D1, D2, D3, D4, Q4, § 9, Q5), 2 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : Q6, une seule valeur approchée) ; ensuite plan de lots (fin de la page).
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : Q6 révisée après sonde, § 25 — présentée, pas tranchée) ; ensuite plan de lots (fin de la page).
 - **En attente de David** : Q6, Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
@@ -428,3 +428,18 @@ Présenté avec les exemples du § 22. Réponse : option 2, « oui, mais `rédui
 « Je ne veux pas changer le nom car `normalize` fait exactement ce qu'elle dit : rendre une forme normale (forme canonique). »
 
 Le nom est juste : le problème relevé au § 3 n'était pas le nom mais l'usage (sa sortie montrée à l'élève), réglé par le § 9. Le lot « renommages » ne touche pas `normalize`.
+
+## 25. Q6 : sonde en profondeur avant de trancher (2026-10-22, pas tranché)
+
+David : « point sensible, explore en profondeur ». Deux agents (évaluateurs ; appelants de `evaluateNodeToApproximatedNumber`), points critiques revérifiés à la main.
+
+- **5 moteurs** : rationnels exacts (`evaluateNodeToApproximatedNumber`, lève ; `evaluateNodeToRational`, budget plus large), `evaluate` mode décimal (`status` + `reason` en français), `compile` (flottant, NaN/±∞, ~100× plus rapide en boucle), et deux évaluateurs maison flottants (`evaluateNumeric` `common/numeric.ts:249`, `evaluateAtPoint` `pedagogical-limits/helpers.ts:92`). Autour : ~40 copies (≈ 25 `try/catch + isFinite` identiques, dont `computeNumericValue` `solve/numeric-value.ts:20`).
+- **`precision`** : un seul appelant (`evaluate.ts:1580`).
+- **Exactitude requise** (mesuré : `0,1+0,2−0,3` = 0 en rationnel, 5,55e-17 en `compile`) : `isZeroTerm` `transforms.ts:1694` et `factorZero` `cosmetic-transforms.ts:442` (**juge de l'élève**, `=== 0`), `foldIntegerExponents` `evaluate-with-modifiers.ts:335`, `isSafeFactor` `limits/evaluate.ts:1403`.
+- **Message d'erreur lu** : `outOfDomainNear` `limits/evaluate.ts:307` (`/argument must be/`) ; `reason` d'`evaluate` affichée dans l'Atelier.
+- **±∞ comme résultat** : `evaluateNumeric` (`1/0 → +∞`, pôles des limites, `indeterminate.ts:119`, `sign-tracking.ts:280`), `inequality/index.ts:248`, `reciprocal/image.ts:52`, `integration/forbidden-value.ts:46`.
+- Mesuré : `e^1000 → Infinity` mais `e^1001` lève (« hors d'échelle ») en rationnel ; `ln(−1)` lève vs NaN ; `1/0` lève vs Infinity en `compile`.
+- **Bug trouvé (mesuré, à confirmer par un test rouge dans les limites)** : `evaluateNumeric` ignore `power` et `isInverse` des fonctions : `\sin^2(1)` → 0,841 (= sin 1) au lieu de 0,708 ; `\cos^{-1}(0,5)` → 0,878 au lieu de 1,047. Utilisé par le moteur des limites.
+- ~20 appels laissent l'erreur remonter sans capture (ex. `solve.ts:1133`, `:1817`, `periodicity.ts`, ubumark `number-line-parser.ts:159`).
+
+Conclusion : **une seule fonction `number | null` ne suffit pas** ; ma proposition initiale est retirée. Proposition révisée présentée à David (voir la page).
