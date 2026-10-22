@@ -120,6 +120,12 @@ d'une même tâche à petite échelle.
      démontrer » donne « connaître » (évaluable) et « démontrer » (travaillé en cours). Un point
      dont aucune partie ne s'évalue par un modèle relève plutôt d'une compétence : il reste
      entier.
+   - **Une puce large reste un point (David, 2026-10-22).** « Résoudre des problèmes impliquant
+     des grandeurs et mesures », « modéliser une situation par une suite », « choisir la
+     représentation la plus adaptée »… : aucune question ne les évaluera, mais elles font partie du
+     programme ; elles relèvent de l'évaluation par compétences. On les garde comme points entiers
+     (cochables dans le cahier de texte). Les puces écartées au seed du lycée pour ce motif
+     (2026-10-08) sont rétablies par la passe lycée.
    - **Exception : un doublon du BO lui-même s'archive.** Deux points d'un même programme ne
      disent jamais la même chose. Quand le texte officiel répète une ligne mot pour mot ou
      presque, le premier point est gardé et le second est **archivé** : il reste en base, fidèle

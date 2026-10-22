@@ -37,6 +37,8 @@ additive applique.
 ## Règles de fond
 
 - Le BO est immuable : aucun contenu ajouté, même grain, mots du BO. Pas de point « entraînement ».
+- **Une puce large reste un point** (David, 2026-10-22) : non évaluable par des questions, elle relève de
+  l'évaluation par compétences mais fait partie du programme. Les puces écartées au seed pour ce motif sont rétablies.
 - Le premier libellé garde le code d'origine ; c'est la partie que visent les références existantes (aucune
   référence déplacée). Les autres prennent un code neuf, rangé juste après, même nœud sauf nœud plus juste existant.
 - Chaque proposition dit **quel niveau la justifie (1a, 1b, 2, 3 ou 4)**, cite la ligne du BO, et argumente aussi
