@@ -5,12 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1599._
+_Mis à jour le 2026-10-22, après #1599 (PR 2 #1600 ouverte, CI verte sur 5d98a25db)._
 
-- **État** : PR 1 #1599 mergée, `db:migrate` + `db:types` faits. PR 2 (`feat/palotins-presence-2`) : revues faites (aucun bloquant), corrections appliquées (panne jamais bloquante, requêtes simultanées, comptes approuvés), tests verts, typecheck 0.
-- **Prochaine action** : PR 2 ouverte, CI verte → merger dès que David a validé les points ci-dessous.
-- **En attente de David** : (1) texte Confidentialité § 3.2 / § 7 ; (2) mémoire serveur au lieu d'un cookie ; (3) effacer vraiment `welcome_back_on` après 7 jours (minimisation) ; (4) écart connu : si la 2e écriture (`welcome_back_on`) échoue après le RPC, le retour est perdu — accepter, ou faire écrire la colonne par la fonction SQL (nouvelle migration).
-- **Pièges en cours** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté).
+- **État** : PR 1 #1599 mergée, `db:migrate` + `db:types` faits. PR 2 #1600 (`feat/palotins-presence-2`) : revues faites, CI verte. David a validé les 4 points le 2026-10-22.
+- **Prochaine action** (dans #1600, avant merge) : (a) effacer `welcome_back_on` vieux de ≥ 7 jours au premier passage suivant, dans `recordStudentPresence` (+ 2 tests dans `buddy-queries-passage.test.ts`) ; (b) Confidentialité § 7, ligne du retour → « Effacé dès que le Palotin a salué le retour, ou au plus tard au premier passage après 7 jours ; supprimé avec le profil » (+ rgpd.md / aipd si même phrase) ; (c) noter l'écart accepté dans `buddy-palotins.md` : si la 2e écriture échoue après le RPC, le retour n'est pas fêté ; (d) tests, `check:incremental`, `docs:check-a-jour --depuis origin/main`, push, CI verte → merger.
+- **Décisions validées** : mémoire serveur (pas de cookie) ; texte § 3.2 tel quel ; effacement réel au passage suivant (pas de tâche planifiée) ; écart de la 2e écriture accepté (pas de migration).
+- **Après merge** : « Reprendre ici », `docs/wip/verifications-manuelles.md`, pointer `palotins-absence-progress.md` vers ce chantier, `git worktree remove` + `git branch -d` des 2 branches.
+- **Pièges en cours** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté). Ne pas mettre `Claude-Session:` dans les commits.
 - **Worktree / branche** : `../ubumaths-wt-palotins-presence` · `feat/palotins-presence-2`.
 
 ## Le problème (2026-10-21)
