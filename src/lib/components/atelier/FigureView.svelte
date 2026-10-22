@@ -181,6 +181,19 @@
 		if (toolbox.cancel()) event.preventDefault();
 	}
 
+	/** La toile focalisable, où les flèches déplacent le point choisi (M8). */
+	let canvasBox = $state<HTMLDivElement | null>(null);
+
+	/**
+	 * Un appui sur la toile lui donne le focus : la toile annule le `pointerdown`
+	 * (glisser, outils), et le navigateur ne le donnait donc pas — les flèches
+	 * parcouraient la barre d'outils ou faisaient défiler la vue (David, 2026-10-22).
+	 * En capture : un appui sur une étiquette (propagation arrêtée) compte aussi.
+	 */
+	function focusCanvas() {
+		if (document.activeElement !== canvasBox) canvasBox?.focus({ preventScroll: true });
+	}
+
 	/** Une flèche est tenue sur le point choisi : son geste attend d'être fermé. */
 	let arrowGesture = false;
 
@@ -420,6 +433,7 @@
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
 	<div
 		class="toile"
+		bind:this={canvasBox}
 		bind:clientWidth={width}
 		bind:clientHeight={height}
 		tabindex="0"
@@ -429,6 +443,7 @@
 			: `Figure : les flèches déplacent ${displayName(chosenPoint)}`}
 		onkeydown={handleArrow}
 		onfocusout={endArrowGesture}
+		onpointerdowncapture={focusCanvas}
 	>
 		{#if width > 0 && height > 0}
 			<!-- Hors du flux : la toile ne fait pas grandir la boîte qu'on mesure -->
