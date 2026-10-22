@@ -2,7 +2,7 @@
  * Présence de l'élève, notée sur toute page vue
  * =============================================
  *
- * Décidé par David le 2026-10-21 (docs/wip/palotins-presence-progress.md) : le
+ * Décidé par David le 2026-10-21 (docs/systeme/buddy-palotins.md) : le
  * Palotin dit « tu m'as manqué » après 21 jours d'absence. Est PRÉSENT l'élève
  * connecté qui voit une page, quelle qu'elle soit (lien de cours partagé,
  * Automaths…), préchargement compris — pas seulement son tableau de bord.

@@ -506,7 +506,7 @@ export async function addExploredTheme(studentId: string, theme: string): Promis
 }
 
 /**
- * Note la présence du jour (toute page vue, docs/wip/palotins-presence-progress.md)
+ * Note la présence du jour (toute page vue, docs/systeme/buddy-palotins.md)
  * et, au retour d'une longue absence, le jour du retour à fêter.
  *
  * Client service seulement : `student_last_visits` n'est lisible par personne

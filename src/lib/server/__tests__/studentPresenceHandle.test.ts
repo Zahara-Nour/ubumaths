@@ -1,5 +1,5 @@
 /**
- * Présence de l'élève, notée sur toute page vue (docs/wip/palotins-presence-progress.md)
+ * Présence de l'élève, notée sur toute page vue (docs/systeme/buddy-palotins.md)
  * =======================================================================================
  *
  * Élève connecté, toute page hors `/api/*` : présence notée une fois par jour

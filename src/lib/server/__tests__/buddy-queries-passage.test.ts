@@ -6,7 +6,7 @@
  * session et le jour UTC calculé par le serveur. Au retour d'une longue
  * absence, le jour du retour est noté ; le layout le lit sans rien écrire, le
  * widget l'efface une fois la bulle montrée
- * (docs/wip/palotins-presence-progress.md).
+ * (docs/systeme/buddy-palotins.md).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { isWelcomeBackDue } from '$lib/utils/buddy-absence';

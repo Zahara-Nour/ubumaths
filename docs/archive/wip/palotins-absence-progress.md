@@ -1,7 +1,7 @@
 # Palotin triste après une longue absence — journal
 
 > Branche `feat/palotins-absence`, worktree `../ubumaths-wt-palotins-absence`. Démarré le 2026-10-21.
-> Suite de [palotins-svg-progress.md](palotins-svg-progress.md) (#1580, l'expression « triste » existe déjà).
+> Suite de [palotins-svg-progress.md](../../wip/palotins-svg-progress.md) (#1580, l'expression « triste » existe déjà).
 
 ## Reprendre ici
 

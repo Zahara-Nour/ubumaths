@@ -5,10 +5,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1600._
+_Mis à jour le 2026-10-22, après #1600 ; archivé le même jour._
 
 - **État** : chantier **terminé**. #1599 (donnée, `db:migrate` + `db:types` faits) et #1600 (code) mergées ; aucune migration en attente. Pas en prod tant que `deploy:prod` n'est pas lancé. Vérification manuelle notée.
-- **Prochaine action** : aucune. Doc durable déjà dans `docs/systeme/buddy-palotins.md` ; journal gardé dans `docs/wip/` tant que le code y renvoie (9 fichiers : l'archiver = PR qui corrige ces renvois).
+- **Prochaine action** : aucune. Doc durable déjà dans `docs/systeme/buddy-palotins.md` ; journal **archivé** le 2026-10-22 (le code renvoie désormais à `buddy-palotins.md` ; les commentaires des deux migrations, déjà jouées, gardent l'ancien chemin `docs/wip/`).
 - **Décisions validées** : mémoire serveur (pas de cookie) ; texte § 3.2 tel quel ; retour non fêté effacé au premier passage d'un nouveau jour (pas de tâche planifiée) ; écart de la 2e écriture accepté (pas de migration).
 - **Pièges** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté).
 - **Worktree / branche** : aucun (retirés après #1600).

@@ -574,16 +574,19 @@ celui du plafond.
 ```
 student_last_visits
 ├── student_id (FK profiles, PK, ON DELETE CASCADE)
-└── last_visit_date (date, jour UTC du dernier passage sur le tableau de bord)
+├── last_visit_date (date, jour UTC de la derniere page vue, hors API)
+└── welcome_back_on (date, NULL : jour du retour a feter, 2026-10-22)
 ```
 
 Lisible par le serveur seul : RLS sans aucune policy, droits retires a `anon` et `authenticated`
 (ni l'eleve, ni le prof, ni l'admin). `record_student_visit(p_student_id, p_today) → date` (SECURITY
 INVOKER, `service_role` seul) enregistre le jour et rend le jour du passage precedent (NULL au
 premier) ; atomique, le jour enregistre ne recule jamais. Migration
-`20261021210000_palotin_dernier_passage.sql`, preuve `tests/integration/palotin-dernier-passage.test.ts`.
-Export RGPD : `gaming.dernier_passage` (`api/account/export`, lu au client service, filtre sur
-l'identite de la session) ; mentionne dans `legal/confidentialite` (§ 3.2).
+`20261021210000_palotin_dernier_passage.sql`, preuve `tests/integration/palotin-dernier-passage.test.ts` ;
+`welcome_back_on` : migration `20261022100000_palotin_retour_a_feter.sql`, preuve
+`tests/integration/palotin-retour-a-feter.test.ts`. Export RGPD : `gaming.dernier_passage` et
+`gaming.retour_a_feter` (`api/account/export`, lu au client service, filtre sur l'identite de la
+session) ; mentionne dans `legal/confidentialite` (§ 3.2 et § 7).
 
 ### Table `buddy_skins`
 

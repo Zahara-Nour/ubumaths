@@ -1,12 +1,12 @@
 /**
- * Le Palotin au retour de l'élève (docs/wip/palotins-absence-progress.md)
+ * Le Palotin au retour de l'élève (docs/systeme/buddy-palotins.md)
  * =======================================================================
  *
  * Ce que l'élève LIT et VOIT : après une longue absence, son Palotin est
  * triste et lui dit « tu m'as manqué ». La Constance perdue pendant cette
  * absence n'a pas sa réplique (« tu m'as manqué » la remplace) ; l'annonce de
  * la Chatterie suit la bulle, sans salutation. Une fois la bulle montrée, le
- * retour est acquitté auprès du serveur (docs/wip/palotins-presence-progress.md).
+ * retour est acquitté auprès du serveur (docs/systeme/buddy-palotins.md).
  */
 
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';

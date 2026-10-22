@@ -5,7 +5,7 @@
  * Le layout LIT le retour à fêter (la présence est notée par le hook, sur toute
  * page) : un préchargement ne consomme rien. Seul « longue absence oui/non »
  * sort ; il reste faux sans Palotin (celui choisi ensuite est tout neuf) ou
- * quand la lecture échoue (docs/wip/palotins-presence-progress.md).
+ * quand la lecture échoue (docs/systeme/buddy-palotins.md).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
