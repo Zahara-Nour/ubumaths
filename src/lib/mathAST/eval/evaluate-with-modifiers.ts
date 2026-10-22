@@ -605,35 +605,35 @@ function withScientificQuantity(writing: string, modifiers: EvalModifiers): stri
  * @returns Formatted result as string
  * @throws Error if evaluation fails
  *
- * @example Basic (exemples écrits sur le LaTeX, pour `parseLatex(latex)`) evaluation
+ * @example Basic evaluation
  * ```typescript
- * evaluateAstWithModifiers('3+4', {})           // Returns: '7'
- * evaluateAstWithModifiers('2^3', {})           // Returns: '8'
+ * evaluateAstWithModifiers(parseLatex('3+4'), {})           // Returns: '7'
+ * evaluateAstWithModifiers(parseLatex('2^3'), {})           // Returns: '8'
  * ```
  *
  * @example Decimal modifier
  * ```typescript
- * evaluateAstWithModifiers('1/3', { decimal: true })  // Returns: '0.3333333333333333'
- * evaluateAstWithModifiers('\\frac{1}{2}', { decimal: true })  // Returns: '0.5'
+ * evaluateAstWithModifiers(parseLatex('1/3'), { decimal: true })  // Returns: '0.3333333333333333'
+ * evaluateAstWithModifiers(parseLatex('\\frac{1}{2}'), { decimal: true })  // Returns: '0.5'
  * ```
  *
  * @example Positive sign modifier
  * ```typescript
- * evaluateAstWithModifiers('5', { addPositive: true })      // Returns: '+5'
- * evaluateAstWithModifiers('-3', { addPositive: true })     // Returns: '-3' (no change for negative)
- * evaluateAstWithModifiers('0', { addPositive: true })      // Returns: '+0' (« y0 » serait lu comme un produit)
+ * evaluateAstWithModifiers(parseLatex('5'), { addPositive: true })      // Returns: '+5'
+ * evaluateAstWithModifiers(parseLatex('-3'), { addPositive: true })     // Returns: '-3' (no change for negative)
+ * evaluateAstWithModifiers(parseLatex('0'), { addPositive: true })      // Returns: '+0' (« y0 » serait lu comme un produit)
  * ```
  *
  * @example Bracket negative modifier
  * ```typescript
- * evaluateAstWithModifiers('-3', { bracketNegative: true })  // Returns: '(-3)'
- * evaluateAstWithModifiers('5', { bracketNegative: true })   // Returns: '5' (no change for positive)
+ * evaluateAstWithModifiers(parseLatex('-3'), { bracketNegative: true })  // Returns: '(-3)'
+ * evaluateAstWithModifiers(parseLatex('5'), { bracketNegative: true })   // Returns: '5' (no change for positive)
  * ```
  *
  * @example Combined modifiers
  * ```typescript
- * evaluateAstWithModifiers('2/3', { decimal: true, addPositive: true })  // Returns: '+0.6666666666666666'
- * evaluateAstWithModifiers('-1/4', { decimal: true, bracketNegative: true })  // Returns: '(-0.25)'
+ * evaluateAstWithModifiers(parseLatex('2/3'), { decimal: true, addPositive: true })  // Returns: '+0.6666666666666666'
+ * evaluateAstWithModifiers(parseLatex('-1/4'), { decimal: true, bracketNegative: true })  // Returns: '(-0.25)'
  * ```
  */
 export function evaluateAstWithModifiers(

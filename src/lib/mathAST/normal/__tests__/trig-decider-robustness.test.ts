@@ -16,6 +16,9 @@
  *   ignoraient la réduction ;
  * - **`Exp.hash` contredisait `Exp.isEquivalent`**, alors que sa docstring
  *   promet le contraire.
+ *
+ * (La classe `Exp` a été supprimée depuis — code mort, chantier simplify-carte ;
+ * ses deux méthodes sont reprises ici par `isEquivalent` et `hashOf`.)
  */
 
 import { describe, it, expect } from 'vitest';
