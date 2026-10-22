@@ -204,6 +204,19 @@ describe('fluide : un point sur un objet suit la souris, au pixel près', () => 
 		expect(atelier.get('M')?.definition).toBe('point_sur(f ; 2,03)');
 	});
 
+	it('sur un long segment, plus fin que le pas du curseur (0,01) : 0,257', () => {
+		const atelier = atelierOf([
+			['point', 'A', '(0 ; 0)'],
+			['point', 'B', '(10 ; 0)'],
+			['curve', 's', '[AB]'],
+			['point', 'M', 'point_sur(s ; 0,3)']
+		]);
+
+		atelier.dragPoint('M', 2.57, 0, SNAP, PIXEL);
+
+		expect(atelier.get('M')?.definition).toBe('point_sur(s ; 0,257)');
+	});
+
 	it('sur un segment, la position reste dans [0 ; 1]', () => {
 		const atelier = atelierOf([
 			['point', 'A', '(0 ; 0)'],

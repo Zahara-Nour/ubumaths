@@ -390,6 +390,26 @@ describe('le glisser d’un point dans la toile (revue du lot 3, PR 1)', () => {
 		expect(atelier.get('A')?.definition).toBe('(2 ; 2)');
 	});
 
+	it('déplacement fluide : la toile passe le pixel, A suit au centième (≈ 2,08) et non au dixième', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		atelier.setPointDragMode('fluid');
+		const { container } = await render(WithFigure, { atelier });
+		const point = await pointA(container);
+		const { x, y } = centerOf(point);
+		const svg = canvasOf(container);
+
+		// Tiré de 30 px : aimanté, A irait en (2 ; 2) ; fluide, deux décimales (pixel ≈ 0,036)
+		pointer(point, 'pointerdown', x, y);
+		for (let i = 1; i <= 3; i++) {
+			pointer(svg, 'pointermove', x + 10 * i, y);
+			await nextFrame();
+		}
+		pointer(svg, 'pointerup', x + 30, y);
+		await nextFrame();
+
+		expect(atelier.get('A')?.definition).toMatch(/^\(2,\d\d ; 2\)$/);
+	});
+
 	it('un second pointeur est ignoré : ni re-saisie, ni mouvement, ni relâcher', async () => {
 		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
 		const steps = atelier.history.steps;

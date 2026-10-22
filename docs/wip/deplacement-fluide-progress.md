@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, avant la PR._
+_Mis à jour le 2026-10-22, PR #1611 ouverte._
 
-- **État** : réglage « Déplacement des points » (Aimanté / Fluide) codé, tests verts · **Prochaine action** : PR, revue `code-reviewer`, merge · **En attente de David** : vérification manuelle à la souris · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-deplacement-fluide` / `feat/atelier-deplacement-fluide`
+- **État** : PR #1611 ouverte, revue `code-reviewer` faite (3 remarques corrigées) · **Prochaine action** : CI verte → merge · **En attente de David** : vérification manuelle à la souris · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-deplacement-fluide` / `feat/atelier-deplacement-fluide`
 
 ## Décisions de David (2026-10-22)
 

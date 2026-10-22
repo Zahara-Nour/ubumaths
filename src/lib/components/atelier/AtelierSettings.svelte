@@ -45,12 +45,14 @@
 		{
 			value: 'snap',
 			label: 'Aimanté',
-			detail: 'Un point glissé avance de 0,1 en 0,1 et se pose sur les entiers quand on passe près.'
+			detail:
+				'Un point libre avance de 0,1 en 0,1 et se pose sur les entiers quand on passe près ; un point sur un objet suit le pas de son curseur.'
 		},
 		{
 			value: 'fluid',
 			label: 'Fluide',
-			detail: 'Un point glissé suit la souris, au pixel près : 0,01 près au zoom habituel.'
+			detail:
+				'Un point glissé ou posé suit la souris, au pixel près : à 0,01 près au zoom habituel.'
 		}
 	];
 
