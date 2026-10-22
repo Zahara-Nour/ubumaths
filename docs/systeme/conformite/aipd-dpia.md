@@ -50,15 +50,15 @@ intégration **Google Classroom**. Les finalités détaillées figurent dans le
 
 ### 2.2 Catégories de données
 
-| Catégorie                  | Exemples                                                 | Sensibilité        |
-| -------------------------- | -------------------------------------------------------- | ------------------ |
-| Identité                   | prénom, nom, pseudonyme, avatar                          | Données de mineurs |
-| Authentification           | email, mot de passe **haché**, identifiants Google OAuth | Élevée (secrets)   |
-| Pédagogiques (profilage)   | réponses, scores, niveau de maîtrise, progression        | Données de mineurs |
-| Contenus utilisateur (UGC) | messages, échanges marketplace, tableau blanc, notebooks | Modérables         |
-| Social                     | liste d'amis, présence                                   | Données de mineurs |
-| Gamification               | gidouilles, cartes VIP, achievements                     | Faible             |
-| Techniques                 | logs, métriques de performance (sans cookie)             | Pseudonymisées     |
+| Catégorie                  | Exemples                                                         | Sensibilité        |
+| -------------------------- | ---------------------------------------------------------------- | ------------------ |
+| Identité                   | prénom, nom, pseudonyme, avatar                                  | Données de mineurs |
+| Authentification           | email, mot de passe **haché**, identifiants Google OAuth         | Élevée (secrets)   |
+| Pédagogiques (profilage)   | réponses, scores, niveau de maîtrise, progression                | Données de mineurs |
+| Contenus utilisateur (UGC) | messages, échanges marketplace, tableau blanc, notebooks         | Modérables         |
+| Social                     | liste d'amis, présence                                           | Données de mineurs |
+| Gamification               | gidouilles, cartes VIP, achievements, jour de présence (Palotin) | Faible             |
+| Techniques                 | logs, métriques de performance (sans cookie)                     | Pseudonymisées     |
 
 > **Données NON collectées** (minimisation, art. 5.1.c) : genre, date de naissance précise, adresse
 > postale, téléphone, données biométriques ou de santé.

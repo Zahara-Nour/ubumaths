@@ -207,12 +207,12 @@ export const GET: RequestHandler = async ({ locals }) => {
 				.eq('student_id', userId)
 				.maybeSingle(),
 
-			// Jeux — jour du dernier passage (Palotin triste au retour, 2026-10-21). Lisible
-			// par le serveur seul (aucune policy) : lu au client service, filtré sur
-			// l'identité de la SESSION.
+			// Jeux — jour du dernier passage et retour à fêter (Palotin triste au retour,
+			// 2026-10-21). Lisibles par le serveur seul (aucune policy) : lus au client
+			// service, filtrés sur l'identité de la SESSION.
 			createServiceRoleClient()
 				.from('student_last_visits')
-				.select('last_visit_date')
+				.select('last_visit_date, welcome_back_on')
 				.eq('student_id', userId)
 				.maybeSingle()
 		]);
@@ -325,7 +325,8 @@ export const GET: RequestHandler = async ({ locals }) => {
 				player_stats: gamePlayerResult.data || null,
 				mathoux: mathouxResult.data || [],
 				palotin: buddyResult.data || null,
-				dernier_passage: lastVisitResult.data?.last_visit_date ?? null
+				dernier_passage: lastVisitResult.data?.last_visit_date ?? null,
+				retour_a_feter: lastVisitResult.data?.welcome_back_on ?? null
 			},
 
 			// Rewards & Economy

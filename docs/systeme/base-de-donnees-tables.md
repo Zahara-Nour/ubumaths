@@ -1050,7 +1050,7 @@ Liens : `equipped_skin_id` → `buddy_skins` · `student_id` → `profiles`
 
 ### `student_last_visits`
 
-`last_visit_date` · `student_id`
+`last_visit_date` · `student_id` · `welcome_back_on?`
 
 Liens : `student_id` → `profiles`
 

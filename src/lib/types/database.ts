@@ -11611,14 +11611,17 @@ export type Database = {
         Row: {
           last_visit_date: string
           student_id: string
+          welcome_back_on: string | null
         }
         Insert: {
           last_visit_date: string
           student_id: string
+          welcome_back_on?: string | null
         }
         Update: {
           last_visit_date?: string
           student_id?: string
+          welcome_back_on?: string | null
         }
         Relationships: [
           {

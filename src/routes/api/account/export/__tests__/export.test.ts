@@ -207,7 +207,7 @@ function setupMockSupabase() {
 					case 'student_buddies':
 						return mockBuddy;
 					case 'student_last_visits':
-						return { last_visit_date: '2026-10-20' };
+						return { last_visit_date: '2026-10-20', welcome_back_on: '2026-10-20' };
 					case 'game_players':
 						return null; // maybeSingle returns null if no data
 					default:
@@ -443,11 +443,12 @@ describe('GET /api/account/export', () => {
 
 		// Jour du dernier passage (Palotin triste au retour, 2026-10-21) : lisible par le
 		// serveur seul, donc lu au client service, filtré sur l'identité de la session
-		test('contient le jour du dernier passage, lu au client service pour l’appelant', async () => {
+		test('contient le jour du dernier passage et le retour à fêter, lus au client service pour l’appelant', async () => {
 			const response = await GET(createMockEvent() as never);
 			const data = await response.json();
 
 			expect(data.gaming.dernier_passage).toBe('2026-10-20');
+			expect(data.gaming.retour_a_feter).toBe('2026-10-20');
 			const service = serviceClient.current as typeof mockSupabase;
 			const appel = service.from.mock.calls.findIndex(
 				(c: unknown[]) => c[0] === 'student_last_visits'

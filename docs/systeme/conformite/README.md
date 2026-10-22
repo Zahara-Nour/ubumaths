@@ -116,6 +116,11 @@ l'export ne plante pas mais renvoie ces catégories **systématiquement vides**.
 > (`student_mathoux`, meilleur stade et étoiles par notion) et le Palotin de l'élève
 > (`student_buddies`, décision de David) ; une lecture en échec rend 500, jamais un export
 > incomplet. `format_version` inchangé (`1.4`). Tableau des catégories : [rgpd.md § 7.3](rgpd.md).
+>
+> ➕ **2026-10-22.** `gaming` exporte aussi la présence de l'élève (`student_last_visits` :
+> `dernier_passage`, jour de la dernière page vue, et `retour_a_feter`, retour après une longue
+> absence pas encore salué par le Palotin), lisible par le serveur seul. Décrite en
+> [rgpd.md § 2.6](rgpd.md) et sur la page Confidentialité (§ 3.2 et § 7).
 
 ### 4. Consentement parental (Art. 8)
 

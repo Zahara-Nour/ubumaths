@@ -2,15 +2,15 @@
  * Layout du tableau de bord élève : retour après une longue absence
  * ==================================================================
  *
- * Le passage du jour est enregistré à chaque chargement, même sans Palotin ;
- * seul « longue absence oui/non » sort, et il reste faux sans Palotin (celui
- * choisi ensuite est tout neuf) ou quand l'enregistrement échoue
- * (docs/wip/palotins-absence-progress.md).
+ * Le layout LIT le retour à fêter (la présence est notée par le hook, sur toute
+ * page) : un préchargement ne consomme rien. Seul « longue absence oui/non »
+ * sort ; il reste faux sans Palotin (celui choisi ensuite est tout neuf) ou
+ * quand la lecture échoue (docs/wip/palotins-presence-progress.md).
  */
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const queries = vi.hoisted(() => ({
-	recordVisitAndCheckLongAbsence: vi.fn(),
+	isWelcomeBackPending: vi.fn(),
 	resetLostConstance: vi.fn()
 }));
 vi.mock('$lib/server/buddy-queries', () => queries);
@@ -79,27 +79,27 @@ async function run(buddy: unknown) {
 }
 
 beforeEach(() => {
-	queries.recordVisitAndCheckLongAbsence.mockReset();
+	queries.isWelcomeBackPending.mockReset();
 	queries.resetLostConstance.mockReset();
 });
 
 describe('layout élève — longue absence', () => {
-	it('enregistre le passage avec l’identité de la session et transmet la longue absence', async () => {
-		queries.recordVisitAndCheckLongAbsence.mockResolvedValue(true);
+	it('lit le retour à fêter avec l’identité de la session et le transmet', async () => {
+		queries.isWelcomeBackPending.mockResolvedValue(true);
 		const data = await run(BUDDY_ROW);
-		expect(queries.recordVisitAndCheckLongAbsence).toHaveBeenCalledWith(STUDENT);
+		expect(queries.isWelcomeBackPending).toHaveBeenCalledWith(STUDENT);
 		expect(data.longAbsence).toBe(true);
 	});
 
-	it('sans Palotin : passage enregistré, mais pas de longue absence', async () => {
-		queries.recordVisitAndCheckLongAbsence.mockResolvedValue(true);
+	it('sans Palotin : pas de longue absence', async () => {
+		queries.isWelcomeBackPending.mockResolvedValue(true);
 		const data = await run(null);
-		expect(queries.recordVisitAndCheckLongAbsence).toHaveBeenCalledWith(STUDENT);
+		expect(queries.isWelcomeBackPending).toHaveBeenCalledWith(STUDENT);
 		expect(data.longAbsence).toBe(false);
 	});
 
-	it('enregistrement qui lève : le chargement aboutit, sans longue absence', async () => {
-		queries.recordVisitAndCheckLongAbsence.mockRejectedValue(new Error('panne'));
+	it('lecture qui lève : le chargement aboutit, sans longue absence', async () => {
+		queries.isWelcomeBackPending.mockRejectedValue(new Error('panne'));
 		const data = await run(BUDDY_ROW);
 		expect(data.longAbsence).toBe(false);
 		expect(data).toHaveProperty('buddy.palotin_type', 'pile');

@@ -32,7 +32,11 @@ import {
 	weekStartOf,
 	type ConstanceReset
 } from '$lib/utils/buddy-constance';
-import { isLongAbsence } from '$lib/utils/buddy-absence';
+import {
+	isLongAbsence,
+	isWelcomeBackDue,
+	lastExpiredWelcomeBackDay
+} from '$lib/utils/buddy-absence';
 
 // Types
 type ServiceClient = SupabaseClient<Database>;
@@ -502,24 +506,87 @@ export async function addExploredTheme(studentId: string, theme: string): Promis
 }
 
 /**
- * Enregistre le passage du jour sur le tableau de bord et rend vrai si l'élève
- * revient d'une longue absence (son Palotin est alors triste, une fois).
+ * Note la présence du jour (toute page vue, docs/wip/palotins-presence-progress.md)
+ * et, au retour d'une longue absence, le jour du retour à fêter.
  *
- * Client service seulement : le jour du dernier passage n'est lisible par
- * personne d'autre que le serveur (décision du 2026-10-21) ; seul « triste
- * oui/non » en sort. `studentId` vient de la session, le jour est calculé ici.
- * Écriture en échec : faux (mieux vaut rater un « tu m'as manqué » que le
- * répéter à chaque passage).
+ * Client service seulement : `student_last_visits` n'est lisible par personne
+ * d'autre que le serveur (décision du 2026-10-21). `studentId` vient de la
+ * session, le jour est calculé ici. `record_student_visit` ne rend l'ancien
+ * jour qu'à un seul de deux appels simultanés : le retour n'est noté qu'une
+ * fois. Au premier passage d'un nouveau jour, un retour resté non fêté
+ * `WELCOME_BACK_DAYS` jours est effacé (aucune tâche planifiée : décision du
+ * 2026-10-22). Panne : journalisée, sans lever (la page s'affiche quand même).
  */
-export async function recordVisitAndCheckLongAbsence(studentId: string): Promise<boolean> {
+export async function recordStudentPresence(studentId: string): Promise<void> {
 	const today = todayUtc();
-	const { data, error } = await createServiceRoleClient().rpc('record_student_visit', {
+	const service = createServiceRoleClient();
+	const { data, error } = await service.rpc('record_student_visit', {
 		p_student_id: studentId,
 		p_today: today
 	});
 	if (error) {
-		logger.error('❌ [buddy-queries] Passage non enregistré :', error);
+		logger.error('❌ [buddy-queries] Présence non enregistrée :', error);
+		return;
+	}
+	if (!isLongAbsence(data, today)) {
+		if (data !== null && data < today) await forgetExpiredWelcomeBack(studentId, today);
+		return;
+	}
+
+	const { data: rows, error: welcomeError } = await service
+		.from('student_last_visits')
+		.update({ welcome_back_on: today })
+		.eq('student_id', studentId)
+		.select('student_id');
+	if (welcomeError || rows?.length !== 1) {
+		logger.error('❌ [buddy-queries] Retour à fêter non noté :', welcomeError ?? 'aucune ligne');
+	}
+}
+
+/**
+ * Efface un retour noté il y a `WELCOME_BACK_DAYS` jours ou plus, jamais fêté :
+ * il ne le sera plus. Client service ; panne journalisée, sans lever.
+ */
+async function forgetExpiredWelcomeBack(studentId: string, today: string): Promise<void> {
+	const expired = lastExpiredWelcomeBackDay(today);
+	if (expired === null) return;
+	const { error } = await createServiceRoleClient()
+		.from('student_last_visits')
+		.update({ welcome_back_on: null })
+		.eq('student_id', studentId)
+		.lte('welcome_back_on', expired);
+	if (error) logger.error('❌ [buddy-queries] Retour périmé non effacé :', error);
+}
+
+/**
+ * Vrai si le Palotin doit dire « tu m'as manqué » : un retour noté il y a
+ * moins de `WELCOME_BACK_DAYS` jours, pas encore fêté. Lecture seule : un
+ * préchargement ne consomme rien. Lecture en échec : faux.
+ */
+export async function isWelcomeBackPending(studentId: string): Promise<boolean> {
+	const { data, error } = await createServiceRoleClient()
+		.from('student_last_visits')
+		.select('welcome_back_on')
+		.eq('student_id', studentId)
+		.maybeSingle();
+	if (error) {
+		logger.error('❌ [buddy-queries] Retour à fêter illisible :', error);
 		return false;
 	}
-	return isLongAbsence(data, today);
+	return isWelcomeBackDue(data?.welcome_back_on ?? null, todayUtc());
+}
+
+/**
+ * Le Palotin a dit « tu m'as manqué » : le retour est fêté, on l'efface.
+ * Rend vrai si une ligne a été effacée (faux s'il n'y avait rien à fêter).
+ */
+export async function acknowledgeWelcomeBack(studentId: string): Promise<boolean> {
+	const { data, error } = await createServiceRoleClient()
+		.from('student_last_visits')
+		.update({ welcome_back_on: null })
+		.eq('student_id', studentId)
+		.not('welcome_back_on', 'is', null)
+		.select('student_id');
+	if (error) throw new Error(`Retour à fêter non effacé : ${error.message}`);
+	return (data?.length ?? 0) > 0;
 }

@@ -116,7 +116,9 @@
 							<td>Gamification</td>
 						</tr>
 						<tr>
-							<td>Jour du dernier passage sur le tableau de bord</td>
+							<td
+								>Jour du dernier passage sur le site, et jour du retour après une longue absence</td
+							>
 							<td>
 								Que le Palotin remarque le retour de l'élève après une longue absence (supprimé avec
 								le compte)
@@ -275,8 +277,15 @@
 							<td>Supprimées avec le profil, après 5 ans sans activité</td>
 						</tr>
 						<tr>
-							<td>Jour du dernier passage sur le tableau de bord</td>
-							<td>Remplacé à chaque passage, supprimé avec le profil</td>
+							<td>Jour du dernier passage sur le site</td>
+							<td>Remplacé chaque jour de présence, supprimé avec le profil</td>
+						</tr>
+						<tr>
+							<td>Jour du retour après une longue absence</td>
+							<td>
+								Effacé dès que le Palotin a salué le retour, ou au plus tard au premier passage
+								après 7 jours ; supprimé avec le profil
+							</td>
 						</tr>
 						<tr>
 							<td>Conversations avec le tuteur IA</td>
