@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 2 en cours._
+_Mis à jour le 2026-10-23, après #1616._
 
-- **État** : lot 2 « consignes, `masque`, ménage » — phase 0 validée par David le 2026-10-23 (ci-dessous). Tests d'abord, puis code.
-- **Prochaine action** : tests rouges (consignes affichées, convertisseur `masque`/`montre`), puis implémentation, puis ménage.
-- **En attente de David** : rien.
-- **Pièges en cours** : 3 constructions en prod ont des `@cacher("T_3")`/`@cacher("arc_9")` sans effet (identifiants IEP sans nom DSL) — **non réparées** (choix de David), à ré-importer un jour depuis leur XML.
-- **Worktree / branche** : `../ubumaths-wt-constructions` · `feat/constructions-consignes-masque`.
+- **État** : lot 2 **livré** — #1616 mergée (consignes des sous-étapes, convertisseur `masque`/`montre`, ménage), vérifié par David en local le 2026-10-23. Part en prod au prochain `deploy:prod`, avec le code du lot 1 (#1615).
+- **Prochaine action** : choisir le lot 3 avec David (aucun worktree ouvert).
+- **En attente de David** : le choix du lot 3. Restent : API des scripts de démo (suppression d'un id étranger → `ok: true`, message brut de la base en 500 ; revue sécurité) · parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique, relevé par la revue).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; test par Tailscale = tunnel SSH ([environnement-de-dev.md](../pratiques/environnement-de-dev.md)).
+- **Worktree / branche** : aucun (supprimé après #1616). Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
 
 ---
 

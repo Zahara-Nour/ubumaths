@@ -100,6 +100,15 @@ ignore. `--no-verify` n'a plus de raison d'être (le hook Claude le refuse).
 worktrees. Toujours `pnpm dev --port <n> --strictPort` (sans `--` : il ferait ignorer le port).
 `pnpm kill:servers` est interdit depuis un worktree (il tue 5173 et Supabase).
 
+**Tester depuis le MacBook (Tailscale).** Pas d'adresse `http://100.x.x.x:<port>` : hors `localhost`,
+SvelteKit pose les cookies en `Secure`, le navigateur jette le cookie de session et la connexion
+« ne fait rien » (côté serveur : « login successful » puis « Profile missing »). Passer par un
+tunnel SSH lancé **depuis le MacBook**, puis ouvrir `http://localhost:<port>` :
+`ssh -L <port>:localhost:<port> -L 54321:localhost:54321 david@100.79.226.105` (54321 = Supabase
+local, pour les appels du navigateur). Le serveur n'a pas besoin de `--host`. Comptes locaux :
+`supabase/seed/dev_accounts.sql` (`teacher@local.test` / `local-teacher`…). Les connexions ratées
+comptent dans le limiteur (table `rate_limits` locale, 15 min) : prendre un autre compte local.
+
 **Supabase local.** Une seule pile pour tout le dépôt (ports 54321-54329, `project_id` figé), d'où le
 verrou `supabase`. CLI = devDependency exacte, lancée par `pnpm db:*` ou `pnpm exec supabase`.
 `pnpm db:reset && pnpm db:seed-riche` remplit la base locale avec le contenu de la prod (lu en lecture
