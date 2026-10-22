@@ -1,5 +1,6 @@
 <title>Bornes du lycée</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" />
 <link
 	rel="stylesheet"
 	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap"
@@ -165,6 +166,10 @@
 	.question {
 		font-size: 1rem;
 	}
+	.ligne {
+		display: grid;
+		gap: 2px;
+	}
 	details {
 		color: var(--muted);
 		font-size: 0.9rem;
@@ -272,6 +277,8 @@
 	</section>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
 <script>
 	const DONNEES = {
 		questions: [
@@ -1940,6 +1947,7 @@
 				libelle:
 					'Sur des cas simples de relations entre variables ($U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres',
 				rubrique: 'Nombres et calculs, algèbre > Algèbre',
+				noeud: 'Algèbre > Calcul littéral > isoler une variable',
 				remarque:
 					'⚠ libellé : le BO écrit « (par exemple U = RI, … ) » ; le libellé a perdu « par exemple » et se lit comme une liste fermée.'
 			},
@@ -1948,6 +1956,7 @@
 				grade: '2',
 				libelle: "Construire un tableau croisé d'effectifs en lien avec une situation donnée",
 				rubrique: 'Statistiques et probabilités > Probabilités',
+				noeud: 'Probabilités > Probabilités conditionnelles > tableaux croisés',
 				remarque:
 					"⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10."
 			},
@@ -1957,6 +1966,7 @@
 				libelle:
 					"Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$)",
 				rubrique: 'Statistiques et probabilités > Probabilités',
+				noeud: 'Probabilités > Probabilités conditionnelles',
 				remarque:
 					'⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).'
 			},
@@ -1966,6 +1976,7 @@
 				libelle:
 					'Passer du registre symbolique ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$) au registre de la langue naturelle',
 				rubrique: 'Statistiques et probabilités > Probabilités',
+				noeud: 'Probabilités > Probabilités conditionnelles',
 				remarque:
 					'⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).'
 			},
@@ -1975,6 +1986,7 @@
 				libelle: 'Suites géométriques : explicitation du terme de rang $n$',
 				rubrique:
 					"Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				noeud: 'Suites > Suites géométriques > terme général',
 				remarque:
 					"⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
 			},
@@ -1984,6 +1996,7 @@
 				libelle: 'Suites géométriques : sens de variation',
 				rubrique:
 					"Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				noeud: 'Suites > Suites géométriques',
 				remarque:
 					"⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
 			},
@@ -1993,6 +2006,7 @@
 				libelle: 'Suites géométriques : représentation graphique',
 				rubrique:
 					"Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				noeud: 'Suites > Généralités sur les suites > représentation graphique',
 				remarque:
 					"⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
 			},
@@ -2002,6 +2016,7 @@
 				libelle:
 					"Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement",
 				rubrique: 'Algèbre > Suites numériques, modèles discrets',
+				noeud: 'Suites > Généralités sur les suites > représentation graphique',
 				remarque:
 					'⚠ libellé : le BO (p.6) dit « registre graphique » sans préciser « nuage de points » ; la précision du libellé est naturelle (une suite se représente par des points isolés) mais ne figure pas au texte.'
 			},
@@ -2010,6 +2025,7 @@
 				grade: '1_SPE',
 				libelle: "Forme développée d'une fonction polynôme du second degré ; coefficients",
 				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				noeud: 'Fonctions > Second degré > formes',
 				remarque:
 					'⚠ libellé : les contenus du BO (p.6) ne mentionnent pas « forme développée ; coefficients » ; seule la capacité « choisir une forme adaptée (développée réduite, canonique, factorisée) » nomme la forme développée. Lecture déduite (texte implicite) : forme ax² + bx + c, a ≠ 0.'
 			},
@@ -2018,6 +2034,7 @@
 				grade: '1_SPE',
 				libelle: "Calcul des coordonnées du sommet d'une parabole",
 				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				noeud: 'Fonctions > Second degré > parabole',
 				remarque:
 					"⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite."
 			},
@@ -2026,6 +2043,7 @@
 				grade: '1_SPE',
 				libelle: "Axe de symétrie d'une parabole",
 				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				noeud: 'Fonctions > Second degré > parabole',
 				remarque:
 					"⚠ libellé : « axe de symétrie d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : il se lit sur la forme canonique, en lien avec la position du graphe de x ↦ f(x − m) (p.5)."
 			},
@@ -2034,6 +2052,7 @@
 				grade: '1_SPE',
 				libelle: "Résolution d'une inéquation du second degré",
 				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				noeud: 'Algèbre > Inéquations : second degré',
 				remarque:
 					"⚠ libellé : la « résolution d'une inéquation du second degré » n'est pas un contenu du BO (p.6), qui dit « Signe » ; l'inéquation n'apparaît que dans la capacité « choisir une forme adaptée … (équation, inéquation, optimisation, variations) ». Lecture déduite (texte implicite) : inéquation se ramenant au signe d'un trinôme."
 			},
@@ -2043,6 +2062,7 @@
 				libelle:
 					'Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles',
 				rubrique: 'Probabilités et statistiques > Variables aléatoires réelles',
+				noeud: 'Probabilités > Variables aléatoires',
 				remarque:
 					"⚠ libellé : le BO (p.11) dit « Modéliser une situation à l'aide d'une variable aléatoire » ; « définir … et donner ses valeurs possibles » est une reformulation qui n'est pas au texte."
 			},
@@ -2052,6 +2072,7 @@
 				libelle:
 					"Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire",
 				rubrique: 'Probabilités et statistiques > Expérimentations',
+				noeud: 'Statistiques > Échantillonnage > fluctuation',
 				remarque:
 					"⚠ libellé : le BO (p.11) dit « Étudier sur des exemples la distance … », le libellé dit « calculer l'écart »."
 			},
@@ -2060,6 +2081,7 @@
 				grade: 'T_SPE',
 				libelle: "Utiliser l'équation fonctionnelle du logarithme pour transformer une écriture",
 				rubrique: 'Analyse > Fonction logarithme',
+				noeud: 'Fonctions > Logarithmes > propriétés algébriques',
 				remarque:
 					"⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé)."
 			}
@@ -2235,6 +2257,24 @@
 		}
 	}
 
+	function ligne(etiquette, texte, classe = '') {
+		return el(
+			'div',
+			{ class: 'ligne' },
+			el('div', { class: 'lbl', text: etiquette }),
+			el('p', { class: classe, text: texte })
+		);
+	}
+
+	// Formules entre $…$ (libellés du référentiel) rendues par KaTeX ; texte brut si le CDN manque.
+	function rendreMaths() {
+		if (typeof renderMathInElement !== 'function') return;
+		renderMathInElement(document.getElementById('libelles'), {
+			delimiters: [{ left: '$', right: '$', display: false }],
+			throwOnError: false
+		});
+	}
+
 	function rendreLibelles() {
 		const zone = document.getElementById('libelles');
 		zone.replaceChildren();
@@ -2250,13 +2290,15 @@
 					'div',
 					{ class: 'tete' },
 					el('span', { class: 'code', text: l.code }),
-					el('span', { class: 'pastille', text: DONNEES.noms[l.grade] ?? l.grade }),
-					el('span', { class: 'id', text: l.rubrique })
+					el('span', { class: 'pastille', text: DONNEES.noms[l.grade] ?? l.grade })
 				)
 			);
+			// Chaque ligne porte son étiquette : rien à deviner sur la provenance du texte.
 			carte.append(
-				el('p', { class: 'question', text: l.libelle }),
-				el('p', { class: 'consequence', text: l.remarque })
+				ligne('Libellé dans le référentiel', l.libelle, 'question'),
+				ligne('Rubrique du BO', l.rubrique),
+				ligne("Nœud de l'arbre des notions", l.noeud || '(aucun)'),
+				ligne('Ce qui cloche', l.remarque.replace(/^⚠ libellé : /, ''), 'consequence')
 			);
 			const options = el('div', { class: 'options', role: 'radiogroup', 'aria-label': l.code });
 			for (const [cle, texte] of [
@@ -2283,6 +2325,7 @@
 			carte.append(options, champNote('libelles', l.code, decisions, 'Note (facultative)'));
 			zone.append(carte);
 		}
+		rendreMaths();
 	}
 
 	function tout() {

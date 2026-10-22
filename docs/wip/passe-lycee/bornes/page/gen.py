@@ -4,6 +4,7 @@
 Lit questions-*.json et les remarques « ⚠ libellé » des <programme>.json ; écrit page.html.
 Les réponses de David vivent dans la base de l'artifact (collections `reponses`, `libelles`).
 """
+import csv
 import json
 import re
 from pathlib import Path
@@ -22,13 +23,18 @@ for f in ['2de-1gen', 'spe', 'tcomp', 'techno']:
 inconnus = [(q['id'], n) for q in questions for n in q['niveaux'] if n not in NOMS]
 assert not inconnus, f'niveaux hors {list(NOMS)} : {inconnus}'
 
+# Nœud de l'arbre des notions de chaque point, pour l'afficher sur la carte.
+with open(BORNES / 'points-lycee.csv', encoding='utf-8') as f:
+    NOEUDS = {r['code']: r['noeud'] for r in csv.DictReader(f)}
+
 libelles = []
 for fichier, grade in PROGRAMMES:
     points = json.loads((BORNES / f'{fichier}.json').read_text(encoding='utf-8'))[grade]['points']
     for code, p in points.items():
         if '⚠ libellé' in p.get('remarque', ''):
             libelles.append({'code': code, 'grade': grade, 'libelle': p['libelle'],
-                             'rubrique': p.get('rubrique', ''), 'remarque': p['remarque']})
+                             'rubrique': p.get('rubrique', ''), 'noeud': NOEUDS.get(code, ''),
+                             'remarque': p['remarque']})
 
 donnees = json.dumps({'questions': questions, 'libelles': libelles, 'noms': NOMS,
                       'ordre': [g for _, g in PROGRAMMES]}, ensure_ascii=False).replace('</', '<\\/')

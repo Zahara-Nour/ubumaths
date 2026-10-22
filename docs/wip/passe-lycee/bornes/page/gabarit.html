@@ -1,5 +1,6 @@
 <title>Bornes du lycée</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" />
 <link
 	rel="stylesheet"
 	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap"
@@ -165,6 +166,10 @@
 	.question {
 		font-size: 1rem;
 	}
+	.ligne {
+		display: grid;
+		gap: 2px;
+	}
 	details {
 		color: var(--muted);
 		font-size: 0.9rem;
@@ -272,6 +277,8 @@
 	</section>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/contrib/auto-render.min.js"></script>
 <script>
 	const DONNEES = /*DONNEES*/ null;
 	const reponses = {}; // id -> {choix, note}
@@ -433,6 +440,24 @@
 		}
 	}
 
+	function ligne(etiquette, texte, classe = '') {
+		return el(
+			'div',
+			{ class: 'ligne' },
+			el('div', { class: 'lbl', text: etiquette }),
+			el('p', { class: classe, text: texte })
+		);
+	}
+
+	// Formules entre $…$ (libellés du référentiel) rendues par KaTeX ; texte brut si le CDN manque.
+	function rendreMaths() {
+		if (typeof renderMathInElement !== 'function') return;
+		renderMathInElement(document.getElementById('libelles'), {
+			delimiters: [{ left: '$', right: '$', display: false }],
+			throwOnError: false
+		});
+	}
+
 	function rendreLibelles() {
 		const zone = document.getElementById('libelles');
 		zone.replaceChildren();
@@ -448,13 +473,15 @@
 					'div',
 					{ class: 'tete' },
 					el('span', { class: 'code', text: l.code }),
-					el('span', { class: 'pastille', text: DONNEES.noms[l.grade] ?? l.grade }),
-					el('span', { class: 'id', text: l.rubrique })
+					el('span', { class: 'pastille', text: DONNEES.noms[l.grade] ?? l.grade })
 				)
 			);
+			// Chaque ligne porte son étiquette : rien à deviner sur la provenance du texte.
 			carte.append(
-				el('p', { class: 'question', text: l.libelle }),
-				el('p', { class: 'consequence', text: l.remarque })
+				ligne('Libellé dans le référentiel', l.libelle, 'question'),
+				ligne('Rubrique du BO', l.rubrique),
+				ligne("Nœud de l'arbre des notions", l.noeud || '(aucun)'),
+				ligne('Ce qui cloche', l.remarque.replace(/^⚠ libellé : /, ''), 'consequence')
 			);
 			const options = el('div', { class: 'options', role: 'radiogroup', 'aria-label': l.code });
 			for (const [cle, texte] of [
@@ -481,6 +508,7 @@
 			carte.append(options, champNote('libelles', l.code, decisions, 'Note (facultative)'));
 			zone.append(carte);
 		}
+		rendreMaths();
 	}
 
 	function tout() {
