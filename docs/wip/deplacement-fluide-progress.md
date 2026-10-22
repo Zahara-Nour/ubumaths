@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, PR #1611 ouverte._
+_Mis à jour le 2026-10-22, après #1611._
 
-- **État** : PR #1611 ouverte, revue `code-reviewer` faite (3 remarques corrigées) · **Prochaine action** : CI verte → merge · **En attente de David** : vérification manuelle à la souris · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-deplacement-fluide` / `feat/atelier-deplacement-fluide`
+- **État** : livré, #1611 mergée (pas en prod) · **Prochaine action** : aucune ; chantier à verser à la fin (doc système déjà à jour) puis journal à archiver · **En attente de David** : vérification manuelle (ligne #1611 de `verifications-manuelles.md`) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Décisions de David (2026-10-22)
 
