@@ -223,3 +223,24 @@ Le besoin A du § 1 mélangeait deux choses :
 Risque, **non vérifié** : une correction écrite par `tidy` qui serait jugée mal écrite si l'élève la tapait, ou l'inverse. À confirmer par des tests avant de l'affirmer.
 
 Question **E1** pour David : faut-il qu'il y ait **une seule définition** de « bien écrit », partagée par les deux (écrire la correction, juger l'élève) — l'écriture de la correction devant passer sans remarque le juge de forme ? Le juge garde ses réglages (strict / warn / off) et son retour à l'élève (« Simplifie la fraction ») ; seule la liste de ce qui est « superflu » serait commune.
+
+## 9. `normalize` pour développer ? (David, 2026-10-22 : « à réfléchir »)
+
+La forme normale est développée **pour être comparée** (base d'`equivalenceForm`). Sondé le 2026-10-22, `toLatex(denormalize(normalize(…)))` :
+
+| Entrée                                        | Sortie             | Ce que ça fait en plus de développer                          |
+| --------------------------------------------- | ------------------ | ------------------------------------------------------------- |
+| `(x+1)(x-2)`                                  | `x^2 - x - 2`      | — (développement pur)                                         |
+| `0,5x(x+0,2)`                                 | `1/2 x^2 + 1/10 x` | change de registre (décimal → fraction)                       |
+| `(x+1)/2`                                     | `1/2 x + 1/2`      | éclate la fraction                                            |
+| `1/(x+1) + 1`                                 | `(x+2)/(x+1)`      | met au même dénominateur (une transformation, pas développer) |
+| `(x²−1)/(x+1)`                                | `x - 1`            | simplifie une fraction rationnelle et **perd x ≠ −1**         |
+| `√2(x+√8)`, `(x+1)^5`, `(x+1)e^x`, `3x−(2−x)` | développés réduits | —                                                             |
+
+Analyse proposée (à valider) — trois usages, trois réponses :
+
+1. **Comparer** (A1) : oui, c'est son rôle ; ce qu'il fait en plus (registre, dénominateur commun, `x−1`) est justement voulu pour une forme canonique.
+2. **Calculer en interne** (D : coefficients, discriminant, degré) : oui, rien n'est montré. Mais par des fonctions nommées (`polynomialCoefficients`…), pas ~100 `denormalize(normalize())` à la main.
+3. **Montrer un développement à l'élève** (`.développer`, corrections, `réduire` et `auto` aujourd'hui) : **non**. Il fait plus que la consigne (dénominateur commun, simplification de fraction avec perte de domaine, décimaux réécrits) et ne sait pas raconter d'étapes. Développer pour l'affichage = la politique `développer` du moteur pédagogique (règles de distributivité et identités remarquables, puis `tidy`). C'est l'étape 2 de la fusion, étendue à `développer` : aujourd'hui `expand-steps.ts` part de `orderExpanded(denormalize(normalize()))` pour le résultat.
+
+À vérifier avant de conclure : les corrections « développer » des questions ont-elles un cas où `normalize` sort un dénominateur commun ou un `x−1` montré à l'élève ?
