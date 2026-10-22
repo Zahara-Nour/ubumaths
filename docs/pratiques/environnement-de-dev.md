@@ -120,8 +120,8 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   refuse `gh pr merge` et les commits ou pushes vers `main`
   ([git-workflow.md § 1 bis](git-workflow.md#1-bis-plusieurs-sessions-en-parallèle)).
   `deploy:prod` n'y est plus soumis (décision de David, 2026-10-10) : la règle vit dans CLAUDE.md.
-- Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills (`doc-a-jour`,
-  `domain-modeling`, `shtam`) : [skills-claude.md](skills-claude.md).
+- Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills du projet
+  (`.claude/skills/`) et skills personnels (`~/.claude/skills/`) : [skills-claude.md](skills-claude.md).
 
 ## GitHub
 
@@ -244,7 +244,6 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
 - `quality.yml`, commentaire de `concurrency` : « chaque commit de main part en prod » — vrai avant
   l'ADR 0021, plus maintenant (la règle « jamais annulé » reste juste : chaque commit doit avoir son
   verdict).
-- `.claude/README.md` cite les skills `domain-modeling` et `shtam`, pas `doc-a-jour`.
 - `.versionrc.json` : l'en-tête du CHANGELOG renvoie encore à `standard-version`.
 - `scripts/check-incremental.sh` : les commentaires parlent tour à tour de « guard 2 » et
   « guard 3 » pour le rejeu du verdict.

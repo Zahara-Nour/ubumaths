@@ -1,7 +1,11 @@
 # Skills et commandes — mode d'emploi
 
 Ce que tu peux taper dans Claude Code sur ce projet, et quand. Les fichiers eux-mêmes sont des
-consignes pour l'agent : `.claude/skills/<nom>/SKILL.md`.
+consignes pour l'agent : `.claude/skills/<nom>/SKILL.md` pour les skills du projet (versionnés),
+`~/.claude/skills/<nom>/SKILL.md` pour tes skills personnels (hors dépôt, valables dans tous tes
+projets, voir [en bas](#skills-personnels-hors-dépôt)).
+
+Un skill ajouté ou modifié n'est vu qu'**au démarrage d'une session** : `/clear` ou nouvelle session.
 
 ---
 
@@ -56,6 +60,16 @@ parce que… ») ; c'est toi qui rouvres ou non.
 - `CONTEXT.md` : c'est **ton** glossaire. Une définition fausse → le dire, tu fais foi.
 - Les fiches de `docs/adr/` : les dix premières (0001 à 0010) ont été reconstruites à partir des
   mémoires de Claude le 2026-09-28 — une date ou une nuance peut être à corriger.
+
+---
+
+## `doc-a-jour` — la doc suit le code, dans la même PR
+
+Se déclenche quand `pnpm docs:check-a-jour --depuis origin/main` signale une doc à mettre à jour,
+avant d'ouvrir une PR qui touche du code couvert (en-tête `couvre:`), ou quand tu demandes de
+remettre une doc d'accord avec le code. Il fait relire le diff passage par passage, vérifier chaque
+symbole cité dans le code, et sinon écrire `Doc-inchangée: <raison>` dans un commit. Pour une zone
+encore sans doc (liste `trous` de `scripts/doc-a-jour.config.ts`), il fait écrire la doc **d'abord**.
 
 ---
 
@@ -116,8 +130,6 @@ devait revenir.
 
 ---
 
-Vérifié contre le code le 2026-10-10.
-
 ## `menage-contexte` — alléger `CLAUDE.md` et la mémoire
 
 `/menage-contexte` (ou « fais le ménage dans CLAUDE.md / la mémoire ») : la session traite
@@ -128,3 +140,31 @@ une liste numérotée : archiver, fusionner, raccourcir, déplacer. **Elle ne to
 réponse**, ne supprime jamais une mémoire sans ton « oui » sur ce fichier, et ne retire jamais une
 règle de `CLAUDE.md` (elle en déplace seulement le détail ou le pourquoi). Comme `reprendre`, elle
 tourne en **Sonnet** pour ce tour ; l'application se fait au tour suivant.
+
+---
+
+## Skills personnels (hors dépôt)
+
+Installés dans `~/.claude/skills/`, ils ne sont ni versionnés ni partagés : seul ton compte les voit,
+dans tous tes projets. Pour en installer un, donner à Claude le lien du dépôt : il lit le `SKILL.md`
+en entier avant de le copier.
+
+### `llm-council` — passer une décision au crible de cinq conseillers
+
+Installé le 2026-10-21 depuis [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council)
+(méthode « LLM Council » de Karpathy). Que des consignes, aucun script.
+
+- **Le lancer** : `/llm-council`, ou « council this », « pressure-test this », « stress-test this »
+  suivi d'une vraie décision à enjeu (pas une question à réponse unique).
+- **Ce qu'il fait** : lit `CLAUDE.md` et la mémoire pour le contexte ; cinq conseillers répondent en
+  parallèle (le contradicteur, les principes premiers, l'expansionniste, le regard extérieur, le
+  pragmatique) ; cinq relecteurs jugent leurs réponses anonymisées ; un président rend le verdict
+  dans le chat (accords, désaccords, angles morts, recommandation, première action).
+- **Coût** : **11 agents** par conseil. Le skill ne fixe aucun modèle ; suivant `CLAUDE.md`
+  § Quand utiliser un agent, la session passe `model: sonnet` aux conseillers et relecteurs, et
+  réserve Opus au président.
+- Ne remplace ni la phase 0 ni les ADR : une décision issue du conseil reste à trancher par toi.
+
+---
+
+Vérifié contre le code le 2026-10-22.
