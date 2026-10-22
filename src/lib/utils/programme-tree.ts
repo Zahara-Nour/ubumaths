@@ -19,8 +19,8 @@ import type { ClassificationNode, ProgrammePoint } from '$lib/types/database-hel
 // ---------------------------------------------------------------------------
 
 /**
- * Ligne de point telle que la base la rend. `node_id` reste nullable : un ancien
- * point (rattaché à un objectif) n'a pas de nœud, et doit être écarté.
+ * Ligne de point telle que la base la rend. `grade` reste nullable : un point sans
+ * niveau (points de test `TEST-SK-*`) n'a pas sa place dans l'arbre d'un niveau.
  */
 export type ProgrammePointRow = Pick<
 	Tables<'curriculum_points'>,
@@ -64,7 +64,7 @@ function byBoOrder(a: ProgrammePointView, b: ProgrammePointView) {
 }
 
 function isNewPoint(row: ProgrammePointRow): row is ProgrammePoint & ProgrammePointRow {
-	return row.node_id !== null && row.grade !== null;
+	return row.grade !== null;
 }
 
 /** Notion et branche d'un nœud où se pose un point (notion ou sous-notion). */

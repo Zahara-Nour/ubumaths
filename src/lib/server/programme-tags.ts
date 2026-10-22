@@ -16,7 +16,6 @@
 import type { ClassificationNode } from '$lib/types/database-helpers';
 import { GRADES, getGradesAtOrAbove, isGradeCode } from '$lib/types/grades';
 import { loadNodesWithAncestors, PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import { isProgrammePoint } from '$lib/server/curriculum-generation';
 import type { ProgrammePointRow } from '$lib/utils/programme-tree';
 
 // Types
@@ -79,9 +78,8 @@ export async function loadTemplateProgrammeTags(
 		.eq('template_id', template.id);
 	if (tagError) throw new Error(`Tags du modèle illisibles : ${tagError.message}`);
 
-	const tags = ((tagData ?? []) as unknown as TagRow[]).filter((t) =>
-		isProgrammePoint(t.curriculum_points)
-	);
+	// Un point illisible (absent de la jointure) n'est pas un tag à montrer.
+	const tags = ((tagData ?? []) as unknown as TagRow[]).filter((t) => t.curriculum_points !== null);
 
 	if (template.classification_node_id === null) {
 		return { nodeMissing: true, programmes: [], taggedCount: tags.length };

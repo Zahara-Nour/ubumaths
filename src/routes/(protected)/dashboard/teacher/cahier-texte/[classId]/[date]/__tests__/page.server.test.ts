@@ -3,10 +3,10 @@
  * ================================================================================
  *
  * Comportements validés par David (C5, étape 3, B2, 2026-10-21) :
- *   - les cases à cocher sont les points NEUFS du niveau de la classe, rangés par
+ *   - les cases à cocher sont les points du niveau de la classe, rangés par
  *     branche > notion (la sous-notion est nommée à côté du point) ;
- *   - un ancien point (thème → objectif) n'apparaît jamais, et la création d'une
- *     séance ne l'écrit pas (Q2), ni un point neuf archivé (B3) ;
+ *   - un point sans niveau n'apparaît jamais ; la création d'une séance n'écrit
+ *     pas un point archivé (B3) ;
  *   - un point archivé déjà coché reste affiché pour pouvoir le décocher ; non
  *     coché, il reste masqué (Q1).
  */
@@ -16,7 +16,7 @@ import {
 	answerProgramme,
 	pointIdsOf,
 	P_ADDITION,
-	P_ANCIEN,
+	P_SANS_NIVEAU,
 	P_FRACTION,
 	P_QUATRIEME,
 	P_TRIANGLE_ARCHIVE
@@ -122,9 +122,9 @@ describe('cahier de texte — programme travaillé (C5, B2)', () => {
 		expect(notion.points[1].subnotionName).toBe('Addition');
 	});
 
-	it('ni ancien point ni point d’un autre niveau, même coché', async () => {
-		const result = await loadWith('5', [P_ANCIEN]);
-		expect(pointIdsOf(result.curriculumTree)).not.toContain(P_ANCIEN);
+	it('ni point sans niveau ni point d’un autre niveau, même coché', async () => {
+		const result = await loadWith('5', [P_SANS_NIVEAU]);
+		expect(pointIdsOf(result.curriculumTree)).not.toContain(P_SANS_NIVEAU);
 		expect(pointIdsOf(result.curriculumTree)).not.toContain(P_QUATRIEME);
 	});
 
@@ -147,10 +147,10 @@ describe('cahier de texte — programme travaillé (C5, B2)', () => {
 });
 
 describe('création d’une séance — points cochés avant enregistrement (Q2)', () => {
-	it('écrit les points neufs, jamais un ancien point ni un archivé', async () => {
+	it('écrit les points actifs, jamais un archivé', async () => {
 		const fake = fakeDb('5', []);
 		const formData = new FormData();
-		formData.set('coveredPointIds', [P_FRACTION, P_ANCIEN, P_TRIANGLE_ARCHIVE].join(','));
+		formData.set('coveredPointIds', [P_FRACTION, P_TRIANGLE_ARCHIVE].join(','));
 		const event = {
 			locals: { supabase: fake.client, user: { id: USER_ID } },
 			params: { classId: CLASS_ID, date: DATE },

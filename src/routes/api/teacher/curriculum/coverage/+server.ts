@@ -18,7 +18,7 @@ import {
 	coveragePointQuerySchema
 } from '$lib/server/validation/curriculum';
 import { curriculumDbError } from '$lib/server/curriculum';
-import { readPointGeneration } from '$lib/server/curriculum-generation';
+import { readPointStatus } from '$lib/server/curriculum-point-status';
 import type { JournalEntryPoint } from '$lib/types/database-helpers';
 import { createServerLogger } from '$lib/utils/logger';
 
@@ -62,22 +62,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		return json({ error: parsed.error.issues[0].message }, { status: 400 });
 	}
 
-	// Q2 (C5, B2) : seuls les points neufs se cochent ; un ancien point n'est plus proposé.
-	// B3 : un point archivé non plus (décocher reste permis, par le DELETE).
-	let generation: Awaited<ReturnType<typeof readPointGeneration>>;
+	// B3 : un point archivé ne se coche pas (décocher reste permis, par le DELETE).
+	let status: Awaited<ReturnType<typeof readPointStatus>>;
 	try {
-		generation = await readPointGeneration(locals.supabase, parsed.data.point_id);
+		status = await readPointStatus(locals.supabase, parsed.data.point_id);
 	} catch (e) {
 		logger.error('[curriculum] coverage POST point read failed:', e);
 		return json({ error: 'Erreur serveur' }, { status: 500 });
 	}
-	if (generation === 'introuvable') {
+	if (status === 'introuvable') {
 		return json({ error: 'Référence introuvable' }, { status: 400 });
 	}
-	if (generation === 'ancien') {
-		return json({ error: 'Point hors programme' }, { status: 400 });
-	}
-	if (generation === 'archive') {
+	if (status === 'archive') {
 		return json({ error: 'Point archivé' }, { status: 400 });
 	}
 

@@ -1,13 +1,13 @@
 /**
- * Décor commun des tests qui lisent l'arbre du programme (génération neuve).
+ * Décor commun des tests qui lisent l'arbre du programme.
  *
  * Une branche « Nombres » > notions « Fractions » (> sous-notion « Addition »)
  * et « Décimaux », et une branche « Géométrie » > notion « Triangles ». Points
- * de 5e : trois actifs, un archivé ; un point de 4e ; un ANCIEN point (rattaché
- * à un objectif, sans nœud ni niveau).
+ * de 5e : trois actifs, un archivé ; un point de 4e ; un point SANS NIVEAU
+ * (posé sur un nœud, comme les points de test `TEST-SK-*`).
  *
  * `answerProgramme` répond aux requêtes de `getProgrammeTree` en appliquant les
- * filtres demandés (niveau, nœud non nul, archivés exclus) : un test vérifie
+ * filtres demandés (niveau, archivés exclus) : un test vérifie
  * donc aussi ce que le code DEMANDE, pas seulement ce qu'il range.
  */
 
@@ -30,16 +30,10 @@ export const P_FRACTION = 'aaaaaaaa-0000-4000-8000-000000000001';
 export const P_ADDITION = 'aaaaaaaa-0000-4000-8000-000000000002';
 export const P_TRIANGLE_ARCHIVE = 'aaaaaaaa-0000-4000-8000-000000000003';
 export const P_QUATRIEME = 'aaaaaaaa-0000-4000-8000-000000000004';
-export const P_ANCIEN = 'aaaaaaaa-0000-4000-8000-000000000005';
+export const P_SANS_NIVEAU = 'aaaaaaaa-0000-4000-8000-000000000005';
 export const P_DECIMAL = 'aaaaaaaa-0000-4000-8000-000000000006';
 
-function row(
-	id: string,
-	code: string,
-	grade: string | null,
-	nodeId: string | null,
-	archived = false
-) {
+function row(id: string, code: string, grade: string | null, nodeId: string, archived = false) {
 	return {
 		id,
 		code,
@@ -58,7 +52,7 @@ export const POINTS = [
 	row(P_DECIMAL, '5-015', '5', 'n-decimaux'),
 	row(P_TRIANGLE_ARCHIVE, '5-020', '5', 'n-triangles', true),
 	row(P_QUATRIEME, '4-010', '4', 'n-fractions'),
-	row(P_ANCIEN, '0-001', null, null)
+	row(P_SANS_NIVEAU, 'TEST-001', null, 'n-fractions')
 ];
 
 // ============================================================================
@@ -84,7 +78,6 @@ export function answerProgramme(table: string, calls: Call[]): Result | undefine
 	if (byId !== undefined) rows = rows.filter((p) => p.id === byId);
 	const grade = argsOf(calls, 'eq', 'grade')?.[1];
 	if (grade !== undefined) rows = rows.filter((p) => p.grade === grade);
-	if (argsOf(calls, 'not', 'node_id')) rows = rows.filter((p) => p.node_id !== null);
 	if (argsOf(calls, 'is', 'archived_at')) rows = rows.filter((p) => p.archived_at === null);
 
 	const terminal = calls.at(-1)?.method;

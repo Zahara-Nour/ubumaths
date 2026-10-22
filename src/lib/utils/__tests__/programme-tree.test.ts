@@ -47,7 +47,7 @@ function node(
 
 function point(
 	id: string,
-	node_id: string | null,
+	node_id: string,
 	display_order: number,
 	extra: Partial<ProgrammePointRow> = {}
 ): ProgrammePointRow {
@@ -130,9 +130,9 @@ describe('buildProgrammeTree', () => {
 		expect(tree[0].notions.map((n) => n.id)).toEqual(['n-entiers']);
 	});
 
-	it('écarte un ancien point (sans nœud)', () => {
+	it('écarte un point sans niveau', () => {
 		const tree = buildProgrammeTree(
-			[point('ancien', null, 1, { grade: null }), point('p1', 'n-entiers', 2)],
+			[point('sans-niveau', 'n-entiers', 1, { grade: null }), point('p1', 'n-entiers', 2)],
 			NODES
 		);
 

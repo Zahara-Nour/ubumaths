@@ -1,11 +1,10 @@
 /**
- * PATCH /api/teacher/curriculum/points/[pointId] — génération neuve seulement.
+ * PATCH /api/teacher/curriculum/points/[pointId].
  *
  * Comportements validés par David (C5, étape 3) :
  *   3.  renommer change le libellé, jamais le code ;
  *   4.  archiver / restaurer ;
  *   9.  libellé vide ou trop long → 400 avec un message clair ;
- *   10. un ANCIEN point (rattaché à un objectif) est refusé ;
  *   11. seuls `name` et `archived` se modifient : tout autre champ est refusé.
  *
  * La RLS échoue en silence : une écriture refusée rend zéro ligne, sans erreur.
@@ -30,19 +29,11 @@ const NODE_ID = '22222222-2222-4222-8222-222222222222';
 /** Requêtes reçues par la fausse base, dans l'ordre. */
 let results: Result[] = [];
 let updates: unknown[] = [];
-let filters: string[] = [];
 
 function chain(result: Result) {
 	const builder = {
 		select: () => builder,
-		eq: (col: string) => {
-			filters.push(`eq:${col}`);
-			return builder;
-		},
-		not: (col: string, op: string, value: unknown) => {
-			filters.push(`not:${col}:${op}:${String(value)}`);
-			return builder;
-		},
+		eq: () => builder,
 		update: (values: unknown) => {
 			updates.push(values);
 			return builder;
@@ -83,7 +74,6 @@ async function respond(event: Event): Promise<{ status: number; body: Record<str
 	}
 }
 
-const NEW_POINT = { id: POINT_ID, node_id: NODE_ID };
 const UPDATED = {
 	id: POINT_ID,
 	code: '5-042',
@@ -98,16 +88,12 @@ const UPDATED = {
 beforeEach(() => {
 	results = [];
 	updates = [];
-	filters = [];
 	supabase.from.mockClear();
 });
 
 describe('PATCH point — renommer et archiver', () => {
 	it('renomme un point neuf : seul le libellé part en base, jamais le code', async () => {
-		results = [
-			{ data: NEW_POINT, error: null },
-			{ data: UPDATED, error: null }
-		];
+		results = [{ data: UPDATED, error: null }];
 		const { status, body } = await respond(call({ name: '  Nouveau libellé  ' }));
 
 		expect(status).toBe(200);
@@ -116,28 +102,13 @@ describe('PATCH point — renommer et archiver', () => {
 	});
 
 	it('archive puis restaure', async () => {
-		results = [
-			{ data: NEW_POINT, error: null },
-			{ data: { ...UPDATED, archived_at: '2026-10-10T00:00:00Z' }, error: null }
-		];
+		results = [{ data: { ...UPDATED, archived_at: '2026-10-10T00:00:00Z' }, error: null }];
 		expect((await respond(call({ archived: true }))).status).toBe(200);
 		expect(updates[0]).toEqual({ archived_at: expect.any(String) });
 
-		results = [
-			{ data: NEW_POINT, error: null },
-			{ data: UPDATED, error: null }
-		];
+		results = [{ data: UPDATED, error: null }];
 		expect((await respond(call({ archived: false }))).status).toBe(200);
 		expect(updates[1]).toEqual({ archived_at: null });
-	});
-
-	it('l’écriture ne vise que les points neufs (filtre node_id non nul)', async () => {
-		results = [
-			{ data: NEW_POINT, error: null },
-			{ data: UPDATED, error: null }
-		];
-		await respond(call({ name: 'X' }));
-		expect(filters).toContain('not:node_id:is:null');
 	});
 });
 
@@ -154,10 +125,7 @@ describe('PATCH point — refus', () => {
 	});
 
 	it('accepte un libellé long du BO (jusqu’à 500 caractères)', async () => {
-		results = [
-			{ data: NEW_POINT, error: null },
-			{ data: UPDATED, error: null }
-		];
+		results = [{ data: UPDATED, error: null }];
 		expect((await respond(call({ name: 'x'.repeat(400) }))).status).toBe(200);
 	});
 
@@ -184,24 +152,8 @@ describe('PATCH point — refus', () => {
 		expect((await respond(call('{oups'))).status).toBe(400);
 	});
 
-	it('point inconnu → 404', async () => {
+	it('point inconnu, ou écriture refusée en silence (zéro ligne rendue) → 404, pas un faux succès', async () => {
 		results = [{ data: null, error: null }];
-		expect((await respond(call({ name: 'X' }))).status).toBe(404);
-	});
-
-	it('ANCIEN point (sans nœud) → 409, rien n’est écrit', async () => {
-		results = [{ data: { id: POINT_ID, node_id: null }, error: null }];
-		const { status, body } = await respond(call({ name: 'X' }));
-		expect(status).toBe(409);
-		expect(String(body.error)).toMatch(/ancien/i);
-		expect(updates).toEqual([]);
-	});
-
-	it('écriture refusée en silence (zéro ligne rendue) → 404, pas un faux succès', async () => {
-		results = [
-			{ data: NEW_POINT, error: null },
-			{ data: null, error: null }
-		];
 		expect((await respond(call({ name: 'X' }))).status).toBe(404);
 	});
 });

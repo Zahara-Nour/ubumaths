@@ -5,20 +5,17 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après le `db:migrate` de l'étape 4 (#1598)._
+_Mis à jour le 2026-10-22, PR 2 de l'étape 4 ouverte._
 
-- **État** : C5 étape 3 en prod (v0.44.0). Étape 4 (#1598) **jouée en prod le 2026-10-22** (07:15 UTC) : vérifié
-  0 table thème/objectif, 0 `objective_id`, `node_id` NOT NULL, 2 126 points (0 sans nœud), 0 lien ni état orphelin,
-  0 des 8 fonctions ; aucune erreur Postgres après. Copie figée : `docs/archive/arbre-notions/ancien-programme/`.
-- **Prochaine action** : PR 2 : `db:types` + simplification des filtres de génération (`isProgrammePoint`,
-  `.not('node_id', 'is', null)`, cas `'ancien'` de `readPointGeneration`) (Q3). Ensuite : **passe lycée** (5 étapes,
-  décidée le 2026-10-21), chantier à part.
+- **État** : étape 4 (#1598) jouée en prod le 2026-10-22. PR 2 (`refactor/arbre-etape4-types`) : `db:types` +
+  filtres de l'ancienne génération retirés (`curriculum-generation.ts` → `curriculum-point-status.ts`, plus de
+  `isProgrammePoint` ni de cas `'ancien'`, plus de `.not('node_id', 'is', null)`, PATCH d'un point sans 409).
+- **Prochaine action** : CI verte → merge, puis **passe lycée** (5 étapes, décidée le 2026-10-21), chantier à part.
 - **En attente de David** : rien de bloquant. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
-- **Pièges en cours** : `database.ts` encore l'ancien (régénérer en PR 2) ; worktrees partis de `main` avant #1598 :
-  tests de l'ancien monde rouges en local ; `supabase start` joue les migrations hors transaction (LOCK seulement dans
-  un `do`) ; points `TEST-SK-*` sans grade, voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
-- **Worktree / branche** : aucun (PR 2 : `git worktree add -b refactor/arbre-etape4-types ../ubumaths-wt-arbre-notions`).
+- **Pièges en cours** : `supabase start` joue les migrations hors transaction (LOCK seulement dans un `do`) ; points
+  `TEST-SK-*` sans grade, voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
+- **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `refactor/arbre-etape4-types`.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1290,3 +1287,6 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
   2e. Revues : security-auditor 0 bloquant (verrou, garde sur 5 tables : corrigés) ; code-reviewer prêt (points
   `TEST-SK-*` nettoyés, grade nul documenté, nom du rollback, titre d'un test). Intégration locale complète :
   258 fichiers, 3 307 tests. `db:migrate` : en attente du go de David.
+- **2026-10-22 — Étape 4 jouée en prod, PR 2 (Q3).** `db:types` : tables thème/objectif retirées, `node_id` NOT
+  NULL. Filtres retirés ; un tag dont la jointure est nulle (point illisible) reste écarté. Décor de test :
+  `P_ANCIEN` devient `P_SANS_NIVEAU` (point posé sur un nœud, sans grade, comme `TEST-SK-*`).

@@ -5,7 +5,7 @@
  * Comportements validés par David (C5, étape 3, B2, 2026-10-21) :
  *   - la carte se lit sur les points NEUFS du niveau de la classe, rangés par
  *     branche > notion (la sous-notion est nommée à côté du point) ;
- *   - un ancien point (thème → objectif) n'apparaît jamais ;
+ *   - un point sans niveau n'apparaît jamais ;
  *   - un point archivé n'apparaît que s'il a été travaillé cette année (Q1).
  */
 import { describe, it, expect, vi } from 'vitest';
@@ -14,7 +14,7 @@ import {
 	answerProgramme,
 	pointIdsOf,
 	P_ADDITION,
-	P_ANCIEN,
+	P_SANS_NIVEAU,
 	P_FRACTION,
 	P_QUATRIEME,
 	P_TRIANGLE_ARCHIVE
@@ -80,9 +80,9 @@ describe('avancement — arbre branche > notion > points (C5, B2)', () => {
 		expect(points[1].subnotionName).toBe('Addition');
 	});
 
-	it('ni ancien point ni point d’un autre niveau', async () => {
-		const result = await loadWith('5', [P_ANCIEN]);
-		expect(pointIdsOf(result.tree)).not.toContain(P_ANCIEN);
+	it('ni point sans niveau ni point d’un autre niveau', async () => {
+		const result = await loadWith('5', [P_SANS_NIVEAU]);
+		expect(pointIdsOf(result.tree)).not.toContain(P_SANS_NIVEAU);
 		expect(pointIdsOf(result.tree)).not.toContain(P_QUATRIEME);
 	});
 

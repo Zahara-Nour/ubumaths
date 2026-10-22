@@ -27,7 +27,7 @@ import { extractResourceReferences, referenceIdsOfKind } from '$lib/resources/re
 import { parseExerciseSelection } from '$lib/resources/exercise-selection';
 import { resolveExercisesAtDisplayNumbers } from '$lib/server/worksheets/display-number';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { isProgrammePoint, keepCheckablePointIds } from '$lib/server/curriculum-generation';
+import { keepCheckablePointIds } from '$lib/server/curriculum-point-status';
 
 type Sb = App.Locals['supabase'];
 
@@ -56,7 +56,7 @@ function refsOf(rows: ActivityRef[], kind: string, column: keyof ActivityRef): s
 interface TemplatePointRow {
 	template_id: string;
 	point_id: string;
-	curriculum_points: { node_id: string | null; grade: string | null } | null;
+	curriculum_points: { grade: string | null } | null;
 }
 
 /**
@@ -76,14 +76,13 @@ async function templatePointIds(
 ): Promise<string[]> {
 	const { data, error } = await supabase
 		.from('question_template_points')
-		.select('template_id, point_id, curriculum_points(node_id, grade)')
+		.select('template_id, point_id, curriculum_points(grade)')
 		.in('template_id', templateIds);
 	if (error) throw new Error(`reconcileAutoCoverage ${context}: ${error.message}`);
 
-	// Les tags des anciens points (thème → objectif) restent en base jusqu'à l'étape 4 de C5 :
-	// écartés AVANT la règle du niveau, ils ne comptent plus dans la couverture.
-	const programmeRows = ((data ?? []) as unknown as TemplatePointRow[]).filter((r) =>
-		isProgrammePoint(r.curriculum_points)
+	// Un point illisible (absent de la jointure) est écarté AVANT la règle du niveau.
+	const programmeRows = ((data ?? []) as unknown as TemplatePointRow[]).filter(
+		(r) => r.curriculum_points !== null
 	);
 	const rows = keepLinksOfGrade(programmeRows, grade, (r) => ({
 		template_id: r.template_id,

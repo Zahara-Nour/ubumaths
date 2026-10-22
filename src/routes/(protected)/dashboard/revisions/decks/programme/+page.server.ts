@@ -13,7 +13,6 @@ import { error } from '@sveltejs/kit';
 import { requireAuth } from '$lib/server/middleware/auth';
 import { templateToBadge } from '$lib/server/srs/capacity-badge';
 import { keepLinksOfGrade } from '$lib/server/curriculum-grade';
-import { isProgrammePoint } from '$lib/server/curriculum-generation';
 import { loadNodesWithAncestors } from '$lib/server/programme-tree';
 import { placeOfNode } from '$lib/utils/programme-tree';
 import type { ClassificationNode } from '$lib/types/database-helpers';
@@ -176,15 +175,15 @@ export const load: PageServerLoad = async ({ locals }): Promise<ProgrammeData> =
 		template_id: string;
 		curriculum_points: {
 			code: string;
-			node_id: string | null;
+			node_id: string;
 			grade: string | null;
 			archived_at: string | null;
 		} | null;
 	};
-	// Seuls les points neufs comptent (les tags des anciens points restent en base jusqu'à
-	// l'étape 4 de C5), rangés par code pour que le « 1er point » ne dépende pas de la lecture.
+	// Seuls les points lisibles comptent, rangés par code pour que le « 1er point » ne
+	// dépende pas de la lecture.
 	const programmeLinks = ((links ?? []) as unknown as LinkRow[])
-		.filter((l) => isProgrammePoint(l.curriculum_points))
+		.filter((l) => l.curriculum_points !== null)
 		.sort((a, b) =>
 			(a.curriculum_points?.code ?? '').localeCompare(b.curriculum_points?.code ?? '', 'fr')
 		);

@@ -1,10 +1,10 @@
 /**
- * Couverture AUTOMATIQUE d'une séance — ni point archivé, ni ancien point
+ * Couverture AUTOMATIQUE d'une séance — jamais un point archivé
  * ======================================================================
  *
  * Comportement validé par David (C5, étape 3, B3, 2026-10-21) : la réconciliation
  * suit la même règle que le coché manuel. Un exercice, un modèle ou une évaluation
- * cités dans une séance ne cochent que des points neufs NON archivés ; une ligne
+ * cités dans une séance ne cochent que des points NON archivés ; une ligne
  * auto déjà posée sur un point devenu archivé disparaît à la réconciliation
  * suivante (les cochés manuels restent).
  */
@@ -15,12 +15,12 @@ import { createFakeSupabase, type Call } from './helpers/fake-supabase';
 const ENTRY = 'entry-1';
 const STAMP = '2026-10-01T00:00:00Z';
 
-/** Points en base : neufs actifs, un neuf archivé, un ancien (sans nœud). */
+/** Points en base : deux actifs, deux archivés. */
 const POINTS = [
 	{ id: 'p-modele', node_id: 'n-1', archived_at: null },
 	{ id: 'p-modele-archive', node_id: 'n-1', archived_at: STAMP },
 	{ id: 'p-exercice', node_id: 'n-2', archived_at: null },
-	{ id: 'p-exercice-ancien', node_id: null, archived_at: null }
+	{ id: 'p-exercice-archive', node_id: 'n-2', archived_at: STAMP }
 ];
 
 function inIds(calls: Call[]): string[] {
@@ -56,11 +56,11 @@ async function reconcile(existing: { point_id: string; source: string }[] = []) 
 					data: ['p-modele', 'p-modele-archive'].map((point_id) => ({
 						template_id: 't-1',
 						point_id,
-						curriculum_points: { node_id: 'n-1', grade: '5' }
+						curriculum_points: { grade: '5' }
 					}))
 				};
 			case 'exercise_curriculum_points':
-				return { data: [{ point_id: 'p-exercice' }, { point_id: 'p-exercice-ancien' }] };
+				return { data: [{ point_id: 'p-exercice' }, { point_id: 'p-exercice-archive' }] };
 			case 'curriculum_points':
 				return { data: POINTS.filter((p) => inIds(calls).includes(p.id)) };
 			case 'journal_entry_points':
@@ -80,8 +80,8 @@ function callsOf(fake: Awaited<ReturnType<typeof reconcile>>, method: string) {
 		.filter((c) => c.method === method);
 }
 
-describe('reconcileAutoCoverage — archivés et anciens points (B3)', () => {
-	it('ne coche que les points neufs non archivés, quelle que soit la source', async () => {
+describe('reconcileAutoCoverage — points archivés (B3)', () => {
+	it('ne coche que les points non archivés, quelle que soit la source', async () => {
 		const fake = await reconcile();
 		const rows = (callsOf(fake, 'upsert')[0]?.args[0] ?? []) as { point_id: string }[];
 		expect(rows.map((r) => r.point_id).sort()).toEqual(['p-exercice', 'p-modele']);
@@ -90,7 +90,7 @@ describe('reconcileAutoCoverage — archivés et anciens points (B3)', () => {
 	it('une ligne auto sur un point devenu archivé est retirée ; un coché manuel reste', async () => {
 		const fake = await reconcile([
 			{ point_id: 'p-modele-archive', source: 'auto' },
-			{ point_id: 'p-exercice-ancien', source: 'manual' }
+			{ point_id: 'p-exercice-archive', source: 'manual' }
 		]);
 		const removed = callsOf(fake, 'in').find((c) => c.args[0] === 'point_id')?.args[1];
 		expect(removed).toEqual(['p-modele-archive']);

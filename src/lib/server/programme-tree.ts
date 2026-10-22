@@ -1,13 +1,11 @@
 /**
  * Lecture de l'arbre du programme — génération neuve (ADR 0020).
  *
- * Lit les points NEUFS d'un niveau (`node_id` non nul) puis, explicitement, les
+ * Lit les points d'un niveau puis, explicitement, les
  * nœuds qu'ils visent et leurs ancêtres (sous-notion → notion → branche). Pas
  * de jointure `!inner` : une ligne masquée y ferait disparaître son parent en
  * silence. Le rangement est confié à `buildProgrammeTree`.
- *
- * Les anciens points (rattachés à un objectif) n'ont ni nœud ni niveau : ils
- * sont exclus par la requête elle-même, et une seconde fois par le rangement.
+
  */
 
 import type { ClassificationNode } from '$lib/types/database-helpers';
@@ -69,11 +67,7 @@ export async function getProgrammeTree(
 	grade: string,
 	{ includeArchived = false }: { includeArchived?: boolean } = {}
 ): Promise<ProgrammeBranch[]> {
-	let query = supabase
-		.from('curriculum_points')
-		.select(PROGRAMME_POINT_COLS)
-		.eq('grade', grade)
-		.not('node_id', 'is', null);
+	let query = supabase.from('curriculum_points').select(PROGRAMME_POINT_COLS).eq('grade', grade);
 	if (!includeArchived) query = query.is('archived_at', null);
 
 	const { data, error } = await query
