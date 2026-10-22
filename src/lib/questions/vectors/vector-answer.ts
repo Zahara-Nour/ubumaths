@@ -24,7 +24,7 @@
 import type { ValidationStatus, VectorMode } from '$lib/questions/types';
 import type { MathNode } from '$lib/mathAST/types';
 import { parseLatexSafe } from '$lib/mathAST/parser';
-import { normalize } from '$lib/mathAST/normal';
+import { equivalenceForms } from '$lib/mathAST/normal/normalize';
 import { multiply, subtract } from '$lib/mathAST/factory';
 import { mapNode } from '$lib/mathAST/transforms';
 import { getVariables } from '$lib/mathAST/eval/substitute';
@@ -68,6 +68,9 @@ const MAX_WRITTEN_EXPONENT = 20;
 
 /** Budget de la réduction d'UNE comparaison (la garde Q58 a déjà filtré l'écriture) */
 const NORMALIZE_BUDGET_MS = 200;
+
+/** Le zéro auquel une coordonnée se compare */
+const ZERO: MathNode = { type: 'number', value: '0' };
 
 /** Commandes d'espacement (`\,` `\;` `\:` `\!` `\ `), jamais le `\\` d'une colonne */
 const SPACING_REGEX = /(?<!\\)\\(?:[,;:!]|\s|q?quad(?![a-zA-Z]))|~/g;
@@ -206,7 +209,9 @@ function readVector(text: string): ReadVector {
  * dépasse son budget (l'appelant juge alors la réponse fausse).
  */
 export function isExactlyZero(node: MathNode): boolean {
-	const form = normalize(node, {
+	// Forme d'équivalence (ADR 0006) : `normalize` seul ignore les identités
+	// lourdes (`sin²2 + cos²2 − 1` ne valait pas 0)
+	const [form] = equivalenceForms(node, ZERO, {
 		abortChecker: makeAbortChecker(undefined, NORMALIZE_BUDGET_MS)
 	});
 	const real = [...form.numerator, ...form.denominator].every((term) =>

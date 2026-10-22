@@ -13,9 +13,10 @@
 import type { MathNode } from '../types';
 import type { Domain, IntervalSet, Interval } from '../domain/types';
 import { isNumber, isPositiveInfinity, isNegativeInfinity } from '../guards';
-import { opposite, subtract, add } from '../factory';
+import { opposite } from '../factory';
 import { substitute, getVariables } from '../eval/substitute';
-import { normalize, isZeroPolynomial } from '../normal';
+import { normalFormsEquivalent } from '../normal';
+import { equivalenceForms } from '../normal/normalize';
 import { computeDomain } from '../domain/compute';
 import { evaluateNodeToApproximatedNumber } from '../eval/evaluate';
 
@@ -448,11 +449,10 @@ function detectSymmetryAlgebraic(node: MathNode, variable: string): SymmetryResu
 		const negX = opposite({ type: 'variable', name: variable });
 		const fNegX = substitute(node, { [variable]: negX }, { maxIterations: 1 });
 
-		// Check even: f(-x) - f(x) = 0
-		const diffEven = subtract(fNegX, node);
-		const normDiffEven = normalize(diffEven);
-
-		if (isZeroPolynomial(normDiffEven.numerator)) {
+		// Comparaison par la forme d'équivalence (ADR 0006) : `normalize` seul ne
+		// réduit pas e^{−(−x)}, et `e^x + e^{−x}` sortait « ni paire ni impaire »
+		// Check even: f(-x) = f(x)
+		if (normalFormsEquivalent(...equivalenceForms(fNegX, node))) {
 			return {
 				symmetry: 'even',
 				variable,
@@ -461,11 +461,8 @@ function detectSymmetryAlgebraic(node: MathNode, variable: string): SymmetryResu
 			};
 		}
 
-		// Check odd: f(-x) + f(x) = 0
-		const sumOdd = add(fNegX, node);
-		const normSumOdd = normalize(sumOdd);
-
-		if (isZeroPolynomial(normSumOdd.numerator)) {
+		// Check odd: f(-x) = -f(x)
+		if (normalFormsEquivalent(...equivalenceForms(fNegX, opposite(node)))) {
 			return {
 				symmetry: 'odd',
 				variable,
