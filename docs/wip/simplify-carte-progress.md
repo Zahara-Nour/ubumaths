@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-22, table contexte → forme cible écrite (§ 7)._
 
 - **État** : phase 0. Relevé (§ 1-4) ; S1-S4 validées (§ 6) ; **table « contexte → forme cible » écrite (§ 7)**, avec 4 questions D1-D4. Aucun code touché.
 - **Prochaine action** : David valide la table du § 7 et tranche D1-D4 ; ensuite, plan de lots (ordre proposé en fin de § 5, à réviser avec S1-S4 et § 7).
-- **En attente de David** : § 7 D1-D4 (réponse finale de f′, factoriser f′ dans les variations, `tidy` sur l'expression tapée, `intent` pour dérivée/primitive) ; § 5 Q4-Q7 (Q3 réglée par S4).
+- **En attente de David** : § 8 E1 (une seule définition de « bien écrit » pour écrire et juger) ; § 7 D1-D4 (réponse finale de f′, factoriser f′ dans les variations, `tidy` sur l'expression tapée, `intent` pour dérivée/primitive) ; § 5 Q4-Q7 (Q3 réglée par S4).
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
 - **Worktree / branche** : aucun (doc seule, sur `main`).
 
@@ -210,3 +210,16 @@ Vocabulaire, d'après S1-S4 : **`tidy`** = mise au propre silencieuse (arithmét
 - **D2 — f′ du tableau de variations** : factoriser f′ (entièrement, pour lire le signe facteur par facteur), ou seulement son numérateur quand c'est un quotient ? **Recommandation** : factoriser le numérateur (les dénominateurs des fonctions du lycée sont déjà des produits ou des carrés), et le garder développé quand il ne se factorise pas sur ℚ, avec une étape nommée « On factorise pour étudier le signe ».
 - **D3 — expression tapée avec variable dans l'Atelier** : la garder telle quelle (aujourd'hui), ou passer `tidy` en ordre gardé (`3+2·x → 3+2x`, `x/x` gardé par S3) ? **Recommandation** : `tidy` en ordre gardé. Avec S1 et S3, la seule raison de l'interdire tombe : `x/x → 1` et les décimaux réécrits n'arrivent plus.
 - **D4 — forme cible déclarée par l'énoncé pour dérivée et primitive** : ajouter à ces modèles de question le même `intent` que la famille « simplifier » ? **Recommandation** : oui. Le champ est facultatif ; sans lui, le défaut de D1 s'applique.
+
+## 8. Correction de David (2026-10-22) : « comparer » a deux sens
+
+Le besoin A du § 1 mélangeait deux choses :
+
+- **A1. Équivalence algébrique** : deux expressions sont-elles égales mathématiquement (sous le domaine, ADR 0006/0012) ? → `areEquivalent` / `equivalenceForm`. C'est de ce sens que relèvent les comparaisons par `normalize` du § 4 (dédoublonnage, parité, vecteurs).
+- **A2. Juger la réponse d'un élève** : équivalente à l'attendu, **et** bien écrite, **et** sous la forme demandée. Une réponse équivalente peut être mal écrite (`bad_form` / `unoptimal_form`) ou ne pas respecter la forme exigée. → chaîne de `utils/answer-validator.ts` décrite dans `docs/systeme/questions.md` § validation : `validationRules` → valeur (A1) → `requiredForm` → forme (`checkFormUnified`, `mathAST/cosmetic-transforms.ts`, contraintes réglables `signs`, `brackets`, `nullTerms`, `factorOne`, `factorZero`, `reducedFractions`, `reducedRadicals`…).
+
+**Ce que ça change pour le chantier** : « bien écrit » est défini **deux fois** — par `tidy` pour écrire (corrections, Atelier), par `cosmetic-transforms` pour juger l'élève. La liste des contraintes réglables recoupe presque mot pour mot la définition de `tidy` donnée par David en Q2 (signes et parenthèses inutiles, neutres, absorbants, fractions simplifiées). `cosmetic-transforms.ts` n'appelle pas `tidy` (vérifié : aucune occurrence).
+
+Risque, **non vérifié** : une correction écrite par `tidy` qui serait jugée mal écrite si l'élève la tapait, ou l'inverse. À confirmer par des tests avant de l'affirmer.
+
+Question **E1** pour David : faut-il qu'il y ait **une seule définition** de « bien écrit », partagée par les deux (écrire la correction, juger l'élève) — l'écriture de la correction devant passer sans remarque le juge de forme ? Le juge garde ses réglages (strict / warn / off) et son retour à l'élève (« Simplifie la fraction ») ; seule la liste de ce qui est « superflu » serait commune.
