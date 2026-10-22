@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-22, après Q4 (§ 21)._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 8 tranchées (E1, § 10, E2, D1, D2, D3, D4, Q4), 4 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : § 9, à présenter, pas à appliquer) ; ensuite plan de lots (fin de la page).
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : § 9, à présenter, pas à appliquer ; sonde faite, § 22) ; ensuite plan de lots (fin de la page).
 - **En attente de David** : § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
@@ -399,3 +399,16 @@ Vérifié avant de présenter (`questions/generator/correction-generator.ts`) : 
 Sondé avant de présenter (test jetable, supprimé) : `(x²−1)/(x+1) → x−1` par `simplify` et par le moteur pédagogique (`auto` et `réduire`), en **une seule étape `simplify-fraction`** venue de `normalize` : ni factorisation montrée, ni `x ≠ −1`. Idem `(x²−4)/(x−2) → x+2`, `(2x+2)/(x+1) → 2`, `(x²−x)/x → x−1`. Deux écarts relevés au passage, ajoutés au § 4 (`simplify` factorise `x²+2x+1` ; le moteur pédagogique développe `(x+1)²`).
 
 **Décision : la règle de l'ADR 0007 « `auto` ne factorise jamais » vise le résultat, pas les étapes.** Une étape peut factoriser pour simplifier une fraction, si le facteur commun disparaît ensuite : `(x²−1)/(x+1) = (x−1)(x+1)/(x+1) = x−1`, pour `x ≠ −1` (condition affichée, S3). Le résultat final n'est jamais une forme factorisée choisie par `auto` : `x²+2x+1` reste développé. Rejetée : interdire aussi les étapes (`auto` laisserait la fraction telle quelle). Précision d'ADR, pas renversement : à reporter dans l'ADR 0007 au lot concerné.
+
+## 22. § 9 : sonde avant présentation (2026-10-22, pas encore présenté à David)
+
+Moteur pédagogique, lycée, test jetable supprimé. Ce que voit l'élève avec `développer` et `réduire` (résultats identiques, sauf les noms d'étapes) :
+
+- `0,5x(x+0,2)` → `(1/2)x² + (1/10)x` : décimaux réécrits en fractions (contraire à S1), étapes « combine-like-terms » ×3 ;
+- `(x+1)/2·(x−1)` → `(1/2)x² − 1/2` ;
+- `(x+1)(x−2) + 1/(x+1)` → `(x³−3x−1)/(x+1)` : même dénominateur imposé, y compris en `réduire` ;
+- `(x²−1)/(x+1)` → `x−1`, étape unique `simplify-fraction`, `x ≠ −1` perdu ;
+- `e^(ln x)·(x+1)` → `x² + x` (`exp-ln`, sans `x > 0`) ; `(√x)²·(x+1)` → `x² + x` (sans `x ≥ 0`) ;
+- `réduire` développe : `(x+1)² → x²+2x+1`, `2(x+3) → 2x+6`.
+
+Toutes les étapes `combine-like-terms` / `simplify-fraction` viennent de `normalize` (`useNormalize: true`, `intent-rules.ts`). À présenter à David avec ces exemples, en langage simple (il a trouvé les options de D4 trop abstraites au premier jet : partir d'un exemple concret).
