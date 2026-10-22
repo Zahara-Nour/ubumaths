@@ -307,3 +307,5 @@ Question de David sur l'ADR 0006. `toCustom(denormalize(·))` des deux formes :
 | `2^(x+1)-2*2^x`        | inchangé                       | `0`               |
 
 `equivalenceForm` (`normal/normalize.ts:2164`) = réécritures de notation (`e^x`→`exp`, `log_b`, Euler, `2^x`→`exp(x ln 2)`, puissances fractionnaires → radicaux), définitions trigo, puis `normalize`, puis `sin²+cos² = 1`. Les identités simples sont déjà dans `normalize` ; ⚠️ `ln(e^x) → x` y est appliquée en silence, contraire à S4 tant que `réduire` passe par `normalize`.
+
+**Où est géré `exp(ln x) = x`** (question de David, 2026-10-22) — trois endroits : `normalize` pour `exp(ln u)` (`normal/normalize.ts:4817`, étape `exp-ln-inverse` enregistrée) ; `normal/rules/euler-identities.ts` pour `e^{ln u}` (chemin d'écriture de `normalize`, sans étape) ; règle `exp-ln` du moteur pédagogique (`pattern/rule-sets/log-exp.ts:35`, famille `identites-log-exp`, avec étape). `tidy` ne l'applique pas (décision du 2026-10-05, option A). Les trois simplifient **sans condition x > 0** (« le domaine est celui de l'expression de départ ») : écart avec S3.
