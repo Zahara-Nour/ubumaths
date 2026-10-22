@@ -5,6 +5,7 @@ couvre:
   - 'src/routes/(public)/construction-demo/**'
   - 'src/routes/api/constructions/**'
   - 'src/routes/api/construction-demo-scripts/**'
+  - src/lib/server/constructions-access.ts
 ---
 
 # Constructions animées (`constructions-v2`)
@@ -220,6 +221,10 @@ Aucun lien `href="/constructions"` dans `src/` hors de ces routes : on y arrive 
 | `DELETE /api/constructions/[id]`                     | `requireAuth` ; auteur (vérifié avant) | UUID ; `.select()` : zéro ligne → 404                                                                                                                |
 | `POST /api/constructions/convert`                    | `teacher`, `admin`                     | `xml` ≤ 5 Mo ; ancien convertisseur → JSON ; 1000 étapes au plus                                                                                     |
 | `GET`/`POST`/`DELETE /api/construction-demo-scripts` | `requireAuth`                          | `name` ≤ 100, `dsl_script` ≤ 100 000 ; `upsert` sur (`author_id`, `name`) ; `DELETE ?id=` UUID                                                       |
+
+Qui écrit : `CONSTRUCTION_AUTHOR_ROLES` et `canAuthorConstructions` (`src/lib/server/constructions-access.ts`),
+prof et admin (décision de David du 2026-10-22). La base tient la même règle (migration
+`20261022200000`) : les gardes de l'API et des pages ne font que répondre 403 et masquer les boutons.
 
 ## 7. Convertisseur XML InstrumenPoche → DSL
 
