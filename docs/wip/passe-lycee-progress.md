@@ -35,3 +35,13 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   « modéliser … suite », « … fonction » ; Tle compl. ex-007, ex-030 ; Tle spé ex-083 (l. 421). Autre catégorie, à
   trancher à part : non repris parce que le BO dit « pas un objectif » ou phrase de présentation / redondance
   (TSPE ex-007, 008, 009, 025 ; TCOMP ex-131 ; 1SPE-062, 1SPE-017, ex-012a).
+- **2026-10-22 — Règles transversales tranchées (David : « je suis tes reco »).**
+  - T1 **Énumérations d'objets** (limites de six fonctions, chiffrements, techniques de limites…) : un point par objet
+    (1a à la lettre ; précédent 5-077 au collège).
+  - T2 **« graphiquement ou algébriquement »** : on coupe selon la méthode (famille du collège, 3-008).
+  - T3 **Non-coupes validées au seed du 2026-10-08** (1SPE-264, 230, 283, 292, 305, 1GEN-022, 1TECHNO-057,
+    TTECHNO-034, 042…) : la règle 1a prime, on coupe.
+  - T4 **Doublons du BO** : on archive celui qu'aucune référence ne vise (2-373, 2-374, et non 2-380, 2-381) ; un
+    doublon né d'une coupe (notation Σ, Tle techno) n'est pas créé.
+  - T5 **⚙ des automatismes de 1re** : un jumeau dans chacun des trois programmes (1SPE, 1GEN, 1TECHNO).
+  - T6 **Puces larges** : rétablies, entières (y compris l. 421 de Tle spé, sans la couper par grandeur).
