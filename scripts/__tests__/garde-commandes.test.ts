@@ -82,6 +82,38 @@ describe('garde-commandes — refusé, avec la raison', () => {
 	});
 });
 
+describe('garde-commandes — git : enchaînements et options qui perdent du travail en silence', () => {
+	it('une suppression de branche chaînée à gh pr merge (#1601)', () => {
+		refuse('gh pr merge 12 --merge ; git push origin --delete feat/x', /MERGED/);
+		refuse('gh pr merge 12 --merge && git push origin -d feat/x', /MERGED/);
+		refuse('gh pr merge 12 --merge && git push origin :feat/x', /MERGED/);
+		refuse('gh pr merge 12 --merge && git branch -d feat/x', /MERGED/);
+	});
+
+	it('la même suppression, seule, passe', () => {
+		passe('git push origin --delete feat/x');
+		passe('gh pr merge 12 --merge');
+		passe('gh pr merge 12 --merge --delete-branch'); // gh ne supprime qu'après un merge réussi
+		passe('gh pr merge 12 --merge && git push origin feat/y');
+	});
+
+	it('git add dont les erreurs sont masquées', () => {
+		refuse('git add a.md b.md 2>/dev/null', /2>\/dev\/null/);
+		refuse('git add a.md &>/dev/null && git commit -m "x"', /2>\/dev\/null/);
+		passe('git add a.md b.md');
+		passe('git status 2>/dev/null');
+	});
+
+	it('git commit sans les hooks', () => {
+		refuse('git commit --no-verify -m "x"', /--no-verify/);
+		refuse('git commit -n -m "x"', /--no-verify/);
+		refuse('git commit -nm "x"', /--no-verify/);
+		passe('git commit -m "x" -- docs/x.md');
+		passe('git commit --amend --no-edit');
+		passe('git commit -m "pas de --no-verify ici"');
+	});
+});
+
 describe('garde-commandes — la mise en prod passe (décision de David, 2026-10-10)', () => {
 	it('pnpm deploy:prod et son essai passent sans demande', () => {
 		passe('pnpm deploy:prod');

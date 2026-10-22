@@ -113,8 +113,10 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   2026-10-10 et gardée en entier.
 - `.claude/hooks/garde-commandes.py` (PreToolUse sur Bash) : refuse les interdits qui dépendent des
   arguments ou du dossier (port 5173, `pnpm dev` sans `--strictPort`, `kill:servers` depuis un
-  worktree, CLI Supabase directe, `--no-verify`, `pnpm release` seul, `tsc --noEmit`, `svelte-check`
-  nu, `git -C ""`) et demande confirmation pour un `--force` ou un `-D` placé n'importe où.
+  worktree, CLI Supabase directe, `--no-verify` au commit comme au push, `pnpm release` seul,
+  `tsc --noEmit`, `svelte-check` nu, `git -C ""`, `2>/dev/null` sur `git add`, suppression de
+  branche chaînée à `gh pr merge`, `pull --rebase` d'une autre branche sur une branche déjà
+  poussée) et demande confirmation pour un `--force` ou un `-D` placé n'importe où.
   Sur `main` (partagé par toutes les sessions) : refuse un pull qui fusionne, un merge non
   fast-forward, `git add -A` / `.`, `git commit -a` ; pendant un `deploy:prod` (verrou « deploy »),
   refuse `gh pr merge` et les commits ou pushes vers `main`

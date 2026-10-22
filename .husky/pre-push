@@ -5,8 +5,9 @@
 echo "pre-push : prettier --check (fichiers suivis)…"
 if ! pnpm format:check; then
 	echo ""
-	echo "❌ Formatage : des fichiers suivis ne sont pas formatés → la CI échouerait (job Lint)."
-	echo "   Corrige puis re-push :  pnpm format:all"
+	echo "❌ Formatage : les fichiers signalés ci-dessus ne sont pas formatés → la CI échouerait (job Lint)."
+	echo "   Les formater, eux seuls, puis re-push :  pnpm format <fichiers>"
+	echo "   (jamais pnpm format:all : il reformaterait le travail en cours des autres sessions)"
 	exit 1
 fi
 
@@ -23,7 +24,7 @@ if ! pnpm lint:fast --push; then
 fi
 
 # Liens de la doc : un commit de doc poussé directement sur main ne passe pas
-# par la CI (`paths-ignore`) ; c'est ici qu'un lien cassé est arrêté (~1 s).
+# par la CI (filtre `paths` de quality.yml) ; c'est ici qu'un lien cassé est arrêté (~1 s).
 echo "pre-push : liens de la doc…"
 if ! pnpm docs:check-links; then
 	exit 1

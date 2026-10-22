@@ -135,6 +135,8 @@ def mot(segment: str) -> str:
 
 # Dossier où s'exécute chaque segment : celui de la session, puis les `cd` successifs.
 ici = dossier
+# Un `gh pr merge` plus tôt dans la même commande (suppression de branche chaînée).
+merge_de_pr_vu = False
 
 for brut in segments:
     s = mot(brut)
@@ -145,8 +147,10 @@ for brut in segments:
             ici = os.path.normpath(os.path.join(ici, chemin(aller.group(1))))
         continue
 
-    if re.match(r"gh\s+pr\s+merge\b", s) and deploiement_en_cours(ici):
-        refuser(DEPLOIEMENT)
+    if re.match(r"gh\s+pr\s+merge\b", s):
+        if deploiement_en_cours(ici):
+            refuser(DEPLOIEMENT)
+        merge_de_pr_vu = True
 
     if re.match(r"pnpm\s+(?:run\s+)?check:fast\b", s) or re.search(r"\btsc\b.*--noEmit", s):
         refuser("meurt sur le tas V8 (~4 Go) et donne de faux positifs `$lib`. Utiliser `pnpm check:incremental`.")
@@ -199,9 +203,47 @@ for brut in segments:
         ):
             demander("suppression forcée de branche (`-D`) : elle perd les commits non mergés. Préférer `git branch -d`.")
 
+        # `gh pr merge` peut échouer (`Base branch was modified`, `BLOCKED`) : la suite
+        # tourne quand même, et supprimer la branche distante d'une PR ouverte la FERME
+        # sans merge (#1601, 2026-10-22).
+        supprime_distante = verbe == "push" and (
+            re.search(r"\s(?:--delete|-d)\s", reste) or any(a.startswith(":") for a in arguments)
+        )
+        supprime_locale = verbe == "branch" and re.search(r"\s(?:-d|-D|--delete)\s", reste)
+        if merge_de_pr_vu and (supprime_distante or supprime_locale):
+            refuser("pas de suppression de branche dans la même commande que `gh pr merge` : s'il échoue, supprimer la branche distante ferme la PR sans merge. Lire `MERGED` (`gh pr view <n> --json state -q .state`), puis supprimer dans une commande séparée.")
+
+        # Un chemin invalide fait échouer TOUT le `git add` ; masquer l'erreur laisse
+        # des fichiers modifiés dans le dépôt principal (incident du 2026-10-14).
+        if verbe == "add" and re.search(r"(?:2|&)>>?\s*/dev/null", s):
+            refuser("jamais de `2>/dev/null` sur `git add` : un seul chemin invalide fait échouer tout l'ajout, et l'erreur masquée laisse des fichiers en plan.")
+
+        # `-n` = `--no-verify` pour commit : il saute lint-staged ET garde-main-a-jour.sh.
+        if verbe == "commit" and re.search(r"\s(?:--no-verify|-[a-zA-Z]*n[a-zA-Z]*)\s", reste):
+            refuser("`git commit --no-verify` (ou `-n`) saute le formatage et le garde-fou du main en retard ; le pre-commit dure ~2 s, il n'y a pas de raison de le contourner.")
+
+        # Une seule lecture de la branche, et seulement pour les verbes qui en dépendent.
+        ici_branche = branche(lieu) if verbe in ("pull", "merge", "add", "commit", "push") else ""
+
+        # Rebaser une branche déjà poussée sur une AUTRE branche réécrit ses commits
+        # publiés : seul un push --force passerait (#1603, 2026-10-22). Tirer sa propre
+        # branche en rebase (sans refspec, ou la même) ne réécrit que le local.
+        if (
+            verbe == "pull"
+            and ici_branche not in ("", "main", "HEAD")
+            and "--no-rebase" not in reste
+            and re.search(r"\s(?:--rebase(?:=\S+)?|-r)\s", reste)
+            and any(a.split(":")[0] not in ("", ici_branche) for a in arguments[1:])
+            and (
+                git_dans(lieu, "rev-parse", "--abbrev-ref", "--symbolic-full-name", "@{upstream}")
+                or git_dans(lieu, "rev-parse", "-q", "--verify", f"refs/remotes/origin/{ici_branche}")
+            )
+        ):
+            refuser("branche déjà poussée : jamais `git pull --rebase` d'une autre branche dessus, il réécrit les commits publiés et seul un push --force passerait. Pour la remettre à jour : `git merge origin/main` (ou rien, GitHub merge quand même).")
+
         # Le main du dépôt principal est PARTAGÉ par toutes les sessions, son index
         # aussi (incident du 2026-10-13 : main divergé, deploy:prod bloqué).
-        if verbe in ("pull", "merge", "add", "commit", "push") and branche(lieu) == "main":
+        if verbe in ("pull", "merge", "add", "commit", "push") and ici_branche == "main":
             if verbe == "pull" and (
                 "--no-rebase" in reste or not re.search(r"\s(?:--rebase(?:=\S+)?|-r|--ff-only)\s", reste)
             ):
