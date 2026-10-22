@@ -47,10 +47,6 @@ try:
 except Exception:
     sys.exit(0)
 
-# `git -C ""` : git reste dans le dossier courant, le dépôt principal (incident du 2026-10-10).
-if re.search(r"""\bgit\s+-C\s*(""|'')""", commande):
-    refuser('`git -C ""` agit dans le dossier courant, souvent le dépôt principal. Vérifier que le dossier n\'est pas vide.')
-
 # Le corps d'un heredoc (message de commit `-F -`, fichier écrit par cat) n'est pas une commande.
 sans_heredoc = re.sub(r"<<-?\s*(['\"]?)(\w+)\1[^\n]*\n.*?\n\s*\2\s*(?=\n|$)", "", commande, flags=re.S)
 
@@ -187,12 +183,17 @@ for brut in segments:
     # foi, mais elle ne voit qu'un début de commande (`git push origin main --force`
     # lui échappe). Ici, l'option est cherchée n'importe où dans la commande git.
     # Options globales avant le verbe : `-C <dossier>`, `-c clé=valeur`, `--no-pager`…
-    commande_git = re.match(r"git((?:\s+(?:-C\s+\S+|-c\s+\S+|--[\w-]+(?:=\S+)?))*)\s+(\w[\w-]*)\b(.*)", s)
+    commande_git = re.match(r"git((?:\s+(?:-C\s*\S+|-c\s+\S+|--[\w-]+(?:=\S+)?))*)\s+(\w[\w-]*)\b(.*)", s)
     if commande_git:
         verbe, reste = commande_git.group(2), " " + commande_git.group(3) + " "
         lieu = ici
-        for dossier_git in re.findall(r"-C\s+(\S+)", commande_git.group(1)):
-            if chemin(dossier_git) and lieu:
+        for dossier_git in re.findall(r"-C\s*(\S+)", commande_git.group(1)):
+            # `git -C ""` : git reste dans le dossier courant, le dépôt principal
+            # (incident du 2026-10-10). Vu ici, sur la commande exécutée, et non dans
+            # un heredoc ou un message qui le cite.
+            if not chemin(dossier_git):
+                refuser('`git -C ""` agit dans le dossier courant, souvent le dépôt principal. Vérifier que le dossier n\'est pas vide.')
+            if lieu:
                 lieu = os.path.normpath(os.path.join(lieu, chemin(dossier_git)))
         # Arguments hors options : chemins, remote, refspecs (un texte entre guillemets compte)
         arguments = [a for a in reste.split() if not a.startswith("-")]

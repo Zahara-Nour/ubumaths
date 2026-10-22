@@ -79,6 +79,15 @@ describe('garde-commandes — refusé, avec la raison', () => {
 		refuse('pnpm release', /deploy:prod/);
 		refuse('git -C "" status', /dossier courant/);
 		refuse("git -C '' checkout x", /dossier courant/);
+		refuse('git -C"" status', /dossier courant/);
+		refuse('cd /tmp && git -C "" add a.md', /dossier courant/);
+		refuse('git -C ../wt -C "" status', /dossier courant/);
+	});
+
+	it('git -C "" cité comme texte, pas exécuté', () => {
+		passe("python3 - <<'EOF'\nprint('git -C \"\" agit dans le dossier courant')\nEOF");
+		passe('git commit -m \'refuser git -C "" dans le hook\'');
+		passe('grep -n \'git -C ""\' docs/pratiques/environnement-de-dev.md');
 	});
 });
 
