@@ -26,7 +26,8 @@ import {
 } from '../../index';
 import type { FunctionBindings } from '../../eval/function-bindings';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
-import { normalize, normalFormsEquivalent } from '../../normal';
+import { normalFormsEquivalent } from '../../normal';
+import { equivalenceForms } from '../../normal/normalize';
 import type { EvalValue, ComplexValueResult, EvalResult } from '../../eval/types';
 import {
 	computeQuantity,
@@ -759,10 +760,10 @@ export class WebReplEngine {
 			// Numeric evaluation failed, fall through to algebraic comparison
 		}
 
-		// Use algebraic equivalence check
+		// Comparaison algébrique par la forme d'équivalence (ADR 0006) : `normalize`
+		// seul ignore les identités lourdes (`sin²x + cos²x = 1` répondait `false`)
 		try {
-			const form1 = normalize(substituted1);
-			const form2 = normalize(substituted2);
+			const [form1, form2] = equivalenceForms(substituted1, substituted2);
 			const isEquivalent = normalFormsEquivalent(form1, form2);
 
 			return this.createEqualityResult(isEquivalent);

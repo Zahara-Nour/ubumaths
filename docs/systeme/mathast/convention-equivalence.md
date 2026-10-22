@@ -551,7 +551,8 @@ désormais une sphère centre-rayon comme bien formée).
 - écritures lues, dans UNE case : `(a;b)`, `\left(a;b\right)`, `(a\,;\,b)`, colonne
   `\begin{pmatrix}a\\b\end{pmatrix}` (le `\\ ` de MathLive compris), dimension 2 ou 3 ; un
   préfixe `\vec{u}=` / `\overrightarrow{AB}=` est ignoré ;
-- coordonnées constantes (fractions, racines, π, virgule décimale `0,5`) réduites par `normalize`
+- coordonnées constantes (fractions, racines, π, virgule décimale `0,5`) réduites par la forme
+  d'équivalence (`equivalenceForms`, ADR 0006 : identités lourdes comprises, `\sin^2 2+\cos^2 2` = 1)
   et comparées EXACTEMENT, aucun flottant : `\frac{2}{\sqrt2}` = `\sqrt2`, `1,414` ≠ `\sqrt2` ;
 - la VALEUR décide du juste / faux ; un vecteur juste voit ensuite chaque coordonnée jugée comme
   une case ordinaire (2026-10-04) : `(\frac{2}{4};1)` pour `(\frac12;1)` est juste avec « La
@@ -581,7 +582,8 @@ par `questions/matrices/matrix-answer.ts`, sur le modèle de la case « vecteur 
 - écritures lues : `\begin{pmatrix}…\end{pmatrix}`, `bmatrix`, `\left(\begin{matrix}…\end{matrix}\right)` ;
   `&` entre coefficients, `\\` entre lignes (espaces de MathLive, ligne vide finale ignorée) ;
   préfixe `A=`, `AB=`, `M^{2}=`, `A^{-1}=` ignoré ;
-- dimensions comparées d'abord ; coefficients CONSTANTS réduits par `normalize` et comparés
+- dimensions comparées d'abord ; coefficients CONSTANTS réduits par la forme d'équivalence (même
+  `isExactlyZero` que les vecteurs) et comparés
   EXACTEMENT (aucun flottant) ; puis chaque coefficient jugé comme une case ordinaire contre le
   coefficient attendu (le pire verdict l'emporte), `acceptDecimal` de la case compris ;
 - facteur devant la matrice (`\frac{1}{2}\begin{pmatrix}…`, `\times`/`\cdot` toléré, `-` seul) :

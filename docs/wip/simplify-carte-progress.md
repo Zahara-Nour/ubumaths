@@ -2,16 +2,16 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1610 (lot code mort, § 28) et la validation de l'ordre des lots (§ 29)._
+_Mis à jour le 2026-10-22, après #1610 (lot code mort, § 28), l'ordre des lots (§ 29) le sondage du lot 1a (§ 30) et le lot 1b (§ 31-32)._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom ; **Q6** (§ 25-26) : trois fonctions numériques (valeur sûre `number | null` en rationnels, variante ±∞/échec, `compile` pour les boucles), aucun résultat changé ; bug `sin²` des limites trouvé ; **Q7** (§ 27) : code mort supprimé dans un premier lot à part, classe `Exp` entière comprise.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 12 tranchées sur 12. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
 - **Lot code mort** (§ 28) : **mergé (#1610)** — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
-- **Ordre des lots validé** (§ 29) : 1a juge de l'élève → 1b moteur → 3 `réduire`/`auto` → 4 contrat de `tidy` → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 1a (vecteurs, QCM, attendu mal écrit) dans le worktree `ubumaths-wt-simplify-carte`, branche `fix/simplify-carte-juge-eleve` : test rouge par bug, puis comportements à valider par David avant le correctif.
+- **Ordre des lots validé** (§ 29, révisé § 30) : 1b moteur → 3 `réduire`/`auto` → 4 contrat de `tidy` → 5 formes par contexte → 6 valeurs approchées → 7 renommages. Lot 1a sondé (§ 30) : rien pour l'élève (vecteurs exotiques → 1b, QCM = code mort → 1b, attendu mal écrit = voulu).
+- **Lot 1b** (§ 31-32) : fait sur `fix/simplify-carte-moteur`, PR en cours. **Prochaine action** : après le merge, lot 3 (`réduire` et `auto` cessent de développer ; ouvrir par les tests rouges de `simplify` qui factorise et de `(x+1)²` développé), nouveau worktree.
 - **En attente de David** : rien.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée », à changer avec E2 (§ 15).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `fix/simplify-carte-juge-eleve` (lot 1a).
+- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `fix/simplify-carte-moteur` (lot 1b).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -490,3 +490,30 @@ Lot 2 (code mort) déjà fait (#1610). Reste, dans l'ordre :
 5. Forme cible par contexte d'affichage (D1-D4, A) — dépend du lot 4 (D3).
 6. Valeurs approchées (Q6) — indépendant, peut être avancé.
 7. Renommages (`normalize` garde son nom, Q5).
+
+## 30. Lot 1a sondé : rien pour l'élève, fondu dans 1b (David, 2026-10-22 : « je te suis »)
+
+Sondé en local (test jetable) et en prod (MCP lecture seule) :
+
+- **Vecteurs** : bug réel dans le code — `(sin²x+cos²x ; 0)` refusé pour `(1 ; 0)`, idem `tan x` / `sin x/cos x`, `2^(x+1)` / `2·2^x` (`√8` / `2√2` et `cos(π/3)` / `1/2` acceptés). Mais **4 modèles vecteurs sur 1 008**, aucun avec trigo, exp ou ln. → lot 1b, avec les autres comparaisons par `normalize` (ADR 0006).
+- **QCM** : **code mort**, pas un bug. Les blocs `requiredForm` et `applyConstraints` de la branche QCM de `validateAnswer` ne tournent qu'avec un LaTeX de réponse ; `QuestionCard` et `FlashCard` passent `undefined` hors texte à trous, et les réponses QCM enregistrées n'ont que `choiceIndexes`. En prod : 117 QCM, 0 `requiredForm`, 28 avec des `constraints` jamais appliquées (laissées en base : un QCM n'a pas d'écriture à juger). → suppression dans le lot 1b.
+- **Attendu mal écrit** : **voulu** (ADR 0013, comparaison stricte : `2×3` attendu → `6` en `bad_form`, comme `400+80` contre `480`). Les 7 attendus littéraux non réduits de la prod sont tous voulus (« Décomposer un entier en produit », `2*16`…). Les attendus calculés relèvent d'E1 / lot 4. → retiré de la liste.
+
+**Lot 1b** (branche `fix/simplify-carte-moteur`), test rouge d'abord pour chaque bug : (1) comparaisons par `normalize` au lieu d'`areEquivalent` (solutions, racine candidate, parité, REPL) + vecteurs ; (2) `sin²` des limites ; (3) `evaluate` ignore l'unité ; (4) `tidySafe` masque les plantages ; (5) code mort QCM. Comportements à faire valider avant les correctifs.
+
+## 31. Lot 1b sondé (2026-10-22, tests jetables retirés)
+
+- **Atelier, test d'égalité `a = b` — bug confirmé, visible par l'élève.** `runInput` → `WebReplEngine.executeEquality` (`cli/web/web-repl-engine.ts:764`), repli par `normalize` : `\sin^2(x)+\cos^2(x) = 1` → `false`, idem `sin(x)^2+cos(x)^2=1`, `tan x = sin x/cos x`, `2^{x+1} = 2·2^x`, `1/cos²x = 1+tan²x`, et même `\sin^2(2)+\cos^2(2)=1` (exact non numérique). `(x+1)^2 = x^2+2x+1` et `\ln(e^x) = x` → `true`.
+- **Vecteurs** (§ 30) : confirmé, aucun modèle concerné.
+- **Parité `detectSymmetry`** — bug confirmé, **aucun appelant en production** (réexporté seulement) : `e^x+e^{-x}`, `2^x+2^{-x}`, `2^x−2^{-x}` → « aucune, prouvé ». Cause : `normalize` ne simplifie pas `e^{-(-x)}` ; `areEquivalent` répond juste.
+- **Dédoublonnage des solutions** (`solve.ts:335`) : repli seulement sans valeur approchée ; aucun cas trouvé. **Racine candidate** (`polynomial.ts:599`) : numérique pur, `normalize` suffit. → pas de bug montré.
+- **`sin²` des limites** : `evaluateNumeric` faux (`sin²(1)` → 0,841, `cos⁻¹(0,5)` → 0,878), mais 15 limites sondées (`1/sin²x` en 0, `1/cos²x` en π/2, `x/sin²x` en 0, `arccos` en 1…) donnent toutes le bon résultat : pas d'effet visible trouvé.
+- **`evaluate` et l'unité** : non reproduit, `5~\unit{km}` → `5000 m`, `2 h + 30 min` → `9000 s` (seul `evaluateToRational` interne lit l'expression sans l'unité).
+- **`tidySafe`** : aucun plantage de `tidy` connu à montrer.
+
+## 32. Lot 1b fait (branche `fix/simplify-carte-moteur`)
+
+- Tests rouges (14) puis correctif : égalité `a = b` de la console / Atelier, `isExactlyZero` des vecteurs (et des matrices, qui le réutilisent), parité, tous par `equivalenceForms` (ADR 0006). **Pas `areEquivalent`** dans la console : il ne lève jamais et retombe sur des flottants ; on garde le message d'erreur.
+- Code mort QCM retiré de `validateAnswer` (50 lignes), aucun test n'en dépendait.
+- Revue `code-reviewer` opus : rien de bloquant. 49 égalités comparées ancien / nouveau : aucun `true` devenu `false`, aucun faux positif (`\sqrt{x^2}=x`, `\ln(x^2)=2\ln x`… restent faux). Effet de bord juste, fixé par un test : `e^{iπ}` accepté pour −1, `e^{i}` refusé comme non réel.
+- **Écart connu laissé (hors périmètre, sur `main` aussi)** : `detectSymmetry` conclut « none, proven » pour `\sqrt[3]{x}`, `x^{1/3}`, `x^{2/3}`, `\ln(x+\sqrt{x^2+1})` (impaires ou paires). Sans appelant en production.

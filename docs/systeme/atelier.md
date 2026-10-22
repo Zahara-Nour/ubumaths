@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22).
 
 ## À quoi ça sert
 
@@ -1382,7 +1382,9 @@ su lire… ». Les refus de `.intégrer`, eux, sont écrits en français **à la
 
 Une comparaison ne garde jamais son écriture (elle rend vrai ou faux), mais passe par le même
 plafond **membre par membre** (`mathAST/cli/bounded-comparison.ts`, aussi pour `a = b`, qui suit
-son propre chemin `executeEquality`) : un membre au-delà du plafond prend sa valeur exacte s'il
+son propre chemin `executeEquality`, qui compare ensuite les valeurs exactes, puis la forme
+d'équivalence de l'ADR 0006 : `\sin^2(x)+\cos^2(x) = 1` et `\tan(x) = \frac{\sin(x)}{\cos(x)}` répondent
+`true`, ce que `normalize` seul ne voyait pas avant le 2026-10-22) : un membre au-delà du plafond prend sa valeur exacte s'il
 est un produit de puissances, sinon la relation se tranche sur des **encadrements rigoureux**
 (`mathAST/cli/interval.ts` : 256 bits, arrondis vers l'extérieur à chaque opération, la valeur
 exacte toujours dedans) : disjoints, le sens est sûr ; sinon refus (« Membres trop proches pour
