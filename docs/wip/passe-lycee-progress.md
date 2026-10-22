@@ -6,19 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, migration de l'étape a écrite et testée (PR à ouvrir)._
+_Mis à jour le 2026-10-22, après #1608 (étape a mergée et migrée en prod)._
 
-- **État** : réponses lues (Q03 = B, le reste = A, toutes = reco ; 335 fiches tenues OK). Migration
-  `20261022180000_passe_points_lycee` GÉNÉRÉE par `passe-lycee/generer-migration.py` : 277 origines, 379 morceaux,
-  25 ajouts (14 ⚙, 11 rétablis), 2 archivés, 130 → 321 références ; 1 105 → 1 507 points actifs. Appliquée en local ;
-  test `passe-points-lycee.test.ts` rouge sans elle, vert avec ; suite d'intégration verte (260 fichiers).
-- **Prochaine action** : PR, revue (`code-reviewer` + `security-auditor`), merge, puis `db:migrate` depuis la branche
-  mergée si les 4 conditions tiennent ; ensuite étape b (bornes) ou c (tags).
-- **En attente de David** : la question d'accès (« qui pourra lire quoi de plus ? » — reco : personne).
-- **Pièges en cours** : 1SPE-244 garde son nœud (un modèle tagué sur la notion bloque le trigger des tags, étape c) ;
-  régénérer = restaurer d'abord les `seed-*-points.json` (le script part de l'état d'avant) ; `undoLaterMigrations`
-  (tests) à compléter pour toute migration de données future du même genre.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `refactor/passe-lycee`.
+- **État** : étape a FAITE. Migration `20261022180000_passe_points_lycee` en prod (empreinte identique au local :
+  2 530 points, 1 160 références) : 1 105 → 1 507 points actifs au lycée. Générateur
+  `passe-lycee/generer-migration.py` (fixture `tests/integration/fixtures/passe-lycee.json`).
+- **Prochaine action** : étape b (bornes par point) ou c (relevé des modèles, répartition des 167 tags des points
+  coupés) — à choisir avec David.
+- **En attente de David** : le choix de l'étape suivante.
+- **Pièges en cours** : 1SPE-244 gardé sur la notion « Second degré » (modèle f8ccc8b6 tagué dessus) : à re-ranger
+  sur « racines » à l'étape c ; `undoLaterMigrations` (tests) à compléter pour toute migration de données
+  future qui s'appuie sur une ancienne.
+- **Worktree / branche** : aucun (worktree supprimé après #1608) ; prochain chantier : nouveau worktree.
 
 ## Les 5 étapes
 
@@ -65,3 +64,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   la Tle spé et compl. celle de 1re spé : 2-382 garde ses trois morceaux en 1re/Tle, 2-214 ses deux en Tle compl.) ;
   1SPE-244 garde son nœud (garde des tags en prod). Prod : aucune donnée d'élève sur les points du lycée (0 état,
   0 journal, 0 exercice, 0 signalement). Rollback éprouvé : empreinte identique à l'état d'avant, puis rejeu.
+- **2026-10-22 — #1608 mergée, `db:migrate` fait.** Revues : `security-auditor` et `code-reviewer` (Opus), aucun
+  bloquant ; corrigé : verrous avant les gardes (migration et rollback), tags de modèles refusés sur un point à
+  archiver, rollback refusé si un libellé a changé, nœuds d'avant vérifiés par le test. Question d'accès tranchée
+  par David : personne ne gagne d'accès. Empreinte prod = local après migration.
