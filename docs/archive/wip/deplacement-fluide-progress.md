@@ -2,9 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1611._
+_Mis à jour le 2026-10-23, clôture._
 
-- **État** : livré, #1611 mergée (pas en prod) · **Prochaine action** : aucune ; chantier à verser à la fin (doc système déjà à jour) puis journal à archiver · **En attente de David** : vérification manuelle (ligne #1611 de `verifications-manuelles.md`) · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
+- **État** : CLOS. #1611 mergée ; vérification manuelle faite par David ; le durable est dans
+  `docs/systeme/atelier.md` (« Vue Géométrie » et réglage « Déplacement des points »).
+- **Prochaine action** : aucune. **En attente de David** : rien.
+- **Worktree / branche** : retirés.
 
 ## Décisions de David (2026-10-22)
 
