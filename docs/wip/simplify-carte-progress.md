@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1609._
+_Mis à jour le 2026-10-22, fin de session (après #1609)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), `normalize` pour développer (§ 9), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11).
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — les 12 questions ouvertes détaillées avec recommandations. À tenir à jour avec le journal.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12).
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Source scratchpad perdue au `/clear` : pour la modifier, `Artifact read` puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
 - **Prochaine action** : David répond aux 12 questions de la page ; ensuite plan de lots (fin de la page).
-- **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
-- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; `normalize` applique en bloc des identités de tous niveaux, permises pour comparer (convention du 2026-09-20 : intersection des domaines), mais affichées sans condition — contraire à S3 et S4 tant que `réduire` passe par lui (§ 12).
-- **Worktree / branche** : aucun (worktree du test retiré après #1609).
+- **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
+- **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -227,20 +227,22 @@ Question **E1** pour David : faut-il qu'il y ait **une seule définition** de «
 
 La forme normale est développée **pour être comparée** (base d'`equivalenceForm`). Sondé le 2026-10-22, `toLatex(denormalize(normalize(…)))` :
 
-| Entrée                                        | Sortie             | Ce que ça fait en plus de développer                          |
-| --------------------------------------------- | ------------------ | ------------------------------------------------------------- |
-| `(x+1)(x-2)`                                  | `x^2 - x - 2`      | — (développement pur)                                         |
-| `0,5x(x+0,2)`                                 | `1/2 x^2 + 1/10 x` | change de registre (décimal → fraction)                       |
-| `(x+1)/2`                                     | `1/2 x + 1/2`      | éclate la fraction                                            |
-| `1/(x+1) + 1`                                 | `(x+2)/(x+1)`      | met au même dénominateur (une transformation, pas développer) |
-| `(x²−1)/(x+1)`                                | `x - 1`            | simplifie une fraction rationnelle et **perd x ≠ −1**         |
-| `√2(x+√8)`, `(x+1)^5`, `(x+1)e^x`, `3x−(2−x)` | développés réduits | —                                                             |
+| Entrée                                        | Sortie             | Ce que ça fait en plus de développer                                                                                |
+| --------------------------------------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------- |
+| `(x+1)(x-2)`                                  | `x^2 - x - 2`      | — (développement pur)                                                                                               |
+| `0,5x(x+0,2)`                                 | `1/2 x^2 + 1/10 x` | change de registre (décimal → fraction)                                                                             |
+| `(x+1)/2`                                     | `1/2 x + 1/2`      | éclate la fraction                                                                                                  |
+| `1/(x+1) + 1`                                 | `(x+2)/(x+1)`      | met au même dénominateur (une transformation, pas développer)                                                       |
+| `(x²−1)/(x+1)`                                | `x - 1`            | simplifie une fraction rationnelle ; élargit le domaine (permis pour comparer), mais l'affichage ne dit plus x ≠ −1 |
+| `√2(x+√8)`, `(x+1)^5`, `(x+1)e^x`, `3x−(2−x)` | développés réduits | —                                                                                                                   |
 
 Analyse proposée (à valider) — trois usages, trois réponses :
 
 1. **Comparer** (A1) : oui, c'est son rôle ; ce qu'il fait en plus (registre, dénominateur commun, `x−1`) est justement voulu pour une forme canonique.
 2. **Calculer en interne** (D : coefficients, discriminant, degré) : oui, rien n'est montré. Mais par des fonctions nommées (`polynomialCoefficients`…), pas ~100 `denormalize(normalize())` à la main.
 3. **Montrer un développement à l'élève** (`.développer`, corrections, `réduire` et `auto` aujourd'hui) : **non**. Il fait plus que la consigne (dénominateur commun, simplification de fraction avec perte de domaine, décimaux réécrits) et ne sait pas raconter d'étapes. Développer pour l'affichage = la politique `développer` du moteur pédagogique (règles de distributivité et identités remarquables, puis `tidy`). C'est l'étape 2 de la fusion, étendue à `développer` : aujourd'hui `expand-steps.ts` part de `orderExpanded(denormalize(normalize()))` pour le résultat.
+
+**Reformulé le 2026-10-22 (page de synthèse)** : la question n'est pas de réserver `normalize` à la comparaison ; on garde comparer et calculer en interne, on retire seulement l'affichage — et seulement pour les expressions **avec variable** (nuance « `normalize` dans `evaluate` », § 12).
 
 À vérifier avant de conclure : les corrections « développer » des questions ont-elles un cas où `normalize` sort un dénominateur commun ou un `x−1` montré à l'élève ?
 
@@ -306,7 +308,7 @@ Question de David sur l'ADR 0006. `toCustom(denormalize(·))` des deux formes :
 | `tan(x)-sin(x)/cos(x)` | `{cos(x)tan(x)-sin(x)}/cos(x)` | `0`               |
 | `2^(x+1)-2*2^x`        | inchangé                       | `0`               |
 
-`equivalenceForm` (`normal/normalize.ts:2164`) = réécritures de notation (`e^x`→`exp`, `log_b`, Euler, `2^x`→`exp(x ln 2)`, puissances fractionnaires → radicaux), définitions trigo, puis `normalize`, puis `sin²+cos² = 1`. Les identités simples sont déjà dans `normalize` ; ⚠️ `ln(e^x) → x` y est appliquée en silence, contraire à S4 tant que `réduire` passe par `normalize`.
+`equivalenceForm` (`normal/normalize.ts:2164`) = réécritures de notation (`e^x`→`exp`, `log_b`, Euler, `2^x`→`exp(x ln 2)`, puissances fractionnaires → radicaux), définitions trigo, puis `normalize`, puis `sin²+cos² = 1`. Les identités simples sont déjà dans `normalize` (liste ci-dessous) ; elles passent donc dans tout ce qui affiche la sortie de `normalize` (§ 9).
 
 **Où est géré `exp(ln x) = x`** (question de David, 2026-10-22) — trois endroits : `normalize` pour `exp(ln u)` (`normal/normalize.ts:4817`, étape `exp-ln-inverse` enregistrée) ; `normal/rules/euler-identities.ts` pour `e^{ln u}` (chemin d'écriture de `normalize`, sans étape) ; règle `exp-ln` du moteur pédagogique (`pattern/rule-sets/log-exp.ts:35`, famille `identites-log-exp`, avec étape). `tidy` ne l'applique pas (décision du 2026-10-05, option A). Les trois simplifient **sans condition x > 0** (« le domaine est celui de l'expression de départ ») : écart avec S3.
 
