@@ -12,7 +12,7 @@
 	<article class="prose max-w-none prose-slate dark:prose-invert">
 		<h1>Mentions légales</h1>
 
-		<p class="lead text-muted-foreground">Dernière mise à jour : 15 juin 2026</p>
+		<p class="lead text-muted-foreground">Dernière mise à jour : 12 octobre 2026</p>
 
 		<hr />
 

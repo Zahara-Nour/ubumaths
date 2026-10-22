@@ -11,8 +11,8 @@
 | **Coordonnées**                               | contact@ubumaths.fr — [adresse postale À COMPLÉTER]                                |
 | **Représentant légal**                        | [À COMPLÉTER]                                                                      |
 | **Délégué à la protection des données (DPO)** | [À COMPLÉTER — facultatif sauf si désignation obligatoire ; sinon « Non désigné »] |
-| **Date de dernière mise à jour**              | 15 juin 2026                                                                       |
-| **Version**                                   | 1.0                                                                                |
+| **Date de dernière mise à jour**              | 22 octobre 2026                                                                    |
+| **Version**                                   | 1.1                                                                                |
 
 ---
 
@@ -83,16 +83,16 @@ coexister : responsable pour le grand public, sous-traitant pour les établissem
 
 ### T3 — Gamification et récompenses
 
-| Champ                              | Contenu                                                                                  |
-| ---------------------------------- | ---------------------------------------------------------------------------------------- |
-| **Finalité(s)**                    | Système de motivation : « gidouilles » (monnaie), cartes VIP, achievements, classements. |
-| **Base légale**                    | Intérêt légitime (art. 6.1.f) — engagement pédagogique.                                  |
-| **Personnes concernées**           | Élèves.                                                                                  |
-| **Catégories de données**          | Solde de récompenses, cartes/objets débloqués, statistiques de jeu.                      |
-| **Destinataires / sous-traitants** | Supabase (BDD + Storage pour les images de cartes).                                      |
-| **Transferts hors UE**             | Néant (UE/France).                                                                       |
-| **Durée de conservation**          | [À COMPLÉTER] — liée au compte.                                                          |
-| **Mesures de sécurité**            | RLS, validation serveur (Zod), chiffrement.                                              |
+| Champ                              | Contenu                                                                                                                                                                                           |
+| ---------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Finalité(s)**                    | Système de motivation : « gidouilles » (monnaie), cartes VIP, achievements, classements ; le Palotin (compagnon) remarque le retour de l'élève après une longue absence.                          |
+| **Base légale**                    | Intérêt légitime (art. 6.1.f) — engagement pédagogique.                                                                                                                                           |
+| **Personnes concernées**           | Élèves.                                                                                                                                                                                           |
+| **Catégories de données**          | Solde de récompenses, cartes/objets débloqués, statistiques de jeu ; jour du dernier passage et jour du retour après une longue absence (`student_last_visits`, lisible par le serveur seul).     |
+| **Destinataires / sous-traitants** | Supabase (BDD + Storage pour les images de cartes).                                                                                                                                               |
+| **Transferts hors UE**             | Néant (UE/France).                                                                                                                                                                                |
+| **Durée de conservation**          | [À COMPLÉTER] — liée au compte. Jour du dernier passage : remplacé chaque jour de présence ; jour du retour : effacé dès que le Palotin l'a salué, au plus tard au premier passage après 7 jours. |
+| **Mesures de sécurité**            | RLS, validation serveur (Zod), chiffrement.                                                                                                                                                       |
 
 ### T4 — Communications transactionnelles (emails)
 
@@ -249,6 +249,7 @@ Autorité de contrôle : **CNIL** — www.cnil.fr — 3 Place de Fontenoy, TSA 8
 
 ## Historique des révisions
 
-| Date         | Version | Modification                                                                         |
-| ------------ | ------- | ------------------------------------------------------------------------------------ |
-| 15 juin 2026 | 1.0     | Création du registre. Hébergement BDD migré USA (us-east-2) → UE/France (eu-west-3). |
+| Date            | Version | Modification                                                                                                                                           |
+| --------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 22 octobre 2026 | 1.1     | T3 : présence de l'élève pour le Palotin (`student_last_visits` : jour du dernier passage, jour du retour à fêter), finalité, données et conservation. |
+| 15 juin 2026    | 1.0     | Création du registre. Hébergement BDD migré USA (us-east-2) → UE/France (eu-west-3).                                                                   |
