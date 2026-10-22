@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, table contexte → forme cible écrite (§ 7)._
+_Mis à jour le 2026-10-22, test d'invariant E1 écrit (§ 11)._
 
-- **État** : phase 0. Relevé (§ 1-4) ; S1-S4 validées (§ 6) ; **table « contexte → forme cible » écrite (§ 7)**, avec 4 questions D1-D4. Aucun code touché.
-- **Prochaine action** : David valide la table du § 7 et tranche D1-D4 ; ensuite, plan de lots (ordre proposé en fin de § 5, à réviser avec S1-S4 et § 7).
-- **En attente de David** : § 10 (validation ↔ `tidy` : partager les règles élémentaires, pas `tidy` entier ; test d'invariant E1 d'abord) ; § 9 (`normalize` pour développer) ; § 7 D1-D4 (réponse finale de f′, factoriser f′ dans les variations, `tidy` sur l'expression tapée, `intent` pour dérivée/primitive) ; § 5 Q4-Q7 (Q3 réglée par S4).
+- **État** : phase 0 + un test. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » : 67/70, seul écart = espaces dans les nombres (§ 11).
+- **Prochaine action** : merger la PR du test ; puis David tranche E2, D1-D4, § 9, § 10 ; ensuite plan de lots.
+- **En attente de David** : § 8 E1 (une seule définition de « bien écrit », toute correction passe le juge — jamais répondue) ; § 11 E2 (espace dans les nombres de 4 chiffres) ; § 10 (partager les règles élémentaires) ; § 9 (`normalize` pour développer) ; § 7 D1-D4 ; § 5 Q4-Q7.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
-- **Worktree / branche** : aucun (doc seule, sur `main`).
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `test/simplify-carte` (le test du § 11).
 
 ---
 
@@ -281,3 +281,15 @@ Demande de David : étudier **toute** la chaîne de validation avant de parler d
 - **`tidy` : `x/x → 1` asserté** (`tidy.test.ts:197`) alors que `tidy-spec.md` §A dit « jamais de changement de domaine » : la spec se contredit (étape 6), et S3 tranche contre le code actuel.
 - **Code mort** : dans `questions/constraint-validators.ts`, `checkSpaces`, `checkProducts`, `checkBrackets`, `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns` n'ont aucun appelant hors tests (seuls `checkUnit` et `checkReducedFractions` servent) — à ajouter à Q7.
 - `docs/systeme/questions.md` § validation ne liste ni les notations équivalentes, ni le `×` final, ni le refus de nom de figure.
+
+## 11. Test d'invariant E1 « `tidy` passe le juge » (2026-10-22)
+
+`src/lib/mathAST/tidy/__tests__/tidy-passe-le-juge.test.ts` : sur 70 entrées (panel des invariants de `tidy` + une par réécriture de l'inventaire du § 10 + écritures courantes), `checkForm(toLatex(tidy(e)), même chose, {})` ne rend aucune violation.
+
+Résultat : **67 / 70 sans remarque.** Les 3 écarts sont tous la contrainte `spaces` : `toLatex` écrit `1024`, `30000`, `\dfrac{2469}{20}` sans espacer les chiffres, et le juge exige l'espace fine dès 4 chiffres (`cosmetic-transforms.ts:151`). Marqués `it.fails` (le test passera au rouge quand l'écart sera réglé). Ce n'est pas un défaut de `tidy` mais de l'écriture des nombres.
+
+Conclusion : sur le superflu, écrire et juger sont **d'accord** aujourd'hui → la mise en commun des règles (§ 10) est un ménage, pas un correctif. Le seul désaccord est typographique.
+
+Question **E2** pour David : un nombre de 4 chiffres (`1024`, `2469`) — espace obligatoire (juge actuel) ou facultative (usage BIPM : « pour un nombre de quatre chiffres, l'espace n'est en général pas utilisée ») ? Et `toLatex` doit-il espacer les nombres de 5 chiffres et plus (`30\,000`) dans les corrections ? Recommandation : 4 chiffres facultatif côté juge ; `toLatex` espace à partir de 5 chiffres.
+
+Limite du test : il mesure `toLatex`, pas le rendu final d'une correction (une couche d'affichage pourrait espacer après coup — aucune trouvée dans les tests de corrections, à confirmer).
