@@ -77,10 +77,12 @@ Point d'entrée : `index.ts` (barrel). API du DSL : `dsl/index.ts` → `parseDsl
 
 ### `src/lib/constructions-v2/` (animation de constructions)
 
+Doc détaillée : [constructions.md](constructions.md) (parcours, directives, chorégraphies, instruments, API, reste à faire).
+
 | Partie                                       | Rôle                                                                                                   |
 | -------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
 | `core/executor.ts`                           | `ConstructionExecutor` : exécute le script pas à pas (`createStepper`), gère directives et instruments |
-| `core/timeline.svelte.ts`                    | `Timeline` : lecture, pause, vitesse (runes)                                                           |
+| `core/timeline.svelte.ts`                    | `Timeline` : lecture, pause, vitesse (classe JS, `requestAnimationFrame`)                              |
 | `core/choreographies/`                       | Chorégraphies `@euclide` / `@equerre` : `registry.ts`, `resolve.ts`, une par builtin                   |
 | `core/animator.ts`, `core/render-helpers.ts` | Tracé partiel (`partialSegment`, `partialArc`, `partialSegmentSVG`…)                                   |
 | `instruments/`                               | `Ruler`, `Compass`, `CompassRaised`, `Protractor`, `SetSquare`, `Pencil` (.svelte) + `positioning.ts`  |
