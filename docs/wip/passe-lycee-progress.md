@@ -6,21 +6,21 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, étape b rédigée._
+_Mis à jour le 2026-10-22, page à cocher corrigée (2de et 1re ES visibles, 3 faux signalements retirés)._
 
-- **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`, générateurs dans
-  `bornes/generateurs/`), 61 questions (`bornes/questions-*.json`), 18 libellés signalés « ⚠ libellé ».
-  Page à cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (générateur `bornes/page/gen.py`,
-  collections `reponses` et `libelles`). Tout est commité sur `main` (docs pur).
-- **Prochaine action** : lire les réponses de David (ArtifactData `list` des 2 collections), les reporter dans les
-  questions (`decision`, `decide_le`) et dans les bornes (force `décision`), puis étape c.
-- **En attente de David** : la page à cocher. Sources : BO seul, définitif (aucun document d'accompagnement
-  approprié sur eduscol, David, 2026-10-22).
-- **Pièges en cours** : 85 points techno sans borne ni remarque (hérités des bornes générales, à vérifier) ;
-  1SPE-243/247/384 absents du nouveau BO (étape a à revoir) ; 1SPE-244 à re-ranger sur « racines » à l'étape c ;
-  `undoLaterMigrations` (tests) à compléter pour toute future migration de données.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (rebasée sur `main`, sans
-  commit propre : les commits partent sur `main`).
+- **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`), 61 questions,
+  15 libellés signalés. Page à cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (`bornes/page/gen.py`
+  → `page.html`, puis `pnpm format` ; collections `reponses`, `libelles`). David y répond (4 libellés faits).
+- **Prochaine action** : lire les réponses (ArtifactData `list` des 2 collections), les reporter dans les questions
+  (`decision`, `decide_le`) et les bornes (force `décision`), puis étape c.
+- **En attente de David** : la page à cocher. Sources : BO seul, définitif.
+- **Pièges en cours** : un « ⚠ libellé » qui dit « partie de puce manquante » peut être une scission déjà faite
+  (2-349, 2-316 via `refs_automatismes`) : vérifier avant de signaler. TSPE-444 fondé, réponse valable aussi pour
+  TCOMP-236 (même coupe). Générateurs `bornes/generateurs/*/build*.py` non relançables (chemins de scratchpad
+  périmés) : corriger les JSON à la main. 85 points techno sans borne ; 1SPE-243/247/384 absents du BO ;
+  1SPE-244 à re-ranger à l'étape c ; `undoLaterMigrations` à compléter pour toute migration de données.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
+  retard sur `main` : les commits partent sur `main`).
 
 ## Les 5 étapes
 
