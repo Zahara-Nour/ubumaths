@@ -500,3 +500,13 @@ Sondé en local (test jetable) et en prod (MCP lecture seule) :
 - **Attendu mal écrit** : **voulu** (ADR 0013, comparaison stricte : `2×3` attendu → `6` en `bad_form`, comme `400+80` contre `480`). Les 7 attendus littéraux non réduits de la prod sont tous voulus (« Décomposer un entier en produit », `2*16`…). Les attendus calculés relèvent d'E1 / lot 4. → retiré de la liste.
 
 **Lot 1b** (branche `fix/simplify-carte-moteur`), test rouge d'abord pour chaque bug : (1) comparaisons par `normalize` au lieu d'`areEquivalent` (solutions, racine candidate, parité, REPL) + vecteurs ; (2) `sin²` des limites ; (3) `evaluate` ignore l'unité ; (4) `tidySafe` masque les plantages ; (5) code mort QCM. Comportements à faire valider avant les correctifs.
+
+## 31. Lot 1b sondé (2026-10-22, tests jetables retirés)
+
+- **Atelier, test d'égalité `a = b` — bug confirmé, visible par l'élève.** `runInput` → `WebReplEngine.executeEquality` (`cli/web/web-repl-engine.ts:764`), repli par `normalize` : `\sin^2(x)+\cos^2(x) = 1` → `false`, idem `sin(x)^2+cos(x)^2=1`, `tan x = sin x/cos x`, `2^{x+1} = 2·2^x`, `1/cos²x = 1+tan²x`, et même `\sin^2(2)+\cos^2(2)=1` (exact non numérique). `(x+1)^2 = x^2+2x+1` et `\ln(e^x) = x` → `true`.
+- **Vecteurs** (§ 30) : confirmé, aucun modèle concerné.
+- **Parité `detectSymmetry`** — bug confirmé, **aucun appelant en production** (réexporté seulement) : `e^x+e^{-x}`, `2^x+2^{-x}`, `2^x−2^{-x}` → « aucune, prouvé ». Cause : `normalize` ne simplifie pas `e^{-(-x)}` ; `areEquivalent` répond juste.
+- **Dédoublonnage des solutions** (`solve.ts:335`) : repli seulement sans valeur approchée ; aucun cas trouvé. **Racine candidate** (`polynomial.ts:599`) : numérique pur, `normalize` suffit. → pas de bug montré.
+- **`sin²` des limites** : `evaluateNumeric` faux (`sin²(1)` → 0,841, `cos⁻¹(0,5)` → 0,878), mais 15 limites sondées (`1/sin²x` en 0, `1/cos²x` en π/2, `x/sin²x` en 0, `arccos` en 1…) donnent toutes le bon résultat : pas d'effet visible trouvé.
+- **`evaluate` et l'unité** : non reproduit, `5~\unit{km}` → `5000 m`, `2 h + 30 min` → `9000 s` (seul `evaluateToRational` interne lit l'expression sans l'unité).
+- **`tidySafe`** : aucun plantage de `tidy` connu à montrer.
