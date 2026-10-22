@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-22, table contexte → forme cible écrite (§ 7)._
 
 - **État** : phase 0. Relevé (§ 1-4) ; S1-S4 validées (§ 6) ; **table « contexte → forme cible » écrite (§ 7)**, avec 4 questions D1-D4. Aucun code touché.
 - **Prochaine action** : David valide la table du § 7 et tranche D1-D4 ; ensuite, plan de lots (ordre proposé en fin de § 5, à réviser avec S1-S4 et § 7).
-- **En attente de David** : § 8 E1 (une seule définition de « bien écrit » pour écrire et juger) ; § 7 D1-D4 (réponse finale de f′, factoriser f′ dans les variations, `tidy` sur l'expression tapée, `intent` pour dérivée/primitive) ; § 5 Q4-Q7 (Q3 réglée par S4).
+- **En attente de David** : § 10 (validation ↔ `tidy` : partager les règles élémentaires, pas `tidy` entier ; test d'invariant E1 d'abord) ; § 9 (`normalize` pour développer) ; § 7 D1-D4 (réponse finale de f′, factoriser f′ dans les variations, `tidy` sur l'expression tapée, `intent` pour dérivée/primitive) ; § 5 Q4-Q7 (Q3 réglée par S4).
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
 - **Worktree / branche** : aucun (doc seule, sur `main`).
 
@@ -244,3 +244,40 @@ Analyse proposée (à valider) — trois usages, trois réponses :
 3. **Montrer un développement à l'élève** (`.développer`, corrections, `réduire` et `auto` aujourd'hui) : **non**. Il fait plus que la consigne (dénominateur commun, simplification de fraction avec perte de domaine, décimaux réécrits) et ne sait pas raconter d'étapes. Développer pour l'affichage = la politique `développer` du moteur pédagogique (règles de distributivité et identités remarquables, puis `tidy`). C'est l'étape 2 de la fusion, étendue à `développer` : aujourd'hui `expand-steps.ts` part de `orderExpanded(denormalize(normalize()))` pour le résultat.
 
 À vérifier avant de conclure : les corrections « développer » des questions ont-elles un cas où `normalize` sort un dénominateur commun ou un `x−1` montré à l'élève ?
+
+## 10. Chaîne de validation ↔ `tidy` : que peut-on mettre en commun ? (2026-10-22, à valider)
+
+Demande de David : étudier **toute** la chaîne de validation avant de parler de factoriser avec `tidy`. Deux relevés en lecture seule (validation : agent `pedagogy-expert` ; `tidy` : agent `mathast-expert`). Vérifié à la main : `buildASTPipeline` (`mathAST/cosmetic-transforms.ts:1504`), la boucle de détection (`:1858`), `stripUnnecessaryBrackets` partagé (`mathAST/transforms.ts:1635`, importé par `tidy/index.ts:17` et `cosmetic-transforms.ts:57`), `x/x → 1` asserté (`tidy/__tests__/tidy.test.ts:197`), l'appel QCM (`utils/answer-validator.ts:521-532`).
+
+### Ce que fait la chaîne de validation, en quatre familles
+
+1. **Le superflu, règle par règle** — `buildASTPipeline` : une liste ordonnée de transformations d'arbre, chacune avec un identifiant (`reducedRadicals`, `reducedFractions`, `factorZero`, `nullTerms`, `brackets`, `signs`, `factorOne`, `products`) ; une violation = l'étape change le `toLatex`. Plus, sur la chaîne tapée : `zeros`, `spaces`. Chaque violation porte un message et une sévérité réglable (strict / warn / off).
+2. **Les notations équivalentes** (identifiant `null`, jamais une faute) : `BA ≡ AB`, `e`/`\exp`, `+∞`, `π` dans les fractions, `\frac13x^3 ≡ \frac{x^3}3`, complexes, `\ln 9 ≡ 2\ln 3`, `\frac1{e^a} ≡ e^{-a}`, **ordre des termes et des facteurs** (tri), `|u| → u` sous hypothèse.
+3. **La comparaison à l'attendu** — contrainte `form` (strict, ADR 0013) : réponse et attendu passent les mêmes étapes, puis égalité des `toLatex`. C'est elle qui refuse `400+80` pour `480` : la validation ne calcule pas, elle compare.
+4. **Ce qui dépend de la consigne** : `requiredForm` (motifs), `precision` / arrondi, grandeurs et unités, durées, intervalles, chaînes `equation` / `vecteur` / `matrice` / `primitive`, `rulesSuffice`, `acceptDecimal`, `angleModulo`, garde de complexité, pourcentage, nom de figure.
+
+### Comparaison avec `tidy`
+
+|                 | `tidy`                                                                                                                                                             | validation                                                                          |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
+| Rôle            | **réécrire** en une forme                                                                                                                                          | **juger** une forme, et dire laquelle est fautive                                   |
+| Grain           | monolithique : pipeline fixe, aucune option par règle ; sa trace (`TidyStepRecorder`) donne une étape par phase, sans localisation, souvent étiquetée `tidy-terms` | une règle = une étape nommée, un message, une sévérité                              |
+| Superflu commun | parenthèses, signes, neutres, absorbants, fractions numériques, radicaux                                                                                           | les mêmes (famille 1) — **`brackets` est déjà la même fonction**                    |
+| En plus         | calcule (`2·3 → 6`, termes semblables, `x/x → 1`, unités, décimaux → fractions), **ordonne** (l'ordre est une correction)                                          | typographie (`zeros`, `spaces`, `×`), notations équivalentes, **ordre indifférent** |
+| Attendu         | —                                                                                                                                                                  | nettoyé en silence par les mêmes étapes                                             |
+
+### Conclusion proposée
+
+- **`tidy` entier ne peut pas servir de juge.** Il ne sait pas dire _quel_ superflu ni _où_ ; il compte un mauvais ordre comme une faute (`3+x`) ; il « corrige » ce que la validation accepte (`1/√2`, décimaux, `x/x`) ; il calcule, alors que la validation compare (famille 3).
+- **Ce qui se met en commun : les règles élémentaires de la famille 1.** Un seul module de règles « superflu », chacune `{ id, transformation, message }` ; `tidy` les applique toutes en silence (plus son calcul, son regroupement, son ordre) ; la validation les rejoue une à une pour détecter et nommer. Précédents : `brackets` déjà partagée, `coefficientCleanupSteps` (`cosmetic-transforms.ts:1545`) qui réutilise 4 étapes côté génération.
+- **Ne se met pas en commun** : familles 2, 3, 4 (propres au jugement), et le calcul / l'ordre de `tidy` (propres à l'écriture).
+- **Premier pas, sans rien refactorer : un test d'invariant** (E1) — sur le panel de `tidy`, `checkForm(toLatex(tidy(e)), toLatex(tidy(e)))` ne rend aucune violation. Rouge → on a trouvé une correction que l'élève se verrait reprocher ; vert → la mise en commun n'est qu'un ménage, pas un correctif.
+
+### Trouvés en chemin (à confirmer par un test, rien d'affirmé)
+
+- **QCM** (`answer-validator.ts:521-532`) : `applyConstraints` reçoit `correctChoiceIndex` comme attendu de forme — on compare le LaTeX de l'élève à un indice de choix ?
+- **Attendu illisible** → `bad_form` « Parse error on expected » à une réponse juste, si `form` est strict.
+- **Attendu non nettoyé** (`2\times3`) → la réponse `6` est `bad_form`.
+- **`tidy` : `x/x → 1` asserté** (`tidy.test.ts:197`) alors que `tidy-spec.md` §A dit « jamais de changement de domaine » : la spec se contredit (étape 6), et S3 tranche contre le code actuel.
+- **Code mort** : dans `questions/constraint-validators.ts`, `checkSpaces`, `checkProducts`, `checkBrackets`, `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns` n'ont aucun appelant hors tests (seuls `checkUnit` et `checkReducedFractions` servent) — à ajouter à Q7.
+- `docs/systeme/questions.md` § validation ne liste ni les notations équivalentes, ni le `×` final, ni le refus de nom de figure.
