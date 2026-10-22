@@ -5,22 +5,20 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1598 (étape 4 mergée, migration NON jouée en prod)._
+_Mis à jour le 2026-10-22, après le `db:migrate` de l'étape 4 (#1598)._
 
-- **État** : C5 étape 3 en prod (v0.44.0). Étape 4 mergée (#1598) : migration destructive
-  `20261022080000_suppression_ancien_programme` (thèmes, objectifs, 1 007 anciens points, 1 026 liens, `objective_id`,
-  8 fonctions ; `node_id` obligatoire), copie figée dans `docs/archive/arbre-notions/ancien-programme/`.
-- **Prochaine action** : `db:migrate` **sur go explicite de David** (destructive), puis vérifier en prod (tables
-  absentes, 2 126 points, aucun lien vers un point disparu) ; puis PR 2 : `db:types` + simplification des filtres de
-  génération (`isProgrammePoint`, `.not('node_id', 'is', null)`, cas `'ancien'` de `readPointGeneration`) (Q3).
-  Ensuite : **passe lycée** (5 étapes, décidée le 2026-10-21), chantier à part.
-- **En attente de David** : go du `db:migrate`. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
+- **État** : C5 étape 3 en prod (v0.44.0). Étape 4 (#1598) **jouée en prod le 2026-10-22** (07:15 UTC) : vérifié
+  0 table thème/objectif, 0 `objective_id`, `node_id` NOT NULL, 2 126 points (0 sans nœud), 0 lien ni état orphelin,
+  0 des 8 fonctions ; aucune erreur Postgres après. Copie figée : `docs/archive/arbre-notions/ancien-programme/`.
+- **Prochaine action** : PR 2 : `db:types` + simplification des filtres de génération (`isProgrammePoint`,
+  `.not('node_id', 'is', null)`, cas `'ancien'` de `readPointGeneration`) (Q3). Ensuite : **passe lycée** (5 étapes,
+  décidée le 2026-10-21), chantier à part.
+- **En attente de David** : rien de bloquant. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
-- **Pièges en cours** : jusqu'au `db:migrate`, `db:seed-riche` échouerait (anciens points copiés, `node_id` NOT NULL) ;
-  base locale déjà migrée (worktrees partis de `main` avant #1598 : tests de l'ancien monde rouges en local) ;
-  `supabase start` joue les migrations hors transaction (LOCK seulement dans un `do`) ; points `TEST-SK-*` sans grade,
-  voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
-- **Worktree / branche** : aucun (supprimés au merge de #1598).
+- **Pièges en cours** : `database.ts` encore l'ancien (régénérer en PR 2) ; worktrees partis de `main` avant #1598 :
+  tests de l'ancien monde rouges en local ; `supabase start` joue les migrations hors transaction (LOCK seulement dans
+  un `do`) ; points `TEST-SK-*` sans grade, voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
+- **Worktree / branche** : aucun (PR 2 : `git worktree add -b refactor/arbre-etape4-types ../ubumaths-wt-arbre-notions`).
 
 ## Tranché avec David (2026-10-06)
 
