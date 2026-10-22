@@ -135,6 +135,29 @@ describe('scripts de démo : réservés au prof et à l’admin', () => {
 		expect(await existe(id)).toBe(true);
 	});
 
+	it('un prof ne crée pas de script au nom d’un autre (42501)', async () => {
+		const client = await clientFor(prof.email);
+		const { error } = await client.from('construction_demo_scripts').insert({
+			name: `${PREFIXE} usurpé`,
+			dsl_script: 'A = point(0, 0)',
+			author_id: admin.id
+		});
+		expect(error?.code).toBe('42501');
+	});
+
+	it('un visiteur non connecté ne lit ni ne crée rien', async () => {
+		const id = await scriptDe(admin.id, 'vu par anon');
+		const client = createClient<Database>(SUPABASE_URL, ANON_KEY, {
+			auth: { persistSession: false, autoRefreshToken: false }
+		});
+		const { data: lus } = await client.from('construction_demo_scripts').select('id').eq('id', id);
+		expect(lus).toEqual([]);
+		const { error } = await client
+			.from('construction_demo_scripts')
+			.insert({ name: `${PREFIXE} anon`, dsl_script: 'A = point(0, 0)', author_id: admin.id });
+		expect(error?.code).toBe('42501');
+	});
+
 	it('un élève ne peut pas créer de script (42501)', async () => {
 		const client = await clientFor(eleve.email);
 		const { error } = await client
