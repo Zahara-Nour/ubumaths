@@ -102,6 +102,7 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	'ln-exp': 'Inverses : ln(eˣ) = x',
 	'exp-ln': 'Inverses : exp(ln(x)) = x',
 	'exp-product': 'exp(a) × exp(b) = exp(a + b)',
+	'pow-neg-one': 'Puissance −1 : a⁻¹ = 1/a',
 	'ln-one': 'ln(1) = 0',
 	'ln-e': 'ln(e) = 1',
 	'ln-pow': 'Propriété du logarithme : ln(aⁿ) = n·ln(a)',
@@ -161,6 +162,7 @@ export function getPedagogicalSimplifyRuleDescription(name: string): string {
 	// Les gestes de `tidy` (`reduire` et `auto`, chantier simplify-carte § 33)
 	if (name in TIDY_RULE_DESCRIPTIONS) return TIDY_RULE_DESCRIPTIONS[name as TidyRule];
 	if (name === 'fraction-factorise') return 'On factorise pour faire apparaître un facteur commun';
+	if (name === 'fraction-develop') return 'On développe et on réduit';
 	// Falls back to the normalize-side dictionary, which itself returns
 	// `"Règle : <name>"` for truly unknown names.
 	return getNormalizeRuleDescription(name);

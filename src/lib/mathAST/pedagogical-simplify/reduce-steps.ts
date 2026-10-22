@@ -110,6 +110,17 @@ export function tidyAsSteps(node: MathNode, makeStep: MakeStep): Stage {
 		.getSteps()
 		.filter((step) => !sameWriting(withoutGrouping(step.before), withoutGrouping(step.after)))
 		.map((step) => makeStep(step.rule, step.before, step.after, step.before, step.after));
+	// Ranger par degré une somme qui a encore un produit à développer n'a pas de
+	// sens (`(x+1)(x−1)+1` devenait `1+(x+1)(x−1)`, « par degré décroissant ») :
+	// on garde l'ordre écrit (revue du lot 3)
+	const last = steps[steps.length - 1];
+	if (last?.rule === 'tidy-sort-terms' && hasSumToDevelop(result)) {
+		steps.pop();
+		const before = last.globalBefore ?? last.before;
+		return steps.length === 0 && sameWriting(withoutGrouping(before), withoutGrouping(node))
+			? { result: node, steps }
+			: { result: before, steps };
+	}
 	// Rien de visible : l'écriture de l'élève reste la sienne
 	if (steps.length === 0 && sameWriting(withoutGrouping(result), withoutGrouping(node))) {
 		return { result: node, steps };
@@ -221,13 +232,32 @@ function plainText(node: MathNode): string {
 		.trim();
 }
 
-/** « x ≠ −1 » pour un facteur du premier degré en une lettre, « x − y ≠ 0 » sinon. */
-function conditionText(factor: Factor, variable: string | null): string {
-	if (factor.poly !== null && factor.poly.length === 2 && variable !== null) {
-		const root = divRational(negRational(factor.poly[0]), factor.poly[1]);
-		return `${variable} ≠ ${rationalText(root)}`;
+/**
+ * « x ≠ −1 » pour un facteur du premier degré en une lettre (`y + 1` d'une
+ * fraction en x et y compris), « x − y ≠ 0 » sinon.
+ */
+function conditionText(factor: Factor): string {
+	const written = readWrittenPolynomial(factor.base);
+	if (written !== null && written.poly.length === 2) {
+		const root = divRational(negRational(written.poly[0]), written.poly[1]);
+		return `${written.variable} ≠ ${rationalText(root)}`;
 	}
 	return `${plainText(factor.base)} ≠ 0`;
+}
+
+/**
+ * Ce qui reste après la simplification, développé s'il est écrit en facteurs :
+ * le résultat d'`auto` n'est jamais une forme factorisée qu'il a produite
+ * (`(x³+6x²+11x+6)/(x+3)` → `(x+1)(x+2)` → `x²+3x+2`). Une fraction : son
+ * numérateur et son dénominateur, chacun.
+ */
+function developRemainder(node: MathNode, develop: (node: MathNode) => MathNode): MathNode {
+	const part = (n: MathNode) =>
+		hasSumToDevelop(n) ? tidy(orderExpanded(develop(withExplicitMinusOne(unwrapGrouping(n))))) : n;
+	if (node.type === 'division') {
+		return { ...node, numerator: part(node.numerator), denominator: part(node.denominator) };
+	}
+	return part(node);
 }
 
 /**
@@ -238,6 +268,7 @@ function conditionText(factor: Factor, variable: string | null): string {
 function simplifyOneFraction(
 	node: MathNode,
 	factorise: (node: MathNode) => MathNode,
+	develop: (node: MathNode) => MathNode,
 	makeStep: MakeStep
 ): Stage | null {
 	for (const fraction of findNodes(node, (n) => n.type === 'division')) {
@@ -250,8 +281,14 @@ function simplifyOneFraction(
 		const names = new Set([...getVariables(top0), ...getVariables(bottom0)]);
 		const variable = names.size === 1 ? [...names][0] : null;
 
-		const numerator = factorise(fraction.numerator);
-		const denominator = factorise(fraction.denominator);
+		let numerator: MathNode;
+		let denominator: MathNode;
+		try {
+			numerator = factorise(fraction.numerator);
+			denominator = factorise(fraction.denominator);
+		} catch {
+			continue;
+		}
 		const top = readFactoredProduct(numerator, variable);
 		const bottom = readFactoredProduct(denominator, variable);
 		if (top === null || bottom === null) continue;
@@ -290,12 +327,24 @@ function simplifyOneFraction(
 			steps.push(makeStep('fraction-factorise', fraction, factored, node, withFactored));
 		}
 		const cancel = makeStep('fraction-cancel', factored, reduced, withFactored, withReduced);
-		const conditions = common.map(({ factor }) => conditionText(factor, variable));
+		const conditions = [...new Set(common.map(({ factor }) => conditionText(factor)))];
 		steps.push({
 			...cancel,
 			description: `On simplifie par le facteur commun, pour ${conditions.join(' et ')}`
 		});
-		return { result: withReduced, steps };
+
+		let developed: MathNode;
+		try {
+			developed = developRemainder(reduced, develop);
+		} catch {
+			developed = reduced;
+		}
+		if (sameWriting(withoutGrouping(developed), withoutGrouping(reduced))) {
+			return { result: withReduced, steps };
+		}
+		const withDeveloped = mapNodeTopDown(node, (n) => (n === fraction ? developed : n));
+		steps.push(makeStep('fraction-develop', reduced, developed, withReduced, withDeveloped));
+		return { result: withDeveloped, steps };
 	}
 	return null;
 }
@@ -309,12 +358,13 @@ function simplifyOneFraction(
 export function simplifyPolynomialFractions(
 	node: MathNode,
 	factorise: (node: MathNode) => MathNode,
+	develop: (node: MathNode) => MathNode,
 	makeStep: MakeStep
 ): Stage {
 	let current = node;
 	const steps: PedagogicalSimplifyStep[] = [];
 	for (let i = 0; i < MAX_FRACTIONS; i++) {
-		const next = simplifyOneFraction(current, factorise, makeStep);
+		const next = simplifyOneFraction(current, factorise, develop, makeStep);
 		if (next === null) break;
 		steps.push(...next.steps);
 		current = next.result;
@@ -346,6 +396,8 @@ function hasSumToDevelop(node: MathNode): boolean {
 			}
 			if (n.type === 'superscript') return isSum(n.base) && n.superscript.type === 'number';
 			if (n.type === 'opposite') return n.operand.type === 'delimiter' && isSum(n.operand);
+			// `x − (x − 1)` : la parenthèse précédée d'un − est le terme de droite
+			if (n.type === 'subtraction') return n.right.type === 'delimiter' && isSum(n.right);
 			return false;
 		}).length > 0
 	);

@@ -1402,9 +1402,11 @@ export type GeneratedSteps =
 			 * Required pedagogical intent — drives rule selection.
 			 * - `'factoriser'` : push toward factored form
 			 * - `'developper'` : push toward expanded form
-			 * - `'reduire'`    : tidy up (combine-like-terms, fractions, radicals,
-			 *                    unambiguous identities) — no factoring/expansion
-			 * - `'auto'`       : `reduire` + unambiguous factoring/expansion only
+			 * - `'reduire'`    : tidy up (like terms, fractions, radicals,
+			 *                    identities) — no factoring/expansion
+			 * - `'auto'`       : `reduire` + polynomial fractions simplified
+			 *                    (factoring shown, never kept) + expansion only
+			 *                    if shorter (chantier simplify-carte § 33)
 			 */
 			readonly intent: 'factoriser' | 'developper' | 'reduire' | 'auto';
 			/** Variable hint for descriptions (e.g. `'x'`, `'t'`). */

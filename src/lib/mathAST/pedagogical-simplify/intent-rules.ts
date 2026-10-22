@@ -119,7 +119,7 @@ export function selectRulesForIntent(
 ): SelectedRules {
 	const identitiesAndUtilities: Rule[] = [];
 	if (flags.enableTrig) identitiesAndUtilities.push(...trigSimplifyRules);
-	if (flags.enableLogExp) identitiesAndUtilities.push(...logExpRules, ...expFunctionRules);
+	if (flags.enableLogExp) identitiesAndUtilities.push(...logExpRules);
 	if (flags.enableAbs) identitiesAndUtilities.push(...absSimplifyRules);
 	if (flags.enableHyperbolic) identitiesAndUtilities.push(...hypSimplifyRules);
 
@@ -148,13 +148,17 @@ export function selectRulesForIntent(
 		case 'reduire':
 		case 'auto': {
 			// Ce que `normalize` faisait en silence : parité et période (`cos(−x) → cos(x)`),
-			// `|−x| = |x|`, `||x|| = |x|`
+			// `|−x| = |x|`, `||x|| = |x|`, `ln(exp(x))`, `exp(a)·exp(b)`. Ici seulement :
+			// dans `factoriser`, `exp-product` passerait avant la mise en facteur et
+			// détruirait le facteur commun (`exp(x)exp(x)+exp(x)`, revue du lot 3)
 			const trigReductions = flags.enableTrig
 				? [...trigNegativeAngleRules, ...trigPeriodicRules]
 				: [];
 			const absReductions = flags.enableAbs ? absReduceRules : [];
+			const expReductions = flags.enableLogExp ? expFunctionRules : [];
 			const rules = dedupeByName([
 				...identitiesAndUtilities,
+				...expReductions,
 				...trigReductions,
 				...absReductions,
 				...powerRules,
@@ -369,6 +373,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	// `auto` : fraction de polynômes (chantier simplify-carte § 33, Q4)
 	['fraction-factorise', 'factorisation'],
 	['fraction-cancel', 'fractions'],
+	['fraction-develop', 'distribution'],
 	// tidy-side steps (`reduire` et `auto`, chantier simplify-carte § 33)
 	['tidy-fold-numbers', 'combinaison-termes-semblables'],
 	['tidy-terms', 'combinaison-termes-semblables'],

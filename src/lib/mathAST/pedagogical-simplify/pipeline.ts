@@ -554,18 +554,25 @@ function runReduce(
 	let summary: PedagogicalSimplifyStep[] | undefined;
 
 	if (options.intent === 'auto') {
+		const develop = (node: MathNode) =>
+			generatePedagogicalSimplifySteps(node, { ...options, intent: 'developper' }).result;
 		const fractions = simplifyPolynomialFractions(
 			result,
 			(node) => generatePedagogicalSimplifySteps(node, { ...options, intent: 'factoriser' }).result,
+			develop,
 			makeStep
 		);
 		steps.push(...fractions.steps);
 		result = fractions.result;
+		// Une fraction simplifiée dans une somme laisse des termes à regrouper :
+		// `(x²−1)/(x+1) + 1` → `x − 1 + 1` → `x`
+		if (fractions.steps.length > 0) {
+			const tidiedAgain = tidyAsSteps(result, makeStep);
+			steps.push(...tidiedAgain.steps);
+			result = tidiedAgain.result;
+		}
 
-		const expanded = expandIfShorter(
-			result,
-			(node) => generatePedagogicalSimplifySteps(node, { ...options, intent: 'developper' }).result
-		);
+		const expanded = expandIfShorter(result, develop);
 		if (expanded !== null) {
 			summary = [...steps, ...expanded.summary];
 			steps.push(...expanded.steps);
