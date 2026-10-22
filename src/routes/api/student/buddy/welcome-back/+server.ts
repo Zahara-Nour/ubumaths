@@ -3,7 +3,7 @@
  * ====================================
  *
  * Le Palotin a dit « tu m'as manqué » : le retour de l'élève après une longue
- * absence est fêté, on l'efface (docs/wip/palotins-presence-progress.md).
+ * absence est fêté, on l'efface (docs/systeme/buddy-palotins.md).
  * Appelé par le widget APRÈS avoir montré la bulle : un préchargement de page
  * ne consomme donc rien.
  *

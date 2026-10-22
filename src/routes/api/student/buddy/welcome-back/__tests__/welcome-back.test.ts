@@ -1,6 +1,6 @@
 /**
  * POST /api/student/buddy/welcome-back — le retour fêté est effacé, pour l'élève
- * de la session seulement (docs/wip/palotins-presence-progress.md).
+ * de la session seulement (docs/systeme/buddy-palotins.md).
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

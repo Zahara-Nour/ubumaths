@@ -2,11 +2,11 @@
  * Longue absence de l'élève : son Palotin est triste au retour
  * =============================================================
  *
- * Décidé par David le 2026-10-21 (docs/wip/palotins-absence-progress.md) :
+ * Décidé par David le 2026-10-21 (docs/systeme/buddy-palotins.md) :
  * « triste » quand l'élève revient 21 jours ou plus après son dernier passage
  * (14 attraperait les petites vacances). Jour UTC, comme la Constance Royale.
  *
- * Présence notée sur toute page vue (docs/wip/palotins-presence-progress.md) :
+ * Présence notée sur toute page vue (docs/systeme/buddy-palotins.md) :
  * le retour est souvent détecté loin du Palotin ; il est fêté à la première
  * apparition du Palotin dans les 7 jours, puis oublié — et effacé au premier
  * passage qui suit.

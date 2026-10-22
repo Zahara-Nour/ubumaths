@@ -462,9 +462,10 @@ un lot d'insertions où une ligne omet `starred_grades` y envoie NULL (union des
 passer `defaultToNull: false` ou toujours fournir la colonne. Test :
 `tests/integration/mathoux-memoire.test.ts`.
 `student_last_visits` (migration `20261021210000`) garde le jour UTC du dernier passage de l'élève
-sur son tableau de bord, pour le Palotin triste après une longue absence. Lisible par **personne**
-d'autre que le serveur (décision de David du 2026-10-21) : RLS sans aucune policy, aucun droit pour
-`anon` ni `authenticated` ; le serveur n'en transmet que « triste oui/non ». Elle ne s'écrit que par
+(dernière page vue hors API, `studentPresenceHandle`) et, depuis la migration `20261022100000`, le
+jour du retour à fêter (`welcome_back_on`), pour le Palotin triste après une longue absence. Lisible
+par **personne** d'autre que le serveur (décision de David du 2026-10-21) : RLS sans aucune policy,
+aucun droit pour `anon` ni `authenticated` ; le serveur n'en transmet que « triste oui/non ». Elle ne s'écrit que par
 `record_student_visit(p_student_id, p_today)` (SECURITY INVOKER, `service_role` seul), qui
 enregistre le jour et rend le jour du passage précédent (NULL au premier) ; atomique (deux
 chargements simultanés ne rendent l'ancien jour qu'une fois), le jour ne recule jamais. Cascade
