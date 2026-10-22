@@ -19,12 +19,11 @@
 
 import type { Atelier } from './atelier.svelte';
 import { supportNamed } from './construction';
-import { commonPoints, GeometryFailure, pointOn, type Support } from './construction-intersect';
-import { geoFromNumber } from '$lib/geometry-core/compute/geo-arithmetic';
+import { commonPoints, type Support } from './construction-intersect';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import type { GeoPoint } from '$lib/geometry-core/types/primitives';
 import { displayName, indexedNameClash, RESERVED_NAMES } from './names';
-import { draggedCoordinates, positionAt } from './point-drag';
+import { draggedCoordinates, positionAt, positionWithin } from './point-drag';
 import type { ObjectKind } from './types';
 
 // =============================================================================
@@ -56,6 +55,8 @@ export type ToolWriter = (line: string) => boolean;
 export interface ToolNear {
 	readonly objects: readonly string[];
 	readonly radius: number;
+	/** La taille d'un pixel, en unités : ce que suit le déplacement fluide (absente : aimanté). */
+	readonly pixel?: number;
 }
 
 /** Un outil à deux points : la ligne écrite une fois les deux points choisis. */
@@ -205,20 +206,6 @@ function clampedPosition(support: Support, value: number): number {
 	return value;
 }
 
-/** Le point de position `value` sur le support, en nombres, ou `null` (hors domaine). */
-function placedAt(support: Support, value: number): [number, number] | null {
-	try {
-		const p = pointOn(support, geoFromNumber(value), null, '');
-		return [geoToNumber(p.x), geoToNumber(p.y)];
-	} catch (error) {
-		if (error instanceof GeometryFailure) return null;
-		throw error;
-	}
-}
-
-/** Au-delà, le pas ne s'affine plus : trois décimales de plus que le curseur. */
-const EXTRA_DECIMALS = 3;
-
 /**
  * La position écrite d'un `point_sur` cliqué en (x ; y), au pas de son curseur
  * de position (`positionSliderFor`) — segment au centième, ramené dans
@@ -231,17 +218,7 @@ function writtenPosition(support: Support, x: number, y: number, tolerance: numb
 	const raw = positionAt(support, x, y);
 	if (raw === null || !Number.isFinite(raw)) return null;
 	const exact = clampedPosition(support, raw);
-	const target = placedAt(support, exact);
-	const first = stepDecimals(support);
-	let value = Number(exact.toFixed(first));
-	for (let decimals = first; decimals <= first + EXTRA_DECIMALS; decimals++) {
-		value = Number(exact.toFixed(decimals));
-		if (target === null || tolerance <= 0) break;
-		const placed = placedAt(support, value);
-		if (placed !== null && Math.hypot(placed[0] - target[0], placed[1] - target[1]) <= tolerance) {
-			break;
-		}
-	}
+	let value = positionWithin(support, exact, stepDecimals(support), tolerance);
 	if (support.type === 'circle') value %= 360;
 	return String(value === 0 ? 0 : value).replace('.', ',');
 }
@@ -571,7 +548,7 @@ export class FigureToolbox {
 		if (crossing !== undefined) return crossing;
 		const on = this.#placeOn(x, y, near);
 		if (on !== undefined) return on;
-		return this.#placePoint(x, y, snap);
+		return this.#placePoint(x, y, snap, near);
 	}
 
 	/**
@@ -608,7 +585,10 @@ export class FigureToolbox {
 	#placeOn(x: number, y: number, near: ToolNear): string | null | undefined {
 		for (const object of near.objects) {
 			const support = supportNamed(this.#atelier, object);
-			const position = support === null ? null : writtenPosition(support, x, y, near.radius / 2);
+			// Fluide : au pixel près ; aimanté : à la moitié du rayon de visée
+			const fluid = this.#atelier.fluidPixel(near.pixel ?? 0);
+			const tolerance = fluid ?? near.radius / 2;
+			const position = support === null ? null : writtenPosition(support, x, y, tolerance);
 			if (position === null) continue;
 			const name = nextPointName(this.#atelier);
 			return this.#write(`${name} = point_sur(${object} ; ${position})`) ? name : null;
@@ -623,9 +603,10 @@ export class FigureToolbox {
 	}
 
 	/** Écrire un point en (x ; y) ; son nom, ou `null` si la ligne a échoué. */
-	#placePoint(x: number, y: number, snap: number): string | null {
+	#placePoint(x: number, y: number, snap: number, near: ToolNear): string | null {
 		const name = nextPointName(this.#atelier);
-		return this.#write(`${name} = ${draggedCoordinates(x, y, snap)}`) ? name : null;
+		const fluid = this.#atelier.fluidPixel(near.pixel ?? 0);
+		return this.#write(`${name} = ${draggedCoordinates(x, y, snap, fluid)}`) ? name : null;
 	}
 }
 

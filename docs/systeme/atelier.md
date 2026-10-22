@@ -131,6 +131,7 @@ Ceux du code et de l'interface :
 | `src/lib/atelier/variations-steps.ts`   | `.variations` et « Variations » : tableau et détail (`variationsRendering`)                                |
 | `src/lib/atelier/steps-summary.ts`      | Interrupteur « Résumé / Détaillé » : `summaryOf`, choix retenu dans le navigateur                          |
 | `src/lib/atelier/copy-text.ts`          | « Copier » d'une ligne : la réponse en texte lisible depuis son LaTeX (`readableText`, `answerToCopy`)     |
+| `src/lib/atelier/point-drag-mode.ts`    | Réglage « Déplacement des points » (aimanté / fluide), retenu dans le navigateur                           |
 | `src/lib/atelier/input-mode.ts`         | Réglage « Saisie dans Calcul » (texte / écriture mathématique), retenu dans le navigateur                  |
 | `src/lib/atelier/console-key.ts`        | Raccourcis de la console : touche sous Échap (par `event.code`, hors d'un champ), Ctrl+Entrée              |
 | `src/lib/atelier/natural-input.ts`      | Écriture mathématique : règles des mots, complétion, LaTeX du champ ↔ texte de Calcul (`calcTextOf`)       |
@@ -196,7 +197,7 @@ Ceux du code et de l'interface :
 | `CurveSettings.svelte`      | « Sur le graphique » : couleur, trait, tangente, aire ; `compact` : le point de tangence, les bornes et les nombres seuls                                      |
 | `CalculView.svelte`         | Le contenu de la console : champ (texte ou écriture mathématique), historique (`>` / `-->`), « Garder »                                                        |
 | `NaturalField.svelte`       | Le champ MathLive de l'écriture mathématique (en essai) : mots finis en texte, complétion, ↑ / ↓, clavier virtuel                                              |
-| `AtelierSettings.svelte`    | Le bouton « Réglages » (icône seule) et sa fenêtre : la saisie dans Calcul                                                                                     |
+| `AtelierSettings.svelte`    | Le bouton « Réglages » (icône seule) et sa fenêtre : saisie dans Calcul, angles, déplacement des points                                                        |
 | `FormulaText.svelte`        | Un message de l'atelier dont les formules `$…$` sont composées (refus de `.réciproque`, valeur interdite de `.évaluer`)                                        |
 | `FigureView.svelte`         | Vue Géométrie : `GeometryCanvas` sur la figure de `syncFigure`, barre d'outils, case « Repère », glisser des points, flèches, message d'un atelier sans figure |
 | `DataView.svelte`           | Vue Données : la grille (barre de cellule, mise en forme, clavier, nommer une colonne), aperçus, diagrammes                                                    |
@@ -1668,12 +1669,18 @@ mouvement par image ; rien n'est écrit sous 4 px de chemin, un clic qui tremble
 tel quel ; l'écart point − curseur de la saisie est gardé, le point ne saute pas ; un seul pointeur,
 les autres sont ignorés ; la classe `dragging` est demandée à `FigureView` (`holds`), la figure
 refaite en plein geste changeant les ids) ; `FigureView` retrouve le nom du point (`AtelierFigure.nameOf`) et appelle
-`atelier.dragPoint(nom, x, y, aimantation)`, qui réécrit sa définition — tout se recalcule
+`atelier.dragPoint(nom, x, y, aimantation, pixel)`, qui réécrit sa définition — tout se recalcule
 pendant le geste (mesures, cartes), la figure suit par `syncFigure`. Un point par coordonnées
 NOMBRES reçoit `(x ; y)`, chaque coordonnée aimantée à l'entier à moins de 8 px, sinon arrondie au
 dixième (`(2,3 ; -0,7)`) ; un `point_sur` à position écrite reçoit sa position lue sur son support
 (`supportOfPointOn` puis `positionAt` : paramètre projeté sur une ligne, angle en degrés dans
 [0 ; 360[ sur un cercle, abscisse sur 𝒞f), par `slidePosition` (bornes et pas de son curseur).
+En déplacement **fluide** (réglage, 2026-10-22, `atelier.fluidPixel`) : aucune aimantation, les
+coordonnées au pixel près (`pixel` = `1 / ppu`, le moins de décimales qui garde l'arrondi sous un
+pixel : 2 au zoom habituel, 6 au plus) ; la position d'un `point_sur` part du pas de son curseur
+et s'affine (`positionWithin`, 3 décimales de plus au plus) jusqu'à retomber à moins d'un pixel —
+un petit cercle reste au degré, un grand passe au dixième. Les flèches (pas de 0,1) et le curseur
+de la carte n'en dépendent pas.
 Ne se glissent pas (`dragRefusal`, phrase sous la barre, `role="status"`) : un point construit
 (« déplace les points dont il dépend »), des coordonnées ou une position qui citent une valeur
 (« glisse son curseur »), un `point_sur` sans position écrite. Coût mesuré (banc
@@ -1692,7 +1699,8 @@ Demi-droite · Cercle · Milieu · Intersection · Point sur un objet · Parall�
 (`figure-tools.svelte.ts`) ne crée rien, il passe ses lignes à `write` — `desk.write`, par le
 conteneur (`writeFromFigure`) : une ligne de console rejouable (geste `saisie`), une étape, jamais
 rappelée par ↑, brouillon intact, console fermée (G7) mais la ligne et sa réponse annoncées. Lignes
-écrites : `A = (1,5 ; 2)` (aimanté aux entiers à 8 px, sinon au dixième, comme le glisser),
+écrites : `A = (1,5 ; 2)` (aimanté aux entiers à 8 px, sinon au dixième, comme le glisser ; au
+pixel près en déplacement fluide, et un `point_sur` posé aussi),
 `d = [AB]`, `d_1 = (AB)`, `d_2 = [BA)`, `c = cercle(A ; passant=B)` ; la construction n'avance que
 si sa ligne a réussi. Noms (M4, `nextPointName`, `nextLineName`, `nextCircleName`) : première
 majuscule libre puis `A_1`… ; `d`, `d_1`… pour droites, segments, demi-droites ; `c`, `c_1`… pour
@@ -1811,7 +1819,10 @@ une définition ; une ligne sans formule (`.stats`) copie son texte.
 ### Réglages et écriture mathématique
 
 Le bouton **« Réglages »** de la barre du haut (`AtelierSettings.svelte`, 2026-10-14) ouvre une
-fenêtre à deux réglages. **« Angles »** (2026-10-18, `angle-unit.ts`) : **Degrés** (le défaut,
+fenêtre à trois réglages. **« Déplacement des points »** (2026-10-22, `point-drag-mode.ts`) :
+**Aimanté** (le défaut) ou **Fluide** — voir le glisser des points dans « Vue Géométrie » ; retenu
+dans ce navigateur (`chiphre-atelier-deplacement`), posé par `setPointDragMode` (hors `serialize()`,
+rien à recalculer). **« Angles »** (2026-10-18, `angle-unit.ts`) : **Degrés** (le défaut,
 comme `unite_angle` du DSL) ou **Radians** — l'unité des seules mesures d'angle (`angle(A, B, C)`) ;
 un nombre seul reste en radians (`cos(60)`, dérivées, tracés inchangés). Retenu dans ce navigateur
 (`chiphre-atelier-angles`), posé sur l'atelier par `setAngleUnit` (hors `serialize()`, qui
