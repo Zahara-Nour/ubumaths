@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, fin de session (après la décision A, § 13)._
+_Mis à jour le 2026-10-22, après la décision E1 (§ 14)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Source scratchpad perdue au `/clear` : pour la modifier, `Artifact read` puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (E1 d'abord) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (E2 ensuite) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : confirmer la lecture d'E1 (réglage le plus exigeant, § 14) · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -331,3 +331,9 @@ Constat : `evaluate` (mode exact) calcule par `normalize`/`denormalize` et rend 
 Options : **A** une seule fonction « valeur exacte à afficher » (`evaluate` puis mise au propre), appelée par tous les affichages, `evaluate` inchangé pour les calculs internes ; **B** `tidy` dans `evaluate` lui-même, après le nouveau contrat (S1, S3), appelant par appelant.
 
 **Décision : A.** B reste possible plus tard. Les 4 gardes de `readable` disparaissent avec S1 et S3.
+
+## 14. E1 : une seule définition de « bien écrit » (David, 2026-10-22 : « oui, mais le juge est paramétrable »)
+
+**Décision : oui.** Toute correction (écriture produite par `tidy`) passe le juge de l'élève (`checkForm`, `cosmetic-transforms.ts:1809`) sans aucune remarque. Le test #1609 devient une règle permanente ; ses 3 écarts (`spaces`) restent en `it.fails` jusqu'à E2.
+
+Précision de David : le juge est paramétrable, chaque règle vaut `strict`, `warn` ou `off` selon la question. Vérifié dans le code : les 10 règles (`zeros`, `spaces`, `brackets`, `signs`, `nullTerms`, `factorOne`, `factorZero`, `products`, `reducedFractions`, `reducedRadicals`) valent `warn` par défaut (`constraints[id] ?? 'warn'`), aucune n'est désactivée par défaut. Le test appelle `checkForm(…, {})`, donc **toutes les règles actives** : c'est le réglage le plus exigeant. `off` ne fait que retirer une règle et `strict`/`warn` ne changent que la conséquence ; une correction sans remarque à ce réglage passe donc tous les réglages d'une question. Lecture proposée à David : la règle vise ce réglage-là (correction exemplaire quel que soit le niveau de contrainte de la question) — **à confirmer**.
