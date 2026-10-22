@@ -1,130 +1,117 @@
+---
+couvre:
+  - .claude/hooks/garde-commandes.py
+  - .claude/settings.json
+  - .husky/commit-msg
+  - .husky/pre-commit
+  - .husky/pre-push
+  - scripts/garde-main-a-jour.sh
+  - scripts/vercel-ignore-build.sh
+---
+
 # Git Workflow — UbuMaths
 
 > **Process de développement OBLIGATOIRE** (bug fixes ET features), décidé avec David le 2026-06-17.
-> `main` = **branche de travail** ; Vercel ne déploie que `production`, avancée par `pnpm deploy:prod` ([ADR 0021](../adr/0021-branche-production-mise-en-prod-manuelle.md)). Référencé depuis `CLAUDE.md`.
-> Outils disponibles : `gh`, `vercel`, `supabase` (CLI) + MCP Supabase/Vercel — Claude prend en charge branche → PR → CI → merge → déploiement → vérif.
+> `main` = **branche de travail** ; Vercel ne déploie que `production`, avancée par `pnpm deploy:prod` ([ADR 0021](../adr/0021-branche-production-mise-en-prod-manuelle.md)), **sur demande explicite de David seulement**.
+> Résumé impératif : [CLAUDE.md](../../CLAUDE.md) § Git Workflow. Ici : le détail, le pourquoi, et [qui applique chaque règle](#6-qui-applique-quoi).
 
 ---
 
 ## 1. Règles d'or
 
 1. **`main` toujours vert et déployable** (la prod en est un instantané, `production`). Jamais de commit de **code** directement sur `main`.
-2. Tout changement de code → **branche → PR → CI 100 % verte → merge commit → suppression de branche**.
-3. **Seule exception au PR** : changement **100 % documentaire** (`docs/**` et `**/*.md`, aucun fichier de code) → commit direct sur `main`, **quel que soit le nombre de fichiers**. Plafond de 2 fichiers levé le 2026-09-14.
-   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (voir le commentaire du fichier — les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown relance donc **les 12 jobs**, ~4 min, pour zéro vérification utile. Sur `push`, le filtre `paths` exclut `docs/**` et `**/*.md` (mais réinclut `data/**`, `src/**`, `static/**`, `.md` compris) → commit direct de doc = **aucune CI**.
+2. Tout changement de code → **worktree → branche → PR → CI 100 % verte → merge commit → suppression de branche** ([§ 3](#3-flux-dune-pr)).
+3. **Seule exception à la PR** : changement **100 % documentaire** (`docs/**` et `**/*.md`, aucun fichier de code) → commit direct sur `main`, **quel que soit le nombre de fichiers**, selon les règles du [§ 2](#2-le-dépôt-principal-partagé).
+   - Pourquoi c'est une obligation et pas une facilité : `quality.yml` n'a **pas** de `paths-ignore` sur `pull_request` (les checks requis doivent rapporter sur toute PR, sinon une PR doc-only resterait bloquée à jamais). Une PR pour du markdown relance donc **les 12 jobs**, ~4 min, pour zéro vérification utile. Sur `push`, le filtre `paths` exclut `docs/**` et `**/*.md` (mais réinclut `data/**`, `src/**`, `static/**`, `.md` compris) → commit direct de doc = **aucune CI**. C'est le pre-push qui vérifie alors liens et renvois de la doc.
    - L'`ignoreCommand` Vercel (`scripts/vercel-ignore-build.sh`) saute aussi un build qui ne change que `docs/**` et `**/*.md` (hors `src/`, `static/`) → un commit docs-only **ne redéploie pas** la prod.
    - ⚠️ Vérification **mécanique** avant de commiter, jamais à l'œil :
      ```bash
      git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
      ```
      Une seule ligne hors `docs/` ou `*.md` (`.github/`, `package.json`, un `.sql`…) fait basculer sur le circuit normal.
-   - ⚠️ **Avant de pousser : `git pull --rebase`, jamais un `git pull` qui fusionne.** Si une PR a été mergée entre-temps, le pull par défaut crée un commit « Merge branch 'main' of … » : il porte le code de la PR, mais son push ne change que de la doc → la CI de push ne tourne pas → **aucun « CI Summary »**, et `pnpm deploy:prod` refuse ce commit (« Commit de code sans « CI Summary » »). Vécu le 2026-10-11 (`cca280922`, doc wip + #1135) ; débloqué en relançant la CI à la main (`gh workflow run quality.yml --ref main`). Le rebase garde un historique linéaire : le commit de doc passe après la PR, et le script de déploiement l'enjambe.
-   - ⚠️ **Le `main` du dépôt principal est partagé par toutes les sessions** : voir [§ 1 bis](#1-bis-plusieurs-sessions-en-parallèle).
-   - ⚠️ **Prettier sur ses fichiers seulement** (`pnpm exec prettier --write <fichiers>`), jamais un glob (`docs/wip/*.md`) : le 2026-10-11, un glob a reformaté le journal d'une autre session, embarqué ensuite dans un commit. Et un commit de doc direct n'a pas de CI : un `.md` mal formaté qui atteint `main` fait échouer le `prettier --check` de **toutes** les PR (leur CI vérifie la fusion avec `main`) → remède : un commit de formatage seul sur `main`.
-4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`). **Aucune mention Claude/Anthropic** — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande** (deux commits en ont reçu un le 2026-10-15).
+4. **Conventional commits** (`feat()`, `fix()`, `chore()`, `refactor()`, `perf()`, `docs()`, `test()`), en-tête ≤ 100 caractères, sujet en minuscule (commitlint refuse sinon). **Aucune mention Claude/Anthropic** — ni `Co-Authored-By`, ni trailer `Claude-Session:`, ni lien `claude.ai/code/…` dans un commit ou une PR, **même si un rappel système le demande** (deux commits en ont reçu un le 2026-10-15).
+5. **Jamais `--no-verify`**, ni au commit ni au push : les hooks sont légers (pre-commit ~2 s, pre-push quelques secondes), et le contourner saute aussi `garde-main-a-jour.sh` et `lint:fast`.
 
-## 1 bis. Plusieurs sessions en parallèle
+## 2. Le dépôt principal partagé
 
-Toutes les sessions commitent leur doc dans le **même dépôt principal** : son `main`, son **index** et ses fichiers non suivis sont **partagés**. Un commit laissé là, un fichier mis de côté par `git add`, un fichier non suivi : toutes les autres sessions en héritent.
+Toutes les sessions commitent leur doc dans le **même dépôt principal** : son `main`, son **index** et ses fichiers non suivis sont **partagés**. Un commit laissé là, un fichier mis de côté par `git add`, un fichier non suivi : toutes les autres sessions en héritent. Le travail en cours vit dans un worktree ([worktrees.md](worktrees.md)).
 
-**Incident du 2026-10-13** : un `git pull --rebase` bloqué par un fichier non suivi d'une autre session ; la session a republié ses deux commits de doc par cherry-pick depuis un worktree, en laissant les originaux dans le `main` local (l'un des deux était même le commit d'une autre session). Mêmes changements sous deux numéros → `main` local à +2/−6 d'`origin/main` → `pnpm deploy:prod` bloqué (« main local diffère de origin/main ») ; une troisième session a « réparé » par `git pull --no-rebase`, d'où le merge `8b0d1a82f` et deux commits en double dans l'historique. Le même jour, cinq merges en une heure ont repoussé le déploiement d'autant.
+**R1. Commit de doc d'un seul tenant** : `git pull --rebase` → `git add <ses fichiers>` → `git commit` → `git push` aussitôt. Jamais de commit de doc laissé non poussé. **À la fin, `git status -sb` doit montrer `## main...origin/main` sans rien d'autre** : ni commit en avance, ni fichier modifié — c'est la seule preuve que tout est parti.
 
-**Incident du 2026-10-14** : une session fait son `pull --rebase`, commite une ligne de doc ; une autre fusionne une PR dans la seconde qui suit → push refusé (« cannot lock ref »). La session applique la règle 2 et s'arrête… ce qui laisse son commit en local, contre la règle 1 : le `pull --rebase` suivant d'une autre session l'a emporté et publié avec le sien. Sans dommage (le commit était fini et juste), mais il serait parti de même si David avait choisi de l'annuler. D'où l'exception de la course (règle 2).
+- **`--rebase`, jamais un pull qui fusionne** : si une PR a été mergée entre-temps, le merge « Merge branch 'main' of … » porte le code de la PR, mais son push ne change que de la doc → la CI de push ne tourne pas → aucun « CI Summary », et `pnpm deploy:prod` refuse ce commit. Vécu le 2026-10-11 (`cca280922`) ; débloqué par `gh workflow run quality.yml --ref main`.
 
-**Incident du 2026-10-14 (bis)** : un commit de doc fait `git add a.md b.md docs/wip/ancien.md 2>/dev/null` juste après un `git mv` de `ancien.md`. Le chemin n'existe plus : `git add` refuse **tout**, rien n'est ajouté, et l'erreur est masquée par `2>/dev/null`. Seul le renommage (déjà indexé par `git mv`) part dans le commit ; les deux autres fichiers restent modifiés dans le dépôt principal (règle 4 enfreinte sans le savoir) et bloquent le `pull --rebase` des autres sessions pendant 30 minutes, jusqu'à ce que l'une d'elles le signale. D'où les ajouts aux règles 1 et 3.
+**R2. ⛔ Pull ou push en échec → on s'arrête et on prévient David.** Jamais republier ses commits par un autre chemin (cherry-pick dans un worktree, push depuis ailleurs) en laissant les originaux en local. Réparer une divergence demande un `reset` ou un merge : c'est à David. Deux exceptions, décidées par David le 2026-10-14 :
 
-**Les règles :**
+- **La course** : push refusé parce qu'`origin/main` a avancé entre le pull et le push (« cannot lock ref », « fetch first », « non-fast-forward ») → **un seul** nouvel essai par le même chemin : `git pull --rebase` puis `git push`. Un conflit au rebase, ou un second refus → R2.
+- **Un contrôle du pre-push** (formatage, lint rapide, liens ou renvois de la doc, doc à jour) : rien n'est parti, `main` n'a pas divergé → corriger la cause dans un **nouveau commit** (un `--amend` risquerait d'emporter ce que d'autres sessions ont indexé), puis repousser par le même chemin. Vérifier d'abord `git status -sb` : en avance seulement, jamais en retard. Une divergence ou un refus du serveur → R2.
 
-1. **Commit de doc d'un seul tenant, depuis le dépôt principal** : `git pull --rebase` → `git add <ses fichiers>` → `git commit` → `git push` aussitôt. Jamais de commit de doc laissé non poussé. **À la fin, `git status -sb` doit montrer `## main...origin/main` sans rien d'autre** : ni commit en avance, ni fichier modifié — c'est la seule preuve que tout est parti.
-2. ⛔ **Pull ou push en échec → on s'arrête et on prévient David.** Jamais republier ses commits par un autre chemin (cherry-pick dans un worktree, push depuis ailleurs) en laissant les originaux en local. Réparer une divergence demande un `reset` ou un merge : c'est à David.
-   **Seule exception (décidée par David le 2026-10-14) : la course.** Push refusé parce qu'`origin/main` a avancé entre le pull et le push (« cannot lock ref », « fetch first », « non-fast-forward ») → **un seul** nouvel essai par le même chemin : `git pull --rebase` puis `git push`. Ce n'est pas « un autre chemin ». Un conflit au rebase, ou un second refus → retour à la règle : on s'arrête, on prévient David.
-   **Seconde exception (décidée par David le 2026-10-14) : un contrôle local du hook.** Push refusé par le hook `pre-push` lui-même (lien de doc cassé, formatage, lint rapide, doc à jour) — rien n'a été envoyé, `main` n'a pas divergé → on corrige la cause dans un **nouveau commit** (pas d'amend d'un commit déjà poussé), puis on repousse par le même chemin. Vérifier d'abord `git status -sb` : en avance seulement, jamais en retard. Une divergence ou un refus du serveur → règle 2.
-3. **L'index est partagé** : `git add` nomme ses propres fichiers ; jamais `git add -A`, `git add .`, ni `git commit -a`. Vérifier `git diff --cached --name-only` avant de commiter : un fichier qu'on n'a pas touché, c'est celui d'une autre session — et un fichier qu'on a touché qui n'y est PAS, c'est un `git add` qui a échoué. **Un seul chemin invalide fait échouer tout le `git add`** (après un `git mv`, ne citer que la destination) : jamais de `2>/dev/null` sur `git add`.
-4. **Rien d'inachevé dans le dépôt principal** : ni fichier suivi modifié en attente, ni fichier non suivi. Un fichier modifié part dans le commit d'une autre session ou bloque son pull ; un fichier non suivi qu'une PR ajoute ensuite bloque le pull de TOUTES les sessions (« untracked working tree files would be overwritten »). Le travail en cours vit dans un worktree. Un fichier non suivi trouvé dans le dépôt principal : demander à qui il est, ne pas y toucher.
-5. **Fichiers que tout le monde complète** (`docs/wip/verifications-manuelles.md` surtout) : ajouter en fin de section, juste après le pull. En cas de conflit au rebase, **garder les deux côtés**, jamais l'un à la place de l'autre.
-6. **Le `pnpm install` d'après pull** : un pull qui change les dépendances relance `pnpm install` dans le dépôt principal, sous le serveur 5175 qui tourne dessus. Erreur étrange du serveur juste après un pull → le relancer.
-7. **Pendant `pnpm deploy:prod`** : ni commit sur `main`, ni merge de PR (voir [§ 7](#7-déploiement--vérification)).
+**R3. L'index est partagé** : `git add` nomme ses propres fichiers ; jamais `git add -A`, `git add .`, ni `git commit -a`. Vérifier `git diff --cached --name-only` avant de commiter : un fichier qu'on n'a pas touché, c'est celui d'une autre session — et un fichier qu'on a touché qui n'y est PAS, c'est un `git add` qui a échoué. **Un seul chemin invalide fait échouer tout le `git add`** (après un `git mv`, ne citer que la destination) : jamais de `2>/dev/null` sur `git add`.
 
-**Les garde-fous** (ils appliquent les règles sans compter sur la mémoire de chaque session) :
+**R4. Rien d'inachevé dans le dépôt principal** : ni fichier suivi modifié en attente, ni fichier non suivi. Un fichier modifié part dans le commit d'une autre session ou bloque son pull ; un fichier non suivi qu'une PR ajoute ensuite bloque le pull de TOUTES les sessions (« untracked working tree files would be overwritten »). Un fichier non suivi trouvé dans le dépôt principal : demander à qui il est, ne pas y toucher.
 
-- **Hook Claude** `.claude/hooks/garde-commandes.py`, sur la branche `main` (dépôt principal, ou `cd` / `git -C` vers lui) : refuse `git pull` sans `--rebase` ni `--ff-only`, `git merge` sans `--ff-only` (sauf `--continue` / `--abort`), `git add -A` / `-u` sans chemin ou `git add .`, `git commit -a`. Et, tant que le verrou « deploy » est tenu, refuse `gh pr merge` et tout commit ou push vers `main`, depuis n'importe quel worktree. Le dossier visé est suivi à travers `cd` et `git -C` (guillemets et `~` compris).
-- **Verrou « deploy »** : `pnpm deploy:prod` tourne sous le verrou noyau de `scripts/lib/lock.py` (relâché à sa fin, quelle qu'en soit la cause) ; un second `deploy:prod` sort en exit 2. `--essai` ne le prend pas.
-- **Hook pre-commit** `scripts/garde-main-a-jour.sh` : sur `main`, refuse le commit si `origin/main` a des commits que le `main` local n'a pas (`git fetch` d'abord, 5 s au plus pour se connecter ; hors ligne, il laisse passer ; le commit qui conclut un merge, un cherry-pick ou un revert passe).
-- ⚠️ Pas de `pull.rebase` / `pull.ff` dans `.git/config` : essayé le 2026-10-13, `pull.ff=only` fait échouer le rebase légitime de son propre commit de doc, n'empêche pas `--no-rebase` de fusionner, et s'appliquerait à tous les worktrees (la config est commune).
+**R5. Prettier sur ses fichiers seulement** (`pnpm format <fichiers>`), jamais un glob ni `pnpm format:all` : le 2026-10-11, un glob a reformaté le journal d'une autre session, embarqué ensuite dans un commit. Le pre-commit formate déjà les fichiers indexés.
 
-## 2. Nommage des branches
+**R6. Fichiers que tout le monde complète** (`docs/wip/verifications-manuelles.md` surtout) : ajouter en fin de section, juste après le pull. En cas de conflit au rebase, **garder les deux côtés**, jamais l'un à la place de l'autre.
 
-`fix/<slug>` · `feat/<slug>` · `refactor/<slug>` · `perf/<slug>` · `chore/<slug>` · `docs/<slug>` · `test/<slug>` — slug kebab court.
+**R7. Le `pnpm install` d'après pull** : un pull qui change les dépendances relance `pnpm install` dans le dépôt principal, sous le serveur 5175 qui tourne dessus. Erreur étrange du serveur juste après un pull → le relancer.
 
-## 3. Flux standard (chaque changement de code)
+**R8. Pendant `pnpm deploy:prod`** : ni commit sur `main`, ni merge de PR ([§ 5](#5-déploiement)).
 
-1. `git switch main && git pull --ff-only` — partir d'un `main` frais.
-2. `git switch -c <type>/<slug>`.
-3. Implémenter, commits en unités logiques.
-4. **Checks locaux avant push** (voir §4).
-5. **Si DB/RLS** → tests d'intégration locaux (voir §5).
-6. `git push -u origin <branche>`.
-7. `gh pr create` — corps structuré : **Quoi / Pourquoi / Risque / Tests**.
-8. `gh pr checks <n> --watch` → corriger jusqu'à **tout vert**. **Jamais merger en rouge.**
+⚠️ Pas de `pull.rebase` / `pull.ff` dans `.git/config` : essayé le 2026-10-13, `pull.ff=only` fait échouer le rebase légitime de son propre commit de doc, n'empêche pas `--no-rebase` de fusionner, et s'appliquerait à tous les worktrees (la config est commune).
+
+### Pourquoi : les incidents
+
+- **2026-10-13 (R2)** : un `git pull --rebase` bloqué par un fichier non suivi d'une autre session ; la session a republié ses deux commits de doc par cherry-pick depuis un worktree, en laissant les originaux dans le `main` local (l'un des deux était même le commit d'une autre session). Mêmes changements sous deux numéros → `main` local à +2/−6 d'`origin/main` → `pnpm deploy:prod` bloqué ; une troisième session a « réparé » par `git pull --no-rebase`, d'où le merge `8b0d1a82f` et deux commits en double dans l'historique. Le même jour, cinq merges en une heure ont repoussé le déploiement d'autant.
+- **2026-10-14 (exception de la course)** : une session fait son `pull --rebase`, commite une ligne de doc ; une autre fusionne une PR dans la seconde qui suit → push refusé (« cannot lock ref »). La session s'arrête… ce qui laisse son commit en local, contre R1 : le `pull --rebase` suivant d'une autre session l'a emporté et publié avec le sien. Sans dommage, mais il serait parti de même si David avait choisi de l'annuler.
+- **2026-10-14 bis (R3, R4)** : `git add a.md b.md docs/wip/ancien.md 2>/dev/null` juste après un `git mv` de `ancien.md`. Le chemin n'existe plus : `git add` refuse **tout**, l'erreur est masquée. Seul le renommage (indexé par `git mv`) part ; les deux autres fichiers restent modifiés dans le dépôt principal et bloquent le `pull --rebase` des autres sessions pendant 30 minutes.
+
+## 3. Flux d'une PR
+
+Branches : `fix/<slug>` · `feat/<slug>` · `refactor/<slug>` · `perf/<slug>` · `chore/<slug>` · `test/<slug>` — slug kebab court. (`docs/<slug>` seulement pour de la doc mêlée à autre chose : la doc pure va sur `main`.)
+
+1. **Worktree** depuis `origin/main` : `git worktree add -b <type>/<sujet> ../ubumaths-wt-<sujet> origin/main` — jamais de chantier dans le dépôt principal ([worktrees.md](worktrees.md)).
+2. Implémenter, **commiter tôt**, en unités logiques : un hook qui crashe peut stasher le travail ; après un crash, `git stash list`.
+3. **Avant de pousser** : `pnpm check:incremental` (0 erreur) et tests ciblés ; DB/RLS → [§ 4](#4-base-de-données). Le reste est automatique : pre-commit (oxlint + prettier sur les fichiers indexés) et pre-push (formatage, lint rapide, liens et renvois de la doc, couverture de la doc). Gros process (`check`, `build`, `lint`) : un seul à la fois, cf. CLAUDE.md § Gros process.
+4. `git push -u origin <branche>`, puis `gh pr create` — corps : **Quoi / Pourquoi / Risque / Tests**.
+5. `gh pr checks <n> --watch` dès l'ouverture → **tout vert** (Lint, Type Check, Types des tests, Build + garde TDZ Safari, Server/Client Tests, Security Audit, Garde SECURITY DEFINER → CI Summary ; CodeQL à part). **Jamais merger en rouge.**
    - ⛔ **Branche déjà poussée : jamais `git pull --rebase origin main` dessus.** Le rebase réécrit les commits poussés → push refusé, et le seul push qui passe est `--force` (liste `ask`). Pour la remettre à jour : `git merge origin/main`, ou rien (GitHub merge quand même). Rattrapage si c'est fait : `git merge origin/<branche>` (le commit en double est identique, sans conflit), puis push normal (#1603, 2026-10-22).
-9. Revue (voir §6).
-10. `gh pr merge --merge` (merge commit).
-11. **Supprimer la branche** : `git branch -d <b>` + `git push origin --delete <b>`, **seulement après avoir lu `MERGED`** (`gh pr view <n> --json state -q .state`), dans une commande **séparée** du merge.
-    - ⛔ **Jamais `gh pr merge … ; git push origin --delete …` dans la même commande.** `gh pr merge` peut échouer (`Base branch was modified` quand `main` vient d'avancer, `BLOCKED` tant qu'un contrôle tourne) : la suite tourne quand même, et **supprimer la branche distante d'une PR ouverte la FERME** sans merge (#1601, 2026-10-22).
-    - Rattrapage si c'est arrivé : les commits restent dans le dépôt local → `git branch <b> <sha>` + `git push origin <b>` + `gh pr reopen <n>` ; la réouverture **relance toute la CI**, à re-surveiller avant de merger.
-    - `Base branch was modified` : relancer `gh pr merge --merge` (une fois) ; `BLOCKED` : attendre la fin des contrôles, ne pas passer `--admin`.
+6. **Revue proportionnée au risque** : CLAUDE.md § Planning, point 4.
+7. `gh pr merge --merge` — **toujours un merge commit**, jamais de squash. `Base branch was modified` : relancer une fois ; `BLOCKED` : attendre la fin des contrôles, jamais `--admin`.
+8. **Supprimer la branche** (`git branch -d <b>` + `git push origin --delete <b>`) **seulement après avoir lu `MERGED`** (`gh pr view <n> --json state -q .state`), dans une commande **séparée** du merge : si `gh pr merge` échoue, la suite tourne quand même, et **supprimer la branche distante d'une PR ouverte la FERME** sans merge (#1601, 2026-10-22).
+   - Rattrapage : les commits restent dans le dépôt local → `git branch <b> <sha>` + `git push origin <b>` + `gh pr reopen <n>` ; la réouverture **relance toute la CI**, à re-surveiller avant de merger.
+9. `git worktree remove` + `git worktree list` ; « Reprendre ici » du journal à jour (CLAUDE.md § Worktrees).
 
-## 4. Checks locaux (un seul gros process à la fois)
+## 4. Base de données
 
-- Le **hook pre-commit est léger** (`.lintstagedrc.js` → `oxlint` + `prettier` sur les fichiers staged, ~2 s — motif : la durée, un eslint complet prend 530 s) → **`--no-verify` n'est plus nécessaire**. oxlint bloque sur _erreurs_ seulement (warnings non bloquants) ; prettier garde le job **Lint** CI (`prettier --check`) vert.
-- **Avant de pousser** : `pnpm check:incremental` (~18 s, moteur `--tsgo` depuis le 2026-10-10, **0 erreur exigée**).
-- **eslint complet** : en CI, et autorisé en local **en arrière-plan** (`pnpm lint`, 530 s). Le hook utilise `oxlint` (Rust) pour le feedback rapide ; `pnpm lint:fast` (~2,5 s) avant de pousser.
-- **Un seul gros process à la fois** : `pnpm check` / `pnpm build` / `pnpm lint` sont autorisés, sous le verrou de `scripts/gros-process.sh` (le même que `check:incremental`) (4 à 6 Go chacun, mesuré le 2026-09-29 sur Mac mini M6 24 Go, swap +0). `svelte-check` sans `--incremental` meurt sur le tas par défaut de Node (~4 Go), quelle que soit la RAM.
+Règles : CLAUDE.md § Migrations et § Base de données ; détail : [base-de-donnees.md](base-de-donnees.md). Ce qui touche au flux git :
 
-## 5. Base de données / migrations (chemin à haut risque)
+- Migration écrite **sur la branche** ; tests d'intégration locaux **obligatoires** pour RLS / `SECURITY DEFINER` / trigger / policy (une RPC cassée est partie en prod le 2026-06-16 faute de les avoir lancés).
+- `pnpm db:migrate` **uniquement depuis la branche mergée dans `main`** (sinon désync de `schema_migrations`).
+- **Additive** (`CREATE`, `ADD COLUMN`, `CREATE OR REPLACE`) → `db:migrate` **au merge** : la base précède le code en prod. **Destructive** (`DROP`, breaking) → **après** le `pnpm deploy:prod` qui livre le code qui ne l'utilise plus (au besoin, 2 migrations séparées).
 
-- Migration écrite **sur la branche**.
-- **Tests d'intégration OBLIGATOIRES** pour **RLS / fonctions `SECURITY DEFINER` / triggers / policies** :
-  `pnpm db:start` (ou `db:reset`) **+** `pnpm test:integration <ciblé>` → **doivent passer**.
-  _(C'est ce qui a manqué et a laissé partir une RPC cassée en prod le 2026-06-16.)_
-- Changement de **schéma pur** (colonne / index / table sans logique) : `pnpm db:reset` doit réussir **+** `pnpm db:types` régénéré et commité.
-- ❌ **JAMAIS** valider une fonction `SECURITY DEFINER` par un smoke-test avec `auth.uid()` NULL — le garde sort **avant** la vraie requête (faux positif).
-- **Timing migration ↔ déploiement** :
-  - **Additive** (`CREATE`, `ADD COLUMN`, `CREATE OR REPLACE`) → `pnpm db:migrate` **au merge** : la base précède le code en prod, sans risque.
-  - **Destructive** (`DROP`, breaking) → `db:migrate` **après** le `pnpm deploy:prod` qui livre le code qui ne l'utilise plus (au besoin, 2 migrations séparées).
-- `pnpm db:migrate` **uniquement depuis la branche mergée dans `main`** (sinon désync de l'historique `schema_migrations`).
+## 5. Déploiement
 
-## 6. PR, revue & merge
-
-- `gh pr checks <n> --watch` → **tout vert** avant merge (Lint, Type Check, Types des tests, Build, Server/Client Tests, Security Audit, Garde SECURITY DEFINER → CI Summary ; CodeQL à part).
-- Revue par agents :
-  - `code-reviewer` sur tout changement substantiel.
-  - **`security-auditor` OBLIGATOIRE** dès qu'il y a auth / RLS / API sensible / migration.
-- **Merge = merge commit** (`gh pr merge --merge`) → préserve l'historique granulaire. Squash réservé à une suite de fixups bruités.
-
-## 7. Déploiement & vérification
-
-- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (`pnpm release` : numéro, CHANGELOG, tag) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait.
-  - Il tient le verrou « deploy » de bout en bout : le hook Claude refuse alors aux autres sessions `gh pr merge` et les commits ou pushes vers `main` ([§ 1 bis](#1-bis-plusieurs-sessions-en-parallèle)). Un humain n'est pas arrêté par le hook : David, qui lance aussi des merges, attend la fin.
+- Merge sur `main` → **rien n'est déployé**. La prod ne bouge que par **`pnpm deploy:prod`**, lancé par David ou par Claude **sur sa demande explicite** (ADR 0021). Le script crée la version (numéro, CHANGELOG, tag — jamais `pnpm release` à part) sur le dernier état vérifié par la CI, attend la CI de ce commit de version, puis avance `production` jusqu'à lui ; `--essai` montre ce qui partirait.
+- Il tient le verrou « deploy » de bout en bout ([§ 6](#6-qui-applique-quoi)). Un humain n'est pas arrêté par le hook : David, qui lance aussi des merges, attend la fin.
 - Ce qui attend la prod : `git log --first-parent origin/production..origin/main`.
-- **Previews OFF** : le **job Build CI** (+ garde TDZ Safari) valide le build.
-- Surveiller le déploiement (`get_deployment` → `READY`).
-- **Vérifier en prod** tout changement user-facing (bypass si maintenance — voir §8).
+- **Previews OFF** : le job Build de la CI valide le build. Surveiller le déploiement (`get_deployment` → `READY`) et **vérifier en prod** tout changement visible des élèves.
 
-## 8. Releases à risque → maintenance mode
+### Mise en prod à risque → maintenance
 
 Pour un changement de schéma **non rétro-compatible** ou un gros cutover :
 
 1. `pnpm maintenance:on` (génère un secret de bypass, redéploie).
-2. Merge → déploiement → migrations **dans le bon ordre** (§5).
+2. Merge → déploiement → migrations **dans le bon ordre** ([§ 4](#4-base-de-données)).
 3. **Vérifier via le bypass opérateur** (`/?bypass=<secret>`, cookie valable 8 h).
 4. `pnpm maintenance:off`.
 
-## 9. Hotfix prod urgent
+### Hotfix
 
-Même flux, expédié : `fix/<slug>` depuis `main` → fix **+ test de non-régression** → PR → CI verte → merge → deploy. Maintenance mode si le bug impacte les données.
+Même flux, expédié : `fix/<slug>` → fix **+ test de non-régression** → PR → CI verte → merge → deploy (sur demande de David). Maintenance si le bug touche les données.
 
-**Retour arrière Vercel (Instant Rollback) : jamais vers une version dont le code dépend de ce qu'une migration a retiré depuis.** Le retour arrière ne ramène que le code ; la base garde son schéma. Une table, une colonne, une policy ou un droit retirés après cette version la cassent, souvent en silence (une écriture refusée par la RLS rend zéro ligne).
+### Retour arrière Vercel (Instant Rollback)
+
+**Jamais vers une version dont le code dépend de ce qu'une migration a retiré depuis.** Le retour arrière ne ramène que le code ; la base garde son schéma. Une table, une colonne, une policy ou un droit retirés après cette version la cassent, souvent en silence (une écriture refusée par la RLS rend zéro ligne).
 
 - **Plancher au 2026-10-19 : v0.39.0.** Migration `20261017090100` : l'élève n'écrit plus lui-même `student_buddies` ni `srs_review_sessions` ; le code d'avant v0.39.0 le faisait (choix du Palotin, XP, série, séances de révision). Plancher précédent : v0.35.0 (migration `20261016103800`, ancien système de versions des modèles de chapitre).
 - **Vérifier avant tout retour arrière vers `vX`** : lister les migrations ajoutées depuis `vX` qui retirent quelque chose :
@@ -132,17 +119,28 @@ Même flux, expédié : `fix/<slug>` depuis `main` → fix **+ test de non-régr
   git diff --name-only --diff-filter=A vX origin/production -- supabase/migrations \
     | xargs grep -liE '^[^-]*(drop (table|column|policy|function)|revoke|rename)'
   ```
-  Un résultat → lire son en-tête : si le code de `vX` utilise ce qui a été retiré, pas de retour arrière vers `vX` ; corriger en avant (§ 9).
+  Un résultat → lire son en-tête : si le code de `vX` utilise ce qui a été retiré, pas de retour arrière vers `vX` ; corriger en avant (hotfix).
 - Une migration qui retire quelque chose relève le plancher : mettre à jour la ligne ci-dessus dans la même PR.
 
-## 10. Interdits (leçons gravées — sessions 2026-06-16/17)
+## 6. Qui applique quoi
 
-- ❌ Smoke-test d'une fonction `SECURITY DEFINER` avec `auth.uid()` NULL.
-- ❌ Laisser du travail non commité : un hook qui crashe peut le **stasher** (→ perdu). Commit tôt ; après un crash de hook, **vérifier `git stash list`**. (Le pre-commit est désormais léger — oxlint + prettier — donc ce risque a fortement baissé.)
-- ❌ Merger en CI rouge.
-- ❌ Pousser une migration que le code déployé ne supporte pas (ordre additive/destructive).
-- ❌ `pnpm db:migrate` depuis une branche non mergée.
+Une règle tenue par un garde-fou ne dépend pas de la mémoire de chaque session. Le hook Claude n'arrête que Claude, jamais un humain.
+
+| Règle                                                                                                                                                                                                         | Appliquée par                                                                                                                                                          |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Commandes qui perdent du travail (`reset`, `rebase`, `clean`, `restore`, `checkout --`, `stash drop/clear`, `branch -D`, push forcé, `worktree remove --force`, `rm`, `mv`)                                   | Liste `ask` de `.claude/settings.json` (confirmation de David) ; le hook Claude demande aussi pour `--force` ou `-D` placés n'importe où                               |
+| Sur `main` : pull qui fusionne, merge non fast-forward, `git add -A` / `-u` / `.` sans chemin, `git commit -a`                                                                                                | Hook Claude `.claude/hooks/garde-commandes.py` (refus), à travers `cd` et `git -C`                                                                                     |
+| `2>/dev/null` sur `git add` ; `--no-verify` au commit ou au push                                                                                                                                              | Hook Claude                                                                                                                                                            |
+| Suppression de branche chaînée à `gh pr merge` ; `pull --rebase` d'une autre branche sur une branche déjà poussée                                                                                             | Hook Claude                                                                                                                                                            |
+| Pendant `deploy:prod` : ni merge de PR, ni commit ou push vers `main`, depuis n'importe quel worktree                                                                                                         | Verrou noyau « deploy » (`scripts/lib/lock.py`, relâché à la fin quoi qu'il arrive ; un second `deploy:prod` sort en exit 2, `--essai` ne le prend pas) + hook Claude  |
+| Pas de commit sur un `main` en retard sur `origin/main`                                                                                                                                                       | Pre-commit `scripts/garde-main-a-jour.sh` (`git fetch`, 5 s au plus ; hors ligne il laisse passer ; le commit qui conclut un merge, un cherry-pick ou un revert passe) |
+| Formatage et oxlint des fichiers indexés                                                                                                                                                                      | Pre-commit (`lint-staged`)                                                                                                                                             |
+| Conventional commit, en-tête ≤ 100                                                                                                                                                                            | Commit-msg (`commitlint`)                                                                                                                                              |
+| Formatage et lint rapide de ce que le push ajoute ; liens, renvois et couverture de la doc                                                                                                                    | Pre-push                                                                                                                                                               |
+| CI verte avant merge                                                                                                                                                                                          | Checks requis de GitHub sur `main`                                                                                                                                     |
+| `pnpm release` seul ; `deploy:prod` seulement sur demande de David                                                                                                                                            | Hook Claude pour le premier ; **personne** pour le second (CLAUDE.md)                                                                                                  |
+| Doc pure vérifiée mécaniquement, `git status -sb` propre, arrêt sur échec (R2), fichiers non suivis (R4), prettier ciblé (R5), aucune mention Claude, revue, ordre des migrations, plancher du retour arrière | **Personne** : discipline                                                                                                                                              |
 
 ---
 
-Vérifié contre le code le 2026-10-10.
+Vérifié contre le code le 2026-10-22.

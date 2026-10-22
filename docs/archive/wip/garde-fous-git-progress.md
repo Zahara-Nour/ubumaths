@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, avant la PR._
+_Mis à jour le 2026-10-22, après #1605._
 
-- **État** : PR 1 (code) en cours — hook `garde-commandes.py` (+4 règles), message du pre-push.
-- **Prochaine action** : après merge, commit doc direct sur `main` : réorganisation de
-  `docs/pratiques/git-workflow.md` (tableau « règle → qui l'applique »), C1-C4, C6 dans `CLAUDE.md`.
-- **En attente de David** : rien (choix tranchés le 2026-10-22).
-- **Pièges en cours** : le hook lit `git -C ""` jusque dans un heredoc — passer par un fichier de script.
-- **Worktree / branche** : `../ubumaths-wt-garde-fous-git` · `chore/garde-fous-git`.
+- **État** : CLOS. #1605 mergée (4 garde-fous + message du pre-push) ; `git-workflow.md` réécrit
+  (tableau « qui applique quoi », `couvre:`), `CLAUDE.md` corrigé ; journal archivé.
+- **Prochaine action** : aucune.
+- **En attente de David** : rien.
+- **Piège resté ouvert** : le hook refuse `git -C ""` même dans un heredoc ou un texte entre
+  guillemets (le test est fait avant leur retrait) — passer par un fichier de script.
+- **Worktree / branche** : retirés.
 
 ## Choix de David (2026-10-22)
 

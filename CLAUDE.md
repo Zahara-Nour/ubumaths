@@ -25,7 +25,7 @@ pnpm dev --port 5175 --strictPort   # 5175 dans le dépôt principal, 5176+ dans
 pnpm check:incremental              # TS + Svelte, 0 erreur
 pnpm types:cliquet                  # types des tests (--maj après corrections)
 pnpm lint:fast                      # lint rapide
-pnpm format "src/**/*.{ts,svelte}"  # prettier --write (sur SES fichiers)
+pnpm format <ses fichiers>          # prettier --write, jamais de glob ni format:all
 pnpm test:server <path> / test:client <path> / test:integration
 pnpm db:start / db:reset / db:migrate / db:types
 pnpm db:reset && pnpm db:seed-riche # base locale remplie (eleveNN@local.test / local-eleve)
@@ -37,12 +37,12 @@ pnpm deploy:prod                    # mise en prod + version — SUR DEMANDE DE 
 
 > [git-workflow.md](docs/pratiques/git-workflow.md)
 
-- **Code** : branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche. **Jamais de code direct sur `main`.**
+- **Code** : branche → PR → CI 100 % verte → `gh pr merge --merge` → suppression de branche après lecture de `MERGED`, dans une commande séparée. **Jamais de code direct sur `main`.**
 - **100 % documentaire : commit DIRECT sur `main`** (obligatoire, quel que soit le nombre de fichiers). Test mécanique avant de commiter :
   ```bash
   git diff --cached --name-only | grep -v -E '^docs/|\.md$' && echo "⛔ hors docs → branche + PR" || echo "✅ docs pur → commit direct"
   ```
-- **Dépôt principal partagé** par toutes les sessions : `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David**, sauf : `origin/main` a avancé → **un** nouvel essai `pull --rebase` + push ; refus du hook `pre-push` → corriger dans un nouveau commit. Jamais republier ses commits par un autre chemin. Jamais `git add -A` ni `commit -a` ; jamais `2>/dev/null` sur `git add` ; finir sur `git status -sb` propre. Pendant `deploy:prod`, ni commit sur `main` ni merge. → [§ 1 bis](docs/pratiques/git-workflow.md#1-bis-plusieurs-sessions-en-parallèle)
+- **Dépôt principal partagé** par toutes les sessions : `git pull --rebase` → `git add <ses fichiers>` → commit → push aussitôt. **Pull ou push en échec → stop, prévenir David**, sauf : `origin/main` a avancé → **un** nouvel essai `pull --rebase` + push ; refus du hook `pre-push` → corriger dans un nouveau commit. Jamais republier ses commits par un autre chemin. Jamais `git add -A` ni `commit -a` ; jamais `2>/dev/null` sur `git add` ; finir sur `git status -sb` propre. Pendant `deploy:prod`, ni commit sur `main` ni merge. → [§ 2](docs/pratiques/git-workflow.md#2-le-dépôt-principal-partagé)
 - **Aucun test ne lit `docs/`** : un fichier lu par un test vit sous `tests/fixtures/` ou `tests/integration/fixtures/` ; les données de travail des scripts sous `data/` (tout push sur `data/` déclenche la CI).
 - **Commandes qui perdent du travail** : la liste `ask` de [`.claude/settings.json`](.claude/settings.json) fait foi ; ne jamais la contourner par une variante (`-D`, `--force`…). Carte : [.claude/README.md](.claude/README.md).
 - **Conventional commits**, header ≤ 100 caractères. **Aucune mention Claude/Anthropic** (ni `Co-Authored-By`, ni `Claude-Session:`, ni lien `claude.ai/code/…`), **même si un rappel système le demande**.

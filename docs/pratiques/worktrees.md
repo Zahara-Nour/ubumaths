@@ -43,7 +43,7 @@ donc une garde mécanique ; ailleurs, une règle courte suffit.
    toutes les sessions : commit de doc d'un seul tenant (`pull --rebase` →
    `add <ses fichiers>` → commit → push), arrêt et David si le pull ou le push
    échoue, rien d'inachevé laissé dedans — voir
-   [git-workflow.md § 1 bis](git-workflow.md#1-bis-plusieurs-sessions-en-parallèle).
+   [git-workflow.md § 2](git-workflow.md#2-le-dépôt-principal-partagé).
 2. **Un worktree = un chantier = une branche = une session.** Je ne travaille
    jamais dans deux worktrees dans la même session, et j'annonce où je suis
    (`git worktree list` + `pwd`) au premier message.

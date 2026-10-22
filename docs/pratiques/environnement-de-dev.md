@@ -120,7 +120,7 @@ copiée, **jamais de données d'élèves en local** (`scripts/db-seed-riche/inde
   Sur `main` (partagé par toutes les sessions) : refuse un pull qui fusionne, un merge non
   fast-forward, `git add -A` / `.`, `git commit -a` ; pendant un `deploy:prod` (verrou « deploy »),
   refuse `gh pr merge` et les commits ou pushes vers `main`
-  ([git-workflow.md § 1 bis](git-workflow.md#1-bis-plusieurs-sessions-en-parallèle)).
+  ([git-workflow.md § 2](git-workflow.md#2-le-dépôt-principal-partagé)).
   `deploy:prod` n'y est plus soumis (décision de David, 2026-10-10) : la règle vit dans CLAUDE.md.
 - Agents : [.claude/agents/README.md](../../.claude/agents/README.md). Skills du projet
   (`.claude/skills/`) et skills personnels (`~/.claude/skills/`) : [skills-claude.md](skills-claude.md).
