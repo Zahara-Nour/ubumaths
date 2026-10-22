@@ -8,10 +8,11 @@ _Mis à jour le 2026-10-22, après #1610 (lot code mort, § 28), l'ordre des lot
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 12 tranchées sur 12. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
 - **Lot code mort** (§ 28) : **mergé (#1610)** — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
 - **Ordre des lots validé** (§ 29, révisé § 30) : 1b moteur → 3 `réduire`/`auto` → 4 contrat de `tidy` → 5 formes par contexte → 6 valeurs approchées → 7 renommages. Lot 1a sondé (§ 30) : rien pour l'élève (vecteurs exotiques → 1b, QCM = code mort → 1b, attendu mal écrit = voulu).
-- **Lot 1b** (§ 31-32) : fait sur `fix/simplify-carte-moteur`, PR en cours. **Prochaine action** : après le merge, lot 3 (`réduire` et `auto` cessent de développer ; ouvrir par les tests rouges de `simplify` qui factorise et de `(x+1)²` développé), nouveau worktree.
+- **Lot 1b** (§ 31-32) : **mergé (#1613)** — égalité de l'Atelier, vecteurs / matrices, parité comparés par `equivalenceForms` ; code mort QCM retiré.
+- **Prochaine action** : lot 3 (`réduire` et `auto` cessent de développer, identités dans `réduire` avec étapes) ; l'ouvrir par les tests rouges de `simplify` qui factorise et de `(x+1)²` développé (§ 29) ; nouveau worktree.
 - **En attente de David** : rien.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée », à changer avec E2 (§ 15).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `fix/simplify-carte-moteur` (lot 1b).
+- **Worktree / branche** : aucun (celui du lot 1b est supprimé) ; nouveau worktree au lot 3.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
