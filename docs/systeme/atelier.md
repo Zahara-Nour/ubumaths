@@ -1711,7 +1711,9 @@ rien : elle délègue le clic (`canvasTool`), le fantôme (`overlay`) suit le po
 (« Clique sur un deuxième point. ») est dite sous la barre (ligne réservée : la toile ne saute pas).
 Échap ou un second appui sur l'outil abandonne la construction (le premier point posé reste). Les
 flèches déplacent le point choisi (le dernier saisi ou posé, entouré) par `dragPoint` : pas de 0,1,
-Maj : 1, une flèche tenue = une étape (`endGesture` au relâcher).
+Maj : 1, une flèche tenue = une étape (`endGesture` au relâcher). Un appui sur la toile lui donne
+le focus (`focusCanvas`, en capture) : la toile annule le `pointerdown`, et sans lui les flèches
+restaient à la barre d'outils ou faisaient défiler la vue (2026-10-22).
 
 **M5 complet et outils de construction** (lot 3, PR 3). La toile dit au clic ce qui est proche :
 le point (`findPointNear`), et les autres éléments à la même distance, le plus proche d'abord

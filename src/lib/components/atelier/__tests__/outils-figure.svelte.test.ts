@@ -272,6 +272,49 @@ describe('M8 : les flèches déplacent le point choisi', () => {
 	});
 });
 
+describe('M8 : un clic sur la toile lui donne le focus (signalé par David, 2026-10-22)', () => {
+	// Avant : la toile ne prenait pas le focus au clic (le pointerdown de la toile
+	// est annulé) — les flèches parcouraient la barre ou faisaient défiler la vue
+	function toile(container: HTMLElement): HTMLElement {
+		const found = container.querySelector<HTMLElement>('.toile');
+		if (found === null) throw new Error('pas de toile');
+		return found;
+	}
+
+	it('outil Point : après le clic, les flèches déplacent A, pas le focus de la barre', async () => {
+		const atelier = atelierOf();
+		const container = await mount(atelier);
+		const point = toolButton(container, 'Point');
+		point.click();
+		point.focus();
+		await clickAt(container, 2, 1);
+		await vi.waitFor(() => expect(atelier.get('A')).toBeDefined());
+
+		expect(document.activeElement).toBe(toile(container));
+		await userEvent.keyboard('{ArrowRight}');
+
+		expect(atelier.get('A')?.definition).toBe('(2,1 ; 1)');
+		expect(point.getAttribute('aria-pressed')).toBe('true');
+	});
+
+	it('Déplacer : un point visé à la souris prend les flèches', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 1)']]);
+		const container = await mount(atelier);
+		toolButton(container, 'Déplacer').focus();
+		const at = screenOf(container, 1, 1);
+		const circle = canvasOf(container).querySelector('circle.point');
+		if (circle === null) throw new Error('A pas dessiné');
+		pointer(circle, 'pointerdown', at);
+		pointer(canvasOf(container), 'pointerup', at);
+		await nextFrame();
+
+		expect(document.activeElement).toBe(toile(container));
+		await userEvent.keyboard('{ArrowRight}');
+
+		expect(atelier.get('A')?.definition).toBe('(1,1 ; 1)');
+	});
+});
+
 describe('revue de la PR', () => {
 	it('Annuler le premier point d’un segment : la construction est abandonnée, la consigne le dit', async () => {
 		const atelier = atelierOf();
