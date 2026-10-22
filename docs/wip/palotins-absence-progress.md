@@ -5,13 +5,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1588._
+_Mis à jour le 2026-10-22 : suite dans [palotins-presence-progress.md](palotins-presence-progress.md)._
 
-- **État** : PR 1 #1584 (donnée) et PR 2 #1588 (code) mergées ; aucune migration en attente. Vérification manuelle notée (#1588). Pas en prod tant que `deploy:prod` n'est pas lancé.
-- **Prochaine action** : selon la réponse de David sur le préchargement ; sinon fin de chantier → verser (la doc durable est déjà dans `docs/systeme/buddy-palotins.md`) et archiver ce journal.
-- **En attente de David** : (1) préchargement au survol (`data-sveltekit-preload-data="hover"`, `src/app.html`) : le `load` du layout élève tourne au survol d'un lien et enregistre le passage → « tu m'as manqué » perdu si l'élève ne clique pas. Option (a) couper le préchargement sur les liens vers `/dashboard/student` (recommandée), (b) enregistrer le passage côté client après affichage. (2) Formulation des deux lignes de la page Confidentialité (§ 3.2 et § 7, registre « l'élève »).
-- **Pièges en cours** : `record_student_visit` typée `Returns: string` mais rend NULL au premier passage (géré par `isLongAbsence`, testé).
-- **Worktree / branche** : aucun (retiré après #1588).
+- **État** : terminé. Les deux questions en attente ont été tranchées et livrées par le chantier **palotins-presence** (#1599, #1600) : présence notée sur toute page par le hook (préchargement sans effet), lignes de la page Confidentialité écrites.
+- **Prochaine action** : aucune ici ; voir [palotins-presence-progress.md](palotins-presence-progress.md).
+- **Worktree / branche** : aucun.
 
 ## Décisions de David (2026-10-21)
 

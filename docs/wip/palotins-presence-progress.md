@@ -5,14 +5,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1599 (PR 2 #1600 ouverte, points (a)-(c) faits)._
+_Mis à jour le 2026-10-22, après #1600._
 
-- **État** : PR 1 #1599 mergée, `db:migrate` + `db:types` faits. PR 2 #1600 (`feat/palotins-presence-2`) : revues faites, CI verte. David a validé les 4 points le 2026-10-22.
-- **Prochaine action** : CI verte sur `1d8bc5489` → merger #1600. Points (a)-(c) faits dans `1d8bc5489` : retour périmé effacé au premier passage d'un nouveau jour (`forgetExpiredWelcomeBack`, `lastExpiredWelcomeBackDay`, 6 tests, rouges sans le code), Confidentialité § 7 + `rgpd.md` (AIPD sans cette phrase), écart de la 2e écriture dans `buddy-palotins.md`.
-- **Décisions validées** : mémoire serveur (pas de cookie) ; texte § 3.2 tel quel ; effacement réel au passage suivant (pas de tâche planifiée) ; écart de la 2e écriture accepté (pas de migration).
-- **Après merge** : « Reprendre ici », `docs/wip/verifications-manuelles.md`, pointer `palotins-absence-progress.md` vers ce chantier, `git worktree remove` + `git branch -d` des 2 branches.
-- **Pièges en cours** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté). Ne pas mettre `Claude-Session:` dans les commits.
-- **Worktree / branche** : `../ubumaths-wt-palotins-presence` · `feat/palotins-presence-2`.
+- **État** : chantier **terminé**. #1599 (donnée, `db:migrate` + `db:types` faits) et #1600 (code) mergées ; aucune migration en attente. Pas en prod tant que `deploy:prod` n'est pas lancé. Vérification manuelle notée.
+- **Prochaine action** : aucune. Doc durable déjà dans `docs/systeme/buddy-palotins.md` ; journal gardé dans `docs/wip/` tant que le code y renvoie (9 fichiers : l'archiver = PR qui corrige ces renvois).
+- **Décisions validées** : mémoire serveur (pas de cookie) ; texte § 3.2 tel quel ; retour non fêté effacé au premier passage d'un nouveau jour (pas de tâche planifiée) ; écart de la 2e écriture accepté (pas de migration).
+- **Pièges** : remise à zéro de la Constance toujours dans le `load` (survol = réplique perdue, accepté).
+- **Worktree / branche** : aucun (retirés après #1600).
 
 ## Le problème (2026-10-21)
 
@@ -66,3 +65,5 @@ Le passage n'était noté que par le `load` du layout `/dashboard/student/*` :
   de `welcome_back_on` non bornée (à David) ; code-reviewer : exception du client service = 500 sur
   toutes les pages élève (corrigé, try/catch), requêtes simultanées du premier jour (corrigé :
   promesse mémorisée), retour perdu si la 2e écriture échoue (à David).
+- 2026-10-22 : 4 points validés par David ; retour périmé effacé au passage suivant, Confidentialité § 7,
+  écart noté ; #1600 mergée ; worktree et branches retirés.
