@@ -92,7 +92,7 @@ beforeEach(() => {
 });
 
 describe('PATCH point — renommer et archiver', () => {
-	it('renomme un point neuf : seul le libellé part en base, jamais le code', async () => {
+	it('renomme un point : seul le libellé part en base, jamais le code', async () => {
 		results = [{ data: UPDATED, error: null }];
 		const { status, body } = await respond(call({ name: '  Nouveau libellé  ' }));
 

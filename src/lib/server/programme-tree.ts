@@ -1,11 +1,10 @@
 /**
- * Lecture de l'arbre du programme — génération neuve (ADR 0020).
+ * Lecture de l'arbre du programme (ADR 0020).
  *
- * Lit les points d'un niveau puis, explicitement, les
- * nœuds qu'ils visent et leurs ancêtres (sous-notion → notion → branche). Pas
- * de jointure `!inner` : une ligne masquée y ferait disparaître son parent en
- * silence. Le rangement est confié à `buildProgrammeTree`.
-
+ * Lit les points d'un niveau puis, explicitement, les nœuds qu'ils visent et
+ * leurs ancêtres (sous-notion → notion → branche). Pas de jointure `!inner` :
+ * une ligne masquée y ferait disparaître son parent en silence. Le rangement
+ * est confié à `buildProgrammeTree`.
  */
 
 import type { ClassificationNode } from '$lib/types/database-helpers';

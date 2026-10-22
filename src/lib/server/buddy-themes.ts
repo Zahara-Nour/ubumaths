@@ -6,8 +6,7 @@
  * point que valide la question : `question_template_points` → `curriculum_points`
  * → nœud (sous-notion ou notion) → branche. On retient l'IDENTIFIANT de la
  * branche (stable, contrairement à son nom) ; il est rangé tel quel dans
- * `student_buddies.themes_explored`. Les tags des anciens points (thème →
- * objectif), sans nœud, ne donnent pas de thème.
+ * `student_buddies.themes_explored`.
  *
  * Une question qui valide des points de plusieurs branches en reçoit UNE seule,
  * toujours la même (le plus petit identifiant) : la réponse garde un seul thème,

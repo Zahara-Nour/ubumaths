@@ -336,8 +336,8 @@ export async function reconcileAutoCoverage(
 		}
 	}
 
-	// B3 : même règle que le coché manuel — ni ancien point ni archivé. Une ligne auto déjà
-	// posée sur un point devenu archivé sort donc à l'étape 4 ; un coché manuel reste.
+	// B3 : même règle que le coché manuel (non archivé). Une ligne auto déjà posée sur un
+	// point devenu archivé sort donc ici ; un coché manuel reste.
 	const desired = await keepCheckablePointIds(supabase, [...desiredSet]);
 
 	// 3. existing coverage rows for the entry
