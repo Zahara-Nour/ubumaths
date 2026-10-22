@@ -63,8 +63,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			[
 				'\\frac{6}{8}x',
 				'\\dfrac{3 x}{4}',
-				'\\dfrac{3}{4} x',
-				'\\dfrac{3}{4} x',
+				'\\dfrac{3 x}{4}',
+				'\\dfrac{3 x}{4}',
 				'\\dfrac{3}{4} x',
 				'\\dfrac{3}{4} x'
 			]
@@ -83,8 +83,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			[
 				'\\frac{1}{\\sqrt{2}}',
 				'\\dfrac{\\sqrt{2}}{2}',
-				'\\dfrac{1}{2} \\sqrt{2}',
-				'\\dfrac{1}{2} \\sqrt{2}',
+				'\\dfrac{\\sqrt{2}}{2}',
+				'\\dfrac{\\sqrt{2}}{2}',
 				'\\dfrac{1}{2} \\sqrt{2}',
 				'\\dfrac{\\sqrt{2}}{2}'
 			],
@@ -100,8 +100,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			[
 				'\\sqrt[3]{x}\\sqrt[3]{x}',
 				'\\sqrt[3]{x}^2',
-				'\\sqrt[3]{x^2}',
-				'\\sqrt[3]{x^2}',
+				'\\sqrt[3]{x}^2',
+				'\\sqrt[3]{x}^2',
 				'\\sqrt[3]{x^2}',
 				'\\sqrt[3]{x} \\sqrt[3]{x}'
 			],
@@ -135,8 +135,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			[
 				'(x+1)^2',
 				'\\left( x + 1 \\right)^2',
-				'x^2 + 2 x + 1',
-				'x^2 + 2 x + 1',
+				'\\left( x + 1 \\right)^2',
+				'\\left( x + 1 \\right)^2',
 				'x^2 + 2 x + 1',
 				'\\left( x + 1 \\right)^2'
 			],
@@ -144,19 +144,26 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'(x+1)(x-1)',
 				'x^2 - 1',
 				'x^2 - 1',
-				'x^2 - 1',
+				'\\left( x + 1 \\right) \\left( x - 1 \\right)',
 				'x^2 - 1',
 				'\\left( x + 1 \\right) \\left( x - 1 \\right)'
 			],
 			[
 				'(2x-3)(x+4)',
 				'\\left( 2 x - 3 \\right) \\left( x + 4 \\right)',
-				'2 x^2 + 5 x - 12',
-				'2 x^2 + 5 x - 12',
+				'\\left( 2 x - 3 \\right) \\left( x + 4 \\right)',
+				'\\left( 2 x - 3 \\right) \\left( x + 4 \\right)',
 				'2 x^2 + 5 x - 12',
 				'\\left( 2 x - 3 \\right) \\left( x + 4 \\right)'
 			],
-			['x(x+1)', 'x^2 + x', 'x^2 + x', 'x^2 + x', 'x^2 + x', 'x \\left( x + 1 \\right)']
+			[
+				'x(x+1)',
+				'x^2 + x',
+				'x^2 + x',
+				'x \\left( x + 1 \\right)',
+				'x^2 + x',
+				'x \\left( x + 1 \\right)'
+			]
 		])('%s', (entree, attenduSimplify, auto, reduire, developper, factoriser) => {
 			expect(parSimplify(entree)).toBe(attenduSimplify);
 			expect(parIntention(entree, 'auto')).toBe(auto);
@@ -178,7 +185,7 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			],
 			[
 				'x^2+2x+1',
-				'\\left( x + 1 \\right)^2',
+				'x^2 + 2 x + 1',
 				'x^2 + 2 x + 1',
 				'x^2 + 2 x + 1',
 				'x^2 + 2 x + 1',
@@ -222,13 +229,13 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 
 	describe('Fractions rationnelles', () => {
 		it.each([
-			['\\frac{x^2-1}{x+1}', 'x - 1', 'x - 1', 'x - 1', 'x - 1', 'x - 1'],
-			['\\frac{x^2-y^2}{x-y}', 'x + y', 'x + y', 'x + y', 'x + y', 'x + y'],
+			['\\frac{x^2-1}{x+1}', 'x - 1', 'x - 1', '\\dfrac{x^2 - 1}{x + 1}', 'x - 1', 'x - 1'],
+			['\\frac{x^2-y^2}{x-y}', 'x + y', 'x + y', '\\dfrac{x^2 - y^2}{x - y}', 'x + y', 'x + y'],
 			[
 				'\\frac{x^2-y^2}{x^2+2xy+y^2}',
 				'\\dfrac{x - y}{x + y}',
 				'\\dfrac{x - y}{x + y}',
-				'\\dfrac{x - y}{x + y}',
+				'\\dfrac{x^2 - y^2}{2 x y + x^2 + y^2}',
 				'\\dfrac{x - y}{x + y}',
 				'\\dfrac{x - y}{x + y}'
 			],
@@ -236,8 +243,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			[
 				'\\frac{(x+y)^2}{x+2y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',
-				'\\dfrac{2 x y + x^2 + y^2}{x + 2 y}',
-				'\\dfrac{2 x y + x^2 + y^2}{x + 2 y}',
+				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',
+				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',
 				'\\dfrac{2 x y + x^2 + y^2}{x + 2 y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}'
 			]
@@ -358,8 +365,8 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 			[
 				'-(x+1)',
 				'-\\left( x + 1 \\right)',
-				'-x - 1',
-				'-x - 1',
+				'-\\left( x + 1 \\right)',
+				'-\\left( x + 1 \\right)',
 				'-x - 1',
 				'-\\left( x + 1 \\right)'
 			],

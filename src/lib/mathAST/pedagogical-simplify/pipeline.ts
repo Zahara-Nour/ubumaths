@@ -12,10 +12,14 @@
  *    until fixpoint or `maxIterations`, mapping every fired rule into a
  *    `PedagogicalSimplifyStep` (with `category` from `categorizeRule`).
  *
- * 2. **Phase B — normalize bridge** (only when `useNormalize === true`) :
- *    run `normalize()` on the Phase A result with a `StepRecorder`,
- *    convert each `NormalizationStep` into a `PedagogicalSimplifyStep`,
- *    append.
+ * 2. **Phase B**, by intent :
+ *    - `developper` — normalize bridge : run `normalize()` on the Phase A
+ *      result with a `StepRecorder`, convert each `NormalizationStep` into a
+ *      `PedagogicalSimplifyStep`, append ;
+ *    - `reduire` / `auto` — `tidy`, told in steps, then for `auto` the
+ *      polynomial fractions and « expand only if shorter » (`reduce-steps.ts`,
+ *      chantier simplify-carte § 33 : normalize developed everything) ;
+ *    - `factoriser` — content extraction and the ADR 0024 strategies.
  *
  * Both phases populate `globalBefore` / `globalAfter` with the full
  * expression context at the moment the step fired so the renderer can
@@ -40,6 +44,7 @@ import type { SchoolLevel } from '../common/step-renderer-base';
 import { getPedagogicalSimplifyRuleDescription } from './descriptions-fr';
 import { commonContentFactorRules } from '../pattern/rule-sets/common-factor';
 import { categorizeRule, selectRulesForIntent } from './intent-rules';
+import { expandIfShorter, simplifyPolynomialFractions, tidyAsSteps } from './reduce-steps';
 import {
 	flattenGroupedProducts,
 	runFactoriserStrategies,
@@ -441,6 +446,10 @@ export function generatePedagogicalSimplifySteps(
 			};
 		}
 
+		if (options.intent === 'reduire' || options.intent === 'auto') {
+			return runReduce(phaseA, options, makeStep);
+		}
+
 		if (!useNormalize) {
 			// ⚠️ La mise en facteur du CONTENU — numérique et monôme — s'applique
 			// aux sommes MAXIMALES seulement, et après la phase A.
@@ -522,6 +531,63 @@ export function generatePedagogicalSimplifySteps(
 	} finally {
 		dispose();
 	}
+}
+
+/**
+ * `reduire` et `auto` après la phase A (chantier simplify-carte § 33).
+ *
+ * - `reduire` : `tidy`, qui raconte ses gestes — ni développement ni
+ *   factorisation, `2(x+3)` reste ;
+ * - `auto` : puis les fractions de polynômes simplifiées en montrant la
+ *   factorisation et la condition (Q4), puis le développement s'il est plus
+ *   court, rédigé comme `.développer`. Le résultat n'est jamais factorisé
+ *   (ADR 0007) : `x²+2x+1` reste.
+ */
+function runReduce(
+	phaseA: { result: MathNode; steps: PedagogicalSimplifyStep[] },
+	options: PedagogicalSimplifyOptions,
+	makeStep: StepFactory
+): PedagogicalSimplifyResult {
+	const tidied = tidyAsSteps(phaseA.result, makeStep);
+	const steps = [...phaseA.steps, ...tidied.steps];
+	let result = tidied.result;
+	let summary: PedagogicalSimplifyStep[] | undefined;
+
+	if (options.intent === 'auto') {
+		const develop = (node: MathNode) =>
+			generatePedagogicalSimplifySteps(node, { ...options, intent: 'developper' }).result;
+		const fractions = simplifyPolynomialFractions(
+			result,
+			(node) => generatePedagogicalSimplifySteps(node, { ...options, intent: 'factoriser' }).result,
+			develop,
+			makeStep
+		);
+		steps.push(...fractions.steps);
+		result = fractions.result;
+		// Une fraction simplifiée dans une somme laisse des termes à regrouper :
+		// `(x²−1)/(x+1) + 1` → `x − 1 + 1` → `x`
+		if (fractions.steps.length > 0) {
+			const tidiedAgain = tidyAsSteps(result, makeStep);
+			steps.push(...tidiedAgain.steps);
+			result = tidiedAgain.result;
+		}
+
+		const expanded = expandIfShorter(result, develop);
+		if (expanded !== null) {
+			summary = [...steps, ...expanded.summary];
+			steps.push(...expanded.steps);
+			result = expanded.result;
+		}
+	}
+
+	// Ids renumérotés : les étapes de `.développer` ont leur propre compteur
+	const renumber = (list: readonly PedagogicalSimplifyStep[]) =>
+		list.map((step, index) => ({ ...step, id: index + 1 }));
+	return {
+		result,
+		steps: renumber(steps),
+		...(summary !== undefined && { summary: renumber(summary) })
+	};
 }
 
 /**

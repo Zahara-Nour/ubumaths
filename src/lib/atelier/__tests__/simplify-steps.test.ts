@@ -49,11 +49,16 @@ describe('ce que le moteur ne savait pas faire', () => {
 		expect(simplified!.steps[0].title).toBe('On regroupe les termes semblables');
 	});
 
-	it('la fraction rationnelle se réduit', () => {
+	it('la fraction rationnelle se réduit, factorisation et condition montrées', () => {
 		const simplified = simplifySteps('(x^2-1)/(x+1)');
 
+		// Chantier simplify-carte § 33 (Q4) : la factorisation est une étape,
+		// la condition est dite — avant, une seule ligne « On réduit la fraction »
 		expect(simplified!.answer).toBe('x - 1');
-		expect(simplified!.steps[0].title).toBe('On réduit la fraction');
+		expect(simplified!.steps.map((step) => step.title)).toEqual([
+			'On factorise pour faire apparaître un facteur commun',
+			'On simplifie par le facteur commun, pour x ≠ −1'
+		]);
 	});
 });
 
@@ -163,5 +168,20 @@ describe('`.simplifier` reçoit vraiment les étapes', () => {
 		const result = runInput(session(), '.simplifier 2x+1<7');
 
 		expect(result.kind).toBe('commande');
+	});
+});
+
+// Rien à simplifier (`2(x+3)`, `x²+2x+1` depuis le lot 3 de simplify-carte) :
+// la ligne montrait le bloc du terminal, « Simplified: … Custom: … Hash: 2*V(x)+6 »
+// (vu par David le 2026-10-23)
+describe('rien à simplifier', () => {
+	it.each([
+		['.simplifier 2(x+3)', '2 \\left( x + 3 \\right)'],
+		['.simplifier x^2+2x+1', 'x^2 + 2 x + 1'],
+		['.simplifier x^2-4', 'x^2 - 4']
+	])('%s : l’expression en LaTeX, pas le bloc du terminal', (input, latex) => {
+		const result = stepsOf(input);
+		expect(result.latex).toBe(latex);
+		expect(result.steps).toBeUndefined();
 	});
 });

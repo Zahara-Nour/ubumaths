@@ -32,9 +32,6 @@ export interface SimplifyOptions {
 	/** Enable hyperbolic identity simplification (default: true) */
 	readonly enableHyperbolic?: boolean;
 
-	/** Enable algebraic identity simplification (default: true) */
-	readonly enableAlgebraic?: boolean;
-
 	/** Enable absolute value simplification (default: true) */
 	readonly enableAbs?: boolean;
 

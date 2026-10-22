@@ -2,17 +2,18 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1610 (lot code mort, § 28), l'ordre des lots (§ 29) le sondage du lot 1a (§ 30) et le lot 1b (§ 31-32)._
+_Mis à jour le 2026-10-23 : lot 3 fait (§ 33-34), revue en cours, PR à ouvrir._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom ; **Q6** (§ 25-26) : trois fonctions numériques (valeur sûre `number | null` en rationnels, variante ±∞/échec, `compile` pour les boucles), aucun résultat changé ; bug `sin²` des limites trouvé ; **Q7** (§ 27) : code mort supprimé dans un premier lot à part, classe `Exp` entière comprise.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 12 tranchées sur 12. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
 - **Lot code mort** (§ 28) : **mergé (#1610)** — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
 - **Ordre des lots validé** (§ 29, révisé § 30) : 1b moteur → 3 `réduire`/`auto` → 4 contrat de `tidy` → 5 formes par contexte → 6 valeurs approchées → 7 renommages. Lot 1a sondé (§ 30) : rien pour l'élève (vecteurs exotiques → 1b, QCM = code mort → 1b, attendu mal écrit = voulu).
 - **Lot 1b** (§ 31-32) : **mergé (#1613)** — égalité de l'Atelier, vecteurs / matrices, parité comparés par `equivalenceForms` ; code mort QCM retiré.
-- **Prochaine action** : lot 3 (`réduire` et `auto` cessent de développer, identités dans `réduire` avec étapes) ; l'ouvrir par les tests rouges de `simplify` qui factorise et de `(x+1)²` développé (§ 29) ; nouveau worktree.
+- **Lot 3** (§ 33-34) : fait sur `refactor/simplify-carte-reduire` — `réduire` et `auto` sans `normalize`, fractions Q4, `simplify` sans factorisation ; tous les tests verts.
+- **Prochaine action** : revue `code-reviewer` opus, puis PR, CI, merge ; ensuite lot 4 (contrat de `tidy`, S1-S4, E1-E2).
 - **En attente de David** : rien.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée », à changer avec E2 (§ 15).
-- **Worktree / branche** : aucun (celui du lot 1b est supprimé) ; nouveau worktree au lot 3.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `refactor/simplify-carte-reduire`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -518,3 +519,30 @@ Sondé en local (test jetable) et en prod (MCP lecture seule) :
 - Code mort QCM retiré de `validateAnswer` (50 lignes), aucun test n'en dépendait.
 - Revue `code-reviewer` opus : rien de bloquant. 49 égalités comparées ancien / nouveau : aucun `true` devenu `false`, aucun faux positif (`\sqrt{x^2}=x`, `\ln(x^2)=2\ln x`… restent faux). Effet de bord juste, fixé par un test : `e^{iπ}` accepté pour −1, `e^{i}` refusé comme non réel.
 - **Écart connu laissé (hors périmètre, sur `main` aussi)** : `detectSymmetry` conclut « none, proven » pour `\sqrt[3]{x}`, `x^{1/3}`, `x^{2/3}`, `\ln(x+\sqrt{x^2+1})` (impaires ou paires). Sans appelant en production.
+
+## 33. Lot 3 : `réduire` et `auto` cessent de développer (David, 2026-10-23 : « je valide »)
+
+Branche `refactor/simplify-carte-reduire`, worktree `ubumaths-wt-simplify-carte`.
+
+**Mesuré avant** (sonde jetable, supprimée) : en prod, **aucun** modèle de question n'a de correction générée `simplify` (0 / 1 008, ni `réduire` ni `auto`) ; le seul effet visible est le `.simplifier` de l'Atelier (`auto`). Couper les identités remarquables de `simplify` ne rougit que 2 tests, tous deux sur `x²+2x+1 → (x+1)²` (panel de référence, `segment-length-sans-option`).
+
+**Comportements validés :**
+
+- **`réduire`** = règles d'identités, de puissances et de racines (étapes nommées), puis `tidy` qui raconte (`tidy-*`) à la place de `normalize`. `2(x+3)`, `(x+1)²`, `−(x+2)`, `(x+1)(x−2)+1/(x+1)` restent ; `2(x+1)²+3(x+1)² → 5(x+1)²` ; `(x²−1)/(x+1)` reste (simplifier demande de factoriser).
+- **`auto`** = `réduire`, puis fractions (Q4), puis « développer seulement si plus court » (règle de `simplify` : coût strictement inférieur, ou égal sans plus de termes). Jamais de factorisation dans le résultat : `x²+2x+1` reste sans aller-retour. `(x+1)²−x² → 2x+1`, `x(x+1) → x²+x`.
+- **Q1** : les étapes du développement dans `auto` sont celles de `.développer` (`writeExpandSteps`, « une intention, une rédaction »), détaillées et résumées ; rédaction impossible → on ne développe pas.
+- **Q2** : dans `auto`, une fraction de polynômes se simplifie en montrant la factorisation : `(x²−1)/(x+1) = (x−1)(x+1)/(x+1) = x−1`, pour `x ≠ −1` (condition dans le titre de l'étape). Précision à reporter dans l'ADR 0007.
+- **Q3** : valeurs remarquables (`cos(π/3) → 1/2`) reportées à un lot à part.
+- **`simplify`** ne factorise plus (règles `algebraicSimplifyRules` retirées) ; panel de référence mis à jour.
+- **Hors lot** (lot 4, contrat de `tidy`) : décimaux (S1), `x/x` et `e^{ln x}` sans condition (S3). `développer` inchangé (sa rédaction passe déjà par `explainExpansion`).
+
+## 34. Lot 3 fait (branche `refactor/simplify-carte-reduire`)
+
+- Tests rouges (29, commit `ed4aa8682`) puis correctif (`b7601e400`). Nouveau module `pedagogical-simplify/reduce-steps.ts` : `tidyAsSteps` (étapes `tidy-*`, celles qui ne retirent que des parenthèses de groupement sont tues), `simplifyPolynomialFractions` (Q4, une et plusieurs lettres), `expandIfShorter` (garde : une somme à développer doit exister, sinon `normalize` ferait passer `cos(−x) → cos(x)` sous « On réduit »).
+- Ce que `normalize` faisait en silence et qu'il a fallu rendre en règles nommées : `ln(exp(x))`, `exp(ln(x))`, `exp(a)·exp(b)` (`expFunctionRules`), parité et période trig (`trigNegativeAngleRules`, `trigPeriodicRules`), `|−x|`, `||x||` (`absReduceRules`).
+- Mesuré sur le panel : `auto` rend ce que rend `simplify` sur 46 lignes sur 49 (avant : 38) ; restent 3 écarts de capacité (`√(x²)`, `(eˣ)³`, `xᵃxᵇ`). Écritures changées, voulues : `1/√2 → √2/2` et `(6/8)x → 3x/4` (celles de `tidy`, comme `simplify`).
+- `segment-length-sans-option` : l'empreinte d'avant les longueurs garde sa valeur, l'écart voulu (`simplify x²+2x+1`) est déclaré dans le test.
+- Docs : panel (tables + section des divergences 11 → 3), README mathAST, `pattern-matching.md`, ADR 0007 (précision Q4).
+- Serveur de test : `http://localhost:5177/atelier` (worktree `ubumaths-wt-simplify-carte`).
+- **Revue `code-reviewer` opus** (~330 entrées, aucune étape fausse, aucune exception). Corrigés, test rouge d'abord : (1) `expFunctionRules` limitées à `réduire`/`auto` (dans `factoriser`, `exp-product` détruisait le facteur commun de `exp(x)exp(x)+exp(x)`) ; (2) le reste d'une fraction simplifiée est développé (`fraction-develop` : `(x³+6x²+11x+6)/(x+3) → x²+3x+2`, jamais de forme factorisée produite par `auto`) ; (3) `tidy` raconté après les fractions (`(x²−1)/(x+1)+1 → x`) ; (4) `x−(x−1)` vu comme à développer ; (5) `réduire` ne range plus `1+(x+1)(x−1)` « par degré ». Aussi : condition « y ≠ −1 » d'un facteur à une lettre dans une fraction à plusieurs lettres, conditions dédoublonnées, `factorise` sous `try`, description de `pow-neg-one`, titres `abs-*` sans `|` en tête (ubumark), commentaire de `questions/types.ts`.
+- **Laissés (mineurs, connus)** : `tidy` simplifie `(x+1)²/(x+1)³` et `(−x−1)/(x+1)` sans condition (S3, lot 4) ; facteurs opposés non reconnus (`(x²−1)/(1−x)` reste, juste mais non simplifié) ; `MAX_FRACTIONS = 8` coupe en silence au-delà ; `|−(x−1)|` → `|(x−1)|` (parenthèse en trop).

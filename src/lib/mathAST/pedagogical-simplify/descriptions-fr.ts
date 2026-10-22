@@ -25,6 +25,7 @@
 
 import type { SchoolLevel } from '../common/step-renderer-base';
 import { getRuleDescription as getNormalizeRuleDescription } from '../normal/step-recorder';
+import { TIDY_RULE_DESCRIPTIONS, type TidyRule } from '../tidy';
 import type { MathNode } from '../types';
 import type { Rational } from '../normal/types';
 import { isNegative, isZero } from '../normal/rational';
@@ -100,6 +101,8 @@ const PATTERN_RULE_DESCRIPTIONS: Readonly<Record<string, string>> = {
 	// ---- identités log/exp (rules pattern) ------------------------------------
 	'ln-exp': 'Inverses : ln(eˣ) = x',
 	'exp-ln': 'Inverses : exp(ln(x)) = x',
+	'exp-product': 'exp(a) × exp(b) = exp(a + b)',
+	'pow-neg-one': 'Puissance −1 : a⁻¹ = 1/a',
 	'ln-one': 'ln(1) = 0',
 	'ln-e': 'ln(e) = 1',
 	'ln-pow': 'Propriété du logarithme : ln(aⁿ) = n·ln(a)',
@@ -156,6 +159,10 @@ function getPatternRuleDescription(name: string): string | undefined {
 export function getPedagogicalSimplifyRuleDescription(name: string): string {
 	const pattern = getPatternRuleDescription(name);
 	if (pattern !== undefined) return pattern;
+	// Les gestes de `tidy` (`reduire` et `auto`, chantier simplify-carte § 33)
+	if (name in TIDY_RULE_DESCRIPTIONS) return TIDY_RULE_DESCRIPTIONS[name as TidyRule];
+	if (name === 'fraction-factorise') return 'On factorise pour faire apparaître un facteur commun';
+	if (name === 'fraction-develop') return 'On développe et on réduit';
 	// Falls back to the normalize-side dictionary, which itself returns
 	// `"Règle : <name>"` for truly unknown names.
 	return getNormalizeRuleDescription(name);
@@ -243,6 +250,25 @@ function evidentRootTitle(step: PedagogicalSimplifyStep): string {
 
 type RuleFnMap<F> = Partial<Record<string, F>>;
 
+/** L'étape de `tidy` réduit une fraction (`6/8 → 3/4`, `(2x+4)/2 → x+2`). */
+function reducesFraction(step: PedagogicalSimplifyStep): boolean {
+	const before = step.globalBefore ?? step.before;
+	return before.type === 'division';
+}
+
+/** Le titre d'un geste de `tidy`, « On réduit la fraction » quand c'en est une. */
+function tidyTitle(fallback: string): TitleFn {
+	return (step) => (reducesFraction(step) ? 'On réduit la fraction' : fallback);
+}
+
+/** Le « pourquoi » d'un geste de `tidy`, celui de la fraction quand c'en est une. */
+function tidyExplanation(fallback: string): ExplainFn {
+	return (step) =>
+		reducesFraction(step)
+			? 'On divise le numérateur et le dénominateur par un même nombre.'
+			: fallback;
+}
+
 /**
  * `lycee` is the default level-vocabulary anchor : every other level
  * references it via fallback. Aim for a teacher-correct French sentence
@@ -285,14 +311,19 @@ const LYCEE_TITLES: RuleFnMap<TitleFn> = {
 	'ln-quotient': () => 'ln(a/b) = ln(a) - ln(b)',
 	'ln-pow': () => 'ln(aⁿ) = n·ln(a)',
 	// abs
-	'abs-negation': () => '|-x| = |x|',
-	'abs-product': () => '|a·b| = |a|·|b|',
+	// Jamais `|` en tête : ubumark y lirait un tableau (garde V25)
+	'abs-negation': () => 'On utilise |−x| = |x|',
+	'abs-product': () => 'On utilise |a·b| = |a|·|b|',
 	// puissances
 	'same-base-mul': () => 'aᵐ · aⁿ = aᵐ⁺ⁿ',
 	'pow-of-pow': () => '(aᵐ)ⁿ = aᵐⁿ',
 	// radicaux
 	'sqrt-product': () => '√(a·b) = √a · √b',
 	'sqrt-square': () => '√(a²) = |a|',
+	// tidy-side (`reduire`, `auto`) : les mots des étapes de normalize qu'elles remplacent
+	'tidy-extract-radicals': () => 'On simplifie le radical',
+	'tidy-fold-numbers': tidyTitle('On calcule les nombres'),
+	'tidy-terms': tidyTitle('On met chaque terme au propre'),
 	// normalize-side (frequent)
 	'combine-like-terms': () => 'On regroupe les termes semblables',
 	'simplify-fraction': () => 'On réduit la fraction',
@@ -315,11 +346,13 @@ const COLLEGE_TITLES: RuleFnMap<TitleFn> = {
 	'common-factor-content-add': () => 'On met en facteur ce qui est commun',
 	'common-factor-content-sub': () => 'On met en facteur ce qui est commun',
 	'combine-like-terms': () => 'On regroupe les termes en x',
+	'tidy-collect-like-terms': () => 'On regroupe les termes en x',
 	'simplify-fraction': () => 'On simplifie la fraction'
 };
 
 const PRIMAIRE_TITLES: RuleFnMap<TitleFn> = {
 	'combine-like-terms': () => 'On regroupe les nombres',
+	'tidy-collect-like-terms': () => 'On regroupe les nombres',
 	'simplify-fraction': () => 'On rend la fraction plus simple',
 	'abs-negation': () => 'L’opposé d’un nombre a la même distance à zéro',
 	'additive-identity-left': () => 'Ajouter zéro ne change rien',
@@ -396,6 +429,26 @@ const LYCEE_EXPLANATIONS: RuleFnMap<ExplainFn> = {
 		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
 	'simplify-fraction': () => 'On divise numérateur et dénominateur par leur PGCD.',
 	'radical-simplify': () => 'On extrait du radical les facteurs qui sont des carrés parfaits.',
+	// tidy-side et fractions de `auto` (chantier simplify-carte § 33)
+	'tidy-collect-like-terms': () =>
+		'On additionne (ou soustrait) les coefficients des termes ayant la même partie variable.',
+	'tidy-extract-radicals': () => 'On extrait du radical les facteurs qui sont des carrés parfaits.',
+	'tidy-fold-numbers': tidyExplanation('On effectue les calculs entre nombres.'),
+	'tidy-add-fractions': () =>
+		'Pour additionner des fractions, on les écrit avec le même dénominateur, puis on additionne les numérateurs.',
+	'tidy-simplify-signs': () =>
+		'L’opposé de l’opposé d’un nombre est ce nombre : −(−a) = a, et a + (−b) = a − b.',
+	'tidy-merge-factors': () =>
+		'aᵐ × aⁿ = aᵐ⁺ⁿ : les facteurs de même base se regroupent en additionnant les exposants.',
+	'tidy-terms': tidyExplanation(
+		'Chaque terme s’écrit le plus simplement possible : nombres calculés, signes simplifiés, facteurs regroupés.'
+	),
+	'tidy-sort-terms': () => 'On range les termes par puissances décroissantes de x.',
+	'tidy-number-first': () => 'Dans un produit, le nombre s’écrit devant les lettres : x × 3 = 3x.',
+	'fraction-factorise': () =>
+		'Pour simplifier une fraction, on factorise son numérateur et son dénominateur : un facteur commun aux deux peut alors disparaître.',
+	'fraction-cancel': () =>
+		'Un facteur commun au numérateur et au dénominateur se simplifie, à condition de ne pas être nul : la simplification ne vaut que pour les valeurs qui ne l’annulent pas.',
 	'sqrt-extract-perfect-square': () =>
 		'On extrait du radical les facteurs qui sont des carrés parfaits.',
 	// « développer » rédigé (`expand-steps.ts`) : le titre est dans la description

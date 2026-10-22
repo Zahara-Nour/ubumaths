@@ -121,15 +121,15 @@ describe('pipeline — factoriser intent', () => {
 // =============================================================================
 
 describe('pipeline — reduire intent', () => {
-	it('2x + 3x → 5x via combine-like-terms', () => {
+	it('2x + 3x → 5x via tidy-collect-like-terms', () => {
 		const node = parseLatex('2x + 3x');
 		const { result, steps } = generatePedagogicalSimplifySteps(node, {
 			intent: 'reduire',
 			schoolLevel: 'lycee'
 		});
 		expect(tex(result)).toBe('5x');
-		// combine-like-terms comes from the normalize bridge.
-		expect(steps.map((s) => s.rule)).toContain('combine-like-terms');
+		// `tidy`, qui raconte, a remplacé normalize (chantier simplify-carte § 33).
+		expect(steps.map((s) => s.rule)).toEqual(['tidy-collect-like-terms']);
 	});
 
 	it('6/8 → 3/4 via simplify-fraction', () => {
@@ -457,15 +457,25 @@ describe('pipeline — step descriptions', () => {
 	});
 
 	it('normalize-side rule steps fall through to normal/rule-descriptions-fr', () => {
+		// `developper` est la seule intention qui passe encore par normalize
 		const node = parseLatex('2x + 3x');
 		const { steps } = generatePedagogicalSimplifySteps(node, {
-			intent: 'reduire',
+			intent: 'developper',
 			schoolLevel: 'lycee'
 		});
 		const combine = steps.find((s) => s.rule === 'combine-like-terms');
 		expect(combine).toBeDefined();
 		expect(combine!.description).toBeTruthy();
 		expect(combine!.description).not.toMatch(/^Règle\s*:/i);
+	});
+
+	it('tidy-side rule steps carry the tidy descriptions', () => {
+		const node = parseLatex('2x + 3x');
+		const { steps } = generatePedagogicalSimplifySteps(node, {
+			intent: 'reduire',
+			schoolLevel: 'lycee'
+		});
+		expect(steps.map((s) => s.description)).toEqual(['On regroupe les termes semblables']);
 	});
 
 	it('distribute-binomial-product description mentions distribution', () => {

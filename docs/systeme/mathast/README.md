@@ -125,9 +125,9 @@ syntaxe maison ──── parseCustom ─┤
 
 **`simplify(node, options)`** (`simplify/simplify.ts`) tourne sur le moteur `rewrite`
 (`common/rewriting-engine.ts`), stratégie `cost-fixpoint`. Par itération : `tidy` →
-règles de motif (`absSimplifyRules`, `trigSimplifyRules`, `hypSimplifyRules`,
-`algebraicSimplifyRules`, coupables par `enableAbs`/`enableTrig`/`enableHyperbolic`/
-`enableAlgebraic`) → `tidy`, puis le candidat `tidy(normalize(…))` ne remplace la forme que
+règles de motif (`absSimplifyRules`, `trigSimplifyRules`, `hypSimplifyRules`, coupables par
+`enableAbs`/`enableTrig`/`enableHyperbolic` ; plus d'identités remarquables depuis le
+2026-10-23 : `simplify` ne factorise jamais, ADR 0007) → `tidy`, puis le candidat `tidy(normalize(…))` ne remplace la forme que
 s'il est **strictement moins cher**. C'est la seule place de `normalize` dans `simplify`.
 Mesuré : `simplify((x+1)²)` garde `(x+1)²`, `simplify((x+1)²−x²)` rend `2x+1`.
 
@@ -174,10 +174,14 @@ L'ADR 0007 (acceptée le 2026-09-21) décide **un seul moteur, quatre politiques
 seulement si moins cher, `factoriser` jamais et factoriser. Nom envisagé en dernier :
 `rewrite(node, { toward: … })`.
 
-**État au 2026-10-10 : décidé, pas fait.** Seule l'étape « donner une voix à `tidy` » est
-livrée (#396, #397). Dans le code, `auto` passe toujours par `runNormalizePass`
-(inconditionnel) et inclut les factorisations symboliques. Mesuré :
-`auto` et `reduire` rendent `x²+2x+1` pour `(x+1)²`, là où `simplify` garde `(x+1)²`.
+**État au 2026-10-23 : `reduire` et `auto` faits** (chantier simplify-carte § 33). Ni l'un
+ni l'autre ne passe plus par `normalize` (`reduce-steps.ts`) : `reduire` = règles puis `tidy`
+raconté (`2(x+3)`, `(x+1)²` restent) ; `auto` = `reduire`, puis les fractions de polynômes
+simplifiées en montrant la factorisation et la condition (`(x²−1)/(x+1) = (x−1)(x+1)/(x+1) =
+x−1`, pour `x ≠ −1`), puis le développement **s'il est plus court** (règle de `simplify`),
+rédigé comme `.développer` ; jamais de factorisation dans le résultat. Mesuré : `auto` rend
+ce que rend `simplify` sur tout le panel, sauf 3 écarts de capacité. `developper` passe
+encore par `normalize` pour son résultat (sa rédaction est celle d'`explainExpansion`).
 Le tableau des écarts, pinné par un test : [panel-simplifications.md](panel-simplifications.md).
 Spec d'`auto` (colonne « attendu ») : [tidy-spec.md](tidy-spec.md) §C.
 
@@ -1190,9 +1194,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `integrateDefinite` les recopie dans `error`, que l'atelier montre à l'élève ;
   `integrate.command.ts` dit « Je ne sais pas calculer cette intégrale » et nomme la technique
   tentée en français (`TECHNIQUE_LABELS`).
-- ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : elles arrivent
-  pourtant dans `auto`/`reduire`/`developper` via `runNormalizePass` (ADR 0007 veut les
-  retirer du chemin élève).
+- ⚠️ Les étapes de `normalize` sont du calcul interne, pas une leçon : `auto` et `reduire`
+  ne les montrent plus (2026-10-23) ; seule la trace brute de `developper` en contient
+  encore, et elle n'est montrée nulle part (`explainExpansion` rédige à sa place).
 
 ## Comment étendre
 

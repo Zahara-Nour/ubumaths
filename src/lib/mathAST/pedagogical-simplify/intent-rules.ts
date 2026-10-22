@@ -5,8 +5,9 @@
  *
  *  - `selectRulesForIntent(intent, flags)` — returns the active pattern rules
  *    for a given intent + which capability flags are on, plus a boolean that
- *    tells the pipeline whether to run a normalize pass (combine-like-terms,
- *    fraction reduction, …) after the pattern passes.
+ *    tells the pipeline whether to run a normalize pass after the pattern
+ *    passes (`developper` only : `reduire` and `auto` finish with `tidy`,
+ *    chantier simplify-carte § 33).
  *
  *  - `categorizeRule(name)` — maps both pattern rule names (from
  *    `pattern/rule-sets/*`) and normalize step names (recorded by
@@ -22,19 +23,20 @@
 
 import type { Rule } from '../pattern/types';
 import {
+	absReduceRules,
 	absSimplifyRules,
 	hypSimplifyRules,
+	expFunctionRules,
 	logExpRules,
 	powerRules,
 	sqrtRules,
+	trigNegativeAngleRules,
+	trigPeriodicRules,
 	trigSimplifyRules
 } from '../pattern/rule-sets';
 // Direct import (bypassing the rule-sets barrel) to avoid a Rollup chunk-cycle
 // warning between `rule-sets/index.ts` and `algebraic-identities.ts`.
-import {
-	algebraicFactoringRules,
-	algebraicExpandingRules
-} from '../pattern/rule-sets/algebraic-identities';
+import { algebraicExpandingRules } from '../pattern/rule-sets/algebraic-identities';
 // Import direct lui aussi, pour la même raison de cycle de chunk.
 import { commonFactorRules } from '../pattern/rule-sets/common-factor';
 import { distributeBinomialProduct } from './pedagogical-rules';
@@ -62,23 +64,12 @@ export interface SelectedRules {
 
 	/**
 	 * Whether the pipeline should run a normalize pass after pattern rules.
-	 * `false` for `'factoriser'` (normalize would undo the factoring),
-	 * `true` for `'developper'`, `'reduire'`, `'auto'`.
+	 * `true` for `'developper'` only. `false` for `'factoriser'` (normalize
+	 * would undo the factoring), and for `'reduire'` / `'auto'` : normalize
+	 * develops everything (`2(x+3) → 2x+6`), they finish with `tidy`.
 	 */
 	readonly useNormalize: boolean;
 }
-
-/**
- * Numeric factoring rules — produce e.g. `x²-4 → (x+2)(x-2)`. Used as an
- * exclusion filter inside the `'auto'` branch of `selectRulesForIntent` :
- * the choice between factored and expanded form is pedagogically ambiguous
- * when no explicit intent is declared.
- */
-const NUMERIC_FACTORING_RULE_NAMES: ReadonlySet<string> = new Set([
-	'diff-squares-numeric',
-	'sum-cubes-numeric',
-	'diff-cubes-numeric'
-]);
 
 /**
  * Drop entries whose `name` already appeared earlier in the list (first wins).
@@ -113,10 +104,14 @@ export function dedupeByName(rules: readonly Rule[]): readonly Rule[] {
  *                    `useNormalize: true` (combine-like-terms after expand).
  *
  *  - `reduire`     : identities + powers + sqrt rules. Neither factoring nor
- *                    expansion. `useNormalize: true`.
+ *                    expansion. `useNormalize: false` : the pipeline finishes
+ *                    with `tidy`, told in steps (`reduce-steps.ts`).
  *
- *  - `auto`        : `reduire` ∪ symbolic factoring (no numeric factoring).
- *                    `useNormalize: true`.
+ *  - `auto`        : the same rules as `reduire`, never factoring (ADR 0007 :
+ *                    the symbolic factoring rules made `x²+2x+1` go to
+ *                    `(x+1)²` and back on screen). The pipeline adds the
+ *                    polynomial fractions and « expand only if shorter »
+ *                    (`reduce-steps.ts`). `useNormalize: false`.
  */
 export function selectRulesForIntent(
 	intent: SimplifyIntent,
@@ -150,22 +145,26 @@ export function selectRulesForIntent(
 			]);
 			return { rules, useNormalize: true };
 		}
-		case 'reduire': {
-			const rules = dedupeByName([...identitiesAndUtilities, ...powerRules, ...sqrtRules]);
-			return { rules, useNormalize: true };
-		}
+		case 'reduire':
 		case 'auto': {
-			// `reduire` ∪ symbolic factoring (no numeric factoring — ambiguous).
-			const factoringSymbolic = algebraicFactoringRules.filter(
-				(r) => !NUMERIC_FACTORING_RULE_NAMES.has(r.name)
-			);
+			// Ce que `normalize` faisait en silence : parité et période (`cos(−x) → cos(x)`),
+			// `|−x| = |x|`, `||x|| = |x|`, `ln(exp(x))`, `exp(a)·exp(b)`. Ici seulement :
+			// dans `factoriser`, `exp-product` passerait avant la mise en facteur et
+			// détruirait le facteur commun (`exp(x)exp(x)+exp(x)`, revue du lot 3)
+			const trigReductions = flags.enableTrig
+				? [...trigNegativeAngleRules, ...trigPeriodicRules]
+				: [];
+			const absReductions = flags.enableAbs ? absReduceRules : [];
+			const expReductions = flags.enableLogExp ? expFunctionRules : [];
 			const rules = dedupeByName([
 				...identitiesAndUtilities,
+				...expReductions,
+				...trigReductions,
+				...absReductions,
 				...powerRules,
-				...sqrtRules,
-				...factoringSymbolic
+				...sqrtRules
 			]);
-			return { rules, useNormalize: true };
+			return { rules, useNormalize: false };
 		}
 	}
 }
@@ -311,6 +310,7 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['log-simplify', 'identites-log-exp'],
 	['exp-zero', 'identites-log-exp'],
 	['exp-one', 'identites-log-exp'],
+	['exp-product', 'identites-log-exp'],
 
 	// ---- puissances -----------------------------------------------------------
 	['pow-one', 'puissances'],
@@ -369,6 +369,22 @@ const RULE_CATEGORY_MAP: ReadonlyMap<string, PedagogicalSimplifyCategory> = new 
 	['division-by-one', 'fractions'],
 	['division-same', 'fractions'],
 	['constant-division', 'fractions'],
+
+	// `auto` : fraction de polynômes (chantier simplify-carte § 33, Q4)
+	['fraction-factorise', 'factorisation'],
+	['fraction-cancel', 'fractions'],
+	['fraction-develop', 'distribution'],
+	// tidy-side steps (`reduire` et `auto`, chantier simplify-carte § 33)
+	['tidy-fold-numbers', 'combinaison-termes-semblables'],
+	['tidy-terms', 'combinaison-termes-semblables'],
+	['tidy-collect-like-terms', 'combinaison-termes-semblables'],
+	['tidy-simplify-signs', 'combinaison-termes-semblables'],
+	['tidy-sort-terms', 'combinaison-termes-semblables'],
+	['tidy-number-first', 'combinaison-termes-semblables'],
+	['tidy-merge-factors', 'puissances'],
+	['tidy-extract-radicals', 'radicaux'],
+	['tidy-add-fractions', 'fractions'],
+	['tidy-choose-unit', 'autre'],
 
 	// ---- combinaison-termes-semblables ---------------------------------------
 	// pattern arithmetic rules

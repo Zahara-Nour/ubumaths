@@ -7,7 +7,9 @@
  *
  * Spécification : docs/systeme/mathast/tidy-spec.md §B. Par itération du moteur :
  * 1. preProcess — `tidy` : aplatir, regrouper, ordonner, SANS développer
- * 2. règles de motif (abs + trig + hyp + algébriques, une passe ascendante)
+ * 2. règles de motif (abs + trig + hyp, une passe ascendante). Aucune identité
+ *    remarquable : elles factorisaient quand c'était moins cher (`x²+2x+1 →
+ *    (x+1)²`), et `simplify` ne factorise jamais (ADR 0007, chantier simplify-carte § 33)
  * 3. contrôle de coût intermédiaire (strict `<`)
  * 4. postProcess — `tidy`, puis « développer seulement si moins cher » :
  *    le candidat `tidy(normalizePass(n))` ne remplace la forme mise au propre
@@ -34,7 +36,6 @@ import { getSimplifyRuleDescription } from './descriptions-fr';
 import { absSimplifyRules } from '../pattern/rule-sets/abs';
 import { trigSimplifyRules } from '../pattern/rule-sets/trig-identities';
 import { hypSimplifyRules } from '../pattern/rule-sets/hyperbolic-identities';
-import { algebraicSimplifyRules } from '../pattern/rule-sets/algebraic-identities';
 
 // Normalize
 import { preprocess } from '../normal/rules';
@@ -64,13 +65,11 @@ function buildSimplifyRules(options: {
 	enableAbs?: boolean;
 	enableTrig?: boolean;
 	enableHyperbolic?: boolean;
-	enableAlgebraic?: boolean;
 }): readonly Rule[] {
 	const rules: Rule[] = [];
 	if (options.enableAbs !== false) rules.push(...absSimplifyRules);
 	if (options.enableTrig !== false) rules.push(...trigSimplifyRules);
 	if (options.enableHyperbolic !== false) rules.push(...hypSimplifyRules);
-	if (options.enableAlgebraic !== false) rules.push(...algebraicSimplifyRules);
 	return rules;
 }
 
@@ -224,7 +223,6 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 		maxIterations = 10,
 		enableTrig = true,
 		enableHyperbolic = true,
-		enableAlgebraic = true,
 		enableAbs = true,
 		costFunction = computeCost,
 		signal,
@@ -237,8 +235,7 @@ export function simplify(node: MathNode, options?: SimplifyOptions): SimplifyRes
 	const rules = buildSimplifyRules({
 		enableAbs,
 		enableTrig,
-		enableHyperbolic,
-		enableAlgebraic
+		enableHyperbolic
 	});
 
 	// Le moteur part de la forme mise au propre : la barrière de coût compare

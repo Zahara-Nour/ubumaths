@@ -19,8 +19,8 @@ import { functionParityRules } from './function-parity';
 
 export { arithmeticRules } from './arithmetic';
 export { powerRules } from './powers';
-export { absRules, absSimplifyRules } from './abs';
-export { logExpRules } from './log-exp';
+export { absRules, absSimplifyRules, absReduceRules } from './abs';
+export { logExpRules, expFunctionRules } from './log-exp';
 export { sqrtRules } from './sqrt';
 export { trigRules } from './trig';
 export { functionParityRules } from './function-parity';
@@ -58,11 +58,7 @@ export {
 	hypHigherPowerRules
 } from './hyperbolic-identities';
 
-export {
-	algebraicSimplifyRules,
-	algebraicFactoringRules,
-	algebraicExpandingRules
-} from './algebraic-identities';
+export { algebraicFactoringRules, algebraicExpandingRules } from './algebraic-identities';
 
 // =============================================================================
 // Combined Rule Sets

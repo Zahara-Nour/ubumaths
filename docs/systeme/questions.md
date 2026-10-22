@@ -359,6 +359,11 @@ décimal écrit dans l'expression donne des décimaux, sinon des fractions. Sans
 rien à développer, somme sous une fonction, une racine, dans un exposant ou une fraction) : repli
 silencieux sur le mode A, jamais sur la trace. Tests : `correction-developper.test.ts`.
 
+`simplify` avec `intent: 'reduire'` ou `'auto'` ne passe plus par `normalize` (chantier
+simplify-carte § 33, 2026-10-23) : `reduire` ne développe ni ne factorise (`2(x+3)` reste) ; `auto`
+simplifie les fractions de polynômes en montrant la factorisation et la condition, et ne développe
+que si c'est plus court. Aucun modèle en prod ne les emploie (mesuré le 2026-10-23).
+
 Concise / détaillée (ADR 0017) : `splitCorrectionDetail` retire ou garde `\detail{…}`, les blocs
 `> [!méthode]`, `> [!rappel]`, `> [!attention]` et les spans `{.rappel}`… ; un seul interrupteur
 (`correction-view-preference.ts`). Rédaction : [corrections-redaction](../pratiques/corrections-redaction.md).

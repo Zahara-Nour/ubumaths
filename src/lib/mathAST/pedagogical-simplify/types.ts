@@ -71,10 +71,12 @@ export type PedagogicalSimplifyCategory = (typeof ALL_PEDAGOGICAL_SIMPLIFY_CATEG
  *
  * - `factoriser`  : push toward factored form (no expansion, no normalize).
  * - `developper`  : push toward expanded form (then combine-like-terms).
- * - `reduire`     : tidy up (combine-like-terms, fractions, radicals,
- *                   unambiguous identities) — no factoring/expansion.
- * - `auto`        : `reduire` + unambiguous factoring/expansion only
- *                   (e.g. `√8 → 2√2`, `sin²+cos² → 1`, but `x²-4` stays).
+ * - `reduire`     : tidy up (like terms, fractions, radicals, identities) —
+ *                   no factoring/expansion : `2(x+3)` stays.
+ * - `auto`        : `reduire`, polynomial fractions simplified (the
+ *                   factoring is shown, never kept), and expansion only if
+ *                   shorter (`(x+1)²−x² → 2x+1`, but `(x+1)²` and `x²-4`
+ *                   stay). Chantier simplify-carte § 33.
  */
 export type SimplifyIntent = 'factoriser' | 'developper' | 'reduire' | 'auto';
 
@@ -198,6 +200,13 @@ export interface PedagogicalSimplifyResult {
 
 	/** Top-level steps; `subSteps` (V2) live inside each entry. */
 	readonly steps: readonly PedagogicalSimplifyStep[];
+
+	/**
+	 * La rédaction résumée, quand elle diffère de `steps` : `auto` qui
+	 * développe reprend les deux rédactions de `.développer` (chaque ligne à ×
+	 * fondue dans le calcul qui la suit). Absente, `steps` sert aux deux.
+	 */
+	readonly summary?: readonly PedagogicalSimplifyStep[];
 
 	/**
 	 * Set to `true` when the pipeline was interrupted before reaching its

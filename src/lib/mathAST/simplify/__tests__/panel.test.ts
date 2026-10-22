@@ -161,3 +161,15 @@ describe('panel — invariants de simplify', () => {
 		expect(s('(x+1)^3')).toBe('(x+1)^3');
 	});
 });
+
+// ADR 0007 : « `auto` ne factorise jamais » — `simplify` est sa cible (tidy-spec §C).
+// Ses règles d'identités remarquables factorisaient quand c'était moins cher
+// (`x²+2x+1 → (x+1)²`, 9 contre 13) : chantier simplify-carte, lot 3 (§ 33).
+describe('panel — simplify ne factorise jamais', () => {
+	it.each([['x^2+2x+1'], ['x^2-2x+1'], ['x^3+3x^2+3x+1'], ['x^2-4'], ['x^3+1'], ['a^2-b^2']])(
+		'%s reste développé',
+		(input) => {
+			expect(s(input)).toBe(toCustom(parseCustom(input)));
+		}
+	);
+});
