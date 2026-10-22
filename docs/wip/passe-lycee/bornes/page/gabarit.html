@@ -1,6 +1,5 @@
 <title>Bornes du lycée</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css" />
 <link
 	rel="stylesheet"
 	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap"
@@ -449,12 +448,13 @@
 		);
 	}
 
-	// Formules entre $…$ (libellés du référentiel) rendues par KaTeX ; texte brut si le CDN manque.
+	// Formules entre $…$ rendues par KaTeX en MathML natif (le CSS de KaTeX est bloqué par la page) ; texte brut si le CDN manque.
 	function rendreMaths() {
 		if (typeof renderMathInElement !== 'function') return;
 		renderMathInElement(document.getElementById('libelles'), {
 			delimiters: [{ left: '$', right: '$', display: false }],
-			throwOnError: false
+			throwOnError: false,
+			output: 'mathml'
 		});
 	}
 
