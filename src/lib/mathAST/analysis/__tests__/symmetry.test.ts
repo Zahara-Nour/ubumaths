@@ -271,3 +271,19 @@ describe('domain symmetry', () => {
 		expect(result.symmetry).toBe('even');
 	});
 });
+
+// simplify-carte § 31 : f(−x) comparé à ±f(x) par `areEquivalent` (ADR 0006) ;
+// `normalize` seul ne réduit pas e^{−(−x)} et concluait « ni paire ni impaire »
+describe('detectSymmetry — exponentielles en ±x', () => {
+	it.each(['e^x+e^{-x}', '2^x+2^{-x}', '\\frac{e^x+e^{-x}}{2}'])('%s est paire', (f) => {
+		expect(detectSymmetry(parseLatex(f)).symmetry).toBe('even');
+	});
+
+	it.each(['e^x-e^{-x}', '2^x-2^{-x}'])('%s est impaire', (f) => {
+		expect(detectSymmetry(parseLatex(f)).symmetry).toBe('odd');
+	});
+
+	it('e^x n’a pas de parité', () => {
+		expect(detectSymmetry(parseLatex('e^x')).symmetry).toBe('none');
+	});
+});

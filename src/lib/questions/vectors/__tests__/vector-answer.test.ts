@@ -170,3 +170,19 @@ describe('attendue du modèle', () => {
 		expect(expectedVectorLatex(')(')).toBe(')(');
 	});
 });
+
+// simplify-carte § 31 : comparer passe par `areEquivalent` (ADR 0006), pas par
+// `normalize` seul, qui ignore les identités lourdes
+describe('coordonnées égales par une identité', () => {
+	it.each([
+		['(\\sin^2(2)+\\cos^2(2);0)', '(1;0)'],
+		['(\\tan(1);1)', '(\\frac{\\sin(1)}{\\cos(1)};1)'],
+		['(2^{\\pi+1};0)', '(2\\cdot2^{\\pi};0)']
+	])('%s vaut %s', (answer, expected) => {
+		expect(judgeVectorAnswer(answer, expected).status).toBe('correct');
+	});
+
+	it('une identité fausse reste fausse', () => {
+		expect(judgeVectorAnswer('(\\sin^2(2)+\\cos^2(2);0)', '(2;0)').status).toBe('incorrect');
+	});
+});
