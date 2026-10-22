@@ -24,9 +24,10 @@ const CONSTRUCTION_ID = '22222222-2222-4222-8222-222222222222';
 
 /**
  * Faux `locals` : session et profil du rôle donné ; toute requête sur `constructions`
- * est notée et renvoie une construction de l'utilisateur.
+ * est notée et renvoie une construction de l'utilisateur ; `writeRefused` : la liste
+ * rendue est vide, comme après un refus RLS silencieux.
  */
-function fakeLocals(role: 'student' | 'teacher' | 'admin') {
+function fakeLocals(role: 'student' | 'teacher' | 'admin', { writeRefused = false } = {}) {
 	const tablesTouched: string[] = [];
 	const row = {
 		id: CONSTRUCTION_ID,
@@ -37,7 +38,7 @@ function fakeLocals(role: 'student' | 'teacher' | 'admin') {
 		is_public: false
 	};
 	// Requête awaitable (une promesse) qui renvoie elle-même à chaque maillon.
-	const chain = Object.assign(Promise.resolve({ data: [row], error: null }), {
+	const chain = Object.assign(Promise.resolve({ data: writeRefused ? [] : [row], error: null }), {
 		single: async () => ({ data: row, error: null }),
 		maybeSingle: async () => ({ data: row, error: null })
 	});
@@ -122,8 +123,16 @@ describe('API constructions : un élève ne crée ni ne modifie', () => {
 		const status = await statusOf(() =>
 			DELETE({ locals, params: { id: CONSTRUCTION_ID } } as never)
 		);
-		expect(status).not.toBe(403);
+		expect(status).toBe(200);
 		expect(tablesTouched).toContain('constructions');
+	});
+
+	it('DELETE refusé en silence par la base (zéro ligne) → 404', async () => {
+		const { locals } = fakeLocals('teacher', { writeRefused: true });
+		const status = await statusOf(() =>
+			DELETE({ locals, params: { id: CONSTRUCTION_ID } } as never)
+		);
+		expect(status).toBe(404);
 	});
 
 	it.each(['teacher', 'admin'] as const)('POST par %s passe la garde', async (role) => {
@@ -131,7 +140,7 @@ describe('API constructions : un élève ne crée ni ne modifie', () => {
 		const status = await statusOf(() =>
 			POST({ locals, request: jsonRequest(NEW_CONSTRUCTION) } as never)
 		);
-		expect(status).not.toBe(403);
+		expect(status).toBe(201);
 		expect(tablesTouched).toContain('constructions');
 	});
 
@@ -144,7 +153,7 @@ describe('API constructions : un élève ne crée ni ne modifie', () => {
 				request: jsonRequest({ is_public: true })
 			} as never)
 		);
-		expect(status).not.toBe(403);
+		expect(status).toBe(200);
 		expect(tablesTouched).toContain('constructions');
 	});
 });

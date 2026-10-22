@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-22, avant la première PR._
 
 - **État** : lot sécurité codé (phase 0 validée par David le 2026-10-22) : migration `20261022200000`, API, pages, tests rouges prouvés puis verts. Migration appliquée sur la base **locale** seulement.
-- **Prochaine action** : PR → revues `code-reviewer` + `security-auditor` → CI verte → merge → `db:migrate` (4 conditions) depuis `main`.
+- **Prochaine action** : PR #1615 ouverte, revues faites (`security-auditor` : aucun bloquant ; `code-reviewer` : mineurs corrigés) → CI verte → merge → `db:migrate` depuis `main` (4 conditions réunies).
 - **En attente de David** : rien.
 - **Pièges en cours** : un client Supabase tourne dans le navigateur → la règle doit être tenue en base (RLS), pas seulement par l'API.
 - **Worktree / branche** : `../ubumaths-wt-constructions` · `fix/constructions-securite`.
@@ -45,3 +45,4 @@ Migration : **additive au sens du risque** (resserre deux policies, aucune donn�
 - Migration `20261022200000_constructions_ecriture_prof_admin.sql` : `INSERT` et `UPDATE` exigent `is_teacher_or_admin()`. Test `tests/integration/constructions-ecriture-reservee.test.ts` : 3 rouges sans la migration (création élève ×2, modification élève), 7/7 verts avec.
 - API : `POST` et `PUT` → `requireRoles(CONSTRUCTION_AUTHOR_ROLES)` (`src/lib/server/constructions-access.ts`) ; `DELETE` avec `.select()` (zéro ligne → 404).
 - Pages : `/constructions/new` et `/constructions/[id]/edit` → 403 pour un élève ; boutons « nouvelle », « importer XML », « modifier » masqués (`canAuthor`). Test `src/routes/api/constructions/__tests__/ecriture-reservee.test.ts` : 6 rouges sans le correctif, 10/10 verts avec.
+- Revues : `security-auditor` aucun finding bloquant ; `code-reviewer` → PUT refusé par la RLS = 404, assertions 200/201 strictes, DELETE à zéro ligne testé (11/11).

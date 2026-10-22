@@ -94,7 +94,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 /**
  * PUT /api/constructions/[id]
  * Update construction
- * Only the owner can update, prof ou admin (la RLS tient la même règle)
+ * Only the owner can update, and only if teacher or admin (RLS enforces the same rule)
  */
 export const PUT: RequestHandler = async ({ locals, params, request }) => {
 	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
@@ -156,6 +156,10 @@ export const PUT: RequestHandler = async ({ locals, params, request }) => {
 		.select()
 		.single();
 
+	// Un refus RLS rend zéro ligne : `.single()` répond PGRST116
+	if (updateError?.code === 'PGRST116') {
+		throw error(404, 'Construction introuvable');
+	}
 	if (updateError) {
 		logger.error('Error updating construction:', updateError);
 		throw error(500, 'Impossible de modifier la construction');
