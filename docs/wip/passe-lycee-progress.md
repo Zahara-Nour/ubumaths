@@ -6,18 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après #1608 (étape a mergée et migrée en prod)._
+_Mis à jour le 2026-10-22, étape b lancée._
 
-- **État** : étape a FAITE. Migration `20261022180000_passe_points_lycee` en prod (empreinte identique au local :
-  2 530 points, 1 160 références) : 1 105 → 1 507 points actifs au lycée. Générateur
-  `passe-lycee/generer-migration.py` (fixture `tests/integration/fixtures/passe-lycee.json`).
-- **Prochaine action** : étape b (bornes par point) ou c (relevé des modèles, répartition des 167 tags des points
-  coupés) — à choisir avec David.
-- **En attente de David** : le choix de l'étape suivante.
-- **Pièges en cours** : 1SPE-244 gardé sur la notion « Second degré » (modèle f8ccc8b6 tagué dessus) : à re-ranger
-  sur « racines » à l'étape c ; `undoLaterMigrations` (tests) à compléter pour toute migration de données
-  future qui s'appuie sur une ancienne.
-- **Worktree / branche** : aucun (worktree supprimé après #1608) ; prochain chantier : nouveau worktree.
+- **État** : étape b (bornes par point) en cours, worktree `ubumaths-wt-passe-lycee`, branche `feat/passe-lycee-bornes`.
+  Méthode du collège (`arbre-notions/bornes/`) : `passe-lycee/bornes/<programme>.{md,json}` + questions. Export des
+  1 507 points actifs : `bornes/points-lycee.csv`. 4 agents Opus (2de + 1re ES ; 1re spé + Tle spé + Tle expertes ;
+  techno ; Tle compl.), sources = BO (eduscol refuse l'accès automatique, 403).
+- **Prochaine action** : fusionner les sorties des agents, page à cocher des incertitudes.
+- **En attente de David** : documents d'accompagnement du lycée (nouveaux programmes, BO n° 14 du 2026-04-02)
+  s'il en trouve sur eduscol → `docs/ref/programmes/Accompagnement/lycee/`, passe complémentaire.
+- **Pièges en cours** : 1SPE-244 à re-ranger sur « racines » à l'étape c ; `undoLaterMigrations` (tests) à
+  compléter pour toute migration de données future qui s'appuie sur une ancienne.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes`.
 
 ## Les 5 étapes
 
@@ -68,3 +68,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   bloquant ; corrigé : verrous avant les gardes (migration et rollback), tags de modèles refusés sur un point à
   archiver, rollback refusé si un libellé a changé, nœuds d'avant vérifiés par le test. Question d'accès tranchée
   par David : personne ne gagne d'accès. Empreinte prod = local après migration.
+- **2026-10-22 — Étape b lancée (David : « je te suis »).** Sources : BO seul pour l'instant. Eduscol renvoie 403
+  aux outils ; les sites académiques (Amiens, Paris) ne listent que les programmes du BO n° 14 du 2026-04-02
+  (2de et 1re à la rentrée 2026, terminales à la rentrée 2027 ; maths expertes : texte de 2019). Aucune ressource
+  d'accompagnement du lycée trouvée pour ces programmes. Mêmes fichiers et même grille qu'au collège (aspect, force
+  BO / accompagnement / déduite / décision, source paginée), aspect `fonctions` ajouté.
