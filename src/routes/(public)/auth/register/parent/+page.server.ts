@@ -3,7 +3,7 @@
  * ==========================================
  *
  * Le parent inscrit un enfant sans adresse : code de classe, prénom de l'enfant, mot de
- * passe de l'enfant, adresse du parent, CGU (journal docs/wip/inscription-parent-progress.md).
+ * passe de l'enfant, adresse du parent, CGU (docs/systeme/auth.md, « Inscription par le parent »).
  *
  * DÉROULÉ :
  * 1. Validation (Zod), limites de débit par IP et par adresse du parent (5 / 24 h).
