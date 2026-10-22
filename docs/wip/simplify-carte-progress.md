@@ -10,7 +10,7 @@ _Mis à jour le 2026-10-23, après #1617 (lot 3)._
 - **Prochaine action** : lot 4, nouveau worktree ; l'ouvrir par les tests rouges de `tidy` qui simplifie `x/x` (S3) et des décimaux (S1, vérifier le mode décimal et les tests qui assertent `0,5+0,25 → 3/4`).
 - **En attente de David** : rien (vérification manuelle de #1617 notée dans `verifications-manuelles.md`).
 - **Pièges en cours** : mineurs connus du lot 3 (§ 34 : `(x+1)²/(x+1)³` simplifié sans condition par `tidy`, facteurs opposés non reconnus, `MAX_FRACTIONS`, `|(x−1)|`) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée » (E2) ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte` gardé tant que le serveur de test de David y tourne (5177) ; à supprimer ensuite.
+- **Worktree / branche** : aucun (celui du lot 3 est supprimé) ; nouveau worktree au lot 4.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
