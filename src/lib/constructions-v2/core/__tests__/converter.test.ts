@@ -179,6 +179,22 @@ describe('converter — masquer / montrer un point', () => {
 	});
 });
 
+describe('converter — masquer un point jamais créé', () => {
+	it('ignore l’action avec un avertissement, sans casser le script', async () => {
+		const xml = wrap(
+			'<action objet="point" mouvement="creer" id="1" abscisse="400" ordonnee="300" />' +
+				'<action objet="point" mouvement="masquer" id="99" />'
+		);
+		const result = await convertXmlToDsl(xml);
+		expect(result.dsl).not.toContain('masque(');
+		expect(result.warnings.some((w) => w.includes('99'))).toBe(true);
+		const exec = new ConstructionExecutor();
+		exec.load(result.dsl ?? '');
+		exec.executeAll();
+		expect(exec.loadError).toBeNull();
+	});
+});
+
 describe('converter — instruments', () => {
 	it('converts regle montrer/masquer', async () => {
 		const xml = wrap(

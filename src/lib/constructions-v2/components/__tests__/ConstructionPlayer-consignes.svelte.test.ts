@@ -100,4 +100,15 @@ describe('ConstructionPlayer — consignes des sous-étapes', () => {
 		await expect.poll(() => authorInstruction(container)).toBe('Trace la médiatrice de [AB]');
 		expect(subStepInstruction(container)).toBeNull();
 	});
+
+	it('garde la dernière consigne quand la construction finit sur une sous-étape', async () => {
+		// Revue de code : le pas de fin de lecture (visibilité finale) vidait la sous-étape
+		const script = SCRIPT.split('\n').slice(0, 4).join('\n');
+		const { container } = await render(ConstructionPlayer, { script, width: 400, height: 300 });
+		// @instruction, A, B, puis les 6 sous-étapes de la médiatrice
+		await next(container, 9);
+		await expect
+			.poll(() => subStepInstruction(container))
+			.toBe('Règle sur les 2 points : on trace la médiatrice');
+	});
 });

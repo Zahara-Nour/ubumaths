@@ -48,7 +48,7 @@ Timeline (requestAnimationFrame) ─onStepChange(i)─▶ ConstructionPlayer
 | Sous-étape            | `core/executor.ts:339` `applySubStepToAnimationState()`                                                                                                                                          | Révèle les éléments à animer, place l'instrument principal (`instrumentTarget`) et le secondaire.                                                                                                                                                                                               |
 | Visibilité finale     | `core/executor.ts:308-317`, `:322` ; `core/choreographies/visibility.ts:51`                                                                                                                      | La dernière sous-étape programme `applyFinalVisibility`, appliquée **au début du pas suivant** (ou par un `step()` de plus en fin de lecture).                                                                                                                                                  |
 | Horloge               | `core/timeline.svelte.ts:50` `Timeline`                                                                                                                                                          | JS simple, **sans `$state`** (`:4`) : `load(durées)`, `play`, `pause`, `stepForward`, `playOneStep`, `stepBackward`, `seekToStep`, `scrubByProgress`, vitesse 0,25 à 4 (× ou ÷ 1,5).                                                                                                            |
-| Lecteur               | `components/ConstructionPlayer.svelte` : exécuteur `:112`, `handleStepChange` `:148`, `handleTimelineUpdate` `:190`, `handleScrub` `:231`, `loadScript` `:257`, `$effect` de rechargement `:296` | À chaque changement de pas : `executor.reset()` puis `step()` × (i + 1), copie de l'état d'animation dans des `$state`. Arrivée en fin de lecture → un `step()` de plus pour vider la visibilité en attente. Props `seekToEnd`, `autoPlay`, `interactive`.                                      |
+| Lecteur               | `components/ConstructionPlayer.svelte` : exécuteur `:112`, `handleStepChange` `:160`, `handleTimelineUpdate` `:202`, `handleScrub` `:242`, `loadScript` `:267`, `$effect` de rechargement `:306` | À chaque changement de pas : `executor.reset()` puis `step()` × (i + 1), copie de l'état d'animation dans des `$state`. Arrivée en fin de lecture → un `step()` de plus pour vider la visibilité en attente. Props `seekToEnd`, `autoPlay`, `interactive`.                                      |
 | Toile                 | `components/ConstructionCanvas.svelte` : `hiddenElementIds` `:79`, `GeometryCanvas` `:313`, tracés partiels `:324`, points `:379`, droites `:505`, instruments `:569`                            | Les éléments en cours d'animation sont masqués dans `GeometryCanvas` et redessinés partiellement au-dessus (`core/render-helpers.ts`).                                                                                                                                                          |
 | Éditeur               | `components/ScriptEditor.svelte`                                                                                                                                                                 | CodeMirror 6 chargé à la demande (repli `textarea`), validation `parseDsl` après 300 ms (`:97`), aperçu `ConstructionPlayer` placé à la fin.                                                                                                                                                    |
 
@@ -77,7 +77,7 @@ Chaque directive occupe **une entrée du curseur** (0 ms sauf `@pause`).
 | Directive                                    | Effet                                                                                                                                                     |
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@instrument("regle", x=…, y=…, rotation=…)` | Montre l'instrument et le place (unités math, rotation en degrés). Noms : `regle`, `compas`, `rapporteur`, `equerre`, `crayon` (`executor.ts:79-85`).     |
-| `@instruction("texte")`                      | Consigne affichée sous la toile (`ConstructionPlayer.svelte:359-371`) jusqu'à la suivante. La consigne de la sous-étape en cours s'affiche dessous (§ 4). |
+| `@instruction("texte")`                      | Consigne affichée sous la toile (`ConstructionPlayer.svelte:368-380`) jusqu'à la suivante. La consigne de la sous-étape en cours s'affiche dessous (§ 4). |
 | `@vitesse(f)`                                | Multiplie les vitesses par `f > 0` à partir de cette ligne (lue à la pré-simulation seulement, `executor.ts:1005-1009`).                                  |
 | `@pause(ms)`                                 | Entrée vide de `ms` millisecondes (300 par défaut).                                                                                                       |
 | `@cacher` / `@cacher("compas")`              | Cache tous les instruments / un instrument.                                                                                                               |
@@ -128,7 +128,7 @@ Sous-étapes (`SubStep`, `types.ts:73`), abrégées : **CM** `compass-measure` (
 tracé), **CD** `compass-draw`, **RT** `ruler-trace`, **PF** `point-fade-in`, **LF** `line-fade-in`.
 Chaque sous-étape peut porter une consigne (`SubStep.instruction`) : le lecteur l'affiche sous la
 consigne `@instruction` de l'auteur, précédée de « ↳ », le temps de la sous-étape
-(`ConstructionPlayer.svelte:144`, `:365-368`).
+(`ConstructionPlayer.svelte:144`, `:374-377`).
 Les trois visibilités et les modificateurs valent pour **toutes** les voies (passe commune).
 Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« int. ») et
 `transporte-choreography.test.ts`.
@@ -232,15 +232,16 @@ prof et admin (décision de David du 2026-10-22). La base tient la même règle 
 ## 7. Convertisseur XML InstrumenPoche → DSL
 
 `converter.ts:105` `convertXmlToDsl(xml)` (DOMParser au navigateur, `xml2js` côté Node). Gère
-points (création, nom, translation ; « masquer » / « montrer » → builtins `masque(A)` / `montre(A)`), crayon (segments), compas (écart, tracé d'arcs), règle,
+points (création, nom, translation ; « masquer » / « montrer » → builtins `masque(A)` / `montre(A)`, ignoré avec un avertissement pour un point
+jamais créé), crayon (segments), compas (écart, tracé d'arcs), règle,
 équerre, texte → `@instruction`, tempo → `@pause` (≥ 200 ms, pas deux de suite), angle droit.
 Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/retourner/rotation`
 (`:403`), marque de longueur (`:452`), marque de segment (`:479`), objet inconnu (`:492`).
 
 ## 8. Tests
 
-`pnpm test:server src/lib/constructions-v2/` le 2026-10-23 : **10 fichiers, 189 réussis,
-21 ignorés (210)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
+`pnpm test:server src/lib/constructions-v2/` le 2026-10-23 : **10 fichiers, 190 réussis,
+21 ignorés (211)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
 `converter.test.ts` (`:274`, `:330`, `:369`), faute du dossier `extern/instrumenpoche-main`.
 
 | Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                  |
@@ -253,7 +254,7 @@ Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/reto
 | `core/__tests__/timeline.test.ts`                   | 18      | navigation, défilement, vitesse, rappels, formatage                                                                                                     |
 | `core/__tests__/animator.test.ts`                   | 23      | `partialSegment`, `partialCircle`, `partialArc`, assouplissements                                                                                       |
 | `core/__tests__/render-helpers.test.ts`             | 15      | tracés SVG partiels, pointe du crayon                                                                                                                   |
-| `core/__tests__/converter.test.ts`                  | 34      | conversion XML → DSL, point masqué / montré (dont 21 sur fixtures, ignorés)                                                                             |
+| `core/__tests__/converter.test.ts`                  | 35      | conversion XML → DSL, point masqué / montré (dont 21 sur fixtures, ignorés)                                                                             |
 | `instruments/__tests__/positioning.test.ts`         | 8       | `rulerPosition`, `compassPosition`, `applyPosition`                                                                                                     |
 
 Ailleurs : `geometry-core/dsl/__tests__/directives.test.ts` (21), `parser-decorators.test.ts` (22),
@@ -261,7 +262,7 @@ Ailleurs : `geometry-core/dsl/__tests__/directives.test.ts` (21), `parser-decora
 (instruments en traits noirs, 2) ; `routes/(public)/construction-demo/__tests__/page.server.test.ts`
 (1) ; `tests/integration/lectures-ouvertes-fermees.test.ts` (lecture des constructions publiques).
 Composant : `components/__tests__/ConstructionPlayer-consignes.svelte.test.ts` (consignes de
-l'auteur et des sous-étapes, 4, `pnpm test:client`). **Aucun** test de composant pour
+l'auteur et des sous-étapes, 5, `pnpm test:client`). **Aucun** test de composant pour
 `ConstructionCanvas` ni `ScriptEditor`.
 
 ## 9. Écarts et reste à faire
@@ -282,8 +283,8 @@ Faits relevés dans le code le 2026-10-22.
 
 | Point                                                                                                                                                                                                                                                                                                                   | Où                                                                  |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
-| La visibilité finale d'une instruction chorégraphiée s'applique au pas suivant ; le lecteur ne la force qu'en fin de lecture                                                                                                                                                                                            | `executor.ts:234`, `:308-317` ; `ConstructionPlayer.svelte:190-204` |
-| Chaque changement de pas rejoue tout depuis le début, et `reset()` refait la pré-simulation entière : coût quadratique sur un long script                                                                                                                                                                               | `ConstructionPlayer.svelte:148-153` ; `executor.ts:566`             |
+| La visibilité finale d'une instruction chorégraphiée s'applique au pas suivant ; le lecteur ne la force qu'en fin de lecture                                                                                                                                                                                            | `executor.ts:234`, `:308-317` ; `ConstructionPlayer.svelte:202-215` |
+| Chaque changement de pas rejoue tout depuis le début, et `reset()` refait la pré-simulation entière : coût quadratique sur un long script                                                                                                                                                                               | `ConstructionPlayer.svelte:160-165` ; `executor.ts:566`             |
 | `PPU = 40` codé deux fois dans l'exécuteur, en double de `INITIAL_PPU`                                                                                                                                                                                                                                                  | `executor.ts:1193`, `:1312` ; `ConstructionCanvas.svelte:60`        |
 | Le genre `compass-measure` sert aussi de « déplacement sans tracé » de l'équerre et de la règle                                                                                                                                                                                                                         | `perpendiculaire.ts:973-1245`, `parallele.ts:402-776`               |
 | 3 constructions en prod (« Ajouter 19 », « Soustraire 99 », « Axes de symétrie… carré ») contiennent des `@cacher("T_3")`, `@cacher("arc_9")`… sans effet, écrits par l'ancien convertisseur : ce sont des identifiants IEP sans nom dans le script, aucune réécriture automatique possible (ré-import depuis leur XML) | table `constructions` (mesure du 2026-10-23)                        |

@@ -145,6 +145,18 @@
 		figureVersion++;
 	}
 
+	/**
+	 * Pas de fin de lecture : applique la visibilité finale laissée en attente
+	 * par la dernière sous-étape chorégraphiée. Ce pas vide `currentSubStep` :
+	 * la consigne de la dernière sous-étape jouée reste affichée.
+	 */
+	function drainFinalVisibility() {
+		const lastSubStepInstruction = currentSubStepInstruction;
+		executor.step();
+		syncState();
+		currentSubStepInstruction = lastSubStepInstruction;
+	}
+
 	function handleStepChange(stepIndex: number) {
 		try {
 			executor.reset();
@@ -198,8 +210,7 @@
 		const justReachedEnd = tl.progress < 1 && state.progress >= 1 && state.stepCount > 0;
 		tl = state;
 		if (justReachedEnd) {
-			executor.step();
-			syncState();
+			drainFinalVisibility();
 		}
 	}
 
@@ -233,8 +244,7 @@
 		// When scrubbing to the very end, drain any pending visibility
 		// (final reveal of the principal line for chorégraphié statements).
 		if (progress >= 1) {
-			executor.step();
-			syncState();
+			drainFinalVisibility();
 		}
 	}
 
@@ -303,8 +313,7 @@
 					executor.hideAutoInstruments();
 					// Drain any pending visibility from the last chorégraphié
 					// sub-step so the principal line is revealed at end.
-					executor.step();
-					syncState();
+					drainFinalVisibility();
 				} else if (autoPlay) {
 					timeline?.play();
 				}

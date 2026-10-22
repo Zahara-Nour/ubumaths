@@ -276,20 +276,20 @@ export async function convertXmlToDsl(xml: string): Promise<DslConversionResult>
 					case 'nommer':
 						// Handled in pre-scan, skip
 						break;
-					case 'masquer': {
-						if (action.id) {
-							// `@cacher` ne cache que des instruments : un point se masque
-							// avec le builtin `masque`.
-							const name = getPointName(action.id);
-							emitLine(`masque(${name})`);
-						}
-						break;
-					}
+					// `@cacher` ne cache que des instruments : un point se masque avec
+					// le builtin `masque`. Point jamais créé → `masque(P1)` ferait
+					// échouer tout le script : on l'ignore avec un avertissement.
+					case 'masquer':
 					case 'montrer': {
-						if (action.id) {
-							const name = getPointName(action.id);
-							emitLine(`montre(${name})`);
+						if (!action.id) break;
+						if (!points.some((p) => p.id === action.id)) {
+							warnings.push(
+								`Point ${action.id} ${mouvement === 'masquer' ? 'masqué' : 'montré'} avant sa création, ignoré`
+							);
+							break;
 						}
+						const builtin = mouvement === 'masquer' ? 'masque' : 'montre';
+						emitLine(`${builtin}(${getPointName(action.id)})`);
 						break;
 					}
 					case 'translation':
