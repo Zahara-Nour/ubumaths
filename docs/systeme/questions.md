@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22.
 
 ## À quoi ça sert
 
@@ -313,8 +313,8 @@ même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions d�
 reçoivent pas (aucune réponse attendue à majuscules collées en base).
 
 Plusieurs cases : positionnelles par défaut ; `options.orderIndependent` → appariement maximal
-réponses ↔ cases (pas glouton). QCM : `validateChoice`, puis `requiredForm` et contraintes si une
-écriture LaTeX accompagne la réponse. `validateAnswerDetailed` rend le verdict par case / par choix
+réponses ↔ cases (pas glouton). QCM : `validateChoice` seul — aucune forme jugée, l'élève coche
+sans rien écrire (le jugement d'écriture des QCM, jamais atteint, est retiré le 2026-10-22). `validateAnswerDetailed` rend le verdict par case / par choix
 qu'utilise la correction.
 
 Où la validation tourne : **dans le navigateur** partout (ADR 0001 : le serveur reçoit un verdict),
