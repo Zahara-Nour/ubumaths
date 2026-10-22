@@ -68,7 +68,10 @@ Toutes les sessions commitent leur doc dans le **même dépôt principal** : son
 8. `gh pr checks <n> --watch` → corriger jusqu'à **tout vert**. **Jamais merger en rouge.**
 9. Revue (voir §6).
 10. `gh pr merge --merge` (merge commit).
-11. **Supprimer la branche** : `git branch -d <b>` + `git push origin --delete <b>`.
+11. **Supprimer la branche** : `git branch -d <b>` + `git push origin --delete <b>`, **seulement après avoir lu `MERGED`** (`gh pr view <n> --json state -q .state`), dans une commande **séparée** du merge.
+    - ⛔ **Jamais `gh pr merge … ; git push origin --delete …` dans la même commande.** `gh pr merge` peut échouer (`Base branch was modified` quand `main` vient d'avancer, `BLOCKED` tant qu'un contrôle tourne) : la suite tourne quand même, et **supprimer la branche distante d'une PR ouverte la FERME** sans merge (#1601, 2026-10-22).
+    - Rattrapage si c'est arrivé : les commits restent dans le dépôt local → `git branch <b> <sha>` + `git push origin <b>` + `gh pr reopen <n>` ; la réouverture **relance toute la CI**, à re-surveiller avant de merger.
+    - `Base branch was modified` : relancer `gh pr merge --merge` (une fois) ; `BLOCKED` : attendre la fin des contrôles, ne pas passer `--admin`.
 
 ## 4. Checks locaux (un seul gros process à la fois)
 
