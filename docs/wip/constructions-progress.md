@@ -2,14 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, avant la première PR._
+_Mis à jour le 2026-10-22, après #1615._
 
-- **État** : lot sécurité codé (phase 0 validée par David le 2026-10-22) : migration `20261022200000`, API, pages, tests rouges prouvés puis verts. Migration appliquée sur la base **locale** seulement.
-- **Prochaine action** : PR #1615 ouverte, revues faites (`security-auditor` : aucun bloquant ; `code-reviewer` : mineurs corrigés) → CI verte → merge → `db:migrate` depuis `main` (4 conditions réunies).
-- **En attente de David** : rien.
-- **Pièges en cours** : un client Supabase tourne dans le navigateur → la règle doit être tenue en base (RLS), pas seulement par l'API.
-- **Worktree / branche** : `../ubumaths-wt-constructions` · `fix/constructions-securite`.
-- **Suite du chantier** (ordre proposé, non validé) : consignes des sous-étapes affichées · convertisseur `@cacher` · ménage → parallèle double perpendiculaire · formes `(P, d)` décorées → `@mesure` (rapporteur).
+- **État** : lot 1 sécurité **livré** — #1615 mergée, migration `20261022200000` appliquée en prod (policies relues). Le code (API, pages) part au prochain `deploy:prod` ; d'ici là, un élève qui tenterait de créer reçoit une erreur 500 de la base (refus RLS), pas un 403.
+- **Prochaine action** : choisir le lot suivant avec David (aucun worktree ouvert).
+- **En attente de David** : le choix du lot 2. Proposé : consignes des sous-étapes affichées + convertisseur `@cacher` → `masque` + ménage (commentaires périmés, code mort, `any`) ; puis parallèle double perpendiculaire + formes `(P, d)` décorées ; `@mesure` (rapporteur) = chantier à part.
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : aucun (supprimé après #1615). Lot suivant : `git worktree add -b feat/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
 
 ---
 
