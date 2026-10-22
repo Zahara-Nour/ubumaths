@@ -1,0 +1,697 @@
+Programme de mathématiques de la classe terminale de la voie
+technologique
+Sommaire
+Préambule
+   Intentions majeures
+   Lignes directrices pour l’enseignement
+      Attitudes développées
+      Développement des six compétences mathématiques et de l’aptitude à l’abstraction
+      Diversité de l’activité mathématique
+      Évaluation des élèves
+      Activités algorithmiques et numériques
+      Résolution de problèmes et automatismes
+      Place de l’oral
+      Trace écrite
+      Travail personnel des élèves
+      Cohérence entre l’enseignement de tronc commun et l’enseignement de spécialité de physique-chimie et
+      mathématiques en séries STI2D et STL
+   Organisation du programme
+Programme
+   Vocabulaire ensembliste et logique
+   Algorithmique et programmation (sauf série STD2A)
+   Activités géométriques (uniquement pour la série STD2A)
+     Géométrie plane
+     Géométrie dans l’espace
+   Automatismes
+   Analyse
+     Suites numériques
+     Fonctions exponentielles
+     Fonction logarithme décimal
+     Fonction inverse
+   Statistique et probabilités
+     Séries statistiques à deux variables quantitatives
+     Probabilités conditionnelles
+     Variables aléatoires discrètes finies
+   Thèmes d’étude
+     Liste indicative de thèmes
+
+
+
+Préambule
+Intentions majeures
+Le programme de mathématiques commun à tous les élèves des classes terminales de la voie technologique est conçu avec les
+intentions suivantes :
+  − permettre à chaque élève de consolider et d’élargir ses connaissances et compétences mathématiques afin de poursuivre
+    l’acquisition d’une culture mathématique nécessaire pour évoluer dans un environnement numérique où les données et les
+    graphiques sont omniprésents ;
+  − développer une image positive des mathématiques et permettre à chaque élève de faire l’expérience personnelle des
+    démarches qui leur sont propres afin d’en appréhender la pertinence et l’efficacité ;
+  − assurer les bases mathématiques nécessaires aux autres disciplines enseignées et développer des aptitudes intellectuelles
+    indispensables à la réussite d’études supérieures ; pour cela, les notions figurant au programme ont été retenues soit parce
+    qu’elles offrent des occasions de convoquer le raisonnement et d’accéder à l’abstraction, soit parce que leur bonne
+    utilisation à un niveau supérieur sera facilitée par une présentation anticipée dès la classe terminale ;
+  − prendre en compte les spécificités des séries tertiaires, industrielles et artistiques et leurs finalités différentes.
+
+Lignes directrices pour l’enseignement
+Attitudes développées
+L’enseignement des mathématiques participe à la formation générale des élèves en contribuant au développement d’attitudes
+propices à la poursuite d’études. Parmi elles, peuvent notamment être mentionnés : la persévérance dans la recherche d’une
+solution, l’esprit critique, l’engagement réfléchi dans un débat, le souci d’argumenter sa pensée par un raisonnement logique,
+la qualité d’expression écrite et orale, l'esprit de collaboration dans un travail d’équipe.
+Développées par la résolution d’exercices et de problèmes, individuellement ou en groupe, mais aussi par l’organisation de
+réflexions et d’échanges scientifiques, ces attitudes seront particulièrement utiles pour l’épreuve orale terminale du
+baccalauréat et, au-delà, pour la formation individuelle dans ses dimensions personnelle, professionnelle et civique.
+
+Développement des six compétences mathématiques et de l’aptitude à l’abstraction
+L’activité mathématique contribue à développer les six compétences mentionnées ci-dessous :
+  − chercher, expérimenter, émettre des conjectures ;
+  − modéliser, réaliser des simulations numériques d’un modèle, valider ou invalider un modèle ;
+  − représenter, choisir un cadre (numérique, algébrique, géométrique, etc.), changer de registre (algébrique, graphique, etc.) ;
+  − raisonner, démontrer, trouver des résultats partiels et les mettre en perspective ;
+  − calculer, appliquer des techniques et mettre en œuvre des algorithmes ;
+  − communiquer un résultat par oral ou par écrit, expliquer une démarche.
+
+Ces compétences sont plus ou moins mobilisées selon les activités proposées aux élèves et il convient de diversifier les
+situations afin de les développer toutes. Au-delà de ces compétences disciplinaires, l’enseignement des mathématiques
+contribue à développer des aptitudes transversales, notamment l’abstraction, qui sont essentielles pour la poursuite d’études
+supérieures.
+
+Diversité de l’activité mathématique
+La mise en œuvre du programme permet aux élèves d’acquérir des connaissances, des méthodes et des démarches
+spécifiques. En lien avec les contenus étudiés, elles sont mobilisées et articulées les unes aux autres dans des activités riches et
+variées où le sens des concepts et les techniques liées à leur application sont régulièrement mis en relation, chacun venant
+éclairer et consolider l’autre. La diversité des activités concerne aussi bien les contextes (internes aux mathématiques ou liés à
+des situations issues de la vie quotidienne ou d’autres disciplines) que les types de tâches proposées : « questions flash » pour
+favoriser l’acquisition d’automatismes, exercices d’application et d’entrainement pour stabiliser et consolider les
+connaissances, exercices et problèmes favorisant les prises d’initiatives, débats à l’oral et mises au point collectives d’une
+solution, productions d’écrits individuels ou collectif, etc.
+
+Le passage à l’abstraction mathématique peut présenter des difficultés pour certains élèves. Il importe donc de veiller au
+caractère progressif et actif des apprentissages. Les nouveaux concepts gagnent à être introduits par un questionnement ou un
+problème qui conduit à des conjectures et donne sens à leur formalisation abstraite. Le recours à des logiciels de calcul, de
+géométrie dynamique ou la pratique de la programmation facilitent cette approche inductive. Pour assurer la stabilité et la
+pérennité des apprentissages, les concepts sont ensuite mis en œuvre dans des exercices et des problèmes qui permettent de
+les consolider et d’en montrer la portée.
+
+Au-delà du cours de mathématiques, l’élève consolide sa compréhension des notions enseignées en les mobilisant dans des
+situations issues des autres disciplines de sa filière. Les professeurs de mathématiques sont invités à travailler avec les
+professeurs des disciplines concernées pour identifier des situations propices à la contextualisation de son enseignement et
+pour harmoniser les notations et le vocabulaire. Cela favorise les articulations, facilite les transferts et renforce ainsi les acquis
+des élèves.
+
+Les professeurs veillent à montrer que les mathématiques sont vivantes et en perpétuelle évolution, qu’elles s’inscrivent dans
+un cadre historique mais aussi dans la société actuelle. Il s’agit par exemple :
+ − d’insérer des éléments d’histoire des mathématiques, des sciences et des techniques, en classe de mathématiques ;
+ − de présenter des faits d’actualité liés aux mathématiques (médaille Fields, évocation de mathématiciennes et
+    mathématiciens contemporains, présentation vulgarisée de découvertes importantes, etc.) ;
+ − de faire connaitre des métiers et des études supérieures où les mathématiques sont utilisées, en veillant à déconstruire les
+    stéréotypes de genre.
+
+Évaluation des élèves
+L’évaluation joue un rôle clé dans la régulation des apprentissages, tant pour l’enseignant que pour l’élève, pour lequel elle
+participe pleinement au développement de son autonomie et à son engagement dans les apprentissages. Elle revêt différentes
+modalités mais conserve toujours une visée formative ; pour cela, les élèves sont informés en amont des éléments évalués.
+
+L’évaluation doit permettre de repérer les acquis des élèves en lien avec les six compétences mathématiques : chercher,
+modéliser, représenter, raisonner, calculer, communiquer.
+
+L’évaluation doit faire prendre conscience des réussites et des progrès. Le retour sur l’évaluation est un moment clé du
+processus d’apprentissage. Il ne se limite pas à une correction collective, mais vise à valoriser les démarches pertinentes, même
+si elles ne mènent pas immédiatement à la bonne réponse, mettre en lumière les erreurs fréquentes, pour aider les élèves à les
+comprendre et à y remédier, proposer des pistes de progrès aux élèves. Ce retour permet aussi à l’enseignant de réguler sa
+progression, de revoir certains points du programme ou de proposer d’autres approches pédagogiques.
+
+Activités algorithmiques et numériques
+Le développement d’un mode de pensée numérique est aujourd’hui constitutif de la formation mathématique. Il ne s’agit plus
+seulement d’utiliser des outils numériques (calculatrices, logiciels de géométrie, etc.) pour l’enseignement mais d’intégrer à
+l’enseignement des mathématiques une composante informatique qui recouvre l’algorithmique, la programmation et la
+pratique du tableur.
+
+Cette dimension s’inscrit de manière transversale dans le cours de mathématiques et repose sur la connaissance d’un nombre
+limité d’éléments de syntaxe et de fonctions spécifiques à l’outil utilisé (langage Python, tableur). Cela suppose, d’une part, un
+enseignement explicite par les professeurs, d’autre part, une pratique effective et régulière des élèves.
+
+Tout au long du cycle terminal, les élèves sont amenés à :
+ − écrire une fonction simple en langage Python ;
+ − interpréter un algorithme donné ;
+ − compléter, améliorer ou corriger un programme informatique ;
+ − traduire un algorithme en langage naturel ou en langage Python ;
+ − décomposer un programme en fonctions ;
+ − organiser une feuille de calcul.
+
+Parallèlement, l’utilisation de logiciels pédagogiques, notamment ceux de géométrie dynamique, enrichit le cours de
+mathématiques d’illustrations ou de simulations propices à l’appropriation des concepts.
+
+Résolution de problèmes et automatismes
+La résolution de problèmes est centrale dans l’activité mathématique car elle offre un cadre privilégié pour travailler, mobiliser
+et combiner les six compétences mathématiques tout en développant des aptitudes transversales. Toutefois, pour résoudre
+des problèmes, il faut être en capacité de prendre des initiatives, d’imaginer des pistes de solution et de s’y engager sans
+s’égarer. Pour cela, on procède souvent par analogie, en rattachant une situation particulière à une classe plus générale de
+problèmes ou en adaptant une méthode connue à la situation étudiée. La disponibilité d'esprit nécessaire à ces étapes
+essentielles suppose des connaissances, des procédures et des stratégies immédiatement mobilisables, c’est-à-dire
+automatisées. L’acquisition de ces automatismes est favorisée par la mise en place, dans la durée et sous la conduite du
+professeur, d’activités rituelles. Il ne s’agit pas de réduire les mathématiques à des activités répétitives, mais de permettre un
+ancrage solide des fondamentaux, afin de pouvoir les mobiliser en situation de résolution de problèmes.
+
+Parallèlement à l’ancrage de notions incontournables, les activités visant l’acquisition d’automatismes fournissent des
+conditions de réussite rapide et mettent l’élève en confiance pour s’engager dans la résolution de problèmes.
+
+Place de l’oral
+Les étapes de verbalisation et de reformulation jouent un rôle majeur dans l’appropriation des notions mathématiques et la
+résolution de problèmes. Comme toutes les disciplines, les mathématiques contribuent au développement des compétences
+langagières orales à travers notamment le débat et la pratique de l’argumentation. Le débat suppose des capacités d’écoute et
+d’adaptation de son propre discours aux arguments de ses interlocuteurs. L’argumentation orale conduit à préciser sa pensée
+et à expliciter son raisonnement de manière à convaincre. Le débat et la pratique de l’argumentation permettent à chacun de
+faire évoluer sa pensée, jusqu’à la remettre en cause si nécessaire, pour accéder progressivement à la vérité par la preuve. Des
+situations variées se prêtent à la pratique de l’oral en mathématiques : la reformulation par l’élève d’un énoncé ou d’une
+démarche, les échanges interactifs lors de la construction du cours, les mises en commun après un temps de recherche, les
+corrections d’exercices, les travaux de groupe, les exposés individuels ou à plusieurs, etc. L’oral mathématique mobilise à la fois
+le langage naturel et le langage symbolique dans ses différents registres (graphiques, formules, calculs). Composante
+importante de l’enseignement des mathématiques, l’oral révèle et développe des compétences complémentaires de celles
+mobilisées à l’écrit, et favorise la socialisation des élèves.
+
+Trace écrite
+Disposer d’une trace de cours claire, explicite et structurée est une aide essentielle à l’apprentissage des mathématiques.
+Faisant suite aux étapes importantes de recherche, d’appropriation individuelle ou collective, de présentation commentée ou
+de débats, la trace écrite récapitule de façon organisée les connaissances, les méthodes et les stratégies étudiées en classe.
+Explicitant les liens entre les différentes notions ainsi que leurs objectifs, éventuellement enrichie par des exemples ou des
+schémas, elle constitue pour l’élève une véritable référence vers laquelle il peut se tourner autant que de besoin, tout au long
+du cycle terminal. Sa consultation régulière (notamment au moment de la recherche d’exercices et de problèmes, sous la
+conduite du professeur ou en autonomie) favorise à la fois la mémorisation et le développement de compétences. Les
+professeurs doivent avoir le souci de la bonne qualité (mathématique et rédactionnelle) des traces écrites figurant au tableau
+et dans les cahiers d’élèves. En particulier, il est essentiel de bien distinguer le statut des énoncés (conjecture, définition,
+propriété admise ou démontrée, démonstration, théorème).
+
+Travail personnel des élèves
+Si la classe est le lieu privilégié pour la mise en activité mathématique des élèves, les travaux hors du temps scolaire sont
+indispensables pour consolider les apprentissages. Fréquents, de longueur raisonnable et de nature variée, ces travaux sont
+essentiels à la formation des élèves. Individuels ou en groupe, évalués à l’écrit ou à l’oral, ces travaux sont conçus de façon à
+prendre en compte la diversité des aptitudes des élèves et visent la mémorisation, la maitrise des savoir-faire, le
+réinvestissement de démarches ou méthodes.
+
+Les professeurs précisent le cadre et les modalités d’usage des outils d’intelligence artificielle dans le travail personnel des élèves.
+Cohérence entre l’enseignement de tronc commun et l’enseignement de spécialité de physique-chimie et
+mathématiques en séries STI2D et STL
+L’enseignement commun de mathématiques est complété, pour les élèves des séries STI2D et STL, par un enseignement de
+spécialité de physique-chimie et mathématiques. Il convient pour les professeurs de mathématiques d’inscrire ces deux
+composantes de la formation en cohérence et en résonance afin de bien préparer les élèves aux démarches mathématiques
+indispensables à la poursuite et à la réussite d’études scientifiques et technologiques. Cela recouvre aussi bien le choix des
+supports pour la contextualisation des mathématiques ou pour la modélisation du réel que la pratique de raisonnements
+faisant appel à l'abstraction. Une étroite collaboration s’impose avec les professeurs de physique-chimie.
+
+Organisation du programme
+Le programme est organisé en trois parties transversales (vocabulaire ensembliste et logique ; algorithmique et
+programmation ; automatismes) et en deux parties thématiques :
+ − « Analyse » pour étudier ou modéliser des évolutions ;
+ − « Statistique et probabilités » pour traiter et interpréter des données, pour modéliser des phénomènes aléatoires.
+
+Pour la série STD2A, la partie « Algorithmique et programmation » est remplacée par une partie « Activités géométriques ».
+
+Les parties transversales recensent les capacités attendues qui doivent être travaillées tout au long du cycle terminal, sous
+forme de rituels ou d’activités intégrées aux enseignements d’analyse et de statistique et probabilités. Reposant
+essentiellement sur des notions étudiées dans les classes précédentes, elles ne donnent pas lieu à des chapitres de cours
+spécifiques mais font cependant l’objet d’un enseignement explicite.
+
+Les parties « Analyse » et « Statistique et probabilités » sont organisées en quatre rubriques :
+ − contenus ;
+ − capacités attendues ;
+ − commentaires ;
+ − situations algorithmiques (sauf pour la série STD2A).
+
+La dernière rubrique (qui ne concerne pas la série STD2A) identifie un nombre limité de situations qui peuvent toutes faire
+l’objet d’un travail spécifique utilisant le langage Python ou le tableur. Les professeurs s’attachent à proposer quelques
+situations mettant en œuvre ces deux modalités afin qu’en fin d’année les élèves aient acquis les capacités attendues en
+algorithmique et en programmation.
+
+Enfin, le programme propose une liste indicative de thèmes d’étude permettant d’aller plus loin. Ils se prêtent à la
+remobilisation des notions du programme dans le cadre de modélisations ou de simulations adaptées à la résolution de
+nouvelles classes de problèmes. Ces thèmes peuvent constituer des supports appropriés au projet évalué lors de l’épreuve
+orale terminale.
+
+
+Programme
+Vocabulaire ensembliste et logique
+L'apprentissage des notations mathématiques et de la logique est transversal à tous les chapitres du programme. Aussi, il
+importe d'y travailler d’abord dans des contextes où ils se présentent naturellement, puis de prévoir des temps où les concepts
+et types de raisonnement sont étudiés, après avoir été́ rencontrés plusieurs fois en situation.
+
+Les élèves doivent connaitre les notions d’élément d’un ensemble, de sous-ensemble, d’appartenance et d’inclusion, de
+réunion, d’intersection et de complémentaire et savoir utiliser les symboles de base correspondants : Ø, ∈, ⊂, ∩, ∪, { … }, ainsi
+que la notation des ensembles de nombres et des intervalles. Ils rencontrent également la notion de couple et celle de produit
+cartésien de deux ensembles. Pour le complémentaire d’un sous-ensemble A de E, on utilise la notation ̅   A des probabilités, ou
+la notation E \ A. On utilise la notation Card(A) pour le cardinal (nombre d’éléments) d’un ensemble fini A.
+
+Pour ce qui concerne le raisonnement logique, les élèves s’exercent :
+ − à utiliser correctement les connecteurs logiques « et », « ou » ;
+ − à identifier le statut d’une égalité (identité, équation) et celui de la ou des lettres utilisées (variable, indéterminée,
+   inconnue, paramètre) ;
+ − à utiliser un contre-exemple pour infirmer une proposition universelle ;
+ − à distinguer une proposition de sa réciproque ;
+ − à utiliser à bon escient les expressions « condition nécessaire », « condition suffisante », « équivalence logique ».
+
+Commentaires
+
+ − La construction de conditions logiques en algorithmique à l’aide des opérateurs ET, OU, NON et la création de filtres en
+   analyse de données sont l’occasion de travailler la logique.
+ − Dans le cours de mathématiques, les professeurs explicitent la nature des raisonnements conduits (raisonnement par
+   disjonction des cas, recours à la contraposée, raisonnement par l’absurde) ainsi que les quantificateurs à l’œuvre, en
+   langage naturel et sans formalisme.
+Algorithmique et programmation (sauf série STD2A)
+La pratique de l’algorithmique et de la programmation se poursuit en classe terminale en continuité avec la classe de première.
+On peut utiliser le langage Python ou le tableur.
+
+Le programme vise la consolidation des notions de variable, de liste, d’instruction conditionnelle et de boucle ainsi que
+l’utilisation des fonctions.
+
+Capacités attendues
+
+Variables
+ − Utiliser un générateur de nombres aléatoires entre 0 et 1 pour simuler une loi de Bernoulli de paramètre p.
+ − Utiliser la notion de compteur.
+ − Utiliser le principe d’accumulateur pour calculer une somme, un produit.
+
+Fonctions
+ − Identifier les entrées et les sorties d’une fonction.
+ − Structurer un programme en ayant recours aux fonctions.
+
+Listes
+  − Générer une liste (en extension, par ajouts successifs, en compréhension).
+  − Manipuler des éléments d’une liste (ajouter, supprimer, etc.) et leurs indices.
+  − Itérer sur les éléments d’une liste.
+
+Sélection de données
+ − Traiter un fichier contenant des données réelles pour en extraire de l’information et l’analyser.
+ − Réaliser un tableau croisé de données sur deux critères à partir de données brutes.
+
+Commentaires
+
+ − Les notions relatives aux types de variables et à l’affectation sont consolidées. Comme en classe de seconde, on utilise le
+   symbole « ← » pour désigner l’affectation dans un algorithme écrit en langage naturel.
+ − L’accent est mis sur la programmation modulaire qui permet de découper une tâche complexe en tâches simples.
+ − La génération des listes en compréhension et en extension est mise en lien avec la notion d’ensemble. Les conditions
+   apparaissant dans les listes définies en compréhension permettent de travailler la logique.
+ − Afin d’éviter des confusions, il est recommandé de se limiter aux listes sans présenter d’autres types de collections.
+
+Activités géométriques (uniquement pour la série STD2A)
+Le programme de géométrie de la classe terminale étudie des figures géométriques et des modes de représentation usuels
+dans les domaines de l’art et du design. Il privilégie les liens entre géométrie plane et géométrie dans l’espace et s’articule
+autour de trois axes de travail :
+ − étudier l’intersection d’un cône avec un plan suivant la position de celui-ci, retrouver des courbes déjà connues et les
+    regrouper sous la dénomination de coniques ;
+ − enrichir les représentations planes des objets de l'espace par l'introduction de la perspective centrale ;
+ − analyser des compositions artistiques ou architecturales et décomposer des scènes de l’espace en solides simples, afin de
+    les reproduire ou de les représenter dans le plan.
+
+Les activités à supports réels issus de divers domaines artistiques sont privilégiées. L’utilisation de logiciels de dessin employés
+dans les enseignements artistiques est l’occasion d’enrichir le propos mathématique.
+
+Géométrie plane
+Contenus
+
+Coniques
+ − Sections planes d’un cône de révolution.
+ − Notion de tangente à une conique en un point.
+
+Capacités attendues
+
+ − Étudier le raccordement d’arcs de cercles, d’ellipses ou de courbes représentatives de fonctions.
+
+Commentaires
+
+ − L’éclairement d’un mur par une source ponctuelle constitue une approche adaptée des sections planes de cônes de
+   révolution.
+ − Les différentes sections planes d’un cône de révolution sont visualisées à l’aide d’un logiciel de géométrie dynamique ; elles
+   font apparaitre des courbes déjà connues des élèves, notamment le cercle, l’ellipse, la parabole, l’hyperbole.
+ − Par analogie avec la notion de tangente étudiée en classe de première (tangente à la courbe représentative d’une
+   fonction), la tangente à une conique en un point est définie comme position limite des sécantes en ce point.
+ − Aucune connaissance n’est attendue sur les équations cartésiennes de tangentes à une conique. Dans les situations
+   analytiques de raccordement, celles-ci sont données.
+Géométrie dans l’espace
+Contenus
+
+Perspective centrale
+ − Projection centrale.
+ − Propriétés de conservation (alignement, contact) ou de non conservation (longueurs, milieux, rapports de longueurs,
+    angles, parallélisme) ; cas particulier des plans frontaux.
+ − Point de fuite d’une droite.
+ − Point de fuite principal.
+ − Ligne de fuite d’un plan non frontal, ligne d’horizon.
+ − Image d’un quadrillage, de solides simples (parallélépipède rectangle, prisme, pyramide).
+
+Capacités attendues
+
+ −   Utiliser le vocabulaire usuel de la perspective centrale.
+ −   Utiliser les propriétés d’une projection centrale.
+ −   Utiliser la conservation de forme dans les plans frontaux.
+ −   Utiliser la position relative de l’image de deux droites parallèles.
+ −   Construire l’image d’un quadrillage ou d’un parallélépipède rectangle ayant au moins une arête en vraie grandeur.
+
+Commentaires
+
+ − La situation dite de « l’ombre au flambeau » (source ponctuelle) portée sur un plan constitue une approche adaptée de la
+   projection centrale.
+ − L’utilisation d’un logiciel de géométrie dynamique facilite la compréhension des différentes notions de cette partie du
+   programme.
+ − Des situations simples où un plan frontal est disponible sont proposées. Des situations plus générales sont analysées en lien
+   avec la photographie.
+ − Des « esquisses » de représentation d’objets comme le cylindre et le cône sont construites en les inscrivant dans un solide
+   simple et en prenant appui sur les points de contact.
+
+Automatismes
+Comme indiqué dans le programme de la classe de première, cette partie du programme vise à construire et à entretenir des
+habiletés dans les domaines du calcul, de l’information chiffrée et des représentations graphiques. Il s’agit d’automatiser le
+recours à des connaissances, des procédures, des méthodes et des stratégies, afin de permettre aux élèves de les mobiliser plus
+rapidement. Leur acquisition permet aux élèves une meilleure réussite dans l’apprentissage des mathématiques, participe du
+développement de leur esprit critique par une meilleure maitrise des chiffres et du calcul et leur permet une meilleure lecture
+et compréhension des représentations de données dont les graphiques.
+
+Les capacités attendues énoncées ci-dessous n’ont pas vocation à faire l’objet d’un chapitre d’enseignement spécifique car les
+notions qui les sous-tendent ont été travaillées dans les classes antérieures et doivent être entretenues et consolidées au cours
+de l’année. Cependant les nouvelles notions du programme peuvent donner lieu également à un travail d’automatisation tout
+le long de l’année. Elles relèvent d’un entrainement régulier privilégiant l'activité mentale. Les différents thèmes proposés
+doivent être travaillés tout au long des deux années et la présentation par blocs thématiques ne signifie pas, bien au contraire,
+qu’il faille les aborder les uns après les autres. Les modalités de mise en œuvre peuvent être variées et prendre appui sur
+différents supports : à l’oral, à l’écrit, individuellement ou en groupe, utilisant éventuellement des outils numériques de vidéo-
+projection, de recensement instantané des réponses etc.
+
+En classe terminale, le travail sur les automatismes se poursuit. Au-delà d’une plus grande rapidité dans l’exécution des tâches,
+il s’enrichit à travers :
+  − une complexification des variables didactiques comme par exemple la nature des nombres utilisés (entiers, fractions ou
+                                                       4
+      paramètres) dans la factorisation de 𝑥² – 9, 𝑥² – , 4𝑥² – k² ;
+                                                     9
+ − l’enchainement de plusieurs automatismes ;
+ − des changements de registre comme la détermination du signe de –2(𝑥 – 1)(𝑥 – 3) à partir d’une image mentale de la
+   courbe représentative de la fonction correspondante ;
+ − l’automatisation de quelques connaissances ou procédures relatives aux notions installées en classe de première comme,
+   par exemple, le lien entre le signe de la dérivée et le sens de variation de la fonction, la reconnaissance d’une situation
+   contextualisée se modélisant par une suite géométrique, etc.
+
+Les automatismes propres à la classe terminale figurent dans les tirets en italique.
+
+Capacités attendues
+
+Proportions et pourcentages
+ − Calculer, appliquer, exprimer une proportion sous différentes formes (décimale, fractionnaire, pourcentage).
+ − Calculer la proportion d’une proportion.
+Évolutions et variations
+ − Passer d’une formulation additive (« augmenter de 5 % », respectivement « diminuer de 5 % ») à une formulation
+    multiplicative (« multiplier par 1,05 », respectivement « multiplier par 0,95 »).
+ − Appliquer un taux d’évolution pour calculer une valeur finale ou initiale.
+ − Calculer un taux d’évolution, l’exprimer en pourcentage.
+ − Interpréter un indice de base 100. calculer un indice ; calculer le taux d’évolution entre deux valeurs.
+ − Calculer le taux d’évolution équivalent à plusieurs évolutions successives.
+ − Calculer un taux d’évolution réciproque.
+ − Reconnaitre une situation contextualisée se modélisant par une suite géométrique dont on identifie la raison.
+
+Calcul numérique et algébrique
+ − Effectuer des opérations et des comparaisons entre des fractions simples.
+ − Effectuer des opérations sur les puissances.
+ − Passer d’une écriture d’un nombre à une autre (décimale, fractionnaire, scientifique).
+ − Estimer un ordre de grandeur.
+ − Effectuer des conversions d’unités.
+ − Résoudre une équation ou une inéquation du premier degré, une équation du type : 𝑥² = a.
+ − Déterminer le signe d’une expression du premier degré, d’une expression factorisée du second degré.
+ − Isoler une variable dans une égalité ou une inégalité qui en comporte plusieurs sur des exemples internes aux
+    mathématiques ou issus des autres disciplines.
+ − Effectuer une application numérique d’une formule (notamment pour les formules utilisées dans les autres disciplines).
+ − Développer, factoriser, réduire une expression algébrique simple.
+ − Calculer la dérivée d’une fonction polynomiale de degré inférieur ou égal à 3.
+ − Calculer le coefficient directeur de la tangente en un point à une courbe à l’aide de la dérivée.
+
+Fonctions et représentations :
+ − Déterminer graphiquement des images et des antécédents.
+ − Résoudre graphiquement une équation, une inéquation du type : ƒ(𝑥 ) = k, ƒ(𝑥 ) < k, etc.
+ − Déterminer le signe d’une expression factorisée du second degré à l’aide d’une image mentale de la courbe représentative de
+   la fonction correspondante.
+ − Déterminer graphiquement le signe d’une fonction ou son tableau de variations.
+ − Exploiter une équation de courbe (appartenance d’un point, calcul de coordonnées).
+ − Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur.
+ − Lire graphiquement l’équation réduite d’une droite.
+ − Déterminer l’équation réduite d’une droite à partir des coordonnées de deux de ses points.
+ − Déterminer graphiquement le coefficient directeur d’une tangente à une courbe.
+
+Représentations graphiques de données chiffrées :
+ − Lire un graphique, un histogramme, un diagramme en barres ou circulaire, un diagramme en boite ou toute autre
+   représentation (repérer l’origine du repère, les unités de graduations ou les échelles, etc.).
+ − Passer du graphique aux données et vice versa.
+
+Analyse
+Cette partie du programme consolide et approfondit les notions sur les suites abordées en classe de première. Elle élargit la
+gamme des fonctions permettant d’étudier des phénomènes évolutifs continus. Ainsi, le passage du discret au continu à partir
+des suites géométriques permet d’introduire les fonctions exponentielles de base a qui modélisent des phénomènes continus
+dont l’évolution relative instantanée est constante. La résolution d’équations du type 10 𝑥 = b permet de déterminer des
+durées d’évolution non entières et d’introduire la fonction logarithme décimal.
+
+Dans le cadre d’une démarche inductive, les outils numériques, notamment les grapheurs ou les logiciels de géométrie et de
+programmation, aident à la construction des objets mathématiques ou à l’illustration de leurs propriétés, lesquelles sont
+ensuite admises ou généralisées.
+
+Suites numériques
+Contenus
+
+Suites arithmétiques
+ − Moyenne arithmétique de deux nombres.
+ − Expression en fonction de n du terme de rang n.
+ − Somme des n premiers termes d’une suite arithmétique ; notation .
+
+Suites géométriques à termes positifs
+ − Moyenne géométrique de deux nombres positifs.
+ − Expression en fonction de n du terme de rang n.
+ − Somme des n premiers termes d’une suite géométrique ; notation .
+Capacités attendues
+
+ −   Prouver que trois nombres sont (ou ne sont pas) les termes consécutifs d’une suite arithmétique ou géométrique.
+ −   Déterminer la raison d’une suite arithmétique ou géométrique modélisant une évolution.
+ −   Exprimer en fonction de n le terme général d’une suite arithmétique ou géométrique.
+ −   Calculer la somme des n premiers termes d’une suite arithmétique ou géométrique.
+ −   Reconnaitre une situation relevant du calcul d’une somme de termes consécutifs d’une suite arithmétique ou géométrique.
+
+Commentaires
+
+ − Le calcul de valeurs acquises, lors de placements à intérêts composés à taux constant avec versements réguliers, fournit
+   une situation relevant du calcul d’une somme de termes consécutifs d'une suite géométrique.
+ − Le lien est fait entre les suites arithmétiques (respectivement géométriques) et l’expression « croissance linéaire »
+   (respectivement « croissance exponentielle ») du langage courant.
+ − La notation  est travaillée sur des exemples variés (somme de carrés, de cubes, d’inverse, etc.).
+
+Situations algorithmiques
+
+ − Écrire en langage Python une fonction qui calcule la somme des n premiers carrés, des n premiers cubes ou des n premiers
+   inverses ; établir le lien entre l’écriture de la somme à l’aide du symbole , et les composantes de l’algorithme
+   (initialisation, sortie de boucle, accumulateur, compteur).
+
+Fonctions exponentielles
+Contenus
+
+Les fonctions 𝑥 ↦ a 𝑥 (a > 0) comme modèle continu d’évolution relative constante
+ − Définition de la fonction 𝑥 ↦ a𝑥 pour x positif comme prolongement à des valeurs non entières positives de la suite
+                                                                   1
+     géométrique (a𝑛 )𝑛∈ℕ ; extension à ℝ_ en posant a−𝑥 =             .
+                                                                  a𝑥
+ − Sens de variation selon les valeurs de a.
+ − Allure de la courbe représentative selon les valeurs de a.
+                                                        a𝑥
+ − Propriétés algébriques : a𝑥 + 𝑦 = a 𝑥 a𝑦 ; a𝑥 −𝑦 =        ; a𝑛𝑥 = (a𝑥 )𝑛 pour 𝑛 entier relatif.
+                                                        a𝑦
+                                    1
+ − Cas particulier de l’exposant        pour calculer un taux d’évolution moyen équivalent à 𝑛 évolutions successives.
+                                    𝑛
+
+Capacités attendues
+
+ − Connaitre et utiliser le sens de variation des fonctions de la forme 𝑥 ↦ k a , selon le signe de k et les valeurs de a.
+                                                                                         𝑥
+
+ − Connaitre les propriétés algébriques des fonctions exponentielles et les utiliser pour transformer des écritures numériques
+   ou littérales.
+ − Calculer le taux d’évolution moyen équivalent à des évolutions successives.
+
+Commentaires
+
+ − Les propriétés algébriques de la fonction 𝑥 ↦ a𝑥 sont admises, par extension des propriétés des puissances entières. Le
+   lien est fait avec les suites géométriques.
+ − Le parallèle est fait entre le sens de variation de la fonction 𝑥 ↦ a𝑥 et celui des suites géométriques.
+ − Le calcul du taux d’évolution moyen se fait dans des contextes variés (taux mensuel équivalent à un taux annuel, évolution
+   moyenne d’une population sur une période, etc.).
+
+Situations algorithmiques
+
+ − Intercaler entre deux points déjà construits un troisième point ayant pour abscisse (respectivement pour ordonnée) la
+   moyenne arithmétique (respectivement géométrique) des abscisses (respectivement des ordonnées) des deux points
+   initiaux.
+
+Fonction logarithme décimal
+Contenus
+
+ − Définition du logarithme décimal de b pour b > 0 comme l’unique solution de l’équation 10 𝑥 = b ; notation log.
+ − Sens de variation.
+                                                                                       a
+ − Propriétés algébriques : log (ab) = log (a) + log (b), log (an) = n log (a) et log ( ) = log (a) - log (b), pour 𝑛 entier naturel, a et b
+                                                                                         b
+     réels strictement positifs.
+
+Capacités attendues
+
+ − Utiliser le logarithme décimal pour résoudre une équation du type a𝑥 = b ou 𝑥 a = b d’inconnue 𝑥 réelle, une inéquation du
+   type a𝑥 < b ou 𝑥 a < b d’inconnue 𝑥 réelle ou du type a𝑛 < b d’inconnue 𝑛 entier naturel.
+ − Utiliser les propriétés algébriques de la fonction logarithme décimal pour transformer des expressions numériques ou
+   littérales.
+Commentaires
+ − La formule du logarithme d’un produit, qui peut être démontrée ou admise, permet de prouver les propriétés suivantes :
+         1                 a
+    log ( ) = - log (b), log ( ) = log (a) - log(b) et, pour de petites valeurs de 𝑛, log (a𝑛 ) = 𝑛 log (a).
+        b                  b
+ − La recherche d’un nombre d'annuités comme celle d’un taux moyen fournit des exemples de résolution d'équations de la
+   forme a𝑥 = b ou 𝑥 a = b.
+ − La valeur du logarithme décimal d’un nombre strictement positif permet d’obtenir son ordre de grandeur et de
+   déterminer, dans le cas d’un entier strictement positif, le nombre de chiffres de son écriture décimale.
+ − Le travail sur le logarithme décimal peut être l’occasion de représenter une série statistique ou une fonction dans un
+   repère logarithmique ou semi-logarithmique, notamment pour les élèves des séries STI2D et STL.
+
+Fonction inverse
+Contenus
+ − Comportement de la fonction inverse aux bornes de son ensemble de définition.
+ − Dérivée et sens de variation.
+ − Courbe représentative ; asymptotes.
+
+Capacités attendues
+ − Étudier et représenter des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions
+   polynomiales de degré au maximum 3.
+
+Commentaires
+                                                   1
+ − Le calcul de la dérivée de la fonction 𝑥 ↦          permet de réinvestir la définition du nombre dérivé à partir du calcul du taux
+                                                  𝑥
+   de variation.
+ − Les élèves des séries STI2D et STL ont déjà calculé la dérivée de la fonction inverse en classe de première dans le cadre de
+   l’enseignement de spécialité de physique-chimie et mathématiques.
+ − La fonction inverse permet d’aborder des situations contextualisées de prix unitaire ou de cout moyen.
+ − Le comportement de la fonction inverse aux bornes de son ensemble de définition est mis en lien avec, d’une part, l’ordre
+   de grandeur d’inverses de petits ou grands nombres, d’autre part, l’allure de la courbe.
+ − Aucune définition de l’asymptote n’est attendue ; on s’en tient à une approche intuitive.
+
+Statistique et probabilités
+Le programme de première technologique a abordé l’étude de variables quantitatives, représentées par des nuages de points.
+Il a introduit la notion d’ajustement affine afin de réaliser des interpolations ou des extrapolations. En terminale
+technologique, cette étude est consolidée et prolongée par la recherche d’ajustements non affines s’appuyant sur des
+changements de variable.
+
+En probabilités, dans le prolongement des notions étudiées dans les classes antérieures (probabilité conditionnelle,
+indépendance d’évènements), on introduit :
+  − la formule des probabilités totales ;
+  − la loi binomiale, par le biais de la répétition de 𝑛 épreuves de Bernoulli identiques et indépendantes.
+
+Des activités de programmation, au tableur ou en langage Python, permettent d’automatiser certains calculs et d’obtenir des
+résultats inaccessibles à la main.
+
+Séries statistiques à deux variables quantitatives
+Contenus
+ − Changement de variable dans l’étude graphique d’une série statistique à deux variables quantitatives.
+ − Ajustement se ramenant par changement de variable à un ajustement affine.
+
+Capacités attendues
+                                                                                                               1   1
+ − Représenter un nuage de points en effectuant un changement de variable donné (par exemple 𝑢2 , ,                     , log(𝑦), etc.) afin
+                                                                                                               𝑡   √𝑛
+    de conjecturer une relation de linéarité entre de nouvelles variables.
+
+Commentaires
+ − Plusieurs ajustements sont proposés (au jugé, droite de Mayer, moindres carrés) mais aucune connaissance théorique n’est
+   attendue L’appréciation de leur qualité peut faire l’objet d’une discussion au sein de la classe.
+ − La méthode des moindres carrés est présentée : recherche d’une droite d’équation 𝑦 = a𝑥 + b réalisant le minimum de
+                       2
+    Σ𝑖 (𝑦𝑖 - (a𝑥𝑖 + b)) pour le nuage de points (𝑥𝑖 , 𝑦𝑖 ).
+ − Les situations ou contextes réels, en lien notamment avec les enseignements de spécialité, sont privilégiés :
+ − données issues des domaines de la santé, de l’économie, de la gestion, des sciences sociales, etc. ;
+ − mesures expérimentales de grandeurs liées par une relation linéaire en physique-chimie (intensité et tension ; droite
+   d’étalonnage d’une concentration, etc.), en biotechnologies ou en sciences de l’ingénieur dans tous les domaines
+   (industriels, génie civil, etc.).
+ − Les élèves sont entrainés à exercer leur esprit critique sur la pertinence, au regard des données et de la situation étudiée,
+   d’une modélisation par ajustement affine et sur les limites des extrapolations faites dans ce cadre.
+
+Situations algorithmiques
+                                               2
+ − Automatiser le calcul de Σ𝑖 (𝑦𝑖 - (a𝑥𝑖 + b)) .
+ − Rechercher un couple (a,b) minimisant cette expression parmi un ensemble fini de couples proposés par les élèves ou
+   générés par balayage, tirage aléatoire, etc.
+
+Probabilités conditionnelles
+Contenus
+
+ − Formule des probabilités totales pour une partition de l’univers.
+
+Capacités attendues
+
+ − Construire un arbre de probabilités associé à une situation aléatoire donnée.
+ − Interpréter les pondérations de chaque branche d’un arbre en termes de probabilités, et notamment de probabilités
+   conditionnelles.
+ − Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du
+   chemin correspondant.
+ − Utiliser un arbre de probabilités pour calculer des probabilités.
+ − Calculer la probabilité d’un évènement connaissant ses probabilités conditionnelles relatives à une partition de l’univers.
+
+Commentaires
+
+ − La formule des probabilités totales est mise en relation avec l’arbre. Elle est démontrée dans le cas d'une partition de
+   l'univers en deux ou trois évènements, la notion de partition d’un ensemble étant présentée sans formalisme.
+
+Variables aléatoires discrètes finies
+Contenus
+
+ − Espérance d’une variable aléatoire discrète.
+ − Loi binomiale 𝐵(𝑛, 𝑝) ; espérance.
+ − Coefficients binomiaux (𝑘 ) ; triangle de Pascal.
+                              𝑛
+
+
+Capacités attendues
+
+ − Calculer l’espérance d’une variable aléatoire discrète dans des cas simples et l’interpréter.
+ − Calculer des coefficients binomiaux (𝑘 ) à l’aide du triangle de Pascal pour 𝑛 ⩽ 10.
+                                         𝑛
+
+ −   Reconnaitre une situation relevant de la loi binomiale et en identifier le couple de paramètres.
+ −   Lorsque la variable aléatoire X suit une loi binomiale :
+ −   interpréter l’évènement {𝑋 = 𝑘} sur un arbre de probabilité ;
+ −   calculer les probabilités des évènements {𝑋 = 0}, {𝑋 = 1}, {𝑋 = 𝑛}, {𝑋 = 𝑛 − 1} et de ceux qui s’en déduisent par réunion ;
+ −   calculer la probabilité de l’évènement {𝑋 = 𝑘} à l’aide des coefficients binomiaux.
+
+Commentaires
+
+ − La loi binomiale formalise le travail fait en classe de première sur la répétition d’épreuves indépendantes selon une même
+   loi de Bernoulli. La valeur de l’espérance est admise.
+ − Pour des valeurs de 𝑛 inférieures ou égales à 4, comme en classe de première, la représentation de l’arbre permet de
+   dénombrer les chemins et de calculer les probabilités correspondantes.
+ − Pour des valeurs de 𝑛 plus grandes, l’arbre sert d’image mentale et le nombre de chemins associés à l’évènement est donné
+   ou déterminé à l’aide du triangle de Pascal.
+ − Le coefficient binomial (𝑘 ) est défini comme le nombre de chemins associés à l’évènement {X = k} dans un arbre
+                              𝑛
+
+   représentant un schéma de Bernoulli de taille n.
+                                𝑛−1     𝑛−1
+ − La formule de Pascal (𝑘 ) = (𝑘−1) + ( 𝑘 ) est établie à partir d’un raisonnement sur le nombre de chemins dans l’arbre.
+                         𝑛
+
+
+Situations algorithmiques
+
+ − Générer un triangle de Pascal de taille n donnée.
+ − Représenter par un diagramme en bâtons la loi de probabilité d’une loi binomiale (𝑛, 𝑝). Faire le lien avec l’histogramme
+   des fréquences observées des 1 lors de la simulation de 𝑁 échantillons de taille 𝑛 d'une loi de Bernoulli de paramètre 𝑝
+   faite en classe de première.
+ − Calculer l’espérance Σ𝑥𝑖 𝑝𝑖 d’une variable aléatoire suivant une loi de probabilité donnée ; cas particulier d’une variable
+   aléatoire suivant la loi binomiale 𝐵(𝑛, 𝑝).
+ − Représenter graphiquement l’espérance de lois binomiales 𝐵(𝑛, 𝑝) à 𝑝 fixé et 𝑛 variable, à 𝑛 fixé et 𝑝 variable puis faire le
+   lien avec l’expression admise de l’espérance.
+Thèmes d’étude
+L’étude des thèmes proposés ci-après s’appuie sur la résolution de problèmes. Elle privilégie la modélisation ou la simulation
+tout en mobilisant des contenus et des capacités figurant au programme. Les apports théoriques sont limités au strict
+nécessaire et introduits au fil des situations proposées.
+
+Liste indicative de thèmes
+ −   Optimisation linéaire et régionnement du plan.
+ −   Méthode de Monte-Carlo.
+ −   Simulation de marches aléatoires.
+ −   Initiation aux graphes ; ordonnancement.
+
