@@ -6,7 +6,7 @@ _Mis à jour le 2026-10-22, test d'invariant E1 écrit (§ 11)._
 
 - **État** : phase 0 + un test. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » : 67/70, seul écart = espaces dans les nombres (§ 11).
 - **Prochaine action** : merger la PR du test ; puis David tranche E2, D1-D4, § 9, § 10 ; ensuite plan de lots.
-- **En attente de David** : § 11 E2 (espace dans les nombres de 4 chiffres) ; § 10 (partager les règles élémentaires) ; § 9 (`normalize` pour développer) ; § 7 D1-D4 ; § 5 Q4-Q7.
+- **En attente de David** : § 8 E1 (une seule définition de « bien écrit », toute correction passe le juge — jamais répondue) ; § 11 E2 (espace dans les nombres de 4 chiffres) ; § 10 (partager les règles élémentaires) ; § 9 (`normalize` pour développer) ; § 7 D1-D4 ; § 5 Q4-Q7.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
 - **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `test/simplify-carte` (le test du § 11).
 
