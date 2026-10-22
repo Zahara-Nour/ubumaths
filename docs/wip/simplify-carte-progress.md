@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après la décision E1 (§ 14)._
+_Mis à jour le 2026-10-22, après les décisions E1 et E2 (§ 14-15)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Source scratchpad perdue au `/clear` : pour la modifier, `Artifact read` puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (E2 ensuite) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : confirmer la lecture d'E1 (réglage le plus exigeant, § 14) · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (§ 10 ensuite) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : § 10 (règles partagées) · partie décimale de 4 chiffres (§ 15) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -336,4 +336,12 @@ Options : **A** une seule fonction « valeur exacte à afficher » (`evaluate` p
 
 **Décision : oui.** Toute correction (écriture produite par `tidy`) passe le juge de l'élève (`checkForm`, `cosmetic-transforms.ts:1809`) sans aucune remarque. Le test #1609 devient une règle permanente ; ses 3 écarts (`spaces`) restent en `it.fails` jusqu'à E2.
 
-Précision de David : le juge est paramétrable, chaque règle vaut `strict`, `warn` ou `off` selon la question. Vérifié dans le code : les 10 règles (`zeros`, `spaces`, `brackets`, `signs`, `nullTerms`, `factorOne`, `factorZero`, `products`, `reducedFractions`, `reducedRadicals`) valent `warn` par défaut (`constraints[id] ?? 'warn'`), aucune n'est désactivée par défaut. Le test appelle `checkForm(…, {})`, donc **toutes les règles actives** : c'est le réglage le plus exigeant. `off` ne fait que retirer une règle et `strict`/`warn` ne changent que la conséquence ; une correction sans remarque à ce réglage passe donc tous les réglages d'une question. Lecture proposée à David : la règle vise ce réglage-là (correction exemplaire quel que soit le niveau de contrainte de la question) — **à confirmer**.
+Précision de David : le juge est paramétrable, chaque règle vaut `strict`, `warn` ou `off` selon la question. Vérifié dans le code : les 10 règles (`zeros`, `spaces`, `brackets`, `signs`, `nullTerms`, `factorOne`, `factorZero`, `products`, `reducedFractions`, `reducedRadicals`) valent `warn` par défaut (`constraints[id] ?? 'warn'`), aucune n'est désactivée par défaut. Le test appelle `checkForm(…, {})`, donc **toutes les règles actives** : c'est le réglage le plus exigeant. `off` ne fait que retirer une règle et `strict`/`warn` ne changent que la conséquence ; une correction sans remarque à ce réglage passe donc tous les réglages d'une question. **Confirmé par David** (« oui c'est ça ») : la règle vise ce réglage-là, une correction est exemplaire quel que soit le niveau de contrainte de la question.
+
+## 15. E2 : l'espace dans les nombres (David, 2026-10-22 : « comme tu proposes »)
+
+**Décision** : à 4 chiffres, l'espace est **facultative** (`1024` et `1 024` acceptés par le juge) ; dès 5 chiffres elle est **obligatoire** (`30000` reçoit une remarque). Les corrections écrivent `1024` et `30 000`. Usage du BIPM.
+
+Effets prévus : `hasIntegerSpacingViolation` (`cosmetic-transforms.ts:142`) ne signale plus un nombre de 4 chiffres sans espace (une espace mal placée reste une faute) ; `toLatex` espace les entiers dès 5 chiffres ; les 3 `it.fails` de `tidy-passe-le-juge.test.ts` doivent alors passer : `1024` et `2469/20` (4 chiffres) sont acceptés tels quels, `30000` est écrit `30 000`.
+
+Reste ouvert : la **partie décimale** suit la même règle aujourd'hui (`hasDecimalSpacingViolation`, `:164`, exige l'espace dès 4 décimales : `0,123 4`). Question posée à David : même assouplissement à 4 décimales (`0,1234` accepté) ?
