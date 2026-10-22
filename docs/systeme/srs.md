@@ -162,7 +162,7 @@ Le paquet d'un chapitre n'ajoute **rien** au Programme.
 
 La page `decks/programme` range les cartes en 4 sections calculées à la lecture
 (`templateToBadge`) et affiche sous chaque carte la **notion** de l'arbre où se range son point
-(niveau de l'élève d'abord, `keepLinksOfGrade` ; points neufs seuls, le plus petit code s'il y en a
+(niveau de l'élève d'abord, `keepLinksOfGrade` ; points lisibles seuls, le plus petit code s'il y en a
 plusieurs) ; « À remédier » et « À renforcer » lancent une séance filtrée
 (`?states=learning,relearning`, `?states=review`) :
 

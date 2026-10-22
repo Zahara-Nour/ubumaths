@@ -138,7 +138,7 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
   acquisition de l'élève s'y accrochent. `code` (`1SPE-047`, `6-012`), posé par la migration qui crée le point, est le seul
   identifiant lisible et stable d'un environnement à l'autre. Un point se retire par `archived_at`, pas
   par DELETE : l'application n'expose plus de suppression (C5 étape 3) ; seuls le libellé et
-  l'archivage d'un point **neuf** se modifient (PATCH `/api/teacher/curriculum/points/[pointId]`).
+  l'archivage d'un point se modifient (PATCH `/api/teacher/curriculum/points/[pointId]`).
   `curriculum_point_reference_counts` (DEFINER) reste en base, sans appelant.
 - **Arbre et programme (ADR 0019, 0020)** : `classification_nodes` (branche > notion > sous-notion),
   `source_types`, `exercise_classifications`, `grade_predecessors` (parcours, `grade_ancestors()`), et
@@ -158,7 +158,7 @@ Deux référentiels, deux usages (la famille A, ex-`skills`, n'existe plus :
 - **Position d'affichage** : `display_order` est local à la fratrie ; un nœud créé sans position va en
   dernier (triggers `*_place_last`) ; `reorder_curriculum_points` / `_themes` / `_objectives` renumérotent 1..N et refusent une liste
   incomplète (en **INVOKER** pour que la RLS s'applique) ; plus aucun appelant depuis la C5 étape 3 :
-  les points neufs suivent l'ordre du BO, fixé par migration.
+  les points suivent l'ordre du BO, fixé par migration.
 
 Accès : arbre et compétences lisibles par tout compte connecté (et une partie par `anon`, § 1) ;
 arbre écrit par le professeur / admin ; compétences et `classification_nodes` écrits par l'admin.
@@ -167,7 +167,7 @@ L'élève lit **ses** tentatives et **ses** caches ; le professeur ceux de tous 
 `teacher`.
 
 Code : `src/lib/server/curriculum.ts`, `src/lib/server/programme-tree.ts` (arbre branche > notion >
-points neufs d'un niveau), `src/lib/server/curriculum-coverage.ts`,
+points d'un niveau), `src/lib/server/curriculum-coverage.ts`,
 `src/lib/server/competences/`, `src/lib/server/stats/`, `src/routes/api/teacher/curriculum`,
 `src/routes/(protected)/dashboard/teacher/programme`. Types : `SkillAttempt` (discriminé, à préférer à
 `Tables<'skill_attempts'>`) dans `src/lib/types/database-helpers.ts`, `MissingForNext` dans

@@ -9,7 +9,7 @@ couvre:
 
 # Analytique prof — la page « analytics » d'une classe
 
-> Vérifié contre le code le 2026-10-21. Historique du chantier (V2.0, juin 2026) :
+> Vérifié contre le code le 2026-10-21 ; filtres de l'ancienne génération retirés le 2026-10-22. Historique du chantier (V2.0, juin 2026) :
 > [teacher-analytics-progress.md](../archive/wip/teacher-analytics-progress.md) (archivé, ne décrit
 > pas le code actuel).
 
@@ -28,7 +28,7 @@ Termes ([CONTEXT.md](../../CONTEXT.md)) : Point du programme, branche, notion, c
 mathématiques. L'interface dit « point » ; ⚠️ le code dit encore « **capacité** »
 (`ClassCapacityGrid`, `getClassCapacityGrid`, `CapacityBadge`) et certains commentaires « famille A » :
 c'est le **vocabulaire du référentiel abandonné**
-([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)). Les colonnes sont des **points neufs**
+([ADR 0008](../adr/0008-referentiel-famille-a-abandonne.md)). Les colonnes sont des **points**
 du programme (posés sur un nœud de l'arbre, ADR 0020) ; seule la famille B (compétences) reste un
 référentiel vivant.
 
@@ -44,19 +44,19 @@ s'élève quand il a besoin de l'admin ; l'élévation laisse le rôle de sessio
 
 Onglet 📘 Connaissances :
 
-- **A — Grille élève × point** (`ClassCapacityGrid.svelte`) : une colonne par point neuf **non
+- **A — Grille élève × point** (`ClassCapacityGrid.svelte`) : une colonne par point **non
   archivé** tagué sur un modèle que la classe a tenté (via `question_template_points`, sans `!inner` ;
-  anciens points et archivés écartés en mémoire par `isLivePoint`). Carte tagguée dans plusieurs
+  points sans niveau et archivés écartés en mémoire par `isLivePoint`). Carte tagguée dans plusieurs
   programmes : seuls ses points du **niveau de la classe** comptent, s'il en a (`keepLinksOfGrade`,
   niveau lu sur le point). Colonnes dans l'**ordre de l'arbre** (branche, notion, puis ordre du BO,
   `placeInTree`) ; sous chaque nom (rendu par `InlineMarkdown`, LaTeX compris), la **notion** du
   point ; un point qu'on ne sait pas placer garde sa colonne, en dernier, sans notion. Cellule = badge
   FSRS agrégé 🆘 / 🔁 / ⏳ / ✅ / ◯ (`templateToBadge` + `BADGE_PRIORITY`,
-  `src/lib/server/srs/capacity-badge.ts`). Bascule « Tout le niveau » : ajoute les points neufs non
+  `src/lib/server/srs/capacity-badge.ts`). Bascule « Tout le niveau » : ajoute les points non
   archivés du niveau de la classe, même non touchés. Tri optionnel par % acquis ; pied de colonne
   `% acquise / % à remédier`.
 - **B — Courbe de rétention** (`StudentRetentionCurve.svelte`) : un élève × une **branche** de l'arbre,
-  dans le programme du niveau de la classe (points neufs non archivés de ce niveau dont la branche,
+  dans le programme du niveau de la classe (points non archivés de ce niveau dont la branche,
   lue en remontant sous-notion → notion → branche, est celle choisie). Retrievability moyenne par
   semaine (8 par défaut), lue dans `srs_card_stats.review_history`. Rien n'est tracé sous 3 révisions.
 - **C — Heatmap d'activité** (`ClassActivityHeatmap.svelte`) : élève × jour (30 j), nombre de
