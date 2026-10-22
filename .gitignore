@@ -80,3 +80,6 @@ __pycache__/
 tools/chiphre-math/venv/
 # Ancien emplacement (avant le 2026-10-13) : un venv créé là reste ignoré
 tools/shantell-math/venv/
+
+# Transcriptions de sessions Claude (skill exporter-session) : locales, jamais publiées
+docs/session-transcripts/

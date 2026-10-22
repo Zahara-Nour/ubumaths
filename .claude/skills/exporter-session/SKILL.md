@@ -67,4 +67,4 @@ EOF
 
 ## 2. Rendre compte
 
-Donner à David le chemin complet du fichier et le nombre de messages. **Ne pas commiter** : le dépôt est public, et le sort de `docs/session-transcripts/` (commité ou ignoré) reste à décider par David.
+Donner à David le chemin complet du fichier et le nombre de messages. **Rien à commiter** : `docs/session-transcripts/` est dans le `.gitignore` (dépôt public, décision de David du 2026-10-22). Les transcriptions restent sur la machine.
