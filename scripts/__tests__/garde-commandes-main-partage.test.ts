@@ -8,7 +8,9 @@
  * bloqué `pnpm deploy:prod`. Gardé ici :
  * - sur main : pull qui fusionne, merge non fast-forward, `git add -A` / `.`,
  *   `git commit -a` refusés ; leurs variantes sûres passent ;
- * - sur une branche de chantier, rien de tout ça n'est refusé ;
+ * - sur une branche de chantier, rien de tout ça n'est refusé ; seul l'est,
+ *   une fois la branche poussée, le `pull --rebase` d'une autre branche (il
+ *   réécrit les commits publiés, #1603) ;
  * - le dossier est suivi à travers `cd` et `git -C` ;
  * - pendant un deploy:prod (verrou « deploy » tenu), `gh pr merge` et les
  *   commits / pushes vers main sont refusés, même depuis un worktree ; le verrou
@@ -153,12 +155,50 @@ describe('main partagé — passe', () => {
 		passe("git commit -F - <<'EOF'\ndocs: avant, git pull pour synchroniser\nEOF", principal);
 	});
 
+	it('une branche de chantier pas encore poussée se rebase sur main', () => {
+		passe('git pull --rebase origin main', chantier);
+	});
+
+	it("même avec l'upstream origin/main que lui donne `git worktree add -b x … origin/main`", () => {
+		git(chantier, 'config', 'remote.origin.url', join(racine, 'distant.git'));
+		git(chantier, 'config', 'remote.origin.fetch', '+refs/heads/*:refs/remotes/origin/*');
+		git(chantier, 'update-ref', 'refs/remotes/origin/main', 'HEAD');
+		git(chantier, 'config', 'branch.feat/x.remote', 'origin');
+		git(chantier, 'config', 'branch.feat/x.merge', 'refs/heads/main');
+		passe('git pull --rebase origin main', chantier);
+	});
+
 	it('tout, sur une branche de chantier', () => {
 		passe('git pull', chantier);
 		passe('git merge origin/main', chantier);
 		passe('git add -A', chantier);
 		passe('git commit -am "wip"', chantier);
 		passe('gh pr merge 12 --merge', chantier);
+	});
+});
+
+describe('branche de chantier déjà poussée (#1603)', () => {
+	beforeAll(() => {
+		// Le distant connaît la branche : une ref de suivi suffit.
+		git(chantier, 'update-ref', 'refs/remotes/origin/feat/x', 'HEAD');
+	});
+
+	afterAll(() => {
+		git(chantier, 'update-ref', '-d', 'refs/remotes/origin/feat/x');
+	});
+
+	it('refuse de la rebaser sur une autre branche', () => {
+		refuse('git pull --rebase origin main', chantier, /git merge origin\/main/);
+		refuse('git pull -r origin main', chantier, /git merge origin\/main/);
+		refuse(`git -C "${chantier}" pull --rebase origin main`, principal, /git merge origin\/main/);
+	});
+
+	it('laisse tirer sa propre branche, et fusionner main', () => {
+		passe('git pull --rebase', chantier);
+		passe('git pull --rebase origin feat/x', chantier);
+		passe('git pull --rebase origin HEAD', chantier);
+		passe('git pull origin main', chantier);
+		passe('git merge origin/main', chantier);
 	});
 });
 
