@@ -95,8 +95,11 @@ Google est coupé (`GOOGLE_LOGIN_ENABLED`). Derrière l'identifiant du cas B, un
 
 **Concernés** : tout niveau **sauf 1re et terminale** (primaire, collège, 2nde et niveau inconnu
 compris ; question d'âge en 2nde). Le prof peut dispenser un élève. **Sans consentement**, l'élève
-est en **lecture seule** : il travaille, mais le social et les échanges (messages, marché, jeux…)
-sont bloqués.
+est en **lecture seule** : il consulte, mais **rien de ce qu'il fait n'est enregistré**. Le
+consentement couvre la collecte de ses données d'activité (RGPD art. 8), pas seulement le social :
+`requireConsent` (403) ferme exercices terminés, révisions, énigmes, exercices Python, scores et
+pouvoirs des jeux, messages, chat, marché, cartes VIP ; la base garde en plus messages, marché et
+démineur (`guard_read_only_author`, voir [conformite/](conformite/consentement-parental.md)).
 
 | Situation       | Avant la lecture seule                        | Comment le lien part au parent                                                              |
 | --------------- | --------------------------------------------- | ------------------------------------------------------------------------------------------- |
