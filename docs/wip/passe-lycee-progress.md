@@ -6,14 +6,16 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, ouverture du chantier._
+_Mis à jour le 2026-10-22, page à cocher de l'étape a publiée._
 
-- **État** : étape a (passe des points) lancée. Relevé fait : 1 105 points actifs du lycée
-  (`passe-lycee/points-lycee.csv`, base locale = prod), textes du BO extraits (`passe-lycee/bo/`).
-- **Prochaine action** : analyse par programme (agents), consolidation des familles, page à cocher.
-- **En attente de David** : rien.
-- **Pièges en cours** : seuls les nouveaux programmes comptent ; Tle (spé, compl., techno) = textes de la rentrée
-  2027 ; maths expertes = texte de 2019 (seul existant).
+- **État** : étape a consolidée (`passe-lycee/propositions.tsv`, 367 propositions ; `questions.md` Q1-Q15 ;
+  `bilan.md` : 1 105 → 1 495 points si tout passe). Page à cocher : https://claude.ai/artifact/NuDHhVAh5K5VUMQuCBKt3o
+  (base de l'artifact, collection `reponses`, un document par Qnn / Pnnn ; générée par `passe-lycee/page/generer.py`).
+- **Prochaine action** : lire les réponses (`ArtifactData list reponses`, compter avant de dire « tout est relu »),
+  appliquer, puis écrire la migration additive (points neufs, ⚙, rétablis, archivés, références) + tests d'intégration.
+- **En attente de David** : ses réponses sur la page (15 questions, 350 fiches).
+- **Pièges en cours** : Tle = textes de la rentrée 2027, expertes = 2019 ; 85 points coupés portent 167 tags (étape c) ;
+  Q4 déplace une référence (exception à « aucune référence déplacée »).
 - **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `refactor/passe-lycee`.
 
 ## Les 5 étapes
@@ -45,3 +47,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
     doublon né d'une coupe (notation Σ, Tle techno) n'est pas créé.
   - T5 **⚙ des automatismes de 1re** : un jumeau dans chacun des trois programmes (1SPE, 1GEN, 1TECHNO).
   - T6 **Puces larges** : rétablies (l. 421 de Tle spé comprise ; un point ou quatre grandeurs : sur la page).
+- **2026-10-22 — Consolidation et page à cocher.** 5 agents (un par lot de programmes) puis un agent de consolidation
+  (T1-T6, familles harmonisées, 7 conflits résolus). Vérifié : citations retrouvées dans `bo/`, codes existants, 211
+  nœuds proposés tous présents dans l'arbre. Page publiée (15 questions + 350 fiches ; les 32 fiches « à trancher »
+  renvoient aux questions).

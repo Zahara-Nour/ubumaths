@@ -1,0 +1,485 @@
+<title>Passe des points du lycée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@500&display=swap"
+/>
+<style>
+	/* Colonne de lecture unique ; barre de filtres collante ; une fiche par proposition, statut lisible au bord gauche. */
+	:root {
+		--bg: #f6f7f9;
+		--surface: #ffffff;
+		--ink: #1d2533;
+		--muted: #5d6779;
+		--line: #d9dee7;
+		--accent: #24508f;
+		--accent-soft: #e5ecf7;
+		--warn: #9a5b00;
+		--warn-soft: #fbf0dc;
+		--ok: #1f7a4d;
+		--ok-soft: #e1f3e9;
+		--bad: #b3261e;
+		--bad-soft: #fbe5e3;
+		--f-display: 'Source Serif 4', Georgia, serif;
+		--f-body: 'IBM Plex Sans', system-ui, sans-serif;
+		--f-mono: 'IBM Plex Mono', ui-monospace, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #12161d;
+			--surface: #1a2029;
+			--ink: #e4e8ef;
+			--muted: #9aa4b5;
+			--line: #2e3644;
+			--accent: #8fb3ec;
+			--accent-soft: #1f2d44;
+			--warn: #f0b860;
+			--warn-soft: #3a2c14;
+			--ok: #6fd3a0;
+			--ok-soft: #173326;
+			--bad: #f2948d;
+			--bad-soft: #3d1c1a;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #12161d;
+		--surface: #1a2029;
+		--ink: #e4e8ef;
+		--muted: #9aa4b5;
+		--line: #2e3644;
+		--accent: #8fb3ec;
+		--accent-soft: #1f2d44;
+		--warn: #f0b860;
+		--warn-soft: #3a2c14;
+		--ok: #6fd3a0;
+		--ok-soft: #173326;
+		--bad: #f2948d;
+		--bad-soft: #3d1c1a;
+		color-scheme: dark;
+	}
+	body {
+		background: var(--bg);
+		color: var(--ink);
+		font: 15px/1.5 var(--f-body);
+	}
+	.wrap {
+		max-width: 860px;
+		margin: 0 auto;
+		padding-inline: 16px;
+		padding-block: 24px 64px;
+		display: grid;
+		gap: 20px;
+	}
+	h1 {
+		font: 600 1.9rem/1.2 var(--f-display);
+		margin: 0;
+		text-wrap: balance;
+	}
+	h2 {
+		font: 600 1.35rem/1.3 var(--f-display);
+		margin: 8px 0 4px;
+		text-wrap: balance;
+	}
+	h2 small {
+		font: 400 0.85rem var(--f-body);
+		color: var(--muted);
+		margin-left: 6px;
+	}
+	.intro p {
+		margin: 6px 0;
+		color: var(--muted);
+		max-width: 68ch;
+	}
+	.barre {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 2;
+		background: var(--bg);
+		padding-block: 10px;
+		border-bottom: 1px solid var(--line);
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 14px;
+		align-items: center;
+	}
+	.barre .grp {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	.barre button,
+	.choix button {
+		font: 600 0.85rem var(--f-body);
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--ink);
+		border-radius: 6px;
+		padding: 6px 10px;
+		cursor: pointer;
+	}
+	.barre button[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+	}
+	.compte {
+		margin-left: auto;
+		font-variant-numeric: tabular-nums;
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	#alerte {
+		background: var(--bad-soft);
+		color: var(--bad);
+		border: 1px solid var(--bad);
+		border-radius: 8px;
+		padding: 10px 12px;
+		font-weight: 600;
+	}
+	.prog {
+		display: grid;
+		gap: 12px;
+	}
+	.fiche {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-left: 5px solid var(--line);
+		border-radius: 8px;
+		padding: 12px 14px;
+		display: grid;
+		gap: 6px;
+		min-width: 0;
+	}
+	.fiche[data-statut='A_TRANCHER'] {
+		border-left-color: var(--warn);
+	}
+	.fiche.rep-ok {
+		border-left-color: var(--ok);
+	}
+	.fiche.rep-revoir {
+		border-left-color: var(--bad);
+	}
+	.fiche header {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 10px;
+		align-items: baseline;
+		font-size: 0.82rem;
+	}
+	.pid,
+	.pcode,
+	.code {
+		font-family: var(--f-mono);
+	}
+	.pid {
+		color: var(--muted);
+	}
+	.pcode {
+		margin-left: auto;
+		font-weight: 500;
+	}
+	.type {
+		font-weight: 600;
+		color: var(--accent);
+		background: var(--accent-soft);
+		padding: 1px 8px;
+		border-radius: 999px;
+	}
+	.regle {
+		color: var(--muted);
+	}
+	.atr {
+		font-weight: 600;
+		color: var(--warn);
+		background: var(--warn-soft);
+		padding: 1px 8px;
+		border-radius: 999px;
+	}
+	.fiche p {
+		margin: 0;
+		overflow-wrap: anywhere;
+	}
+	.actuel {
+		color: var(--muted);
+	}
+	.libs {
+		margin: 2px 0;
+		padding: 0;
+		list-style: none;
+		display: grid;
+		gap: 4px;
+	}
+	.libs li {
+		display: grid;
+		grid-template-columns: 7.5em 1fr;
+		gap: 10px;
+		align-items: baseline;
+	}
+	.libs .code {
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.lib {
+		font-weight: 600;
+		min-width: 0;
+	}
+	.bo {
+		font-size: 0.88rem;
+		color: var(--muted);
+	}
+	.bo b {
+		font: 500 0.75rem var(--f-mono);
+		letter-spacing: 0.06em;
+		margin-right: 4px;
+	}
+	.justif {
+		font-size: 0.92rem;
+	}
+	.fiche.q .justif {
+		font-size: 0.98rem;
+	}
+	.renvoi {
+		font-size: 0.85rem;
+		color: var(--warn);
+		font-weight: 600;
+	}
+	.lot {
+		margin: 0;
+	}
+	.lot button {
+		font: 600 0.82rem var(--f-body);
+		border: 1px dashed var(--line);
+		background: transparent;
+		color: var(--muted);
+		border-radius: 6px;
+		padding: 5px 10px;
+		cursor: pointer;
+	}
+	.meta {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 14px;
+		font-size: 0.82rem;
+		color: var(--muted);
+	}
+	.meta .tags {
+		color: var(--warn);
+		font-weight: 600;
+	}
+	.rep {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 6px 12px;
+		align-items: start;
+		margin-top: 4px;
+	}
+	.choix {
+		display: flex;
+		gap: 6px;
+		grid-row: span 2;
+	}
+	.choix button[aria-pressed='true'][data-choix='ok'] {
+		background: var(--ok);
+		border-color: var(--ok);
+		color: var(--surface);
+	}
+	.choix button[aria-pressed='true'][data-choix='revoir'] {
+		background: var(--bad);
+		border-color: var(--bad);
+		color: var(--surface);
+	}
+	.com-l {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		overflow: hidden;
+		clip: rect(0 0 0 0);
+	}
+	textarea {
+		font: inherit;
+		font-size: 0.9rem;
+		width: 100%;
+		box-sizing: border-box;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		background: var(--bg);
+		color: var(--ink);
+		padding: 6px 8px;
+		resize: vertical;
+	}
+	.etat {
+		grid-column: 2;
+		font-size: 0.78rem;
+		color: var(--muted);
+		min-height: 1em;
+	}
+	.etat.err {
+		color: var(--bad);
+		font-weight: 600;
+	}
+	button:focus-visible,
+	textarea:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	@media (max-width: 560px) {
+		.rep {
+			grid-template-columns: 1fr;
+		}
+		.choix {
+			grid-row: auto;
+		}
+		.etat {
+			grid-column: 1;
+		}
+		.libs li {
+			grid-template-columns: 1fr;
+			gap: 0;
+		}
+		.compte {
+			margin-left: 0;
+		}
+	}
+</style>
+
+<div class="wrap">
+	<div class="intro">
+		<h1>Passe des points du lycée</h1>
+		<p>
+			Étape a : chaque fiche propose une coupe, un archivage, un point ⚙ ou une puce rétablie, avec
+			la ligne du BO. Les fiches « à trancher » portent une vraie question : la recommandation est
+			dans le texte. Les autres appliquent les règles que tu as tranchées (1a, 1b, T1 à T6) :
+			réponds OK, ou « À revoir » avec un commentaire.
+		</p>
+		<p>
+			Commence par les questions : elles tranchent toutes les fiches marquées « à trancher ». Le
+			bouton en tête de chaque programme marque OK d'un coup les fiches auxquelles tu n'as pas
+			répondu ; « À revoir » reste possible ensuite.
+		</p>
+		<p>
+			Le premier libellé d'une coupe garde le code actuel ; « neuf » reçoit un nouveau code, rangé
+			juste après.
+		</p>
+	</div>
+	<div class="barre">
+		<div class="grp" id="f-statut">
+			<button type="button" data-f="reste" aria-pressed="true">Ce qui reste</button>
+			<button type="button" data-f="trancher" aria-pressed="false">Questions</button>
+			<button type="button" data-f="revoir" aria-pressed="false">À revoir</button>
+			<button type="button" data-f="tout" aria-pressed="false">Tout</button>
+		</div>
+		<div class="grp" id="f-prog"></div>
+		<span class="compte" id="compte">0 / %%TOTAL%% répondues</span>
+	</div>
+	<div id="alerte" hidden></div>
+	%%SECTIONS%%
+</div>
+
+<script>
+	const IDS = %%IDS%%;
+	const PROGS = %%PROGS%%;
+	const rep = {};             // id -> {choix, commentaire}
+	const enAttente = new Map(); // id -> données à écrire
+	let db = null, filtreStatut = 'reste', filtreProg = 'tous', echecs = 0;
+
+	const fiches = [...document.querySelectorAll('.fiche')];
+	const parId = Object.fromEntries(fiches.map(f => [f.dataset.id, f]));
+
+	// Filtres par programme
+	const fp = document.getElementById('f-prog');
+	for (const [k, nom] of [['tous', 'Tous'], ...Object.entries(PROGS)]) {
+	  if (k !== 'tous' && !document.querySelector(`.prog[data-prog="${k}"]`)) continue;
+	  const b = document.createElement('button');
+	  b.type = 'button'; b.dataset.p = k; b.textContent = k === 'tous' ? 'Tous' : nom.replace('Terminale', 'Tle');
+	  b.setAttribute('aria-pressed', k === 'tous'); fp.append(b);
+	}
+	fp.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+	  filtreProg = b.dataset.p; fp.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); appliquer(); });
+	document.getElementById('f-statut').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return;
+	  filtreStatut = b.dataset.f; document.querySelectorAll('#f-statut button').forEach(x => x.setAttribute('aria-pressed', x === b)); appliquer(); });
+
+	function appliquer() {
+	  for (const f of fiches) {
+	    const r = rep[f.dataset.id];
+	    const repondable = IDS.includes(f.dataset.id);
+	    let v = filtreStatut === 'tout'
+	      || (filtreStatut === 'reste' && repondable && (!r || r.choix !== 'ok'))
+	      || (filtreStatut === 'trancher' && f.dataset.prog === 'questions')
+	      || (filtreStatut === 'revoir' && r && r.choix === 'revoir');
+	    if (filtreProg !== 'tous' && f.dataset.prog !== filtreProg && f.dataset.prog !== 'questions') v = false;
+	    f.hidden = !v;
+	  }
+	  for (const s of document.querySelectorAll('.prog')) s.hidden = !s.querySelector('.fiche:not([hidden])');
+	  const n = IDS.filter(id => rep[id] && rep[id].choix).length;
+	  document.getElementById('compte').textContent = `${n} / ${IDS.length} répondues`;
+	}
+
+	function peindre(id) {
+	  const f = parId[id]; if (!f || !f.querySelector('.rep')) return; const r = rep[id] || {};
+	  f.classList.toggle('rep-ok', r.choix === 'ok'); f.classList.toggle('rep-revoir', r.choix === 'revoir');
+	  f.querySelectorAll('.choix button').forEach(b => b.setAttribute('aria-pressed', b.dataset.choix === r.choix));
+	  const t = f.querySelector('textarea'); if (document.activeElement !== t) t.value = r.commentaire || '';
+	}
+
+	function alerte() {
+	  const el = document.getElementById('alerte');
+	  if (!db) { el.hidden = false; el.textContent = 'Les réponses ne peuvent pas être enregistrées ici (base indisponible ou non connecté). Ouvre la page depuis claude.ai.'; return; }
+	  if (enAttente.size) { el.hidden = false; el.textContent = `${enAttente.size} réponse(s) pas encore enregistrée(s) : nouvel essai automatique. Ne ferme pas la page.`; }
+	  else el.hidden = true;
+	}
+
+	// File d'écriture unique, espacée, avec nouvel essai
+	let enCours = false;
+	async function vider() {
+	  if (enCours || !db) return; enCours = true;
+	  while (enAttente.size) {
+	    const [id, data] = enAttente.entries().next().value;
+	    const etat = parId[id]?.querySelector('.etat');
+	    try {
+	      await db.collection('reponses').doc(id).set(data);
+	      if (enAttente.get(id) === data) enAttente.delete(id);
+	      echecs = 0; if (etat) { etat.textContent = 'Enregistré'; etat.classList.remove('err'); }
+	      await new Promise(r => setTimeout(r, 400));
+	    } catch (e) {
+	      echecs++; if (etat) { etat.textContent = 'Pas enregistré, nouvel essai…'; etat.classList.add('err'); }
+	      alerte(); await new Promise(r => setTimeout(r, Math.min(30000, 2000 * echecs)));
+	    }
+	  }
+	  enCours = false; alerte(); appliquer();
+	}
+	function ecrire(id) { const r = rep[id]; enAttente.set(id, { choix: r.choix || null, commentaire: r.commentaire || '', maj: new Date().toISOString() }); alerte(); vider(); }
+
+	document.addEventListener('click', e => {
+	  const lot = e.target.closest('.tout-ok');
+	  if (lot) {
+	    if (!db) { alerte(); return; }
+	    for (const f of document.querySelectorAll(`.fiche[data-prog="${lot.dataset.prog}"]`)) {
+	      const id = f.dataset.id; if (!IDS.includes(id) || (rep[id] && rep[id].choix)) continue;
+	      rep[id] = rep[id] || {}; rep[id].choix = 'ok'; peindre(id); ecrire(id);
+	    }
+	    return;
+	  }
+	  const b = e.target.closest('.choix button'); if (!b) return;
+	  const id = b.closest('.fiche').dataset.id; rep[id] = rep[id] || {};
+	  rep[id].choix = rep[id].choix === b.dataset.choix ? null : b.dataset.choix;
+	  peindre(id); ecrire(id);
+	});
+	const minuteurs = {};
+	document.addEventListener('input', e => {
+	  const t = e.target.closest('.fiche textarea'); if (!t) return;
+	  const id = t.closest('.fiche').dataset.id; rep[id] = rep[id] || {}; rep[id].commentaire = t.value;
+	  clearTimeout(minuteurs[id]); minuteurs[id] = setTimeout(() => ecrire(id), 900);
+	});
+
+	appliquer();
+	(async () => {
+	  try { db = await window.claude?.use?.('db'); } catch { db = null; }
+	  if (!db) { alerte(); return; }
+	  db.collection('reponses').onSnapshot(snap => {
+	    for (const d of snap.docs) { if (enAttente.has(d.id)) continue; const v = d.data() || {}; rep[d.id] = { choix: v.choix || null, commentaire: v.commentaire || '' }; peindre(d.id); }
+	    appliquer();
+	  }, () => { alerte(); });
+	  alerte();
+	})();
+</script>
