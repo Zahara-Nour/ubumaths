@@ -2261,44 +2261,6 @@ export type Database = {
           },
         ]
       }
-      curriculum_objectives: {
-        Row: {
-          created_at: string
-          description: string | null
-          display_order: number
-          id: string
-          name: string
-          theme_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          description?: string | null
-          display_order?: number
-          id?: string
-          name: string
-          theme_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          description?: string | null
-          display_order?: number
-          id?: string
-          name?: string
-          theme_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "curriculum_objectives_theme_id_fkey"
-            columns: ["theme_id"]
-            isOneToOne: false
-            referencedRelation: "curriculum_themes"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       curriculum_point_automatismes: {
         Row: {
           created_at: string
@@ -2336,8 +2298,7 @@ export type Database = {
           id: string
           kind: string
           name: string
-          node_id: string | null
-          objective_id: string | null
+          node_id: string
           rang: number | null
           regime_acquisition: string
           rubrique: string | null
@@ -2353,8 +2314,7 @@ export type Database = {
           id?: string
           kind: string
           name: string
-          node_id?: string | null
-          objective_id?: string | null
+          node_id: string
           rang?: number | null
           regime_acquisition?: string
           rubrique?: string | null
@@ -2370,8 +2330,7 @@ export type Database = {
           id?: string
           kind?: string
           name?: string
-          node_id?: string | null
-          objective_id?: string | null
+          node_id?: string
           rang?: number | null
           regime_acquisition?: string
           rubrique?: string | null
@@ -2385,44 +2344,7 @@ export type Database = {
             referencedRelation: "classification_nodes"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "curriculum_points_objective_id_fkey"
-            columns: ["objective_id"]
-            isOneToOne: false
-            referencedRelation: "curriculum_objectives"
-            referencedColumns: ["id"]
-          },
         ]
-      }
-      curriculum_themes: {
-        Row: {
-          code: string | null
-          created_at: string
-          display_order: number
-          grade: string
-          id: string
-          name: string
-          updated_at: string
-        }
-        Insert: {
-          code?: string | null
-          created_at?: string
-          display_order?: number
-          grade: string
-          id?: string
-          name: string
-          updated_at?: string
-        }
-        Update: {
-          code?: string | null
-          created_at?: string
-          display_order?: number
-          grade?: string
-          id?: string
-          name?: string
-          updated_at?: string
-        }
-        Relationships: []
       }
       daily_game_rewards: {
         Row: {
@@ -15097,12 +15019,6 @@ export type Database = {
         Args: { p_point_id: string }
         Returns: Json
       }
-      curriculum_referenced_points: {
-        Args: { p_grade: string }
-        Returns: {
-          point_id: string
-        }[]
-      }
       delete_all_resolved_errors: { Args: never; Returns: number }
       delete_attachment: { Args: { p_attachment_id: string }; Returns: string }
       delete_user_account: { Args: { p_user_id: string }; Returns: Json }
@@ -16263,18 +16179,6 @@ export type Database = {
         Returns: Json
       }
       reopen_school_year: { Args: { p_school_year_id: string }; Returns: Json }
-      reorder_curriculum_objectives: {
-        Args: { p_objective_ids: string[]; p_theme_id: string }
-        Returns: undefined
-      }
-      reorder_curriculum_points: {
-        Args: { p_objective_id: string; p_point_ids: string[] }
-        Returns: undefined
-      }
-      reorder_curriculum_themes: {
-        Args: { p_grade: string; p_theme_ids: string[] }
-        Returns: undefined
-      }
       reorder_worksheet_exercises: {
         Args: { p_exercises: Json; p_worksheet_id: string }
         Returns: number
