@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, fin de session (après #1609)._
+_Mis à jour le 2026-10-22, fin de session (après la décision A, § 13)._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées (aujourd'hui / à décider / options / recommandation). Source scratchpad perdue au `/clear` : pour la modifier, `Artifact read` puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page ; ensuite plan de lots (fin de la page).
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (E1 d'abord) ; ensuite plan de lots (fin de la page).
 - **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
