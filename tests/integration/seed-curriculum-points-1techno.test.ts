@@ -17,6 +17,10 @@
  * (chemin du nœud compris), rien d'autre au grade '1_TECHNO', l'ensemble exact des
  * références. Lecture ANONYME (B6).
  *
+ * Puis la passe des points du lycée (migration `20261022180000_passe_points_lycee`, validée
+ * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 143 points ; fixture transformée par
+ * docs/wip/passe-lycee/generer-migration.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -169,14 +173,14 @@ describe('Seed des points de 1re technologique (points + références)', () => {
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (105 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (143 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(105);
+		expect(fixture.points).toHaveLength(143);
 		expect(fixture.points.every((p) => p.grade === '1_TECHNO')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(80);
 	});
 
-	it('les 105 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 143 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -191,7 +195,7 @@ describe('Seed des points de 1re technologique (points + références)', () => {
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(105);
+		expect(pointRows).toHaveLength(143);
 	});
 
 	it('les références du grade 1_TECHNO visent EXACTEMENT les cibles du document (liste de 2de comprise)', () => {
@@ -208,22 +212,34 @@ describe('Seed des points de 1re technologique (points + références)', () => {
 		);
 		const codes = new Set(actual.map((s) => s.split('|')[0]));
 		expect(refs2de.references.filter((r) => !codes.has(r.code))).toEqual([]);
-		// Une seule auto-référence : le signe d'une expression factorisée du second degré.
-		expect([...codes].filter((c) => c.startsWith('1TECHNO-'))).toEqual(['1TECHNO-066']);
+		// Auto-références : le signe d'une expression factorisée du second degré, et les trois
+		// points ⚙ de la passe lycée.
+		expect([...codes].filter((c) => c.startsWith('1TECHNO-')).sort()).toEqual([
+			'1TECHNO-066',
+			'1TECHNO-139',
+			'1TECHNO-140',
+			'1TECHNO-141'
+		]);
 	});
 
 	it('décisions T1 et T2 : séries dans la rubrique, tout attendu, régime', () => {
 		expect(pointRows.every((r) => r.rang === null)).toBe(true);
-		expect(pointRows.every((r) => r.regime_acquisition === 'diversite')).toBe(true);
+		// Seuls les trois points ⚙ de la passe lycée (Automatismes) sont en fluence.
+		expect(
+			pointRows
+				.filter((r) => r.regime_acquisition !== 'diversite')
+				.map((r) => r.code)
+				.sort()
+		).toEqual(['1TECHNO-139', '1TECHNO-140', '1TECHNO-141']);
 		// T2 : tout est attendu, Situations algorithmiques comprises.
 		expect(pointRows.every((r) => r.exigence === 'attendu')).toBe(true);
-		expect(pointRows.filter((r) => r.kind === 'algorithme')).toHaveLength(18);
+		expect(pointRows.filter((r) => r.kind === 'algorithme')).toHaveLength(23); // 18, coupés par la passe lycée
 		// T1 : la série est dite dans la rubrique.
 		expect(
 			pointRows.filter((r) => r.rubrique === 'Algorithmique et programmation (sauf série STD2A)')
-		).toHaveLength(11);
+		).toHaveLength(13);
 		expect(
 			pointRows.filter((r) => (r.rubrique ?? '').startsWith('Activités géométriques (série STD2A)'))
-		).toHaveLength(18);
+		).toHaveLength(26);
 	});
 });

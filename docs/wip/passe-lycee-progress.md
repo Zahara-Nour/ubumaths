@@ -6,19 +6,19 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, page à cocher de l'étape a republiée (v2, questions réécrites)._
+_Mis à jour le 2026-10-22, migration de l'étape a écrite et testée (PR à ouvrir)._
 
-- **État** : étape a consolidée (`passe-lycee/propositions.tsv`, 367 propositions ; `bilan.md` : 1 105 → 1 495 points).
-  Page : https://claude.ai/artifact/NuDHhVAh5K5VUMQuCBKt3o — base de l'artifact, collection `reponses`, un document
-  par Qnn (`choix` = clé d'option A/B/C) ou Pnnn (`choix` = ok/revoir), + `commentaire`. Questions dans
-  `passe-lycee/page/questions.json` (BO, point actuel, libellés de chaque option, reco) ; page = `page/generer.py`.
-- **Prochaine action** : attendre que David ait répondu ; lire `reponses` (compter : 15 questions + 350 fiches),
-  appliquer à `propositions.tsv`, puis migration additive (points neufs, ⚙, rétablis, archivés, références) + tests.
-- **En attente de David** : ses réponses. Déjà : Q01 = A, Q02 = A ; Q03 et Q04 commentées « je ne comprends pas »
-  avant la réécriture (à lui faire reprendre).
-- **Pièges en cours** : Tle = textes de la rentrée 2027, expertes = 2019 ; 85 points coupés portent 167 tags (étape c) ;
-  le pre-commit reformate `page/gabarit.html` (remplacements par ancre, pas par texte exact).
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `refactor/passe-lycee` (poussée, pas de PR).
+- **État** : réponses lues (Q03 = B, le reste = A, toutes = reco ; 335 fiches tenues OK). Migration
+  `20261022180000_passe_points_lycee` GÉNÉRÉE par `passe-lycee/generer-migration.py` : 277 origines, 379 morceaux,
+  25 ajouts (14 ⚙, 11 rétablis), 2 archivés, 130 → 321 références ; 1 105 → 1 507 points actifs. Appliquée en local ;
+  test `passe-points-lycee.test.ts` rouge sans elle, vert avec ; suite d'intégration verte (260 fichiers).
+- **Prochaine action** : PR, revue (`code-reviewer` + `security-auditor`), merge, puis `db:migrate` depuis la branche
+  mergée si les 4 conditions tiennent ; ensuite étape b (bornes) ou c (tags).
+- **En attente de David** : la question d'accès (« qui pourra lire quoi de plus ? » — reco : personne).
+- **Pièges en cours** : 1SPE-244 garde son nœud (un modèle tagué sur la notion bloque le trigger des tags, étape c) ;
+  régénérer = restaurer d'abord les `seed-*-points.json` (le script part de l'état d'avant) ; `undoLaterMigrations`
+  (tests) à compléter pour toute migration de données future du même genre.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `refactor/passe-lycee`.
 
 ## Les 5 étapes
 
@@ -56,3 +56,12 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
 - **2026-10-22 — Questions réécrites (David : « ce n'est pas clair »).** Q03/Q04 incomprises : les questions citaient des
   codes sans libellés. Réécrites en `page/questions.json` (BO, point actuel, une option par bouton avec ses libellés).
   Réponses Q01/Q02 « reco » converties en A.
+- **2026-10-22 — Réponses et migration.** Page lue : 15 questions répondues (Q03 = B, toutes les autres = A, chaque fois
+  la reco), aucune fiche cochée ; David : « tiens-les toutes pour OK et continue ». Générateur
+  `generer-migration.py` (modèle : `c5-scissions-generer.py`) → migration, fixture `passe-lycee.json`, fixtures des
+  seeds (`--seeds`). Décisions techniques prises en route : codes neufs = max + 1 par grade ; ⚙ en fluence, rubrique
+  « Automatismes > <bloc du BO> », rangés en tête de la partie Automatismes ; références par défaut au morceau qui
+  garde le code, étendues selon la colonne famille ; invariants des seeds respectés (la 1re reprend la liste de 2de,
+  la Tle spé et compl. celle de 1re spé : 2-382 garde ses trois morceaux en 1re/Tle, 2-214 ses deux en Tle compl.) ;
+  1SPE-244 garde son nœud (garde des tags en prod). Prod : aucune donnée d'élève sur les points du lycée (0 état,
+  0 journal, 0 exercice, 0 signalement). Rollback éprouvé : empreinte identique à l'état d'avant, puis rejeu.

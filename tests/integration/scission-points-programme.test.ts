@@ -82,6 +82,20 @@ const fixture: Fixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/scission-points-programme.json', 'utf-8')
 );
 const GRADES = Object.keys(fixture.grades);
+/**
+ * La passe des points du lycée, venue après, réécrit la 2de (ordre, archivages, références) : pour
+ * ce qu'elle touche, l'état final est le sien (tests/integration/passe-points-lycee.test.ts), et
+ * l'état « après » de cette migration-ci doit être son état « avant ».
+ */
+const passeLycee: {
+	grades: Record<string, { before: string[] }>;
+	archived: { code: string }[];
+	references: { before: string[]; after: string[] };
+} = JSON.parse(readFileSync('tests/integration/fixtures/passe-lycee.json', 'utf-8'));
+const LATER_GRADES = new Set(Object.keys(passeLycee.grades));
+const LATER_CODES = new Set(
+	[...passeLycee.references.before, ...passeLycee.references.after].map((r) => r.split('§')[0])
+);
 const SPLIT_CODES = fixture.splits.flatMap((s) => s.codes);
 const NEW_CODES = [
 	...fixture.splits.flatMap((s) => s.codes.slice(1)),
@@ -201,7 +215,10 @@ describe('Scission des points : l’état après les migrations (base locale)', 
 	});
 
 	it('l’ordre d’affichage de chaque grade touché est EXACTEMENT celui de la fixture (1..N)', () => {
-		for (const grade of GRADES) {
+		for (const grade of GRADES.filter((g) => LATER_GRADES.has(g))) {
+			expect(fixture.grades[grade].after, grade).toEqual(passeLycee.grades[grade].before);
+		}
+		for (const grade of GRADES.filter((g) => !LATER_GRADES.has(g))) {
 			expect(orderOf(points, grade), grade).toEqual(fixture.grades[grade].after);
 			const orders = [...points.values()]
 				.filter((p) => p.grade === grade)
@@ -282,12 +299,23 @@ describe('Scission des points : l’état après les migrations (base locale)', 
 			expect(points.get(a.code)?.archived_at, a.code).not.toBeNull();
 			expect(points.get(a.code)?.name, a.code).toBe(a.name);
 		}
-		const archived = [...points.values()].filter((p) => p.archived_at !== null).map((p) => p.code);
+		const later = new Set(passeLycee.archived.map((a) => a.code));
+		const archived = [...points.values()]
+			.filter((p) => p.archived_at !== null && !later.has(p.code))
+			.map((p) => p.code);
 		expect(archived.sort()).toEqual(['3-002', '3-038']);
 	});
 
 	it('les références d’automatismes des points en jeu sont EXACTEMENT celles décidées', () => {
-		expect(references).toEqual(fixture.references.after);
+		const code = (r: string) => r.split('§')[0];
+		expect(references.filter((r) => !LATER_CODES.has(code(r)))).toEqual(
+			fixture.references.after.filter((r) => !LATER_CODES.has(code(r)))
+		);
+		// Ce que la passe lycée a repris : son état « avant » est l'état « après » d'ici.
+		const watched = new Set(WATCHED);
+		expect(fixture.references.after.filter((r) => LATER_CODES.has(code(r)))).toEqual(
+			passeLycee.references.before.filter((r) => watched.has(code(r)))
+		);
 	});
 });
 

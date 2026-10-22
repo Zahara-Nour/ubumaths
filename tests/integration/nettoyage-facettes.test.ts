@@ -33,6 +33,7 @@ import { TestData } from '../helpers/database/test-data-factory';
 import { extractRollback, TRANSACTION_CONTROL } from '../helpers/database/migration-rollback';
 import { nodeIdByPath, readNodePaths } from '../helpers/database/classification-paths';
 import { insertProdCopies } from '../helpers/database/prod-copies';
+import { undoLaterMigrations } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -97,6 +98,9 @@ const CLASSIFICATION_981 = 'supabase/migrations/20261011200000_rangements_modele
 const fixture: CleanupFixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/nettoyage-facettes.json', 'utf-8')
 );
+/** La passe des points du lycée, venue après : ce qu'elle a re-rangé (nœud d'avant, nœud d'après). */
+const passeLycee: { splits: { origin: string; pathBefore: string; paths: string[] }[] } =
+	JSON.parse(readFileSync('tests/integration/fixtures/passe-lycee.json', 'utf-8'));
 const fixture981: Classification981Fixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/rangements.json', 'utf-8')
 );
@@ -187,6 +191,7 @@ async function readState(pg: Client): Promise<State> {
  * points, et la date de création de PRODUCTION des 4 doublons.
  */
 async function prepareProdCopy(pg: Client, authorId: string): Promise<void> {
+	await undoLaterMigrations(pg);
 	await pg.query(extractRollback(MIGRATION));
 	await insertProdCopies(pg, {
 		templateIds: TEMPLATE_IDS,
@@ -305,10 +310,24 @@ describe("Nettoyage de l'arbre : l'état final après les migrations (base local
 		expect(archived.sort()).toEqual(fixture.noeuds.archives.map((a) => a.chemin_final).sort());
 	});
 
-	it('les 125 points re-rattachés sont sur leur nouveau nœud', () => {
+	it('les 125 points re-rattachés sont sur leur nouveau nœud (ou, depuis, sur celui de la passe lycée)', () => {
+		// La passe lycée a re-rangé quelques-uns de ces points : elle partait du nœud que le nettoyage
+		// leur avait donné, et l'état final est le sien.
+		const later = new Map(
+			passeLycee.splits.map((s) => [s.origin, { before: s.pathBefore, after: s.paths[0] }])
+		);
 		const gaps = fixture.points
-			.map((p) => ({ code: p.code, expected: p.apres, actual: state.points.get(p.code) }))
-			.filter((p) => p.expected !== p.actual);
+			.map((p) => {
+				const moved = later.get(p.code);
+				if (moved && moved.before !== p.apres)
+					return { code: p.code, chain: moved.before, apres: p.apres };
+				return {
+					code: p.code,
+					expected: moved?.after ?? p.apres,
+					actual: state.points.get(p.code)
+				};
+			})
+			.filter((p) => !('expected' in p) || p.expected !== p.actual);
 		expect(gaps).toEqual([]);
 	});
 
