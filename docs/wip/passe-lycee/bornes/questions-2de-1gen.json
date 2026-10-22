@@ -2,7 +2,7 @@
 	{
 		"id": "l2-1",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": [
 			"2-245",
 			"2-420",
@@ -37,7 +37,7 @@
 	{
 		"id": "l2-2",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": [
 			"2-329",
 			"2-326",
@@ -73,7 +73,7 @@
 	{
 		"id": "l2-3",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": [
 			"2-266",
 			"2-280",
@@ -120,7 +120,7 @@
 	{
 		"id": "l2-4",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-391", "2-397", "2-399", "2-400"],
 		"titre": "Arbres : la probabilité d'un évènement par la somme des chemins",
 		"question": "Le BO met au programme le calcul de probabilités sur un arbre, mais dit que « le calcul de la probabilité d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers n'est pas un attendu ». Une question « Arbre à deux niveaux A / Ā puis B / B̄ ; calculer P(B) » (somme de deux chemins) est-elle dans 2-397 ?",
@@ -143,7 +143,7 @@
 	{
 		"id": "l2-5",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-431"],
 		"titre": "Coquille « a ⩾ b » dans la liste des inéquations",
 		"question": "Le BO écrit « inéquation du premier degré du type a ⩾ b, a + x ⩾ b, ax + b ⩾ cx + d » ; « a ⩾ b » n'a pas d'inconnue (vérifié sur le rendu image de la page 8, ce n'est pas une erreur d'extraction). Le libellé de 2-431 lit « ax ⩾ b ». Une question « Résoudre −3x ⩾ 12 » est-elle dans 2-431 ?",
@@ -166,7 +166,7 @@
 	{
 		"id": "l2-6",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-260", "2-270"],
 		"titre": "Puissances : quelles « règles de calcul » ?",
 		"question": "Le BO dit « Règles de calcul sur les puissances entières relatives » sans les lister. En 3e, (aᵐ)ⁿ était hors point (non citée, lecture déduite). Une question « Écrire (2³)⁻² sous la forme 2ⁿ » ou « Simplifier (a/b)³ » est-elle dans 2-260 / 2-270 ?",
@@ -183,7 +183,7 @@
 	{
 		"id": "l2-7",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-261", "2-271"],
 		"titre": "Racines carrées : quelles règles au-delà du produit ?",
 		"question": "Le BO dit « Règles de calcul […] sur les racines carrées » et démontre √ab = √a √b. Une question « Écrire √20 sous la forme a√5 », « Simplifier √(9/16) » ou « Écrire 1/√2 sans racine au dénominateur » est-elle dans 2-261 / 2-271 ?",
@@ -207,7 +207,7 @@
 	{
 		"id": "l2-8",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-296", "2-302", "2-306"],
 		"titre": "Milieu : calcul attendu, formule en approfondissement",
 		"question": "La capacité « Calculer les coordonnées du milieu d'un segment » est attendue, mais « Formule permettant le calcul des coordonnées du milieu d'un segment » est rangée dans les approfondissements possibles ; le contenu attendu est la « caractérisation vectorielle du milieu ». Un modèle « A(1 ; 3), B(5 ; −1) : coordonnées du milieu de [AB] » dont la correction applique ((x_A + x_B)/2 ; (y_A + y_B)/2) est-il dans 2-302 ?",
@@ -230,7 +230,7 @@
 	{
 		"id": "l2-9",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-383", "2-384", "2-485", "2-385", "2-486", "2-386", "2-487", "2-388"],
 		"titre": "Croisement de variables : « données réelles » est-il une borne ?",
 		"question": "Le BO dit que « les élèves travaillent avec des données réelles » pour le croisement de deux variables qualitatives. Un modèle qui tire au hasard les effectifs d'un tableau croisé fictif (« 120 élèves, filles / garçons, demi-pension ou non ») est-il dans les points de la section ?",
@@ -253,7 +253,7 @@
 	{
 		"id": "l2-10",
 		"cycle": "lycée",
-		"niveaux": ["2de"],
+		"niveaux": ["2"],
 		"points": ["2-394"],
 		"titre": "« Construire un arbre pondéré ou un tableau » : quel tableau ?",
 		"question": "Le BO dit « Construire un arbre pondéré ou un tableau en lien avec une situation donnée » ; le libellé de 2-394 dit « tableau croisé d'effectifs ». Un modèle « Compléter le tableau des probabilités P(A ∩ B), P(A ∩ B̄)… » (tableau de probabilités, pas d'effectifs) est-il dans 2-394 ?",
@@ -276,7 +276,7 @@
 	{
 		"id": "l1g-1",
 		"cycle": "lycée",
-		"niveaux": ["1re ES"],
+		"niveaux": ["1_GEN"],
 		"points": ["1GEN-009", "1GEN-012", "1GEN-047"],
 		"titre": "Indépendance : la caractérisation par le produit",
 		"question": "Le BO définit l'indépendance par P_B(A) = P(A) (P(B) ≠ 0) et ne cite pas P(A ∩ B) = P(A) × P(B). Une question « P(A) = 0,4, P(B) = 0,5, P(A ∩ B) = 0,2 : A et B sont-ils indépendants ? » est-elle dans 1GEN-047 ?",
@@ -296,7 +296,7 @@
 	{
 		"id": "l1g-2",
 		"cycle": "lycée",
-		"niveaux": ["1re ES"],
+		"niveaux": ["1_GEN"],
 		"points": ["1GEN-010"],
 		"titre": "Répétition d'épreuves de Bernoulli : n ⩽ 4 vaut-il pour le contenu ?",
 		"question": "Le contenu « Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli » ne borne pas n ; la capacité dit « avec n ⩽ 4 ». Une question « On lance 6 fois une pièce équilibrée : probabilité d'obtenir 6 piles ? » est-elle dans 1GEN-010 ?",

@@ -5,6 +5,7 @@ Lit questions-*.json et les remarques « ⚠ libellé » des <programme>.json ; 
 Les réponses de David vivent dans la base de l'artifact (collections `reponses`, `libelles`).
 """
 import json
+import re
 from pathlib import Path
 
 ICI = Path(__file__).resolve().parent
@@ -17,6 +18,9 @@ NOMS = {'2': '2de', '1_GEN': '1re ES', '1_SPE': '1re spé', 'T_SPE': 'Tle spé',
 questions = []
 for f in ['2de-1gen', 'spe', 'tcomp', 'techno']:
     questions += json.loads((BORNES / f'questions-{f}.json').read_text(encoding='utf-8'))
+# La page range une question sous son premier niveau : un niveau inconnu la ferait disparaître sans bruit.
+inconnus = [(q['id'], n) for q in questions for n in q['niveaux'] if n not in NOMS]
+assert not inconnus, f'niveaux hors {list(NOMS)} : {inconnus}'
 
 libelles = []
 for fichier, grade in PROGRAMMES:
@@ -29,5 +33,8 @@ for fichier, grade in PROGRAMMES:
 donnees = json.dumps({'questions': questions, 'libelles': libelles, 'noms': NOMS,
                       'ordre': [g for _, g in PROGRAMMES]}, ensure_ascii=False).replace('</', '<\\/')
 gabarit = (ICI / 'gabarit.html').read_text(encoding='utf-8')
-(ICI / 'page.html').write_text(gabarit.replace('/*DONNEES*/null', donnees), encoding='utf-8')
+# Prettier (pre-commit) écrit `/*DONNEES*/ null` : tolérer l'espace, et refuser une page vide.
+page, n = re.subn(r'/\*DONNEES\*/\s*null', lambda _: donnees, gabarit)
+assert n == 1, f'emplacement /*DONNEES*/ trouvé {n} fois dans gabarit.html'
+(ICI / 'page.html').write_text(page, encoding='utf-8')
 print(len(questions), 'questions,', len(libelles), 'libellés')
