@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, avant la PR._
+_Mis à jour le 2026-10-22, après #1614._
 
-- **État** : lockfile monté à dompurify 3.4.17, `pnpm audit --prod` propre · **Prochaine action** : PR, CI, merge · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-dompurify` / `chore/dompurify-3-4-17`
+- **État** : livré, #1614 mergée (pas en prod) · **Prochaine action** : aucune ; journal à archiver · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Constat
 

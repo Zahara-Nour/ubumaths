@@ -2,9 +2,9 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, avant la PR._
+_Mis à jour le 2026-10-22, après #1612._
 
-- **État** : correctif codé, tests verts · **Prochaine action** : PR, CI, merge · **En attente de David** : vérification à la souris · **Pièges en cours** : aucun · **Worktree / branche** : `../ubumaths-wt-fleches-focus` / `fix/atelier-fleches-focus-toile`
+- **État** : livré, #1612 mergée (pas en prod) · **Prochaine action** : aucune ; journal à archiver · **En attente de David** : rien · **Pièges en cours** : aucun · **Worktree / branche** : supprimés
 
 ## Constat (David, 2026-10-22)
 
