@@ -18,7 +18,7 @@ import { createFakeSupabase, type Call } from '$lib/server/__tests__/helpers/fak
 import {
 	answerProgramme,
 	P_ADDITION,
-	P_ANCIEN,
+	P_SANS_NIVEAU,
 	P_DECIMAL,
 	P_FRACTION,
 	P_QUATRIEME,
@@ -169,9 +169,9 @@ describe('getNotionsProgression', () => {
 		expect(progression.stats).toMatchObject({ atteint: 1, non_commence: 1 });
 	});
 
-	it("B4 — l'état d'un point hors programme (ancien, archivé, autre niveau) ne compte pas", async () => {
+	it("B4 — l'état d'un point hors programme (sans niveau, archivé, autre niveau) ne compte pas", async () => {
 		const { client } = programmeClient([
-			{ point_id: P_ANCIEN, is_acquired: true, needs_remediation: true },
+			{ point_id: P_SANS_NIVEAU, is_acquired: true, needs_remediation: true },
 			{ point_id: P_TRIANGLE_ARCHIVE, is_acquired: true, needs_remediation: false },
 			{ point_id: P_QUATRIEME, is_acquired: true, needs_remediation: false }
 		]);

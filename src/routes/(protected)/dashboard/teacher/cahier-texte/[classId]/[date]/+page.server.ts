@@ -16,7 +16,7 @@ import {
 	validateUpdateJournalEntry
 } from '$lib/server/validation/journal';
 import { getProgrammeTreeKeeping } from '$lib/server/programme-tree';
-import { keepCheckablePointIds } from '$lib/server/curriculum-generation';
+import { keepCheckablePointIds } from '$lib/server/curriculum-point-status';
 import { reconcileAutoCoverage, type ReconcileReport } from '$lib/server/curriculum-coverage';
 import { parsePendingActivities } from '$lib/server/journal-activities';
 import {
@@ -374,7 +374,7 @@ export const actions: Actions = {
 
 		if (entry?.id && pointIds.length > 0) {
 			const uuids = pointIds.filter((id) => uuidSchema.safeParse(id).success).slice(0, 500);
-			// Q2 (C5, B2) et B3 : ni ancien point ni archivé ne se coche, même envoyé à la main.
+			// B3 : un point archivé ne se coche pas, même envoyé à la main.
 			let valid: string[] = [];
 			let covError: unknown = null;
 			try {

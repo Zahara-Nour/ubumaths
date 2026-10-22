@@ -133,14 +133,13 @@ describe('loadMathouCollection', () => {
 		expect(from).not.toHaveBeenCalled();
 	});
 
-	it('lit les points du niveau, non archivés, rattachés à un nœud', async () => {
+	it('lit les points du niveau, non archivés', async () => {
 		const { supabase, queries } = buildMock(nominalHandlers());
 		await loadMathouCollection(supabase, STUDENT, '1_SPE');
 		const points = queries.find((q) => q.table === 'curriculum_points');
 		expect(points).toBeDefined();
 		expect(has(points!.calls, 'eq', 'grade', '1_SPE')).toBe(true);
 		expect(has(points!.calls, 'is', 'archived_at', null)).toBe(true);
-		expect(has(points!.calls, 'not', 'node_id', 'is', null)).toBe(true);
 	});
 
 	it('lit les états de L’ÉLÈVE de la session seulement', async () => {

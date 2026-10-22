@@ -1,6 +1,6 @@
 /**
- * Tags d'un modèle vers les points du programme — génération neuve (C5, étape 3)
- * ===============================================================================
+ * Tags d'un modèle vers les points du programme
+ * =============================================
  *
  * Règles posées en base (triggers, étape 2 de C5) et reprises par l'écran :
  *   - règle 1 : un point tagué est posé sur le nœud du modèle ou sur la notion de ce nœud ;
@@ -9,14 +9,12 @@
  *
  * L'écran propose donc UN choix par programme. Les programmes proposés sont ceux du modèle et
  * des années suivantes (un programme plus tardif remobilise une notion vue plus tôt), plus tout
- * programme où un tag est déjà posé. Les tags des anciens points (thème → objectif) restent en
- * base jusqu'à l'étape 4, mais ne s'affichent plus.
+ * programme où un tag est déjà posé.
  */
 
 import type { ClassificationNode } from '$lib/types/database-helpers';
 import { GRADES, getGradesAtOrAbove, isGradeCode } from '$lib/types/grades';
 import { loadNodesWithAncestors, PROGRAMME_POINT_COLS } from '$lib/server/programme-tree';
-import { isProgrammePoint } from '$lib/server/curriculum-generation';
 import type { ProgrammePointRow } from '$lib/utils/programme-tree';
 
 // Types
@@ -79,9 +77,8 @@ export async function loadTemplateProgrammeTags(
 		.eq('template_id', template.id);
 	if (tagError) throw new Error(`Tags du modèle illisibles : ${tagError.message}`);
 
-	const tags = ((tagData ?? []) as unknown as TagRow[]).filter((t) =>
-		isProgrammePoint(t.curriculum_points)
-	);
+	// Un point illisible (absent de la jointure) n'est pas un tag à montrer.
+	const tags = ((tagData ?? []) as unknown as TagRow[]).filter((t) => t.curriculum_points !== null);
 
 	if (template.classification_node_id === null) {
 		return { nodeMissing: true, programmes: [], taggedCount: tags.length };

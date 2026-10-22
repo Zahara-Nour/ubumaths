@@ -180,7 +180,7 @@ async function computeCollection(
 		readMathouMemory(supabase, studentId)
 	]);
 
-	// 2. Points de chaque niveau rattachés à un nœud (une requête par niveau)
+	// 2. Points de chaque niveau (une requête par niveau)
 	const pointResults = await Promise.all(
 		grades.map((g) =>
 			supabase
@@ -188,7 +188,6 @@ async function computeCollection(
 				.select('id, node_id, grade, regime_acquisition')
 				.eq('grade', g)
 				.is('archived_at', null)
-				.not('node_id', 'is', null)
 		)
 	);
 
@@ -198,7 +197,7 @@ async function computeCollection(
 	for (const result of pointResults) {
 		if (result.error) throw new Error(`Points du parcours illisibles : ${result.error.message}`);
 		for (const row of result.data ?? []) {
-			if (row.node_id && row.grade) {
+			if (row.grade) {
 				gradePoints.push({ id: row.id, nodeId: row.node_id, grade: row.grade });
 				regimeByPoint.set(row.id, row.regime_acquisition);
 			}

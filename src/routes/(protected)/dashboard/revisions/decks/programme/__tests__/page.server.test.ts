@@ -5,8 +5,7 @@
  * valide (point posé sur la notion ou sur une de ses sous-notions). Une carte
  * peut être rattachée à des points de PLUSIEURS référentiels (Terminale
  * spécialité `T_SPE` et maths complémentaires `T_COMP`) : l'élève ne voit que
- * la notion de SON niveau. Les tags des anciens points (thème → objectif) ne
- * comptent plus.
+ * la notion de SON niveau. Un point sans niveau n'est jamais retenu.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -64,7 +63,7 @@ const NODES = [
 /**
  * Deux cartes :
  *  - `t-partagee` : un point T_COMP (code rangé en premier, sur une sous-notion)
- *    ET un point T_SPE — le cas visé ; plus un ancien point, jamais retenu ;
+ *    ET un point T_SPE — le cas visé ; plus un point sans niveau, jamais retenu ;
  *  - `t-seule` : un seul point, de T_COMP — non-régression.
  */
 function supabaseFixture() {
@@ -93,7 +92,7 @@ function supabaseFixture() {
 			case 'question_template_points':
 				return {
 					data: [
-						link('t-partagee', '0-ancien', null, null),
+						link('t-partagee', '0-sans-niveau', 'sn-comp', null),
 						link('t-partagee', 'TCOMP-001', 'sn-comp', 'T_COMP'),
 						link('t-seule', 'TCOMP-002', 'n-seule', 'T_COMP'),
 						link('t-partagee', 'TSPE-005', 'n-spe', 'T_SPE'),

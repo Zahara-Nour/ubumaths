@@ -101,15 +101,15 @@ const NODES = [
 
 interface PointOpts {
 	name?: string;
-	nodeId?: string | null;
+	nodeId?: string;
 	grade?: string | null;
 	archived?: boolean;
 	order?: number;
 }
 
-/** Point neuf (posé sur un nœud, avec un niveau), ou ancien si `nodeId: null`. */
+/** Point posé sur un nœud, de 6e par défaut (`grade: null` : sans niveau). */
 function point(id: string, opts: PointOpts = {}) {
-	const nodeId = opts.nodeId === undefined ? 'n-fractions' : opts.nodeId;
+	const nodeId = opts.nodeId ?? 'n-fractions';
 	return {
 		id,
 		code: id,
@@ -118,7 +118,7 @@ function point(id: string, opts: PointOpts = {}) {
 		rubrique: null,
 		archived_at: opts.archived ? '2026-10-01T00:00:00Z' : null,
 		node_id: nodeId,
-		grade: opts.grade === undefined ? (nodeId === null ? null : '6') : opts.grade
+		grade: opts.grade === undefined ? '6' : opts.grade
 	};
 }
 
@@ -202,13 +202,13 @@ describe('getClassCapacityGrid', () => {
 		expect(grid.capacities[0].notion_name).toBe('Fractions');
 	});
 
-	it('un ancien point (sans nœud) ne fait pas de colonne', async () => {
+	it('un point sans niveau ne fait pas de colonne', async () => {
 		const grid = await getClassCapacityGrid(
-			gridFixture([tag('t1', point('neuf')), tag('t1', point('ancien', { nodeId: null }))]),
+			gridFixture([tag('t1', point('actif')), tag('t1', point('sans-niveau', { grade: null }))]),
 			'class-1'
 		);
-		expect(grid.capacities.map((c) => c.id)).toEqual(['neuf']);
-		expect(grid.cells['s1:ancien']).toBeUndefined();
+		expect(grid.capacities.map((c) => c.id)).toEqual(['actif']);
+		expect(grid.cells['s1:sans-niveau']).toBeUndefined();
 	});
 
 	it('un point archivé ne fait pas de colonne', async () => {
@@ -237,7 +237,7 @@ describe('getClassCapacityGrid', () => {
 		]);
 	});
 
-	it('« Tout le niveau » ajoute les points neufs non archivés du niveau', async () => {
+	it('« Tout le niveau » ajoute les points non archivés du niveau', async () => {
 		const inCalls: InCall[] = [];
 		const supabase = gridFixture(
 			[tag('t1', point('touche'))],
@@ -248,7 +248,7 @@ describe('getClassCapacityGrid', () => {
 						point('touche'),
 						point('non-touche', { nodeId: 'n-triangles' }),
 						point('archive', { archived: true }),
-						point('ancien', { nodeId: null })
+						point('sans-niveau', { grade: null })
 					],
 					error: null
 				})
@@ -480,7 +480,7 @@ describe('getStudentRetentionCurve', () => {
 						point('decimal', { nodeId: 'n-decimaux' }),
 						point('geo', { nodeId: 'n-triangles' }),
 						point('archive', { archived: true }),
-						point('ancien', { nodeId: null })
+						point('sans-niveau', { grade: null })
 					],
 					error: null
 				}),

@@ -607,11 +607,11 @@ export type ClassificationNode = Omit<Tables<'classification_nodes'>, 'kind'> & 
 };
 
 /**
- * Point de programme de la génération NEUVE (ADR 0020) : rattaché à un nœud de
- * l'arbre et à un niveau, rangé dans l'ordre du BO (`display_order`).
+ * Point de programme (ADR 0020) : rattaché à un nœud de l'arbre et à un niveau,
+ * rangé dans l'ordre du BO (`display_order`).
  *
- * `node_id` et `grade` sont nullables dans la table tant que l'ancienne
- * génération (rattachée à un objectif) coexiste ; un point neuf les a toujours.
+ * `grade` est nullable dans la table (points de test `TEST-SK-*`) ; un point
+ * d'un programme l'a toujours.
  */
 export type ProgrammePoint = Pick<
 	Tables<'curriculum_points'>,

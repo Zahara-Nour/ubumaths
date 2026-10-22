@@ -119,8 +119,8 @@ revision le meme jour.
 **Thematique** = la branche de l'arbre des notions (`classification_nodes.id`) ou se range le point
 que valide la question (`question_template_points` → `curriculum_points.node_id` → notion → branche,
 `placeOfNode`), lue par `fetchTemplateThemeIds` (`src/lib/server/buddy-themes.ts`) en deux lectures
-par seance (les tags, puis les noeuds et leurs ancetres). Une question sans point neuf n'a pas de
-theme (les tags des anciens points, theme → objectif, ne comptent plus depuis la bascule de la C5) ;
+par seance (les tags, puis les noeuds et leurs ancetres). Une question sans point n'a pas de
+theme ;
 une question rattachee a plusieurs branches recoit toujours le plus petit identifiant. Une panne de
 lecture rend « aucun theme », jamais une erreur. Les themes candidats au bonus (absents de `themes_explored`, bonus non tronque par le
 plafond dans le calcul local) sont RESERVES avant le credit (`addExploredThemes`, une ecriture sous

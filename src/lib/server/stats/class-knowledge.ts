@@ -96,12 +96,9 @@ export interface GradeHistogramBucket {
 // Points du programme : filtre et rangement dans l'arbre
 // ===========================================================================
 
-/**
- * Point neuf (posé sur un nœud, avec un niveau) et non archivé. Les anciens
- * points (rattachés à un objectif) n'ont plus leur place dans l'analytique.
- */
+/** Point d'un niveau, non archivé : le seul qui a sa place dans l'analytique. */
 function isLivePoint(p: ProgrammePointRow): boolean {
-	return p.node_id !== null && p.grade !== null && p.archived_at === null;
+	return p.grade !== null && p.archived_at === null;
 }
 
 /**
@@ -110,7 +107,7 @@ function isLivePoint(p: ProgrammePointRow): boolean {
  * dernier et sans étiquette, plutôt que de disparaître en silence.
  */
 async function placeInTree(supabase: SB, points: ProgrammePointRow[]): Promise<ClassCapacity[]> {
-	const nodeIds = points.map((p) => p.node_id).filter((id): id is string => id !== null);
+	const nodeIds = points.map((p) => p.node_id);
 	const nodes = await loadNodesWithAncestors(supabase, nodeIds);
 	const nodeById = new Map(nodes.map((n) => [n.id, n]));
 
@@ -259,13 +256,12 @@ export async function getClassCapacityGrid(
 	}
 
 	if (opts.includeAllCycle && classGrade) {
-		// Bouton « Tout le niveau » : on étend aux points neufs du niveau de la
+		// Bouton « Tout le niveau » : on étend aux points du niveau de la
 		// classe, même non touchés.
 		const { data: gradePoints, error: gradePointsError } = await supabase
 			.from('curriculum_points')
 			.select(PROGRAMME_POINT_COLS)
 			.eq('grade', classGrade)
-			.not('node_id', 'is', null)
 			.is('archived_at', null);
 
 		if (gradePointsError) {
@@ -414,7 +410,6 @@ export async function getStudentRetentionCurve(
 		.from('curriculum_points')
 		.select(PROGRAMME_POINT_COLS)
 		.eq('grade', grade)
-		.not('node_id', 'is', null)
 		.is('archived_at', null);
 
 	// Une courbe de rétention vide se lit « cet élève ne révise pas ». Mieux vaut
@@ -426,7 +421,7 @@ export async function getStudentRetentionCurve(
 
 	// La branche d'un point se lit en remontant l'arbre (sous-notion → notion → branche).
 	const livePoints = ((pointRows ?? []) as ProgrammePointRow[]).filter(isLivePoint);
-	const nodeIds = livePoints.map((p) => p.node_id).filter((id): id is string => id !== null);
+	const nodeIds = livePoints.map((p) => p.node_id);
 	const nodeById = new Map((await loadNodesWithAncestors(supabase, nodeIds)).map((n) => [n.id, n]));
 	const pointIds = livePoints
 		.filter((p) => placeOfNode(p.node_id, nodeById)?.branch.id === branchId)

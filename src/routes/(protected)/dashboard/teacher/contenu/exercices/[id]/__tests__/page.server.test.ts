@@ -8,7 +8,7 @@
  *     propose que ceux-là, des NIVEAUX de l'exercice, rangés par branche > notion
  *     (la sous-notion est nommée à côté du point) ;
  *   - un exercice non rangé ne peut recevoir aucun point : l'écran le dit ;
- *   - un ancien point (thème → objectif) n'apparaît jamais ;
+ *   - un point sans niveau n'apparaît jamais ;
  *   - un point archivé déjà tagué reste affiché pour pouvoir le retirer ; non
  *     tagué, il reste masqué (Q1).
  */
@@ -18,7 +18,7 @@ import {
 	answerProgramme,
 	pointIdsOf,
 	P_ADDITION,
-	P_ANCIEN,
+	P_SANS_NIVEAU,
 	P_DECIMAL,
 	P_FRACTION,
 	P_QUATRIEME,
@@ -119,9 +119,9 @@ describe('édition d’un exercice — tags du programme (C5, B2)', () => {
 		expect(pointIdsOf(result.curriculumByGrade[1].tree)).toEqual([P_QUATRIEME]);
 	});
 
-	it('un ancien point n’apparaît jamais, même tagué', async () => {
-		const result = await loadWith(['5'], ['s-addition'], [P_ANCIEN]);
-		expect(pointIdsOf(result.curriculumByGrade[0].tree)).not.toContain(P_ANCIEN);
+	it('un point sans niveau n’apparaît jamais, même tagué', async () => {
+		const result = await loadWith(['5'], ['s-addition'], [P_SANS_NIVEAU]);
+		expect(pointIdsOf(result.curriculumByGrade[0].tree)).not.toContain(P_SANS_NIVEAU);
 	});
 
 	it('un point archivé déjà tagué reste affiché, marqué archivé', async () => {
