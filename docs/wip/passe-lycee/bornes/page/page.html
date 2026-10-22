@@ -1,0 +1,2343 @@
+<title>Bornes du lycée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap"
+/>
+<style>
+	/* Colonne de lecture unique ; une carte par question, regroupées par programme ; barre d'état collante. */
+	:root {
+		--bg: #f5f6f8;
+		--surface: #ffffff;
+		--fg: #1c2230;
+		--muted: #5d6677;
+		--line: #dde1e8;
+		--accent: #2f4fa8;
+		--accent-soft: #e6ebf8;
+		--ok: #1f7a4d;
+		--ok-soft: #e3f3ea;
+		--warn: #9a5b00;
+		--f-display: 'IBM Plex Serif', Georgia, serif;
+		--f-body: 'IBM Plex Sans', system-ui, sans-serif;
+		--f-code: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #12151c;
+			--surface: #1a1f29;
+			--fg: #e4e8f0;
+			--muted: #9aa3b5;
+			--line: #2c3342;
+			--accent: #8fa8ee;
+			--accent-soft: #232c44;
+			--ok: #6fd3a0;
+			--ok-soft: #1a3328;
+			--warn: #e3a74a;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #12151c;
+		--surface: #1a1f29;
+		--fg: #e4e8f0;
+		--muted: #9aa3b5;
+		--line: #2c3342;
+		--accent: #8fa8ee;
+		--accent-soft: #232c44;
+		--ok: #6fd3a0;
+		--ok-soft: #1a3328;
+		--warn: #e3a74a;
+		color-scheme: dark;
+	}
+	body {
+		background: var(--bg);
+		color: var(--fg);
+		font: 15px/1.55 var(--f-body);
+	}
+	.page {
+		max-width: 760px;
+		margin: 0 auto;
+		padding-inline: 16px;
+		padding-block: 24px 80px;
+		display: grid;
+		gap: 28px;
+	}
+	h1,
+	h2 {
+		font-family: var(--f-display);
+		text-wrap: balance;
+		margin: 0;
+	}
+	h1 {
+		font-size: 1.7rem;
+	}
+	h2 {
+		font-size: 1.2rem;
+		padding-top: 8px;
+		border-top: 1px solid var(--line);
+	}
+	p {
+		margin: 0;
+	}
+	.intro {
+		display: grid;
+		gap: 8px;
+		color: var(--muted);
+	}
+	.barre {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 2;
+		background: var(--bg);
+		padding-block: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		border-bottom: 1px solid var(--line);
+	}
+	.compte {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		margin-right: auto;
+	}
+	.etat {
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+	.filtre {
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--fg);
+		border-radius: 999px;
+		padding: 3px 11px;
+		font: inherit;
+		font-size: 0.85rem;
+		cursor: pointer;
+	}
+	.filtre[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+	}
+	.section {
+		display: grid;
+		gap: 14px;
+	}
+	.carte {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 16px;
+		display: grid;
+		gap: 10px;
+		min-width: 0;
+	}
+	.carte.faite {
+		border-color: var(--ok);
+	}
+	.tete {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: baseline;
+	}
+	.id {
+		font-family: var(--f-code);
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.titre {
+		font-weight: 600;
+	}
+	.pastille {
+		font-size: 0.75rem;
+		padding: 1px 8px;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+	.pastille.ok {
+		background: var(--ok-soft);
+		color: var(--ok);
+		margin-left: auto;
+	}
+	.question {
+		font-size: 1rem;
+	}
+	details {
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	details summary {
+		cursor: pointer;
+		color: var(--accent);
+	}
+	details .corps {
+		display: grid;
+		gap: 6px;
+		padding-top: 6px;
+	}
+	.lbl {
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.consequence {
+		font-size: 0.9rem;
+		border-left: 3px solid var(--line);
+		padding-left: 10px;
+	}
+	.options {
+		display: grid;
+		gap: 6px;
+	}
+	.option {
+		display: flex;
+		gap: 10px;
+		align-items: flex-start;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 8px 10px;
+		cursor: pointer;
+	}
+	.option:has(input:checked) {
+		border-color: var(--accent);
+		background: var(--accent-soft);
+	}
+	.option input {
+		margin-top: 4px;
+		accent-color: var(--accent);
+	}
+	.reco {
+		font-size: 0.72rem;
+		font-weight: 600;
+		color: var(--warn);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		margin-left: 6px;
+	}
+	textarea {
+		width: 100%;
+		box-sizing: border-box;
+		min-height: 2.6em;
+		font: inherit;
+		font-size: 0.9rem;
+		color: var(--fg);
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 6px 8px;
+		resize: vertical;
+	}
+	:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	.code {
+		font-family: var(--f-code);
+		font-size: 0.85rem;
+	}
+	.vide {
+		color: var(--muted);
+		font-style: italic;
+	}
+</style>
+
+<div class="page">
+	<header class="intro">
+		<h1>Bornes du lycée</h1>
+		<p>
+			Passe lycée, étape b. Pour chaque question, choisis une lecture du BO ; la recommandation est
+			marquée. Une note libre est possible partout. Chaque choix est enregistré tout de suite.
+		</p>
+		<p>
+			En bas : les libellés de points que les agents trouvent infidèles au BO. Rien n'est corrigé
+			sans ton choix.
+		</p>
+	</header>
+
+	<div class="barre" id="barre">
+		<span class="compte" id="compte">…</span>
+		<span class="etat" id="etat">Connexion à l'enregistrement…</span>
+	</div>
+	<div class="barre" style="position: static; border: 0; padding: 0" id="filtres"></div>
+
+	<main id="questions" class="section"></main>
+
+	<section class="section">
+		<h2>Libellés signalés</h2>
+		<div id="libelles" class="section"></div>
+	</section>
+</div>
+
+<script>
+	const DONNEES = {
+		questions: [
+			{
+				id: 'l2-1',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: [
+					'2-245',
+					'2-420',
+					'2-246',
+					'2-423',
+					'2-333',
+					'2-340',
+					'2-458',
+					'2-459',
+					'2-460',
+					'2-475',
+					'2-354'
+				],
+				titre:
+					'Valeur absolue : « toute autre utilisation est hors programme » contre la fonction valeur absolue',
+				question:
+					"Le BO réserve la notation |a| à la distance et aux intervalles de centre donné, « Toute autre utilisation est hors programme », mais la section Fonctions met au programme la fonction valeur absolue (définition, courbe, signe, variations, |x| = k, |x| < k) et l'Algèbre la relation √a² = |a|. Une question « Résoudre algébriquement |x| = 4 » ou « Dresser le tableau de variations de x ↦ |x| » est-elle dans les points ?",
+				sources:
+					'BO 2de p.7 (Nombres réels, introduction) : « La notation de la valeur absolue est introduite pour exprimer la distance entre deux nombres réels et caractériser les intervalles de centre donné. Toute autre utilisation est hors programme. » BO 2de p.7 (Algèbre) : « Relation √a2 = |a| ». BO 2de p.10-11 (Fonctions) : « Fonctions valeur absolue, carré, inverse : définitions et courbes représentatives », « Fonctions valeur absolue, carré : signe et variations », « Pour les fonctions affines, valeur absolue, carré, inverse, racine carrée et cube, résoudre graphiquement ou algébriquement une équation ou une inéquation du type f(x) = k, f(x) < k ».',
+				options: [
+					[
+						'fonction',
+						'La fonction x ↦ |x| est au programme (définition, courbe, signe, variations, |x| = k, |x| < k) ainsi que √a² = |a| ; « toute autre utilisation » exclut le reste (|2x − 1| < 3, |ab| = |a||b|, expressions avec plusieurs valeurs absolues)'
+					],
+					[
+						'distance',
+						"Lecture stricte de la p.7 : distance et intervalles de centre donné seulement ; les puces de la section Fonctions sur la valeur absolue n'ouvrent aucun modèle"
+					]
+				],
+				reco: 'fonction',
+				pourquoi:
+					"Les puces de la section Fonctions sont des capacités attendues explicites et précises ; la phrase de la p.7 se lit comme une limite des usages calculatoires de la notation, pas comme l'annulation de capacités écrites ailleurs dans le même texte.",
+				consequence:
+					"Avec « fonction » : un modèle « Résoudre |x| = 4 » (2-458) ou « signe de x ↦ |x| » (2-475) est accepté ; « Résoudre |2x − 1| < 3 » est refusé partout en 2de. Avec « distance » : ces points n'acceptent que des questions de lecture de courbe sans calcul sur |x|.",
+				info: false
+			},
+			{
+				id: 'l2-2',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: [
+					'2-329',
+					'2-326',
+					'2-356',
+					'2-477',
+					'2-343',
+					'2-467',
+					'2-468',
+					'2-469',
+					'2-344',
+					'2-470',
+					'2-471',
+					'2-472'
+				],
+				titre: 'Racine carrée et cube : fonctions de référence de 2de ?',
+				question:
+					"Le BO de 2de cite les fonctions racine carrée et cube une seule fois, dans « résoudre graphiquement ou algébriquement f(x) = k, f(x) < k » (plus un approfondissement qui relie racine carrée et carré). Ni leur définition, ni leur courbe, ni leurs variations ne sont listées. Une question « Comparer √2,1 et √2,3 à l'aide de la fonction racine carrée », « Signe de x ↦ x³ » ou « Ensemble de définition de x ↦ √(x − 2) » est-elle dans les points qui disent « fonctions de référence » ?",
+				sources:
+					"BO 2de p.10 : « Signe d'une fonction affine et des fonctions de référence » ; « Fonctions valeur absolue, carré, inverse : définitions et courbes représentatives ». BO 2de p.11 : « Pour les fonctions affines, valeur absolue, carré, inverse, racine carrée et cube, résoudre graphiquement ou algébriquement une équation ou une inéquation du type f(x) = k, f(x) < k » ; « Fonctions valeur absolue, carré : signe et variations » ; « Pour deux nombres a et b donnés et une fonction de référence f, comparer f(a) et f(b) » ; démonstrations : variations des fonctions affines, carré, inverse ; approfondissement : « Relier les courbes représentatives de la fonction racine carrée et de la fonction carré sur ℝ+ ». BO 2de p.10 (objectifs) : « étendre la panoplie des fonctions de référence ».",
+				options: [
+					[
+						'resolution',
+						"Racine carrée et cube seulement dans les points de résolution (2-343 à 2-472), courbe fournie par l'énoncé ; « fonction de référence » ailleurs = affines, valeur absolue, carré, inverse"
+					],
+					[
+						'reference',
+						'Racine carrée et cube sont des fonctions de référence de 2de pour tous les points qui le disent (signe, comparaison de f(a) et f(b), ensemble de définition)'
+					]
+				],
+				reco: 'resolution',
+				pourquoi:
+					'Inclusion stricte : les listes de la section Fonctions qui nomment des fonctions (définitions, signe et variations, démonstrations) omettent toutes racine carrée et cube ; on ne leur prête que la seule capacité qui les cite. Le programme précédent (2019) les définissait en 2de, ce texte-ci non.',
+				consequence:
+					"Avec « resolution » : un modèle « Comparer √2,1 et √2,3 » est refusé en 2de (il relève de la 1re spécialité) ; « Résoudre √x = 3 » est accepté dans 2-467. Avec « reference » : les deux sont acceptés, et l'ensemble de définition de √(x − 2) entre dans 2-326.",
+				info: false
+			},
+			{
+				id: 'l2-3',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: [
+					'2-266',
+					'2-280',
+					'2-431',
+					'2-432',
+					'2-448',
+					'2-450',
+					'2-451',
+					'2-453',
+					'2-454',
+					'2-456',
+					'2-457',
+					'2-459',
+					'2-460',
+					'2-462',
+					'2-463',
+					'2-465',
+					'2-466',
+					'2-468',
+					'2-469',
+					'2-471',
+					'2-472',
+					'2-246'
+				],
+				titre: "Sens des inégalités dans les « types » d'inéquations",
+				question:
+					"Le BO écrit chaque type d'inéquation avec un seul sens : ax + b > 0, ax + b ⩾ cx + d, f(x) < k, f(x) > 0, f(x) < g(x), |x − a| ⩽ r. Une question « Résoudre 3x − 2 ⩽ 7 » ou « Résoudre x² ⩾ 9 » est-elle dans le point écrit avec l'autre sens ?",
+				sources:
+					"BO 2de p.8 : « inéquations de la forme ax + b > 0 » ; « inéquation du premier degré du type a ⩾ b, a + x ⩾ b, ax + b ⩾ cx + d ». BO 2de p.10-11 : « f(x) = k, f(x) < k », « f(x) = 0, f(x) > 0 à l'aide d'un tableau de signes », « f(x) = g(x), f(x) < g(x) ». BO 2de p.7 : « Inéquation du type |x – a| ⩽ r. Représentation graphique des solutions, intervalle [a – r, a + r] ». Précédent : décision de David du 2026-10-18 sur 3-014 (question c4-5), les quatre sens.",
+				options: [
+					[
+						'quatre-sens',
+						"Les quatre sens (<, ⩽, >, ⩾) pour tous les types, comme en 3e (c4-5) ; sauf |x − a| ⩽ r : ⩽ et < seulement (le BO lie ce type à l'intervalle [a − r ; a + r])"
+					],
+					[
+						'quatre-sens-partout',
+						'Les quatre sens pour tous les types, |x − a| ⩾ r compris (solution réunion de deux intervalles)'
+					],
+					['sens-ecrit', 'Seulement le sens écrit dans le BO']
+				],
+				reco: 'quatre-sens',
+				pourquoi:
+					"Le sens écrit est un représentant du type (« du type ») ; changer le sens ne change pas la méthode, sauf pour |x − a| où le sens > donne une réunion d'intervalles, qui sort de « caractériser les intervalles de centre donné ».",
+				consequence:
+					'Avec « quatre-sens » : « Résoudre x² ⩾ 9 » est accepté dans 2-463, « Résoudre |x − 2| > 1 » est refusé dans 2-246. Avec « sens-ecrit » : un modèle de 2-463 ne tire que des inégalités <.',
+				info: false
+			},
+			{
+				id: 'l2-4',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-391', '2-397', '2-399', '2-400'],
+				titre: "Arbres : la probabilité d'un évènement par la somme des chemins",
+				question:
+					"Le BO met au programme le calcul de probabilités sur un arbre, mais dit que « le calcul de la probabilité d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers n'est pas un attendu ». Une question « Arbre à deux niveaux A / Ā puis B / B̄ ; calculer P(B) » (somme de deux chemins) est-elle dans 2-397 ?",
+				sources:
+					"BO 2de p.13 (contenus) : « Arbres de probabilité, application au calcul de probabilités » ; (capacités) « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme […] d'un arbre de probabilité », « Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant », « Distinguer en situation PA(B) et PB(A) » ; dernière phrase de la section : « Le calcul de la probabilité́ d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers n'est pas un attendu du programme. »",
+				options: [
+					[
+						'chemin',
+						"Hors point : sur un arbre, seulement la probabilité d'un chemin (intersection) et la lecture des probabilités conditionnelles ; P(B) par la somme des chemins relève de la 1re"
+					],
+					[
+						'somme-guidee',
+						"Admis si l'arbre est donné et que l'énoncé fait additionner des chemins nommés, sans énoncer ni exiger la formule"
+					]
+				],
+				reco: 'chemin',
+				pourquoi:
+					"La phrase du BO décrit exactement ce calcul (A, Ā partition de l'univers ; P(B) à partir de P_A(B) et P_Ā(B)) ; en inclusion stricte, ce qui « n'est pas un attendu » n'entre pas dans un point.",
+				consequence:
+					"Avec « chemin » : un modèle « calculer P(B) sur l'arbre » est refusé en 2de, et l'inversion P_B(A) sur un arbre (faux positifs) aussi, puisqu'elle passe par P(B) ; elle reste possible sur un tableau croisé. Avec « somme-guidee » : les deux sont acceptés si l'énoncé guide.",
+				info: false
+			},
+			{
+				id: 'l2-5',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-431'],
+				titre: 'Coquille « a ⩾ b » dans la liste des inéquations',
+				question:
+					"Le BO écrit « inéquation du premier degré du type a ⩾ b, a + x ⩾ b, ax + b ⩾ cx + d » ; « a ⩾ b » n'a pas d'inconnue (vérifié sur le rendu image de la page 8, ce n'est pas une erreur d'extraction). Le libellé de 2-431 lit « ax ⩾ b ». Une question « Résoudre −3x ⩾ 12 » est-elle dans 2-431 ?",
+				sources:
+					"BO 2de p.8 (capacités attendues, Algèbre) : « Donner l'ensemble des solutions d'une équation du premier degré du type ax = b, a + x = b, ax + b = cx + d, d'une inéquation du premier degré du type a ⩾ b, a + x ⩾ b, ax + b ⩾ cx + d ».",
+				options: [
+					[
+						'ax',
+						"Coquille : on lit « ax ⩾ b », parallèle à l'équation « ax = b » de la même puce (le libellé de 2-431)"
+					],
+					[
+						'general',
+						"Pas de type ax ⩾ b propre : 2-431 n'a d'autre borne que celle de ax + b ⩾ cx + d (2-280)"
+					]
+				],
+				reco: 'ax',
+				pourquoi:
+					'Même construction que la liste des équations de la même phrase (ax = b, a + x = b, ax + b = cx + d) ; même traitement que la coquille c4-7 au collège.',
+				consequence:
+					'Presque aucun effet : avec « ax », « Résoudre −3x ⩾ 12 » est rangé dans 2-431 ; avec « general », il est rangé dans 2-280.',
+				info: false
+			},
+			{
+				id: 'l2-6',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-260', '2-270'],
+				titre: 'Puissances : quelles « règles de calcul » ?',
+				question:
+					'Le BO dit « Règles de calcul sur les puissances entières relatives » sans les lister. En 3e, (aᵐ)ⁿ était hors point (non citée, lecture déduite). Une question « Écrire (2³)⁻² sous la forme 2ⁿ » ou « Simplifier (a/b)³ » est-elle dans 2-260 / 2-270 ?',
+				sources:
+					"BO 2de p.7 (contenus, Algèbre) : « Règles de calcul sur les puissances entières relatives » ; p.8 : « Effectuer des calculs numériques ou littéraux mettant en jeu des puissances » ; automatisme p.5 : « Effectuer des opérations sur les puissances ». Bornes de 3e (cycle4.json, 3-005) : aᵐ × aⁿ et aᵐ / aⁿ, « La puissance d'une puissance (aᵐ)ⁿ n'est pas citée ».",
+				options: [
+					[
+						'toutes',
+						'Toutes les règles usuelles : aᵐ × aⁿ, aᵐ / aⁿ, (aᵐ)ⁿ, (ab)ⁿ, (a/b)ⁿ, a⁻ⁿ = 1/aⁿ'
+					],
+					[
+						'liste-3e',
+						'Seulement les règles déjà bornées au collège (aᵐ × aⁿ, aᵐ / aⁿ, (ab)ⁿ, a⁻ⁿ)'
+					]
+				],
+				reco: 'toutes',
+				pourquoi:
+					"« Règles de calcul » au pluriel et sans liste, dans un programme qui reprend les puissances comme contenu propre : rien ne justifie d'en écarter (aᵐ)ⁿ une fois au lycée.",
+				consequence:
+					'Avec « toutes » : un modèle « (2³)⁻² = 2ⁿ, trouver n » est accepté dans 2-270. Avec « liste-3e » : il est refusé en 2de.',
+				info: false
+			},
+			{
+				id: 'l2-7',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-261', '2-271'],
+				titre: 'Racines carrées : quelles règles au-delà du produit ?',
+				question:
+					'Le BO dit « Règles de calcul […] sur les racines carrées » et démontre √ab = √a √b. Une question « Écrire √20 sous la forme a√5 », « Simplifier √(9/16) » ou « Écrire 1/√2 sans racine au dénominateur » est-elle dans 2-261 / 2-271 ?',
+				sources:
+					'BO 2de p.7 : « Règles de calcul sur les puissances entières relatives, sur les racines carrées. Relation √a2 = |a| » ; p.8 : « Effectuer des calculs numériques ou littéraux mettant en jeu des puissances, des racines carrées, des écritures fractionnaires » ; démonstration p.8 : « Quels que soient les réels positifs a et b, on a √ab = √a √b ». Rien sur le quotient ni sur le dénominateur.',
+				options: [
+					[
+						'produit-quotient',
+						"Produit et quotient (√(a/b) = √a / √b), simplifications de la forme a√b (√20 = 2√5) ; pas d'exigence de dénominateur sans racine"
+					],
+					[
+						'avec-denominateur',
+						"Comme « produit-quotient », plus l'écriture sans racine au dénominateur (1/√2 = √2/2)"
+					],
+					['produit', 'Seulement √ab = √a √b et √a² = |a| (et a√b qui en découle)']
+				],
+				reco: 'produit-quotient',
+				pourquoi:
+					"Le quotient est une règle de calcul au même titre que le produit ; rendre un dénominateur rationnel est une technique qu'aucune ligne ne cite.",
+				consequence:
+					'Avec « produit-quotient » : « √20 = a√5 » et « √(9/16) » acceptés, « 1/√2 sans racine au dénominateur » refusé en 2de. Avec « avec-denominateur » : les trois acceptés.',
+				info: false
+			},
+			{
+				id: 'l2-8',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-296', '2-302', '2-306'],
+				titre: 'Milieu : calcul attendu, formule en approfondissement',
+				question:
+					"La capacité « Calculer les coordonnées du milieu d'un segment » est attendue, mais « Formule permettant le calcul des coordonnées du milieu d'un segment » est rangée dans les approfondissements possibles ; le contenu attendu est la « caractérisation vectorielle du milieu ». Un modèle « A(1 ; 3), B(5 ; −1) : coordonnées du milieu de [AB] » dont la correction applique ((x_A + x_B)/2 ; (y_A + y_B)/2) est-il dans 2-302 ?",
+				sources:
+					"BO 2de p.9 (contenus) : « Caractérisation vectorielle du milieu d'un segment » ; (capacités) « Calculer les coordonnées du milieu d'un segment » ; (approfondissements possibles) « Formule permettant le calcul des coordonnées du milieu d'un segment » ; introduction p.9 : « La caractérisation vectorielle du milieu d'un segment donne l'occasion de travailler le calcul vectoriel ».",
+				options: [
+					[
+						'calcul',
+						"Dans 2-302 : le point vise le calcul, quelle que soit la méthode ; la correction peut appliquer la formule ; 2-306 ne garde que l'établissement de la formule"
+					],
+					[
+						'vectoriel',
+						"Dans 2-302 seulement si la correction passe par la caractérisation vectorielle (AI⃗ = IB⃗) ; un modèle qui s'appuie sur la formule relève de 2-306"
+					]
+				],
+				reco: 'calcul',
+				pourquoi:
+					"La capacité attendue est le calcul ; l'approfondissement porte sur l'établissement d'une formule générale. Un élève qui connait la formule calcule juste et le modèle juge la réponse, pas la méthode.",
+				consequence:
+					'Avec « calcul » : le modèle cité est accepté dans 2-302 tel quel. Avec « vectoriel » : sa correction doit être réécrite par les vecteurs, sinon il est rangé dans 2-306 (approfondissement).',
+				info: false
+			},
+			{
+				id: 'l2-9',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-383', '2-384', '2-485', '2-385', '2-486', '2-386', '2-487', '2-388'],
+				titre: 'Croisement de variables : « données réelles » est-il une borne ?',
+				question:
+					"Le BO dit que « les élèves travaillent avec des données réelles » pour le croisement de deux variables qualitatives. Un modèle qui tire au hasard les effectifs d'un tableau croisé fictif (« 120 élèves, filles / garçons, demi-pension ou non ») est-il dans les points de la section ?",
+				sources:
+					"BO 2de p.12 (introduction de « Croisement de deux variables qualitatives ») : « Les élèves travaillent avec des données réelles dans des domaines variés (sécurité routière, démographie, économie, agronomie, etc.) » ; contenus et capacités de la même section : « Tableau croisé d'effectifs », « Calculer des fréquences conditionnelles et des fréquences marginales », sans mention des données.",
+				options: [
+					[
+						'methode',
+						'Pas une borne : une consigne de mise en œuvre ; les effectifs tirés au hasard sont admis'
+					],
+					[
+						'borne',
+						'Borne : seuls des modèles appuyés sur des données réelles (sourcées) entrent dans ces points'
+					]
+				],
+				reco: 'methode',
+				pourquoi:
+					"La phrase est dans l'introduction de la section, qui décrit comment enseigner ; les contenus et capacités attendus ne portent pas sur l'origine des données.",
+				consequence:
+					'Avec « methode » : tous les modèles de tableaux croisés générés aléatoirement sont acceptés. Avec « borne » : ils sont refusés et chaque modèle doit embarquer un jeu de données réel.',
+				info: false
+			},
+			{
+				id: 'l2-10',
+				cycle: 'lycée',
+				niveaux: ['2de'],
+				points: ['2-394'],
+				titre: '« Construire un arbre pondéré ou un tableau » : quel tableau ?',
+				question:
+					"Le BO dit « Construire un arbre pondéré ou un tableau en lien avec une situation donnée » ; le libellé de 2-394 dit « tableau croisé d'effectifs ». Un modèle « Compléter le tableau des probabilités P(A ∩ B), P(A ∩ B̄)… » (tableau de probabilités, pas d'effectifs) est-il dans 2-394 ?",
+				sources:
+					"BO 2de p.13 (capacités, Probabilités) : « Construire un arbre pondéré ou un tableau en lien avec une situation donnée » ; même page : « Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs (tirage au sort avec équiprobabilité d'un individu dans une population) ou d'un arbre de probabilité ». Libellé 2-394 : « Construire un tableau croisé d'effectifs en lien avec une situation donnée ».",
+				options: [
+					[
+						'libelle',
+						"Le libellé : tableau croisé d'effectifs seulement ; le tableau de probabilités n'a pas de point en 2de"
+					],
+					[
+						'bo',
+						"Le BO : tout tableau (d'effectifs ou de probabilités) ; on garde le libellé tel quel mais la borne suit le BO"
+					]
+				],
+				reco: 'libelle',
+				pourquoi:
+					"Inclusion stricte dans le point tel qu'il est nommé ; le seul tableau dont le BO parle ensuite pour calculer est le tableau croisé d'effectifs. Si David veut le tableau de probabilités, c'est un libellé à élargir, pas une borne.",
+				consequence:
+					'Avec « libelle » : le modèle de tableau de probabilités est refusé dans 2-394. Avec « bo » : il est accepté.',
+				info: false
+			},
+			{
+				id: 'l1g-1',
+				cycle: 'lycée',
+				niveaux: ['1re ES'],
+				points: ['1GEN-009', '1GEN-012', '1GEN-047'],
+				titre: 'Indépendance : la caractérisation par le produit',
+				question:
+					"Le BO définit l'indépendance par P_B(A) = P(A) (P(B) ≠ 0) et ne cite pas P(A ∩ B) = P(A) × P(B). Une question « P(A) = 0,4, P(B) = 0,5, P(A ∩ B) = 0,2 : A et B sont-ils indépendants ? » est-elle dans 1GEN-047 ?",
+				sources:
+					"BO 1re ES p.5 (introduction de « Phénomènes aléatoires ») : « deux évènements A et B sont dits indépendants si la probabilité conditionnelle de A sachant B est égale à la probabilité de A (sous réserve de la non-nullité de celle de B) » ; capacité : « Savoir utiliser ou justifier l'indépendance de deux évènements ». BO 2de p.13 (hérité) : « Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches ».",
+				options: [
+					[
+						'les-deux',
+						'Les deux : la définition P_B(A) = P(A) et la caractérisation P(A ∩ B) = P(A) × P(B), qui en découle par la multiplication sur les branches (2de)'
+					],
+					['definition', 'Seulement la définition P_B(A) = P(A) ; le critère du produit est refusé']
+				],
+				reco: 'les-deux',
+				pourquoi:
+					"La caractérisation par le produit s'obtient en une ligne depuis la définition et P(A ∩ B) = P(B) × P_B(A), déjà au programme de 2de ; « justifier » laisse le choix de la méthode.",
+				consequence:
+					'Avec « les-deux » : le modèle cité est accepté (justification par 0,4 × 0,5 = 0,2). Avec « definition » : il doit être reformulé pour faire calculer P_B(A).',
+				info: false
+			},
+			{
+				id: 'l1g-2',
+				cycle: 'lycée',
+				niveaux: ['1re ES'],
+				points: ['1GEN-010'],
+				titre: "Répétition d'épreuves de Bernoulli : n ⩽ 4 vaut-il pour le contenu ?",
+				question:
+					"Le contenu « Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli » ne borne pas n ; la capacité dit « avec n ⩽ 4 ». Une question « On lance 6 fois une pièce équilibrée : probabilité d'obtenir 6 piles ? » est-elle dans 1GEN-010 ?",
+				sources:
+					"BO 1re ES p.5 (colonne Contenus) : « Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli » ; (capacités attendues) « Représenter par un arbre de probabilités la répétition de n épreuves aléatoires identiques et indépendantes de Bernoulli avec n ⩽ 4 afin de calculer des probabilités ». BO 1re ES p.3 : « Seuls sont exigibles des élèves les contenus mathématiques de la colonne de droite, mobilisés dans les capacités attendues ».",
+				options: [
+					['n4', "n ⩽ 4 pour tous les points de la répétition d'épreuves, 1GEN-010 compris"],
+					['libre', '1GEN-010 sans borne sur n (seuls 1GEN-011 et 1GEN-046 sont bornés)']
+				],
+				reco: 'n4',
+				pourquoi:
+					'Le BO dit que les contenus ne sont exigibles que « mobilisés dans les capacités attendues » ; la seule capacité qui mobilise ce contenu borne n à 4.',
+				consequence:
+					'Avec « n4 » : le modèle à 6 lancers est refusé en 1re ES (la 1re spécialité borne aussi n ⩽ 4 ; il relève de la terminale). Avec « libre » : il est accepté dans 1GEN-010.',
+				info: false
+			},
+			{
+				id: 'l1s-1',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-274', '1SPE-272', '1SPE-283', 'borne générale « Dérivées » de 1re spé'],
+				titre: "Dérivée d'une composée affine en 1re spé",
+				question:
+					"Le BO nouveau de 1re spé ne liste que les dérivées de x², x³, 1/x, √x, xⁿ (n ∈ ℤ), t ↦ e^{at} et les opérations somme, produit, inverse, quotient ; la formule de dérivation de x ↦ g(ax + b) n'y figure plus. Une question « Dériver f(x) = √(3x + 1) » ou « Dériver f(x) = (2x − 5)⁴ » est-elle dans 1SPE-274 ?",
+				sources:
+					'BO 1re spé p.7 (Point de vue global) : « Fonction dérivée des fonctions carré, cube, inverse, racine carrée. Opérations sur les fonctions dérivables : somme, produit, inverse, quotient. Pour n dans ℤ, fonction dérivée de la fonction x ↦ xⁿ. » BO 1re spé p.8 : « Pour a réel, dérivée de la fonction t ↦ e^{at}. » Capacité p.7 : « Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables. » BO Tle spé p.9 : « Composée de deux fonctions, notation v ∘ u. Relation (v ∘ u)′ = (v′ ∘ u) × u′ » (« Compléments sur la dérivation »).',
+				options: [
+					[
+						'liste-bo',
+						'Liste du BO seulement : √(ax + b) et (ax + b)ⁿ hors point (sauf (ax + b)² ou 1/(ax + b), atteignables par produit ou inverse)'
+					],
+					[
+						'affine-admise',
+						'Composée affine g(ax + b) admise pour les fonctions de référence du programme'
+					]
+				],
+				reco: 'liste-bo',
+				pourquoi:
+					'Le texte nouveau écrit une seule composée, t ↦ e^{at}, ce qui montre que les composées ont été pesées ; ajouter g(ax + b) serait ajouter une formule au BO. Les cas atteignables par les opérations listées restent dans le point.',
+				consequence:
+					'Avec « liste-bo », un modèle « dériver √(3x + 1) » ou « (2x − 5)⁴ » est refusé en 1re spé (il relève de la terminale, « Compléments sur la dérivation ») ; « dériver 1/(2x + 1) » ou « (3x − 1)² » est accepté.',
+				info: false
+			},
+			{
+				id: 'l1s-2',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-246', '1SPE-254', '1SPE-247'],
+				titre: "Forme canonique : jusqu'où vont les « cas simples » ?",
+				question:
+					"Le BO demande la forme canonique « dans des cas simples » par complétion du carré, « le calcul effectif de la forme canonique dans le cas général n'est pas un attendu ». Une question « Mettre 2x² − 6x + 1 sous forme canonique » (coefficient dominant ≠ 1, coefficients non entiers après division) est-elle dans 1SPE-246 ?",
+				sources:
+					"BO 1re spé p.5 : « être capables de la déterminer dans des cas simples à l'aide de l'identité x² + 2ax = (x + a)² – a² (méthode de complétion du carré). Le calcul effectif de la forme canonique dans le cas général n'est pas un attendu du programme. »",
+				options: [
+					['unitaire', 'Coefficient de x² égal à 1 seulement (x² + bx + c)'],
+					[
+						'entiers',
+						'Coefficient de x² quelconque, à condition que b/(2a) soit entier ou demi-entier simple'
+					],
+					[
+						'general',
+						'Tout trinôme : le « cas général » visé est seulement la formule littérale α = −b/(2a), β = −Δ/(4a)'
+					]
+				],
+				reco: 'unitaire',
+				pourquoi:
+					"L'identité donnée par le BO, x² + 2ax = (x + a)² − a², s'applique telle quelle aux trinômes unitaires ; dès que le coefficient de x² vaut autre chose, il faut d'abord factoriser, ce qui rapproche du cas général. C'est la lecture la plus littérale.",
+				consequence:
+					'Avec « unitaire », un modèle qui tire a ≠ 1 (« forme canonique de 2x² − 6x + 1 ») est refusé dans 1SPE-246 ; « forme canonique de x² − 6x + 1 » est accepté.',
+				info: false
+			},
+			{
+				id: 'l1s-3',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-410', '1SPE-306', '1SPE-307'],
+				titre: 'Trigonométrie : valeurs remarquables et angles associés',
+				question:
+					"Le BO parle de « valeurs remarquables » et d'« angles associés à x », sans liste. Sont-elles dans les points : (a) « Donner cos(5π/6) » ; (b) « Donner sin(−7π/4) » ; (c) « Simplifier cos(π − x) + sin(π + x) » (x littéral) ?",
+				sources:
+					"BO 1re spé p.8 : contenus « Cosinus et sinus d'un nombre réel. Lien avec le sinus et le cosinus dans un triangle rectangle. Valeurs remarquables. » ; capacité « Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de x, les cosinus et sinus d'angles associés à x. » ; démonstration « Calcul de cos(π/4), sin(π/4), cos(π/3), sin(π/3). »",
+				options: [
+					[
+						'lecture',
+						'Valeurs 0, π/6, π/4, π/3, π/2 et tout réel associé lisible sur le cercle (±x, π ± x, à 2kπ près) ; valeurs numériques seulement, pas de formule littérale (c) refusée'
+					],
+					[
+						'formules',
+						'Comme « lecture », plus les formules littérales cos(π − x), sin(π + x), cos(π/2 − x)… (c) acceptée'
+					],
+					[
+						'quadrant',
+						'Valeurs remarquables du premier quadrant seulement (0 à π/2) : (a) et (b) refusées'
+					]
+				],
+				reco: 'lecture',
+				pourquoi:
+					"La capacité dit « par lecture du cercle » et « pour des valeurs remarquables de x » : c'est numérique, sur le cercle. Les formules littérales d'angles associés ne sont pas écrites ; les fonctions sinus et cosinus (parité, périodicité) sont de terminale.",
+				consequence:
+					"Avec « lecture », un modèle « cos(5π/6) = ? » ou « sin(−7π/4) = ? » est accepté ; un modèle de simplification littérale « cos(π − x) + sin(π + x) » est refusé en 1re spé ; π/6 compris même s'il n'est pas dans les démonstrations.",
+				info: false
+			},
+			{
+				id: 'l1s-4',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-340', '1SPE-421', '1SPE-337'],
+				titre: 'Probabilités totales « dans des cas simples »',
+				question:
+					"La capacité est « dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales ». Une question où l'univers est partagé en quatre évènements A₁, A₂, A₃, A₄ (quatre machines d'une usine) est-elle dans 1SPE-340 ?",
+				sources:
+					"BO 1re spé p.10 : contenus « Partition de l'univers (systèmes complets d'évènements). Formule des probabilités totales. » ; capacité « Dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales. » BO 2de p.13 : ce calcul « n'est pas un attendu » en 2de.",
+				options: [
+					[
+						'partition-finie',
+						'Toute partition finie lisible sur un arbre (deux, trois, quatre évènements…) ; « cas simples » = calcul direct, sans paramètre'
+					],
+					['deux-trois', 'Partition en deux ou trois évènements seulement']
+				],
+				reco: 'partition-finie',
+				pourquoi:
+					"Le contenu parle de « systèmes complets d'évènements » au pluriel, sans limite de taille ; « cas simples » vise plutôt la complexité du calcul (pas d'inconnue à retrouver) que le nombre de branches.",
+				consequence:
+					"Avec « deux-trois », un modèle à quatre machines est refusé dans 1SPE-340 ; avec « partition-finie », il est accepté tant qu'il ne demande qu'une application directe de la formule.",
+				info: false
+			},
+			{
+				id: 'l1s-5',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-294'],
+				titre: 'Exponentielle : propriétés non écrites (quotient, puissance)',
+				question:
+					"Le BO n'écrit que exp(x + y) = exp(x)exp(y) et exp(x)exp(−x) = 1. Une question « Simplifier (e^{2x})³ / e^{x−1} » utilise eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ, non écrites. Est-elle dans 1SPE-294 ?",
+				sources:
+					'BO 1re spé p.8 : contenus « Pour tous réels x et y, exp(x + y) = exp(x) exp(y) et exp(x) exp(–x) = 1. Nombre e. Notation eˣ. » ; capacité « Transformer une expression en utilisant les propriétés algébriques de la fonction exponentielle. »',
+				options: [
+					[
+						'consequences',
+						'Les conséquences directes (quotient, inverse, puissance entière n ∈ ℤ) sont dans le point'
+					],
+					[
+						'deux-seulement',
+						'Seules les deux égalités écrites : le quotient et la puissance sont hors point'
+					]
+				],
+				reco: 'consequences',
+				pourquoi:
+					"La capacité parle « des propriétés algébriques » au pluriel, et la notation eˣ n'a de sens qu'avec les règles des puissances (vues en 2de pour les exposants entiers) ; quotient et puissance entière découlent en une ligne des deux égalités écrites.",
+				consequence:
+					'Avec « consequences », un modèle « simplifier (e^{2x})³ / e^{x−1} » est accepté ; avec « deux-seulement », il est refusé et seuls les produits eᵃ·eᵇ et eˣ·e⁻ˣ restent.',
+				info: false
+			},
+			{
+				id: 'l1s-6',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-351', '1SPE-356', '1SPE-357'],
+				titre: "Linéarité de l'espérance en 1re",
+				question:
+					"Le BO de 1re écrit « Linéarité de l'espérance » sans préciser ; les sommes de variables aléatoires sont un chapitre de terminale. Sont-elles dans 1SPE-351 : (a) « E(X) = 3, calculer E(2X + 5) » ; (b) « E(X) = 3, E(Y) = 4, calculer E(X + Y) » ; (c) « V(X) = 2, calculer V(3X) » ?",
+				sources:
+					"BO 1re spé p.10 : contenus « Espérance, variance, écart type d'une variable aléatoire. Linéarité de l'espérance. Formule de König-Huygens. » BO Tle spé p.13-14 (« Sommes de variables aléatoires ») : « Somme de deux variables aléatoires. Linéarité de l'espérance : E(X + Y) = E(X) + E(Y) et E(aX) = aE(X). » ; « Relation V(aX) = a²V(X). » La terminale réécrit donc E(aX), ce qui rend la portée du mot en 1re incertaine.",
+				options: [
+					['affine', 'E(aX + b) = aE(X) + b seulement : (a) acceptée, (b) et (c) refusées'],
+					['affine-somme', 'E(aX + b) et E(X + Y) : (a) et (b) acceptées, (c) refusée'],
+					['affine-variance', 'E(aX + b) et V(aX + b) = a²V(X) : (a) et (c) acceptées, (b) refusée']
+				],
+				reco: 'affine',
+				pourquoi:
+					"En 1re, une seule variable aléatoire est étudiée à la fois ; la somme X + Y suppose deux variables sur un même univers, objet du chapitre de terminale. Aucune formule de variance n'est écrite en 1re hors König-Huygens.",
+				consequence:
+					'Avec « affine », un modèle « E(X + Y) » ou « V(3X) » est refusé en 1re spé et rattaché à la terminale ; « E(2X + 5) » est accepté dans 1SPE-351.',
+				info: false
+			},
+			{
+				id: 'l1s-7',
+				cycle: 'lycée',
+				niveaux: ['1_SPE'],
+				points: ['1SPE-432', '1SPE-433', '1SPE-434', 'automatismes de 1re spé'],
+				titre: "Automatismes : l'« activité mentale » borne-t-elle les valeurs ?",
+				question:
+					"Le BO dit que les automatismes « relèvent d'un entrainement régulier … privilégiant l'activité mentale ». Une question d'automatisme « Coefficient directeur de la droite passant par A(1,37 ; −2,8) et B(4,05 ; 6,19) » (calculatrice nécessaire) est-elle dans 1SPE-434 ?",
+				sources:
+					"BO 1re spé p.4 : « Elles relèvent d'un entrainement régulier sur l'ensemble du cycle terminal privilégiant l'activité mentale. » ; « Il s'agit d'automatiser le recours à des connaissances, des procédures … afin de permettre aux élèves de les mobiliser plus rapidement. »",
+				options: [
+					[
+						'mental',
+						'Valeurs choisies pour un calcul mental (entiers ou décimaux simples) : le modèle ci-dessus est refusé'
+					],
+					['libre', "« Privilégiant » n'est pas « seulement » : les valeurs sont libres"]
+				],
+				reco: 'mental',
+				pourquoi:
+					"Le BO assigne aux automatismes une finalité de rapidité et d'activité mentale ; un calcul qui exige la calculatrice change la nature de l'exercice. « Privilégiant » laisse une marge, d'où la question.",
+				consequence:
+					"Avec « mental », un modèle d'automatisme qui tire des coordonnées à deux décimales est refusé dans 1SPE-434 ; le même modèle avec des coordonnées entières est accepté.",
+				info: false
+			},
+			{
+				id: 'lts-1',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-457', 'TSPE-458'],
+				titre: 'Équations et inéquations en sinus',
+				question:
+					'Le BO ne nomme que le cosinus : « Résoudre une équation du type cos(x) = a, une inéquation de la forme cos(x) ⩽ a sur [−π, π] ». Une question « Résoudre sin(x) = 1/2 sur [0 ; 2π] » est-elle dans les points ?',
+				sources:
+					'BO Tle spé p.11, capacités attendues de « Fonctions sinus et cosinus ». BO 1re spé (Trigonométrie) : cosinus et sinus des valeurs remarquables lus sur le cercle.',
+				options: [
+					['cos-et-sin', '« Du type » couvre aussi sin(x) = a et sin(x) ⩽ a'],
+					['cos-seul', "Cosinus seulement, comme le texte l'écrit"]
+				],
+				reco: 'cos-et-sin',
+				pourquoi:
+					"« Du type » désigne une famille d'équations résolues de la même façon sur le cercle trigonométrique, où sinus et cosinus sont lus ensemble depuis la 1re ; mais le texte ne cite que cos, d'où la question.",
+				consequence:
+					'Avec cos-seul, tout modèle en sin(x) = a (ou sin(x) ⩽ a) rattaché à TSPE-457/458 est refusé ; avec cos-et-sin il est accepté.',
+				info: false
+			},
+			{
+				id: 'lts-2',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-457'],
+				titre: 'Intervalle de résolution de cos(x) = a',
+				question:
+					"Dans « une équation du type cos(x) = a, une inéquation de la forme cos(x) ⩽ a sur [−π, π] », la précision « sur [−π, π] » porte-t-elle aussi sur l'équation ? Une question « Résoudre cos(x) = 1/2 dans ℝ » est-elle dans le point ?",
+				sources:
+					"BO Tle spé p.11 (même phrase). Le découpage en points a rattaché l'intervalle à la seule inéquation (TSPE-458).",
+				options: [
+					[
+						'libre',
+						"Équation sur ℝ ou sur tout intervalle donné ; [−π, π] pour l'inéquation seulement"
+					],
+					['moins-pi-pi', 'Équation et inéquation sur [−π, π] seulement']
+				],
+				reco: 'libre',
+				pourquoi:
+					"La virgule sépare deux compléments ; l'équation sur ℝ s'écrit par périodicité, notion du même chapitre (TSPE-598). Lecture grammaticale incertaine, d'où la question.",
+				consequence:
+					'Avec moins-pi-pi, un modèle « cos(x) = 1/2 dans ℝ » ou « sur [0 ; 2π] » est refusé ; avec libre il est accepté.',
+				info: false
+			},
+			{
+				id: 'lts-3',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-457', 'TSPE-458'],
+				titre: 'Valeurs de a dans cos(x) = a',
+				question:
+					'Le BO ne dit pas quelles valeurs prend a. Faut-il des valeurs remarquables (0, ±1/2, ±√2/2, ±√3/2, ±1), ou une valeur quelconque comme a = 0,3 (solution approchée à la calculatrice) ?',
+				sources:
+					'BO Tle spé p.11 : rien sur a ; capacité « lier la représentation graphique… et le cercle trigonométrique ». BO 1re spé : cosinus et sinus « pour des valeurs remarquables ». Aucune fonction réciproque (arccos) au programme (BO Tle spé p.10 : seule la réciproque de exp).',
+				options: [
+					['remarquables', 'a parmi les valeurs remarquables, solutions exactes'],
+					['quelconques', 'a quelconque dans [−1, 1], solutions approchées admises']
+				],
+				reco: 'remarquables',
+				pourquoi:
+					"Sans arccos, une solution exacte n'existe que pour les valeurs remarquables ; le cercle trigonométrique est l'outil désigné.",
+				consequence:
+					'Avec remarquables, un modèle tirant a = 0,3 et attendant x ≈ 1,266 est refusé ; avec quelconques il est accepté.',
+				info: false
+			},
+			{
+				id: 'lts-4',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-458'],
+				titre: "Sens de l'inéquation en cosinus",
+				question:
+					'Le BO écrit « une inéquation de la forme cos(x) ⩽ a ». Les inéquations cos(x) > a, cos(x) ⩾ a, cos(x) < a sont-elles dans le point ?',
+				sources:
+					'BO Tle spé p.11. Précédent : décision c4-5 (inéquations du cycle 4, les quatre sens admis).',
+				options: [
+					['quatre-sens', 'Les quatre sens (⩽, <, ⩾, >)'],
+					['inferieur', '⩽ seulement (et < par symétrie de la méthode)']
+				],
+				reco: 'quatre-sens',
+				pourquoi:
+					"Changer le sens ne change pas la méthode (lecture sur le cercle) ; c'est la lecture déjà retenue pour le cycle 4.",
+				consequence:
+					'Avec inferieur, un modèle « cos(x) > 1/2 sur [−π, π] » est refusé ; avec quatre-sens il est accepté.',
+				info: false
+			},
+			{
+				id: 'lts-5',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: [
+					'TSPE-402',
+					'TSPE-576',
+					'TSPE-577',
+					'TSPE-578',
+					'TSPE-579',
+					'TSPE-403',
+					'TSPE-580',
+					'TSPE-581',
+					'TSPE-582',
+					'TSPE-583',
+					'TSPE-415'
+				],
+				titre: 'Limites faisant intervenir ln, sin, cos',
+				question:
+					'La section « Limites des fonctions » ne cite que « les fonctions de référence étudiées en classe de première : puissances entières, racine carrée, fonction exponentielle ». Une question « Déterminer la limite de ln(x)/x en +∞ » ou « de sin(x)/x en +∞ (encadrement) » est-elle dans les points de calcul de limites ?',
+				sources:
+					"BO Tle spé p.9 (Limites des fonctions, contenus et capacités) ; p.10 (Fonction logarithme : limites en 0 et +∞, croissance comparée avec xⁿ) ; p.11 (sinus, cosinus) ; p.3 : « Ce découpage n'est pas un plan de cours ».",
+				options: [
+					['toutes', 'Toutes les fonctions de référence de terminale (dont ln, sin, cos)'],
+					['premiere', 'Seulement celles de 1re ; les limites en ln relèvent de TSPE-441/443']
+				],
+				reco: 'toutes',
+				pourquoi:
+					"Le découpage n'est pas un plan de cours et la capacité de dérivation (TSPE-415) parle des « fonctions de référence » sans restriction ; mais la liste écrite de la section est celle de 1re.",
+				consequence:
+					'Avec premiere, un modèle ln(x)/x ou (sin x)/x rattaché à TSPE-580/582 est refusé (il doit viser TSPE-443 ou rester sans point) ; avec toutes il est accepté.',
+				info: false
+			},
+			{
+				id: 'lts-6',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-372', 'TSPE-371', 'TSPE-566', 'TSPE-567'],
+				titre: 'Taille des systèmes linéaires « dans des cas simples »',
+				question:
+					"Le BO demande de résoudre « dans des cas simples » le système traduisant un problème de l'espace, sans étude générale des systèmes. Un système 3 × 3 dont toutes les équations contiennent les trois inconnues (pivot de Gauss) est-il dans le point ?",
+				sources:
+					"BO Tle spé p.7 (« Dans des cas simples, résoudre le système obtenu ») ; p.5 (« L'étude générale des systèmes linéaires n'est pas un objectif »).",
+				options: [
+					['deux', 'Deux inconnues (la troisième équation sert de vérification)'],
+					[
+						'trois-simple',
+						"Jusqu'à trois inconnues, résolubles par substitution (une équation au moins à une ou deux inconnues)"
+					],
+					['libre', 'Tout système 3 × 3']
+				],
+				reco: 'trois-simple',
+				pourquoi:
+					"Décider si trois vecteurs forment une base ou décomposer un vecteur conduit naturellement à trois inconnues ; « cas simples » et l'absence d'étude générale excluent la méthode générale.",
+				consequence:
+					'Avec trois-simple, un modèle tirant un système 3 × 3 à coefficients tous non nuls est refusé ; un système triangulaire ou à substitution directe est accepté.',
+				info: false
+			},
+			{
+				id: 'lts-7',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-567', 'TSPE-372', 'TSPE-374'],
+				titre: 'Intersection de deux plans : attendu ou approfondissement',
+				question:
+					"La capacité attendue cite « intersection … de droites ou de plans » parmi les configurations à traduire par un système, mais « Déterminer l'intersection de deux plans » est un approfondissement. Une question « Donner une représentation paramétrique de la droite d'intersection des plans P et P′ » est-elle dans TSPE-567 ?",
+				sources:
+					"BO Tle spé p.7 : capacité attendue (traduire par un système … intersection et orthogonalité de droites ou de plans) et approfondissement (« Déterminer l'intersection de deux plans ») ; p.5 : exemples de systèmes « intersections de plans ».",
+				options: [
+					[
+						'approf',
+						"Attendu : traduire et décider (plans sécants, parallèles, confondus, droite ∩ plan) ; déterminer la droite d'intersection = TSPE-374 seulement"
+					],
+					['attendu', "La détermination complète de la droite d'intersection est dans TSPE-567"]
+				],
+				reco: 'approf',
+				pourquoi:
+					"Les deux passages ne se contredisent que si l'attendu inclut la détermination ; les lire ensemble laisse à l'attendu la traduction et la décision.",
+				consequence:
+					'Avec approf, un modèle demandant la représentation paramétrique de P ∩ P′ ne peut viser que TSPE-374 ; un modèle « P et P′ sont-ils sécants ? » ou « intersection de la droite d et du plan P » reste dans TSPE-567.',
+				info: false
+			},
+			{
+				id: 'lts-8',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-567', 'TSPE-367', 'TSPE-375'],
+				titre: 'Vecteur normal à un plan défini par trois points',
+				question:
+					'« Déterminer un vecteur orthogonal à deux vecteurs non colinéaires » est un approfondissement. Une question « Déterminer un vecteur normal au plan (ABC) » (sans vecteur proposé) est-elle dans les attendus ?',
+				sources:
+					"BO Tle spé p.7 : approfondissement (vecteur orthogonal à deux vecteurs non colinéaires) ; capacité attendue (traduire par un système … orthogonalité de droites ou de plans) ; capacité « Déterminer l'équation cartésienne d'un plan dont on connait un vecteur normal et un point ».",
+				options: [
+					[
+						'verifier',
+						"Attendu : vérifier qu'un vecteur donné est normal à (ABC) ; le déterminer = TSPE-375"
+					],
+					['determiner', 'Le déterminer par un système est attendu (TSPE-567)']
+				],
+				reco: 'verifier',
+				pourquoi:
+					"La capacité sur l'équation de plan suppose le vecteur normal connu ; le déterminer est exactement l'approfondissement nommé.",
+				consequence:
+					'Avec verifier, un modèle « trouver un vecteur normal à (ABC) » ne peut viser que TSPE-375 ; « montrer que n(1 ; 2 ; −1) est normal à (ABC) » reste attendu.',
+				info: false
+			},
+			{
+				id: 'lts-9',
+				cycle: 'lycée',
+				niveaux: ['T_SPE'],
+				points: ['TSPE-463', 'TSPE-467', 'TSPE-468'],
+				titre: 'Primitive de x ↦ 1/x',
+				question:
+					'Le BO liste les primitives de « x ↦ xⁿ pour n ∈ ℤ », ce qui inclut n = −1, dont la primitive est ln. Une question « Primitive de 1/x sur ]0 ; +∞[ » ou « de 1/x sur ]−∞ ; 0[ » (ln|x|) est-elle dans les points ?',
+				sources:
+					'BO Tle spé p.11 (primitives des fonctions de référence) ; p.10 : ln défini sur ]0 ; +∞[, aucune mention de ln|x|.',
+				options: [
+					[
+						'ln-positif',
+						'n = −1 inclus, sur ]0 ; +∞[ seulement (primitive ln x ; u′/u avec u > 0)'
+					],
+					['ln-abs', 'Aussi sur ]−∞ ; 0[ avec ln|x|'],
+					['exclu', "n ≠ −1 : le cas 1/x n'est pas dans TSPE-463"]
+				],
+				reco: 'ln-positif',
+				pourquoi:
+					"Le texte écrit n ∈ ℤ sans exclure −1 et ln′ = 1/x est au programme ; ln|x| n'apparaît nulle part.",
+				consequence:
+					'Avec ln-positif, un modèle « primitive de 3/x sur ]0 ; +∞[ » est accepté et un modèle attendant ln|x| sur ]−∞ ; 0[ est refusé.',
+				info: false
+			},
+			{
+				id: 'lte-1',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-208'],
+				titre: 'Équations « simples » en z et z̄',
+				question:
+					'Le BO demande de résoudre « une équation simple faisant intervenir z et z̄ » sans dire ce qui est simple. Une question « Résoudre dans ℂ : z² + z̄ = 0 » est-elle dans le point, ou seulement « Résoudre 2z + i z̄ = 3 − i » ?',
+				sources:
+					"BO Tle exp. p.6, capacités attendues : « Résoudre une équation simple faisant intervenir z et z̄. » Rien d'autre dans la section.",
+				options: [
+					[
+						'premier-degre',
+						'Équations du premier degré en z et z̄ (az + b z̄ = c), résolues en posant z = x + iy : système linéaire en x, y'
+					],
+					[
+						'systeme-simple',
+						'Toute équation qui, avec z = x + iy, donne un système en x, y résoluble à ce niveau (z² + z̄ = 0, z z̄ + z = 3 compris)'
+					]
+				],
+				reco: 'premier-degre',
+				pourquoi:
+					'Le mot « simple », à côté de « équation linéaire az = b » juste au-dessus, appelle le premier degré ; les équations du second degré en z sont rangées ailleurs (coefficients réels seulement, p.7).',
+				consequence:
+					'Avec premier-degre, un modèle « 2z + i z̄ = 3 − i » est accepté et un modèle « z² + z̄ = 0 » refusé ; avec systeme-simple, les deux sont acceptés.',
+				info: false
+			},
+			{
+				id: 'lte-2',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-218', 'TEXP-221', 'TEXP-237', 'TEXP-238', 'TEXP-263'],
+				titre: 'Arguments exacts : valeurs remarquables seulement ?',
+				question:
+					'Le BO demande de « déterminer les arguments » et de passer à la forme trigonométrique, sans fonction arctangente au programme. Une question « Donner un argument de 3 + 4i » (pas de valeur remarquable) est-elle dans le point ?',
+				sources:
+					"BO Tle exp. p.6 : « Déterminer le module et les arguments d'un nombre complexe. » BO Tle exp. p.7 : « Passer de la forme algébrique […] à sa forme trigonométrique ou exponentielle ». BO 1re spé (trigonométrie) : cosinus et sinus des seules valeurs remarquables. Aucune fonction réciproque de cos, sin ou tan au programme.",
+				options: [
+					[
+						'remarquables',
+						'Argument exact attendu seulement quand cos θ et sin θ sont des valeurs remarquables (multiples de π/6 et π/4)'
+					],
+					[
+						'approche',
+						'Argument non remarquable admis, donné en valeur approchée (calculatrice) ou en le définissant par cos θ et sin θ'
+					]
+				],
+				reco: 'remarquables',
+				pourquoi:
+					"Sans fonction réciproque au programme, la seule façon d'écrire un argument exact est de reconnaître une valeur remarquable ; une valeur approchée suppose un outil que le BO ne nomme pas.",
+				consequence:
+					'Avec remarquables, un modèle qui tire z = a + ib au hasard et demande un argument est refusé ; il doit tirer |z| et un angle multiple de π/6 ou π/4. Avec approche, il est accepté.',
+				info: false
+			},
+			{
+				id: 'lte-3',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-248', 'TEXP-249'],
+				titre: 'Racine « connue » : donnée ou à trouver ?',
+				question:
+					'Le BO demande de résoudre une équation de degré 3 « dont une racine est connue ». Une question « Résoudre z³ − 3z² + 4z − 2 = 0 » sans indiquer la racine 1 est-elle dans le point ?',
+				sources:
+					'BO Tle exp. p.7 : « Résoudre une équation de degré 3 à coefficients réels dont une racine est connue. Factoriser un polynôme dont une racine est connue. » BO 1re spé : « racine évidente » seulement pour le second degré.',
+				options: [
+					[
+						'donnee',
+						"La racine est donnée par l'énoncé (ou l'énoncé demande de vérifier qu'un nombre donné est racine)"
+					],
+					[
+						'evidente',
+						"L'élève peut avoir à trouver une racine évidente entière (−2 à 2), comme au second degré en 1re spé"
+					]
+				],
+				reco: 'donnee',
+				pourquoi:
+					'« Connue » dit que la racine est disponible au départ ; la recherche de racine évidente est écrite pour le second degré, pas ici.',
+				consequence:
+					'Avec donnee, un modèle qui ne donne pas la racine est refusé ; avec evidente, il est accepté si la racine est un petit entier.',
+				info: false
+			},
+			{
+				id: 'lte-4',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-292'],
+				titre: 'Équations diophantiennes « simples »',
+				question:
+					'Le BO demande de résoudre « des équations diophantiennes simples ». Une question « Résoudre x² − y² = 15 dans ℕ² » est-elle dans le point, ou seulement « Résoudre 5x + 3y = 1 dans ℤ² » ?',
+				sources:
+					"BO Tle exp. p.8 : « exemples simples d'équations diophantiennes ». BO Tle exp. p.9 : capacité « Résoudre des équations diophantiennes simples » ; triplets pythagoriciens et Pell-Fermat rangés en problèmes possibles.",
+				options: [
+					['lineaires', 'Équations ax + by = c seulement (Bézout, Gauss)'],
+					[
+						'factorisables',
+						"Aussi les équations qu'une factorisation ramène à un nombre fini de cas (x² − y² = n, xy = …)"
+					]
+				],
+				reco: 'lineaires',
+				pourquoi:
+					'Les outils du chapitre (Bézout, Gauss) visent ax + by = c ; les équations non linéaires nommées par le BO (triplets pythagoriciens, Pell-Fermat) sont des problèmes possibles, pas des attendus.',
+				consequence:
+					'Avec lineaires, un modèle « x² − y² = 15 » est refusé dans TEXP-292 ; avec factorisables, il est accepté.',
+				info: false
+			},
+			{
+				id: 'lte-5',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-312', 'TEXP-315', 'TEXP-322', 'TEXP-342', 'TEXP-345'],
+				titre: 'Chaînes ou chemins : graphes orientés hors Markov ?',
+				question:
+					"Les contenus ne parlent que d'arêtes et de chaînes (graphe non orienté), l'orientation n'y apparaît que pour les chaînes de Markov ; mais la capacité et la démonstration parlent de « chemins ». Une question « Combien de chemins de longueur 3 vont de A à C dans ce graphe orienté ? » est-elle dans le point ?",
+				sources:
+					"BO Tle exp. p.10 (contenus) : « Graphe, sommets, arêtes […] chaîne, longueur d'une chaîne » ; « Graphe orienté pondéré associé à une chaîne de Markov ». BO Tle exp. p.11 (capacités, démonstrations) : « nombre de chemins de longueur donnée entre deux sommets d'un graphe ».",
+				options: [
+					[
+						'non-oriente',
+						"Graphes non orientés seulement ; l'orientation est réservée aux chaînes de Markov"
+					],
+					[
+						'oriente-chemins',
+						"Graphes orientés admis pour la matrice d'adjacence et le nombre de chemins ; vocabulaire de base (degré, connexe) en non orienté"
+					],
+					['libre', 'Graphes orientés admis partout']
+				],
+				reco: 'oriente-chemins',
+				pourquoi:
+					"Les deux textes sont le BO ; « chemin » et la démonstration sur la matrice d'adjacence valent pour un graphe orienté comme non orienté, alors que le vocabulaire des contenus est non orienté.",
+				consequence:
+					"Avec oriente-chemins, un modèle de comptage de chemins sur un graphe orienté est accepté, un modèle « degré entrant d'un sommet » refusé ; avec non-oriente, les deux sont refusés.",
+				info: false
+			},
+			{
+				id: 'lte-6',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: [
+					'TEXP-320',
+					'TEXP-321',
+					'TEXP-322',
+					'TEXP-324',
+					'TEXP-338',
+					'TEXP-339',
+					'TEXP-340',
+					'TEXP-342'
+				],
+				titre: 'Ordre des matrices et taille des systèmes',
+				question:
+					"Le BO ne donne un ordre (2 ou 3) que pour les « exemples de calcul de puissances » et pour les chaînes de Markov ; rien pour l'inverse, les systèmes ni la matrice d'adjacence. Une question « Inverser cette matrice 4 × 4 » ou « Nombre de chemins de longueur 3 dans un graphe à 5 sommets » est-elle dans le point ?",
+				sources:
+					"BO Tle exp. p.10 : « Exemples de calcul de puissances de matrices carrées d'ordre 2 ou 3 » ; « Chaîne de Markov à deux ou trois états ». BO Tle exp. p.11 : « Calculer l'inverse, les puissances d'une matrice carrée » sans ordre.",
+				options: [
+					[
+						'ordre-3',
+						'Ordre au plus 3 partout (inverse, puissances, systèmes à 3 inconnues au plus, graphes à 3 sommets au plus)'
+					],
+					[
+						'exact-3-adjacence-libre',
+						"Ordre au plus 3 pour les calculs exacts (inverse, puissance générale, systèmes) ; matrice d'adjacence de taille libre, puissance numérique à la calculatrice"
+					],
+					['libre', "Aucune borne d'ordre"]
+				],
+				reco: 'exact-3-adjacence-libre',
+				pourquoi:
+					"Le seul ordre écrit (2 ou 3) porte sur des calculs ; un graphe à 3 sommets rendrait le comptage de chemins sans intérêt, et le BO parle d'utiliser des logiciels de calcul (p.3).",
+				consequence:
+					'Avec la recommandation, un modèle « inverser une matrice 4 × 4 » est refusé et un modèle « chemins dans un graphe à 5 sommets, calculatrice » accepté ; avec ordre-3, les deux sont refusés.',
+				info: false
+			},
+			{
+				id: 'lte-7',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-319', 'TEXP-320', 'TEXP-338'],
+				titre: "Déterminant d'une matrice 2 × 2",
+				question:
+					"Le déterminant n'apparaît pas au BO. Une question « Calculer l'inverse de la matrice (2 1 ; 5 3) » dont la correction utilise la formule 1/(ad − bc) × (d −b ; −c a) sans la rappeler est-elle dans le point ?",
+				sources:
+					"BO Tle exp. p.10-11 : « Inverse, puissances d'une matrice carrée » ; « Calculer l'inverse ». Le mot déterminant est absent du texte.",
+				options: [
+					[
+						'enonce',
+						"Formule ad − bc admise seulement si l'énoncé la donne ; sinon inverse par vérification AB = I ou par un système"
+					],
+					['exigible', "Formule de l'inverse 2 × 2 par le déterminant exigible sans rappel"]
+				],
+				reco: 'enonce',
+				pourquoi:
+					"Exiger une formule que le BO ne nomme pas serait une borne inventée ; la donner dans l'énoncé reste dans le point.",
+				consequence:
+					"Avec enonce, un modèle dont la correction s'appuie sur ad − bc sans le rappeler est refusé ; il doit donner la formule ou faire vérifier un produit égal à I.",
+				info: false
+			},
+			{
+				id: 'lte-8',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-323'],
+				titre: 'Quelles transformations du plan en matrices ?',
+				question:
+					"Le BO dit « transformations géométriques du plan » sans liste. Or ce texte de 2019 supposait l'ancien collège : rotation et homothétie ne sont plus au programme du cycle 4 en vigueur, ni en 2de, 1re et Tle spé (seules restent symétries et translations). Une question « Écrire la matrice de la rotation de centre O et d'angle π/2 » est-elle dans le point ?",
+				sources:
+					'BO Tle exp. p.10 : « transformations géométriques du plan ». Bornes cycle 4 : rotation et homothétie absentes du BO c4 en vigueur. BO 2de : translations seulement. Rien en 1re ni Tle spé.',
+				options: [
+					[
+						'connues',
+						"Seulement les transformations connues des programmes en vigueur (symétries axiales par une droite passant par O, symétrie centrale de centre O), plus celles définies dans l'énoncé"
+					],
+					[
+						'lineaires',
+						"Toute transformation x' = ax + by, y' = cx + dy, y compris rotations et homothéties de centre O nommées sans définition"
+					]
+				],
+				reco: 'connues',
+				pourquoi:
+					"Nommer une rotation sans la définir suppose un savoir que les programmes en vigueur ne donnent plus ; la définir dans l'énoncé reste possible.",
+				consequence:
+					"Avec connues, un modèle « matrice de la rotation d'angle π/2 » est refusé sauf si l'énoncé donne x' = −y, y' = x ; avec lineaires, il est accepté.",
+				info: false
+			},
+			{
+				id: 'lte-9',
+				cycle: 'lycée',
+				niveaux: ['T_EXP'],
+				points: ['TEXP-260', 'TEXP-261', 'TEXP-263', 'TEXP-264', 'TEXP-227'],
+				titre: 'Transformations z ↦ az + b',
+				question:
+					"Le BO ne cite les similitudes directes que dans l'histoire (programme d'Erlangen) et la suite z_{n+1} = az_n + b qu'en problème possible ; aucune capacité ne parle d'écriture complexe d'une rotation ou d'une homothétie. Une question « Quelle est la nature de la transformation z ↦ iz + 1 ? » est-elle dans le point ?",
+				sources:
+					'BO Tle exp. p.6 (histoire) : « similitudes directes du plan complexe ». BO Tle exp. p.6 (problèmes possibles) : « Suite de nombres complexes définie par z_{n+1} = az_n + b ». BO Tle exp. p.8 : capacités limitées à alignement, orthogonalité, longueurs, angles, ensembles de points.',
+				options: [
+					[
+						'refus',
+						"Hors programme : aucun modèle ne demande la nature d'une transformation complexe"
+					],
+					[
+						'via-module-argument',
+						"Admis si la question se ramène à des longueurs et des angles (|z' − ω| = |z − ω|, arg …) sans nommer la transformation"
+					]
+				],
+				reco: 'via-module-argument',
+				pourquoi:
+					"La mention historique n'est pas un contenu ; mais une question sur le module et l'argument de (z' − ω)/(z − ω) reste dans « calculer des longueurs, des angles ».",
+				consequence:
+					"Avec via-module-argument, un modèle « montrer que OM' = OM et (OM, OM') = π/2 si z' = iz » est accepté, un modèle « reconnaître une rotation » refusé ; avec refus, les deux sont refusés.",
+				info: false
+			},
+			{
+				id: 'ltc-1',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-230', 'TCOMP-378', 'TCOMP-231'],
+				titre: 'Croissances comparées absentes du BO',
+				question:
+					"Le BO de Tle compl. ne cite pas les croissances comparées (eˣ/x → +∞, x e^{−x} → 0, ln x / x → 0) ; il dit seulement que composition et comparaison s'utilisent « en contexte ». Une question « Calculer la limite de x e^{−x} en +∞ » est-elle dans TCOMP-230 ?",
+				sources:
+					"BO Tle compl. p.9 : « La formalisation de la notion de limite n'est pas un attendu du programme. Les opérations sur les limites sont admises. Au besoin, l'utilisation du théorème de composition des limites et des théorèmes de comparaison se fait en contexte. » Limites listées : celles des fonctions de référence.",
+				options: [
+					[
+						'donnee',
+						"Admise seulement si l'énoncé donne le résultat de croissance comparée (« on admet que … »)"
+					],
+					[
+						'refus',
+						'Refusée : seules les limites des fonctions de référence et leurs opérations sans forme indéterminée'
+					],
+					['admise', 'Admise comme une limite ordinaire']
+				],
+				reco: 'donnee',
+				pourquoi:
+					"Le BO ne met que les limites des fonctions de référence au programme ; une croissance comparée fournie par l'énoncé reste un calcul « en contexte », ce qui est la seule ouverture du texte.",
+				consequence:
+					'Un modèle « lim x e^{−x} en +∞ » sans indication est refusé ; le même modèle qui écrit « on admet que lim eˣ/x = +∞ » est accepté.',
+				info: false
+			},
+			{
+				id: 'ltc-2',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-290', 'TCOMP-297', 'TCOMP-303'],
+				titre: 'Probabilités binomiales à la main',
+				question:
+					"Le BO demande de calculer P(X = k), P(X ⩽ k) « à l'aide d'une calculatrice ou d'un logiciel » pour une loi binomiale, et de connaître son « expression ». Une question « X suit ℬ(4 ; 0,3), calculer P(X = 2) » sans calculatrice est-elle dans le point ?",
+				sources:
+					"BO Tle compl. p.11 : contenus « Expression, espérance et écart type (admis) » ; capacité « calculer à l'aide d'une calculatrice ou d'un logiciel, les probabilités des événements de type P(X = k) ou P(X ⩽ k), etc. Calculer explicitement ces probabilités pour une variable aléatoire suivant une loi géométrique ».",
+				options: [
+					[
+						'petit_n',
+						"Calcul à la main admis pour un petit n (coefficient lu dans le triangle de Pascal) ; pour un grand n, valeurs fournies par l'énoncé"
+					],
+					[
+						'calculatrice',
+						'Jamais à la main : le modèle fournit les valeurs (tableau de la loi) ou admet le résultat numérique de la calculatrice'
+					]
+				],
+				reco: 'petit_n',
+				pourquoi:
+					"L'expression de la loi est au programme et les coefficients s'obtiennent par le triangle de Pascal ; le BO oppose « explicitement » (géométrique) à « calculatrice » (binomiale) parce que n est souvent grand, pas pour interdire le calcul sur un petit n.",
+				consequence:
+					'Un modèle « ℬ(4 ; 0,3), P(X = 2) = 6 × 0,3² × 0,7² » est accepté avec « petit_n », refusé avec « calculatrice » ; un modèle ℬ(50 ; 0,3) sans valeurs fournies est refusé dans les deux cas.',
+				info: false
+			},
+			{
+				id: 'ltc-3',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: [
+					'TCOMP-310',
+					'TCOMP-312',
+					'TCOMP-314',
+					'TCOMP-315',
+					'TCOMP-316',
+					'TCOMP-371',
+					'TCOMP-376'
+				],
+				titre: 'Densités sur [0, +∞[ (intégrales sur un intervalle non borné)',
+				question:
+					"L'intégrale n'est définie au programme que sur un segment [a, b], mais la loi exponentielle a une densité sur [0, +∞[. Une question « Montrer que f(x) = 2e^{−2x} est une densité sur [0, +∞[ » ou « Calculer E(X) pour X exponentielle » est-elle dans les points ?",
+				sources:
+					"BO Tle compl. p.10 : intégrale définie sur [a, b]. p.11 : « Loi exponentielle. Fonction densité, fonction de répartition. Espérance » ; « Déterminer si une fonction est une densité de probabilité. Calculer des probabilités. Calculer l'espérance d'une variable aléatoire à densité. » p.9 : limites au programme (approche intuitive).",
+				options: [
+					[
+						'limite',
+						"Admis en passant par la limite de ∫_0^x quand x → +∞, primitive donnée par l'énoncé si elle sort des formes du programme (x e^{−λx})"
+					],
+					[
+						'segment',
+						'Seulement des densités sur un segment [a, b] ; pour la loi exponentielle, on utilise F(x) = 1 − e^{−λx} et E = 1/λ comme résultats de cours'
+					]
+				],
+				reco: 'limite',
+				pourquoi:
+					"Le programme met la loi exponentielle et son espérance au programme, et la limite d'une intégrale ∫_0^x est un calcul intuitif de limite d'exponentielle ; la primitive de x λe^{−λx} demande une intégration par parties absente, d'où la primitive fournie.",
+				consequence:
+					'Un modèle « ∫_0^x 2e^{−2t} dt puis limite » est accepté avec « limite », refusé avec « segment » ; un modèle qui fait trouver seul la primitive de x e^{−x} est refusé dans les deux cas.',
+				info: false
+			},
+			{
+				id: 'ltc-4',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-322', 'TCOMP-327'],
+				titre: 'Coefficient de corrélation : calcul par formule ?',
+				question:
+					'Le BO met le coefficient de corrélation dans les contenus sans aucune capacité ni formule. Une question « Calculer r pour ce tableau de 5 points » par la formule cov(x, y)/(σₓσᵧ) est-elle dans TCOMP-322 ?',
+				sources:
+					"BO Tle compl. p.12 : contenus « Ajustement affine. Droite des moindres carrés. Coefficient de corrélation » ; capacités : représenter un nuage, calculer un point moyen, déterminer une droite de régression « à l'aide de la calculatrice, d'un logiciel ou par calcul », interpoler, extrapoler. p.7 : « évaluer une corrélation ».",
+				options: [
+					[
+						'lecture',
+						"r fourni par l'énoncé (ou calculatrice) ; la question porte sur son interprétation (signe, proximité de ±1, corrélation ≠ causalité)"
+					],
+					['formule', 'Calcul de r par formule admis sur une petite série']
+				],
+				reco: 'lecture',
+				pourquoi:
+					"Seule la droite de régression a « par calcul » dans le BO ; pour r, le thème « Corrélation et causalité » insiste sur l'évaluation et la réflexion critique, pas sur le calcul.",
+				consequence:
+					"Un modèle qui donne r = 0,98 et demande si l'ajustement affine est pertinent est accepté ; un modèle qui fait calculer r à la main est refusé avec « lecture ».",
+				info: false
+			},
+			{
+				id: 'ltc-5',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-202', 'TCOMP-331'],
+				titre: 'Convention de calcul des déciles',
+				question:
+					'Le BO cite les déciles sans définition ; la 2de calcule les quartiles « selon la façon dont la série est présentée » et le cycle 4 a fixé la convention des quartiles (c4-2). Quelle convention le correcteur attend-il pour D1 et D9 ?',
+				sources:
+					"BO Tle compl. p.6 : « Statistique descriptive : caractéristiques de dispersion (médiane, quartiles, déciles, rapport interdécile) » ; courbe de Lorenz « construction d'une ligne polygonale à partir des quantiles ». BO 2de p.6 : quartiles selon la présentation (brutes, classes, graphiques). Décision c4-2 : Q1 = plus petite valeur dont l'effectif cumulé atteint 25 %.",
+				options: [
+					[
+						'comme_quartiles',
+						"Même convention que les quartiles (c4-2) : D1 (D9) = plus petite valeur dont l'effectif cumulé atteint 10 % (90 %) ; lecture graphique sur le polygone des fréquences cumulées pour des données en classes"
+					],
+					[
+						'tolerance',
+						'Le correcteur accepte toute valeur entre deux valeurs consécutives de la série encadrant le rang'
+					]
+				],
+				reco: 'comme_quartiles',
+				pourquoi:
+					"Une seule convention dans tout Chiphre évite qu'un même calcul soit juste au collège et faux au lycée ; les données en classes (revenus) ne se traitent que graphiquement.",
+				consequence:
+					'Un modèle « série de 20 salaires, D1 ? » attend la 2e valeur avec « comme_quartiles » et accepte un intervalle de valeurs avec « tolerance ».',
+				info: false
+			},
+			{
+				id: 'ltc-6',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-250', 'TCOMP-245'],
+				titre: "Vérifier une solution d'une équation différentielle d'ordre 2",
+				question:
+					"Le BO limite la résolution aux équations linéaires du premier ordre, mais la capacité « Vérifier qu'une fonction donnée est solution d'une équation différentielle » n'est pas bornée, et la dérivée seconde est au programme (convexité). Une question « Vérifier que x ↦ e^{2x} est solution de y'' = 4y » est-elle dans TCOMP-250 ?",
+				sources:
+					"BO Tle compl. p.9 : « Le programme se limite à la résolution des équations différentielles linéaires du premier ordre à coefficients constants. […] Des équations différentielles non linéaires peuvent apparaitre, par exemple l'équation logistique […], mais aucune connaissance spécifique à ce sujet n'est exigible. » Capacité : « Vérifier qu'une fonction donnée est solution d'une équation différentielle. » p.10 : dérivée seconde.",
+				options: [
+					['ordre1', 'Premier ordre seulement (linéaire ou non, logistique comprise)'],
+					[
+						'tout_ordre',
+						"Tout ordre : la vérification ne demande qu'un calcul de dérivées du programme"
+					]
+				],
+				reco: 'ordre1',
+				pourquoi:
+					"Le BO ne mentionne comme exception que des équations non linéaires du premier ordre (logistique) ; l'ordre 2 relève de la Tle spé / maths expertes et n'apparaît nulle part dans le texte.",
+				consequence:
+					"Un modèle « vérifier que e^{2x} est solution de y'' = 4y » est refusé avec « ordre1 », accepté avec « tout_ordre » ; un modèle logistique y' = y(1 − y) est accepté dans les deux cas.",
+				info: false
+			},
+			{
+				id: 'ltc-7',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-302', 'TCOMP-224', 'TCOMP-280', 'TCOMP-281', 'TCOMP-324', "thèmes d'étude"],
+				titre: "Notions des thèmes d'étude absentes du volet « contenus »",
+				question:
+					"Les thèmes d'étude citent des notions qui ne sont pas dans les contenus : courbe de Lorenz, indice de Gini, sensibilité / spécificité / valeurs prédictives, modèle de Verhulst, fourchette de sondage, σ/√n, quadrature de l'hyperbole, volumes de solides de révolution. Un modèle « Calculer l'indice de Gini 2∫_0^1 (x − L(x)) dx » se rattache-t-il au point de la capacité mobilisée (ici TCOMP-276) ?",
+				sources:
+					"BO Tle compl. p.3 : « Les professeurs organisent leur enseignement de façon à aborder au moins six thèmes tout en couvrant l'ensemble des contenus et capacités attendues » ; les problèmes possibles « offrent des pistes », « sans prétendre à l'exhaustivité ». p.4-7 : descriptifs et problèmes des thèmes.",
+				options: [
+					[
+						'habillage',
+						"Admis comme habillage : la notion du thème est définie dans l'énoncé, le modèle se rattache au point de la capacité mathématique mobilisée"
+					],
+					['hors', 'Hors de tout point : seul le volet « contenus » borne les modèles']
+				],
+				reco: 'habillage',
+				pourquoi:
+					"Le BO veut que les contenus soient travaillés « au travers des thèmes » : les thèmes sont le contexte normal des questions, mais leurs problèmes ne sont pas obligatoires (six thèmes sur neuf), donc la notion doit être redonnée par l'énoncé.",
+				consequence:
+					"Un modèle Gini qui définit L et l'indice dans l'énoncé est accepté sous TCOMP-276 avec « habillage » ; un modèle qui suppose connue la définition de la sensibilité d'un test est refusé dans les deux cas.",
+				info: false
+			},
+			{
+				id: 'ltc-8',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-223', 'TCOMP-340'],
+				titre: 'Fonctions réciproques : seulement les couples illustrés ?',
+				question:
+					'Le BO dit que la notion de réciproque « est illustrée par les fonctions carré, racine carrée, exponentielle, logarithme ». Une question « Tracer la courbe de la réciproque de x ↦ x³ sur ℝ » ou « réciproque de x ↦ 2x + 1 » est-elle dans le point ?',
+				sources:
+					"BO Tle compl. p.9 : « La notion de fonction réciproque ne donne pas lieu à des développements théoriques, mais est illustrée par les fonctions carré, racine carrée, exponentielle, logarithme. » Contenus : « Réciproque d'une fonction continue strictement monotone sur un intervalle, représentation graphique. »",
+				options: [
+					[
+						'toute',
+						'Toute fonction continue strictement monotone du programme (lecture graphique, symétrie par rapport à y = x), sans théorie'
+					],
+					['couples', 'Seulement carré ↔ racine carrée et exponentielle ↔ logarithme']
+				],
+				reco: 'toute',
+				pourquoi:
+					"Le contenu est énoncé en général ; « illustrée par » désigne les exemples de cours, non une liste fermée. L'interdit porte sur la théorie (pas de formule de dérivée de la réciproque, etc.).",
+				consequence:
+					'Un modèle « courbe de la réciproque de x ↦ x³ » est accepté avec « toute », refusé avec « couples ».',
+				info: false
+			},
+			{
+				id: 'ltc-9',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['TCOMP-330', 'TCOMP-201'],
+				titre: 'Produit cartésien : dénombrer ?',
+				question:
+					"Le BO demande la « notion de produit cartésien » et fixe la notation Card(A), sans règle de dénombrement (la Tle compl. n'a pas de chapitre de combinatoire). Une question « Card(A) = 3, Card(B) = 4, combien d'éléments dans A × B ? » est-elle dans TCOMP-330 ?",
+				sources:
+					"BO Tle compl. p.3 : « Ils connaissent également la notion de couple, de triplet et plus généralement de n-uplet et celle de produit cartésien. […] On utilise la notation Card(A) pour le cardinal (nombre d'éléments) d'un ensemble fini A. »",
+				options: [
+					[
+						'notion',
+						'Notion seulement : écrire ou lister les éléments de A × B sur de petits ensembles, reconnaître un couple ; pas de Card(A × B) par la règle du produit'
+					],
+					[
+						'comptage',
+						'Comptage de A × B admis sur de petits ensembles (par listage ou par Card(A) × Card(B))'
+					]
+				],
+				reco: 'notion',
+				pourquoi:
+					"Le BO ne donne qu'une notion de vocabulaire ; la règle du produit est un contenu de dénombrement (Tle spé), absent ici.",
+				consequence:
+					'Un modèle « lister A × B pour A = {1, 2}, B = {a, b, c} » est accepté dans les deux cas ; « Card(A × B) = ? » sans listage est refusé avec « notion ».',
+				info: false
+			},
+			{
+				id: 'ltc-10',
+				cycle: 'lycée',
+				niveaux: ['T_COMP'],
+				points: ['bornes générales de T_COMP'],
+				titre: 'Logique : liste de la Tle compl. plus courte que celle de la 1re spé',
+				question:
+					"La Tle compl. reprend une liste de logique plus courte que la 1re spé suivie l'année d'avant : négation « sans implication ni quantificateurs » (la 1re spé demande la négation de propositions quantifiées), ni contraposée, ni condition nécessaire / suffisante. Un modèle de Tle compl. qui demande la contraposée ou la négation de « pour tout x, f(x) > 0 » est-il hors programme ?",
+				sources:
+					"BO Tle compl. p.3 : « formuler la négation de propositions simples (sans implication ni quantificateurs) » ; « formuler la réciproque d'une implication ». BO 1re spé p.4 : « formuler la réciproque d'une implication, la contraposée » ; « employer les expressions condition nécessaire, condition suffisante » ; « formuler la négation de propositions quantifiées ». BO Tle compl. p.1 : le programme « s'appuie sur le programme de spécialité de mathématiques de la classe de première qu'il réinvestit ».",
+				options: [
+					[
+						'heritage',
+						"L'acquis de 1re spé reste valable : contraposée et négation quantifiée admises en Tle compl."
+					],
+					[
+						'liste_tcomp',
+						'La liste de Tle compl. borne : contraposée et négation quantifiée refusées dans un modèle de Tle compl.'
+					]
+				],
+				reco: 'heritage',
+				pourquoi:
+					'Les élèves de Tle compl. ont suivi la 1re spé ; la liste courte reprend celle de 2de et ne retire rien explicitement.',
+				consequence:
+					'Un modèle de Tle compl. « négation de : pour tout x, f(x) > 0 » est accepté avec « heritage » (rattaché au point de 1re spé), refusé avec « liste_tcomp ».',
+				info: false
+			},
+			{
+				id: 'l1t-1',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO', 'T_TECHNO'],
+				points: ['1TECHNO-090', '1TECHNO-092', 'TTECHNO-055', 'TTECHNO-056'],
+				titre: 'Probabilités totales : quelle partition en 1re techno ?',
+				question:
+					"Le BO de 1re techno met la formule des probabilités totales « dans les cas simples » ; le BO de Tle techno dit qu'on l'« introduit » en Tle, pour une partition de l'univers. Une question de 1re techno « Une usine a trois machines A, B, C (50 %, 30 %, 20 % de la production) ; taux de défaut 2 %, 3 %, 5 % ; probabilité qu'une pièce soit défectueuse ? » est-elle dans 1TECHNO-092 ?",
+				sources:
+					"BO 2de p.13 : le calcul d'une probabilité connaissant ses probabilités conditionnelles relatives à une partition « n'est pas un attendu ». BO 1re techno p.10 : contenu « Formule des probabilités totales », capacité « Dans les cas simples, calculer une probabilité à l'aide de la formule des probabilités totales ». BO Tle techno p.9 : « on introduit : la formule des probabilités totales » ; p.10 : « pour une partition de l'univers », démontrée pour une partition en deux ou trois évènements.",
+				options: [
+					[
+						'deux',
+						'1re : partition {A, Ā} seulement (arbre à deux niveaux) ; trois évènements et plus en Tle'
+					],
+					[
+						'libre',
+						"1re : toute partition finie, les « cas simples » ne limitant que la complexité de l'arbre"
+					]
+				],
+				reco: 'deux',
+				pourquoi:
+					'Les trois textes se lisent ensemble si la 1re se limite au cas le plus simple (A et son contraire) et que la Tle généralise à une partition, avec démonstration en deux ou trois évènements.',
+				consequence:
+					"Avec « deux », l'exemple des trois machines est refusé en 1TECHNO-092 et rattaché à TTECHNO-056 ; un modèle « P(B) = P(A)·P_A(B) + P(Ā)·P_Ā(B) » reste en 1re.",
+				info: false
+			},
+			{
+				id: 'l1t-2',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO'],
+				points: ['1TECHNO-081', '1TECHNO-133', '1TECHNO-075'],
+				titre: "Variations d'un polynôme de degré 3 sans discriminant",
+				question:
+					"Le discriminant n'est pas au programme. Pour f(x) = x³ − 3x² − 2x + 1, la dérivée 3x² − 6x − 2 n'a pas de racine évidente. Un modèle « Dresser le tableau de variations de f » est-il dans 1TECHNO-081 ?",
+				sources:
+					"BO 1re techno p.8 : « le calcul des racines à l'aide du discriminant ne figure pas au programme » ; « on privilégie les situations où les racines sont évidentes ainsi que les interprétations graphiques. En cas de besoin, la résolution d'une équation du second degré peut se faire à l'aide d'un solveur » ; capacité « Déterminer le sens de variation et les extrémums d'une fonction polynôme de degré inférieur ou égal à 3 ».",
+				options: [
+					[
+						'evidentes',
+						"Dérivée factorisable sans discriminant : forme factorisée, racine évidente, ou racines données dans l'énoncé"
+					],
+					['solveur', 'Toute dérivée : racines obtenues au solveur, valeurs approchées acceptées']
+				],
+				reco: 'evidentes',
+				pourquoi:
+					"Le BO privilégie les racines évidentes et ne cite le solveur qu'« en cas de besoin » ; un modèle généré peut toujours choisir des racines entières pour la dérivée, ou les donner.",
+				consequence:
+					"Avec « evidentes », le modèle cité est refusé tel quel ; il devient acceptable si l'énoncé donne les racines de f′ ou si les coefficients sont tirés pour que f′ ait des racines entières (f(x) = x³ − 3x + 1, f′ = 3(x − 1)(x + 1)).",
+				info: false
+			},
+			{
+				id: 'l1t-3',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO', 'T_TECHNO'],
+				points: [
+					'1TECHNO-139',
+					'1TECHNO-140',
+					'1TECHNO-141',
+					'1TECHNO-066',
+					'TTECHNO-015',
+					'TTECHNO-073',
+					'TTECHNO-092'
+				],
+				titre: "Automatismes : « privilégiant l'activité mentale » est-il une borne ?",
+				question:
+					"Les automatismes « relèvent d'un entrainement régulier privilégiant l'activité mentale ». Un modèle rattaché à un point d'automatisme (ex. 1TECHNO-141, coefficient directeur entre A(1,37 ; −2,84) et B(5,12 ; 3,09)) qui exige la calculatrice est-il dans le point ?",
+				sources:
+					"BO 1re techno p.6 et BO Tle techno p.6 : « Elles relèvent d'un entrainement régulier privilégiant l'activité mentale. […] Les modalités de mise en œuvre peuvent être variées ».",
+				options: [
+					[
+						'mental',
+						'Borne : nombres et calculs faisables de tête ; un modèle à calculatrice va dans le point thématique jumeau'
+					],
+					[
+						'modalite',
+						"Modalité d'enseignement, pas une borne : le grain du savoir fixe seul l'inclusion"
+					]
+				],
+				reco: 'modalite',
+				pourquoi:
+					'« Privilégier » dit une préférence, pas une exclusion, et la phrase suivante ouvre les modalités ; la borne « seulement » doit reposer sur ce que le savoir contient.',
+				consequence:
+					"Avec « modalite », le modèle à coordonnées décimales est accepté en 1TECHNO-141 ; avec « mental », il est refusé et ces points n'acceptent que des valeurs entières ou simples.",
+				info: false
+			},
+			{
+				id: 'l1t-4',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO'],
+				points: [
+					'1TECHNO-058',
+					'1TECHNO-063',
+					'1TECHNO-064',
+					'1TECHNO-065',
+					'1TECHNO-066',
+					'1TECHNO-126'
+				],
+				titre: 'Racines et coefficients non entiers du second degré en 1re techno',
+				question:
+					'La Tle techno annonce pour ses automatismes « une complexification des variables didactiques comme la nature des nombres utilisés (entiers, fractions ou paramètres) dans la factorisation de x² − 9, x² − 4/9, 4x² − k² ». En 1re, un modèle « Étudier le signe de (2x − 1)(3x + 4) » (racines 1/2 et −4/3) ou « Factoriser 2x² − 3x + 1 sachant que 1 est racine » est-il dans les points ?',
+				sources:
+					'BO Tle techno p.6 (ci-dessus). BO 1re techno p.8 : « on privilégie les situations où les racines sont évidentes » ; « Savoir factoriser, dans des cas simples, une expression du second degré connaissant au moins une de ses racines ».',
+				options: [
+					[
+						'entiers',
+						'1re : racines et coefficients entiers ; fractions et paramètres réservés à la Tle'
+					],
+					[
+						'simples',
+						'1re : racines entières ou fractions simples (1/2, −4/3) ; paramètres littéraux exclus'
+					],
+					['libre', 'Aucune borne sur la nature des nombres en 1re']
+				],
+				reco: 'simples',
+				pourquoi:
+					'La phrase de Tle porte sur les automatismes (activité mentale) et vise surtout les paramètres ; en 1re, une racine comme 1/2 de 2x − 1 reste « évidente » et la forme factorisée la donne directement.',
+				consequence:
+					'Avec « simples », (2x − 1)(3x + 4) est accepté et (x − k)(x + 2) avec k littéral refusé ; avec « entiers », tout modèle à racine fractionnaire est refusé en 1re.',
+				info: false
+			},
+			{
+				id: 'l1t-5',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO'],
+				points: ['1TECHNO-089', '1TECHNO-091', '1TECHNO-134'],
+				titre: 'Indépendance : le critère produit est-il permis ?',
+				question:
+					"Le BO définit l'indépendance par P_A(B) = P(B) et n'écrit pas P(A ∩ B) = P(A) × P(B). Un modèle « P(A) = 0,4, P(B) = 0,5, P(A ∩ B) = 0,2 : A et B sont-ils indépendants ? » (réponse par le produit) est-il dans 1TECHNO-134 ?",
+				sources:
+					"BO 1re techno p.9-10 : « deux évènements A et B sont dits indépendants si la probabilité conditionnelle de A sachant B est égale à la probabilité de A » ; « pour un évènement A de probabilité non nulle, B est indépendant de A si P_A(B) = P(B) ». BO 2de p.13 : multiplication des probabilités le long d'un chemin.",
+				options: [
+					[
+						'produit-admis',
+						'Critère produit admis (conséquence directe de P(A ∩ B) = P(A)·P_A(B), vu en 2de)'
+					],
+					['definition-seule', 'Seulement la comparaison de P_A(B) (ou P_B(A)) avec P(B) (ou P(A))']
+				],
+				reco: 'produit-admis',
+				pourquoi:
+					"Avec P(A ∩ B) = P(A)·P_A(B) (2de), l'égalité P_A(B) = P(B) équivaut au produit ; le modèle cité se résout aussi par la définition (P_A(B) = 0,2/0,4 = 0,5).",
+				consequence:
+					'Avec « produit-admis », le modèle est accepté et la correction peut utiliser le produit ; avec « definition-seule », la correction doit passer par P_A(B) et un modèle qui ne demande que de vérifier P(A ∩ B) = P(A)P(B) est refusé.',
+				info: false
+			},
+			{
+				id: 'l1t-6',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO'],
+				points: ['1TECHNO-098', '1TECHNO-137'],
+				titre: 'Variable aléatoire : {X > a}, {X ⩾ a} en 1re techno ?',
+				question:
+					'Le BO cite les écritures {X = a}, {X ⩽ a} et les probabilités P(X = a), P(X ⩽ a). Un modèle « Calculer P(X ⩾ 2) » ou « P(X > 1) » est-il dans 1TECHNO-137 ?',
+				sources:
+					"BO 1re techno p.10 : « Interpréter en situation les écritures {X = a}, {X ⩽ a} où X désigne une variable aléatoire et calculer les probabilités correspondantes P(X = a), P(X ⩽ a) ». BO 2de p.6 : probabilité de l'évènement contraire (automatisme).",
+				options: [
+					[
+						'complement',
+						"Admis : {X > a} est le contraire de {X ⩽ a}, et {X ⩾ a}, {X < a} s'y ramènent ; seules les écritures d'intervalle {a ⩽ X ⩽ b} restent hors point"
+					],
+					['deux-ecritures', 'Seulement {X = a} et {X ⩽ a}']
+				],
+				reco: 'complement',
+				pourquoi:
+					"L'évènement contraire est un automatisme de 2de ; sur une loi donnée par un tableau, P(X ⩾ 2) est une somme de P(X = a) au même titre que P(X ⩽ a).",
+				consequence:
+					'Avec « complement », P(X ⩾ 2) est accepté en 1TECHNO-137 ; avec « deux-ecritures », il est refusé et le modèle doit écrire P(X ⩽ 1).',
+				info: false
+			},
+			{
+				id: 'l1t-7',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO'],
+				points: ['1TECHNO-070', '1TECHNO-128'],
+				titre: 'Nombre dérivé : calcul algébrique de la limite du taux de variation ?',
+				question:
+					'Le titre du BO est « approche graphique de la notion de nombre dérivé » et la limite reste intuitive. Un modèle « f(x) = x² ; simplifier (f(3 + h) − f(3))/h puis en déduire f′(3) » est-il dans 1TECHNO-070 ?',
+				sources:
+					"BO 1re techno p.8 : « Point de vue local : approche graphique de la notion de nombre dérivé » ; « Nombre dérivé en un point défini comme limite du taux de variation en ce point ». BO 1re techno p.9 : « ne pas donner la définition formelle de la notion de limite et s'en tenir à une approche intuitive à partir d'exemples. Le vocabulaire et la notation correspondants sont introduits ». BO Tle techno p.9 : « Le calcul de la dérivée de la fonction x ↦ 1/x permet de réinvestir la définition du nombre dérivé à partir du calcul du taux de variation ».",
+				options: [
+					[
+						'algebrique',
+						'Admis sur des polynômes simples : taux de variation simplifié, puis h → 0 de façon intuitive'
+					],
+					[
+						'graphique',
+						'Seulement graphique ou numérique (sécantes, tableau de taux pour h petit) ; aucun calcul algébrique de limite'
+					]
+				],
+				reco: 'algebrique',
+				pourquoi:
+					"Le BO de Tle parle de « réinvestir » ce calcul en Tle, ce qui suppose qu'il a été fait en 1re ; la limite reste intuitive, sans définition formelle.",
+				consequence:
+					"Avec « algebrique », le modèle cité est accepté (taux 6 + h, limite 6) ; avec « graphique », il est refusé et seuls les modèles de lecture ou d'estimation numérique restent.",
+				info: false
+			},
+			{
+				id: 'l1t-8',
+				cycle: 'lycée',
+				niveaux: ['1_TECHNO'],
+				points: [
+					'1TECHNO-014 à 1TECHNO-031, 1TECHNO-109 à 1TECHNO-116 (Activités géométriques, STD2A)'
+				],
+				titre: "STD2A : « d'autres notions si la situation le nécessite »",
+				question:
+					"Le BO de la partie STD2A permet d'« aborder d'autres notions si la situation étudiée le nécessite ». Un modèle de pavage qui demande de reconnaître une homothétie ou de classer une frise parmi les sept types est-il dans un point STD2A ?",
+				sources:
+					"BO 1re techno p.5 : « Les professeurs peuvent aborder d'autres notions si la situation étudiée le nécessite » ; « La classification des types de frises ou de pavages n'est pas un attendu du programme ».",
+				options: [
+					[
+						'strict',
+						"Inclusion stricte : seules les notions listées ; une autre notion relève de son propre point (ou d'aucun)"
+					],
+					[
+						'ouvert',
+						'La phrase ouvre les bornes des points STD2A à toute notion requise par la situation'
+					]
+				],
+				reco: 'strict',
+				pourquoi:
+					"La phrase autorise le professeur, elle ne crée pas d'attendu ; la classification est exclue en toutes lettres.",
+				consequence:
+					"Avec « strict », les deux modèles cités sont refusés ; un modèle d'angle au centre d'un polygone régulier (360°/n) reste accepté en 1TECHNO-111.",
+				info: false
+			},
+			{
+				id: 'ltt-1',
+				cycle: 'lycée',
+				niveaux: ['T_TECHNO'],
+				points: ['TTECHNO-043', 'TTECHNO-084', 'TTECHNO-082', 'TTECHNO-044'],
+				titre: 'log(aˣ) = x·log(a) pour x réel ?',
+				question:
+					"La propriété est donnée « pour n entier naturel » ; or résoudre aˣ = b d'inconnue x réelle demande log(aˣ) = x·log(a) pour x réel. Un modèle « Écrire log(5^{0,5}) en fonction de log 5 » ou « Résoudre 1,03ˣ = 2 » est-il dans les points ?",
+				sources:
+					"BO Tle techno p.8 : « log(aⁿ) = n log(a) […] pour n entier naturel, a et b réels strictement positifs » ; « Utiliser le logarithme décimal pour résoudre une équation du type aˣ = b ou xᵃ = b d'inconnue x réelle ». BO Tle techno p.9 : « pour de petites valeurs de n, log(aⁿ) = n log(a) ».",
+				options: [
+					[
+						'reel-dans-resolution',
+						'x réel admis dans les résolutions (aˣ = b, aˣ < b, xᵃ = b) ; les transformations pures (TTECHNO-082, 044) restent à n entier naturel'
+					],
+					['reel-partout', 'log(aˣ) = x·log(a) admis pour tout x réel, transformations comprises'],
+					[
+						'naturel-seul',
+						'Jamais pour x non entier : les résolutions se limitent à ce que le BO permet de justifier'
+					]
+				],
+				reco: 'reel-dans-resolution',
+				pourquoi:
+					"La capacité de résolution n'a pas de sens sans la propriété pour x réel ; mais le BO n'énonce la propriété algébrique qu'en entier naturel, ce qui borne les exercices de transformation.",
+				consequence:
+					'Avec la reco, « Résoudre 1,03ˣ = 2 » est accepté en TTECHNO-043 et « log(5^{0,5}) » refusé en TTECHNO-082 ; avec « naturel-seul », même 1,03ˣ = 2 serait refusé, ce qui viderait la capacité.',
+				info: false
+			},
+			{
+				id: 'ltt-2',
+				cycle: 'lycée',
+				niveaux: ['T_TECHNO'],
+				points: ['TTECHNO-064'],
+				titre: 'Loi binomiale : contraire et P(X ⩽ k) quelconque',
+				question:
+					"Le BO limite aux évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} « et ceux qui s'en déduisent par réunion ». Un modèle « X ~ B(20 ; 0,1), calculer P(X ⩾ 2) » (= 1 − P(X = 0) − P(X = 1)) ou « P(X ⩽ 5) » à la calculatrice est-il dans TTECHNO-064 ?",
+				sources:
+					"BO Tle techno p.10 : « calculer les probabilités des évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et de ceux qui s'en déduisent par réunion ». BO 2de p.6 : probabilité de l'évènement contraire (automatisme).",
+				options: [
+					[
+						'reunion-contraire',
+						'Réunions de ces évènements et leurs contraires (P(X ⩾ 2), P(X ⩽ n − 2)) ; pas de P(X ⩽ k) général à la calculatrice'
+					],
+					['reunion-stricte', 'Seulement les réunions (P(X ⩽ 1), P(X ⩾ n − 1))'],
+					['calculatrice', 'Tout P(X ⩽ k), la calculatrice faisant le calcul']
+				],
+				reco: 'reunion-contraire',
+				pourquoi:
+					"Le contraire est un automatisme acquis ; P(X ⩾ 1) = 1 − P(X = 0) est l'usage le plus courant. Le BO ne parle jamais de calcul de probabilité cumulée à la calculatrice.",
+				consequence:
+					'Avec la reco, P(X ⩾ 2) est accepté et P(X ⩽ 5) pour n = 20 refusé ; avec « calculatrice », les deux sont acceptés.',
+				info: false
+			},
+			{
+				id: 'ltt-3',
+				cycle: 'lycée',
+				niveaux: ['T_TECHNO'],
+				points: ['TTECHNO-061', 'TTECHNO-065'],
+				titre: 'Coefficients binomiaux au-delà de n = 10',
+				question:
+					"La capacité dit « à l'aide du triangle de Pascal pour n ⩽ 10 », le commentaire dit que pour n plus grand le nombre de chemins « est donné ou déterminé à l'aide du triangle de Pascal ». Un modèle « X ~ B(12 ; 0,3), calculer P(X = 3) » sans donner le coefficient est-il dans TTECHNO-065 ?",
+				sources:
+					"BO Tle techno p.10 : capacité « Calculer des coefficients binomiaux à l'aide du triangle de Pascal pour n ⩽ 10 » ; commentaire « Pour des valeurs de n plus grandes, l'arbre sert d'image mentale et le nombre de chemins associés à l'évènement est donné ou déterminé à l'aide du triangle de Pascal ».",
+				options: [
+					[
+						'dix',
+						"L'élève calcule un coefficient seulement si n ⩽ 10 ; au-delà, l'énoncé le donne"
+					],
+					['pascal', 'Au-delà de 10 aussi, coefficient au triangle de Pascal (ou fourni)'],
+					['calculatrice', 'Coefficient obtenu à la calculatrice pour tout n']
+				],
+				reco: 'dix',
+				pourquoi:
+					"La capacité fixe la borne n ⩽ 10 ; le commentaire décrit le cas de l'arbre (n > 4), et le triangle de Pascal au-delà de 10 lignes n'est pas une tâche raisonnable. La calculatrice n'est pas citée.",
+				consequence:
+					"Avec « dix », le modèle cité est refusé sauf si l'énoncé donne (12 choose 3) = 220.",
+				info: false
+			},
+			{
+				id: 'ltt-4',
+				cycle: 'lycée',
+				niveaux: ['T_TECHNO'],
+				points: ['TTECHNO-049', 'TTECHNO-087'],
+				titre: "Combinaisons linéaires avec l'inverse : forme quotient admise ?",
+				question:
+					'Le BO dit « combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3 », et cite le coût moyen. Un modèle « Coût moyen C_M(x) = (x² + 2x + 100)/x, étudier ses variations » (égal à x + 2 + 100/x) est-il dans TTECHNO-049 ?',
+				sources:
+					"BO Tle techno p.9 : capacité citée ; commentaire « La fonction inverse permet d'aborder des situations contextualisées de prix unitaire ou de cout moyen ».",
+				options: [
+					[
+						'equivalente',
+						'Toute expression égale à P(x) + k/x (deg P ⩽ 3), y compris (P(x))/x ; pas de 1/(x − a) ni de quotient général'
+					],
+					['forme-somme', 'Seulement les expressions écrites sous la forme P(x) + k/x']
+				],
+				reco: 'equivalente',
+				pourquoi:
+					"Le coût moyen, cité par le BO, s'écrit naturellement C(x)/x ; la fonction reste une combinaison linéaire, seule l'écriture change.",
+				consequence:
+					'Avec « equivalente », le modèle du coût moyen est accepté, f(x) = 1/(x − 2) ou (x + 1)/(x − 3) refusés ; avec « forme-somme », le modèle doit donner x + 2 + 100/x.',
+				info: false
+			},
+			{
+				id: 'ltt-5',
+				cycle: 'lycée',
+				niveaux: ['T_TECHNO'],
+				points: ['TTECHNO-055', 'TTECHNO-056'],
+				titre: 'Probabilités totales en Tle : partition en plus de trois évènements ?',
+				question:
+					"La formule est « démontrée dans le cas d'une partition de l'univers en deux ou trois évènements ». Un modèle à quatre fournisseurs (partition en quatre) est-il dans TTECHNO-056 ?",
+				sources:
+					"BO Tle techno p.10 : « Formule des probabilités totales pour une partition de l'univers » ; « Elle est démontrée dans le cas d'une partition de l'univers en deux ou trois évènements, la notion de partition d'un ensemble étant présentée sans formalisme ».",
+				options: [
+					['finie', 'Toute partition finie (la limite à deux ou trois porte sur la démonstration)'],
+					['deux-trois', 'Partition en deux ou trois évènements seulement']
+				],
+				reco: 'finie',
+				pourquoi:
+					"Le contenu dit « pour une partition de l'univers » sans limite ; la restriction est écrite pour la démonstration.",
+				consequence:
+					'Avec « finie », le modèle à quatre fournisseurs est accepté ; avec « deux-trois », il est refusé.',
+				info: false
+			},
+			{
+				id: 'ltt-6',
+				cycle: 'lycée',
+				niveaux: ['T_TECHNO'],
+				points: ['TTECHNO-045', 'TTECHNO-086'],
+				titre: 'Fonction inverse aux bornes : notation lim ?',
+				question:
+					'Le comportement aux bornes et les asymptotes restent intuitifs. Un modèle « Compléter : lim_{x→+∞} 1/x = … » ou « Donner lim_{x→0⁺} (3 + 2/x) » est-il dans TTECHNO-045 ?',
+				sources:
+					"BO Tle techno p.9 : « Comportement de la fonction inverse aux bornes de son ensemble de définition », mis en lien avec « l'ordre de grandeur d'inverses de petits ou grands nombres » et « l'allure de la courbe » ; « Aucune définition de l'asymptote n'est attendue ; on s'en tient à une approche intuitive ». BO 1re techno p.9 : vocabulaire et notation de la limite introduits avec le nombre dérivé.",
+				options: [
+					[
+						'notation',
+						'Notation lim admise pour 1/x et ses combinaisons simples (k/x, a + k/x), sans opérations générales sur les limites'
+					],
+					[
+						'mots',
+						'En mots ou sur la courbe seulement (« 1/x devient très grand ») ; pas de notation lim'
+					]
+				],
+				reco: 'notation',
+				pourquoi:
+					"La notation a été introduite en 1re ; le BO borne la notion (approche intuitive), pas l'écriture. Les opérations sur les limites ne sont nulle part au programme.",
+				consequence:
+					"Avec « notation », les deux exemples sont acceptés, mais lim (x³ − 2x)/(x² + 1) en +∞ reste refusée ; avec « mots », seules les questions de lecture de courbe ou d'ordre de grandeur restent.",
+				info: false
+			}
+		],
+		libelles: [
+			{
+				code: '2-273',
+				grade: '2',
+				libelle:
+					'Sur des cas simples de relations entre variables ($U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres',
+				rubrique: 'Nombres et calculs, algèbre > Algèbre',
+				remarque:
+					'⚠ libellé : le BO écrit « (par exemple U = RI, … ) » ; le libellé a perdu « par exemple » et se lit comme une liste fermée.'
+			},
+			{
+				code: '2-394',
+				grade: '2',
+				libelle: "Construire un tableau croisé d'effectifs en lien avec une situation donnée",
+				rubrique: 'Statistiques et probabilités > Probabilités',
+				remarque:
+					"⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10."
+			},
+			{
+				code: '2-395',
+				grade: '2',
+				libelle:
+					"Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$)",
+				rubrique: 'Statistiques et probabilités > Probabilités',
+				remarque:
+					'⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).'
+			},
+			{
+				code: '2-488',
+				grade: '2',
+				libelle:
+					'Passer du registre symbolique ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$) au registre de la langue naturelle',
+				rubrique: 'Statistiques et probabilités > Probabilités',
+				remarque:
+					'⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).'
+			},
+			{
+				code: '1GEN-062',
+				grade: '1_GEN',
+				libelle: "Déterminer graphiquement le signe d'une fonction",
+				rubrique: 'Automatismes > Fonctions et représentations',
+				remarque:
+					"⚠ libellé : la même puce du BO ajoute « ou son tableau de variations » ; cette partie n'est pas dans le libellé (non corrigé)."
+			},
+			{
+				code: '1GEN-029',
+				grade: '1_GEN',
+				libelle: 'Suites géométriques : explicitation du terme de rang $n$',
+				rubrique:
+					"Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				remarque:
+					"⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+			},
+			{
+				code: '1GEN-030',
+				grade: '1_GEN',
+				libelle: 'Suites géométriques : sens de variation',
+				rubrique:
+					"Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				remarque:
+					"⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+			},
+			{
+				code: '1GEN-031',
+				grade: '1_GEN',
+				libelle: 'Suites géométriques : représentation graphique',
+				rubrique:
+					"Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				remarque:
+					"⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+			},
+			{
+				code: '1SPE-432',
+				grade: '1_SPE',
+				libelle: "Déterminer graphiquement le signe d'une fonction",
+				rubrique: 'Automatismes > Fonctions et représentations',
+				remarque:
+					"⚠ libellé : la puce du BO (p.5) est « Déterminer graphiquement le signe d'une fonction ou son tableau de variations » ; le libellé n'en garde que le signe."
+			},
+			{
+				code: '1SPE-433',
+				grade: '1_SPE',
+				libelle: 'Tracer une droite donnée par un point et son coefficient directeur',
+				rubrique: 'Automatismes > Fonctions et représentations',
+				remarque:
+					"⚠ libellé : la puce du BO (p.5) est « Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur » ; le libellé n'en garde que la seconde partie."
+			},
+			{
+				code: '1SPE-221',
+				grade: '1_SPE',
+				libelle:
+					"Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement",
+				rubrique: 'Algèbre > Suites numériques, modèles discrets',
+				remarque:
+					'⚠ libellé : le BO (p.6) dit « registre graphique » sans préciser « nuage de points » ; la précision du libellé est naturelle (une suite se représente par des points isolés) mais ne figure pas au texte.'
+			},
+			{
+				code: '1SPE-243',
+				grade: '1_SPE',
+				libelle: "Forme développée d'une fonction polynôme du second degré ; coefficients",
+				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				remarque:
+					'⚠ libellé : les contenus du BO (p.6) ne mentionnent pas « forme développée ; coefficients » ; seule la capacité « choisir une forme adaptée (développée réduite, canonique, factorisée) » nomme la forme développée. Lecture déduite (texte implicite) : forme ax² + bx + c, a ≠ 0.'
+			},
+			{
+				code: '1SPE-247',
+				grade: '1_SPE',
+				libelle: "Calcul des coordonnées du sommet d'une parabole",
+				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				remarque:
+					"⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite."
+			},
+			{
+				code: '1SPE-384',
+				grade: '1_SPE',
+				libelle: "Axe de symétrie d'une parabole",
+				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				remarque:
+					"⚠ libellé : « axe de symétrie d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : il se lit sur la forme canonique, en lien avec la position du graphe de x ↦ f(x − m) (p.5)."
+			},
+			{
+				code: '1SPE-250',
+				grade: '1_SPE',
+				libelle: "Résolution d'une inéquation du second degré",
+				rubrique: 'Algèbre > Équations, fonctions polynômes du second degré',
+				remarque:
+					"⚠ libellé : la « résolution d'une inéquation du second degré » n'est pas un contenu du BO (p.6), qui dit « Signe » ; l'inéquation n'apparaît que dans la capacité « choisir une forme adaptée … (équation, inéquation, optimisation, variations) ». Lecture déduite (texte implicite) : inéquation se ramenant au signe d'un trinôme."
+			},
+			{
+				code: '1SPE-354',
+				grade: '1_SPE',
+				libelle:
+					'Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles',
+				rubrique: 'Probabilités et statistiques > Variables aléatoires réelles',
+				remarque:
+					"⚠ libellé : le BO (p.11) dit « Modéliser une situation à l'aide d'une variable aléatoire » ; « définir … et donner ses valeurs possibles » est une reformulation qui n'est pas au texte."
+			},
+			{
+				code: '1SPE-364',
+				grade: '1_SPE',
+				libelle:
+					"Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire",
+				rubrique: 'Probabilités et statistiques > Expérimentations',
+				remarque:
+					"⚠ libellé : le BO (p.11) dit « Étudier sur des exemples la distance … », le libellé dit « calculer l'écart »."
+			},
+			{
+				code: 'TSPE-444',
+				grade: 'T_SPE',
+				libelle: "Utiliser l'équation fonctionnelle du logarithme pour transformer une écriture",
+				rubrique: 'Analyse > Fonction logarithme',
+				remarque:
+					"⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé)."
+			}
+		],
+		noms: {
+			2: '2de',
+			'1_GEN': '1re ES',
+			'1_SPE': '1re spé',
+			T_SPE: 'Tle spé',
+			T_EXP: 'Tle expertes',
+			T_COMP: 'Tle compl.',
+			'1_TECHNO': '1re techno',
+			T_TECHNO: 'Tle techno'
+		},
+		ordre: ['2', '1_GEN', '1_SPE', 'T_SPE', 'T_EXP', 'T_COMP', '1_TECHNO', 'T_TECHNO']
+	};
+	const reponses = {}; // id -> {choix, note}
+	const decisions = {}; // code -> {choix, note}
+	let db = null;
+	let filtre = 'tous';
+
+	function el(tag, attrs = {}, ...enfants) {
+		const e = document.createElement(tag);
+		for (const [k, v] of Object.entries(attrs)) {
+			if (k === 'class') e.className = v;
+			else if (k === 'text') e.textContent = v;
+			else e.setAttribute(k, v);
+		}
+		for (const c of enfants) if (c) e.append(c);
+		return e;
+	}
+
+	function etat(t) {
+		document.getElementById('etat').textContent = t;
+	}
+
+	function compter() {
+		const q = DONNEES.questions.filter((x) => reponses[x.id]?.choix).length;
+		const l = DONNEES.libelles.filter((x) => decisions[x.code]?.choix).length;
+		document.getElementById('compte').textContent =
+			`Questions ${q} / ${DONNEES.questions.length} · Libellés ${l} / ${DONNEES.libelles.length}`;
+	}
+
+	async function ecrire(collection, id, corps) {
+		if (!db) {
+			etat('Enregistrement indisponible : choix non gardés');
+			return;
+		}
+		etat('Enregistrement…');
+		try {
+			await db
+				.collection(collection)
+				.doc(id)
+				.set({ ...corps, maj: new Date().toISOString() });
+			etat('Enregistré');
+		} catch (e) {
+			etat(`Non enregistré (${e?.code ?? 'erreur'}) : recharge la page puis refais ce choix`);
+		}
+	}
+
+	function programmeDe(q) {
+		return q.niveaux?.[0] ?? 'autre';
+	}
+
+	function filtres() {
+		const zone = document.getElementById('filtres');
+		zone.replaceChildren();
+		const presents = DONNEES.ordre.filter((g) =>
+			DONNEES.questions.some((q) => programmeDe(q) === g)
+		);
+		for (const g of ['tous', ...presents]) {
+			const b = el('button', {
+				class: 'filtre',
+				type: 'button',
+				'aria-pressed': String(filtre === g),
+				text: g === 'tous' ? 'Tous' : (DONNEES.noms[g] ?? g)
+			});
+			b.onclick = () => {
+				filtre = g;
+				filtres();
+				rendreQuestions();
+			};
+			zone.append(b);
+		}
+	}
+
+	function carteQuestion(q) {
+		const r = reponses[q.id] ?? {};
+		const carte = el('article', { class: 'carte' + (r.choix ? ' faite' : ''), id: q.id });
+		const tete = el(
+			'div',
+			{ class: 'tete' },
+			el('span', { class: 'id', text: q.id }),
+			el('span', { class: 'titre', text: q.titre })
+		);
+		for (const n of q.niveaux ?? [])
+			tete.append(el('span', { class: 'pastille', text: DONNEES.noms[n] ?? n }));
+		if (r.choix) tete.append(el('span', { class: 'pastille ok', text: 'répondu' }));
+		carte.append(tete, el('p', { class: 'question', text: q.question }));
+
+		const corps = el(
+			'div',
+			{ class: 'corps' },
+			el('div', { class: 'lbl', text: 'Pourquoi la question se pose' }),
+			el('p', { text: q.pourquoi }),
+			el('div', { class: 'lbl', text: 'Sources' }),
+			el('p', { text: q.sources }),
+			el('div', { class: 'lbl', text: 'Points concernés' }),
+			el('p', { text: (q.points ?? []).join(' · ') })
+		);
+		carte.append(el('details', {}, el('summary', { text: 'Contexte et sources' }), corps));
+		carte.append(el('p', { class: 'consequence', text: q.consequence }));
+
+		const options = el('div', { class: 'options', role: 'radiogroup', 'aria-label': q.titre });
+		for (const [cle, texte] of q.options) {
+			const input = el('input', {
+				type: 'radio',
+				name: 'q-' + q.id,
+				id: `q-${q.id}-${cle}`,
+				value: cle
+			});
+			if (r.choix === cle) input.checked = true;
+			input.onchange = () => {
+				reponses[q.id] = { ...reponses[q.id], choix: cle };
+				ecrire('reponses', q.id, reponses[q.id]);
+				compter();
+				carte.classList.add('faite');
+			};
+			const lab = el(
+				'label',
+				{ class: 'option', for: input.id },
+				input,
+				el('span', { text: texte })
+			);
+			if (cle === q.reco) lab.lastChild.append(el('span', { class: 'reco', text: 'reco' }));
+			options.append(lab);
+		}
+		carte.append(options, champNote('reponses', q.id, reponses, 'Note (facultative)'));
+		return carte;
+	}
+
+	function champNote(collection, id, magasin, aide) {
+		const t = el('textarea', {
+			id: `note-${collection}-${id}`,
+			placeholder: aide,
+			'aria-label': aide
+		});
+		t.value = magasin[id]?.note ?? '';
+		let minuteur = null;
+		t.oninput = () => {
+			clearTimeout(minuteur);
+			minuteur = setTimeout(() => {
+				magasin[id] = { ...magasin[id], note: t.value };
+				ecrire(collection, id, magasin[id]);
+			}, 700);
+		};
+		return t;
+	}
+
+	function rendreQuestions() {
+		const zone = document.getElementById('questions');
+		zone.replaceChildren();
+		for (const g of DONNEES.ordre) {
+			if (filtre !== 'tous' && filtre !== g) continue;
+			const qs = DONNEES.questions.filter((q) => programmeDe(q) === g);
+			if (!qs.length) continue;
+			zone.append(
+				el('h2', {
+					text: `${DONNEES.noms[g] ?? g} · ${qs.length} question${qs.length > 1 ? 's' : ''}`
+				})
+			);
+			for (const q of qs) zone.append(carteQuestion(q));
+		}
+	}
+
+	function rendreLibelles() {
+		const zone = document.getElementById('libelles');
+		zone.replaceChildren();
+		if (!DONNEES.libelles.length) {
+			zone.append(el('p', { class: 'vide', text: 'Aucun libellé signalé.' }));
+			return;
+		}
+		for (const l of DONNEES.libelles) {
+			const d = decisions[l.code] ?? {};
+			const carte = el('article', { class: 'carte' + (d.choix ? ' faite' : '') });
+			carte.append(
+				el(
+					'div',
+					{ class: 'tete' },
+					el('span', { class: 'code', text: l.code }),
+					el('span', { class: 'pastille', text: DONNEES.noms[l.grade] ?? l.grade }),
+					el('span', { class: 'id', text: l.rubrique })
+				)
+			);
+			carte.append(
+				el('p', { class: 'question', text: l.libelle }),
+				el('p', { class: 'consequence', text: l.remarque })
+			);
+			const options = el('div', { class: 'options', role: 'radiogroup', 'aria-label': l.code });
+			for (const [cle, texte] of [
+				['corriger', "Corriger le libellé (ou le point) à l'étape suivante"],
+				['laisser', 'Laisser tel quel']
+			]) {
+				const input = el('input', {
+					type: 'radio',
+					name: 'l-' + l.code,
+					id: `l-${l.code}-${cle}`,
+					value: cle
+				});
+				if (d.choix === cle) input.checked = true;
+				input.onchange = () => {
+					decisions[l.code] = { ...decisions[l.code], choix: cle };
+					ecrire('libelles', l.code, decisions[l.code]);
+					compter();
+					carte.classList.add('faite');
+				};
+				options.append(
+					el('label', { class: 'option', for: input.id }, input, el('span', { text: texte }))
+				);
+			}
+			carte.append(options, champNote('libelles', l.code, decisions, 'Note (facultative)'));
+			zone.append(carte);
+		}
+	}
+
+	function tout() {
+		compter();
+		filtres();
+		rendreQuestions();
+		rendreLibelles();
+	}
+	tout();
+
+	(async () => {
+		try {
+			db = await window.claude?.use('db');
+		} catch {
+			db = null;
+		}
+		if (!db) {
+			etat('Enregistrement indisponible : connecte-toi à claude.ai pour garder tes choix');
+			return;
+		}
+		try {
+			const [rq, rl] = await Promise.all([
+				db.collection('reponses').get(),
+				db.collection('libelles').get()
+			]);
+			for (const d of rq.docs) reponses[d.id] = d.data();
+			for (const d of rl.docs) decisions[d.id] = d.data();
+			etat(rq.size + rl.size ? 'Choix précédents rechargés' : 'Prêt : aucun choix encore');
+			tout();
+		} catch (e) {
+			etat(`Lecture impossible (${e?.code ?? 'erreur'})`);
+		}
+	})();
+</script>

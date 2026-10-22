@@ -1,0 +1,517 @@
+<title>Bornes du lycée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&display=swap"
+/>
+<style>
+	/* Colonne de lecture unique ; une carte par question, regroupées par programme ; barre d'état collante. */
+	:root {
+		--bg: #f5f6f8;
+		--surface: #ffffff;
+		--fg: #1c2230;
+		--muted: #5d6677;
+		--line: #dde1e8;
+		--accent: #2f4fa8;
+		--accent-soft: #e6ebf8;
+		--ok: #1f7a4d;
+		--ok-soft: #e3f3ea;
+		--warn: #9a5b00;
+		--f-display: 'IBM Plex Serif', Georgia, serif;
+		--f-body: 'IBM Plex Sans', system-ui, sans-serif;
+		--f-code: 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #12151c;
+			--surface: #1a1f29;
+			--fg: #e4e8f0;
+			--muted: #9aa3b5;
+			--line: #2c3342;
+			--accent: #8fa8ee;
+			--accent-soft: #232c44;
+			--ok: #6fd3a0;
+			--ok-soft: #1a3328;
+			--warn: #e3a74a;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #12151c;
+		--surface: #1a1f29;
+		--fg: #e4e8f0;
+		--muted: #9aa3b5;
+		--line: #2c3342;
+		--accent: #8fa8ee;
+		--accent-soft: #232c44;
+		--ok: #6fd3a0;
+		--ok-soft: #1a3328;
+		--warn: #e3a74a;
+		color-scheme: dark;
+	}
+	body {
+		background: var(--bg);
+		color: var(--fg);
+		font: 15px/1.55 var(--f-body);
+	}
+	.page {
+		max-width: 760px;
+		margin: 0 auto;
+		padding-inline: 16px;
+		padding-block: 24px 80px;
+		display: grid;
+		gap: 28px;
+	}
+	h1,
+	h2 {
+		font-family: var(--f-display);
+		text-wrap: balance;
+		margin: 0;
+	}
+	h1 {
+		font-size: 1.7rem;
+	}
+	h2 {
+		font-size: 1.2rem;
+		padding-top: 8px;
+		border-top: 1px solid var(--line);
+	}
+	p {
+		margin: 0;
+	}
+	.intro {
+		display: grid;
+		gap: 8px;
+		color: var(--muted);
+	}
+	.barre {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 2;
+		background: var(--bg);
+		padding-block: 10px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		border-bottom: 1px solid var(--line);
+	}
+	.compte {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+		margin-right: auto;
+	}
+	.etat {
+		color: var(--muted);
+		font-size: 0.85rem;
+	}
+	.filtre {
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--fg);
+		border-radius: 999px;
+		padding: 3px 11px;
+		font: inherit;
+		font-size: 0.85rem;
+		cursor: pointer;
+	}
+	.filtre[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+	}
+	.section {
+		display: grid;
+		gap: 14px;
+	}
+	.carte {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 16px;
+		display: grid;
+		gap: 10px;
+		min-width: 0;
+	}
+	.carte.faite {
+		border-color: var(--ok);
+	}
+	.tete {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: baseline;
+	}
+	.id {
+		font-family: var(--f-code);
+		font-size: 0.8rem;
+		color: var(--muted);
+	}
+	.titre {
+		font-weight: 600;
+	}
+	.pastille {
+		font-size: 0.75rem;
+		padding: 1px 8px;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+	.pastille.ok {
+		background: var(--ok-soft);
+		color: var(--ok);
+		margin-left: auto;
+	}
+	.question {
+		font-size: 1rem;
+	}
+	details {
+		color: var(--muted);
+		font-size: 0.9rem;
+	}
+	details summary {
+		cursor: pointer;
+		color: var(--accent);
+	}
+	details .corps {
+		display: grid;
+		gap: 6px;
+		padding-top: 6px;
+	}
+	.lbl {
+		font-size: 0.72rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.consequence {
+		font-size: 0.9rem;
+		border-left: 3px solid var(--line);
+		padding-left: 10px;
+	}
+	.options {
+		display: grid;
+		gap: 6px;
+	}
+	.option {
+		display: flex;
+		gap: 10px;
+		align-items: flex-start;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 8px 10px;
+		cursor: pointer;
+	}
+	.option:has(input:checked) {
+		border-color: var(--accent);
+		background: var(--accent-soft);
+	}
+	.option input {
+		margin-top: 4px;
+		accent-color: var(--accent);
+	}
+	.reco {
+		font-size: 0.72rem;
+		font-weight: 600;
+		color: var(--warn);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		margin-left: 6px;
+	}
+	textarea {
+		width: 100%;
+		box-sizing: border-box;
+		min-height: 2.6em;
+		font: inherit;
+		font-size: 0.9rem;
+		color: var(--fg);
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 6px 8px;
+		resize: vertical;
+	}
+	:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	.code {
+		font-family: var(--f-code);
+		font-size: 0.85rem;
+	}
+	.vide {
+		color: var(--muted);
+		font-style: italic;
+	}
+</style>
+
+<div class="page">
+	<header class="intro">
+		<h1>Bornes du lycée</h1>
+		<p>
+			Passe lycée, étape b. Pour chaque question, choisis une lecture du BO ; la recommandation est
+			marquée. Une note libre est possible partout. Chaque choix est enregistré tout de suite.
+		</p>
+		<p>
+			En bas : les libellés de points que les agents trouvent infidèles au BO. Rien n'est corrigé
+			sans ton choix.
+		</p>
+	</header>
+
+	<div class="barre" id="barre">
+		<span class="compte" id="compte">…</span>
+		<span class="etat" id="etat">Connexion à l'enregistrement…</span>
+	</div>
+	<div class="barre" style="position: static; border: 0; padding: 0" id="filtres"></div>
+
+	<main id="questions" class="section"></main>
+
+	<section class="section">
+		<h2>Libellés signalés</h2>
+		<div id="libelles" class="section"></div>
+	</section>
+</div>
+
+<script>
+	const DONNEES = /*DONNEES*/ null;
+	const reponses = {}; // id -> {choix, note}
+	const decisions = {}; // code -> {choix, note}
+	let db = null;
+	let filtre = 'tous';
+
+	function el(tag, attrs = {}, ...enfants) {
+		const e = document.createElement(tag);
+		for (const [k, v] of Object.entries(attrs)) {
+			if (k === 'class') e.className = v;
+			else if (k === 'text') e.textContent = v;
+			else e.setAttribute(k, v);
+		}
+		for (const c of enfants) if (c) e.append(c);
+		return e;
+	}
+
+	function etat(t) {
+		document.getElementById('etat').textContent = t;
+	}
+
+	function compter() {
+		const q = DONNEES.questions.filter((x) => reponses[x.id]?.choix).length;
+		const l = DONNEES.libelles.filter((x) => decisions[x.code]?.choix).length;
+		document.getElementById('compte').textContent =
+			`Questions ${q} / ${DONNEES.questions.length} · Libellés ${l} / ${DONNEES.libelles.length}`;
+	}
+
+	async function ecrire(collection, id, corps) {
+		if (!db) {
+			etat('Enregistrement indisponible : choix non gardés');
+			return;
+		}
+		etat('Enregistrement…');
+		try {
+			await db
+				.collection(collection)
+				.doc(id)
+				.set({ ...corps, maj: new Date().toISOString() });
+			etat('Enregistré');
+		} catch (e) {
+			etat(`Non enregistré (${e?.code ?? 'erreur'}) : recharge la page puis refais ce choix`);
+		}
+	}
+
+	function programmeDe(q) {
+		return q.niveaux?.[0] ?? 'autre';
+	}
+
+	function filtres() {
+		const zone = document.getElementById('filtres');
+		zone.replaceChildren();
+		const presents = DONNEES.ordre.filter((g) =>
+			DONNEES.questions.some((q) => programmeDe(q) === g)
+		);
+		for (const g of ['tous', ...presents]) {
+			const b = el('button', {
+				class: 'filtre',
+				type: 'button',
+				'aria-pressed': String(filtre === g),
+				text: g === 'tous' ? 'Tous' : (DONNEES.noms[g] ?? g)
+			});
+			b.onclick = () => {
+				filtre = g;
+				filtres();
+				rendreQuestions();
+			};
+			zone.append(b);
+		}
+	}
+
+	function carteQuestion(q) {
+		const r = reponses[q.id] ?? {};
+		const carte = el('article', { class: 'carte' + (r.choix ? ' faite' : ''), id: q.id });
+		const tete = el(
+			'div',
+			{ class: 'tete' },
+			el('span', { class: 'id', text: q.id }),
+			el('span', { class: 'titre', text: q.titre })
+		);
+		for (const n of q.niveaux ?? [])
+			tete.append(el('span', { class: 'pastille', text: DONNEES.noms[n] ?? n }));
+		if (r.choix) tete.append(el('span', { class: 'pastille ok', text: 'répondu' }));
+		carte.append(tete, el('p', { class: 'question', text: q.question }));
+
+		const corps = el(
+			'div',
+			{ class: 'corps' },
+			el('div', { class: 'lbl', text: 'Pourquoi la question se pose' }),
+			el('p', { text: q.pourquoi }),
+			el('div', { class: 'lbl', text: 'Sources' }),
+			el('p', { text: q.sources }),
+			el('div', { class: 'lbl', text: 'Points concernés' }),
+			el('p', { text: (q.points ?? []).join(' · ') })
+		);
+		carte.append(el('details', {}, el('summary', { text: 'Contexte et sources' }), corps));
+		carte.append(el('p', { class: 'consequence', text: q.consequence }));
+
+		const options = el('div', { class: 'options', role: 'radiogroup', 'aria-label': q.titre });
+		for (const [cle, texte] of q.options) {
+			const input = el('input', {
+				type: 'radio',
+				name: 'q-' + q.id,
+				id: `q-${q.id}-${cle}`,
+				value: cle
+			});
+			if (r.choix === cle) input.checked = true;
+			input.onchange = () => {
+				reponses[q.id] = { ...reponses[q.id], choix: cle };
+				ecrire('reponses', q.id, reponses[q.id]);
+				compter();
+				carte.classList.add('faite');
+			};
+			const lab = el(
+				'label',
+				{ class: 'option', for: input.id },
+				input,
+				el('span', { text: texte })
+			);
+			if (cle === q.reco) lab.lastChild.append(el('span', { class: 'reco', text: 'reco' }));
+			options.append(lab);
+		}
+		carte.append(options, champNote('reponses', q.id, reponses, 'Note (facultative)'));
+		return carte;
+	}
+
+	function champNote(collection, id, magasin, aide) {
+		const t = el('textarea', {
+			id: `note-${collection}-${id}`,
+			placeholder: aide,
+			'aria-label': aide
+		});
+		t.value = magasin[id]?.note ?? '';
+		let minuteur = null;
+		t.oninput = () => {
+			clearTimeout(minuteur);
+			minuteur = setTimeout(() => {
+				magasin[id] = { ...magasin[id], note: t.value };
+				ecrire(collection, id, magasin[id]);
+			}, 700);
+		};
+		return t;
+	}
+
+	function rendreQuestions() {
+		const zone = document.getElementById('questions');
+		zone.replaceChildren();
+		for (const g of DONNEES.ordre) {
+			if (filtre !== 'tous' && filtre !== g) continue;
+			const qs = DONNEES.questions.filter((q) => programmeDe(q) === g);
+			if (!qs.length) continue;
+			zone.append(
+				el('h2', {
+					text: `${DONNEES.noms[g] ?? g} · ${qs.length} question${qs.length > 1 ? 's' : ''}`
+				})
+			);
+			for (const q of qs) zone.append(carteQuestion(q));
+		}
+	}
+
+	function rendreLibelles() {
+		const zone = document.getElementById('libelles');
+		zone.replaceChildren();
+		if (!DONNEES.libelles.length) {
+			zone.append(el('p', { class: 'vide', text: 'Aucun libellé signalé.' }));
+			return;
+		}
+		for (const l of DONNEES.libelles) {
+			const d = decisions[l.code] ?? {};
+			const carte = el('article', { class: 'carte' + (d.choix ? ' faite' : '') });
+			carte.append(
+				el(
+					'div',
+					{ class: 'tete' },
+					el('span', { class: 'code', text: l.code }),
+					el('span', { class: 'pastille', text: DONNEES.noms[l.grade] ?? l.grade }),
+					el('span', { class: 'id', text: l.rubrique })
+				)
+			);
+			carte.append(
+				el('p', { class: 'question', text: l.libelle }),
+				el('p', { class: 'consequence', text: l.remarque })
+			);
+			const options = el('div', { class: 'options', role: 'radiogroup', 'aria-label': l.code });
+			for (const [cle, texte] of [
+				['corriger', "Corriger le libellé (ou le point) à l'étape suivante"],
+				['laisser', 'Laisser tel quel']
+			]) {
+				const input = el('input', {
+					type: 'radio',
+					name: 'l-' + l.code,
+					id: `l-${l.code}-${cle}`,
+					value: cle
+				});
+				if (d.choix === cle) input.checked = true;
+				input.onchange = () => {
+					decisions[l.code] = { ...decisions[l.code], choix: cle };
+					ecrire('libelles', l.code, decisions[l.code]);
+					compter();
+					carte.classList.add('faite');
+				};
+				options.append(
+					el('label', { class: 'option', for: input.id }, input, el('span', { text: texte }))
+				);
+			}
+			carte.append(options, champNote('libelles', l.code, decisions, 'Note (facultative)'));
+			zone.append(carte);
+		}
+	}
+
+	function tout() {
+		compter();
+		filtres();
+		rendreQuestions();
+		rendreLibelles();
+	}
+	tout();
+
+	(async () => {
+		try {
+			db = await window.claude?.use('db');
+		} catch {
+			db = null;
+		}
+		if (!db) {
+			etat('Enregistrement indisponible : connecte-toi à claude.ai pour garder tes choix');
+			return;
+		}
+		try {
+			const [rq, rl] = await Promise.all([
+				db.collection('reponses').get(),
+				db.collection('libelles').get()
+			]);
+			for (const d of rq.docs) reponses[d.id] = d.data();
+			for (const d of rl.docs) decisions[d.id] = d.data();
+			etat(rq.size + rl.size ? 'Choix précédents rechargés' : 'Prêt : aucun choix encore');
+			tout();
+		} catch (e) {
+			etat(`Lecture impossible (${e?.code ?? 'erreur'})`);
+		}
+	})();
+</script>

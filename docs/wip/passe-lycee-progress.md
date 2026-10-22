@@ -6,18 +6,21 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, étape b lancée._
+_Mis à jour le 2026-10-22, étape b rédigée._
 
-- **État** : étape b (bornes par point) en cours, worktree `ubumaths-wt-passe-lycee`, branche `feat/passe-lycee-bornes`.
-  Méthode du collège (`arbre-notions/bornes/`) : `passe-lycee/bornes/<programme>.{md,json}` + questions. Export des
-  1 507 points actifs : `bornes/points-lycee.csv`. 4 agents Opus (2de + 1re ES ; 1re spé + Tle spé + Tle expertes ;
-  techno ; Tle compl.), sources = BO (eduscol refuse l'accès automatique, 403).
-- **Prochaine action** : fusionner les sorties des agents, page à cocher des incertitudes.
-- **En attente de David** : documents d'accompagnement du lycée (nouveaux programmes, BO n° 14 du 2026-04-02)
-  s'il en trouve sur eduscol → `docs/ref/programmes/Accompagnement/lycee/`, passe complémentaire.
-- **Pièges en cours** : 1SPE-244 à re-ranger sur « racines » à l'étape c ; `undoLaterMigrations` (tests) à
-  compléter pour toute migration de données future qui s'appuie sur une ancienne.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes`.
+- **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`, générateurs dans
+  `bornes/generateurs/`), 61 questions (`bornes/questions-*.json`), 18 libellés signalés « ⚠ libellé ».
+  Page à cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (générateur `bornes/page/gen.py`,
+  collections `reponses` et `libelles`). Tout est commité sur `main` (docs pur).
+- **Prochaine action** : lire les réponses de David (ArtifactData `list` des 2 collections), les reporter dans les
+  questions (`decision`, `decide_le`) et dans les bornes (force `décision`), puis étape c.
+- **En attente de David** : la page à cocher ; les documents d'accompagnement du lycée s'il en trouve
+  (`docs/ref/programmes/Accompagnement/lycee/`).
+- **Pièges en cours** : 85 points techno sans borne ni remarque (hérités des bornes générales, à vérifier) ;
+  1SPE-243/247/384 absents du nouveau BO (étape a à revoir) ; 1SPE-244 à re-ranger sur « racines » à l'étape c ;
+  `undoLaterMigrations` (tests) à compléter pour toute future migration de données.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (rebasée sur `main`, sans
+  commit propre : les commits partent sur `main`).
 
 ## Les 5 étapes
 
@@ -73,3 +76,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   (2de et 1re à la rentrée 2026, terminales à la rentrée 2027 ; maths expertes : texte de 2019). Aucune ressource
   d'accompagnement du lycée trouvée pour ces programmes. Mêmes fichiers et même grille qu'au collège (aspect, force
   BO / accompagnement / déduite / décision, source paginée), aspect `fonctions` ajouté.
+- **2026-10-22 — Bornes rédigées (4 agents Opus).** 2de 292 · 1re ES 64 · 1re spé 237 · Tle spé 325 · Tle exp. 176 ·
+  Tle compl. 178 · 1re techno 143 · Tle techno 92, codes identiques à l'export (vérifié). Bornes surtout `BO`,
+  `déduite` toujours expliquée. 61 questions (l2, l1g, l1s, lts, lte, ltc, l1t, ltt). Hors périmètre, relevés pour
+  l'étape a : 1SPE-243 (forme développée), 247 (sommet), 384 (axe de symétrie) absents du nouveau BO de 1re spé ;
+  doublons possibles TSPE-304 / 386 (récurrence) et 1SPE-290 / 301 ; capacités de Tle techno sans point (arbres et
+  probabilités conditionnelles, espérance, automatismes en italique) ; PPCM absent de tous les BO du lycée.
