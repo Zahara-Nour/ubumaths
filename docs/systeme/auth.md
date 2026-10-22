@@ -206,11 +206,11 @@ pose. Un `signUp` GoTrue direct ne peut donc pas squatter un identifiant. Il est
 (vérifié au commit) : GoTrue insère le compte puis écrit ses `app_metadata` par un UPDATE dans
 la même transaction, qu'un trigger BEFORE INSERT ne verrait pas. Un `/auth/v1/recover` direct sur
 une adresse fictive ne part nulle part (domaine absent du DNS). Chantier :
-[inscription-parent](../wip/inscription-parent-progress.md).
+[inscription-parent](../archive/wip/inscription-parent-progress.md).
 
 ### Mots de passe des élèves
 
-Trois recours (chantier [inscription-parent](../wip/inscription-parent-progress.md), PR 3,
+Trois recours (chantier [inscription-parent](../archive/wip/inscription-parent-progress.md), PR 3,
 décisions R1-R4 du 2026-10-21), dans `src/lib/server/child-password.ts` :
 
 - **Le parent** d'un enfant à identifiant : « Mot de passe oublié » avec l'identifiant →
@@ -351,6 +351,14 @@ le lien. L'écran final affiche l'identifiant. Le parent n'a **aucun compte**.
 
 Côté prof : la page des classes affiche le code (`regenerateJoinCode`) et ouvre/ferme les
 inscriptions (`toggleRegistration`).
+
+**Reporté (2026-10-22, David)** : sur `/auth/register` (élève seul), un champ « adresse d'un
+parent » distinct de celui de l'élève, dont le lien de consentement ne partirait qu'après un clic
+du prof sur **Approuver** (décision 10, PR 4 du chantier, jamais faite). Aujourd'hui le prof
+saisit l'adresse du parent dans sa page des consentements, et un élève peut s'inscrire avec
+l'adresse de son parent comme adresse de connexion. Comportements et question d'accès déjà
+tranchée (Q6 : adresse lue par le prof et l'admin seulement) :
+[journal archivé](../archive/wip/inscription-parent-progress.md).
 
 ### Consentement parental
 
