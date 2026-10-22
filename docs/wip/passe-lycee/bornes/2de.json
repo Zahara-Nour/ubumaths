@@ -1,0 +1,3328 @@
+{
+	"2": {
+		"general": [
+			{
+				"aspect": "nombres",
+				"borne": "Nombres réels : ensembles ℕ, ℤ, 𝔻, ℚ, ℝ et intervalles de ℝ ; les irrationnels (√2, π…) s'ajoutent aux nombres du cycle 4.",
+				"detail": {
+					"ensembles": ["ℕ", "ℤ", "𝔻", "ℚ", "ℝ"]
+				},
+				"source": "BO 2de p.6-7",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Les règles de calcul sur les racines carrées entrent au programme (√ab = √a √b pour a, b positifs ; √a² = |a|) : la borne de 3e « aucune propriété algébrique des racines carrées » ne vaut plus (portée : question l2-7).",
+				"source": "BO 2de p.7-8",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Valeur absolue : notation |a| pour la distance de a à 0, distance entre deux réels, intervalles de centre donné (|x − a| ⩽ r) ; « Toute autre utilisation est hors programme » (contradiction avec la fonction valeur absolue : question l2-1).",
+				"source": "BO 2de p.7",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Fonctions à valeurs réelles définies sur un intervalle ou une réunion finie d'intervalles de ℝ, données par une courbe, une expression algébrique, un programme de calcul ou un tableau de valeurs ; fonctions définies sur ℕ possibles pour un phénomène discret, avec la notation u(n).",
+				"source": "BO 2de p.10",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Fonctions de référence nommées : affines (dont linéaires), valeur absolue, carré, inverse (définition, courbe) ; racine carrée et cube n'apparaissent que pour résoudre f(x) = k, f(x) < k (statut : question l2-2). Pas de polynôme du second degré général, de dérivée ni d'exponentielle : absents du BO de 2de.",
+				"detail": {
+					"liste": ["affine", "linéaire", "valeur absolue", "carré", "inverse"],
+					"resolution_seulement": ["racine carrée", "cube"]
+				},
+				"source": "BO 2de p.10-11",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations et inéquations « se ramenant au premier degré » : premier degré, produit nul, quotient, x² = a, f(x) = k pour les fonctions de référence ; pas de méthode générale du second degré (ni forme canonique ni discriminant).",
+				"source": "BO 2de p.6, 8",
+				"force": "BO"
+			},
+			{
+				"aspect": "figures",
+				"borne": "Géométrie plane seulement ; vecteurs manipulés dans un repère orthogonal ; norme, distance et déterminant dans une base (un repère) orthonormée.",
+				"source": "BO 2de p.8-9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "L'histogramme entre au programme (classes de même amplitude) ; rotation, homothétie et triangles semblables restent absents.",
+				"source": "BO 2de p.8-12",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Notations ensemblistes Ø, ∈, ⊂, ∩, ∪, {…}, Ā ou E \\ A, Card(A) ; les symboles ∀ et ∃ sont hors programme.",
+				"source": "BO 2de p.4",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Algorithmique en Python (passage langage naturel ↔ Python) ; « Aucune connaissance sur les listes n'est exigée ».",
+				"source": "BO 2de p.4-5",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités : le calcul de la probabilité d'un évènement à partir de ses probabilités conditionnelles relatives à une partition de l'univers (probabilités totales) « n'est pas un attendu du programme » (portée sur les arbres : question l2-4).",
+				"source": "BO 2de p.13",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Les approfondissements possibles ne sont « en aucun cas obligatoires ».",
+				"source": "BO 2de p.4",
+				"force": "BO"
+			}
+		],
+		"points": {
+			"2-229": {
+				"libelle": "Fonctions à un ou plusieurs arguments",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": []
+			},
+			"2-230": {
+				"libelle": "Fonction renvoyant un nombre aléatoire ; série statistique obtenue par la répétition de l'appel d'une telle fonction",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": []
+			},
+			"2-231": {
+				"libelle": "Écrire des fonctions simples",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonctions simples.",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-416": {
+				"libelle": "Appeler une fonction",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": []
+			},
+			"2-232": {
+				"libelle": "Lire, comprendre, modifier, compléter des fonctions plus complexes",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonctions plus complexes : lire, comprendre, modifier, compléter seulement (pas écrire).",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-233": {
+				"libelle": "Lire et comprendre une fonction renvoyant une moyenne (aucune connaissance sur les listes n'est exigée)",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lire et comprendre seulement (pas écrire) ; aucune connaissance sur les listes exigée.",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-417": {
+				"libelle": "Lire et comprendre une fonction renvoyant un écart type (aucune connaissance sur les listes n'est exigée)",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lire et comprendre seulement (pas écrire) ; aucune connaissance sur les listes exigée.",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-234": {
+				"libelle": "Écrire des fonctions renvoyant le résultat numérique d'une expérience aléatoire, d'une répétition d'expériences aléatoires indépendantes",
+				"rubrique": "Algorithmique et programmation > Notion de fonction",
+				"bornes": []
+			},
+			"2-218": {
+				"libelle": "Variables informatiques de type entier, booléen, flottant, chaine de caractères",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Types entier, booléen, flottant, chaine de caractères.",
+						"detail": {
+							"liste": ["entier", "booléen", "flottant", "chaine de caractères"]
+						},
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-219": {
+				"libelle": "Affectation (notée $\\leftarrow$ en langage naturel)",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Affectation notée ← en langage naturel.",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-220": {
+				"libelle": "Séquence d'instructions",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-221": {
+				"libelle": "Instruction conditionnelle",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-222": {
+				"libelle": "Boucle bornée (`for`)",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-413": {
+				"libelle": "Boucle non bornée (`while`)",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-223": {
+				"libelle": "Choisir ou déterminer le type d'une variable (entier, flottant ou chaine de caractères)",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Types à choisir parmi entier, flottant ou chaine de caractères (le booléen n'est pas dans la liste de cette capacité).",
+						"detail": {
+							"liste": ["entier", "flottant", "chaine de caractères"]
+						},
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-224": {
+				"libelle": "Concevoir et écrire une instruction d'affectation",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-414": {
+				"libelle": "Concevoir et écrire une séquence d'instructions",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-415": {
+				"libelle": "Concevoir et écrire une instruction conditionnelle",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-225": {
+				"libelle": "Écrire une formule permettant un calcul combinant des variables",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": []
+			},
+			"2-226": {
+				"libelle": "Programmer, dans des cas simples, une boucle bornée",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Dans des cas simples.",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-227": {
+				"libelle": "Programmer, dans des cas simples, une boucle non bornée",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Dans des cas simples.",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-228": {
+				"libelle": "Dans des cas plus complexes : lire, comprendre, modifier ou compléter un algorithme ou un programme",
+				"rubrique": "Algorithmique et programmation > Variables et instructions élémentaires",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Cas plus complexes : lire, comprendre, modifier ou compléter seulement (écrire un programme complexe en entier n'est pas demandé).",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-489": {
+				"libelle": "Effectuer un calcul littéral élémentaire : expressions multiplicatives",
+				"rubrique": "Automatismes > Calcul numérique et algébrique",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Les égalités de la liste du BO : x = 1 × x, x = x/1, (−1) × a = a/(−1) = −a ; 0 = 0x, 0/a = 0, x/a = (1/a)x, ab/c = a × (b/c) = (a/c) × b ; 1/(1/a) = a, 1/(a/b) = b/a, (a/b)/(c/d) = (a/b) : (c/d) = (a/b) ÷ (c/d) = (a/b) × (d/c) = ad/(bc).",
+						"detail": {
+							"liste": [
+								"x = 1×x",
+								"x = x/1",
+								"(−1)×a = a/(−1) = −a",
+								"0 = 0x",
+								"0/a = 0",
+								"x/a = (1/a)x",
+								"ab/c = a×b/c = a/c×b",
+								"1/(1/a) = a",
+								"1/(a/b) = b/a",
+								"(a/b)/(c/d) = ad/(bc)"
+							]
+						},
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "Fractions de la puce relues sur le rendu image de la page 5 du PDF (extraction pdftotext en plusieurs lignes)."
+			},
+			"2-491": {
+				"libelle": "Déterminer graphiquement des images",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique sur une courbe donnée.",
+						"source": "BO 2de p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"2-492": {
+				"libelle": "Déterminer graphiquement des antécédents",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique sur une courbe donnée.",
+						"source": "BO 2de p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"2-401": {
+				"libelle": "Calculer le périmètre d'un polygone.",
+				"rubrique": "Automatismes > Géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Polygones ; le cercle, cité dans la même puce, est un autre savoir.",
+						"source": "BO 2de p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"2-490": {
+				"libelle": "Utiliser une proportion pour calculer le tout connaissant une partie",
+				"rubrique": "Automatismes > Proportions et pourcentages",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Proportion donnée sous forme décimale, fractionnaire ou de pourcentage.",
+						"source": "BO 2de p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : les trois formes viennent de la puce précédente du même bloc (« exprimer une proportion sous différentes formes (décimale, fractionnaire, pourcentage) »)."
+			},
+			"2-402": {
+				"libelle": "Interpréter les quartiles d'une série statistique (Q1 = 12 : au moins un quart des valeurs sont inférieures ou égales à 12).",
+				"rubrique": "Automatismes > Statistiques",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série présentée en données brutes, regroupées par classes, ou par une représentation graphique.",
+						"source": "BO 2de p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "La définition des quartiles reste celle de 3e (décision c4-2) : le BO de 2de ne la redonne pas."
+			},
+			"2-325": {
+				"libelle": "Fonction à valeurs réelles définie sur un intervalle ou une réunion finie d'intervalles de $\\mathbb{R}$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Ensemble de définition : un intervalle ou une réunion finie d'intervalles de ℝ.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"2-326": {
+				"libelle": "Recherche de domaine d'étude (ensemble de définition)",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Ensemble de définition d'une expression, en lien avec l'équation quotient (dénominateur non nul).",
+						"source": "BO 2de p.8, 10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Domaine d'une expression avec racine carrée (√(x − 2)) : dépend du statut de la fonction racine carrée (question l2-2)."
+			},
+			"2-327": {
+				"libelle": "Courbe représentative : la courbe d'équation $y = f(x)$ est l'ensemble des points du plan dont les coordonnées $(x\\,;\\,y)$ vérifient $y = f(x)$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Courbe d'équation y = f(x) : points dont les coordonnées (x, y) vérifient y = f(x).",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"2-328": {
+				"libelle": "Signe d'une fonction affine",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions affines x ↦ mx + p ; signe relié au sens de variation et à la droite.",
+						"source": "BO 2de p.10-11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-329": {
+				"libelle": "Signe des fonctions de référence",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions de référence du programme ; la valeur absolue et le carré sont nommés pour le signe.",
+						"source": "BO 2de p.10-11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La liste des fonctions de référence (racine carrée, cube ?) : question l2-2."
+			},
+			"2-330": {
+				"libelle": "Tableau de signes pour une fonction produit",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré »."
+			},
+			"2-446": {
+				"libelle": "Tableau de signes pour une fonction quotient",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "fonctions",
+						"borne": "Quotient : valeurs où le dénominateur s'annule exclues.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré »."
+			},
+			"2-331": {
+				"libelle": "Exploiter l'équation $y = f(x)$ d'une courbe : appartenance",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appartenance d'un point à la courbe d'équation y = f(x), par calcul de f(x_A).",
+						"source": "BO 2de p.6, 10",
+						"force": "BO"
+					}
+				]
+			},
+			"2-447": {
+				"libelle": "Exploiter l'équation $y = f(x)$ d'une courbe : calcul de coordonnées",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Calcul d'une coordonnée d'un point de la courbe : l'ordonnée par f(a) ; une abscisse seulement si l'équation f(x) = b est d'un type du programme.",
+						"source": "BO 2de p.6, 10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « calcul de coordonnées » sans précision ; trouver une abscisse revient à résoudre f(x) = b, borné par les types d'équations du programme."
+			},
+			"2-495": {
+				"libelle": "Modéliser par des fonctions des situations issues des mathématiques, des autres disciplines ou de la vie courante ou citoyenne",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [],
+				"remarque": "Point-compétence (modéliser) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait écrire l'expression d'une fonction à partir d'une situation, sous les bornes générales."
+			},
+			"2-333": {
+				"libelle": "Fonction valeur absolue : définition et courbe représentative",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "x ↦ |x| : définition et courbe.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Statut de la fonction valeur absolue face à « Toute autre utilisation est hors programme » (BO p.7) : question l2-1."
+			},
+			"2-334": {
+				"libelle": "Fonction carré : définition et courbe représentative",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "x ↦ x² : définition et courbe.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"2-335": {
+				"libelle": "Fonction inverse : définition et courbe représentative",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "x ↦ 1/x : définition et courbe.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"2-336": {
+				"libelle": "Résoudre une équation du type $f(x) = k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Méthode au choix (graphique, algébrique, logicielle) ; la résolution algébrique ne porte que sur les types d'équations et d'inéquations du programme.",
+						"source": "BO 2de p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : f est quelconque (courbe, expression, tableau), mais une résolution algébrique n'est attendue que pour les types que le BO liste ailleurs (premier degré, produit nul, quotient, x² = a, fonctions de référence)."
+			},
+			"2-448": {
+				"libelle": "Résoudre une inéquation du type $f(x) < k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Méthode au choix (graphique, algébrique, logicielle) ; la résolution algébrique ne porte que sur les types d'équations et d'inéquations du programme.",
+						"source": "BO 2de p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : f est quelconque (courbe, expression, tableau), mais une résolution algébrique n'est attendue que pour les types que le BO liste ailleurs (premier degré, produit nul, quotient, x² = a, fonctions de référence). Sens de l'inégalité : question l2-3."
+			},
+			"2-337": {
+				"libelle": "Résoudre une équation de la forme $f(x) = 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "f produit ; équation f(x) = 0 à l'aide d'un tableau de signes.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré »."
+			},
+			"2-449": {
+				"libelle": "Résoudre une équation de la forme $f(x) = 0$ à l'aide d'un tableau de signes, lorsque $f$ est un quotient",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "f quotient ; équation f(x) = 0 à l'aide d'un tableau de signes.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré »."
+			},
+			"2-450": {
+				"libelle": "Résoudre une inéquation de la forme $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "f produit ; inéquation f(x) > 0 à l'aide d'un tableau de signes.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ». Sens de l'inégalité : question l2-3."
+			},
+			"2-451": {
+				"libelle": "Résoudre une inéquation de la forme $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un quotient",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "f quotient ; inéquation f(x) > 0 à l'aide d'un tableau de signes.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ». Sens de l'inégalité : question l2-3."
+			},
+			"2-338": {
+				"libelle": "Résoudre graphiquement une équation du type $f(x) = g(x)$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-452": {
+				"libelle": "Résoudre à l'aide d'un outil numérique une équation du type $f(x) = g(x)$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-453": {
+				"libelle": "Résoudre graphiquement une inéquation du type $f(x) < g(x)$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-454": {
+				"libelle": "Résoudre à l'aide d'un outil numérique une inéquation du type $f(x) < g(x)$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-339": {
+				"libelle": "Fonction affine : résoudre graphiquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f affine, x ↦ mx + p.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-455": {
+				"libelle": "Fonction affine : résoudre algébriquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f affine, x ↦ mx + p.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-456": {
+				"libelle": "Fonction affine : résoudre graphiquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f affine, x ↦ mx + p.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-457": {
+				"libelle": "Fonction affine : résoudre algébriquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f affine, x ↦ mx + p.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-340": {
+				"libelle": "Fonction valeur absolue : résoudre graphiquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = |x|.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-458": {
+				"libelle": "Fonction valeur absolue : résoudre algébriquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = |x|.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-459": {
+				"libelle": "Fonction valeur absolue : résoudre graphiquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = |x|.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Questions l2-1 et l2-3."
+			},
+			"2-460": {
+				"libelle": "Fonction valeur absolue : résoudre algébriquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = |x|.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Questions l2-1 et l2-3."
+			},
+			"2-341": {
+				"libelle": "Fonction carré : résoudre graphiquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x².",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-461": {
+				"libelle": "Fonction carré : résoudre algébriquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x².",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "x² = a : ensemble des solutions (deux, une ou aucune solution) ; solutions exactes en √a.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-462": {
+				"libelle": "Fonction carré : résoudre graphiquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x².",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-463": {
+				"libelle": "Fonction carré : résoudre algébriquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x².",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-342": {
+				"libelle": "Fonction inverse : résoudre graphiquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = 1/x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-464": {
+				"libelle": "Fonction inverse : résoudre algébriquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = 1/x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Forme a/x = b admise (automatisme).",
+						"source": "BO 2de p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"2-465": {
+				"libelle": "Fonction inverse : résoudre graphiquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = 1/x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-466": {
+				"libelle": "Fonction inverse : résoudre algébriquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = 1/x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-343": {
+				"libelle": "Fonction racine carrée : résoudre graphiquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = √x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2."
+			},
+			"2-467": {
+				"libelle": "Fonction racine carrée : résoudre algébriquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = √x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2."
+			},
+			"2-468": {
+				"libelle": "Fonction racine carrée : résoudre graphiquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = √x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2. Sens de l'inégalité : question l2-3."
+			},
+			"2-469": {
+				"libelle": "Fonction racine carrée : résoudre algébriquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = √x.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2. Sens de l'inégalité : question l2-3."
+			},
+			"2-344": {
+				"libelle": "Fonction cube : résoudre graphiquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x³.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2."
+			},
+			"2-470": {
+				"libelle": "Fonction cube : résoudre algébriquement une équation du type $f(x) = k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x³.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2."
+			},
+			"2-471": {
+				"libelle": "Fonction cube : résoudre graphiquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x³.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2. Sens de l'inégalité : question l2-3."
+			},
+			"2-472": {
+				"libelle": "Fonction cube : résoudre algébriquement une inéquation du type $f(x) < k$",
+				"rubrique": "Fonctions > Représentation algébrique et graphique des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x³.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2. Sens de l'inégalité : question l2-3."
+			},
+			"2-345": {
+				"libelle": "Croissance, décroissance, monotonie d'une fonction définie sur un intervalle",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonction définie sur un intervalle.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-473": {
+				"libelle": "Tableau de variations",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": []
+			},
+			"2-346": {
+				"libelle": "Maximum, minimum d'une fonction sur un intervalle",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Sur un intervalle.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-347": {
+				"libelle": "Pour une fonction affine donnée par $f(x) = mx + p$, interprétation de $m$ comme taux d'accroissement",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = mx + p : m taux d'accroissement.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-474": {
+				"libelle": "Pour une fonction affine donnée par $f(x) = mx + p$, interprétation de $p$ comme ordonnée à l'origine",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = mx + p : p ordonnée à l'origine.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-348": {
+				"libelle": "Variations d'une fonction affine selon le signe du coefficient directeur",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Selon le signe du coefficient directeur.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-349": {
+				"libelle": "Relier représentation graphique et tableau de variations",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": []
+			},
+			"2-350": {
+				"libelle": "Déterminer graphiquement les extrémums d'une fonction sur un intervalle",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique, sur un intervalle.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-351": {
+				"libelle": "Exploiter un logiciel de géométrie dynamique ou de calcul formel, la calculatrice ou Python pour décrire les variations d'une fonction donnée par une formule",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Outil : logiciel de géométrie dynamique ou de calcul formel, calculatrice, Python ; fonction donnée par une formule.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-352": {
+				"libelle": "Pour une fonction affine, relier sens de variation, signe de la fonction et droite représentative",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions affines seulement.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-353": {
+				"libelle": "Traiter des problèmes d'optimisation",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [],
+				"remarque": "Point-compétence (résoudre un problème) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait chercher un extremum dans une situation (graphiquement, à l'outil numérique ou par les variations connues ; pas de dérivée en 2de), sous les bornes générales."
+			},
+			"2-475": {
+				"libelle": "Fonction valeur absolue : signe",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = |x|.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-354": {
+				"libelle": "Fonction valeur absolue : variations",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = |x|.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-476": {
+				"libelle": "Fonction carré : signe",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x².",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-355": {
+				"libelle": "Fonction carré : variations",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f(x) = x².",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"2-356": {
+				"libelle": "Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ numériquement",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f fonction de référence du programme.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Comparaison numérique.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Liste des fonctions de référence (racine carrée, cube ?) : question l2-2."
+			},
+			"2-477": {
+				"libelle": "Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ graphiquement",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f fonction de référence du programme.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Comparaison graphique.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Liste des fonctions de référence (racine carrée, cube ?) : question l2-2."
+			},
+			"2-357": {
+				"libelle": "Variations des fonctions affines",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-358": {
+				"libelle": "Position relative des courbes d'équation $y = x$ et $y = x^2$, pour $x \\geqslant 0$",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-359": {
+				"libelle": "Variations de la fonction carré",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-360": {
+				"libelle": "Variations de la fonction inverse",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-361": {
+				"libelle": "Pour une fonction dont le tableau de variations est donné, algorithmes d'approximation numérique d'un extrémum (balayage, dichotomie)",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tableau de variations donné ; balayage ou dichotomie.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-362": {
+				"libelle": "Algorithme de calcul approché de longueur d'une portion de courbe représentative de fonction",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-363": {
+				"libelle": "Relier les courbes représentatives de la fonction racine carrée et de la fonction carré sur $\\mathbb{R}^+$",
+				"rubrique": "Fonctions > Variations et extrémums d'une fonction",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Sur ℝ+.",
+						"source": "BO 2de p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-311": {
+				"libelle": "Vecteur directeur d'une droite",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": []
+			},
+			"2-312": {
+				"libelle": "Équation de droite : équation cartésienne",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": []
+			},
+			"2-439": {
+				"libelle": "Équation de droite : équation réduite",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "y = mx + p, ou x = c pour une droite parallèle à l'axe des ordonnées.",
+						"source": "BO 2de p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO ne donne pas la forme ; il réserve la pente aux droites non parallèles à l'axe des ordonnées, ce qui laisse x = c à ces droites."
+			},
+			"2-313": {
+				"libelle": "Pente (ou coefficient directeur) d'une droite non parallèle à l'axe des ordonnées",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Droite non parallèle à l'axe des ordonnées.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-314": {
+				"libelle": "Déterminer une équation de droite à partir de deux points",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Équation cartésienne ou réduite (le BO ne fixe pas la forme attendue).",
+						"source": "BO 2de p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "À partir de deux points.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « déterminer une équation de droite » sans forme imposée, les deux formes étant au programme."
+			},
+			"2-440": {
+				"libelle": "Déterminer une équation de droite à partir d'un point et un vecteur directeur",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Équation cartésienne ou réduite (le BO ne fixe pas la forme attendue).",
+						"source": "BO 2de p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "À partir d'un point et d'un vecteur directeur.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « déterminer une équation de droite » sans forme imposée, les deux formes étant au programme."
+			},
+			"2-441": {
+				"libelle": "Déterminer une équation de droite à partir d'un point et la pente",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Équation cartésienne ou réduite (le BO ne fixe pas la forme attendue).",
+						"source": "BO 2de p.9",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "À partir d'un point et de la pente.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « déterminer une équation de droite » sans forme imposée, les deux formes étant au programme."
+			},
+			"2-315": {
+				"libelle": "Déterminer la pente d'une droite donnée par une représentation graphique",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique ; droite non parallèle à l'axe des ordonnées.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-442": {
+				"libelle": "Déterminer la pente d'une droite donnée par une équation",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Droite donnée par une équation (cartésienne ou réduite) ; non parallèle à l'axe des ordonnées.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-443": {
+				"libelle": "Déterminer un vecteur directeur d'une droite donnée par une équation",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Droite donnée par une équation (cartésienne ou réduite).",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-444": {
+				"libelle": "Déterminer un vecteur directeur d'une droite donnée par une représentation graphique",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-316": {
+				"libelle": "Tracer une droite connaissant son équation réduite",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation réduite.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-445": {
+				"libelle": "Tracer une droite connaissant son équation cartésienne",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation cartésienne.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-317": {
+				"libelle": "Établir que trois points sont alignés ou non",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Par la colinéarité (déterminant ou proportionnalité des coordonnées) ou par une équation de droite.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-318": {
+				"libelle": "Déterminer si deux droites sont parallèles ou sécantes",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": []
+			},
+			"2-319": {
+				"libelle": "Déterminer le point d'intersection de deux droites sécantes données par leur équation réduite",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux droites données par leur équation réduite seulement ; aucun système de deux équations à deux inconnues sous forme générale n'est cité.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-320": {
+				"libelle": "En utilisant le déterminant, établir la forme générale d'une équation de droite",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-321": {
+				"libelle": "Étudier l'alignement de trois points dans le plan",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-322": {
+				"libelle": "Déterminer une équation de droite passant par deux points donnés",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-323": {
+				"libelle": "Ensemble des points équidistants d'un point et de l'axe des abscisses",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-324": {
+				"libelle": "Représentation, sur des exemples, de parties du plan décrites par des inégalités sur les coordonnées",
+				"rubrique": "Géométrie > Droites du plan",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sur des exemples.",
+						"source": "BO 2de p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-287": {
+				"libelle": "Égalité de deux vecteurs ; notation $\\vec{u}$",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation u⃗.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-433": {
+				"libelle": "Vecteur nul",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-288": {
+				"libelle": "Représentants d'un vecteur",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-289": {
+				"libelle": "Produit d'un vecteur par un nombre réel",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Produit par un nombre réel.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-290": {
+				"libelle": "Colinéarité de deux vecteurs",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-291": {
+				"libelle": "Représentation d'un vecteur comme combinaison de deux vecteurs non colinéaires",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Combinaison de deux vecteurs non colinéaires ; relation u⃗ = x i⃗ + y j⃗ mise en évidence.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-292": {
+				"libelle": "Base orthonormée",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-434": {
+				"libelle": "Coordonnées d'un vecteur",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Coordonnées dans une base ; relation u⃗ = x i⃗ + y j⃗.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-293": {
+				"libelle": "Expression de la norme d'un vecteur",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Dans une base orthonormée.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-294": {
+				"libelle": "Expression des coordonnées de $\\vec{AB}$ en fonction de celles de $A$ et de $B$",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-295": {
+				"libelle": "Déterminant de deux vecteurs dans une base orthonormée",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Dans une base orthonormée.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-435": {
+				"libelle": "Déterminant de deux vecteurs, critère de colinéarité ; application à l'alignement, au parallélisme",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Critère de colinéarité ; application à l'alignement et au parallélisme.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-296": {
+				"libelle": "Caractérisation vectorielle du milieu d'un segment",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Formule des coordonnées du milieu : approfondissement (2-306) ; question l2-8."
+			},
+			"2-297": {
+				"libelle": "Représenter la somme de deux vecteurs à partir de représentants de même origine",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "À partir de représentants de même origine.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-298": {
+				"libelle": "Représenter un vecteur dont on connait les coordonnées",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-299": {
+				"libelle": "Lire les coordonnées d'un vecteur",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-300": {
+				"libelle": "Calculer les coordonnées d'une somme de vecteurs",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": []
+			},
+			"2-436": {
+				"libelle": "Calculer les coordonnées d'un produit d'un vecteur par un nombre réel",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Produit par un nombre réel.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-301": {
+				"libelle": "Calculer la distance entre deux points",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Repère orthonormé.",
+						"source": "BO 2de p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : l'expression de la norme est donnée « dans une base orthonormée » (BO p.9) ; la distance AB est la norme de AB⃗."
+			},
+			"2-302": {
+				"libelle": "Calculer les coordonnées du milieu d'un segment",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "La formule des coordonnées du milieu est un approfondissement (2-306) alors que ce calcul est attendu : question l2-8."
+			},
+			"2-303": {
+				"libelle": "Caractériser l'alignement par la colinéarité de vecteurs",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Par la colinéarité de vecteurs (déterminant nul ou proportionnalité des coordonnées).",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-437": {
+				"libelle": "Caractériser le parallélisme par la colinéarité de vecteurs",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Par la colinéarité de vecteurs (déterminant nul ou proportionnalité des coordonnées).",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"2-493": {
+				"libelle": "Résoudre des problèmes en utilisant la représentation la plus adaptée des vecteurs",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-compétence (résoudre un problème) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait choisir la représentation des vecteurs pour résoudre un problème, sous les bornes générales."
+			},
+			"2-494": {
+				"libelle": "Résoudre des problèmes avec des méthodes diverses (méthodes vectorielles, repérées ou non, méthodes géométriques)",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-compétence (résoudre un problème) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait résoudre un problème de géométrie par une méthode au choix, sous les bornes générales."
+			},
+			"2-304": {
+				"libelle": "Caractérisation de la colinéarité de deux vecteurs non nuls : nullité du déterminant",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-438": {
+				"libelle": "Caractérisation de la colinéarité de deux vecteurs non nuls : proportionnalité des coordonnées",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-305": {
+				"libelle": "Barycentre de deux ou trois points",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Deux ou trois points.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-306": {
+				"libelle": "Formule permettant le calcul des coordonnées du milieu d'un segment",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Question l2-8. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-307": {
+				"libelle": "Démontrer que les hauteurs d'un triangle sont concourantes",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins). Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-308": {
+				"libelle": "Expression de l'aire d'un triangle : $\\tfrac{1}{2}ab\\sin C$",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Aire = ½ ab sin C.",
+						"source": "BO 2de p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "figures",
+						"borne": "Angle C aigu.",
+						"source": "BO 2de p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le sinus n'est défini en 2de que dans le triangle rectangle (automatisme p.6, « lignes trigonométriques dans le triangle rectangle ») ; le sinus d'un angle obtus n'est pas au programme. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-309": {
+				"libelle": "Démontrer que l'isobarycentre de trois points non alignés est l'intersection des médianes",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins). Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-310": {
+				"libelle": "Démontrer que le point de concours des médiatrices est le centre du cercle circonscrit",
+				"rubrique": "Géométrie > Vecteurs et problèmes de géométrie",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins). Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-260": {
+				"libelle": "Règles de calcul sur les puissances entières relatives",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Exposants entiers relatifs.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Portée des « règles de calcul » ((aᵐ)ⁿ, (a/b)ⁿ) : question l2-6."
+			},
+			"2-261": {
+				"libelle": "Règles de calcul sur les racines carrées",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Règles de calcul sur les racines carrées ; √ab = √a √b (a, b positifs) est démontré.",
+						"source": "BO 2de p.7-8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Quelles règles au-delà du produit (quotient, a√b, dénominateur rationnel) : question l2-7."
+			},
+			"2-423": {
+				"libelle": "Relation $\\sqrt{a^2} = |a|$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "√a² = |a|, a réel.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-262": {
+				"libelle": "Calculer sur des expressions algébriques simples, en particulier sur des expressions fractionnaires",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Exemples simples de calcul, en particulier sur des expressions fractionnaires.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-263": {
+				"libelle": "Somme d'inégalités",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": []
+			},
+			"2-424": {
+				"libelle": "Produit d'une inégalité par un réel positif, négatif, en liaison avec le sens de variation d'une fonction affine",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Multiplication par un réel positif (sens conservé) ou négatif (sens changé), en liaison avec le sens de variation d'une fonction affine.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-264": {
+				"libelle": "Comparaison additive (par différence)",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Comparaison par la différence.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-425": {
+				"libelle": "Comparaison multiplicative (par rapport, pour deux nombres strictement positifs)",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Deux nombres strictement positifs.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-265": {
+				"libelle": "Ensemble des solutions des équations du type $ax + b = 0$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type ax + b = 0 ; ensemble des solutions.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-266": {
+				"libelle": "Ensemble des solutions des inéquations de la forme $ax + b > 0$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Forme ax + b > 0 ; ensemble des solutions (intervalle).",
+						"source": "BO 2de p.7-8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-267": {
+				"libelle": "Équation de la forme $A(x)B(x) = 0$ (équation produit nul)",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "A(x) et B(x) du premier degré.",
+						"source": "BO 2de p.6, 8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : les objectifs visent des équations et inéquations « se ramenant au premier degré » (BO p.6)."
+			},
+			"2-268": {
+				"libelle": "En liaison avec la section « Fonctions », étude du signe des expressions de la forme $A(x)B(x)$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré »."
+			},
+			"2-426": {
+				"libelle": "En liaison avec la section « Fonctions », étude du signe des expressions de la forme $\\tfrac{A(x)}{B(x)}$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé).",
+						"source": "BO 2de p.8, 10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "fonctions",
+						"borne": "Quotient : valeurs où B(x) s'annule exclues.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré »."
+			},
+			"2-269": {
+				"libelle": "Équation $\\tfrac{A(x)}{B(x)} = k$ (équation quotient), en lien avec l'ensemble de définition d'une expression",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "A(x) et B(x) du premier degré.",
+						"source": "BO 2de p.6, 8",
+						"force": "déduite"
+					},
+					{
+						"aspect": "autre",
+						"borne": "En lien avec l'ensemble de définition de l'expression (B(x) ≠ 0) ; a/x = b en est un cas (automatisme).",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : les objectifs visent des équations et inéquations « se ramenant au premier degré » (BO p.6)."
+			},
+			"2-270": {
+				"libelle": "Effectuer des calculs numériques ou littéraux mettant en jeu des puissances",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Puissances entières relatives ; calculs numériques ou littéraux.",
+						"source": "BO 2de p.7-8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-6."
+			},
+			"2-271": {
+				"libelle": "Effectuer des calculs numériques ou littéraux mettant en jeu des racines carrées",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Racines carrées ; calculs numériques ou littéraux.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-7."
+			},
+			"2-272": {
+				"libelle": "Effectuer des calculs numériques ou littéraux mettant en jeu des écritures fractionnaires",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Écritures fractionnaires numériques et littérales ; égalités de l'automatisme (a/b ÷ c/d = ad/bc…).",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-273": {
+				"libelle": "Sur des cas simples de relations entre variables ($U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Cas simples de relations entre variables ; U = RI, d = vt, S = πr², V = abc, V = πr²h sont donnés « par exemple » (liste non limitative), y compris des formules d'autres disciplines.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO écrit « (par exemple U = RI, … ) » ; le libellé a perdu « par exemple » et se lit comme une liste fermée."
+			},
+			"2-274": {
+				"libelle": "Exprimer une variable en fonction de l'autre dans une relation du premier degré $ax + by = c$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Relation du premier degré ax + by = c.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-275": {
+				"libelle": "Choisir la forme la plus adaptée (factorisée, développée réduite) d'une expression en vue de la résolution d'un problème",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Deux formes seulement : factorisée, développée réduite.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-276": {
+				"libelle": "Comparer deux quantités en utilisant leur différence",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Comparaison par la différence.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-427": {
+				"libelle": "Comparer deux quantités en utilisant leur rapport (ratio) dans le cas de quantités positives",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Quantités strictement positives.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-277": {
+				"libelle": "Interpréter, selon le contexte, la comparaison de deux quantités par leur différence en termes de variation additive",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Interprétation selon le contexte, en variation additive.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-428": {
+				"libelle": "Interpréter, selon le contexte, la comparaison de deux quantités par leur rapport en termes de variation multiplicative",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Interprétation selon le contexte, en variation multiplicative.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-278": {
+				"libelle": "Modéliser un problème par une inéquation",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Inéquations « se ramenant au premier degré ».",
+						"source": "BO 2de p.6, 8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point en partie compétence (modéliser) : un modèle s'y rattache s'il fait écrire l'inéquation qui traduit la situation."
+			},
+			"2-279": {
+				"libelle": "Donner l'ensemble des solutions d'une équation du premier degré du type $ax + b = cx + d$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type ax + b = cx + d ; ensemble des solutions.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-429": {
+				"libelle": "Donner l'ensemble des solutions d'une équation du premier degré du type $ax = b$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type ax = b ; ensemble des solutions.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-430": {
+				"libelle": "Donner l'ensemble des solutions d'une équation du premier degré du type $a + x = b$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type a + x = b ; ensemble des solutions.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-280": {
+				"libelle": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax + b \\geqslant cx + d$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type ax + b ⩾ cx + d ; ensemble des solutions (intervalle).",
+						"source": "BO 2de p.5, 7-8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-431": {
+				"libelle": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax \\geqslant b$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type ax ⩾ b ; ensemble des solutions (intervalle).",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Le BO imprime « a ⩾ b » (coquille vérifiée sur le rendu image de la page 8) : question l2-5. Sens de l'inégalité : question l2-3."
+			},
+			"2-432": {
+				"libelle": "Donner l'ensemble des solutions d'une inéquation du premier degré du type $a + x \\geqslant b$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type a + x ⩾ b ; ensemble des solutions (intervalle).",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Sens de l'inégalité : question l2-3."
+			},
+			"2-281": {
+				"libelle": "Donner l'ensemble des solutions d'une équation du type $x^2 = a$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Type x² = a ; ensemble des solutions (deux, une ou aucune solution), solutions exactes en √a.",
+						"source": "BO 2de p.5, 8",
+						"force": "BO"
+					}
+				]
+			},
+			"2-282": {
+				"libelle": "Quels que soient les réels positifs $a$ et $b$, on a $\\sqrt{ab} = \\sqrt{a}\\,\\sqrt{b}$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-283": {
+				"libelle": "Déterminer la première puissance d'un nombre positif donné supérieure ou inférieure à une valeur donnée",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombre positif donné ; première puissance supérieure ou inférieure à une valeur donnée.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-284": {
+				"libelle": "Développement de $(a + b + c)^2$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "(a + b + c)².",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-285": {
+				"libelle": "Développement de $(a + b)^3$",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "(a + b)³.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-286": {
+				"libelle": "Inégalité entre moyennes géométrique et arithmétique de deux réels strictement positifs",
+				"rubrique": "Nombres et calculs, algèbre > Algèbre",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Deux réels strictement positifs.",
+						"source": "BO 2de p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-235": {
+				"libelle": "Notations $\\mathbb{N}$ et $\\mathbb{Z}$",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": []
+			},
+			"2-236": {
+				"libelle": "Définition de la notion de multiple : $a$ est multiple de $b$ s'il existe un entier $k$ tel que $a = kb$",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": []
+			},
+			"2-418": {
+				"libelle": "Définition de la notion de diviseur",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": []
+			},
+			"2-419": {
+				"libelle": "Définition des notions de nombre pair, de nombre impair",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": []
+			},
+			"2-237": {
+				"libelle": "Modéliser et résoudre des problèmes mobilisant les notions de multiple, de diviseur, de nombre pair, de nombre impair",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Notions mobilisées : multiple, diviseur, nombre pair, nombre impair (liste du BO).",
+						"detail": {
+							"liste": ["multiple", "diviseur", "pair", "impair"]
+						},
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point en partie compétence (modéliser et résoudre) : un modèle s'y rattache s'il fait traduire ou résoudre un problème avec ces seules notions."
+			},
+			"2-238": {
+				"libelle": "Présenter les fractions sous forme irréductible",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Forme irréductible, en liaison avec l'étude des multiples et diviseurs.",
+						"source": "BO 2de p.6-7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-239": {
+				"libelle": "Pour une valeur numérique de $a$, la somme de deux multiples de $a$ est multiple de $a$",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-240": {
+				"libelle": "Le carré d'un nombre impair est impair",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-241": {
+				"libelle": "Déterminer si un entier naturel $a$ est multiple d'un entier naturel $b$",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers naturels.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-242": {
+				"libelle": "Pour des entiers $a$ et $b$ donnés, déterminer le plus grand multiple de $a$ inférieur ou égal à $b$",
+				"rubrique": "Nombres et calculs, algèbre > Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Entiers donnés a et b.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-243": {
+				"libelle": "Ensemble $\\mathbb{R}$ des nombres réels, droite numérique",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": []
+			},
+			"2-244": {
+				"libelle": "Intervalles de $\\mathbb{R}$ ; représentation graphique, notations du type $[a\\,;\\,+\\infty[$, $]-\\infty\\,;\\,a]$, $[a\\,;\\,b]$",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations du type [a ; +∞[, ]−∞ ; a], [a ; b], etc. ; représentation graphique (le BO écrit la virgule : [a, b]).",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-245": {
+				"libelle": "Notation en valeur absolue $|a|$ pour la distance de $a$ à $0$",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "|a| = distance de a à 0.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-420": {
+				"libelle": "Distance entre deux nombres réels",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Distance entre deux réels a et b, exprimée par |a − b|.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-1."
+			},
+			"2-246": {
+				"libelle": "Inéquation du type $|x - a| \\leqslant r$ ; représentation graphique des solutions, intervalle $[a - r\\,;\\,a + r]$",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Inéquation |x − a| ⩽ r ; solutions représentées graphiquement, intervalle [a − r ; a + r].",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Questions l2-1 et l2-3."
+			},
+			"2-247": {
+				"libelle": "Ensemble $\\mathbb{D}$ des nombres décimaux",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": []
+			},
+			"2-421": {
+				"libelle": "Encadrement décimal d'un nombre réel à $10^{-n}$ près",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Encadrement décimal à 10⁻ⁿ près.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-248": {
+				"libelle": "Ensemble $\\mathbb{Q}$ des nombres rationnels",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": []
+			},
+			"2-422": {
+				"libelle": "Nombres irrationnels, exemples fournis par la géométrie comme $\\sqrt{2}$ et $\\pi$",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Exemples fournis par la géométrie, « par exemple √2 et π » (liste non limitative).",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-249": {
+				"libelle": "Lire l'abscisse d'un nombre réel sur une droite graduée",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Abscisses réelles.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-250": {
+				"libelle": "Placer un nombre réel d'abscisse donnée sur une droite graduée",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Abscisses réelles.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-251": {
+				"libelle": "Représenter un intervalle de la droite numérique",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Intervalle de la droite numérique, borné ou non.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-252": {
+				"libelle": "Déterminer si un nombre réel appartient à un intervalle donné",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": []
+			},
+			"2-253": {
+				"libelle": "Donner un encadrement, d'amplitude donnée, d'un nombre réel par des décimaux",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Encadrement d'amplitude donnée par des décimaux.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-254": {
+				"libelle": "Dans le cadre de la résolution de problèmes, arrondir en donnant le nombre de chiffres significatifs adapté à la situation étudiée",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Arrondi au nombre de chiffres significatifs adapté, dans le cadre d'un problème.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-255": {
+				"libelle": "Le nombre rationnel $\\tfrac{1}{3}$ n'est pas décimal",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-256": {
+				"libelle": "Le nombre réel $\\sqrt{2}$ est irrationnel",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [],
+				"remarque": "Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins)."
+			},
+			"2-257": {
+				"libelle": "Déterminer par balayage un encadrement de $\\sqrt{2}$ d'amplitude inférieure ou égale à $10^{-n}$",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Balayage ; amplitude inférieure ou égale à 10⁻ⁿ.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-258": {
+				"libelle": "Développement décimal illimité d'un nombre réel",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-259": {
+				"libelle": "Observation, sur des exemples, de la périodicité du développement décimal de nombres rationnels",
+				"rubrique": "Nombres et calculs, algèbre > Nombres réels",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sur des exemples.",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-383": {
+				"libelle": "Tableau croisé d'effectifs",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux variables qualitatives (nominales ou ordinales).",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-384": {
+				"libelle": "Fréquence conditionnelle",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-485": {
+				"libelle": "Fréquence marginale",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-385": {
+				"libelle": "Calculer des fréquences conditionnelles",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-486": {
+				"libelle": "Calculer des fréquences marginales",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-386": {
+				"libelle": "Compléter un tableau croisé par des raisonnements sur les effectifs",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Par des raisonnements sur les effectifs.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-487": {
+				"libelle": "Compléter un tableau croisé en utilisant des fréquences conditionnelles",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "En utilisant des fréquences conditionnelles.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				],
+				"remarque": "« Données réelles » : question l2-9."
+			},
+			"2-387": {
+				"libelle": "À partir de deux listes représentant deux caractères d'individus, déterminer un sous-ensemble d'individus répondant à un critère (filtre, utilisation de ET, OU, NON)",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux listes représentant deux caractères ; filtre avec ET, OU, NON.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-388": {
+				"libelle": "Dresser le tableau croisé de deux variables qualitatives à partir du fichier des individus et calculer des fréquences conditionnelles ou marginales",
+				"rubrique": "Statistiques et probabilités > Croisement de deux variables qualitatives",
+				"bornes": [],
+				"remarque": "« Données réelles » : question l2-9. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4)."
+			},
+			"2-364": {
+				"libelle": "Ensembles de référence inclus les uns dans les autres : pourcentage de pourcentage",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-365": {
+				"libelle": "Évolution : variation absolue (variation additive) $V_2 - V_1$",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-366": {
+				"libelle": "Évolution : coefficient multiplicateur (variation multiplicative) $\\tfrac{V_2}{V_1}$",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-367": {
+				"libelle": "Évolution : variation relative (taux d'évolution) $\\tfrac{V_2 - V_1}{V_1}$",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-368": {
+				"libelle": "Évolutions successives : relation sur les coefficients multiplicateurs (produit)",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Coefficient multiplicateur global = produit des coefficients.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-478": {
+				"libelle": "Évolution réciproque : relation sur les coefficients multiplicateurs (inverse)",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Coefficient multiplicateur réciproque = inverse.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-369": {
+				"libelle": "Linéarité de la moyenne",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-370": {
+				"libelle": "Indicateurs de dispersion : écart type",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "L'écart type est le seul indicateur de dispersion cité dans les contenus (la variance n'est pas citée).",
+						"source": "BO 2de p.12",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « Indicateurs de dispersion : écart type » ; la variance n'apparait nulle part au BO de 2de."
+			},
+			"2-371": {
+				"libelle": "Influence sur la moyenne de l'ajout ou de la suppression d'une valeur dans la série",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajout ou suppression d'une valeur.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-479": {
+				"libelle": "Influence sur la médiane de l'ajout ou de la suppression d'une valeur dans la série",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajout ou suppression d'une valeur.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-372": {
+				"libelle": "Représentation graphique : histogramme",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série continue regroupée en classes de même amplitude.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-480": {
+				"libelle": "Représentation graphique : polygone des fréquences cumulées",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série continue regroupée en classes de même amplitude.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-375": {
+				"libelle": "Exploiter la relation entre effectifs, proportions et pourcentages",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-376": {
+				"libelle": "Traiter des situations simples mettant en jeu des pourcentages de pourcentages",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Situations simples.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-377": {
+				"libelle": "Exploiter la relation entre deux valeurs successives et leur taux d'évolution",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-378": {
+				"libelle": "Calculer le taux d'évolution global à partir des taux d'évolution successifs",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-379": {
+				"libelle": "Calculer un taux d'évolution réciproque",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": []
+			},
+			"2-380": {
+				"libelle": "Pour une série regroupée en classes, calculer la moyenne à partir de la moyenne et des effectifs de chaque classe (moyenne pondérée)",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série regroupée en classes de même amplitude.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-481": {
+				"libelle": "Pour une série regroupée en classes, calculer la moyenne dans le cas particulier où la répartition est uniforme dans chaque classe (donc égale au centre de la classe)",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série regroupée en classes de même amplitude.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Répartition uniforme dans chaque classe : centre de la classe.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-381": {
+				"libelle": "Pour une série regroupée en classes, déterminer la classe médiane à partir des effectifs des classes",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série regroupée en classes de même amplitude.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-482": {
+				"libelle": "Pour une série regroupée en classes, estimer la médiane dans le cas d'une répartition uniforme dans la classe médiane",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Série regroupée en classes de même amplitude.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Répartition uniforme dans la classe médiane.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-382": {
+				"libelle": "Décrire les différences entre deux séries statistiques, en s'appuyant sur le couple moyenne–écart type",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Couple moyenne–écart type.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-483": {
+				"libelle": "Décrire les différences entre deux séries statistiques, en s'appuyant sur le couple médiane–écart interquartile",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Couple médiane–écart interquartile.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-484": {
+				"libelle": "Décrire les différences entre deux séries statistiques, en s'appuyant sur des représentations graphiques données",
+				"rubrique": "Statistiques et probabilités > Information chiffrée et statistique descriptive",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Représentations graphiques données.",
+						"source": "BO 2de p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"2-389": {
+				"libelle": "Version vulgarisée de la loi des grands nombres : lorsque $n$ est grand, sauf exception, la fréquence observée est proche de la probabilité",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": []
+			},
+			"2-390": {
+				"libelle": "Probabilité conditionnelle d'un évènement $B$ sachant un évènement $A$ de probabilité non nulle ; notation $P_A(B)$",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation P_A(B), A de probabilité non nulle.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"2-391": {
+				"libelle": "Arbres de probabilité, application au calcul de probabilités",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Pas de calcul par les probabilités totales (partition de l'univers).",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-4."
+			},
+			"2-392": {
+				"libelle": "Observer, à l'aide d'une simulation sur Python ou tableur, que lorsque $n$ est grand la fréquence observée est proche de la probabilité (loi des grands nombres)",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Simulation sur Python ou tableur.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"2-393": {
+				"libelle": "Construire un arbre pondéré en lien avec une situation donnée",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "En lien avec une situation donnée.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"2-394": {
+				"libelle": "Construire un tableau croisé d'effectifs en lien avec une situation donnée",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "En lien avec une situation donnée.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10."
+			},
+			"2-395": {
+				"libelle": "Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$)",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations du programme : P(A), Ā, P(A ∩ B), P_A(B).",
+						"source": "BO 2de p.4, 13",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13)."
+			},
+			"2-488": {
+				"libelle": "Passer du registre symbolique ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$) au registre de la langue naturelle",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations du programme : P(A), Ā, P(A ∩ B), P_A(B).",
+						"source": "BO 2de p.4, 13",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13)."
+			},
+			"2-396": {
+				"libelle": "Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tableau croisé d'effectifs ; tirage au sort avec équiprobabilité d'un individu dans une population : P_B(A) = Card(A ∩ B) / Card(B).",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				]
+			},
+			"2-397": {
+				"libelle": "Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Arbre de probabilité ; pas de calcul par les probabilités totales.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l2-4."
+			},
+			"2-398": {
+				"libelle": "Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": []
+			},
+			"2-399": {
+				"libelle": "Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Probabilité d'un chemin = produit des probabilités de ses branches.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				],
+				"remarque": "Somme de chemins : question l2-4."
+			},
+			"2-400": {
+				"libelle": "Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »",
+				"rubrique": "Statistiques et probabilités > Probabilités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Situations de type « faux positifs » ; vocabulaire des tests : faux positifs, faux négatifs, spécificité, sensibilité.",
+						"source": "BO 2de p.13",
+						"force": "BO"
+					}
+				],
+				"remarque": "Inversion du conditionnement sur un arbre : passe par P(B), donc par la question l2-4."
+			},
+			"2-201": {
+				"libelle": "Notions d'élément d'un ensemble et d'appartenance",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Symbole ∈ ; ensembles écrits {…}.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-403": {
+				"libelle": "Notions de sous-ensemble et d'inclusion",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Symbole ⊂.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-202": {
+				"libelle": "Notion d'ensemble vide",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Symbole Ø.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-404": {
+				"libelle": "Notion de réunion",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Symbole ∪.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-405": {
+				"libelle": "Notion d'intersection",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Symbole ∩.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-406": {
+				"libelle": "Notion de complémentaire",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Notations Ā (celle des probabilités) ou E \\ A.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-203": {
+				"libelle": "Symboles de base correspondants : $\\varnothing$, $\\in$, $\\subset$, $\\cap$, $\\cup$, $\\{\\,\\ldots\\,\\}$",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Symboles Ø, ∈, ⊂, ∩, ∪, {…} (liste du BO).",
+						"detail": {
+							"liste": ["Ø", "∈", "⊂", "∩", "∪", "{…}"]
+						},
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-204": {
+				"libelle": "Notation des ensembles de nombres",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "ℕ, ℤ, 𝔻, ℚ, ℝ.",
+						"detail": {
+							"liste": ["ℕ", "ℤ", "𝔻", "ℚ", "ℝ"]
+						},
+						"source": "BO 2de p.4, 7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-407": {
+				"libelle": "Notation des intervalles",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations du type [a ; +∞[, ]−∞ ; a], [a ; b], etc. (le BO écrit la virgule : [a, b]).",
+						"source": "BO 2de p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"2-205": {
+				"libelle": "Notion de couple et de produit cartésien de deux ensembles",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Notion « rencontrée » seulement (« Ils rencontrent également la notion de couple et celle de produit cartésien ») ; aucune notation (E × F) n'est citée.",
+						"source": "BO 2de p.4",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « rencontrent » dit une rencontre, pas une connaissance exigible ; la notation E × F n'est pas écrite au BO."
+			},
+			"2-206": {
+				"libelle": "Notation du complémentaire d'un sous-ensemble $A$ de $E$ : $\\bar{A}$ (notation des probabilités) ou $E \\setminus A$",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ā (notation des probabilités) ou E \\ A.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-207": {
+				"libelle": "Notation $\\operatorname{Card}(A)$ pour le cardinal d'un ensemble fini",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Card(A), ensemble fini seulement.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-208": {
+				"libelle": "Reconnaitre ce qu'est une proposition mathématique",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-209": {
+				"libelle": "Utiliser des variables pour écrire des propositions mathématiques",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-210": {
+				"libelle": "Lire et écrire des propositions contenant le connecteur « et »",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Connecteur « et ».",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-408": {
+				"libelle": "Lire et écrire des propositions contenant le connecteur « ou »",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Connecteur « ou ».",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-211": {
+				"libelle": "Formuler la négation de propositions simples (sans implication ni quantificateurs)",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Propositions simples, sans implication ni quantificateurs.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-212": {
+				"libelle": "Mobiliser un contre-exemple pour montrer qu'une proposition est fausse",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-213": {
+				"libelle": "Formuler une implication",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-409": {
+				"libelle": "Formuler une équivalence logique",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-410": {
+				"libelle": "Mobiliser une implication, une équivalence logique dans un raisonnement simple",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Raisonnement simple.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-214": {
+				"libelle": "Formuler la réciproque d'une implication",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-411": {
+				"libelle": "Formuler la contraposée d'une implication",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-215": {
+				"libelle": "Lire et écrire des propositions contenant une quantification universelle (les symboles $\\forall$ et $\\exists$ sont hors programme)",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Quantification universelle en mots (« pour tout ») ; symbole ∀ hors programme.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-412": {
+				"libelle": "Lire et écrire des propositions contenant une quantification existentielle (les symboles $\\forall$ et $\\exists$ sont hors programme)",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Appris « en situation », sur des propositions tirées des chapitres du programme (pas de séquence de logique formelle).",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Quantification existentielle en mots (« il existe ») ; symbole ∃ hors programme.",
+						"source": "BO 2de p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"2-216": {
+				"libelle": "Produire un raisonnement par disjonction des cas",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [],
+				"remarque": "Point-compétence (raisonner) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait produire un raisonnement par disjonction des cas, sous les bornes générales."
+			},
+			"2-217": {
+				"libelle": "Produire un raisonnement par l'absurde",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [],
+				"remarque": "Point-compétence (raisonner) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait produire un raisonnement par l'absurde, sous les bornes générales."
+			}
+		}
+	}
+}

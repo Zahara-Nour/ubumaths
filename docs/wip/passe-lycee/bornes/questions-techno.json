@@ -1,0 +1,318 @@
+[
+	{
+		"id": "l1t-1",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO", "T_TECHNO"],
+		"points": ["1TECHNO-090", "1TECHNO-092", "TTECHNO-055", "TTECHNO-056"],
+		"titre": "Probabilités totales : quelle partition en 1re techno ?",
+		"question": "Le BO de 1re techno met la formule des probabilités totales « dans les cas simples » ; le BO de Tle techno dit qu'on l'« introduit » en Tle, pour une partition de l'univers. Une question de 1re techno « Une usine a trois machines A, B, C (50 %, 30 %, 20 % de la production) ; taux de défaut 2 %, 3 %, 5 % ; probabilité qu'une pièce soit défectueuse ? » est-elle dans 1TECHNO-092 ?",
+		"sources": "BO 2de p.13 : le calcul d'une probabilité connaissant ses probabilités conditionnelles relatives à une partition « n'est pas un attendu ». BO 1re techno p.10 : contenu « Formule des probabilités totales », capacité « Dans les cas simples, calculer une probabilité à l'aide de la formule des probabilités totales ». BO Tle techno p.9 : « on introduit : la formule des probabilités totales » ; p.10 : « pour une partition de l'univers », démontrée pour une partition en deux ou trois évènements.",
+		"options": [
+			[
+				"deux",
+				"1re : partition {A, Ā} seulement (arbre à deux niveaux) ; trois évènements et plus en Tle"
+			],
+			[
+				"libre",
+				"1re : toute partition finie, les « cas simples » ne limitant que la complexité de l'arbre"
+			]
+		],
+		"reco": "deux",
+		"pourquoi": "Les trois textes se lisent ensemble si la 1re se limite au cas le plus simple (A et son contraire) et que la Tle généralise à une partition, avec démonstration en deux ou trois évènements.",
+		"consequence": "Avec « deux », l'exemple des trois machines est refusé en 1TECHNO-092 et rattaché à TTECHNO-056 ; un modèle « P(B) = P(A)·P_A(B) + P(Ā)·P_Ā(B) » reste en 1re.",
+		"info": false
+	},
+	{
+		"id": "l1t-2",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO"],
+		"points": ["1TECHNO-081", "1TECHNO-133", "1TECHNO-075"],
+		"titre": "Variations d'un polynôme de degré 3 sans discriminant",
+		"question": "Le discriminant n'est pas au programme. Pour f(x) = x³ − 3x² − 2x + 1, la dérivée 3x² − 6x − 2 n'a pas de racine évidente. Un modèle « Dresser le tableau de variations de f » est-il dans 1TECHNO-081 ?",
+		"sources": "BO 1re techno p.8 : « le calcul des racines à l'aide du discriminant ne figure pas au programme » ; « on privilégie les situations où les racines sont évidentes ainsi que les interprétations graphiques. En cas de besoin, la résolution d'une équation du second degré peut se faire à l'aide d'un solveur » ; capacité « Déterminer le sens de variation et les extrémums d'une fonction polynôme de degré inférieur ou égal à 3 ».",
+		"options": [
+			[
+				"evidentes",
+				"Dérivée factorisable sans discriminant : forme factorisée, racine évidente, ou racines données dans l'énoncé"
+			],
+			["solveur", "Toute dérivée : racines obtenues au solveur, valeurs approchées acceptées"]
+		],
+		"reco": "evidentes",
+		"pourquoi": "Le BO privilégie les racines évidentes et ne cite le solveur qu'« en cas de besoin » ; un modèle généré peut toujours choisir des racines entières pour la dérivée, ou les donner.",
+		"consequence": "Avec « evidentes », le modèle cité est refusé tel quel ; il devient acceptable si l'énoncé donne les racines de f′ ou si les coefficients sont tirés pour que f′ ait des racines entières (f(x) = x³ − 3x + 1, f′ = 3(x − 1)(x + 1)).",
+		"info": false
+	},
+	{
+		"id": "l1t-3",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO", "T_TECHNO"],
+		"points": [
+			"1TECHNO-139",
+			"1TECHNO-140",
+			"1TECHNO-141",
+			"1TECHNO-066",
+			"TTECHNO-015",
+			"TTECHNO-073",
+			"TTECHNO-092"
+		],
+		"titre": "Automatismes : « privilégiant l'activité mentale » est-il une borne ?",
+		"question": "Les automatismes « relèvent d'un entrainement régulier privilégiant l'activité mentale ». Un modèle rattaché à un point d'automatisme (ex. 1TECHNO-141, coefficient directeur entre A(1,37 ; −2,84) et B(5,12 ; 3,09)) qui exige la calculatrice est-il dans le point ?",
+		"sources": "BO 1re techno p.6 et BO Tle techno p.6 : « Elles relèvent d'un entrainement régulier privilégiant l'activité mentale. […] Les modalités de mise en œuvre peuvent être variées ».",
+		"options": [
+			[
+				"mental",
+				"Borne : nombres et calculs faisables de tête ; un modèle à calculatrice va dans le point thématique jumeau"
+			],
+			[
+				"modalite",
+				"Modalité d'enseignement, pas une borne : le grain du savoir fixe seul l'inclusion"
+			]
+		],
+		"reco": "modalite",
+		"pourquoi": "« Privilégier » dit une préférence, pas une exclusion, et la phrase suivante ouvre les modalités ; la borne « seulement » doit reposer sur ce que le savoir contient.",
+		"consequence": "Avec « modalite », le modèle à coordonnées décimales est accepté en 1TECHNO-141 ; avec « mental », il est refusé et ces points n'acceptent que des valeurs entières ou simples.",
+		"info": false
+	},
+	{
+		"id": "l1t-4",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO"],
+		"points": [
+			"1TECHNO-058",
+			"1TECHNO-063",
+			"1TECHNO-064",
+			"1TECHNO-065",
+			"1TECHNO-066",
+			"1TECHNO-126"
+		],
+		"titre": "Racines et coefficients non entiers du second degré en 1re techno",
+		"question": "La Tle techno annonce pour ses automatismes « une complexification des variables didactiques comme la nature des nombres utilisés (entiers, fractions ou paramètres) dans la factorisation de x² − 9, x² − 4/9, 4x² − k² ». En 1re, un modèle « Étudier le signe de (2x − 1)(3x + 4) » (racines 1/2 et −4/3) ou « Factoriser 2x² − 3x + 1 sachant que 1 est racine » est-il dans les points ?",
+		"sources": "BO Tle techno p.6 (ci-dessus). BO 1re techno p.8 : « on privilégie les situations où les racines sont évidentes » ; « Savoir factoriser, dans des cas simples, une expression du second degré connaissant au moins une de ses racines ».",
+		"options": [
+			[
+				"entiers",
+				"1re : racines et coefficients entiers ; fractions et paramètres réservés à la Tle"
+			],
+			[
+				"simples",
+				"1re : racines entières ou fractions simples (1/2, −4/3) ; paramètres littéraux exclus"
+			],
+			["libre", "Aucune borne sur la nature des nombres en 1re"]
+		],
+		"reco": "simples",
+		"pourquoi": "La phrase de Tle porte sur les automatismes (activité mentale) et vise surtout les paramètres ; en 1re, une racine comme 1/2 de 2x − 1 reste « évidente » et la forme factorisée la donne directement.",
+		"consequence": "Avec « simples », (2x − 1)(3x + 4) est accepté et (x − k)(x + 2) avec k littéral refusé ; avec « entiers », tout modèle à racine fractionnaire est refusé en 1re.",
+		"info": false
+	},
+	{
+		"id": "l1t-5",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO"],
+		"points": ["1TECHNO-089", "1TECHNO-091", "1TECHNO-134"],
+		"titre": "Indépendance : le critère produit est-il permis ?",
+		"question": "Le BO définit l'indépendance par P_A(B) = P(B) et n'écrit pas P(A ∩ B) = P(A) × P(B). Un modèle « P(A) = 0,4, P(B) = 0,5, P(A ∩ B) = 0,2 : A et B sont-ils indépendants ? » (réponse par le produit) est-il dans 1TECHNO-134 ?",
+		"sources": "BO 1re techno p.9-10 : « deux évènements A et B sont dits indépendants si la probabilité conditionnelle de A sachant B est égale à la probabilité de A » ; « pour un évènement A de probabilité non nulle, B est indépendant de A si P_A(B) = P(B) ». BO 2de p.13 : multiplication des probabilités le long d'un chemin.",
+		"options": [
+			[
+				"produit-admis",
+				"Critère produit admis (conséquence directe de P(A ∩ B) = P(A)·P_A(B), vu en 2de)"
+			],
+			["definition-seule", "Seulement la comparaison de P_A(B) (ou P_B(A)) avec P(B) (ou P(A))"]
+		],
+		"reco": "produit-admis",
+		"pourquoi": "Avec P(A ∩ B) = P(A)·P_A(B) (2de), l'égalité P_A(B) = P(B) équivaut au produit ; le modèle cité se résout aussi par la définition (P_A(B) = 0,2/0,4 = 0,5).",
+		"consequence": "Avec « produit-admis », le modèle est accepté et la correction peut utiliser le produit ; avec « definition-seule », la correction doit passer par P_A(B) et un modèle qui ne demande que de vérifier P(A ∩ B) = P(A)P(B) est refusé.",
+		"info": false
+	},
+	{
+		"id": "l1t-6",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO"],
+		"points": ["1TECHNO-098", "1TECHNO-137"],
+		"titre": "Variable aléatoire : {X > a}, {X ⩾ a} en 1re techno ?",
+		"question": "Le BO cite les écritures {X = a}, {X ⩽ a} et les probabilités P(X = a), P(X ⩽ a). Un modèle « Calculer P(X ⩾ 2) » ou « P(X > 1) » est-il dans 1TECHNO-137 ?",
+		"sources": "BO 1re techno p.10 : « Interpréter en situation les écritures {X = a}, {X ⩽ a} où X désigne une variable aléatoire et calculer les probabilités correspondantes P(X = a), P(X ⩽ a) ». BO 2de p.6 : probabilité de l'évènement contraire (automatisme).",
+		"options": [
+			[
+				"complement",
+				"Admis : {X > a} est le contraire de {X ⩽ a}, et {X ⩾ a}, {X < a} s'y ramènent ; seules les écritures d'intervalle {a ⩽ X ⩽ b} restent hors point"
+			],
+			["deux-ecritures", "Seulement {X = a} et {X ⩽ a}"]
+		],
+		"reco": "complement",
+		"pourquoi": "L'évènement contraire est un automatisme de 2de ; sur une loi donnée par un tableau, P(X ⩾ 2) est une somme de P(X = a) au même titre que P(X ⩽ a).",
+		"consequence": "Avec « complement », P(X ⩾ 2) est accepté en 1TECHNO-137 ; avec « deux-ecritures », il est refusé et le modèle doit écrire P(X ⩽ 1).",
+		"info": false
+	},
+	{
+		"id": "l1t-7",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO"],
+		"points": ["1TECHNO-070", "1TECHNO-128"],
+		"titre": "Nombre dérivé : calcul algébrique de la limite du taux de variation ?",
+		"question": "Le titre du BO est « approche graphique de la notion de nombre dérivé » et la limite reste intuitive. Un modèle « f(x) = x² ; simplifier (f(3 + h) − f(3))/h puis en déduire f′(3) » est-il dans 1TECHNO-070 ?",
+		"sources": "BO 1re techno p.8 : « Point de vue local : approche graphique de la notion de nombre dérivé » ; « Nombre dérivé en un point défini comme limite du taux de variation en ce point ». BO 1re techno p.9 : « ne pas donner la définition formelle de la notion de limite et s'en tenir à une approche intuitive à partir d'exemples. Le vocabulaire et la notation correspondants sont introduits ». BO Tle techno p.9 : « Le calcul de la dérivée de la fonction x ↦ 1/x permet de réinvestir la définition du nombre dérivé à partir du calcul du taux de variation ».",
+		"options": [
+			[
+				"algebrique",
+				"Admis sur des polynômes simples : taux de variation simplifié, puis h → 0 de façon intuitive"
+			],
+			[
+				"graphique",
+				"Seulement graphique ou numérique (sécantes, tableau de taux pour h petit) ; aucun calcul algébrique de limite"
+			]
+		],
+		"reco": "algebrique",
+		"pourquoi": "Le BO de Tle parle de « réinvestir » ce calcul en Tle, ce qui suppose qu'il a été fait en 1re ; la limite reste intuitive, sans définition formelle.",
+		"consequence": "Avec « algebrique », le modèle cité est accepté (taux 6 + h, limite 6) ; avec « graphique », il est refusé et seuls les modèles de lecture ou d'estimation numérique restent.",
+		"info": false
+	},
+	{
+		"id": "l1t-8",
+		"cycle": "lycée",
+		"niveaux": ["1_TECHNO"],
+		"points": [
+			"1TECHNO-014 à 1TECHNO-031, 1TECHNO-109 à 1TECHNO-116 (Activités géométriques, STD2A)"
+		],
+		"titre": "STD2A : « d'autres notions si la situation le nécessite »",
+		"question": "Le BO de la partie STD2A permet d'« aborder d'autres notions si la situation étudiée le nécessite ». Un modèle de pavage qui demande de reconnaître une homothétie ou de classer une frise parmi les sept types est-il dans un point STD2A ?",
+		"sources": "BO 1re techno p.5 : « Les professeurs peuvent aborder d'autres notions si la situation étudiée le nécessite » ; « La classification des types de frises ou de pavages n'est pas un attendu du programme ».",
+		"options": [
+			[
+				"strict",
+				"Inclusion stricte : seules les notions listées ; une autre notion relève de son propre point (ou d'aucun)"
+			],
+			[
+				"ouvert",
+				"La phrase ouvre les bornes des points STD2A à toute notion requise par la situation"
+			]
+		],
+		"reco": "strict",
+		"pourquoi": "La phrase autorise le professeur, elle ne crée pas d'attendu ; la classification est exclue en toutes lettres.",
+		"consequence": "Avec « strict », les deux modèles cités sont refusés ; un modèle d'angle au centre d'un polygone régulier (360°/n) reste accepté en 1TECHNO-111.",
+		"info": false
+	},
+	{
+		"id": "ltt-1",
+		"cycle": "lycée",
+		"niveaux": ["T_TECHNO"],
+		"points": ["TTECHNO-043", "TTECHNO-084", "TTECHNO-082", "TTECHNO-044"],
+		"titre": "log(aˣ) = x·log(a) pour x réel ?",
+		"question": "La propriété est donnée « pour n entier naturel » ; or résoudre aˣ = b d'inconnue x réelle demande log(aˣ) = x·log(a) pour x réel. Un modèle « Écrire log(5^{0,5}) en fonction de log 5 » ou « Résoudre 1,03ˣ = 2 » est-il dans les points ?",
+		"sources": "BO Tle techno p.8 : « log(aⁿ) = n log(a) […] pour n entier naturel, a et b réels strictement positifs » ; « Utiliser le logarithme décimal pour résoudre une équation du type aˣ = b ou xᵃ = b d'inconnue x réelle ». BO Tle techno p.9 : « pour de petites valeurs de n, log(aⁿ) = n log(a) ».",
+		"options": [
+			[
+				"reel-dans-resolution",
+				"x réel admis dans les résolutions (aˣ = b, aˣ < b, xᵃ = b) ; les transformations pures (TTECHNO-082, 044) restent à n entier naturel"
+			],
+			["reel-partout", "log(aˣ) = x·log(a) admis pour tout x réel, transformations comprises"],
+			[
+				"naturel-seul",
+				"Jamais pour x non entier : les résolutions se limitent à ce que le BO permet de justifier"
+			]
+		],
+		"reco": "reel-dans-resolution",
+		"pourquoi": "La capacité de résolution n'a pas de sens sans la propriété pour x réel ; mais le BO n'énonce la propriété algébrique qu'en entier naturel, ce qui borne les exercices de transformation.",
+		"consequence": "Avec la reco, « Résoudre 1,03ˣ = 2 » est accepté en TTECHNO-043 et « log(5^{0,5}) » refusé en TTECHNO-082 ; avec « naturel-seul », même 1,03ˣ = 2 serait refusé, ce qui viderait la capacité.",
+		"info": false
+	},
+	{
+		"id": "ltt-2",
+		"cycle": "lycée",
+		"niveaux": ["T_TECHNO"],
+		"points": ["TTECHNO-064"],
+		"titre": "Loi binomiale : contraire et P(X ⩽ k) quelconque",
+		"question": "Le BO limite aux évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} « et ceux qui s'en déduisent par réunion ». Un modèle « X ~ B(20 ; 0,1), calculer P(X ⩾ 2) » (= 1 − P(X = 0) − P(X = 1)) ou « P(X ⩽ 5) » à la calculatrice est-il dans TTECHNO-064 ?",
+		"sources": "BO Tle techno p.10 : « calculer les probabilités des évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et de ceux qui s'en déduisent par réunion ». BO 2de p.6 : probabilité de l'évènement contraire (automatisme).",
+		"options": [
+			[
+				"reunion-contraire",
+				"Réunions de ces évènements et leurs contraires (P(X ⩾ 2), P(X ⩽ n − 2)) ; pas de P(X ⩽ k) général à la calculatrice"
+			],
+			["reunion-stricte", "Seulement les réunions (P(X ⩽ 1), P(X ⩾ n − 1))"],
+			["calculatrice", "Tout P(X ⩽ k), la calculatrice faisant le calcul"]
+		],
+		"reco": "reunion-contraire",
+		"pourquoi": "Le contraire est un automatisme acquis ; P(X ⩾ 1) = 1 − P(X = 0) est l'usage le plus courant. Le BO ne parle jamais de calcul de probabilité cumulée à la calculatrice.",
+		"consequence": "Avec la reco, P(X ⩾ 2) est accepté et P(X ⩽ 5) pour n = 20 refusé ; avec « calculatrice », les deux sont acceptés.",
+		"info": false
+	},
+	{
+		"id": "ltt-3",
+		"cycle": "lycée",
+		"niveaux": ["T_TECHNO"],
+		"points": ["TTECHNO-061", "TTECHNO-065"],
+		"titre": "Coefficients binomiaux au-delà de n = 10",
+		"question": "La capacité dit « à l'aide du triangle de Pascal pour n ⩽ 10 », le commentaire dit que pour n plus grand le nombre de chemins « est donné ou déterminé à l'aide du triangle de Pascal ». Un modèle « X ~ B(12 ; 0,3), calculer P(X = 3) » sans donner le coefficient est-il dans TTECHNO-065 ?",
+		"sources": "BO Tle techno p.10 : capacité « Calculer des coefficients binomiaux à l'aide du triangle de Pascal pour n ⩽ 10 » ; commentaire « Pour des valeurs de n plus grandes, l'arbre sert d'image mentale et le nombre de chemins associés à l'évènement est donné ou déterminé à l'aide du triangle de Pascal ».",
+		"options": [
+			["dix", "L'élève calcule un coefficient seulement si n ⩽ 10 ; au-delà, l'énoncé le donne"],
+			["pascal", "Au-delà de 10 aussi, coefficient au triangle de Pascal (ou fourni)"],
+			["calculatrice", "Coefficient obtenu à la calculatrice pour tout n"]
+		],
+		"reco": "dix",
+		"pourquoi": "La capacité fixe la borne n ⩽ 10 ; le commentaire décrit le cas de l'arbre (n > 4), et le triangle de Pascal au-delà de 10 lignes n'est pas une tâche raisonnable. La calculatrice n'est pas citée.",
+		"consequence": "Avec « dix », le modèle cité est refusé sauf si l'énoncé donne (12 choose 3) = 220.",
+		"info": false
+	},
+	{
+		"id": "ltt-4",
+		"cycle": "lycée",
+		"niveaux": ["T_TECHNO"],
+		"points": ["TTECHNO-049", "TTECHNO-087"],
+		"titre": "Combinaisons linéaires avec l'inverse : forme quotient admise ?",
+		"question": "Le BO dit « combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3 », et cite le coût moyen. Un modèle « Coût moyen C_M(x) = (x² + 2x + 100)/x, étudier ses variations » (égal à x + 2 + 100/x) est-il dans TTECHNO-049 ?",
+		"sources": "BO Tle techno p.9 : capacité citée ; commentaire « La fonction inverse permet d'aborder des situations contextualisées de prix unitaire ou de cout moyen ».",
+		"options": [
+			[
+				"equivalente",
+				"Toute expression égale à P(x) + k/x (deg P ⩽ 3), y compris (P(x))/x ; pas de 1/(x − a) ni de quotient général"
+			],
+			["forme-somme", "Seulement les expressions écrites sous la forme P(x) + k/x"]
+		],
+		"reco": "equivalente",
+		"pourquoi": "Le coût moyen, cité par le BO, s'écrit naturellement C(x)/x ; la fonction reste une combinaison linéaire, seule l'écriture change.",
+		"consequence": "Avec « equivalente », le modèle du coût moyen est accepté, f(x) = 1/(x − 2) ou (x + 1)/(x − 3) refusés ; avec « forme-somme », le modèle doit donner x + 2 + 100/x.",
+		"info": false
+	},
+	{
+		"id": "ltt-5",
+		"cycle": "lycée",
+		"niveaux": ["T_TECHNO"],
+		"points": ["TTECHNO-055", "TTECHNO-056"],
+		"titre": "Probabilités totales en Tle : partition en plus de trois évènements ?",
+		"question": "La formule est « démontrée dans le cas d'une partition de l'univers en deux ou trois évènements ». Un modèle à quatre fournisseurs (partition en quatre) est-il dans TTECHNO-056 ?",
+		"sources": "BO Tle techno p.10 : « Formule des probabilités totales pour une partition de l'univers » ; « Elle est démontrée dans le cas d'une partition de l'univers en deux ou trois évènements, la notion de partition d'un ensemble étant présentée sans formalisme ».",
+		"options": [
+			["finie", "Toute partition finie (la limite à deux ou trois porte sur la démonstration)"],
+			["deux-trois", "Partition en deux ou trois évènements seulement"]
+		],
+		"reco": "finie",
+		"pourquoi": "Le contenu dit « pour une partition de l'univers » sans limite ; la restriction est écrite pour la démonstration.",
+		"consequence": "Avec « finie », le modèle à quatre fournisseurs est accepté ; avec « deux-trois », il est refusé.",
+		"info": false
+	},
+	{
+		"id": "ltt-6",
+		"cycle": "lycée",
+		"niveaux": ["T_TECHNO"],
+		"points": ["TTECHNO-045", "TTECHNO-086"],
+		"titre": "Fonction inverse aux bornes : notation lim ?",
+		"question": "Le comportement aux bornes et les asymptotes restent intuitifs. Un modèle « Compléter : lim_{x→+∞} 1/x = … » ou « Donner lim_{x→0⁺} (3 + 2/x) » est-il dans TTECHNO-045 ?",
+		"sources": "BO Tle techno p.9 : « Comportement de la fonction inverse aux bornes de son ensemble de définition », mis en lien avec « l'ordre de grandeur d'inverses de petits ou grands nombres » et « l'allure de la courbe » ; « Aucune définition de l'asymptote n'est attendue ; on s'en tient à une approche intuitive ». BO 1re techno p.9 : vocabulaire et notation de la limite introduits avec le nombre dérivé.",
+		"options": [
+			[
+				"notation",
+				"Notation lim admise pour 1/x et ses combinaisons simples (k/x, a + k/x), sans opérations générales sur les limites"
+			],
+			[
+				"mots",
+				"En mots ou sur la courbe seulement (« 1/x devient très grand ») ; pas de notation lim"
+			]
+		],
+		"reco": "notation",
+		"pourquoi": "La notation a été introduite en 1re ; le BO borne la notion (approche intuitive), pas l'écriture. Les opérations sur les limites ne sont nulle part au programme.",
+		"consequence": "Avec « notation », les deux exemples sont acceptés, mais lim (x³ − 2x)/(x² + 1) en +∞ reste refusée ; avec « mots », seules les questions de lecture de courbe ou d'ordre de grandeur restent.",
+		"info": false
+	}
+]

@@ -1,0 +1,3120 @@
+{
+	"1_SPE": {
+		"general": [
+			{
+				"aspect": "fonctions",
+				"borne": "Fonctions connues : celles de seconde (affines, valeur absolue, carré, inverse, racine carrée, cube), plus les polynômes du second degré, les fonctions x ↦ xⁿ (n ∈ ℤ) et la fonction exponentielle. Pas de logarithme, pas de fonctions sinus et cosinus étudiées comme fonctions (terminale).",
+				"detail": {
+					"liste": [
+						"affines",
+						"valeur absolue",
+						"carré",
+						"inverse",
+						"racine carrée",
+						"cube",
+						"polynôme du second degré",
+						"x ↦ xⁿ (n ∈ ℤ)",
+						"exponentielle"
+					],
+					"exclus": [
+						"logarithme",
+						"fonctions sinus et cosinus",
+						"fonctions puissances non entières"
+					]
+				},
+				"source": "BO 1re spé p.5-8",
+				"force": "déduite"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Dérivées : fonctions carré, cube, inverse, racine carrée, x ↦ xⁿ (n ∈ ℤ), t ↦ e^{at} (a réel) ; opérations somme, produit, inverse, quotient. C'est la liste du BO ; la seule composée écrite est t ↦ e^{at} (au-delà, question l1s-1).",
+				"detail": {
+					"liste": ["x²", "x³", "1/x", "√x", "xⁿ (n ∈ ℤ)", "e^{at}", "u + v", "uv", "1/v", "u/v"]
+				},
+				"source": "BO 1re spé p.7-8",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Les fonctions étudiées sont toutes régulières ; le nombre dérivé est introduit par la perception intuitive de la limite du taux de variation, sans définition formelle de la limite.",
+				"source": "BO 1re spé p.7",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Limites : aucune formalisation ; seulement une intuition sur des exemples (calculs numériques, algorithmes de seuil). Pas de calcul de limite de fonction : aucun contenu de limite de fonction n'est écrit au BO de 1re.",
+				"detail": {
+					"exclus": ["définition formelle de la limite", "limites de fonctions"]
+				},
+				"source": "BO 1re spé p.5-7",
+				"force": "déduite"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Suites : seules les suites arithmétiques et géométriques sont formalisées ; d'autres types simples peuvent être rencontrés sans aucune connaissance spécifique à leur sujet.",
+				"source": "BO 1re spé p.5",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Second degré : forme canonique déterminée dans des cas simples par complétion du carré (x² + 2ax = (x + a)² − a²) ; le calcul effectif de la forme canonique dans le cas général n'est pas un attendu.",
+				"source": "BO 1re spé p.5",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Trigonométrie : cercle trigonométrique, radian, cosinus et sinus d'un réel, valeurs remarquables. Pas d'équation ni d'inéquation trigonométrique, pas de formule d'addition.",
+				"detail": {
+					"exclus": [
+						"équations trigonométriques",
+						"formules d'addition",
+						"fonctions sinus et cosinus"
+					]
+				},
+				"source": "BO 1re spé p.8",
+				"force": "déduite"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Équations et inéquations avec l'exponentielle : seulement celles qui se ramènent à eᵘ = eᵛ ou eᵘ < eᵛ par la stricte croissance (u, v expressions connues) ; pas d'équation eˣ = k avec k > 0 quelconque, faute de logarithme (terminale).",
+				"detail": {
+					"exclus": ["eˣ = k, k > 0 quelconque", "logarithme"]
+				},
+				"source": "BO 1re spé p.8",
+				"force": "déduite"
+			},
+			{
+				"aspect": "figures",
+				"borne": "Géométrie plane seulement ; en géométrie repérée, le plan est rapporté à un repère orthonormé. Pas de géométrie dans l'espace (terminale).",
+				"source": "BO 1re spé p.9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités : univers finis et variables aléatoires réelles seulement ; répétition d'épreuves de Bernoulli limitée à n ⩽ 4 (pas de loi binomiale ni de coefficient binomial, qui sont de terminale).",
+				"detail": {
+					"max": {
+						"n_epreuves_bernoulli": 4
+					},
+					"exclus": ["loi binomiale", "coefficients binomiaux", "univers infini"]
+				},
+				"source": "BO 1re spé p.10",
+				"force": "déduite"
+			},
+			{
+				"aspect": "format",
+				"borne": "Notations ensemblistes : ∅, ∈, ⊂, ∩, ∪, { … }, ensembles de nombres, intervalles ; complémentaire noté Ā ou E \\ A ; Card(A) ; couple, produit cartésien. Les symboles ∀ et ∃ ne sont pas exigibles.",
+				"detail": {
+					"notation_enonce": ["∀", "∃"],
+					"notation_reponse": ["pas ∀ ni ∃ exigés"]
+				},
+				"source": "BO 1re spé p.3-4",
+				"force": "BO"
+			},
+			{
+				"aspect": "format",
+				"borne": "Notation Δy/Δx pour un taux de variation et dy/dx pour une dérivée : peut être signalée et utilisée en liaison avec les autres disciplines, en adaptant les lettres au contexte (x = f(t), q = f(t)…).",
+				"source": "BO 1re spé p.7",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Algorithmique : langage naturel ou Python ; affectation notée « ← » en langage naturel ; seule notion nouvelle : la liste, sans aucun autre type de collection.",
+				"detail": {
+					"exclus": ["dictionnaires", "tuples", "ensembles Python", "autres collections"]
+				},
+				"source": "BO 1re spé p.4",
+				"force": "BO"
+			}
+		],
+		"points": {
+			"1SPE-201": {
+				"libelle": "Employer les expressions « condition nécessaire », « condition suffisante »",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Expressions « condition nécessaire », « condition suffisante », en situation, sur des propositions du programme.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-202": {
+				"libelle": "Identifier le statut des égalités (identité, équation)",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Statut d'une égalité : identité ou équation.",
+						"detail": {
+							"liste": ["identité", "équation"]
+						},
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-366": {
+				"libelle": "Identifier le statut des lettres utilisées (variable, inconnue, paramètre)",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Statut d'une lettre : variable, inconnue ou paramètre.",
+						"detail": {
+							"liste": ["variable", "inconnue", "paramètre"]
+						},
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-203": {
+				"libelle": "Repérer les quantifications implicites dans certaines propositions, particulièrement dans les propositions conditionnelles",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Quantifications implicites, surtout dans les propositions conditionnelles ; symboles ∀ et ∃ non exigibles.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-204": {
+				"libelle": "Formuler la négation de propositions quantifiées",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Négation de propositions quantifiées, formulée en langage naturel (∀ et ∃ non exigibles).",
+						"detail": {
+							"notation_reponse": ["langage naturel"]
+						},
+						"source": "BO 1re spé p.4",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : les symboles ∀ et ∃ n'étant « pas exigibles » (BO p.4), la négation attendue est formulée en mots ; un modèle peut afficher les symboles dans l'énoncé sans les exiger dans la réponse."
+			},
+			"1SPE-205": {
+				"libelle": "Produire un raisonnement par contraposée",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [],
+				"remarque": "Point-compétence (raisonner) : « les élèves produisent des raisonnements … par contraposée » (BO p.4) ; aucun grain questionnable propre, au mieux une question sur la contraposée d'une implication donnée (voir aussi la puce « formuler la réciproque d'une implication, la contraposée »)."
+			},
+			"1SPE-206": {
+				"libelle": "Générer une liste en extension",
+				"rubrique": "Algorithmique et programmation > Notion de liste",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Génération en extension (énumération des éléments). Listes seulement (pas d'autre type de collection) ; Python ou langage naturel.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-367": {
+				"libelle": "Générer une liste par ajouts successifs",
+				"rubrique": "Algorithmique et programmation > Notion de liste",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Génération par ajouts successifs. Listes seulement (pas d'autre type de collection) ; Python ou langage naturel.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-207": {
+				"libelle": "Générer une liste en compréhension",
+				"rubrique": "Algorithmique et programmation > Notion de liste",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Génération en compréhension, mise en lien avec la notion d'ensemble ; les conditions de la compréhension travaillent la logique. Listes seulement (pas d'autre type de collection) ; Python ou langage naturel.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-208": {
+				"libelle": "Manipuler des éléments d'une liste (ajouter, supprimer, etc.) et leurs indices",
+				"rubrique": "Algorithmique et programmation > Notion de liste",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajouter, supprimer des éléments, accéder par l'indice. Listes seulement (pas d'autre type de collection) ; Python ou langage naturel.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-209": {
+				"libelle": "Parcourir une liste",
+				"rubrique": "Algorithmique et programmation > Notion de liste",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Parcours d'une liste. Listes seulement (pas d'autre type de collection) ; Python ou langage naturel.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-210": {
+				"libelle": "Itérer sur les éléments d'une liste",
+				"rubrique": "Algorithmique et programmation > Notion de liste",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Itération sur les éléments d'une liste. Listes seulement (pas d'autre type de collection) ; Python ou langage naturel.",
+						"source": "BO 1re spé p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-432": {
+				"libelle": "Déterminer graphiquement le signe d'une fonction",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Lecture graphique du signe d'une fonction sur sa courbe.",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : la puce du BO (p.5) est « Déterminer graphiquement le signe d'une fonction ou son tableau de variations » ; le libellé n'en garde que le signe."
+			},
+			"1SPE-433": {
+				"libelle": "Tracer une droite donnée par un point et son coefficient directeur",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Droite donnée par un point et son coefficient directeur, tracée dans un repère.",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : la puce du BO (p.5) est « Tracer une droite donnée par son équation réduite ou par un point et son coefficient directeur » ; le libellé n'en garde que la seconde partie."
+			},
+			"1SPE-434": {
+				"libelle": "Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Coefficient directeur (yB − yA)/(xB − xA) à partir des coordonnées de deux points (xA ≠ xB).",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-211": {
+				"libelle": "Exemples de modes de génération d'une suite : explicite $u_n = f(n)$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Mode explicite uₙ = f(n), sur des exemples.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-368": {
+				"libelle": "Exemples de modes de génération d'une suite : par une relation de récurrence $u_{n+1} = f(u_n)$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Relation de récurrence uₙ₊₁ = f(uₙ) (récurrence d'ordre 1), sur des exemples.",
+						"detail": {
+							"liste": ["uₙ₊₁ = f(uₙ)"]
+						},
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-369": {
+				"libelle": "Exemples de modes de génération d'une suite : par un algorithme",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Suite générée par un algorithme, sur des exemples (Python ou langage naturel).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-370": {
+				"libelle": "Exemples de modes de génération d'une suite : par des motifs géométriques",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Motifs géométriques ou combinatoires (nombres figurés, nombre d'éléments d'une configuration dépendant d'un entier naturel).",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-212": {
+				"libelle": "Notations : $u(n)$, $u_n$, $(u(n))$, $(u_n)$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations u(n), uₙ, (u(n)), (uₙ).",
+						"detail": {
+							"liste": ["u(n)", "uₙ", "(u(n))", "(uₙ)"]
+						},
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-213": {
+				"libelle": "Suites arithmétiques : exemples, définition",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Suite arithmétique : exemples et définition (uₙ₊₁ = uₙ + r).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-371": {
+				"libelle": "Suites arithmétiques : calcul du terme général",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Terme général d'une suite arithmétique.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-214": {
+				"libelle": "Suites arithmétiques : lien avec l'étude d'évolutions successives à accroissements constants",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Évolutions successives à accroissements constants.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-372": {
+				"libelle": "Suites arithmétiques : lien avec les fonctions affines",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Lien suite arithmétique ↔ fonction affine (points alignés).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-215": {
+				"libelle": "Suites arithmétiques : calcul de $1 + 2 + \\cdots + n$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Somme 1 + 2 + … + n seulement (démontrée au programme).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-216": {
+				"libelle": "Suites géométriques : exemples, définition",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Suite géométrique : exemples et définition (uₙ₊₁ = q·uₙ).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-373": {
+				"libelle": "Suites géométriques : calcul du terme général",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Terme général d'une suite géométrique.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-217": {
+				"libelle": "Suites géométriques : lien avec l'étude d'évolutions successives à taux constant",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Évolutions successives à taux constant ; une évolution à taux fixe est modélisée par une suite géométrique, rapport de deux termes consécutifs.",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-374": {
+				"libelle": "Suites géométriques : lien avec la fonction exponentielle",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Mise en parallèle évolution géométrique à temps discret / évolution exponentielle à temps continu.",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-218": {
+				"libelle": "Suites géométriques : calcul de $1 + q + \\cdots + q^n$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Somme 1 + q + … + qⁿ seulement (démontrée au programme).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-219": {
+				"libelle": "Sens de variation d'une suite",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sens de variation d'une suite (croissante, décroissante) ; méthodes non précisées par le BO.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-220": {
+				"libelle": "Sur des exemples, introduction intuitive de la notion de limite, finie ou infinie, ou de l'absence de limite d'une suite",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sur des exemples, intuition de la limite (finie, infinie) ou de l'absence de limite ; toute formalisation exclue.",
+						"detail": {
+							"exclus": ["définition formelle", "calcul de limite par théorèmes"]
+						},
+						"source": "BO 1re spé p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-221": {
+				"libelle": "Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Registres langue naturelle, algébrique, graphique pour une suite, et passage de l'un à l'autre.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO (p.6) dit « registre graphique » sans préciser « nuage de points » ; la précision du libellé est naturelle (une suite se représente par des points isolés) mais ne figure pas au texte."
+			},
+			"1SPE-375": {
+				"libelle": "Passer d'un registre à l'autre pour une suite : de l'énoncé en langage naturel à l'expression algébrique",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Passage de l'énoncé en langue naturelle à l'expression algébrique d'une suite.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-435": {
+				"libelle": "Proposer, modéliser une situation permettant de générer une suite de nombres",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [],
+				"remarque": "Point-compétence (modéliser) : « Proposer, modéliser une situation permettant de générer une suite de nombres » (BO p.6) ; aucun grain questionnable propre."
+			},
+			"1SPE-222": {
+				"libelle": "Déterminer une relation explicite pour une suite définie par un motif géométrique, par une question de dénombrement",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Relation explicite pour une suite définie par un motif géométrique ou une question de dénombrement.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-376": {
+				"libelle": "Déterminer une relation de récurrence pour une suite définie par un motif géométrique, par une question de dénombrement",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Relation de récurrence pour une suite définie par un motif géométrique ou une question de dénombrement.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-223": {
+				"libelle": "Calculer des termes d'une suite définie explicitement",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Termes d'une suite définie explicitement.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-377": {
+				"libelle": "Calculer des termes d'une suite définie par récurrence",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Termes d'une suite définie par une récurrence uₙ₊₁ = f(uₙ).",
+						"detail": {
+							"liste": ["uₙ₊₁ = f(uₙ)"]
+						},
+						"source": "BO 1re spé p.5-6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le seul mode de récurrence écrit au BO est uₙ₊₁ = f(uₙ) (p.5 et p.6) ; une récurrence d'ordre 2 n'apparaît qu'à travers la suite de Fibonacci, en exemple d'algorithme (1SPE-239)."
+			},
+			"1SPE-378": {
+				"libelle": "Calculer des termes d'une suite définie par un algorithme",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Termes d'une suite définie par un algorithme (Python ou langage naturel).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-224": {
+				"libelle": "Pour une suite arithmétique, calculer le terme général",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Terme général d'une suite arithmétique.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-225": {
+				"libelle": "Pour une suite géométrique, calculer le terme général",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Terme général d'une suite géométrique.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-226": {
+				"libelle": "Pour une suite arithmétique, calculer la somme de termes consécutifs",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Somme de termes consécutifs d'une suite arithmétique, ramenée à 1 + 2 + … + n.",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO ne donne que 1 + 2 + … + n (contenus et démonstrations p.6) ; la somme de termes consécutifs s'y ramène. La formule « nombre de termes × (premier + dernier) / 2 » n'est pas écrite."
+			},
+			"1SPE-227": {
+				"libelle": "Pour une suite géométrique, calculer la somme de termes consécutifs",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Somme de termes consécutifs d'une suite géométrique, ramenée à 1 + q + … + qⁿ (q ≠ 1).",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO ne donne que 1 + q + … + qⁿ (p.6) ; la somme de termes consécutifs s'y ramène."
+			},
+			"1SPE-228": {
+				"libelle": "Pour une suite arithmétique, déterminer le sens de variation",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sens de variation d'une suite arithmétique (signe de la raison).",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « déterminer le sens de variation » d'une suite arithmétique ; le critère du signe de r n'est pas écrit mais découle de la définition."
+			},
+			"1SPE-229": {
+				"libelle": "Pour une suite géométrique, déterminer le sens de variation",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sens de variation d'une suite géométrique (selon q et le signe du premier terme).",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le critère sur q n'est pas écrit au BO (p.6)."
+			},
+			"1SPE-230": {
+				"libelle": "Modéliser un phénomène discret à croissance linéaire par une suite arithmétique",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Phénomène discret à croissance linéaire → suite arithmétique.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-379": {
+				"libelle": "Modéliser un phénomène discret à croissance exponentielle par une suite géométrique",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Phénomène discret à croissance exponentielle → suite géométrique (capital, population, décroissance radioactive).",
+						"source": "BO 1re spé p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-231": {
+				"libelle": "Conjecturer, dans des cas simples, la limite éventuelle d'une suite",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Conjecture seulement, dans des cas simples (calculs numériques, algorithme de seuil) ; aucune démonstration de limite.",
+						"source": "BO 1re spé p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-232": {
+				"libelle": "Calcul du terme général d'une suite arithmétique",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : l'expression du terme général d'une suite arithmétique ; pas plus.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-233": {
+				"libelle": "Calcul du terme général d'une suite géométrique",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : l'expression du terme général d'une suite géométrique ; pas plus.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-234": {
+				"libelle": "Calcul de $1 + 2 + \\cdots + n$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : 1 + 2 + … + n = n(n + 1)/2 ; pas plus.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-235": {
+				"libelle": "Calcul de $1 + q + \\cdots + q^n$",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : 1 + q + … + qⁿ = (1 − qⁿ⁺¹)/(1 − q) pour q ≠ 1 ; pas plus.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-236": {
+				"libelle": "Calcul de termes d'une suite",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme de calcul de termes d'une suite.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-380": {
+				"libelle": "Calcul de sommes de termes",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme de calcul de sommes de termes.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-237": {
+				"libelle": "Calcul de seuil",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme de seuil : premier rang à partir duquel uₙ dépasse (ou passe sous) une valeur ; pas de résolution algébrique de qⁿ > A (logarithme : terminale).",
+						"detail": {
+							"exclus": ["logarithme"]
+						},
+						"source": "BO 1re spé p.5-6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3). Lecture déduite (texte implicite) : sans logarithme au programme, le seuil d'une suite géométrique ne se trouve que par algorithme ou calculs successifs."
+			},
+			"1SPE-238": {
+				"libelle": "Calcul de factorielle",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme de calcul de n!.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-239": {
+				"libelle": "Liste des premiers termes d'une suite : suites de Syracuse, suite de Fibonacci",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Suites de Syracuse et de Fibonacci seulement.",
+						"detail": {
+							"liste": ["Syracuse", "Fibonacci"]
+						},
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-240": {
+				"libelle": "Tour de Hanoï",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tour de Hanoï.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-241": {
+				"libelle": "Somme des $n$ premiers carrés",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Somme des n premiers carrés.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-381": {
+				"libelle": "Somme des $n$ premiers cubes",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Somme des n premiers cubes.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-242": {
+				"libelle": "Remboursement d'un emprunt par annuités constantes",
+				"rubrique": "Algèbre > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Emprunt remboursé par annuités constantes.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-243": {
+				"libelle": "Forme développée d'une fonction polynôme du second degré ; coefficients",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme développée réduite ax² + bx + c (a ≠ 0), nommée parmi les formes à choisir.",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "⚠ libellé : les contenus du BO (p.6) ne mentionnent pas « forme développée ; coefficients » ; seule la capacité « choisir une forme adaptée (développée réduite, canonique, factorisée) » nomme la forme développée. Lecture déduite (texte implicite) : forme ax² + bx + c, a ≠ 0."
+			},
+			"1SPE-244": {
+				"libelle": "Fonction polynôme du second degré donnée sous forme factorisée ; racines",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme factorisée a(x − x₁)(x − x₂) ; racines lues sur la forme factorisée.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-382": {
+				"libelle": "Fonction polynôme du second degré donnée sous forme factorisée ; signe",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Signe d'un polynôme du second degré donné sous forme factorisée.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-245": {
+				"libelle": "Expression de la somme des racines",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Somme des racines : x₁ + x₂ = −b/a.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-383": {
+				"libelle": "Expression du produit des racines",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Produit des racines : x₁x₂ = c/a.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-246": {
+				"libelle": "Forme canonique d'une fonction polynôme du second degré",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme canonique a(x − α)² + β ; obtenue dans des cas simples par complétion du carré x² + 2ax = (x + a)² − a² ; cas général non attendu.",
+						"source": "BO 1re spé p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ La frontière entre « cas simples » et « cas général » n'est pas écrite : question l1s-2."
+			},
+			"1SPE-247": {
+				"libelle": "Calcul des coordonnées du sommet d'une parabole",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Sommet de la parabole lu sur la forme canonique (α ; β), ou obtenu par l'extrémum en lien avec la dérivation.",
+						"source": "BO 1re spé p.5-8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite."
+			},
+			"1SPE-384": {
+				"libelle": "Axe de symétrie d'une parabole",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Axe de symétrie x = α, lu sur la forme canonique.",
+						"source": "BO 1re spé p.5",
+						"force": "déduite"
+					}
+				],
+				"remarque": "⚠ libellé : « axe de symétrie d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : il se lit sur la forme canonique, en lien avec la position du graphe de x ↦ f(x − m) (p.5)."
+			},
+			"1SPE-248": {
+				"libelle": "Discriminant d'une fonction polynôme du second degré",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Discriminant Δ = b² − 4ac.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-385": {
+				"libelle": "Factorisation éventuelle",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Factorisation a(x − x₁)(x − x₂) quand Δ ⩾ 0 ; pas de factorisation quand Δ < 0.",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « factorisation éventuelle » (p.6) signifie que la factorisation dépend du signe de Δ ; aucun nombre complexe en 1re."
+			},
+			"1SPE-386": {
+				"libelle": "Résolution d'une équation du second degré",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation ax² + bx + c = 0 (a ≠ 0), solutions réelles ; aucun nombre complexe.",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO ne parle que de solutions réelles ; les complexes ne sont qu'en maths expertes."
+			},
+			"1SPE-249": {
+				"libelle": "Signe d'une fonction polynôme du second degré",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Signe de ax² + bx + c selon Δ et le signe de a.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-250": {
+				"libelle": "Résolution d'une inéquation du second degré",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Inéquation du second degré ramenée au signe d'un polynôme du second degré.",
+						"source": "BO 1re spé p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "⚠ libellé : la « résolution d'une inéquation du second degré » n'est pas un contenu du BO (p.6), qui dit « Signe » ; l'inéquation n'apparaît que dans la capacité « choisir une forme adaptée … (équation, inéquation, optimisation, variations) ». Lecture déduite (texte implicite) : inéquation se ramenant au signe d'un trinôme."
+			},
+			"1SPE-251": {
+				"libelle": "Étudier le signe d'une fonction polynôme du second degré donnée sous forme factorisée",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynôme donné sous forme factorisée a(x − x₁)(x − x₂) seulement ; signe par tableau de signes.",
+						"source": "BO 1re spé p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-252": {
+				"libelle": "Déterminer les fonctions polynômes du second degré s'annulant en deux nombres réels distincts",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynômes a(x − x₁)(x − x₂), a ≠ 0 quelconque, x₁ ≠ x₂ réels donnés.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-253": {
+				"libelle": "Factoriser une fonction polynôme du second degré, en diversifiant les stratégies : racine évidente, détection des racines par leur somme et leur produit, identité remarquable, application des formules générales",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Stratégies : racine évidente, racines détectées par leur somme et leur produit, identité remarquable, formules générales. Factorisation directe dans les cas qui s'y prêtent : racines apparentes, coefficient de x nul, racines entières trouvées mentalement.",
+						"detail": {
+							"liste": [
+								"racine évidente",
+								"somme et produit",
+								"identité remarquable",
+								"formules générales"
+							]
+						},
+						"source": "BO 1re spé p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-254": {
+				"libelle": "Choisir une forme adaptée (développée réduite, canonique, factorisée) d'une fonction polynôme du second degré dans le cadre de la résolution d'un problème (équation, inéquation, optimisation, variations)",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Trois formes : développée réduite, canonique, factorisée ; problèmes d'équation, d'inéquation, d'optimisation, de variations.",
+						"detail": {
+							"liste": ["développée réduite", "canonique", "factorisée"]
+						},
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-255": {
+				"libelle": "Résolution de l'équation du second degré",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : la résolution de ax² + bx + c = 0 (discriminant, racines réelles) ; pas plus.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-256": {
+				"libelle": "Factorisation d'un polynôme du troisième degré admettant une racine",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynôme du troisième degré dont une racine est connue (factorisation par x − x₀).",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-387": {
+				"libelle": "Résolution de l'équation associée à un polynôme du troisième degré admettant une racine",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation du troisième degré dont une racine est connue, ramenée au second degré.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-257": {
+				"libelle": "Factorisation de $x^n - 1$ par $x - 1$, de $x^n - a^n$ par $x - a$",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "xⁿ − 1 par x − 1 et xⁿ − aⁿ par x − a seulement.",
+						"detail": {
+							"liste": ["xⁿ − 1", "xⁿ − aⁿ"]
+						},
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-258": {
+				"libelle": "Déterminer deux nombres réels connaissant leur somme $s$ et leur produit $p$ comme racines de la fonction polynôme $x \\mapsto x^2 - sx + p$",
+				"rubrique": "Algèbre > Équations, fonctions polynômes du second degré",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux réels de somme s et de produit p, racines de x² − sx + p.",
+						"source": "BO 1re spé p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-259": {
+				"libelle": "Taux de variation",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Taux de variation (f(b) − f(a))/(b − a) ; notation Δy/Δx possible.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-388": {
+				"libelle": "Sécantes à la courbe représentative d'une fonction en un point donné",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Sécante à la courbe en un point donné ; sa pente est le taux de variation.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-260": {
+				"libelle": "Nombre dérivé d'une fonction en un point, comme limite du taux de variation ; notation $f'(a)$",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Nombre dérivé comme limite intuitive du taux de variation, sans définition formelle ; notation f′(a). Calcul algébrique du taux dans les cas qui s'y prêtent : second degré, fonction inverse.",
+						"detail": {
+							"liste": ["second degré", "inverse"]
+						},
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-261": {
+				"libelle": "Tangente à la courbe représentative d'une fonction en un point, comme « limite des sécantes » ; pente",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Tangente comme « limite des sécantes » ; pente f′(a).",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-389": {
+				"libelle": "Équation : la tangente à la courbe représentative de $f$ au point d'abscisse $a$ est la droite d'équation $y = f(a) + f'(a)(x - a)$",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Équation de la tangente y = f(a) + f′(a)(x − a).",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-262": {
+				"libelle": "Approximation linéaire : fonction affine tangente $x \\mapsto f(a) + f'(a)(x - a)$",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonction affine tangente x ↦ f(a) + f′(a)(x − a).",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-390": {
+				"libelle": "Approximation linéaire : approximation de $f(a + h)$ par $f(a) + f'(a)h$",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Approximation f(a + h) ≈ f(a) + f′(a)h ; exemples du BO : a = 1 avec carré, inverse, racine carrée.",
+						"detail": {
+							"liste": ["carré", "inverse", "racine carrée"]
+						},
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-263": {
+				"libelle": "Fonction dérivable sur un intervalle ; fonction dérivée",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction dérivable sur un intervalle, fonction dérivée ; fonctions régulières seulement.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-264": {
+				"libelle": "Fonction dérivée de la fonction carré",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(x²)′ = 2x.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-391": {
+				"libelle": "Fonction dérivée de la fonction cube",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(x³)′ = 3x².",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-392": {
+				"libelle": "Fonction dérivée de la fonction inverse",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(1/x)′ = −1/x² sur ]−∞ ; 0[ et ]0 ; +∞[.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-393": {
+				"libelle": "Fonction dérivée de la fonction racine carrée",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(√x)′ = 1/(2√x) sur ]0 ; +∞[.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-265": {
+				"libelle": "Opérations sur les fonctions dérivables : somme",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(u + v)′ = u′ + v′ (et (ku)′ = ku′).",
+						"source": "BO 1re spé p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le produit par une constante n'est pas nommé dans la liste « somme, produit, inverse, quotient » (p.7) ; il découle du produit par une fonction constante."
+			},
+			"1SPE-394": {
+				"libelle": "Opérations sur les fonctions dérivables : produit",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(uv)′ = u′v + uv′.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-395": {
+				"libelle": "Opérations sur les fonctions dérivables : inverse",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(1/v)′ = −v′/v², v ne s'annulant pas.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-396": {
+				"libelle": "Opérations sur les fonctions dérivables : quotient",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(u/v)′ = (u′v − uv′)/v², v ne s'annulant pas.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-266": {
+				"libelle": "Pour $n$ dans $\\mathbb{Z}$, fonction dérivée de la fonction $x \\mapsto x^n$",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(xⁿ)′ = nxⁿ⁻¹ pour n ∈ ℤ (x ≠ 0 si n < 0) ; exposants entiers seulement.",
+						"detail": {
+							"exposants": "entiers relatifs"
+						},
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-267": {
+				"libelle": "Fonction valeur absolue : étude de la dérivabilité en 0",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonction valeur absolue en 0 seulement.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-268": {
+				"libelle": "Calculer un taux de variation",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Taux de variation d'une fonction connue entre deux valeurs.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-397": {
+				"libelle": "Calculer la pente d'une sécante",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Pente d'une sécante.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-269": {
+				"libelle": "Interpréter le nombre dérivé en contexte : pente d'une tangente, vitesse instantanée, cout marginal, etc.",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Contextes : pente d'une tangente, vitesse instantanée, coût marginal, etc.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-270": {
+				"libelle": "Déterminer graphiquement un nombre dérivé par la pente de la tangente",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Lecture graphique du nombre dérivé par la pente de la tangente tracée.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-271": {
+				"libelle": "Construire la tangente en un point à une courbe représentative connaissant le nombre dérivé",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Tracé de la tangente en un point, le nombre dérivé étant connu.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-272": {
+				"libelle": "Déterminer l'équation de la tangente en un point à la courbe représentative d'une fonction",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "y = f(a) + f′(a)(x − a), f dérivée à l'aide des dérivées et opérations du programme.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-273": {
+				"libelle": "Calculer une valeur approchée de $f(a + h)$",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "f(a + h) ≈ f(a) + f′(a)h.",
+						"source": "BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-274": {
+				"libelle": "Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Cas simples ; dérivées et opérations du programme seulement (somme, produit, inverse, quotient, xⁿ pour n ∈ ℤ, √x, e^{at}).",
+						"source": "BO 1re spé p.7-8",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ Le BO nouveau ne contient aucune dérivée de composée hors t ↦ e^{at} : faut-il refuser √(ax + b), (ax + b)ⁿ ? Question l1s-1."
+			},
+			"1SPE-275": {
+				"libelle": "Équation de la tangente en un point à une courbe représentative",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : l'équation y = f(a) + f′(a)(x − a) de la tangente ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-276": {
+				"libelle": "La fonction racine carrée n'est pas dérivable en 0",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : la fonction racine carrée n'est pas dérivable en 0 (taux de variation non borné) ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-277": {
+				"libelle": "Fonction dérivée de la fonction carrée",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : (x²)′ = 2x ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-398": {
+				"libelle": "Fonction dérivée de la fonction inverse",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : (1/x)′ = −1/x² ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-278": {
+				"libelle": "Fonction dérivée d'un produit",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : (uv)′ = u′v + uv′ ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-279": {
+				"libelle": "Écrire la liste des coefficients directeurs des sécantes pour un pas donné",
+				"rubrique": "Analyse > Dérivation",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Liste (Python) des coefficients directeurs des sécantes pour un pas donné.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-280": {
+				"libelle": "Représentation algébrique de fonctions paires, impaires",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Parité : f(−x) = f(x) (paire), f(−x) = −f(x) (impaire), sur un domaine symétrique.",
+						"source": "BO 1re spé p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « représentation algébrique … de fonctions paires, impaires » (p.8) sans donner les égalités ; la condition de domaine symétrique est sous-entendue."
+			},
+			"1SPE-399": {
+				"libelle": "Représentation graphique de fonctions paires, impaires ; traduction géométrique",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Traduction géométrique : symétrie par rapport à l'axe des ordonnées (paire), par rapport à l'origine (impaire).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-281": {
+				"libelle": "Lien entre le sens de variation d'une fonction dérivable sur un intervalle et le signe de sa fonction dérivée",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction dérivable sur un intervalle : sens de variation ↔ signe de la dérivée.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-400": {
+				"libelle": "Caractérisation des fonctions constantes",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "f constante sur un intervalle ⟺ f′ nulle sur cet intervalle.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-282": {
+				"libelle": "Nombre dérivé en un extrémum, tangente à la courbe représentative",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "En un extrémum (intérieur à l'intervalle), nombre dérivé nul, tangente horizontale.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-283": {
+				"libelle": "Étudier les variations d'une fonction",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions dérivables à l'aide des dérivées et opérations du programme ; variations par le signe de la dérivée.",
+						"source": "BO 1re spé p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la capacité « étudier les variations d'une fonction » (p.8) ne liste pas les fonctions ; elles sont bornées par ce que l'élève sait dériver (bornes générales)."
+			},
+			"1SPE-401": {
+				"libelle": "Déterminer les extrémums",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Extrémums d'une fonction dérivable sur un intervalle, à l'aide des variations.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-284": {
+				"libelle": "Résoudre un problème d'optimisation",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [],
+				"remarque": "Point-compétence (modéliser, résoudre un problème) : « Résoudre un problème d'optimisation » (BO p.8) ; les fonctions en jeu restent bornées par les bornes générales."
+			},
+			"1SPE-285": {
+				"libelle": "Exploiter les variations d'une fonction pour établir une inégalité",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Inégalité établie par l'étude des variations d'une fonction (signe d'une différence).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-286": {
+				"libelle": "Étudier la position relative de deux courbes représentatives",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Position relative de deux courbes par le signe de la différence f − g.",
+						"source": "BO 1re spé p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la méthode (signe de f − g) n'est pas écrite ; elle est déjà celle de la seconde."
+			},
+			"1SPE-287": {
+				"libelle": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : variations",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynôme du second degré : variations par la dérivée.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-402": {
+				"libelle": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : extrémum",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynôme du second degré : extrémum.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-403": {
+				"libelle": "Étudier, en lien avec la dérivation, une fonction polynôme du second degré : allure selon le signe du coefficient de $x^2$",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynôme du second degré : allure (parabole tournée vers le haut ou le bas) selon le signe du coefficient de x².",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-288": {
+				"libelle": "Méthode de Newton, en se limitant à des cas favorables",
+				"rubrique": "Analyse > Variations et courbes représentatives des fonctions",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Méthode de Newton, cas favorables seulement.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-289": {
+				"libelle": "Définition de la fonction exponentielle comme unique fonction dérivable sur $\\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$ (existence et unicité admises) ; notation $\\exp(x)$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "exp : unique fonction dérivable sur ℝ telle que f′ = f et f(0) = 1, existence et unicité admises ; notation exp(x).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-290": {
+				"libelle": "Pour tous réels $x$ et $y$, $\\exp(x + y) = \\exp(x)\\exp(y)$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "exp(x + y) = exp(x)exp(y).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-404": {
+				"libelle": "$\\exp(x)\\exp(-x) = 1$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "exp(x)exp(−x) = 1.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-291": {
+				"libelle": "Nombre $e$ ; notation $e^x$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Nombre e = exp(1) ; notation eˣ.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-292": {
+				"libelle": "Signe de la fonction exponentielle",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "eˣ > 0 pour tout réel x.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-405": {
+				"libelle": "Sens de variation de la fonction exponentielle",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "exp strictement croissante sur ℝ.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-406": {
+				"libelle": "Courbe représentative de la fonction exponentielle",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Courbe de la fonction exponentielle.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-293": {
+				"libelle": "Lien avec les suites géométriques",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lien avec les suites géométriques (évolution discrète / continue).",
+						"source": "BO 1re spé p.7-8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-294": {
+				"libelle": "Transformer une expression en utilisant les propriétés algébriques de la fonction exponentielle",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés algébriques de l'exponentielle (exp(x + y) = exp(x)exp(y), exp(x)exp(−x) = 1).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ Le BO n'écrit que deux propriétés ; les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ? Question l1s-5."
+			},
+			"1SPE-295": {
+				"libelle": "Pour $a$ réel, dérivée de la fonction $t \\mapsto e^{at}$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(e^{at})′ = a·e^{at}, a réel.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-296": {
+				"libelle": "Pour une valeur numérique strictement positive de $k$, représenter graphiquement la fonction $t \\mapsto e^{-kt}$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "t ↦ e^{−kt} pour une valeur numérique k > 0.",
+						"detail": {
+							"min": {
+								"k": "> 0"
+							}
+						},
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-407": {
+				"libelle": "Pour une valeur numérique strictement positive de $k$, représenter graphiquement la fonction $t \\mapsto e^{kt}$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "t ↦ e^{kt} pour une valeur numérique k > 0.",
+						"detail": {
+							"min": {
+								"k": "> 0"
+							}
+						},
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-297": {
+				"libelle": "Modéliser une situation par une croissance, une décroissance exponentielle (évolution d'un capital à taux fixe, décroissance radioactive)",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Croissance ou décroissance exponentielle (capital à taux fixe, décroissance radioactive, dilution).",
+						"source": "BO 1re spé p.7-8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-298": {
+				"libelle": "Construction de l'exponentielle par la méthode d'Euler",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Méthode d'Euler pour construire l'exponentielle.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-299": {
+				"libelle": "Détermination d'une valeur approchée de $e$ à l'aide de la suite $\\left(\\left(1 + \\tfrac{1}{n}\\right)^n\\right)$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Valeur approchée de e par la suite ((1 + 1/n)ⁿ).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-300": {
+				"libelle": "Unicité d'une fonction $f$ dérivable sur $\\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : l'unicité d'une fonction dérivable sur ℝ telle que f′ = f et f(0) = 1 ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-301": {
+				"libelle": "Pour tous réels $x$ et $y$, $\\exp(x + y) = \\exp(x)\\exp(y)$",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : exp(x + y) = exp(x)exp(y) ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3). Même énoncé que 1SPE-290 (connaissance), ici à démontrer."
+			},
+			"1SPE-302": {
+				"libelle": "La fonction exponentielle est strictement positive et croissante",
+				"rubrique": "Analyse > Fonction exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : exp strictement positive et croissante ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-303": {
+				"libelle": "Cercle trigonométrique",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cercle trigonométrique (cercle de centre O, de rayon 1, orienté), en repère orthonormé.",
+						"source": "BO 1re spé p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la définition du cercle trigonométrique n'est pas écrite au BO (p.8)."
+			},
+			"1SPE-408": {
+				"libelle": "Longueur d'arc",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Longueur d'arc sur le cercle trigonométrique (rayon 1).",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-409": {
+				"libelle": "Radian",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "unites",
+						"borne": "Radian ; conversion degrés ↔ radians.",
+						"source": "BO 1re spé p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la conversion degrés ↔ radians n'est pas écrite, mais le lien avec le triangle rectangle (angles en degrés au collège) la suppose."
+			},
+			"1SPE-304": {
+				"libelle": "Enroulement de la droite sur le cercle trigonométrique ; image d'un nombre réel",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Image sur le cercle de tout nombre réel par enroulement de la droite.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-305": {
+				"libelle": "Cosinus et sinus d'un nombre réel ; lien avec le sinus et le cosinus dans un triangle rectangle",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "cos x et sin x d'un réel x ; lien avec cosinus et sinus dans le triangle rectangle.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-410": {
+				"libelle": "Cosinus et sinus d'un nombre réel : valeurs remarquables",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Valeurs remarquables de cos et sin.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ Le BO ne liste pas les valeurs remarquables ni les angles associés : question l1s-3."
+			},
+			"1SPE-306": {
+				"libelle": "Placer un point sur le cercle trigonométrique",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Point image d'un réel sur le cercle trigonométrique.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ Les réels à placer ne sont pas bornés par le BO ; voir question l1s-3 (valeurs remarquables et angles associés)."
+			},
+			"1SPE-307": {
+				"libelle": "Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de $x$, les cosinus et sinus d'angles associés à $x$",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Lecture du cercle ; valeurs remarquables de x et angles associés à x.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ Quels angles associés (−x, π − x, π + x, π/2 − x…) et sous quelle forme (valeurs numériques ou formules littérales) : question l1s-3."
+			},
+			"1SPE-308": {
+				"libelle": "Calcul de $\\cos\\left(\\tfrac{\\pi}{4}\\right)$, $\\sin\\left(\\tfrac{\\pi}{4}\\right)$",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : cos(π/4) = sin(π/4) = √2/2 ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-411": {
+				"libelle": "Calcul de $\\cos\\left(\\tfrac{\\pi}{3}\\right)$, $\\sin\\left(\\tfrac{\\pi}{3}\\right)$",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : cos(π/3) = 1/2, sin(π/3) = √3/2 ; pas plus.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-309": {
+				"libelle": "Approximation de $\\pi$ par la méthode d'Archimède",
+				"rubrique": "Analyse > Trigonométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Approximation de π par la méthode d'Archimède.",
+						"source": "BO 1re spé p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-310": {
+				"libelle": "Produit scalaire à partir de la projection orthogonale",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Produit scalaire par la projection orthogonale.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-412": {
+				"libelle": "Produit scalaire à partir de la formule avec le cosinus",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "u·v = ‖u‖‖v‖cos(u, v).",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-311": {
+				"libelle": "Caractérisation de l'orthogonalité",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "u et v orthogonaux ⟺ u·v = 0.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-312": {
+				"libelle": "Produit scalaire : bilinéarité",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Bilinéarité du produit scalaire.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-413": {
+				"libelle": "Produit scalaire : symétrie",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Symétrie u·v = v·u.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-313": {
+				"libelle": "En base orthonormée, expression du produit scalaire",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "En base orthonormée : u·v = xx′ + yy′.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-414": {
+				"libelle": "En base orthonormée, expression de la norme",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "En base orthonormée : ‖u‖ = √(x² + y²).",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-415": {
+				"libelle": "En base orthonormée, critère d'orthogonalité",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "En base orthonormée : xx′ + yy′ = 0.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-314": {
+				"libelle": "Expression des coordonnées dans une base orthonormée en termes de produits scalaires avec les vecteurs de la base",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Coordonnées x = u·i, y = u·j dans une base orthonormée (i, j).",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-315": {
+				"libelle": "Développement de $\\lVert\\vec{u} + \\vec{v}\\rVert^2$",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "‖u + v‖² = ‖u‖² + 2u·v + ‖v‖².",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-416": {
+				"libelle": "Développement de $\\lVert\\vec{u} - \\vec{v}\\rVert^2$",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "‖u − v‖² = ‖u‖² − 2u·v + ‖v‖².",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-316": {
+				"libelle": "Formule d'Al-Kashi",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Formule d'Al-Kashi.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-317": {
+				"libelle": "Transformation de l'expression $\\vec{MA} \\cdot \\vec{MB}$",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Transformation de MA·MB (par le milieu I de [AB] : MA·MB = MI² − AB²/4).",
+						"source": "BO 1re spé p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO (p.9) ne donne pas la forme transformée ; MI² − IA² est la transformation classique, en lien avec la démonstration 1SPE-323."
+			},
+			"1SPE-318": {
+				"libelle": "Utiliser le produit scalaire pour démontrer une orthogonalité",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Orthogonalité démontrée par un produit scalaire nul, dans le plan.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-319": {
+				"libelle": "Utiliser le produit scalaire pour calculer un angle",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Angle obtenu par cos(u, v) = u·v / (‖u‖‖v‖), dans le plan.",
+						"source": "BO 1re spé p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la formule n'est pas écrite ; elle découle de la formule avec le cosinus."
+			},
+			"1SPE-320": {
+				"libelle": "Utiliser le produit scalaire pour calculer une longueur dans le plan",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Longueur dans le plan (Al-Kashi, développement de ‖u ± v‖²).",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-321": {
+				"libelle": "En vue de la résolution d'un problème, calculer le produit scalaire de deux vecteurs en choisissant une méthode adaptée (projection orthogonale, coordonnées, normes et angle, normes)",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Quatre méthodes : projection orthogonale, coordonnées, normes et angle, normes seules.",
+						"detail": {
+							"liste": ["projection orthogonale", "coordonnées", "normes et angle", "normes"]
+						},
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-436": {
+				"libelle": "Utiliser le produit scalaire pour résoudre un problème géométrique",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [],
+				"remarque": "Point-compétence (résoudre un problème géométrique) : « Utiliser le produit scalaire pour résoudre un problème géométrique » (BO p.9) ; aucun grain questionnable propre, plan seulement."
+			},
+			"1SPE-322": {
+				"libelle": "Formule d'Al-Kashi (démonstration avec le produit scalaire)",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : la formule d'Al-Kashi, par le produit scalaire ; pas plus.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-323": {
+				"libelle": "Ensemble des points $M$ tels que $\\vec{MA} \\cdot \\vec{MB} = 0$ (démonstration avec le produit scalaire)",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ce qui est démontré : l'ensemble des points M tels que MA·MB = 0 est le cercle de diamètre [AB] ; pas plus.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-324": {
+				"libelle": "Loi des sinus",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Loi des sinus.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-325": {
+				"libelle": "Concourance des hauteurs d'un triangle",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Concourance des hauteurs d'un triangle.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-326": {
+				"libelle": "Les médianes d'un triangle concourent au centre de gravité",
+				"rubrique": "Géométrie > Calcul vectoriel et produit scalaire",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Concourance des médianes au centre de gravité.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-327": {
+				"libelle": "Vecteur normal à une droite",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Vecteur normal à une droite du plan, en repère orthonormé.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-417": {
+				"libelle": "Le vecteur de coordonnées $(a\\,;\\,b)$ est normal à la droite d'équation $ax + by + c = 0$",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(a ; b) normal à la droite ax + by + c = 0.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-328": {
+				"libelle": "Projection orthogonale d'un point sur une droite",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Projeté orthogonal d'un point sur une droite du plan.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-329": {
+				"libelle": "Équation de cercle",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Équation de cercle (x − a)² + (y − b)² = r² en repère orthonormé.",
+						"source": "BO 1re spé p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « équation de cercle » sans la forme ; la forme centre-rayon découle de la capacité « cercle donné par son centre et son rayon »."
+			},
+			"1SPE-330": {
+				"libelle": "Déterminer une équation cartésienne d'une droite connaissant un point et un vecteur normal",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Droite donnée par un point et un vecteur normal ; équation ax + by + c = 0.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-331": {
+				"libelle": "Déterminer les coordonnées du projeté orthogonal d'un point sur une droite",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Coordonnées du projeté orthogonal d'un point sur une droite, en repère orthonormé.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-332": {
+				"libelle": "Déterminer l'équation d'un cercle donné par son centre et son rayon",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cercle donné par son centre et son rayon.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-418": {
+				"libelle": "Utiliser l'équation d'un cercle donné par son centre et son rayon",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Utilisation de l'équation d'un cercle donné par son centre et son rayon (appartenance d'un point…).",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-333": {
+				"libelle": "Reconnaitre une équation de cercle",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Reconnaître qu'une équation x² + y² + αx + βy + γ = 0 est celle d'un cercle (par complétion des carrés).",
+						"source": "BO 1re spé p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la forme développée de l'équation n'est pas écrite au BO (p.9) ; la reconnaissance passe par la complétion du carré vue en second degré."
+			},
+			"1SPE-419": {
+				"libelle": "Équation de cercle : déterminer centre et rayon",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Centre et rayon à partir d'une équation de cercle.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-437": {
+				"libelle": "Utiliser un repère pour étudier une configuration",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [],
+				"remarque": "Point-compétence (choisir un cadre) : « Utiliser un repère pour étudier une configuration » (BO p.9) ; aucun grain questionnable propre, plan en repère orthonormé."
+			},
+			"1SPE-334": {
+				"libelle": "Recherche de l'ensemble des points équidistants de l'axe des abscisses et d'un point donné",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Points équidistants de l'axe des abscisses et d'un point donné (parabole).",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-335": {
+				"libelle": "Déterminer l'intersection d'un cercle avec une droite parallèle à un axe",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Cercle et droite parallèle à un axe seulement.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-420": {
+				"libelle": "Déterminer l'intersection d'une parabole d'équation $y = ax^2 + bx + c$ avec une droite parallèle à un axe",
+				"rubrique": "Géométrie > Géométrie repérée",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Parabole y = ax² + bx + c et droite parallèle à un axe seulement.",
+						"source": "BO 1re spé p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-336": {
+				"libelle": "Indépendance de deux évènements",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "A et B indépendants : P_B(A) = P(A) (P(B) ≠ 0), soit P(A ∩ B) = P(A)P(B).",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-337": {
+				"libelle": "Partition de l'univers (systèmes complets d'évènements)",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Partition de l'univers (système complet d'évènements), univers fini.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-421": {
+				"libelle": "Formule des probabilités totales",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Formule des probabilités totales relative à une partition de l'univers.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-338": {
+				"libelle": "Succession de deux épreuves indépendantes",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Succession de deux épreuves indépendantes seulement.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-422": {
+				"libelle": "Succession de deux épreuves indépendantes : représentation par un arbre",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux épreuves indépendantes, représentation par un arbre.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-423": {
+				"libelle": "Succession de deux épreuves indépendantes : représentation par un tableau",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux épreuves indépendantes, représentation par un tableau.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-339": {
+				"libelle": "Pour $n \\leqslant 4$, répétition de $n$ épreuves de Bernoulli indépendantes et identiques",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "n ⩽ 4 épreuves de Bernoulli indépendantes et identiques.",
+						"detail": {
+							"max": {
+								"n": 4
+							}
+						},
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-340": {
+				"libelle": "Dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Cas simples de la formule des probabilités totales.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ « Cas simples » n'est pas défini (taille de la partition) : question l1s-4."
+			},
+			"1SPE-341": {
+				"libelle": "Savoir utiliser l'indépendance de deux évènements",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Utiliser l'indépendance de deux évènements (pas plus de deux).",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-424": {
+				"libelle": "Savoir justifier l'indépendance de deux évènements",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Justifier l'indépendance de deux évènements (P(A ∩ B) = P(A)P(B) ou P_B(A) = P(A)).",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-342": {
+				"libelle": "Représenter la succession de deux épreuves indépendantes par un arbre",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Arbre pour deux épreuves indépendantes.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-425": {
+				"libelle": "Représenter la succession de deux épreuves indépendantes par un tableau",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tableau pour deux épreuves indépendantes.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-343": {
+				"libelle": "Pour $n \\leqslant 4$, représenter l'arbre associé à la répétition de $n$ épreuves de Bernoulli indépendantes et identiques",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Arbre de n ⩽ 4 épreuves de Bernoulli indépendantes et identiques.",
+						"detail": {
+							"max": {
+								"n": 4
+							}
+						},
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-426": {
+				"libelle": "Pour $n \\leqslant 4$, calculer des probabilités associées à la répétition de $n$ épreuves de Bernoulli indépendantes et identiques",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Probabilités lues sur l'arbre de n ⩽ 4 épreuves de Bernoulli.",
+						"detail": {
+							"max": {
+								"n": 4
+							}
+						},
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de loi binomiale ni de coefficient binomial.",
+						"detail": {
+							"exclus": ["loi binomiale", "coefficients binomiaux"]
+						},
+						"source": "BO 1re spé p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO de 1re limite à n ⩽ 4 et passe par l'arbre (p.10) ; la loi binomiale et les coefficients binomiaux n'y figurent pas (programme de terminale)."
+			},
+			"1SPE-344": {
+				"libelle": "Méthode de Monte-Carlo : estimation de l'aire sous la parabole",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Monte-Carlo : aire sous la parabole.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-427": {
+				"libelle": "Méthode de Monte-Carlo : estimation du nombre $\\pi$",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Monte-Carlo : estimation de π.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-345": {
+				"libelle": "Exemples de succession de plusieurs épreuves indépendantes",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Plusieurs épreuves indépendantes (au-delà de deux), sur des exemples.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-346": {
+				"libelle": "Exemples de marches aléatoires",
+				"rubrique": "Probabilités et statistiques > Probabilités conditionnelles et indépendance",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Marches aléatoires, sur des exemples.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-347": {
+				"libelle": "Variable aléatoire réelle : modélisation du résultat numérique d'une expérience aléatoire ; formalisation comme fonction définie sur l'univers et à valeurs réelles",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Variable aléatoire réelle sur un univers fini, fonction de l'univers dans ℝ.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-348": {
+				"libelle": "Loi d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Loi d'une variable aléatoire à valeurs en nombre fini.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-349": {
+				"libelle": "Espérance d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Espérance E(X) = Σ xᵢ P(X = xᵢ).",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-350": {
+				"libelle": "Variance, écart type d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Variance V(X) = E((X − E(X))²), écart type σ(X) = √V(X).",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-351": {
+				"libelle": "Linéarité de l'espérance",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Linéarité de l'espérance.",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ Le BO dit « linéarité de l'espérance » sans préciser : E(aX + b) seulement, ou aussi E(X + Y) (sommes de variables aléatoires : terminale) ? Question l1s-6."
+			},
+			"1SPE-352": {
+				"libelle": "Formule de König-Huygens",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "V(X) = E(X²) − E(X)².",
+						"source": "BO 1re spé p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-353": {
+				"libelle": "Interpréter en situation les notations $\\{X = a\\}$, $\\{X \\leqslant a\\}$, $P(X = a)$, $P(X \\leqslant a)$",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a), interprétées en situation.",
+						"detail": {
+							"liste": ["{X = a}", "{X ⩽ a}", "P(X = a)", "P(X ⩽ a)"]
+						},
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-428": {
+				"libelle": "Utiliser les notations $\\{X = a\\}$, $\\{X \\leqslant a\\}$, $P(X = a)$, $P(X \\leqslant a)$",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a).",
+						"detail": {
+							"liste": ["{X = a}", "{X ⩽ a}", "P(X = a)", "P(X ⩽ a)"]
+						},
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-429": {
+				"libelle": "Passer du registre de la langue naturelle au registre symbolique",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "De la langue naturelle aux notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a).",
+						"detail": {
+							"liste": ["{X = a}", "{X ⩽ a}", "P(X = a)", "P(X ⩽ a)"]
+						},
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-430": {
+				"libelle": "Passer du registre symbolique au registre de la langue naturelle",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Des notations {X = a}, {X ⩽ a}, P(X = a), P(X ⩽ a) à la langue naturelle.",
+						"detail": {
+							"liste": ["{X = a}", "{X ⩽ a}", "P(X = a)", "P(X ⩽ a)"]
+						},
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-354": {
+				"libelle": "Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Modélisation d'une situation par une variable aléatoire réelle (univers fini).",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO (p.11) dit « Modéliser une situation à l'aide d'une variable aléatoire » ; « définir … et donner ses valeurs possibles » est une reformulation qui n'est pas au texte."
+			},
+			"1SPE-355": {
+				"libelle": "Déterminer la loi de probabilité d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Loi de probabilité d'une variable aléatoire à valeurs en nombre fini.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-356": {
+				"libelle": "Calculer une espérance",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espérance d'une variable aléatoire à valeurs en nombre fini.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-357": {
+				"libelle": "Calculer une variance, un écart type",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Variance et écart type d'une variable aléatoire à valeurs en nombre fini.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-358": {
+				"libelle": "Utiliser la notion d'espérance dans une résolution de problème (mise pour un jeu équitable, etc.)",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espérance dans une résolution de problème (mise pour un jeu équitable, etc.).",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-359": {
+				"libelle": "Algorithme renvoyant l'espérance d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme renvoyant l'espérance.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-431": {
+				"libelle": "Algorithme renvoyant la variance ou l'écart type d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme renvoyant la variance ou l'écart type.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-360": {
+				"libelle": "Fréquence d'apparition des lettres d'un texte donné, en français, en anglais",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fréquence d'apparition des lettres d'un texte, en français, en anglais.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-361": {
+				"libelle": "Pour $X$ variable aléatoire, étude de la fonction du second degré $x \\mapsto E\\big((X - x)^2\\big)$",
+				"rubrique": "Probabilités et statistiques > Variables aléatoires réelles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonction x ↦ E((X − x)²), du second degré.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Approfondissement possible du BO, « en aucun cas obligatoire » (BO 1re spé p.3)."
+			},
+			"1SPE-362": {
+				"libelle": "Simuler une variable aléatoire avec Python ou un tableur",
+				"rubrique": "Probabilités et statistiques > Expérimentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Simulation avec Python ou un tableur.",
+						"detail": {
+							"liste": ["Python", "tableur"]
+						},
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-363": {
+				"libelle": "Lire, comprendre et écrire une fonction Python renvoyant la moyenne d'un échantillon de taille $n$ d'une variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Expérimentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction Python renvoyant la moyenne d'un échantillon de taille n.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"1SPE-364": {
+				"libelle": "Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire",
+				"rubrique": "Probabilités et statistiques > Expérimentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sur des exemples, distance entre la moyenne d'un échantillon simulé de taille n et l'espérance.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO (p.11) dit « Étudier sur des exemples la distance … », le libellé dit « calculer l'écart »."
+			},
+			"1SPE-365": {
+				"libelle": "Simuler, avec Python ou un tableur, $N$ échantillons de taille $n$ d'une variable aléatoire d'espérance $\\mu$ et d'écart type $\\sigma$ ; si $m$ désigne la moyenne d'un échantillon, calculer la proportion des cas où l'écart entre $m$ et $\\mu$ est inférieur ou égal à $\\tfrac{2\\sigma}{\\sqrt{n}}$",
+				"rubrique": "Probabilités et statistiques > Expérimentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "N échantillons de taille n simulés (Python ou tableur) ; proportion des cas où |m − μ| ⩽ 2σ/√n.",
+						"source": "BO 1re spé p.11",
+						"force": "BO"
+					}
+				]
+			}
+		}
+	}
+}

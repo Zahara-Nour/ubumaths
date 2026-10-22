@@ -1,0 +1,545 @@
+[
+	{
+		"id": "l1s-1",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-274", "1SPE-272", "1SPE-283", "borne générale « Dérivées » de 1re spé"],
+		"titre": "Dérivée d'une composée affine en 1re spé",
+		"question": "Le BO nouveau de 1re spé ne liste que les dérivées de x², x³, 1/x, √x, xⁿ (n ∈ ℤ), t ↦ e^{at} et les opérations somme, produit, inverse, quotient ; la formule de dérivation de x ↦ g(ax + b) n'y figure plus. Une question « Dériver f(x) = √(3x + 1) » ou « Dériver f(x) = (2x − 5)⁴ » est-elle dans 1SPE-274 ?",
+		"sources": "BO 1re spé p.7 (Point de vue global) : « Fonction dérivée des fonctions carré, cube, inverse, racine carrée. Opérations sur les fonctions dérivables : somme, produit, inverse, quotient. Pour n dans ℤ, fonction dérivée de la fonction x ↦ xⁿ. » BO 1re spé p.8 : « Pour a réel, dérivée de la fonction t ↦ e^{at}. » Capacité p.7 : « Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables. » BO Tle spé p.9 : « Composée de deux fonctions, notation v ∘ u. Relation (v ∘ u)′ = (v′ ∘ u) × u′ » (« Compléments sur la dérivation »).",
+		"options": [
+			[
+				"liste-bo",
+				"Liste du BO seulement : √(ax + b) et (ax + b)ⁿ hors point (sauf (ax + b)² ou 1/(ax + b), atteignables par produit ou inverse)"
+			],
+			[
+				"affine-admise",
+				"Composée affine g(ax + b) admise pour les fonctions de référence du programme"
+			]
+		],
+		"reco": "liste-bo",
+		"pourquoi": "Le texte nouveau écrit une seule composée, t ↦ e^{at}, ce qui montre que les composées ont été pesées ; ajouter g(ax + b) serait ajouter une formule au BO. Les cas atteignables par les opérations listées restent dans le point.",
+		"consequence": "Avec « liste-bo », un modèle « dériver √(3x + 1) » ou « (2x − 5)⁴ » est refusé en 1re spé (il relève de la terminale, « Compléments sur la dérivation ») ; « dériver 1/(2x + 1) » ou « (3x − 1)² » est accepté.",
+		"info": false
+	},
+	{
+		"id": "l1s-2",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-246", "1SPE-254", "1SPE-247"],
+		"titre": "Forme canonique : jusqu'où vont les « cas simples » ?",
+		"question": "Le BO demande la forme canonique « dans des cas simples » par complétion du carré, « le calcul effectif de la forme canonique dans le cas général n'est pas un attendu ». Une question « Mettre 2x² − 6x + 1 sous forme canonique » (coefficient dominant ≠ 1, coefficients non entiers après division) est-elle dans 1SPE-246 ?",
+		"sources": "BO 1re spé p.5 : « être capables de la déterminer dans des cas simples à l'aide de l'identité x² + 2ax = (x + a)² – a² (méthode de complétion du carré). Le calcul effectif de la forme canonique dans le cas général n'est pas un attendu du programme. »",
+		"options": [
+			["unitaire", "Coefficient de x² égal à 1 seulement (x² + bx + c)"],
+			[
+				"entiers",
+				"Coefficient de x² quelconque, à condition que b/(2a) soit entier ou demi-entier simple"
+			],
+			[
+				"general",
+				"Tout trinôme : le « cas général » visé est seulement la formule littérale α = −b/(2a), β = −Δ/(4a)"
+			]
+		],
+		"reco": "unitaire",
+		"pourquoi": "L'identité donnée par le BO, x² + 2ax = (x + a)² − a², s'applique telle quelle aux trinômes unitaires ; dès que le coefficient de x² vaut autre chose, il faut d'abord factoriser, ce qui rapproche du cas général. C'est la lecture la plus littérale.",
+		"consequence": "Avec « unitaire », un modèle qui tire a ≠ 1 (« forme canonique de 2x² − 6x + 1 ») est refusé dans 1SPE-246 ; « forme canonique de x² − 6x + 1 » est accepté.",
+		"info": false
+	},
+	{
+		"id": "l1s-3",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-410", "1SPE-306", "1SPE-307"],
+		"titre": "Trigonométrie : valeurs remarquables et angles associés",
+		"question": "Le BO parle de « valeurs remarquables » et d'« angles associés à x », sans liste. Sont-elles dans les points : (a) « Donner cos(5π/6) » ; (b) « Donner sin(−7π/4) » ; (c) « Simplifier cos(π − x) + sin(π + x) » (x littéral) ?",
+		"sources": "BO 1re spé p.8 : contenus « Cosinus et sinus d'un nombre réel. Lien avec le sinus et le cosinus dans un triangle rectangle. Valeurs remarquables. » ; capacité « Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de x, les cosinus et sinus d'angles associés à x. » ; démonstration « Calcul de cos(π/4), sin(π/4), cos(π/3), sin(π/3). »",
+		"options": [
+			[
+				"lecture",
+				"Valeurs 0, π/6, π/4, π/3, π/2 et tout réel associé lisible sur le cercle (±x, π ± x, à 2kπ près) ; valeurs numériques seulement, pas de formule littérale (c) refusée"
+			],
+			[
+				"formules",
+				"Comme « lecture », plus les formules littérales cos(π − x), sin(π + x), cos(π/2 − x)… (c) acceptée"
+			],
+			[
+				"quadrant",
+				"Valeurs remarquables du premier quadrant seulement (0 à π/2) : (a) et (b) refusées"
+			]
+		],
+		"reco": "lecture",
+		"pourquoi": "La capacité dit « par lecture du cercle » et « pour des valeurs remarquables de x » : c'est numérique, sur le cercle. Les formules littérales d'angles associés ne sont pas écrites ; les fonctions sinus et cosinus (parité, périodicité) sont de terminale.",
+		"consequence": "Avec « lecture », un modèle « cos(5π/6) = ? » ou « sin(−7π/4) = ? » est accepté ; un modèle de simplification littérale « cos(π − x) + sin(π + x) » est refusé en 1re spé ; π/6 compris même s'il n'est pas dans les démonstrations.",
+		"info": false
+	},
+	{
+		"id": "l1s-4",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-340", "1SPE-421", "1SPE-337"],
+		"titre": "Probabilités totales « dans des cas simples »",
+		"question": "La capacité est « dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales ». Une question où l'univers est partagé en quatre évènements A₁, A₂, A₃, A₄ (quatre machines d'une usine) est-elle dans 1SPE-340 ?",
+		"sources": "BO 1re spé p.10 : contenus « Partition de l'univers (systèmes complets d'évènements). Formule des probabilités totales. » ; capacité « Dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales. » BO 2de p.13 : ce calcul « n'est pas un attendu » en 2de.",
+		"options": [
+			[
+				"partition-finie",
+				"Toute partition finie lisible sur un arbre (deux, trois, quatre évènements…) ; « cas simples » = calcul direct, sans paramètre"
+			],
+			["deux-trois", "Partition en deux ou trois évènements seulement"]
+		],
+		"reco": "partition-finie",
+		"pourquoi": "Le contenu parle de « systèmes complets d'évènements » au pluriel, sans limite de taille ; « cas simples » vise plutôt la complexité du calcul (pas d'inconnue à retrouver) que le nombre de branches.",
+		"consequence": "Avec « deux-trois », un modèle à quatre machines est refusé dans 1SPE-340 ; avec « partition-finie », il est accepté tant qu'il ne demande qu'une application directe de la formule.",
+		"info": false
+	},
+	{
+		"id": "l1s-5",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-294"],
+		"titre": "Exponentielle : propriétés non écrites (quotient, puissance)",
+		"question": "Le BO n'écrit que exp(x + y) = exp(x)exp(y) et exp(x)exp(−x) = 1. Une question « Simplifier (e^{2x})³ / e^{x−1} » utilise eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ, non écrites. Est-elle dans 1SPE-294 ?",
+		"sources": "BO 1re spé p.8 : contenus « Pour tous réels x et y, exp(x + y) = exp(x) exp(y) et exp(x) exp(–x) = 1. Nombre e. Notation eˣ. » ; capacité « Transformer une expression en utilisant les propriétés algébriques de la fonction exponentielle. »",
+		"options": [
+			[
+				"consequences",
+				"Les conséquences directes (quotient, inverse, puissance entière n ∈ ℤ) sont dans le point"
+			],
+			[
+				"deux-seulement",
+				"Seules les deux égalités écrites : le quotient et la puissance sont hors point"
+			]
+		],
+		"reco": "consequences",
+		"pourquoi": "La capacité parle « des propriétés algébriques » au pluriel, et la notation eˣ n'a de sens qu'avec les règles des puissances (vues en 2de pour les exposants entiers) ; quotient et puissance entière découlent en une ligne des deux égalités écrites.",
+		"consequence": "Avec « consequences », un modèle « simplifier (e^{2x})³ / e^{x−1} » est accepté ; avec « deux-seulement », il est refusé et seuls les produits eᵃ·eᵇ et eˣ·e⁻ˣ restent.",
+		"info": false
+	},
+	{
+		"id": "l1s-6",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-351", "1SPE-356", "1SPE-357"],
+		"titre": "Linéarité de l'espérance en 1re",
+		"question": "Le BO de 1re écrit « Linéarité de l'espérance » sans préciser ; les sommes de variables aléatoires sont un chapitre de terminale. Sont-elles dans 1SPE-351 : (a) « E(X) = 3, calculer E(2X + 5) » ; (b) « E(X) = 3, E(Y) = 4, calculer E(X + Y) » ; (c) « V(X) = 2, calculer V(3X) » ?",
+		"sources": "BO 1re spé p.10 : contenus « Espérance, variance, écart type d'une variable aléatoire. Linéarité de l'espérance. Formule de König-Huygens. » BO Tle spé p.13-14 (« Sommes de variables aléatoires ») : « Somme de deux variables aléatoires. Linéarité de l'espérance : E(X + Y) = E(X) + E(Y) et E(aX) = aE(X). » ; « Relation V(aX) = a²V(X). » La terminale réécrit donc E(aX), ce qui rend la portée du mot en 1re incertaine.",
+		"options": [
+			["affine", "E(aX + b) = aE(X) + b seulement : (a) acceptée, (b) et (c) refusées"],
+			["affine-somme", "E(aX + b) et E(X + Y) : (a) et (b) acceptées, (c) refusée"],
+			["affine-variance", "E(aX + b) et V(aX + b) = a²V(X) : (a) et (c) acceptées, (b) refusée"]
+		],
+		"reco": "affine",
+		"pourquoi": "En 1re, une seule variable aléatoire est étudiée à la fois ; la somme X + Y suppose deux variables sur un même univers, objet du chapitre de terminale. Aucune formule de variance n'est écrite en 1re hors König-Huygens.",
+		"consequence": "Avec « affine », un modèle « E(X + Y) » ou « V(3X) » est refusé en 1re spé et rattaché à la terminale ; « E(2X + 5) » est accepté dans 1SPE-351.",
+		"info": false
+	},
+	{
+		"id": "l1s-7",
+		"cycle": "lycée",
+		"niveaux": ["1_SPE"],
+		"points": ["1SPE-432", "1SPE-433", "1SPE-434", "automatismes de 1re spé"],
+		"titre": "Automatismes : l'« activité mentale » borne-t-elle les valeurs ?",
+		"question": "Le BO dit que les automatismes « relèvent d'un entrainement régulier … privilégiant l'activité mentale ». Une question d'automatisme « Coefficient directeur de la droite passant par A(1,37 ; −2,8) et B(4,05 ; 6,19) » (calculatrice nécessaire) est-elle dans 1SPE-434 ?",
+		"sources": "BO 1re spé p.4 : « Elles relèvent d'un entrainement régulier sur l'ensemble du cycle terminal privilégiant l'activité mentale. » ; « Il s'agit d'automatiser le recours à des connaissances, des procédures … afin de permettre aux élèves de les mobiliser plus rapidement. »",
+		"options": [
+			[
+				"mental",
+				"Valeurs choisies pour un calcul mental (entiers ou décimaux simples) : le modèle ci-dessus est refusé"
+			],
+			["libre", "« Privilégiant » n'est pas « seulement » : les valeurs sont libres"]
+		],
+		"reco": "mental",
+		"pourquoi": "Le BO assigne aux automatismes une finalité de rapidité et d'activité mentale ; un calcul qui exige la calculatrice change la nature de l'exercice. « Privilégiant » laisse une marge, d'où la question.",
+		"consequence": "Avec « mental », un modèle d'automatisme qui tire des coordonnées à deux décimales est refusé dans 1SPE-434 ; le même modèle avec des coordonnées entières est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-1",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-457", "TSPE-458"],
+		"titre": "Équations et inéquations en sinus",
+		"question": "Le BO ne nomme que le cosinus : « Résoudre une équation du type cos(x) = a, une inéquation de la forme cos(x) ⩽ a sur [−π, π] ». Une question « Résoudre sin(x) = 1/2 sur [0 ; 2π] » est-elle dans les points ?",
+		"sources": "BO Tle spé p.11, capacités attendues de « Fonctions sinus et cosinus ». BO 1re spé (Trigonométrie) : cosinus et sinus des valeurs remarquables lus sur le cercle.",
+		"options": [
+			["cos-et-sin", "« Du type » couvre aussi sin(x) = a et sin(x) ⩽ a"],
+			["cos-seul", "Cosinus seulement, comme le texte l'écrit"]
+		],
+		"reco": "cos-et-sin",
+		"pourquoi": "« Du type » désigne une famille d'équations résolues de la même façon sur le cercle trigonométrique, où sinus et cosinus sont lus ensemble depuis la 1re ; mais le texte ne cite que cos, d'où la question.",
+		"consequence": "Avec cos-seul, tout modèle en sin(x) = a (ou sin(x) ⩽ a) rattaché à TSPE-457/458 est refusé ; avec cos-et-sin il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-2",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-457"],
+		"titre": "Intervalle de résolution de cos(x) = a",
+		"question": "Dans « une équation du type cos(x) = a, une inéquation de la forme cos(x) ⩽ a sur [−π, π] », la précision « sur [−π, π] » porte-t-elle aussi sur l'équation ? Une question « Résoudre cos(x) = 1/2 dans ℝ » est-elle dans le point ?",
+		"sources": "BO Tle spé p.11 (même phrase). Le découpage en points a rattaché l'intervalle à la seule inéquation (TSPE-458).",
+		"options": [
+			[
+				"libre",
+				"Équation sur ℝ ou sur tout intervalle donné ; [−π, π] pour l'inéquation seulement"
+			],
+			["moins-pi-pi", "Équation et inéquation sur [−π, π] seulement"]
+		],
+		"reco": "libre",
+		"pourquoi": "La virgule sépare deux compléments ; l'équation sur ℝ s'écrit par périodicité, notion du même chapitre (TSPE-598). Lecture grammaticale incertaine, d'où la question.",
+		"consequence": "Avec moins-pi-pi, un modèle « cos(x) = 1/2 dans ℝ » ou « sur [0 ; 2π] » est refusé ; avec libre il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-3",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-457", "TSPE-458"],
+		"titre": "Valeurs de a dans cos(x) = a",
+		"question": "Le BO ne dit pas quelles valeurs prend a. Faut-il des valeurs remarquables (0, ±1/2, ±√2/2, ±√3/2, ±1), ou une valeur quelconque comme a = 0,3 (solution approchée à la calculatrice) ?",
+		"sources": "BO Tle spé p.11 : rien sur a ; capacité « lier la représentation graphique… et le cercle trigonométrique ». BO 1re spé : cosinus et sinus « pour des valeurs remarquables ». Aucune fonction réciproque (arccos) au programme (BO Tle spé p.10 : seule la réciproque de exp).",
+		"options": [
+			["remarquables", "a parmi les valeurs remarquables, solutions exactes"],
+			["quelconques", "a quelconque dans [−1, 1], solutions approchées admises"]
+		],
+		"reco": "remarquables",
+		"pourquoi": "Sans arccos, une solution exacte n'existe que pour les valeurs remarquables ; le cercle trigonométrique est l'outil désigné.",
+		"consequence": "Avec remarquables, un modèle tirant a = 0,3 et attendant x ≈ 1,266 est refusé ; avec quelconques il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-4",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-458"],
+		"titre": "Sens de l'inéquation en cosinus",
+		"question": "Le BO écrit « une inéquation de la forme cos(x) ⩽ a ». Les inéquations cos(x) > a, cos(x) ⩾ a, cos(x) < a sont-elles dans le point ?",
+		"sources": "BO Tle spé p.11. Précédent : décision c4-5 (inéquations du cycle 4, les quatre sens admis).",
+		"options": [
+			["quatre-sens", "Les quatre sens (⩽, <, ⩾, >)"],
+			["inferieur", "⩽ seulement (et < par symétrie de la méthode)"]
+		],
+		"reco": "quatre-sens",
+		"pourquoi": "Changer le sens ne change pas la méthode (lecture sur le cercle) ; c'est la lecture déjà retenue pour le cycle 4.",
+		"consequence": "Avec inferieur, un modèle « cos(x) > 1/2 sur [−π, π] » est refusé ; avec quatre-sens il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-5",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": [
+			"TSPE-402",
+			"TSPE-576",
+			"TSPE-577",
+			"TSPE-578",
+			"TSPE-579",
+			"TSPE-403",
+			"TSPE-580",
+			"TSPE-581",
+			"TSPE-582",
+			"TSPE-583",
+			"TSPE-415"
+		],
+		"titre": "Limites faisant intervenir ln, sin, cos",
+		"question": "La section « Limites des fonctions » ne cite que « les fonctions de référence étudiées en classe de première : puissances entières, racine carrée, fonction exponentielle ». Une question « Déterminer la limite de ln(x)/x en +∞ » ou « de sin(x)/x en +∞ (encadrement) » est-elle dans les points de calcul de limites ?",
+		"sources": "BO Tle spé p.9 (Limites des fonctions, contenus et capacités) ; p.10 (Fonction logarithme : limites en 0 et +∞, croissance comparée avec xⁿ) ; p.11 (sinus, cosinus) ; p.3 : « Ce découpage n'est pas un plan de cours ».",
+		"options": [
+			["toutes", "Toutes les fonctions de référence de terminale (dont ln, sin, cos)"],
+			["premiere", "Seulement celles de 1re ; les limites en ln relèvent de TSPE-441/443"]
+		],
+		"reco": "toutes",
+		"pourquoi": "Le découpage n'est pas un plan de cours et la capacité de dérivation (TSPE-415) parle des « fonctions de référence » sans restriction ; mais la liste écrite de la section est celle de 1re.",
+		"consequence": "Avec premiere, un modèle ln(x)/x ou (sin x)/x rattaché à TSPE-580/582 est refusé (il doit viser TSPE-443 ou rester sans point) ; avec toutes il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-6",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-372", "TSPE-371", "TSPE-566", "TSPE-567"],
+		"titre": "Taille des systèmes linéaires « dans des cas simples »",
+		"question": "Le BO demande de résoudre « dans des cas simples » le système traduisant un problème de l'espace, sans étude générale des systèmes. Un système 3 × 3 dont toutes les équations contiennent les trois inconnues (pivot de Gauss) est-il dans le point ?",
+		"sources": "BO Tle spé p.7 (« Dans des cas simples, résoudre le système obtenu ») ; p.5 (« L'étude générale des systèmes linéaires n'est pas un objectif »).",
+		"options": [
+			["deux", "Deux inconnues (la troisième équation sert de vérification)"],
+			[
+				"trois-simple",
+				"Jusqu'à trois inconnues, résolubles par substitution (une équation au moins à une ou deux inconnues)"
+			],
+			["libre", "Tout système 3 × 3"]
+		],
+		"reco": "trois-simple",
+		"pourquoi": "Décider si trois vecteurs forment une base ou décomposer un vecteur conduit naturellement à trois inconnues ; « cas simples » et l'absence d'étude générale excluent la méthode générale.",
+		"consequence": "Avec trois-simple, un modèle tirant un système 3 × 3 à coefficients tous non nuls est refusé ; un système triangulaire ou à substitution directe est accepté.",
+		"info": false
+	},
+	{
+		"id": "lts-7",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-567", "TSPE-372", "TSPE-374"],
+		"titre": "Intersection de deux plans : attendu ou approfondissement",
+		"question": "La capacité attendue cite « intersection … de droites ou de plans » parmi les configurations à traduire par un système, mais « Déterminer l'intersection de deux plans » est un approfondissement. Une question « Donner une représentation paramétrique de la droite d'intersection des plans P et P′ » est-elle dans TSPE-567 ?",
+		"sources": "BO Tle spé p.7 : capacité attendue (traduire par un système … intersection et orthogonalité de droites ou de plans) et approfondissement (« Déterminer l'intersection de deux plans ») ; p.5 : exemples de systèmes « intersections de plans ».",
+		"options": [
+			[
+				"approf",
+				"Attendu : traduire et décider (plans sécants, parallèles, confondus, droite ∩ plan) ; déterminer la droite d'intersection = TSPE-374 seulement"
+			],
+			["attendu", "La détermination complète de la droite d'intersection est dans TSPE-567"]
+		],
+		"reco": "approf",
+		"pourquoi": "Les deux passages ne se contredisent que si l'attendu inclut la détermination ; les lire ensemble laisse à l'attendu la traduction et la décision.",
+		"consequence": "Avec approf, un modèle demandant la représentation paramétrique de P ∩ P′ ne peut viser que TSPE-374 ; un modèle « P et P′ sont-ils sécants ? » ou « intersection de la droite d et du plan P » reste dans TSPE-567.",
+		"info": false
+	},
+	{
+		"id": "lts-8",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-567", "TSPE-367", "TSPE-375"],
+		"titre": "Vecteur normal à un plan défini par trois points",
+		"question": "« Déterminer un vecteur orthogonal à deux vecteurs non colinéaires » est un approfondissement. Une question « Déterminer un vecteur normal au plan (ABC) » (sans vecteur proposé) est-elle dans les attendus ?",
+		"sources": "BO Tle spé p.7 : approfondissement (vecteur orthogonal à deux vecteurs non colinéaires) ; capacité attendue (traduire par un système … orthogonalité de droites ou de plans) ; capacité « Déterminer l'équation cartésienne d'un plan dont on connait un vecteur normal et un point ».",
+		"options": [
+			[
+				"verifier",
+				"Attendu : vérifier qu'un vecteur donné est normal à (ABC) ; le déterminer = TSPE-375"
+			],
+			["determiner", "Le déterminer par un système est attendu (TSPE-567)"]
+		],
+		"reco": "verifier",
+		"pourquoi": "La capacité sur l'équation de plan suppose le vecteur normal connu ; le déterminer est exactement l'approfondissement nommé.",
+		"consequence": "Avec verifier, un modèle « trouver un vecteur normal à (ABC) » ne peut viser que TSPE-375 ; « montrer que n(1 ; 2 ; −1) est normal à (ABC) » reste attendu.",
+		"info": false
+	},
+	{
+		"id": "lts-9",
+		"cycle": "lycée",
+		"niveaux": ["T_SPE"],
+		"points": ["TSPE-463", "TSPE-467", "TSPE-468"],
+		"titre": "Primitive de x ↦ 1/x",
+		"question": "Le BO liste les primitives de « x ↦ xⁿ pour n ∈ ℤ », ce qui inclut n = −1, dont la primitive est ln. Une question « Primitive de 1/x sur ]0 ; +∞[ » ou « de 1/x sur ]−∞ ; 0[ » (ln|x|) est-elle dans les points ?",
+		"sources": "BO Tle spé p.11 (primitives des fonctions de référence) ; p.10 : ln défini sur ]0 ; +∞[, aucune mention de ln|x|.",
+		"options": [
+			["ln-positif", "n = −1 inclus, sur ]0 ; +∞[ seulement (primitive ln x ; u′/u avec u > 0)"],
+			["ln-abs", "Aussi sur ]−∞ ; 0[ avec ln|x|"],
+			["exclu", "n ≠ −1 : le cas 1/x n'est pas dans TSPE-463"]
+		],
+		"reco": "ln-positif",
+		"pourquoi": "Le texte écrit n ∈ ℤ sans exclure −1 et ln′ = 1/x est au programme ; ln|x| n'apparaît nulle part.",
+		"consequence": "Avec ln-positif, un modèle « primitive de 3/x sur ]0 ; +∞[ » est accepté et un modèle attendant ln|x| sur ]−∞ ; 0[ est refusé.",
+		"info": false
+	},
+	{
+		"id": "lte-1",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-208"],
+		"titre": "Équations « simples » en z et z̄",
+		"question": "Le BO demande de résoudre « une équation simple faisant intervenir z et z̄ » sans dire ce qui est simple. Une question « Résoudre dans ℂ : z² + z̄ = 0 » est-elle dans le point, ou seulement « Résoudre 2z + i z̄ = 3 − i » ?",
+		"sources": "BO Tle exp. p.6, capacités attendues : « Résoudre une équation simple faisant intervenir z et z̄. » Rien d'autre dans la section.",
+		"options": [
+			[
+				"premier-degre",
+				"Équations du premier degré en z et z̄ (az + b z̄ = c), résolues en posant z = x + iy : système linéaire en x, y"
+			],
+			[
+				"systeme-simple",
+				"Toute équation qui, avec z = x + iy, donne un système en x, y résoluble à ce niveau (z² + z̄ = 0, z z̄ + z = 3 compris)"
+			]
+		],
+		"reco": "premier-degre",
+		"pourquoi": "Le mot « simple », à côté de « équation linéaire az = b » juste au-dessus, appelle le premier degré ; les équations du second degré en z sont rangées ailleurs (coefficients réels seulement, p.7).",
+		"consequence": "Avec premier-degre, un modèle « 2z + i z̄ = 3 − i » est accepté et un modèle « z² + z̄ = 0 » refusé ; avec systeme-simple, les deux sont acceptés.",
+		"info": false
+	},
+	{
+		"id": "lte-2",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-218", "TEXP-221", "TEXP-237", "TEXP-238", "TEXP-263"],
+		"titre": "Arguments exacts : valeurs remarquables seulement ?",
+		"question": "Le BO demande de « déterminer les arguments » et de passer à la forme trigonométrique, sans fonction arctangente au programme. Une question « Donner un argument de 3 + 4i » (pas de valeur remarquable) est-elle dans le point ?",
+		"sources": "BO Tle exp. p.6 : « Déterminer le module et les arguments d'un nombre complexe. » BO Tle exp. p.7 : « Passer de la forme algébrique […] à sa forme trigonométrique ou exponentielle ». BO 1re spé (trigonométrie) : cosinus et sinus des seules valeurs remarquables. Aucune fonction réciproque de cos, sin ou tan au programme.",
+		"options": [
+			[
+				"remarquables",
+				"Argument exact attendu seulement quand cos θ et sin θ sont des valeurs remarquables (multiples de π/6 et π/4)"
+			],
+			[
+				"approche",
+				"Argument non remarquable admis, donné en valeur approchée (calculatrice) ou en le définissant par cos θ et sin θ"
+			]
+		],
+		"reco": "remarquables",
+		"pourquoi": "Sans fonction réciproque au programme, la seule façon d'écrire un argument exact est de reconnaître une valeur remarquable ; une valeur approchée suppose un outil que le BO ne nomme pas.",
+		"consequence": "Avec remarquables, un modèle qui tire z = a + ib au hasard et demande un argument est refusé ; il doit tirer |z| et un angle multiple de π/6 ou π/4. Avec approche, il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lte-3",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-248", "TEXP-249"],
+		"titre": "Racine « connue » : donnée ou à trouver ?",
+		"question": "Le BO demande de résoudre une équation de degré 3 « dont une racine est connue ». Une question « Résoudre z³ − 3z² + 4z − 2 = 0 » sans indiquer la racine 1 est-elle dans le point ?",
+		"sources": "BO Tle exp. p.7 : « Résoudre une équation de degré 3 à coefficients réels dont une racine est connue. Factoriser un polynôme dont une racine est connue. » BO 1re spé : « racine évidente » seulement pour le second degré.",
+		"options": [
+			[
+				"donnee",
+				"La racine est donnée par l'énoncé (ou l'énoncé demande de vérifier qu'un nombre donné est racine)"
+			],
+			[
+				"evidente",
+				"L'élève peut avoir à trouver une racine évidente entière (−2 à 2), comme au second degré en 1re spé"
+			]
+		],
+		"reco": "donnee",
+		"pourquoi": "« Connue » dit que la racine est disponible au départ ; la recherche de racine évidente est écrite pour le second degré, pas ici.",
+		"consequence": "Avec donnee, un modèle qui ne donne pas la racine est refusé ; avec evidente, il est accepté si la racine est un petit entier.",
+		"info": false
+	},
+	{
+		"id": "lte-4",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-292"],
+		"titre": "Équations diophantiennes « simples »",
+		"question": "Le BO demande de résoudre « des équations diophantiennes simples ». Une question « Résoudre x² − y² = 15 dans ℕ² » est-elle dans le point, ou seulement « Résoudre 5x + 3y = 1 dans ℤ² » ?",
+		"sources": "BO Tle exp. p.8 : « exemples simples d'équations diophantiennes ». BO Tle exp. p.9 : capacité « Résoudre des équations diophantiennes simples » ; triplets pythagoriciens et Pell-Fermat rangés en problèmes possibles.",
+		"options": [
+			["lineaires", "Équations ax + by = c seulement (Bézout, Gauss)"],
+			[
+				"factorisables",
+				"Aussi les équations qu'une factorisation ramène à un nombre fini de cas (x² − y² = n, xy = …)"
+			]
+		],
+		"reco": "lineaires",
+		"pourquoi": "Les outils du chapitre (Bézout, Gauss) visent ax + by = c ; les équations non linéaires nommées par le BO (triplets pythagoriciens, Pell-Fermat) sont des problèmes possibles, pas des attendus.",
+		"consequence": "Avec lineaires, un modèle « x² − y² = 15 » est refusé dans TEXP-292 ; avec factorisables, il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lte-5",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-312", "TEXP-315", "TEXP-322", "TEXP-342", "TEXP-345"],
+		"titre": "Chaînes ou chemins : graphes orientés hors Markov ?",
+		"question": "Les contenus ne parlent que d'arêtes et de chaînes (graphe non orienté), l'orientation n'y apparaît que pour les chaînes de Markov ; mais la capacité et la démonstration parlent de « chemins ». Une question « Combien de chemins de longueur 3 vont de A à C dans ce graphe orienté ? » est-elle dans le point ?",
+		"sources": "BO Tle exp. p.10 (contenus) : « Graphe, sommets, arêtes […] chaîne, longueur d'une chaîne » ; « Graphe orienté pondéré associé à une chaîne de Markov ». BO Tle exp. p.11 (capacités, démonstrations) : « nombre de chemins de longueur donnée entre deux sommets d'un graphe ».",
+		"options": [
+			[
+				"non-oriente",
+				"Graphes non orientés seulement ; l'orientation est réservée aux chaînes de Markov"
+			],
+			[
+				"oriente-chemins",
+				"Graphes orientés admis pour la matrice d'adjacence et le nombre de chemins ; vocabulaire de base (degré, connexe) en non orienté"
+			],
+			["libre", "Graphes orientés admis partout"]
+		],
+		"reco": "oriente-chemins",
+		"pourquoi": "Les deux textes sont le BO ; « chemin » et la démonstration sur la matrice d'adjacence valent pour un graphe orienté comme non orienté, alors que le vocabulaire des contenus est non orienté.",
+		"consequence": "Avec oriente-chemins, un modèle de comptage de chemins sur un graphe orienté est accepté, un modèle « degré entrant d'un sommet » refusé ; avec non-oriente, les deux sont refusés.",
+		"info": false
+	},
+	{
+		"id": "lte-6",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": [
+			"TEXP-320",
+			"TEXP-321",
+			"TEXP-322",
+			"TEXP-324",
+			"TEXP-338",
+			"TEXP-339",
+			"TEXP-340",
+			"TEXP-342"
+		],
+		"titre": "Ordre des matrices et taille des systèmes",
+		"question": "Le BO ne donne un ordre (2 ou 3) que pour les « exemples de calcul de puissances » et pour les chaînes de Markov ; rien pour l'inverse, les systèmes ni la matrice d'adjacence. Une question « Inverser cette matrice 4 × 4 » ou « Nombre de chemins de longueur 3 dans un graphe à 5 sommets » est-elle dans le point ?",
+		"sources": "BO Tle exp. p.10 : « Exemples de calcul de puissances de matrices carrées d'ordre 2 ou 3 » ; « Chaîne de Markov à deux ou trois états ». BO Tle exp. p.11 : « Calculer l'inverse, les puissances d'une matrice carrée » sans ordre.",
+		"options": [
+			[
+				"ordre-3",
+				"Ordre au plus 3 partout (inverse, puissances, systèmes à 3 inconnues au plus, graphes à 3 sommets au plus)"
+			],
+			[
+				"exact-3-adjacence-libre",
+				"Ordre au plus 3 pour les calculs exacts (inverse, puissance générale, systèmes) ; matrice d'adjacence de taille libre, puissance numérique à la calculatrice"
+			],
+			["libre", "Aucune borne d'ordre"]
+		],
+		"reco": "exact-3-adjacence-libre",
+		"pourquoi": "Le seul ordre écrit (2 ou 3) porte sur des calculs ; un graphe à 3 sommets rendrait le comptage de chemins sans intérêt, et le BO parle d'utiliser des logiciels de calcul (p.3).",
+		"consequence": "Avec la recommandation, un modèle « inverser une matrice 4 × 4 » est refusé et un modèle « chemins dans un graphe à 5 sommets, calculatrice » accepté ; avec ordre-3, les deux sont refusés.",
+		"info": false
+	},
+	{
+		"id": "lte-7",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-319", "TEXP-320", "TEXP-338"],
+		"titre": "Déterminant d'une matrice 2 × 2",
+		"question": "Le déterminant n'apparaît pas au BO. Une question « Calculer l'inverse de la matrice (2 1 ; 5 3) » dont la correction utilise la formule 1/(ad − bc) × (d −b ; −c a) sans la rappeler est-elle dans le point ?",
+		"sources": "BO Tle exp. p.10-11 : « Inverse, puissances d'une matrice carrée » ; « Calculer l'inverse ». Le mot déterminant est absent du texte.",
+		"options": [
+			[
+				"enonce",
+				"Formule ad − bc admise seulement si l'énoncé la donne ; sinon inverse par vérification AB = I ou par un système"
+			],
+			["exigible", "Formule de l'inverse 2 × 2 par le déterminant exigible sans rappel"]
+		],
+		"reco": "enonce",
+		"pourquoi": "Exiger une formule que le BO ne nomme pas serait une borne inventée ; la donner dans l'énoncé reste dans le point.",
+		"consequence": "Avec enonce, un modèle dont la correction s'appuie sur ad − bc sans le rappeler est refusé ; il doit donner la formule ou faire vérifier un produit égal à I.",
+		"info": false
+	},
+	{
+		"id": "lte-8",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-323"],
+		"titre": "Quelles transformations du plan en matrices ?",
+		"question": "Le BO dit « transformations géométriques du plan » sans liste. Or ce texte de 2019 supposait l'ancien collège : rotation et homothétie ne sont plus au programme du cycle 4 en vigueur, ni en 2de, 1re et Tle spé (seules restent symétries et translations). Une question « Écrire la matrice de la rotation de centre O et d'angle π/2 » est-elle dans le point ?",
+		"sources": "BO Tle exp. p.10 : « transformations géométriques du plan ». Bornes cycle 4 : rotation et homothétie absentes du BO c4 en vigueur. BO 2de : translations seulement. Rien en 1re ni Tle spé.",
+		"options": [
+			[
+				"connues",
+				"Seulement les transformations connues des programmes en vigueur (symétries axiales par une droite passant par O, symétrie centrale de centre O), plus celles définies dans l'énoncé"
+			],
+			[
+				"lineaires",
+				"Toute transformation x' = ax + by, y' = cx + dy, y compris rotations et homothéties de centre O nommées sans définition"
+			]
+		],
+		"reco": "connues",
+		"pourquoi": "Nommer une rotation sans la définir suppose un savoir que les programmes en vigueur ne donnent plus ; la définir dans l'énoncé reste possible.",
+		"consequence": "Avec connues, un modèle « matrice de la rotation d'angle π/2 » est refusé sauf si l'énoncé donne x' = −y, y' = x ; avec lineaires, il est accepté.",
+		"info": false
+	},
+	{
+		"id": "lte-9",
+		"cycle": "lycée",
+		"niveaux": ["T_EXP"],
+		"points": ["TEXP-260", "TEXP-261", "TEXP-263", "TEXP-264", "TEXP-227"],
+		"titre": "Transformations z ↦ az + b",
+		"question": "Le BO ne cite les similitudes directes que dans l'histoire (programme d'Erlangen) et la suite z_{n+1} = az_n + b qu'en problème possible ; aucune capacité ne parle d'écriture complexe d'une rotation ou d'une homothétie. Une question « Quelle est la nature de la transformation z ↦ iz + 1 ? » est-elle dans le point ?",
+		"sources": "BO Tle exp. p.6 (histoire) : « similitudes directes du plan complexe ». BO Tle exp. p.6 (problèmes possibles) : « Suite de nombres complexes définie par z_{n+1} = az_n + b ». BO Tle exp. p.8 : capacités limitées à alignement, orthogonalité, longueurs, angles, ensembles de points.",
+		"options": [
+			["refus", "Hors programme : aucun modèle ne demande la nature d'une transformation complexe"],
+			[
+				"via-module-argument",
+				"Admis si la question se ramène à des longueurs et des angles (|z' − ω| = |z − ω|, arg …) sans nommer la transformation"
+			]
+		],
+		"reco": "via-module-argument",
+		"pourquoi": "La mention historique n'est pas un contenu ; mais une question sur le module et l'argument de (z' − ω)/(z − ω) reste dans « calculer des longueurs, des angles ».",
+		"consequence": "Avec via-module-argument, un modèle « montrer que OM' = OM et (OM, OM') = π/2 si z' = iz » est accepté, un modèle « reconnaître une rotation » refusé ; avec refus, les deux sont refusés.",
+		"info": false
+	}
+]

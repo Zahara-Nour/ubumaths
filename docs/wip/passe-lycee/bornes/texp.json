@@ -1,0 +1,2309 @@
+{
+	"T_EXP": {
+		"general": [
+			{
+				"aspect": "nombres",
+				"borne": "Ensemble ℂ des nombres complexes introduit dans ce programme (formes algébrique, trigonométrique, exponentielle). Les matrices sont des tableaux de nombres réels : aucune matrice à coefficients complexes.",
+				"detail": {
+					"ensemble": "complexes ; matrices réelles"
+				},
+				"source": "BO Tle exp. p.6, 10",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Aucune structure algébrique nommée ni exigée (corps, groupe, anneau) : ℂ, 𝕌, 𝕌n et ℤ sont étudiés comme exemples ; pas de polynôme formel.",
+				"source": "BO Tle exp. p.4-5",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "« Polynôme » = fonction polynôme à coefficients réels ; on admet qu'un polynôme nul a tous ses coefficients nuls. Équation à coefficients complexes : seulement en problème possible (TEXP-364).",
+				"detail": {
+					"ensemble": "polynômes à coefficients réels"
+				},
+				"source": "BO Tle exp. p.7",
+				"force": "BO"
+			},
+			{
+				"aspect": "nombres",
+				"borne": "Arithmétique : entiers relatifs (ℤ) ; division euclidienne d'un élément de ℤ par un élément de ℕ*.",
+				"detail": {
+					"ensemble": "entiers relatifs"
+				},
+				"source": "BO Tle exp. p.9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Chaînes de Markov à deux ou trois états seulement (marche aléatoire, Ehrenfest, PageRank : problèmes possibles).",
+				"detail": {
+					"liste": [2, 3]
+				},
+				"source": "BO Tle exp. p.10-11",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Les « Problèmes possibles » (points d'approfondissement de ce programme) ne sont pas obligatoires et ne figurent pas dans les capacités attendues.",
+				"source": "BO Tle exp. p.5",
+				"force": "BO"
+			}
+		],
+		"points": {
+			"TEXP-201": {
+				"libelle": "Ensemble $\\mathbb{C}$ des nombres complexes",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Ensemble ℂ, forme algébrique a + ib (a, b réels, i² = −1) ; aucune structure de corps à nommer.",
+						"source": "BO Tle exp. p.4, 6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-354": {
+				"libelle": "Partie réelle et partie imaginaire",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Partie réelle et partie imaginaire d'un complexe écrit sous forme algébrique.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-202": {
+				"libelle": "Opérations sur les nombres complexes",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Opérations dans ℂ : somme, produit, inverse d'un complexe non nul (donc quotient).",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-203": {
+				"libelle": "Conjugaison. Propriétés algébriques de la conjugaison",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Conjugué ; propriétés algébriques démontrées au BO : conjugué d'un produit, d'un inverse, d'une puissance entière.",
+						"detail": {
+							"liste": [
+								"conjugué d'un produit",
+								"conjugué d'un inverse",
+								"conjugué d'une puissance entière"
+							]
+						},
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-204": {
+				"libelle": "Inverse d'un nombre complexe non nul",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inverse d'un complexe non nul seulement.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-205": {
+				"libelle": "Formule du binôme dans $\\mathbb{C}$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Formule du binôme pour deux complexes et un exposant entier naturel, avec les coefficients binomiaux de Tle spé.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-206": {
+				"libelle": "Effectuer des calculs algébriques avec des nombres complexes",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Calculs algébriques : opérations, conjugaison, inverse, formule du binôme (contenus de la même section).",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-207": {
+				"libelle": "Résoudre une équation linéaire $az = b$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation du seul type az = b (inconnue complexe z).",
+						"detail": {
+							"liste": ["az = b"]
+						},
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-208": {
+				"libelle": "Résoudre une équation simple faisant intervenir $z$ et $\\bar{z}$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation « simple » faisant intervenir z et z̄ ; le BO ne dit pas ce qu'est « simple ».",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-1 : quelles équations en z et z̄ sont « simples »."
+			},
+			"TEXP-209": {
+				"libelle": "Conjugué d'un produit",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer que le conjugué d'un produit est le produit des conjugués.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (conjugué d'un produit), rien de plus."
+			},
+			"TEXP-355": {
+				"libelle": "Conjugué d'un inverse",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer que le conjugué de l'inverse d'un complexe non nul est l'inverse du conjugué.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (conjugué d'un inverse), rien de plus."
+			},
+			"TEXP-356": {
+				"libelle": "Conjugué d'une puissance entière",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer la formule du conjugué d'une puissance entière.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (conjugué d'une puissance entière), rien de plus."
+			},
+			"TEXP-210": {
+				"libelle": "Formule du binôme",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue algébrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer la formule du binôme (dans ℂ).",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (formule du binôme), rien de plus."
+			},
+			"TEXP-211": {
+				"libelle": "Image d'un nombre complexe",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Plan euclidien identifié à ℂ : image de a + ib = point de coordonnées (a ; b).",
+						"source": "BO Tle exp. p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-357": {
+				"libelle": "Image du conjugué",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Image du conjugué (symétrique de l'image de z par rapport à l'axe des réels).",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit seulement « Image du conjugué » ; la symétrie par rapport à l'axe des abscisses en est la seule lecture géométrique."
+			},
+			"TEXP-212": {
+				"libelle": "Affixe d'un point",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [],
+				"remarque": "Aucune borne propre : le libellé du BO suffit (hérite des bornes générales)."
+			},
+			"TEXP-358": {
+				"libelle": "Affixe d'un vecteur",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [],
+				"remarque": "Aucune borne propre : le libellé du BO suffit (hérite des bornes générales)."
+			},
+			"TEXP-213": {
+				"libelle": "Module d'un nombre complexe",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Module d'un nombre complexe (forme algébrique : |a + ib| = √(a² + b²)).",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO nomme le module sans en donner l'expression ; √(a² + b²) découle de |z|² = z z̄ (même section)."
+			},
+			"TEXP-359": {
+				"libelle": "Module d'un nombre complexe : interprétation géométrique",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Interprétation géométrique : |z| = OM, |z_B − z_A| = AB.",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « Interprétation géométrique » sans détail ; la distance est la seule interprétation du module dans la section (« calculer des longueurs », p.8)."
+			},
+			"TEXP-214": {
+				"libelle": "Relation $|z|^2 = z\\bar{z}$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Relation |z|² = z z̄.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-215": {
+				"libelle": "Module d'un produit",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "|zz'| = |z| |z'| (le module d'une puissance est une démonstration, TEXP-226).",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-360": {
+				"libelle": "Module d'un inverse",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Module de l'inverse d'un complexe non nul.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-216": {
+				"libelle": "Ensemble $\\mathbb{U}$ des nombres complexes de module $1$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "𝕌 = complexes de module 1 ; aucune structure de groupe à nommer.",
+						"source": "BO Tle exp. p.4, 6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-217": {
+				"libelle": "Stabilité de $\\mathbb{U}$ par produit et passage à l'inverse",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Stabilité de 𝕌 par produit et passage à l'inverse seulement.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-218": {
+				"libelle": "Arguments d'un nombre complexe non nul",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Arguments d'un complexe non nul (pluriel : définis à 2π près).",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « à 2π près » vient du pluriel « arguments » du BO. Valeurs exactes attendues : incertitude lte-2."
+			},
+			"TEXP-361": {
+				"libelle": "Arguments d'un nombre complexe non nul : interprétation géométrique",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Interprétation géométrique : un argument de z est une mesure de l'angle orienté (u⃗, OM⃗).",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « Interprétation géométrique » sans détail."
+			},
+			"TEXP-219": {
+				"libelle": "Forme trigonométrique d'un nombre complexe",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Forme trigonométrique r(cos θ + i sin θ), r = |z| > 0, θ un argument.",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO nomme la forme trigonométrique sans l'écrire ; la formule de Moivre (p.7) fixe l'écriture cos θ + i sin θ."
+			},
+			"TEXP-220": {
+				"libelle": "Déterminer le module d'un nombre complexe",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Complexe donné sous forme algébrique, ou produit, inverse, puissance de tels complexes (propriétés du module de la section).",
+						"source": "BO Tle exp. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « déterminer le module » ; les seules propriétés au programme sont module d'un produit, d'un inverse, d'une puissance."
+			},
+			"TEXP-221": {
+				"libelle": "Déterminer les arguments d'un nombre complexe",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Complexe non nul.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non."
+			},
+			"TEXP-222": {
+				"libelle": "Représenter un nombre complexe par un point",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Placer l'image d'un complexe dans le plan complexe.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-223": {
+				"libelle": "Déterminer l'affixe d'un point",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Lire l'affixe d'un point du plan complexe.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-224": {
+				"libelle": "Formule $|z|^2 = z\\bar{z}$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer |z|² = z z̄.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (|z|² = z z̄), rien de plus."
+			},
+			"TEXP-225": {
+				"libelle": "Module d'un produit",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer |zz'| = |z| |z'|.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (module d'un produit), rien de plus."
+			},
+			"TEXP-226": {
+				"libelle": "Module d'une puissance",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer la formule du module d'une puissance.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (module d'une puissance), rien de plus."
+			},
+			"TEXP-227": {
+				"libelle": "Suite de nombres complexes définie par $z_{n+1} = az_n + b$",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Suites complexes du seul type z_{n+1} = a z_n + b.",
+						"detail": {
+							"liste": ["z_{n+1} = a z_n + b"]
+						},
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5). Incertitude lte-9 : transformations z ↦ az + b."
+			},
+			"TEXP-228": {
+				"libelle": "Inégalité triangulaire pour deux nombres complexes ; cas d'égalité",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Inégalité triangulaire pour deux complexes et son cas d'égalité.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-229": {
+				"libelle": "Étude expérimentale de l'ensemble de Mandelbrot, d'ensembles de Julia",
+				"rubrique": "Nombres complexes > Nombres complexes : point de vue géométrique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Étude expérimentale (logiciel) de l'ensemble de Mandelbrot et d'ensembles de Julia.",
+						"source": "BO Tle exp. p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-230": {
+				"libelle": "Formules d'addition à partir du produit scalaire",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Formules d'addition : cos(a ± b), sin(a ± b), établies à partir du produit scalaire.",
+						"detail": {
+							"liste": ["cos(a + b)", "cos(a − b)", "sin(a + b)", "sin(a − b)"]
+						},
+						"source": "BO Tle exp. p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « formules d'addition » sans les lister ; ce sont les quatre formules de cos et sin d'une somme et d'une différence."
+			},
+			"TEXP-231": {
+				"libelle": "Formules de duplication à partir du produit scalaire",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Formules de duplication : cos 2a, sin 2a, établies à partir du produit scalaire.",
+						"detail": {
+							"liste": ["cos(2a)", "sin(2a)"]
+						},
+						"source": "BO Tle exp. p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « formules de duplication » sans les lister."
+			},
+			"TEXP-232": {
+				"libelle": "Exponentielle imaginaire, notation $e^{i\\theta}$",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation e^{iθ} (θ réel).",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-233": {
+				"libelle": "Relation fonctionnelle de l'exponentielle imaginaire",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Relation fonctionnelle e^{iθ} e^{iθ'} = e^{i(θ + θ')}.",
+						"source": "BO Tle exp. p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « relation fonctionnelle » sans l'écrire ; c'est l'analogue de exp(x + y) = exp(x) exp(y) (1re spé)."
+			},
+			"TEXP-234": {
+				"libelle": "Forme exponentielle d'un nombre complexe",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Forme exponentielle r e^{iθ}, r = |z| > 0.",
+						"source": "BO Tle exp. p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO nomme la forme exponentielle sans l'écrire."
+			},
+			"TEXP-235": {
+				"libelle": "Formule d'Euler : $\\cos(\\theta) = \\frac{1}{2}(e^{i\\theta} + e^{-i\\theta})$",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "cos θ = (e^{iθ} + e^{−iθ})/2.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-362": {
+				"libelle": "Formule d'Euler : $\\sin(\\theta) = \\frac{1}{2i}(e^{i\\theta} - e^{-i\\theta})$",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "sin θ = (e^{iθ} − e^{−iθ})/(2i).",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-236": {
+				"libelle": "Formule de Moivre : $\\cos(n\\theta) + i\\sin(n\\theta) = (\\cos(\\theta) + i\\sin(\\theta))^n$",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "cos(nθ) + i sin(nθ) = (cos θ + i sin θ)ⁿ.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-237": {
+				"libelle": "Passer de la forme algébrique d'un nombre complexe à sa forme trigonométrique ou exponentielle",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Passage de la forme algébrique à la forme trigonométrique ou exponentielle.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non."
+			},
+			"TEXP-238": {
+				"libelle": "Passer de la forme trigonométrique ou exponentielle d'un nombre complexe à sa forme algébrique",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Passage de la forme trigonométrique ou exponentielle à la forme algébrique.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non."
+			},
+			"TEXP-239": {
+				"libelle": "Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Choix entre forme algébrique, trigonométrique, exponentielle.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-240": {
+				"libelle": "Utiliser les formules d'Euler pour transformer des expressions trigonométriques, dans des contextes divers (intégration, suites, etc.)",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Transformer des expressions trigonométriques par les formules d'Euler, contextes divers (intégration, suites…).",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-363": {
+				"libelle": "Utiliser la formule de Moivre pour transformer des expressions trigonométriques, dans des contextes divers (intégration, suites, etc.)",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Transformer des expressions trigonométriques par la formule de Moivre, contextes divers (intégration, suites…).",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-241": {
+				"libelle": "Utiliser les formules d'Euler et de Moivre pour calculer des puissances de nombres complexes",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Puissances de nombres complexes calculées par les formules d'Euler et de Moivre.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-242": {
+				"libelle": "Démonstration d'une des formules d'addition",
+				"rubrique": "Nombres complexes > Nombres complexes et trigonométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer une seule des formules d'addition, à partir du produit scalaire.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (une des formules d'addition), rien de plus."
+			},
+			"TEXP-243": {
+				"libelle": "Solutions complexes d'une équation du second degré à coefficients réels",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation du second degré à coefficients réels de discriminant négatif : solutions complexes conjuguées.",
+						"source": "BO Tle exp. p.5, 7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-244": {
+				"libelle": "Factorisation de $z^n - a^n$ par $z - a$",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Factorisation de zⁿ − aⁿ par z − a.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-245": {
+				"libelle": "Si $P$ est un polynôme et $P(a) = 0$, factorisation de $P$ par $z - a$",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "P polynôme (coefficients réels) et P(a) = 0 : P se factorise par z − a.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-246": {
+				"libelle": "Un polynôme de degré $n$ admet au plus $n$ racines",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Un polynôme de degré n a au plus n racines.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-247": {
+				"libelle": "Résoudre une équation polynomiale de degré $2$ à coefficients réels",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Degré 2 à coefficients réels seulement (coefficients complexes : TEXP-364).",
+						"detail": {
+							"liste": ["az² + bz + c = 0, a, b, c réels"]
+						},
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-248": {
+				"libelle": "Résoudre une équation de degré $3$ à coefficients réels dont une racine est connue",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Degré 3 à coefficients réels, une racine connue.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver."
+			},
+			"TEXP-249": {
+				"libelle": "Factoriser un polynôme dont une racine est connue",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Polynôme (coefficients réels) dont une racine est connue ; factorisation par z − a.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver."
+			},
+			"TEXP-250": {
+				"libelle": "Factorisation de $z^n - a^n$ par $z - a$ (démonstration)",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer la factorisation de zⁿ − aⁿ par z − a.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (factorisation de zⁿ − aⁿ), rien de plus."
+			},
+			"TEXP-251": {
+				"libelle": "Factorisation de $P(z)$ par $z - a$ si $P(a) = 0$",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer la factorisation de P(z) par z − a si P(a) = 0.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (factorisation par z − a), rien de plus."
+			},
+			"TEXP-252": {
+				"libelle": "Le nombre de solutions d'une équation polynomiale est inférieur ou égal à son degré",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer qu'une équation polynomiale a au plus autant de solutions que son degré.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (nombre de solutions ≤ degré), rien de plus."
+			},
+			"TEXP-253": {
+				"libelle": "Racines carrées d'un nombre complexe",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Racines carrées d'un nombre complexe.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-364": {
+				"libelle": "Équation du second degré à coefficients complexes",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation du second degré à coefficients complexes.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-254": {
+				"libelle": "Formules de Viète",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Formules de Viète (somme et produit des racines lus sur le polynôme).",
+						"source": "BO Tle exp. p.5, 7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-255": {
+				"libelle": "Résolution par radicaux de l'équation de degré $3$",
+				"rubrique": "Nombres complexes > Équations polynomiales",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Résolution par radicaux de l'équation de degré 3 seulement.",
+						"source": "BO Tle exp. p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-256": {
+				"libelle": "Interprétation géométrique du module de $\\frac{c-a}{b-a}$",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "|(c − a)/(b − a)| = AC/AB, A, B, C points d'affixes a, b, c, A ≠ B.",
+						"source": "BO Tle exp. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « interprétation géométrique du module » sans l'écrire."
+			},
+			"TEXP-365": {
+				"libelle": "Interprétation géométrique d'un argument de $\\frac{c-a}{b-a}$",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "arg((c − a)/(b − a)) = (AB⃗, AC⃗) à 2π près, A ≠ B, A ≠ C.",
+						"source": "BO Tle exp. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « interprétation géométrique d'un argument » sans l'écrire."
+			},
+			"TEXP-257": {
+				"libelle": "Racines $n$-ièmes de l'unité. Description de l'ensemble $\\mathbb{U}_n$ des racines $n$-ièmes de l'unité",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "𝕌n = { e^{2ikπ/n}, k = 0, …, n − 1 }.",
+						"source": "BO Tle exp. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « description de l'ensemble 𝕌n » ; la description est celle qu'établit la démonstration TEXP-266."
+			},
+			"TEXP-258": {
+				"libelle": "Représentation géométrique de l'ensemble $\\mathbb{U}_n$ des racines $n$-ièmes de l'unité",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Images des racines n-ièmes de l'unité : sommets d'un polygone régulier à n côtés inscrit dans le cercle unité.",
+						"source": "BO Tle exp. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « représentation géométrique » ; le lien aux polygones réguliers est la capacité TEXP-265."
+			},
+			"TEXP-259": {
+				"libelle": "Racines $n$-ièmes de l'unité, cas particuliers : $n = 2, 3, 4$",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Cas n = 2, 3, 4 seulement.",
+						"detail": {
+							"liste": [2, 3, 4]
+						},
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-260": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer un alignement",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Démontrer un alignement dans une configuration du plan, par les complexes.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-9 : transformations z ↦ az + b."
+			},
+			"TEXP-261": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer une orthogonalité",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Démontrer une orthogonalité dans une configuration du plan, par les complexes.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-9 : transformations z ↦ az + b."
+			},
+			"TEXP-262": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des longueurs",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Calculer des longueurs dans une configuration du plan, par les complexes.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-263": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des angles",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Calculer des angles dans une configuration du plan, par les complexes.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitudes lte-2 (arguments exacts limités aux valeurs remarquables ou non) et lte-9 (transformations z ↦ az + b)."
+			},
+			"TEXP-264": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour déterminer des ensembles de points",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Déterminer des ensembles de points du plan par les complexes (le BO ne liste pas les ensembles).",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-9 : transformations z ↦ az + b."
+			},
+			"TEXP-265": {
+				"libelle": "Utiliser les racines de l'unité dans l'étude de configurations liées aux polygones réguliers",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Configurations liées aux polygones réguliers.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-266": {
+				"libelle": "Détermination de l'ensemble $\\mathbb{U}_n$",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer la description de 𝕌n.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (détermination de 𝕌n), rien de plus."
+			},
+			"TEXP-267": {
+				"libelle": "Lignes trigonométriques de $\\frac{2\\pi}{5}$",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Lignes trigonométriques de 2π/5.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-366": {
+				"libelle": "Construction du pentagone régulier à la règle et au compas",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Construction du pentagone régulier à la règle et au compas.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-268": {
+				"libelle": "Somme des racines $n$-ièmes de l'unité",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Somme des racines n-ièmes de l'unité.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-269": {
+				"libelle": "Racines $n$-ièmes d'un nombre complexe",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Racines n-ièmes d'un nombre complexe.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-270": {
+				"libelle": "Transformation de Fourier discrète",
+				"rubrique": "Nombres complexes > Utilisation des nombres complexes en géométrie",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Transformation de Fourier discrète.",
+						"source": "BO Tle exp. p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-271": {
+				"libelle": "Divisibilité dans $\\mathbb{Z}$",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Divisibilité dans ℤ (entiers relatifs).",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-272": {
+				"libelle": "Division euclidienne d'un élément de $\\mathbb{Z}$ par un élément de $\\mathbb{N}^*$",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Dividende dans ℤ (négatif possible), diviseur dans ℕ* ; a = bq + r avec 0 ≤ r < b.",
+						"detail": {
+							"ensemble": "a ∈ ℤ, b ∈ ℕ*"
+						},
+						"source": "BO Tle exp. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO fixe les ensembles (ℤ, ℕ*) mais n'écrit pas la condition 0 ≤ r < b, qui définit la division euclidienne."
+			},
+			"TEXP-273": {
+				"libelle": "Congruences dans $\\mathbb{Z}$",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Congruences dans ℤ, notation a ≡ b [n].",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-274": {
+				"libelle": "Compatibilité des congruences avec les opérations",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Compatibilité avec l'addition et la multiplication (donc les puissances) ; pas de division.",
+						"source": "BO Tle exp. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO dit « avec les opérations » ; seules somme et produit sont compatibles, l'inverse modulo n étant une capacité à part (TEXP-287)."
+			},
+			"TEXP-275": {
+				"libelle": "PGCD de deux entiers",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "PGCD de deux entiers.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de PPCM.",
+						"source": "BO Tle exp. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le PPCM n'apparaît nulle part dans le BO de maths expertes ni dans ceux de 2de, 1re et Tle spé."
+			},
+			"TEXP-276": {
+				"libelle": "Algorithme d'Euclide",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme d'Euclide (calcul du PGCD de deux entiers).",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-277": {
+				"libelle": "Couples d'entiers premiers entre eux",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Couples (deux entiers) premiers entre eux.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-278": {
+				"libelle": "Théorème de Bézout",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Théorème de Bézout (deux entiers).",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-279": {
+				"libelle": "Théorème de Gauss",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Théorème de Gauss.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-280": {
+				"libelle": "Nombres premiers",
+				"rubrique": "Arithmétique",
+				"bornes": [],
+				"remarque": "Aucune borne propre : le libellé du BO suffit (hérite des bornes générales)."
+			},
+			"TEXP-281": {
+				"libelle": "L'ensemble des nombres premiers est infini",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "L'ensemble des nombres premiers est infini.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-282": {
+				"libelle": "Existence et unicité de la décomposition d'un entier en produit de facteurs premiers",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Existence et unicité de la décomposition en produit de facteurs premiers.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-283": {
+				"libelle": "Petit théorème de Fermat",
+				"rubrique": "Arithmétique",
+				"bornes": [],
+				"remarque": "Aucune borne propre : le libellé du BO suffit (hérite des bornes générales)."
+			},
+			"TEXP-284": {
+				"libelle": "Déterminer les diviseurs d'un entier",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Diviseurs d'un entier (divisibilité dans ℤ).",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-285": {
+				"libelle": "Déterminer le PGCD de deux entiers",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "PGCD de deux entiers.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de PPCM.",
+						"source": "BO Tle exp. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le PPCM n'apparaît nulle part dans le BO de maths expertes ni dans ceux de 2de, 1re et Tle spé."
+			},
+			"TEXP-286": {
+				"libelle": "Résoudre une congruence $ax \\equiv b \\,[n]$",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Une congruence du seul type ax ≡ b [n] ; systèmes de congruences (lemme chinois) : problème possible TEXP-301.",
+						"detail": {
+							"liste": ["ax ≡ b [n]"]
+						},
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-287": {
+				"libelle": "Déterminer un inverse de $a$ modulo $n$ lorsque $a$ et $n$ sont premiers entre eux",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inverse de a modulo n, seulement lorsque a et n sont premiers entre eux.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-288": {
+				"libelle": "Établir des tests de divisibilité",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tests de divisibilité établis par les congruences (le BO ne les liste pas).",
+						"source": "BO Tle exp. p.8-9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO présente les tests de divisibilité comme une application de l'étude des congruences (p.8)."
+			},
+			"TEXP-289": {
+				"libelle": "Utiliser des tests de divisibilité",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Le BO ne liste pas les tests de divisibilité.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-290": {
+				"libelle": "Étudier la primalité de certains nombres",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "« Certains nombres » : aucune liste au BO (Mersenne, Fermat, Carmichael : problèmes possibles).",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-291": {
+				"libelle": "Étudier des problèmes de chiffrement",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Aucun chiffrement imposé pour l'attendu ; affine, Vigenère, Hill, RSA sont des problèmes possibles (TEXP-305, TEXP-370, TEXP-371, TEXP-308).",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-292": {
+				"libelle": "Résoudre des équations diophantiennes simples",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équations diophantiennes « simples » ; le BO ne dit pas lesquelles.",
+						"source": "BO Tle exp. p.8-9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-4 : quelles équations diophantiennes sont « simples »."
+			},
+			"TEXP-293": {
+				"libelle": "Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \\in \\mathbb{Z}^2$",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer que le PGCD de a et b s'écrit ax + by, (x, y) ∈ ℤ².",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (écriture ax + by du PGCD), rien de plus."
+			},
+			"TEXP-294": {
+				"libelle": "Théorème de Gauss (démonstration)",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer le théorème de Gauss.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (théorème de Gauss), rien de plus."
+			},
+			"TEXP-295": {
+				"libelle": "L'ensemble des nombres premiers est infini (démonstration)",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer que l'ensemble des nombres premiers est infini.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (infinité des nombres premiers), rien de plus."
+			},
+			"TEXP-296": {
+				"libelle": "Algorithme d'Euclide de calcul du PGCD de deux nombres",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme d'Euclide pour le PGCD de deux nombres.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-297": {
+				"libelle": "Calcul d'un couple de Bézout par l'algorithme d'Euclide",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Calcul d'un couple de Bézout par l'algorithme d'Euclide.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-298": {
+				"libelle": "Crible d'Ératosthène",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Crible d'Ératosthène.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-299": {
+				"libelle": "Décomposition en facteurs premiers",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Décomposition d'un entier en facteurs premiers.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-300": {
+				"libelle": "Détermination des racines rationnelles d'un polynôme à coefficients entiers",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Racines rationnelles d'un polynôme à coefficients entiers.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-301": {
+				"libelle": "Lemme chinois et applications à des situations concrètes",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lemme chinois et applications à des situations concrètes.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-302": {
+				"libelle": "Démonstrations du petit théorème de Fermat",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démonstrations du petit théorème de Fermat.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-303": {
+				"libelle": "Problèmes de codage : codes barres",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Codes barres.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-367": {
+				"libelle": "Problèmes de codage : code ISBN",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Code ISBN.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-368": {
+				"libelle": "Problèmes de codage : clé du Rib",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Clé du RIB.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-369": {
+				"libelle": "Problèmes de codage : code Insee",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Code Insee.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-304": {
+				"libelle": "Étude de tests de primalité : notion de témoin, nombres de Carmichaël",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tests de primalité : notion de témoin, nombres de Carmichael.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-305": {
+				"libelle": "Problèmes de chiffrement affine",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chiffrement affine.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-370": {
+				"libelle": "Problèmes de chiffrement de Vigenère",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chiffrement de Vigenère.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-371": {
+				"libelle": "Problèmes de chiffrement de Hill",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chiffrement de Hill.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-306": {
+				"libelle": "Recherche de nombres premiers particuliers : Mersenne",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombres premiers de Mersenne.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-372": {
+				"libelle": "Recherche de nombres premiers particuliers : Fermat",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombres premiers de Fermat.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-307": {
+				"libelle": "Exemples simples de codes correcteurs",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Exemples simples de codes correcteurs.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-308": {
+				"libelle": "Étude du système cryptographique RSA",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Système cryptographique RSA.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-309": {
+				"libelle": "Détermination des triplets pythagoriciens",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Triplets pythagoriciens.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-310": {
+				"libelle": "Étude des sommes de deux carrés par les entiers de Gauss",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Sommes de deux carrés, étudiées par les entiers de Gauss.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-311": {
+				"libelle": "Étude de l'équation de Pell-Fermat",
+				"rubrique": "Arithmétique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation de Pell-Fermat.",
+						"source": "BO Tle exp. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-312": {
+				"libelle": "Graphe, sommets, arêtes",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Graphe, sommets, arêtes (vocabulaire du BO, graphe non orienté).",
+						"source": "BO Tle exp. p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : « arêtes » et « chaîne » sont le vocabulaire des graphes non orientés ; l'orientation n'apparaît au BO que pour les chaînes de Markov. Voir lte-5."
+			},
+			"TEXP-313": {
+				"libelle": "Exemple du graphe complet",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Graphe complet, comme exemple.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-373": {
+				"libelle": "Sommets adjacents",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire du BO seulement : sommets adjacents, degré, ordre, chaîne, longueur d'une chaîne, graphe connexe.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-314": {
+				"libelle": "Degré",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire du BO seulement : sommets adjacents, degré, ordre, chaîne, longueur d'une chaîne, graphe connexe.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-374": {
+				"libelle": "Ordre d'un graphe",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire du BO seulement : sommets adjacents, degré, ordre, chaîne, longueur d'une chaîne, graphe connexe.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-315": {
+				"libelle": "Chaîne, longueur d'une chaîne",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Chaîne et longueur d'une chaîne ; ni cycle ni chaîne eulérienne (graphes eulériens : problème possible TEXP-348).",
+						"source": "BO Tle exp. p.10-11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le mot « cycle » n'est pas au BO ; les graphes eulériens sont un problème possible."
+			},
+			"TEXP-316": {
+				"libelle": "Graphe connexe",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Vocabulaire du BO seulement : sommets adjacents, degré, ordre, chaîne, longueur d'une chaîne, graphe connexe.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-317": {
+				"libelle": "Notion de matrice (tableau de nombres réels)",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Matrice = tableau de nombres réels.",
+						"detail": {
+							"ensemble": "réels"
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-318": {
+				"libelle": "Matrice carrée",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Matrice carrée, colonne, ligne (vocabulaire du BO).",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-375": {
+				"libelle": "Matrice colonne",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Matrice carrée, colonne, ligne (vocabulaire du BO).",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-376": {
+				"libelle": "Matrice ligne",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Matrice carrée, colonne, ligne (vocabulaire du BO).",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-319": {
+				"libelle": "Opérations sur les matrices",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Opérations : somme, produit par un réel, produit de matrices ; ni transposée ni déterminant.",
+						"source": "BO Tle exp. p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « Opérations » sans liste ; la transposée et le déterminant n'apparaissent nulle part au BO. Voir lte-7 pour le déterminant d'ordre 2."
+			},
+			"TEXP-320": {
+				"libelle": "Inverse d'une matrice carrée",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inverse d'une matrice carrée.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2)."
+			},
+			"TEXP-321": {
+				"libelle": "Puissances d'une matrice carrée",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Puissances d'une matrice carrée ; calculs donnés en exemple pour les ordres 2 et 3.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-6 : ordre des matrices."
+			},
+			"TEXP-322": {
+				"libelle": "Représentation matricielle : matrice d'adjacence d'un graphe",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Matrice d'adjacence d'un graphe.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices)."
+			},
+			"TEXP-323": {
+				"libelle": "Représentation matricielle des transformations géométriques du plan",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Transformations géométriques du plan représentées par une matrice ; le BO ne les liste pas.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-8 : quelles transformations."
+			},
+			"TEXP-324": {
+				"libelle": "Représentation matricielle des systèmes linéaires",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Écriture matricielle d'un système linéaire.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-6 : taille des systèmes."
+			},
+			"TEXP-325": {
+				"libelle": "Représentation matricielle des suites récurrentes",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Écriture matricielle d'une suite récurrente.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-326": {
+				"libelle": "Exemples de calcul de puissances de matrices carrées d'ordre $2$ ou $3$",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Matrices carrées d'ordre 2 ou 3 seulement.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-327": {
+				"libelle": "Suite de matrices colonnes $(U_n)$ vérifiant une relation de récurrence du type $U_{n+1} = AU_n + C$",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Récurrence du seul type U_{n+1} = AU_n + C.",
+						"detail": {
+							"liste": ["U_{n+1} = AU_n + C"]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-328": {
+				"libelle": "Graphe orienté pondéré associé à une chaîne de Markov à deux ou trois états",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chaîne de Markov à deux ou trois états ; graphe orienté pondéré associé.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-329": {
+				"libelle": "Chaîne de Markov à deux ou trois états",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux ou trois états.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-330": {
+				"libelle": "Distribution initiale d'une chaîne de Markov, représentée par une matrice ligne $\\pi_0$",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Distribution initiale = matrice ligne π0.",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-331": {
+				"libelle": "Matrice de transition d'une chaîne de Markov",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Matrice de transition d'une chaîne à deux ou trois états, graphe pondéré associé.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-332": {
+				"libelle": "Pour une chaîne de Markov à deux ou trois états de matrice $P$, interprétation du coefficient $(i, j)$ de $P^n$",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Interprétation du coefficient (i, j) de Pⁿ, chaîne à deux ou trois états.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-333": {
+				"libelle": "Distribution d'une chaîne de Markov après $n$ transitions, représentée comme la matrice ligne $\\pi_0 P^n$",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Distribution après n transitions = matrice ligne π0Pⁿ (convention ligne).",
+						"source": "BO Tle exp. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-334": {
+				"libelle": "Distributions invariantes d'une chaîne de Markov à deux ou trois états",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Distributions invariantes d'une chaîne à deux ou trois états ; l'étude asymptotique est un problème possible (TEXP-350).",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.10-11",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-335": {
+				"libelle": "Modéliser une situation par un graphe",
+				"rubrique": "Graphes et matrices",
+				"bornes": [],
+				"remarque": "Point-compétence (modéliser) : pas de grain questionnable propre, il se travaille dans les autres points ; aucune borne."
+			},
+			"TEXP-336": {
+				"libelle": "Modéliser une situation par une matrice",
+				"rubrique": "Graphes et matrices",
+				"bornes": [],
+				"remarque": "Point-compétence (modéliser) : pas de grain questionnable propre, il se travaille dans les autres points ; aucune borne."
+			},
+			"TEXP-337": {
+				"libelle": "Associer un graphe orienté pondéré à une chaîne de Markov à deux ou trois états",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chaîne de Markov à deux ou trois états.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-338": {
+				"libelle": "Calculer l'inverse d'une matrice carrée",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inverse d'une matrice carrée.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2)."
+			},
+			"TEXP-339": {
+				"libelle": "Calculer les puissances d'une matrice carrée",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "operandes",
+						"borne": "Puissances d'une matrice carrée.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-6 : ordre des matrices."
+			},
+			"TEXP-340": {
+				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour résoudre un système linéaire",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Système linéaire résolu par le calcul matriciel, notamment l'inverse.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitude lte-6 : taille des systèmes."
+			},
+			"TEXP-341": {
+				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une suite récurrente linéaire",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Suite récurrente linéaire, étudiée par le calcul matriciel (type U_{n+1} = AU_n + C des contenus).",
+						"source": "BO Tle exp. p.10-11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : la capacité ne nomme pas le type de suite ; le seul type des contenus (p.10) est U_{n+1} = AU_n + C."
+			},
+			"TEXP-342": {
+				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour calculer le nombre de chemins de longueur donnée entre deux sommets d'un graphe",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Nombre de chemins de longueur donnée entre deux sommets, par les puissances de la matrice d'adjacence.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices)."
+			},
+			"TEXP-343": {
+				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : calculer des probabilités",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chaîne de Markov à deux ou trois états : calcul de probabilités.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-344": {
+				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : déterminer une probabilité invariante",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Chaîne de Markov à deux ou trois états : probabilité invariante.",
+						"detail": {
+							"liste": [2, 3]
+						},
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TEXP-345": {
+				"libelle": "Expression du nombre de chemins de longueur $n$ reliant deux sommets d'un graphe à l'aide de la puissance $n$-ième de la matrice d'adjacence",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer que le nombre de chemins de longueur n se lit sur la puissance n-ième de la matrice d'adjacence.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (nombre de chemins et matrice d'adjacence), rien de plus."
+			},
+			"TEXP-346": {
+				"libelle": "Pour une chaîne de Markov, expression de la probabilité de passer de l'état $i$ à l'état $j$ en $n$ transitions",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer l'expression de la probabilité de passer de l'état i à l'état j en n transitions.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (probabilité de transition en n étapes), rien de plus."
+			},
+			"TEXP-347": {
+				"libelle": "Pour une chaîne de Markov, expression de la matrice ligne représentant la distribution après $n$ transitions",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Démontrer l'expression de la matrice ligne de la distribution après n transitions.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point « démonstration » : la borne est ce qui est démontré (distribution π0Pⁿ), rien de plus."
+			},
+			"TEXP-348": {
+				"libelle": "Étude de graphes eulériens",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Graphes eulériens.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-349": {
+				"libelle": "Interpolation polynomiale",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Interpolation polynomiale.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-350": {
+				"libelle": "Marche aléatoire sur un graphe. Étude asymptotique",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Marche aléatoire sur un graphe, étude asymptotique.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-351": {
+				"libelle": "Modèle de diffusion d'Ehrenfest",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Modèle de diffusion d'Ehrenfest.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-352": {
+				"libelle": "Modèle « proie-prédateur » discrétisé : évolution couplée de deux suites récurrentes",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Modèle « proie-prédateur » discrétisé : deux suites récurrentes couplées.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			},
+			"TEXP-353": {
+				"libelle": "Algorithme PageRank",
+				"rubrique": "Graphes et matrices",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Algorithme PageRank.",
+						"source": "BO Tle exp. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5)."
+			}
+		}
+	}
+}

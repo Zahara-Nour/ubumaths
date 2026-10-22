@@ -1,0 +1,833 @@
+{
+	"1_GEN": {
+		"general": [
+			{
+				"aspect": "autre",
+				"borne": "« Seuls sont exigibles des élèves les contenus mathématiques de la colonne de droite, mobilisés dans les capacités attendues » : les « Situations et problèmes » (fonction affine par morceaux de l'impôt, point d'équilibre offre/demande, Monty Hall, modèle de Malthus…) sont des contextes possibles, pas des contenus.",
+				"source": "BO 1re ES p.3",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Les automatismes de seconde « doivent être entretenus » : ils restent dans le champ du module.",
+				"source": "BO 1re ES p.3",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Familles de fonctions du module : fonctions affines (remobilisées), polynômes de degré 2, fonctions exponentielles x ↦ aˣ ; les fonctions de seconde restent connues.",
+				"detail": {
+					"liste": ["affine", "polynôme de degré 2", "x ↦ aˣ"]
+				},
+				"source": "BO 1re ES p.5-7",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Fonctions exponentielles x ↦ aˣ seulement pour a > 0 et x ⩾ 0.",
+				"detail": {
+					"a": "> 0",
+					"x": "⩾ 0"
+				},
+				"source": "BO 1re ES p.7",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Second degré : racines et signe seulement sous forme factorisée ; « le calcul des racines à l'aide du discriminant ne figure pas au programme » ; aucune formule (sommet, axe) n'est attendue.",
+				"source": "BO 1re ES p.6",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Pas de dérivée ni de logarithme : absents du BO du module.",
+				"source": "BO 1re ES p.3-7",
+				"force": "BO"
+			},
+			{
+				"aspect": "format",
+				"borne": "Suites : notation fonctionnelle u(n) d'abord, puis notation indicielle uₙ.",
+				"source": "BO 1re ES p.5",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Composante informatique (algorithmique, programmation, tableur) reposant sur « un nombre limité d'éléments de syntaxe » ; outils : calculatrice, tableur, logiciel de géométrie dynamique ou de programmation.",
+				"source": "BO 1re ES p.2-3",
+				"force": "BO"
+			}
+		],
+		"points": {
+			"1GEN-001": {
+				"libelle": "Deux caractères qualitatifs : exemples d'analyse du croisement de deux caractères par représentation graphique (diagrammes en barres, diagrammes circulaires)",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux caractères qualitatifs ; diagrammes en barres, diagrammes circulaires.",
+						"detail": {
+							"liste": ["diagramme en barres", "diagramme circulaire"]
+						},
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-002": {
+				"libelle": "Deux caractères quantitatifs : représentation par un nuage de points",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Deux caractères quantitatifs ; nuage de points.",
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-003": {
+				"libelle": "Ajustement affine",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajustements proposés : au jugé, droite de Mayer, moindres carrés ; « aucune connaissance théorique n'est attendue ».",
+						"detail": {
+							"liste": ["au jugé", "droite de Mayer", "moindres carrés"]
+						},
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-004": {
+				"libelle": "Point moyen",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": []
+			},
+			"1GEN-005": {
+				"libelle": "Interpolation, extrapolation",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "À partir d'un ajustement affine.",
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-006": {
+				"libelle": "Utiliser un tableur pour représenter des données sous forme de tableau ou de diagramme",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tableur ; tableau ou diagramme.",
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-007": {
+				"libelle": "Déterminer un ajustement affine",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajustements proposés : au jugé, droite de Mayer, moindres carrés ; « aucune connaissance théorique n'est attendue ».",
+						"detail": {
+							"liste": ["au jugé", "droite de Mayer", "moindres carrés"]
+						},
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-045": {
+				"libelle": "Utiliser un ajustement affine pour interpoler ou extrapoler des valeurs inconnues",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajustements proposés : au jugé, droite de Mayer, moindres carrés ; « aucune connaissance théorique n'est attendue ».",
+						"detail": {
+							"liste": ["au jugé", "droite de Mayer", "moindres carrés"]
+						},
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-008": {
+				"libelle": "Savoir calculer les coordonnées d'un point moyen",
+				"rubrique": "Analyse de l'information chiffrée",
+				"bornes": []
+			},
+			"1GEN-062": {
+				"libelle": "Déterminer graphiquement le signe d'une fonction",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lecture graphique, fonction donnée par sa courbe.",
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : la même puce du BO ajoute « ou son tableau de variations » ; cette partie n'est pas dans le libellé (non corrigé)."
+			},
+			"1GEN-063": {
+				"libelle": "Tracer une droite donnée par un point et son coefficient directeur",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Droite donnée par un point et son coefficient directeur.",
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-064": {
+				"libelle": "Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points",
+				"rubrique": "Automatismes > Fonctions et représentations",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Coordonnées de deux points de la droite.",
+						"source": "BO 1re ES p.4",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-009": {
+				"libelle": "Indépendance de deux évènements",
+				"rubrique": "Phénomènes aléatoires",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Définition : A et B indépendants si P_B(A) = P(A), avec P(B) ≠ 0.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "Caractérisation par P(A ∩ B) = P(A) × P(B) : question l1g-1."
+			},
+			"1GEN-010": {
+				"libelle": "Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli",
+				"rubrique": "Phénomènes aléatoires",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Épreuves de Bernoulli identiques et indépendantes ; pas de loi binomiale ni de coefficient binomial (absents du BO).",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "Nombre d'épreuves : les capacités disent n ⩽ 4, le contenu ne borne pas ; question l1g-2."
+			},
+			"1GEN-011": {
+				"libelle": "Représenter par un arbre de probabilités la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$",
+				"rubrique": "Phénomènes aléatoires",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n ⩽ 4 épreuves.",
+						"detail": {
+							"n_max": 4
+						},
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Arbre de probabilités.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-046": {
+				"libelle": "Calculer des probabilités associées à la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$",
+				"rubrique": "Phénomènes aléatoires",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n ⩽ 4 épreuves.",
+						"detail": {
+							"n_max": 4
+						},
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Calcul à l'aide de l'arbre.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-012": {
+				"libelle": "Savoir utiliser l'indépendance de deux évènements",
+				"rubrique": "Phénomènes aléatoires",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Définition : A et B indépendants si P_B(A) = P(A), avec P(B) ≠ 0.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l1g-1."
+			},
+			"1GEN-047": {
+				"libelle": "Savoir justifier l'indépendance de deux évènements",
+				"rubrique": "Phénomènes aléatoires",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Définition : A et B indépendants si P_B(A) = P(A), avec P(B) ≠ 0.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "Question l1g-1."
+			},
+			"1GEN-022": {
+				"libelle": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : allure de la courbe",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Polynômes de degré 2 ; allure de la courbe (parabole).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-052": {
+				"libelle": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : axe de symétrie",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Aucune formule attendue (pas x = −b/(2a)) ; l'axe se détermine par exemple en résolvant f(x) = c.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-053": {
+				"libelle": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : coordonnées du sommet en lien avec la symétrie",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sommet en lien avec la symétrie ; aucune formule attendue.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-054": {
+				"libelle": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : tableau de variation de la fonction",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": []
+			},
+			"1GEN-023": {
+				"libelle": "Racines d'un polynôme de degré 2 donné sous forme factorisée (le calcul des racines à l'aide du discriminant ne figure pas au programme)",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Polynôme donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-055": {
+				"libelle": "Signe d'un polynôme de degré 2 donné sous forme factorisée",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Polynôme donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-024": {
+				"libelle": "Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme $x \\mapsto ax^2$, $x \\mapsto ax^2 + c$, $x \\mapsto a(x - x_1)(x - x_2)$",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Formes x ↦ ax², x ↦ ax² + c, x ↦ a(x − x₁)(x − x₂) seulement.",
+						"detail": {
+							"liste": ["ax²", "ax² + c", "a(x − x₁)(x − x₂)"]
+						},
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-025": {
+				"libelle": "Déterminer des éléments caractéristiques de la fonction $x \\mapsto ax^2 + bx + c$ (aucune formule n'est attendue ; l'axe de symétrie se détermine par exemple en résolvant $f(x) = c$)",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "x ↦ ax² + bx + c ; aucune formule attendue ; axe de symétrie par exemple en résolvant f(x) = c.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-026": {
+				"libelle": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Polynôme donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-027": {
+				"libelle": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Polynôme donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-028": {
+				"libelle": "Suites géométriques à termes strictement positifs : définition par relation de récurrence",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Définition par relation de récurrence.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-029": {
+				"libelle": "Suites géométriques : explicitation du terme de rang $n$",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+			},
+			"1GEN-030": {
+				"libelle": "Suites géométriques : sens de variation",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+			},
+			"1GEN-031": {
+				"libelle": "Suites géométriques : représentation graphique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				],
+				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+			},
+			"1GEN-032": {
+				"libelle": "Fonction $x \\mapsto a^x$ ($a > 0$, $x \\geqslant 0$)",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "x ↦ aˣ, a > 0, x ⩾ 0.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-033": {
+				"libelle": "Fonctions $x \\mapsto a^x$ : propriétés algébriques (admises, par extension des propriétés des puissances entières)",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Propriétés algébriques admises, par extension des propriétés des puissances entières.",
+						"source": "BO 1re ES p.6-7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-034": {
+				"libelle": "Fonctions $x \\mapsto a^x$ : variations",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": []
+			},
+			"1GEN-035": {
+				"libelle": "Fonctions $x \\mapsto a^x$ : représentation graphique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": []
+			},
+			"1GEN-036": {
+				"libelle": "Fonctions $x \\mapsto a^x$ : cas particulier de l'exposant $\\frac{1}{n}$",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Exposant 1/n.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-037": {
+				"libelle": "Taux d'évolution moyen correspondant à $n$ évolutions successives",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Taux moyen correspondant à n évolutions successives, à l'aide de l'exposant 1/n.",
+						"source": "BO 1re ES p.7",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite (texte implicite) : le BO place « Cas particulier de l'exposant 1/n » juste avant ce contenu, sans écrire le lien ; aucun logarithme n'est au programme."
+			},
+			"1GEN-038": {
+				"libelle": "Reconnaitre un phénomène discret ou continu de croissance ou décroissance exponentielle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Modèles : suites géométriques à termes strictement positifs, fonctions x ↦ aˣ.",
+						"source": "BO 1re ES p.6-7",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Phénomène discret ou continu, croissance ou décroissance.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-056": {
+				"libelle": "Savoir modéliser un phénomène discret ou continu de croissance ou décroissance exponentielle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Modèles : suites géométriques à termes strictement positifs, fonctions x ↦ aˣ.",
+						"source": "BO 1re ES p.6-7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point en partie compétence (modéliser) : un modèle s'y rattache s'il fait choisir ou écrire le modèle exponentiel d'une situation."
+			},
+			"1GEN-039": {
+				"libelle": "Calculer un terme de rang donné d'une suite géométrique définie par une relation fonctionnelle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Suite définie par une relation fonctionnelle.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-057": {
+				"libelle": "Calculer un terme de rang donné d'une suite géométrique définie par une relation de récurrence",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Suite définie par une relation de récurrence.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-040": {
+				"libelle": "Calculer un taux d'évolution moyen",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [],
+				"remarque": "Méthode : voir 1GEN-037 (exposant 1/n)."
+			},
+			"1GEN-041": {
+				"libelle": "Réaliser la représentation graphique des termes d'une suite géométrique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-058": {
+				"libelle": "Exploiter la représentation graphique des termes d'une suite géométrique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes strictement positifs (raison positive).",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-042": {
+				"libelle": "Réaliser la représentation graphique d'une fonction exponentielle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": []
+			},
+			"1GEN-059": {
+				"libelle": "Exploiter la représentation graphique d'une fonction exponentielle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": []
+			},
+			"1GEN-043": {
+				"libelle": "Estimer les ordres de grandeur d'une quantité en croissance ou décroissance exponentielle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": []
+			},
+			"1GEN-044": {
+				"libelle": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle par le calcul",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Croissance ou décroissance exponentielle ; pas de logarithme (absent du programme).",
+						"source": "BO 1re ES p.3-7",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Par le calcul.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-060": {
+				"libelle": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle à l'aide d'une représentation graphique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Croissance ou décroissance exponentielle ; pas de logarithme (absent du programme).",
+						"source": "BO 1re ES p.3-7",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "À l'aide d'une représentation graphique.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-061": {
+				"libelle": "Résoudre un problème de seuil dans le cas d'une croissance ou décroissance exponentielle en utilisant un outil numérique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation exponentielle",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Croissance ou décroissance exponentielle ; pas de logarithme (absent du programme).",
+						"source": "BO 1re ES p.3-7",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "En utilisant un outil numérique.",
+						"source": "BO 1re ES p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-013": {
+				"libelle": "Suites arithmétiques : définition par la relation de récurrence",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Définition par la relation de récurrence.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-014": {
+				"libelle": "Suites arithmétiques : explicitation du terme de rang $n$",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": []
+			},
+			"1GEN-015": {
+				"libelle": "Suites arithmétiques : sens de variation",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sens de variation, en parallèle possible avec celui des fonctions affines.",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-016": {
+				"libelle": "Suites arithmétiques : représentation graphique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": []
+			},
+			"1GEN-017": {
+				"libelle": "Reconnaitre un phénomène discret ou continu de croissance linéaire",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Modèles : suites arithmétiques, fonctions affines (taux d'accroissement constant).",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Phénomène discret ou continu de croissance linéaire.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-048": {
+				"libelle": "Savoir modéliser un phénomène discret ou continu de croissance linéaire",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Modèles : suites arithmétiques, fonctions affines (taux d'accroissement constant).",
+						"source": "BO 1re ES p.5",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point en partie compétence (modéliser) : un modèle s'y rattache s'il fait choisir ou écrire le modèle linéaire d'une situation."
+			},
+			"1GEN-018": {
+				"libelle": "Calculer un terme de rang donné d'une suite arithmétique définie par une relation fonctionnelle",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Suite définie par une relation fonctionnelle.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-049": {
+				"libelle": "Calculer un terme de rang donné d'une suite arithmétique définie par une relation de récurrence",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Suite définie par une relation de récurrence.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-019": {
+				"libelle": "Réaliser la représentation graphique des termes d'une suite arithmétique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": []
+			},
+			"1GEN-050": {
+				"libelle": "Exploiter la représentation graphique des termes d'une suite arithmétique",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": []
+			},
+			"1GEN-020": {
+				"libelle": "Réaliser la représentation graphique d'une fonction affine",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions affines, remobilisées de seconde (« travail succinct ») : représentation graphique, sens de variation, lien entre taux d'accroissement et coefficient directeur.",
+						"source": "BO 1re ES p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-051": {
+				"libelle": "Exploiter la représentation graphique d'une fonction affine",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions affines, remobilisées de seconde (« travail succinct ») : représentation graphique, sens de variation, lien entre taux d'accroissement et coefficient directeur.",
+						"source": "BO 1re ES p.5-6",
+						"force": "BO"
+					}
+				]
+			},
+			"1GEN-021": {
+				"libelle": "Résoudre un problème de seuil dans le cas d'une croissance linéaire",
+				"rubrique": "Phénomènes d'évolution, modélisation par des fonctions > Variation linéaire",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Croissance linéaire.",
+						"source": "BO 1re ES p.6",
+						"force": "BO"
+					}
+				]
+			}
+		}
+	}
+}

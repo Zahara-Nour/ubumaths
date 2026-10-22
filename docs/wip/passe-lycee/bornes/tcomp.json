@@ -1,0 +1,2134 @@
+{
+	"T_COMP": {
+		"general": [
+			{
+				"aspect": "fonctions",
+				"borne": "Fonctions de référence : carré, cube, racine carrée, inverse, exponentielle, logarithme népérien. Le logarithme est la seule famille nouvelle ; polynômes du second degré, x ↦ xⁿ (n ∈ ℤ) et t ↦ e^{at} viennent de la 1re spécialité.",
+				"detail": {
+					"liste": [
+						"carré",
+						"cube",
+						"racine carrée",
+						"inverse",
+						"exponentielle",
+						"logarithme népérien"
+					]
+				},
+				"source": "BO Tle compl. p.9 ; BO 1re spé p.7-8",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Pas de fonctions trigonométriques (x ↦ cos x, x ↦ sin x) : la 1re spécialité ne voit que le cosinus et le sinus d'un réel sur le cercle, et la Tle compl. ne les ajoute pas aux fonctions de référence.",
+				"detail": {
+					"exclus": ["cos", "sin", "tan"]
+				},
+				"source": "BO Tle compl. p.9 ; BO 1re spé p.8",
+				"force": "déduite"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Compositions : seulement x ↦ f(ax + b), x ↦ e^{u(x)}, x ↦ ln u(x), x ↦ u(x)², en plus des opérations de 1re spé (somme, produit, inverse, quotient).",
+				"detail": {
+					"liste": ["f(ax + b)", "e^{u}", "ln u", "u²"],
+					"exclus": ["√u (u non affine)", "uⁿ (n ⩾ 3)"]
+				},
+				"source": "BO Tle compl. p.9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Limites et continuité : approche intuitive. La formalisation de la limite n'est pas un attendu ; les opérations sur les limites sont admises ; composition des limites et théorèmes de comparaison seulement « en contexte » ; on admet qu'une fonction dérivable sur un intervalle est continue.",
+				"source": "BO Tle compl. p.8-9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations différentielles : la résolution se limite aux équations linéaires du premier ordre à coefficients constants (y' = ay, y' = ay + b). Une équation non linéaire (logistique) peut apparaître, sans aucune connaissance exigible à son sujet.",
+				"source": "BO Tle compl. p.9",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Lois de probabilité au programme : uniforme sur {1, …, n}, Bernoulli, binomiale, géométrique ; à densité : uniforme sur [a, b], exponentielle. Aucune autre (la loi normale n'y figure pas).",
+				"detail": {
+					"liste": [
+						"uniforme discrète",
+						"Bernoulli",
+						"binomiale",
+						"géométrique",
+						"uniforme sur [a, b]",
+						"exponentielle"
+					]
+				},
+				"source": "BO Tle compl. p.11",
+				"force": "BO"
+			},
+			{
+				"aspect": "format",
+				"borne": "Le symbole Σ sert à écrire concisément ; son emploi comme outil de calcul n'est pas un objectif.",
+				"source": "BO Tle compl. p.3",
+				"force": "BO"
+			},
+			{
+				"aspect": "format",
+				"borne": "Symboles ∀ et ∃ non exigibles ; complémentaire noté Ā ou E \\ A ; cardinal noté Card(A).",
+				"detail": {
+					"notation_reponse": "∀, ∃ jamais exigés"
+				},
+				"source": "BO Tle compl. p.3",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Algorithmes écrits en langage naturel (affectation notée ←) ou en Python ; aucune notion d'algorithmique nouvelle par rapport à la 2de et à la 1re (variable, type, affectation, instruction conditionnelle, boucle, fonction, liste).",
+				"source": "BO Tle compl. p.12",
+				"force": "BO"
+			}
+		],
+		"points": {
+			"TCOMP-201": {
+				"libelle": "Notion de couple, de triplet et plus généralement de $n$-uplet",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [],
+				"remarque": "Vocabulaire transversal : le BO (p.3) ne dit rien au-delà de la notion ; hérite des bornes générales."
+			},
+			"TCOMP-330": {
+				"libelle": "Notion de produit cartésien",
+				"rubrique": "Vocabulaire ensembliste et logique",
+				"bornes": [],
+				"remarque": "Le BO (p.3) donne la notion et la notation Card(A), mais aucune règle de dénombrement (Card(E × F) = Card E × Card F, nombre de n-uplets) : voir ltc-9."
+			},
+			"TCOMP-202": {
+				"libelle": "Statistique descriptive : caractéristiques de dispersion — déciles",
+				"rubrique": "Thèmes d'étude > Répartition des richesses, inégalités",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Déciles d'une série statistique (répartition de richesses, de salaires), en prolongement de la médiane et des quartiles de 2de ; convention de calcul non fixée par le BO (ltc-5).",
+						"source": "BO Tle compl. p.5-6",
+						"force": "BO"
+					}
+				],
+				"remarque": "Point tiré des « contenus associés » d'un thème d'étude, exigence d'approfondissement. Convention des déciles : ltc-5."
+			},
+			"TCOMP-331": {
+				"libelle": "Statistique descriptive : caractéristiques de dispersion — rapport interdécile",
+				"rubrique": "Thèmes d'étude > Répartition des richesses, inégalités",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Rapport interdécile = D9 / D1 (quotient, à ne pas confondre avec l'écart interdécile D9 − D1).",
+						"source": "BO Tle compl. p.6",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO nomme le rapport interdécile sans le définir ; le sens usuel (INSEE) est le quotient D9/D1. Point tiré d'un thème d'étude, exigence d'approfondissement."
+			},
+			"TCOMP-203": {
+				"libelle": "Approche intuitive de la notion de limite, finie ou infinie, d'une suite",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Approche intuitive, sur des exemples (calculs numériques, graphiques) ; aucune définition formelle de la limite.",
+						"source": "BO Tle compl. p.8-9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-204": {
+				"libelle": "Approche intuitive des opérations sur les limites",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Opérations sur les limites admises, utilisées sans démonstration.",
+						"source": "BO Tle compl. p.8-9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-332": {
+				"libelle": "Approche intuitive du passage à la limite dans les inégalités",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Approche intuitive : résultat admis et utilisé, sans démonstration.",
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-205": {
+				"libelle": "Approche intuitive du théorème des gendarmes",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Approche intuitive : théorème admis et utilisé, sans démonstration.",
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-206": {
+				"libelle": "Limite d'une suite géométrique de raison positive",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Raison positive seulement (q ⩾ 0) : pas de suite géométrique de raison négative.",
+						"detail": {
+							"ensemble": "q ⩾ 0"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-207": {
+				"libelle": "Limite de la somme des termes d'une suite géométrique de raison positive strictement inférieure à $1$",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Raison q avec 0 ⩽ q < 1 ; limite de la somme des termes u₀ + u₁ + … + uₙ.",
+						"detail": {
+							"ensemble": "0 ⩽ q < 1"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-208": {
+				"libelle": "Suites arithmético-géométriques",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Limite d'une suite arithmético-géométrique uₙ₊₁ = a uₙ + b seulement si a ⩾ 0 (la suite géométrique associée doit avoir une raison positive).",
+						"detail": {
+							"ensemble": "a ⩾ 0 pour la limite"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO ne donne la limite que pour une suite géométrique de raison positive ; la limite d'une suite arithmético-géométrique passe par la suite géométrique uₙ − ℓ de raison a, donc a ⩾ 0."
+			},
+			"TCOMP-377": {
+				"libelle": "Modéliser un problème par une suite donnée par une formule explicite ou une relation de récurrence",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Suite donnée par une formule explicite ou par une relation de récurrence (dont arithmético-géométrique).",
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-209": {
+				"libelle": "Calculer une limite de suite géométrique",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Raison positive seulement (q ⩾ 0) : pas de suite géométrique de raison négative.",
+						"detail": {
+							"ensemble": "q ⩾ 0"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Limite d'une suite arithmético-géométrique uₙ₊₁ = a uₙ + b seulement si a ⩾ 0 (la suite géométrique associée doit avoir une raison positive).",
+						"detail": {
+							"ensemble": "a ⩾ 0 pour la limite"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO ne donne la limite que pour une suite géométrique de raison positive ; la limite d'une suite arithmético-géométrique passe par la suite géométrique uₙ − ℓ de raison a, donc a ⩾ 0."
+			},
+			"TCOMP-210": {
+				"libelle": "Calculer la limite de la somme des termes d'une suite géométrique de raison positive et strictement inférieure à $1$",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Raison q avec 0 ⩽ q < 1 ; limite de la somme des termes u₀ + u₁ + … + uₙ.",
+						"detail": {
+							"ensemble": "0 ⩽ q < 1"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-211": {
+				"libelle": "Représenter graphiquement une suite donnée par une relation de récurrence $u_{n+1} = f(u_n)$ où $f$ est une fonction continue d'un intervalle $I$ dans lui-même",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Récurrence uₙ₊₁ = f(uₙ) avec f continue d'un intervalle I dans lui-même.",
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-212": {
+				"libelle": "Conjecturer le comportement global ou asymptotique d'une suite donnée par une relation de récurrence $u_{n+1} = f(u_n)$",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Récurrence uₙ₊₁ = f(uₙ) avec f continue d'un intervalle I dans lui-même.",
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Conjecture seulement (comportement global ou asymptotique) : aucune preuve exigée.",
+						"source": "BO Tle compl. p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-213": {
+				"libelle": "Pour une récurrence arithmético-géométrique : rechercher une suite constante solution particulière",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suite constante ℓ solution de ℓ = aℓ + b, donc a ≠ 1.",
+						"source": "BO Tle compl. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : une solution constante n'existe (en général) que pour a ≠ 1 ; le BO ne l'écrit pas."
+			},
+			"TCOMP-214": {
+				"libelle": "Pour une récurrence arithmético-géométrique : utiliser une suite constante solution particulière pour déterminer toutes les solutions",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Toutes les solutions par la suite géométrique uₙ − ℓ : uₙ = ℓ + (u₀ − ℓ)aⁿ.",
+						"source": "BO Tle compl. p.8",
+						"force": "déduite"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Limite d'une suite arithmético-géométrique uₙ₊₁ = a uₙ + b seulement si a ⩾ 0 (la suite géométrique associée doit avoir une raison positive).",
+						"detail": {
+							"ensemble": "a ⩾ 0 pour la limite"
+						},
+						"source": "BO Tle compl. p.8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : la forme uₙ = ℓ + (u₀ − ℓ)aⁿ est la seule conséquence de la méthode du BO (« utilisation de cette suite pour déterminer toutes les solutions »). Lecture déduite : le BO ne donne la limite que pour une suite géométrique de raison positive ; la limite d'une suite arithmético-géométrique passe par la suite géométrique uₙ − ℓ de raison a, donc a ⩾ 0."
+			},
+			"TCOMP-215": {
+				"libelle": "Limite des sommes des termes d'une suite géométrique de raison positive strictement inférieure à $1$ (démonstration)",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-216": {
+				"libelle": "Recherche de seuils",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-217": {
+				"libelle": "Pour une suite récurrente $u_{n+1} = f(u_n)$, calcul des termes successifs",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-218": {
+				"libelle": "Recherche de valeurs approchées de constantes mathématiques, par exemple $\\pi$, $\\ln 2$, $\\sqrt{2}$",
+				"rubrique": "Analyse > Suites numériques, modèles discrets",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Exemples du BO : π, ln 2, √2 (liste ouverte : « par exemple »).",
+						"detail": {
+							"liste": ["π", "ln 2", "√2"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-333": {
+				"libelle": "Notion de limite d'une fonction",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Notion intuitive de limite, en un point ou aux bornes d'un intervalle ; la formalisation n'est pas un attendu.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-219": {
+				"libelle": "Lien entre la notion de limite et les asymptotes horizontales ou verticales",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Asymptotes horizontales et verticales seulement (pas d'asymptote oblique).",
+						"detail": {
+							"exclus": ["asymptote oblique"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-220": {
+				"libelle": "Lien entre la notion de limite et la continuité",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Continuité intuitive ; une fonction dérivable sur un intervalle est continue (admis).",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-221": {
+				"libelle": "Limites de la fonction carré",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Limites aux bornes de ℝ : +∞ en −∞ et en +∞.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-334": {
+				"libelle": "Limites de la fonction cube",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Limites aux bornes de ℝ : −∞ en −∞, +∞ en +∞.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-335": {
+				"libelle": "Limites de la fonction racine carrée",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Limite en +∞ : +∞ (fonction définie sur [0, +∞[).",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-336": {
+				"libelle": "Limites de la fonction inverse",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Limites : 0 en −∞ et en +∞ ; −∞ en 0 à gauche, +∞ en 0 à droite.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-337": {
+				"libelle": "Limites de la fonction exponentielle",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Limites : 0 en −∞, +∞ en +∞.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-338": {
+				"libelle": "Limites de la fonction logarithme",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Limites : −∞ en 0 (à droite), +∞ en +∞.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-222": {
+				"libelle": "Théorème des valeurs intermédiaires (admis)",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Théorème admis, pour une fonction continue sur un intervalle.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-339": {
+				"libelle": "Théorème des valeurs intermédiaires : cas des fonctions strictement monotones",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction continue strictement monotone sur un intervalle : existence et unicité de la solution de f(x) = k.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-223": {
+				"libelle": "Réciproque d'une fonction continue strictement monotone sur un intervalle",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Pas de développement théorique ; notion illustrée par les couples carré / racine carrée et exponentielle / logarithme.",
+						"detail": {
+							"liste": ["carré ↔ racine carrée", "exponentielle ↔ logarithme"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Faut-il s'en tenir aux deux couples illustrés ? ltc-8."
+			},
+			"TCOMP-340": {
+				"libelle": "Représentation graphique de la réciproque d'une fonction continue strictement monotone",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Pas de développement théorique ; notion illustrée par les couples carré / racine carrée et exponentielle / logarithme.",
+						"detail": {
+							"liste": ["carré ↔ racine carrée", "exponentielle ↔ logarithme"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Faut-il s'en tenir aux deux couples illustrés ? ltc-8."
+			},
+			"TCOMP-224": {
+				"libelle": "Fonction logarithme népérien : réciproque de la fonction exponentielle",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Logarithme défini comme réciproque de l'exponentielle, donc sur ]0, +∞[ ; le thème historique le relie aussi à l'équation fonctionnelle et à la quadrature de l'hyperbole, sans en faire une définition.",
+						"source": "BO Tle compl. p.5 ; 9",
+						"force": "BO"
+					}
+				],
+				"remarque": "La quadrature de l'hyperbole (aire sous 1/t) n'est qu'un « problème possible » d'un thème : voir ltc-7."
+			},
+			"TCOMP-225": {
+				"libelle": "Représentation graphique de la fonction logarithme népérien",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": []
+			},
+			"TCOMP-226": {
+				"libelle": "Équation fonctionnelle du logarithme népérien",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés : ln(ab) = ln a + ln b, ln(1/a) = −ln a, ln(qⁿ) = n ln q (a, b, q > 0).",
+						"detail": {
+							"liste": ["ln(ab) = ln a + ln b", "ln(1/a) = −ln a", "ln(qⁿ) = n ln q"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-227": {
+				"libelle": "Fonction dérivée du logarithme népérien",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(ln x)' = 1/x sur ]0, +∞[.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-341": {
+				"libelle": "Fonction dérivée de $x \\mapsto f(ax + b)$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(f(ax + b))' = a f'(ax + b), f étant une fonction dont la dérivée est connue.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-228": {
+				"libelle": "Fonction dérivée de $x \\mapsto e^{u(x)}$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(e^{u})' = u' e^{u}.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-342": {
+				"libelle": "Fonction dérivée de $x \\mapsto \\ln u(x)$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(ln u)' = u'/u.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "fonctions",
+						"borne": "u strictement positive sur l'intervalle d'étude ; pas de ln |u|.",
+						"detail": {
+							"exclus": ["ln |u|"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : ln n'est défini que sur ]0, +∞[ (réciproque de exp) et le BO n'écrit que ln u ; ln |u| n'apparaît nulle part."
+			},
+			"TCOMP-343": {
+				"libelle": "Fonction dérivée de $x \\mapsto u(x)^2$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "(u²)' = 2u u' ; pas de formule générale pour uⁿ.",
+						"detail": {
+							"exclus": ["(uⁿ)' pour n ⩾ 3"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-229": {
+				"libelle": "Calculer une fonction dérivée",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonctions construites sur les fonctions de référence par somme, produit, inverse, quotient (1re spé) et par les seules compositions f(ax + b), e^{u}, ln u, u².",
+						"detail": {
+							"exclus": ["√u avec u non affine", "uⁿ (n ⩾ 3)", "fonctions trigonométriques"]
+						},
+						"source": "BO Tle compl. p.9 ; BO 1re spé p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-230": {
+				"libelle": "Calculer des limites",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Limites des fonctions de référence et opérations sur les limites (admises) ; composition et comparaison seulement en contexte.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Les croissances comparées (eˣ/x, x e^{−x}, ln x / x) ne figurent pas au BO : ltc-1."
+			},
+			"TCOMP-231": {
+				"libelle": "Dresser un tableau de variation",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Études sur des intervalles quelconques, avec une notion intuitive de limite aux bornes.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-378": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser le calcul des limites",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Limites des fonctions de référence et opérations sur les limites (admises) ; composition et comparaison seulement en contexte.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Capacité de résolution de problème ; mêmes bornes que TCOMP-230 (croissances comparées : ltc-1)."
+			},
+			"TCOMP-232": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser l'allure des courbes représentatives des fonctions inverse, carré, cube, racine carrée, exponentielle et logarithme",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Allure des courbes des seules fonctions inverse, carré, cube, racine carrée, exponentielle, logarithme.",
+						"detail": {
+							"liste": ["inverse", "carré", "cube", "racine carrée", "exponentielle", "logarithme"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-233": {
+				"libelle": "Exploiter le tableau de variation pour déterminer le nombre de solutions d'une équation du type $f(x) = k$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation du type f(x) = k ; nombre de solutions lu dans le tableau de variation (théorème des valeurs intermédiaires, cas strictement monotone).",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-234": {
+				"libelle": "Exploiter le tableau de variation pour résoudre une inéquation du type $f(x) \\leqslant k$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Inéquation du type f(x) ⩽ k, résolue à partir du tableau de variation.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-235": {
+				"libelle": "Déterminer des valeurs approchées, un encadrement d'une solution d'une équation du type $f(x) = k$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Valeurs approchées ou encadrement d'une solution de f(x) = k (calculatrice, balayage, dichotomie) ; aucune précision imposée par le BO.",
+						"source": "BO Tle compl. p.4 ; 9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-236": {
+				"libelle": "Utiliser l'équation fonctionnelle du logarithme pour transformer une écriture",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés : ln(ab) = ln a + ln b, ln(1/a) = −ln a, ln(qⁿ) = n ln q (a, b, q > 0).",
+						"detail": {
+							"liste": ["ln(ab) = ln a + ln b", "ln(1/a) = −ln a", "ln(qⁿ) = n ln q"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-237": {
+				"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés de 1re spé : e^{x + y} = eˣ eʸ, eˣ e^{−x} = 1 ; la stricte croissance de exp ; passage par ln (réciproque) possible.",
+						"source": "BO Tle compl. p.9 ; BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-344": {
+				"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une inéquation",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés de 1re spé : e^{x + y} = eˣ eʸ, eˣ e^{−x} = 1 ; la stricte croissance de exp ; passage par ln (réciproque) possible.",
+						"source": "BO Tle compl. p.9 ; BO 1re spé p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-238": {
+				"libelle": "Utiliser l'équation fonctionnelle du logarithme pour résoudre une équation",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés : ln(ab) = ln a + ln b, ln(1/a) = −ln a, ln(qⁿ) = n ln q (a, b, q > 0).",
+						"detail": {
+							"liste": ["ln(ab) = ln a + ln b", "ln(1/a) = −ln a", "ln(qⁿ) = n ln q"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Résolution sur l'ensemble où les expressions sous ln sont strictement positives.",
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : conséquence de la définition de ln sur ]0, +∞[ ; le BO n'en parle pas explicitement."
+			},
+			"TCOMP-345": {
+				"libelle": "Utiliser l'équation fonctionnelle du logarithme pour résoudre une inéquation",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés : ln(ab) = ln a + ln b, ln(1/a) = −ln a, ln(qⁿ) = n ln q (a, b, q > 0).",
+						"detail": {
+							"liste": ["ln(ab) = ln a + ln b", "ln(1/a) = −ln a", "ln(qⁿ) = n ln q"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Résolution sur l'ensemble où les expressions sous ln sont strictement positives.",
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : conséquence de la définition de ln sur ]0, +∞[ ; le BO n'en parle pas explicitement."
+			},
+			"TCOMP-239": {
+				"libelle": "Utiliser la relation $\\ln q^n = n \\ln q$ pour déterminer un seuil",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Seuil pour qⁿ (q > 0, n entier naturel) : qⁿ ⩽ s ou qⁿ ⩾ s résolu par n ln q.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-240": {
+				"libelle": "Relation $\\ln(ab) = \\ln a + \\ln b$ (démonstration)",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-346": {
+				"libelle": "Relation $\\ln\\left(\\frac{1}{a}\\right) = -\\ln a$ (démonstration)",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-241": {
+				"libelle": "Calcul de la fonction dérivée du logarithme, en admettant sa dérivabilité",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "La dérivabilité du logarithme est admise.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-242": {
+				"libelle": "Calcul de la fonction dérivée de $\\ln u$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-347": {
+				"libelle": "Calcul de la fonction dérivée de $\\exp u$",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-243": {
+				"libelle": "Méthode de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : balayage",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-348": {
+				"libelle": "Méthode de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : dichotomie",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-349": {
+				"libelle": "Méthode de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : méthode de Newton",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-244": {
+				"libelle": "Algorithme de Briggs pour le calcul de logarithmes",
+				"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-245": {
+				"libelle": "Sur des exemples, notion d'une solution d'équation différentielle",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sur des exemples seulement ; existence et unicité de la solution vérifiant une condition initiale mises en évidence sur ces exemples, pas démontrées.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-246": {
+				"libelle": "Notion de primitive, en liaison avec l'équation différentielle $y' = f$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Primitive F de f : F' = f, en lien avec l'équation y' = f.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-247": {
+				"libelle": "Deux primitives d'une même fonction continue sur un intervalle diffèrent d'une constante",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction continue sur un intervalle.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-248": {
+				"libelle": "Équation différentielle $y' = ay + b$, où $a$ et $b$ sont des réels",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "a et b réels ; la solution particulière constante −b/a suppose a ≠ 0.",
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO dit « a et b réels » ; la solution constante n'existe que pour a ≠ 0 (pour a = 0, y' = b relève des primitives)."
+			},
+			"TCOMP-249": {
+				"libelle": "Allure des courbes des solutions de l'équation différentielle $y' = ay + b$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": []
+			},
+			"TCOMP-250": {
+				"libelle": "Vérifier qu'une fonction donnée est solution d'une équation différentielle",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Équation donnée, linéaire ou non (par exemple logistique y' = ay(b − y)) : seule la vérification par le calcul de la dérivée est demandée.",
+						"source": "BO Tle compl. p.4 ; 9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO admet qu'une équation non linéaire « peut apparaître » sans connaissance exigible ; la vérification n'en demande aucune. L'ordre (y'' admis ou non) : ltc-6."
+			},
+			"TCOMP-251": {
+				"libelle": "Déterminer les primitives d'une fonction, en reconnaissant la dérivée d'une fonction de référence",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives lues sur les dérivées connues : xⁿ (n ∈ ℤ, n ≠ −1), 1/x (→ ln x sur ]0, +∞[), 1/√x, eˣ, e^{ax}, et f(ax + b) ; plus les formes 2uu', e^{u}u', u'/u.",
+						"source": "BO Tle compl. p.9 ; BO 1re spé p.7-8",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO dit « en reconnaissant la dérivée d'une fonction de référence » ; la liste est celle des dérivées connues en 1re spé et en Tle compl."
+			},
+			"TCOMP-252": {
+				"libelle": "Déterminer les primitives d'une fonction de la forme $2uu'$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme 2uu' (primitive u²) seulement ; pas de forme générale uⁿu'.",
+						"detail": {
+							"exclus": ["uⁿu' (n ⩾ 2)"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-350": {
+				"libelle": "Déterminer les primitives d'une fonction de la forme $e^{u}u'$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme e^{u}u' (primitive e^{u}).",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-351": {
+				"libelle": "Déterminer les primitives d'une fonction de la forme $\\frac{u'}{u}$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme u'/u (primitive ln u).",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "fonctions",
+						"borne": "u strictement positive sur l'intervalle d'étude ; pas de ln |u|.",
+						"detail": {
+							"exclus": ["ln |u|"]
+						},
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : ln n'est défini que sur ]0, +∞[ (réciproque de exp) et le BO n'écrit que ln u ; ln |u| n'apparaît nulle part."
+			},
+			"TCOMP-253": {
+				"libelle": "Résoudre une équation différentielle $y' = ay$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "a réel ; solutions x ↦ C e^{ax} ; une condition initiale fixe la solution.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-254": {
+				"libelle": "Pour une équation différentielle $y' = ay + b$ : déterminer une solution particulière constante",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "a et b réels ; la solution particulière constante −b/a suppose a ≠ 0.",
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO dit « a et b réels » ; la solution constante n'existe que pour a ≠ 0 (pour a = 0, y' = b relève des primitives)."
+			},
+			"TCOMP-255": {
+				"libelle": "Pour une équation différentielle $y' = ay + b$ : utiliser une solution particulière constante pour déterminer la solution générale",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Solution générale = solutions de y' = ay plus la solution particulière constante.",
+						"source": "BO Tle compl. p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "a et b réels ; la solution particulière constante −b/a suppose a ≠ 0.",
+						"source": "BO Tle compl. p.9",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO dit « a et b réels » ; la solution constante n'existe que pour a ≠ 0 (pour a = 0, y' = b relève des primitives)."
+			},
+			"TCOMP-256": {
+				"libelle": "Deux primitives d'une même fonction continue sur un intervalle diffèrent d'une constante (démonstration)",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-257": {
+				"libelle": "Résolution de l'équation différentielle $y' = ay$",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-258": {
+				"libelle": "Sur des exemples, résolution approchée d'une équation différentielle par la méthode d'Euler",
+				"rubrique": "Analyse > Primitives et équations différentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Sur des exemples seulement.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-259": {
+				"libelle": "Dérivée seconde d'une fonction",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": []
+			},
+			"TCOMP-260": {
+				"libelle": "Fonction convexe sur un intervalle : définition par la position relative de la courbe représentative et des sécantes",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Définition par la position de la courbe sous ses sécantes (cordes) sur un intervalle.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-261": {
+				"libelle": "Lorsque $f$ est dérivable, équivalence admise avec la position de la courbe par rapport aux tangentes",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Équivalence admise : courbe au-dessus de ses tangentes, pour f dérivable.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-262": {
+				"libelle": "Caractérisation admise de la convexité par la croissance de $f'$",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Caractérisation admise : f convexe ⇔ f' croissante.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-352": {
+				"libelle": "Caractérisation admise de la convexité par la positivité de $f''$",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Caractérisation admise : f convexe ⇔ f'' ⩾ 0.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-263": {
+				"libelle": "Point d'inflexion",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": [],
+				"remarque": "Le BO (p.10) nomme le point d'inflexion sans le définir."
+			},
+			"TCOMP-264": {
+				"libelle": "Reconnaitre sur une représentation graphique une fonction convexe, concave",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": []
+			},
+			"TCOMP-353": {
+				"libelle": "Reconnaitre sur une représentation graphique un point d'inflexion",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": []
+			},
+			"TCOMP-265": {
+				"libelle": "Étudier la convexité, la concavité, d'une fonction deux fois dérivable sur un intervalle",
+				"rubrique": "Analyse > Fonctions convexes",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Fonction deux fois dérivable sur un intervalle (fonctions du programme).",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-266": {
+				"libelle": "Définition de l'intégrale d'une fonction continue et positive sur $[a, b]$ comme aire sous la courbe. Notation $\\int_a^b f(x)\\,\\mathrm{d}x$",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f continue et positive sur [a, b] ; intégrale = aire sous la courbe (en unités d'aire).",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Notation ∫_a^b f(x) dx ; mise en relation avec Σ f(xᵢ)Δxᵢ.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-267": {
+				"libelle": "Relation de Chasles",
+				"rubrique": "Analyse > Intégration",
+				"bornes": []
+			},
+			"TCOMP-268": {
+				"libelle": "Valeur moyenne d'une fonction continue sur $[a, b]$. Approche graphique et numérique",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Valeur moyenne d'une fonction continue sur [a, b], abordée graphiquement et numériquement.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-269": {
+				"libelle": "La valeur moyenne est comprise entre les bornes de la fonction",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Si m ⩽ f ⩽ M sur [a, b], la valeur moyenne est comprise entre m et M.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-270": {
+				"libelle": "Approximation d'une intégrale par la méthode des rectangles",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Méthode des rectangles.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-271": {
+				"libelle": "Présentation de l'intégrale des fonctions continues de signe quelconque",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Signe quelconque : présentation seulement.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-272": {
+				"libelle": "Théorème : si $f$ est continue sur $[a, b]$, la fonction $F$ définie sur $[a, b]$ par $F(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est dérivable sur $[a, b]$ et a pour dérivée $f$",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f continue sur [a, b] ; F(x) = ∫_a^x f(t) dt.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-273": {
+				"libelle": "Calcul d'intégrales à l'aide de primitives : si $F$ est une primitive de $f$, alors $\\int_a^b f(x)\\,\\mathrm{d}x = F(b) - F(a)$",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u).",
+						"source": "BO Tle compl. p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles."
+			},
+			"TCOMP-274": {
+				"libelle": "Estimer graphiquement une intégrale",
+				"rubrique": "Analyse > Intégration",
+				"bornes": []
+			},
+			"TCOMP-354": {
+				"libelle": "Encadrer une intégrale",
+				"rubrique": "Analyse > Intégration",
+				"bornes": []
+			},
+			"TCOMP-275": {
+				"libelle": "Estimer graphiquement une valeur moyenne",
+				"rubrique": "Analyse > Intégration",
+				"bornes": []
+			},
+			"TCOMP-355": {
+				"libelle": "Encadrer une valeur moyenne",
+				"rubrique": "Analyse > Intégration",
+				"bornes": []
+			},
+			"TCOMP-276": {
+				"libelle": "Calculer une intégrale",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u).",
+						"source": "BO Tle compl. p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles."
+			},
+			"TCOMP-277": {
+				"libelle": "Calculer une valeur moyenne",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u).",
+						"source": "BO Tle compl. p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles."
+			},
+			"TCOMP-278": {
+				"libelle": "Calculer l'aire sous une courbe",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Aire sous la courbe d'une fonction continue et positive (en unités d'aire).",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					},
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u).",
+						"source": "BO Tle compl. p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles."
+			},
+			"TCOMP-279": {
+				"libelle": "Calculer l'aire entre deux courbes",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Aire entre deux courbes : ∫_a^b (f − g) avec f ⩾ g sur [a, b].",
+						"source": "BO Tle compl. p.10",
+						"force": "déduite"
+					},
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u).",
+						"source": "BO Tle compl. p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO dit seulement « entre deux courbes » ; la formule suit de la définition par l'aire. Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles."
+			},
+			"TCOMP-280": {
+				"libelle": "Interpréter une intégrale dans un contexte issu d'une autre discipline",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [],
+				"remarque": "Capacité d'interprétation en contexte d'une autre discipline : pas de borne propre."
+			},
+			"TCOMP-281": {
+				"libelle": "Interpréter une valeur moyenne dans un contexte issu d'une autre discipline",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [],
+				"remarque": "Capacité d'interprétation en contexte d'une autre discipline : pas de borne propre."
+			},
+			"TCOMP-282": {
+				"libelle": "Dérivée de $x \\mapsto \\int_a^x f(t)\\,\\mathrm{d}t$ lorsque $f$ est une fonction continue positive croissante",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "f continue, positive et croissante seulement.",
+						"source": "BO Tle compl. p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-283": {
+				"libelle": "Méthode des rectangles",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-356": {
+				"libelle": "Méthode des trapèzes",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-284": {
+				"libelle": "Méthode de Monte-Carlo pour un calcul d'aire",
+				"rubrique": "Analyse > Intégration",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-285": {
+				"libelle": "Loi uniforme sur $\\{1, 2, \\ldots, n\\}$",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Valeurs 1, 2, …, n équiprobables : P(X = k) = 1/n.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-357": {
+				"libelle": "Loi uniforme sur $\\{1, 2, \\ldots, n\\}$ : espérance",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "E(X) = (n + 1)/2.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-286": {
+				"libelle": "Épreuve de Bernoulli. Loi de Bernoulli : définition",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "X à valeurs 0 et 1, P(X = 1) = p.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-358": {
+				"libelle": "Loi de Bernoulli : espérance",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "E(X) = p.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-359": {
+				"libelle": "Loi de Bernoulli : écart type",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "σ(X) = √(p(1 − p)).",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-287": {
+				"libelle": "Schéma de Bernoulli",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Taille n quelconque (la 1re spé se limitait à n ⩽ 4).",
+						"source": "BO Tle compl. p.11 ; BO 1re spé p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO de Tle compl. ne borne plus n, alors que celui de 1re spé (p.10) écrivait « pour n ⩽ 4 »."
+			},
+			"TCOMP-360": {
+				"libelle": "Schéma de Bernoulli : représentation par un arbre",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": []
+			},
+			"TCOMP-288": {
+				"libelle": "Coefficients binomiaux : définition (nombre de façons d'obtenir $k$ succès dans un schéma de Bernoulli de taille $n$)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Définition : nombre de façons d'obtenir k succès dans un schéma de Bernoulli de taille n (chemins de l'arbre).",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de formule n!/(k!(n − k)!) : les coefficients s'obtiennent par dénombrement des chemins de l'arbre ou par le triangle de Pascal.",
+						"detail": {
+							"exclus": ["formule factorielle"]
+						},
+						"source": "BO Tle compl. p.11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO définit les coefficients binomiaux par le schéma de Bernoulli et ne donne comme outil que le triangle de Pascal ; la factorielle n'apparaît qu'en exemple d'algorithme de 1re spé."
+			},
+			"TCOMP-361": {
+				"libelle": "Coefficients binomiaux : triangle de Pascal",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Relation de Pascal (construction du triangle).",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-362": {
+				"libelle": "Coefficients binomiaux : symétrie",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Symétrie : (n k) = (n n − k).",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-289": {
+				"libelle": "Variable aléatoire suivant une loi binomiale $\\mathcal{B}(n, p)$. Interprétation : nombre de succès dans le schéma de Bernoulli",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation ℬ(n, p) ; X = nombre de succès du schéma de Bernoulli.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-290": {
+				"libelle": "Loi binomiale : expression",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "P(X = k) = (n k) pᵏ (1 − p)ⁿ⁻ᵏ.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Calcul effectif à la main ou à la calculatrice : ltc-2."
+			},
+			"TCOMP-291": {
+				"libelle": "Loi binomiale : espérance (admise)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "E(X) = np, admise.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-363": {
+				"libelle": "Loi binomiale : écart type (admis)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "σ(X) = √(np(1 − p)), admis.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-292": {
+				"libelle": "Loi binomiale : représentation graphique",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": []
+			},
+			"TCOMP-293": {
+				"libelle": "Loi géométrique : définition",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Rang du premier succès dans un schéma de Bernoulli (valeurs k ⩾ 1), ou loi discrète sans mémoire.",
+						"source": "BO Tle compl. p.7 ; 11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-364": {
+				"libelle": "Loi géométrique : expression",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "P(X = k) = (1 − p)ᵏ⁻¹ p pour k ⩾ 1 (rang du premier succès).",
+						"source": "BO Tle compl. p.7 ; 11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-365": {
+				"libelle": "Loi géométrique : espérance (admise)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "E(X) = 1/p, admise.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-366": {
+				"libelle": "Loi géométrique : représentation graphique",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": []
+			},
+			"TCOMP-294": {
+				"libelle": "Loi géométrique : propriété caractéristique (loi sans mémoire)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Absence de mémoire : P_{X > m}(X > m + n) = P(X > n).",
+						"source": "BO Tle compl. p.7 ; 11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-295": {
+				"libelle": "Identifier des situations où une variable aléatoire suit une loi de Bernoulli",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": []
+			},
+			"TCOMP-367": {
+				"libelle": "Identifier des situations où une variable aléatoire suit une loi binomiale",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": []
+			},
+			"TCOMP-368": {
+				"libelle": "Identifier des situations où une variable aléatoire suit une loi géométrique",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": []
+			},
+			"TCOMP-296": {
+				"libelle": "Déterminer des coefficients binomiaux à l'aide du triangle de Pascal",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Par le triangle de Pascal.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Pas de formule n!/(k!(n − k)!) : les coefficients s'obtiennent par dénombrement des chemins de l'arbre ou par le triangle de Pascal.",
+						"detail": {
+							"exclus": ["formule factorielle"]
+						},
+						"source": "BO Tle compl. p.11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO définit les coefficients binomiaux par le schéma de Bernoulli et ne donne comme outil que le triangle de Pascal ; la factorielle n'apparaît qu'en exemple d'algorithme de 1re spé."
+			},
+			"TCOMP-297": {
+				"libelle": "Dans le cas où $X$ suit une loi binomiale, calculer à l'aide d'une calculatrice ou d'un logiciel les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$, etc.",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Calcul à la calculatrice ou au logiciel ; événements P(X = k), P(X ⩽ k) et apparentés.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Calcul à la main admis ou non : ltc-2."
+			},
+			"TCOMP-298": {
+				"libelle": "Calculer explicitement les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$ pour une variable aléatoire $X$ suivant une loi géométrique",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "P(X = k) = (1 − p)ᵏ⁻¹ p pour k ⩾ 1 (rang du premier succès).",
+						"source": "BO Tle compl. p.7 ; 11",
+						"force": "BO"
+					},
+					{
+						"aspect": "faits",
+						"borne": "P(X ⩽ k) = 1 − (1 − p)ᵏ, P(X > k) = (1 − p)ᵏ.",
+						"source": "BO Tle compl. p.11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : « calculer explicitement ces probabilités » ; P(X ⩽ k) découle de la somme géométrique de 1re spé."
+			},
+			"TCOMP-299": {
+				"libelle": "Dans le cas où $X$ suit une loi binomiale, déterminer un intervalle $I$ pour lequel la probabilité $P(X \\in I)$ est inférieure à une valeur donnée $\\alpha$, ou supérieure à $1 - \\alpha$",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Intervalle I tel que P(X ∈ I) ⩽ α ou ⩾ 1 − α, X binomiale (calculatrice, logiciel ou algorithme) ; les thèmes donnent I centré en n/2 pour ℬ(n, 1/2) et I = [0, k].",
+						"source": "BO Tle compl. p.6-7 ; 11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-300": {
+				"libelle": "Dans le cadre de la résolution de problème, utiliser l'espérance des lois précédentes (uniforme, de Bernoulli, binomiale, géométrique)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Espérances des seules lois discrètes du programme : uniforme, Bernoulli, binomiale, géométrique.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-301": {
+				"libelle": "Utiliser en situation la caractérisation d'une loi géométrique par l'absence de mémoire",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Absence de mémoire : P_{X > m}(X > m + n) = P(X > n).",
+						"source": "BO Tle compl. p.7 ; 11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-302": {
+				"libelle": "Calculer des probabilités dans des situations faisant intervenir des probabilités conditionnelles",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Inversion du conditionnement par la formule de Bayes P_B(A) = P_A(B)P(A)/P(B), en plus des outils de 1re spé (arbres pondérés, tableaux croisés, probabilités totales).",
+						"source": "BO Tle compl. p.6 ; BO 1re spé p.5 ; 10",
+						"force": "BO"
+					}
+				],
+				"remarque": "La formule de Bayes est écrite dans le thème « Inférence bayésienne » (« bien comprendre cette distinction est un objectif majeur ») ; le vocabulaire des tests (sensibilité, spécificité, valeurs prédictives) n'est qu'un problème possible : ltc-7."
+			},
+			"TCOMP-303": {
+				"libelle": "Calculer des probabilités dans des situations faisant intervenir des répétitions d'expériences aléatoires",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Répétition d'expériences aléatoires indépendantes.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "Taille n quelconque (la 1re spé se limitait à n ⩽ 4).",
+						"source": "BO Tle compl. p.11 ; BO 1re spé p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO de Tle compl. ne borne plus n, alors que celui de 1re spé (p.10) écrivait « pour n ⩽ 4 »."
+			},
+			"TCOMP-304": {
+				"libelle": "Espérance d'une variable aléatoire suivant une loi de Bernoulli (démonstration)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-369": {
+				"libelle": "Écart type d'une variable aléatoire suivant une loi de Bernoulli (démonstration)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-305": {
+				"libelle": "Espérance d'une variable aléatoire uniforme sur $\\{1, 2, \\ldots, n\\}$",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-306": {
+				"libelle": "Espérance d'une variable aléatoire suivant une loi binomiale ($n \\leqslant 3$)",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n ⩽ 3.",
+						"detail": {
+							"max": 3
+						},
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-307": {
+				"libelle": "Caractérisation d'une loi géométrique par l'absence de mémoire",
+				"rubrique": "Probabilités et statistique > Lois discrètes",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			},
+			"TCOMP-308": {
+				"libelle": "Notion de loi à densité à partir d'exemples",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "À partir d'exemples.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-370": {
+				"libelle": "Représentation d'une probabilité comme une aire",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "P(a ⩽ X ⩽ b) = aire sous la densité entre a et b.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-309": {
+				"libelle": "Fonction de répartition $x \\mapsto P(X \\leqslant x)$",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "F(x) = P(X ⩽ x).",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-310": {
+				"libelle": "Espérance d'une loi à densité, expression sous forme d'intégrale",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Espérance écrite sous forme d'intégrale (∫ x f(x) dx).",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Intervalles non bornés : ltc-3."
+			},
+			"TCOMP-371": {
+				"libelle": "Variance d'une loi à densité, expression sous forme d'intégrale",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Variance écrite sous forme d'intégrale.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Intervalles non bornés : ltc-3."
+			},
+			"TCOMP-311": {
+				"libelle": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de densité",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Densité 1 sur [0, 1], puis 1/(b − a) sur [a, b].",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-372": {
+				"libelle": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de répartition",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "F(x) = (x − a)/(b − a) sur [a, b].",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-373": {
+				"libelle": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : espérance",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "E(X) = (a + b)/2.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-374": {
+				"libelle": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : variance",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "V(X) = (b − a)²/12.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-312": {
+				"libelle": "Loi exponentielle : fonction densité",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Densité x ↦ λe^{−λx} sur [0, +∞[, λ > 0.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-375": {
+				"libelle": "Loi exponentielle : fonction de répartition",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "F(x) = 1 − e^{−λx} pour x ⩾ 0.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-376": {
+				"libelle": "Loi exponentielle : espérance",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "E(X) = 1/λ ; pas de variance de la loi exponentielle au programme.",
+						"source": "BO Tle compl. p.11",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO liste pour la loi exponentielle « espérance, propriété d'absence de mémoire », sans la variance qu'il cite pour la loi uniforme. Calcul de 1/λ : ltc-3."
+			},
+			"TCOMP-313": {
+				"libelle": "Propriété d'absence de mémoire de la loi exponentielle",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "P_{X > t}(X > t + h) = P(X > h).",
+						"source": "BO Tle compl. p.7 ; 11",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-314": {
+				"libelle": "Déterminer si une fonction est une densité de probabilité",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Fonction continue, positive, d'intégrale égale à 1 sur l'intervalle considéré.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Intervalles non bornés (densité sur [0, +∞[) : ltc-3."
+			},
+			"TCOMP-315": {
+				"libelle": "Calculer des probabilités pour une variable aléatoire à densité",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Lois à densité du programme (uniforme, exponentielle) ou densités données par l'énoncé ; probabilité = intégrale de la densité.",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Intervalles non bornés : ltc-3."
+			},
+			"TCOMP-316": {
+				"libelle": "Calculer l'espérance d'une variable aléatoire à densité",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u).",
+						"source": "BO Tle compl. p.9-10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles. Intervalles non bornés : ltc-3."
+			},
+			"TCOMP-317": {
+				"libelle": "Simulation d'une variable de Bernoulli ou d'un lancer de dé (ou d'une variable uniforme sur un ensemble fini) à partir d'une variable aléatoire de loi uniforme sur $[0, 1]$",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "À partir d'une variable de loi uniforme sur [0, 1].",
+						"source": "BO Tle compl. p.11",
+						"force": "BO"
+					}
+				],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-318": {
+				"libelle": "Simulation du comportement de la somme de $n$ variables aléatoires indépendantes et de même loi",
+				"rubrique": "Probabilités et statistique > Lois à densité",
+				"bornes": [],
+				"remarque": "Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle)."
+			},
+			"TCOMP-319": {
+				"libelle": "Nuage de points",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": []
+			},
+			"TCOMP-320": {
+				"libelle": "Point moyen",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Point moyen G(x̄ ; ȳ).",
+						"source": "BO Tle compl. p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-321": {
+				"libelle": "Ajustement affine. Droite des moindres carrés",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": []
+			},
+			"TCOMP-322": {
+				"libelle": "Coefficient de corrélation",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [],
+				"remarque": "Le BO (p.12) cite le coefficient de corrélation dans les contenus sans capacité de calcul : ltc-4."
+			},
+			"TCOMP-323": {
+				"libelle": "Ajustement se ramenant par changement de variable à un ajustement affine",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Changement de variable ramenant à un ajustement affine, par exemple une relation exponentielle (z = ln y).",
+						"source": "BO Tle compl. p.11-12",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-324": {
+				"libelle": "Application des ajustements à des interpolations ou extrapolations",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Interpolations ou extrapolations, avec un regard critique.",
+						"source": "BO Tle compl. p.7 ; 12",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-325": {
+				"libelle": "Représenter un nuage de points",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": []
+			},
+			"TCOMP-326": {
+				"libelle": "Calculer les coordonnées d'un point moyen",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Coordonnées (x̄ ; ȳ), moyennes des deux séries.",
+						"source": "BO Tle compl. p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-327": {
+				"libelle": "Déterminer une droite de régression, à l'aide de la calculatrice, d'un logiciel ou par calcul",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "À la calculatrice, au logiciel ou par calcul.",
+						"source": "BO Tle compl. p.12",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-328": {
+				"libelle": "Dans le cadre d'une résolution de problème, utiliser un ajustement pour interpoler, extrapoler",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Interpolations ou extrapolations, avec un regard critique.",
+						"source": "BO Tle compl. p.7 ; 12",
+						"force": "BO"
+					}
+				]
+			},
+			"TCOMP-329": {
+				"libelle": "Droite des moindres carrés (démonstration)",
+				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
+				"bornes": [],
+				"remarque": "Démonstration (« démonstration possible » du BO) : point-compétence, aucune borne propre au-delà des bornes générales."
+			}
+		}
+	}
+}

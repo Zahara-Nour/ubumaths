@@ -1,0 +1,987 @@
+{
+	"T_TECHNO": {
+		"general": [
+			{
+				"aspect": "fonctions",
+				"borne": "Familles nouvelles : x ↦ aˣ et x ↦ k·aˣ (a > 0), logarithme décimal, fonction inverse (dérivée, variations, asymptotes) et combinaisons linéaires de la fonction inverse et de polynômes de degré ≤ 3.",
+				"detail": {
+					"liste": ["k·a^x (a>0)", "log", "1/x", "P(x) + k/x, deg P ≤ 3"]
+				},
+				"source": "BO Tle techno p.8-9",
+				"force": "BO"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Pas de base e : ni exp ni ln ; seul le logarithme décimal, noté log, défini comme l'unique solution de 10ˣ = b (aucune autre fonction exponentielle ou logarithme n'est au programme de la voie techno).",
+				"detail": {
+					"exclus": ["exp", "e^x", "ln"]
+				},
+				"source": "BO Tle techno p.7-8",
+				"force": "déduite"
+			},
+			{
+				"aspect": "fonctions",
+				"borne": "Dérivées : polynômes de degré ≤ 3 (1re) et fonction inverse seulement ; ni dérivée de aˣ ou de log, ni produit, ni quotient, ni composée (aucune n'est au programme).",
+				"source": "BO Tle techno p.8-9",
+				"force": "déduite"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Ni primitive ni intégrale ; aucune limite hors du comportement de la fonction inverse aux bornes de son ensemble de définition (absentes du programme).",
+				"source": "BO Tle techno p.7-10",
+				"force": "déduite"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Programmation : Python ou tableur.",
+				"source": "BO Tle techno p.5",
+				"force": "BO"
+			},
+			{
+				"aspect": "format",
+				"borne": "Automatismes de Tle : nature des nombres plus complexe (entiers, fractions ou paramètres : x² − 9, x² − 4/9, 4x² − k²), enchaînement de plusieurs automatismes, changements de registre (signe de −2(x − 1)(x − 3) par l'image mentale de la courbe).",
+				"source": "BO Tle techno p.6",
+				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Variables aléatoires discrètes finies : espérance seulement, ni variance ni écart type (absents du programme).",
+				"source": "BO Tle techno p.10",
+				"force": "déduite"
+			}
+		],
+		"points": {
+			"TTECHNO-001": {
+				"libelle": "Coniques : sections planes d'un cône de révolution",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+				"bornes": []
+			},
+			"TTECHNO-002": {
+				"libelle": "Notion de tangente à une conique en un point",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tangente définie comme position limite des sécantes ; aucune connaissance attendue sur les équations cartésiennes des tangentes à une conique (données dans les situations analytiques).",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-003": {
+				"libelle": "Étudier le raccordement d'arcs de cercles, d'ellipses ou de courbes représentatives de fonctions",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Tangente définie comme position limite des sécantes ; aucune connaissance attendue sur les équations cartésiennes des tangentes à une conique (données dans les situations analytiques).",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-004": {
+				"libelle": "Perspective centrale : projection centrale",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-005": {
+				"libelle": "Propriétés de conservation (alignement, contact) ou de non conservation (longueurs, milieux, rapports de longueurs, angles, parallélisme) ; cas particulier des plans frontaux",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-006": {
+				"libelle": "Point de fuite d'une droite",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-007": {
+				"libelle": "Point de fuite principal",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-008": {
+				"libelle": "Ligne de fuite d'un plan non frontal",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-070": {
+				"libelle": "Ligne d'horizon",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-009": {
+				"libelle": "Image d'un quadrillage",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-071": {
+				"libelle": "Image de solides simples (parallélépipède rectangle, prisme, pyramide)",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Parallélépipède rectangle, prisme, pyramide.",
+						"detail": {
+							"liste": ["parallélépipède rectangle", "prisme", "pyramide"]
+						},
+						"source": "BO Tle techno p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-010": {
+				"libelle": "Utiliser le vocabulaire usuel de la perspective centrale",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-011": {
+				"libelle": "Utiliser les propriétés d'une projection centrale",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-012": {
+				"libelle": "Utiliser la conservation de forme dans les plans frontaux",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Situations simples où un plan frontal est disponible.",
+						"source": "BO Tle techno p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-013": {
+				"libelle": "Utiliser la position relative de l'image de deux droites parallèles",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": []
+			},
+			"TTECHNO-014": {
+				"libelle": "Construire l'image d'un quadrillage",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Situations simples où un plan frontal est disponible.",
+						"source": "BO Tle techno p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-072": {
+				"libelle": "Construire l'image d'un parallélépipède rectangle ayant au moins une arête en vraie grandeur",
+				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
+				"bornes": [
+					{
+						"aspect": "figures",
+						"borne": "Situations simples où un plan frontal est disponible.",
+						"source": "BO Tle techno p.6",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-015": {
+				"libelle": "Interpréter un indice de base 100",
+				"rubrique": "Automatismes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Indice de base 100 : interpréter, calculer un indice, calculer le taux d'évolution entre deux valeurs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "Contradiction : le BO dit que les automatismes propres à la Tle sont en italique (p.6) ; cette ligne n'est pas en italique (vérifié sur le rendu du PDF), alors que l'indice de base 100 n'apparaît ni au BO de 2de ni au BO de 1re techno. Sans effet sur une borne : le point est de Tle."
+			},
+			"TTECHNO-073": {
+				"libelle": "Calculer un indice",
+				"rubrique": "Automatismes",
+				"bornes": [],
+				"remarque": "Même remarque que TTECHNO-015 (ligne non en italique)."
+			},
+			"TTECHNO-092": {
+				"libelle": "Isoler une variable dans une inégalité qui en comporte plusieurs",
+				"rubrique": "Automatismes",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Exemples internes aux mathématiques ou issus des autres disciplines.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-016": {
+				"libelle": "Moyenne arithmétique de deux nombres",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-017": {
+				"libelle": "Somme des $n$ premiers termes d'une suite arithmétique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-074": {
+				"libelle": "Notation $\\Sigma$",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Notation Σ travaillée sur des exemples variés (sommes de carrés, de cubes, d'inverses…).",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-018": {
+				"libelle": "Moyenne géométrique de deux nombres positifs",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Deux nombres positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-019": {
+				"libelle": "Somme des $n$ premiers termes d'une suite géométrique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				],
+				"remarque": "La 1re techno dit « à termes strictement positifs » (p.7), la Tle « à termes positifs » (p.7) : écart de mot sans effet pratique (un terme nul rend la suite nulle)."
+			},
+			"TTECHNO-020": {
+				"libelle": "Prouver que trois nombres sont (ou ne sont pas) les termes consécutifs d'une suite arithmétique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-021": {
+				"libelle": "Prouver que trois nombres sont (ou ne sont pas) les termes consécutifs d'une suite géométrique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-022": {
+				"libelle": "Déterminer la raison d'une suite arithmétique modélisant une évolution",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-023": {
+				"libelle": "Déterminer la raison d'une suite géométrique modélisant une évolution",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-024": {
+				"libelle": "Exprimer en fonction de $n$ le terme général d'une suite arithmétique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-025": {
+				"libelle": "Exprimer en fonction de $n$ le terme général d'une suite géométrique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-026": {
+				"libelle": "Calculer la somme des $n$ premiers termes d'une suite arithmétique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-027": {
+				"libelle": "Calculer la somme des $n$ premiers termes d'une suite géométrique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-028": {
+				"libelle": "Reconnaitre une situation relevant du calcul d'une somme de termes consécutifs d'une suite arithmétique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-029": {
+				"libelle": "Reconnaitre une situation relevant du calcul d'une somme de termes consécutifs d'une suite géométrique",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Suites géométriques à termes positifs.",
+						"source": "BO Tle techno p.7",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Exemple type : valeur acquise par des placements à intérêts composés à taux constant avec versements réguliers.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-030": {
+				"libelle": "Écrire en langage Python une fonction qui calcule la somme des $n$ premiers carrés",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-075": {
+				"libelle": "Écrire en langage Python une fonction qui calcule la somme des $n$ premiers cubes",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-076": {
+				"libelle": "Écrire en langage Python une fonction qui calcule la somme des $n$ premiers inverses",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-077": {
+				"libelle": "Établir le lien entre l'écriture de la somme à l'aide du symbole $\\Sigma$ et les composantes de l'algorithme (initialisation, sortie de boucle, accumulateur, compteur)",
+				"rubrique": "Analyse > Suites numériques",
+				"bornes": []
+			},
+			"TTECHNO-031": {
+				"libelle": "Définition de la fonction $x \\mapsto a^x$ pour $x$ positif comme prolongement à des valeurs non entières positives de la suite géométrique $(a^n)_{n \\in \\mathbb{N}}$ ; extension à $\\mathbb{R}_-$ en posant $a^{-x} = \\frac{1}{a^x}$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "a > 0.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-032": {
+				"libelle": "Sens de variation de $x \\mapsto a^x$ selon les valeurs de $a$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "a > 0 ; sens de variation selon les valeurs de a, en parallèle avec les suites géométriques.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-033": {
+				"libelle": "Allure de la courbe représentative de $x \\mapsto a^x$ selon les valeurs de $a$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "a > 0 ; sens de variation selon les valeurs de a, en parallèle avec les suites géométriques.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-034": {
+				"libelle": "Propriétés algébriques : $a^{x+y} = a^x a^y$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés admises, par extension des propriétés des puissances entières.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-078": {
+				"libelle": "Propriétés algébriques : $a^{x-y} = \\frac{a^x}{a^y}$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés admises, par extension des propriétés des puissances entières.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-079": {
+				"libelle": "Propriétés algébriques : $a^{nx} = (a^x)^n$ pour $n$ entier relatif",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés admises, par extension des propriétés des puissances entières.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					},
+					{
+						"aspect": "nombres",
+						"borne": "n entier relatif.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-035": {
+				"libelle": "Cas particulier de l'exposant $\\frac{1}{n}$ pour calculer un taux d'évolution moyen équivalent à $n$ évolutions successives",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": []
+			},
+			"TTECHNO-036": {
+				"libelle": "Connaitre le sens de variation des fonctions de la forme $x \\mapsto k a^x$, selon le signe de $k$ et les valeurs de $a$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme x ↦ k·aˣ seulement (k réel, a > 0) ; sens selon le signe de k et les valeurs de a.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-080": {
+				"libelle": "Utiliser le sens de variation des fonctions de la forme $x \\mapsto k a^x$, selon le signe de $k$ et les valeurs de $a$",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Forme x ↦ k·aˣ seulement (k réel, a > 0) ; sens selon le signe de k et les valeurs de a.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-037": {
+				"libelle": "Connaitre les propriétés algébriques des fonctions exponentielles",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés admises, par extension des propriétés des puissances entières.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-081": {
+				"libelle": "Utiliser les propriétés algébriques des fonctions exponentielles pour transformer des écritures numériques ou littérales",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Propriétés admises, par extension des propriétés des puissances entières.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-038": {
+				"libelle": "Calculer le taux d'évolution moyen équivalent à des évolutions successives",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Par l'exposant 1/n ; contextes : taux mensuel équivalent à un taux annuel, évolution moyenne d'une population sur une période.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-039": {
+				"libelle": "Intercaler entre deux points déjà construits un troisième point ayant pour abscisse (respectivement pour ordonnée) la moyenne arithmétique (respectivement géométrique) des abscisses (respectivement des ordonnées) des deux points initiaux",
+				"rubrique": "Analyse > Fonctions exponentielles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-040": {
+				"libelle": "Définition du logarithme décimal de $b$ pour $b > 0$ comme l'unique solution de l'équation $10^x = b$ ; notation $\\log$",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Logarithme décimal seulement, b > 0, notation log.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-041": {
+				"libelle": "Sens de variation de la fonction logarithme décimal",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": []
+			},
+			"TTECHNO-042": {
+				"libelle": "Propriétés algébriques : $\\log(ab) = \\log(a) + \\log(b)$, pour $a$ et $b$ réels strictement positifs",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": []
+			},
+			"TTECHNO-082": {
+				"libelle": "Propriétés algébriques : $\\log(a^n) = n\\log(a)$, pour $n$ entier naturel, $a$ réel strictement positif",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n entier naturel (le BO montre aussi la propriété « pour de petites valeurs de n » à partir du logarithme d'un produit).",
+						"source": "BO Tle techno p.8-9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+			},
+			"TTECHNO-083": {
+				"libelle": "Propriétés algébriques : $\\log\\left(\\frac{a}{b}\\right) = \\log(a) - \\log(b)$, pour $a$ et $b$ réels strictement positifs",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": []
+			},
+			"TTECHNO-043": {
+				"libelle": "Utiliser le logarithme décimal pour résoudre une équation du type $a^x = b$ ou $x^a = b$ d'inconnue $x$ réelle",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Équations du type aˣ = b ou xᵃ = b, d'inconnue x réelle.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+			},
+			"TTECHNO-084": {
+				"libelle": "Utiliser le logarithme décimal pour résoudre une inéquation du type $a^x < b$ ou $x^a < b$ d'inconnue $x$ réelle",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Inéquations du type aˣ < b ou xᵃ < b, d'inconnue x réelle.",
+						"source": "BO Tle techno p.8",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+			},
+			"TTECHNO-085": {
+				"libelle": "Utiliser le logarithme décimal pour résoudre une inéquation du type $a^n < b$ d'inconnue $n$ entier naturel",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Inconnue n entière naturelle (ex. nombre d'annuités).",
+						"source": "BO Tle techno p.8-9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-1."
+			},
+			"TTECHNO-044": {
+				"libelle": "Utiliser les propriétés algébriques de la fonction logarithme décimal pour transformer des expressions numériques ou littérales",
+				"rubrique": "Analyse > Fonction logarithme décimal",
+				"bornes": [],
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+			},
+			"TTECHNO-045": {
+				"libelle": "Comportement de la fonction inverse aux bornes de son ensemble de définition",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Approche intuitive, en lien avec l'ordre de grandeur des inverses de petits ou de grands nombres et l'allure de la courbe.",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-6 (notation lim)."
+			},
+			"TTECHNO-046": {
+				"libelle": "Dérivée de la fonction inverse",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Dérivée de x ↦ 1/x obtenue en réinvestissant la définition du nombre dérivé (taux de variation).",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-047": {
+				"libelle": "Sens de variation de la fonction inverse",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": []
+			},
+			"TTECHNO-048": {
+				"libelle": "Courbe représentative de la fonction inverse",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": []
+			},
+			"TTECHNO-086": {
+				"libelle": "Asymptotes de la courbe représentative de la fonction inverse",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Aucune définition de l'asymptote : approche intuitive.",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-6 (notation lim)."
+			},
+			"TTECHNO-049": {
+				"libelle": "Étudier des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Combinaisons linéaires de x ↦ 1/x et de polynômes de degré ≤ 3 seulement.",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					},
+					{
+						"aspect": "autre",
+						"borne": "Contextes : prix unitaire, coût moyen.",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-4 (forme quotient, ex. coût moyen (x² + 2x + 100)/x)."
+			},
+			"TTECHNO-087": {
+				"libelle": "Représenter des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3",
+				"rubrique": "Analyse > Fonction inverse",
+				"bornes": [
+					{
+						"aspect": "fonctions",
+						"borne": "Combinaisons linéaires de x ↦ 1/x et de polynômes de degré ≤ 3 seulement.",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-4 (forme quotient)."
+			},
+			"TTECHNO-050": {
+				"libelle": "Changement de variable dans l'étude graphique d'une série statistique à deux variables quantitatives",
+				"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+				"bornes": []
+			},
+			"TTECHNO-051": {
+				"libelle": "Ajustement se ramenant par changement de variable à un ajustement affine",
+				"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Ajustements au jugé, droite de Mayer, moindres carrés ; aucune connaissance théorique attendue.",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-052": {
+				"libelle": "Représenter un nuage de points en effectuant un changement de variable donné (par exemple $u^2$, $\\frac{1}{t}$, $\\frac{1}{\\sqrt{n}}$, $\\log(y)$, etc.)",
+				"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Changement de variable donné (ex. u², 1/t, 1/√n, log(y)).",
+						"source": "BO Tle techno p.9",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-088": {
+				"libelle": "Conjecturer une relation de linéarité entre de nouvelles variables",
+				"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+				"bornes": []
+			},
+			"TTECHNO-053": {
+				"libelle": "Automatiser le calcul de $\\sum_i \\left(y_i - (ax_i + b)\\right)^2$",
+				"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-054": {
+				"libelle": "Rechercher un couple $(a, b)$ minimisant cette expression parmi un ensemble fini de couples proposés par les élèves ou générés par balayage, tirage aléatoire, etc.",
+				"rubrique": "Statistique et probabilités > Séries statistiques à deux variables quantitatives",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					},
+					{
+						"aspect": "operandes",
+						"borne": "Ensemble fini de couples (proposés par les élèves, balayage, tirage aléatoire).",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Le libellé dit « cette expression » : il renvoie à la somme Σᵢ(yᵢ − (axᵢ + b))² de TTECHNO-053."
+			},
+			"TTECHNO-055": {
+				"libelle": "Formule des probabilités totales pour une partition de l'univers",
+				"rubrique": "Statistique et probabilités > Probabilités conditionnelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Partition de l'univers présentée sans formalisme ; formule mise en relation avec l'arbre.",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-5 (partition en plus de trois évènements) et l1t-1."
+			},
+			"TTECHNO-056": {
+				"libelle": "Calculer la probabilité d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers",
+				"rubrique": "Statistique et probabilités > Probabilités conditionnelles",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Partition de l'univers présentée sans formalisme ; formule mise en relation avec l'arbre.",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-5 (partition en plus de trois évènements) et l1t-1."
+			},
+			"TTECHNO-057": {
+				"libelle": "Loi binomiale $\\mathcal{B}(n, p)$",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": []
+			},
+			"TTECHNO-058": {
+				"libelle": "Espérance de la loi binomiale (admise)",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "faits",
+						"borne": "Valeur de l'espérance admise.",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-059": {
+				"libelle": "Coefficients binomiaux $\\binom{n}{k}$",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Coefficient défini comme le nombre de chemins réalisant {X = k} dans l'arbre ; formule de Pascal établie par un raisonnement sur les chemins.",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					},
+					{
+						"aspect": "format",
+						"borne": "Pas d'expression par factorielles (absente du programme).",
+						"source": "BO Tle techno p.10",
+						"force": "déduite"
+					}
+				],
+				"remarque": "Lecture déduite : le BO définit le coefficient par les chemins et le calcule au triangle de Pascal ; aucune factorielle n'apparaît."
+			},
+			"TTECHNO-060": {
+				"libelle": "Triangle de Pascal",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": []
+			},
+			"TTECHNO-061": {
+				"libelle": "Calculer des coefficients binomiaux $\\binom{n}{k}$ à l'aide du triangle de Pascal pour $n \\leqslant 10$",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "n ⩽ 10.",
+						"detail": {
+							"max": 10
+						},
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-3 (n > 10)."
+			},
+			"TTECHNO-062": {
+				"libelle": "Reconnaitre une situation relevant de la loi binomiale",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": []
+			},
+			"TTECHNO-089": {
+				"libelle": "Identifier le couple de paramètres d'une situation relevant de la loi binomiale",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": []
+			},
+			"TTECHNO-063": {
+				"libelle": "Lorsque la variable aléatoire $X$ suit une loi binomiale : interpréter l'évènement $\\{X = k\\}$ sur un arbre de probabilité",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Arbre dessiné pour n ⩽ 4 ; au-delà, l'arbre sert d'image mentale.",
+						"detail": {
+							"max": 4
+						},
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-064": {
+				"libelle": "Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer les probabilités des évènements $\\{X = 0\\}$, $\\{X = 1\\}$, $\\{X = n\\}$, $\\{X = n - 1\\}$ et de ceux qui s'en déduisent par réunion",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "format",
+						"borne": "Évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et ceux qui s'en déduisent par réunion.",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-2 (évènement contraire, P(X ⩽ k) quelconque)."
+			},
+			"TTECHNO-065": {
+				"libelle": "Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer la probabilité de l'évènement $\\{X = k\\}$ à l'aide des coefficients binomiaux",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "nombres",
+						"borne": "Nombre de chemins donné ou déterminé au triangle de Pascal.",
+						"source": "BO Tle techno p.10",
+						"force": "BO"
+					}
+				],
+				"remarque": "Voir ltt-3 (n > 10)."
+			},
+			"TTECHNO-066": {
+				"libelle": "Générer un triangle de Pascal de taille $n$ donnée",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-067": {
+				"libelle": "Représenter par un diagramme en bâtons la loi de probabilité d'une loi binomiale $\\mathcal{B}(n, p)$",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-090": {
+				"libelle": "Faire le lien avec l'histogramme des fréquences observées des 1 lors de la simulation de $N$ échantillons de taille $n$ d'une loi de Bernoulli de paramètre $p$ faite en classe de première",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-068": {
+				"libelle": "Calculer l'espérance $\\sum x_i p_i$ d'une variable aléatoire suivant une loi de probabilité donnée ; cas particulier d'une variable aléatoire suivant la loi binomiale $\\mathcal{B}(n, p)$",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-069": {
+				"libelle": "Représenter graphiquement l'espérance de lois binomiales $\\mathcal{B}(n, p)$ à $p$ fixé et $n$ variable, à $n$ fixé et $p$ variable",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			},
+			"TTECHNO-091": {
+				"libelle": "Faire le lien avec l'expression admise de l'espérance",
+				"rubrique": "Statistique et probabilités > Variables aléatoires discrètes finies",
+				"bornes": [
+					{
+						"aspect": "autre",
+						"borne": "Langage Python ou tableur.",
+						"source": "BO Tle techno p.5",
+						"force": "BO"
+					}
+				]
+			}
+		}
+	}
+}
