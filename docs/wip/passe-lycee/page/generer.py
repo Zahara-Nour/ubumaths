@@ -78,28 +78,32 @@ def fiche(r):
 
 
 def questions():
-    texte = (RACINE / 'questions.md').read_text(encoding='utf-8')
-    bloc = texte.split('## Questions', 1)[1].split('\n## ', 1)[0]
-    qs = re.findall(r'^(\d+)\. (.+?)(?=^\d+\. |^Hors de cette étape|\Z)', bloc, flags=re.S | re.M)
-    return [(f'Q{int(n):02d}', ' '.join(t.split())) for n, t in qs]
+    return json.loads((ICI / 'questions.json').read_text(encoding='utf-8'))
 
 
-def md(t):
-    t = E(t)
-    return re.sub(r'\*\*(.+?)\*\*', r'<b>\1</b>', t)
+def liste(titre, items):
+    if not items:
+        return ''
+    return f'<div class="bloc"><p class="etiq">{E(titre)}</p><ul>' + ''.join(f'<li>{E(i)}</li>' for i in items) + '</ul></div>'
 
 
-def fiche_q(qid, t):
+def fiche_q(q):
+    qid = q['id']
+    opts = ''.join(
+        f'''<div class="opt"><button type="button" data-choix="{E(o['cle'])}">{E(o['cle'])}. {E(o['titre'])}</button>
+      {'<span class="reco">ma reco</span>' if o.get('reco') else ''}<p>{E(o['effet'])}</p></div>'''
+        for o in q['options']
+    )
     return f'''<article class="fiche q" id="{qid}" data-id="{qid}" data-prog="questions" data-statut="A_TRANCHER">
   <header><span class="pid">{qid}</span><span class="atr">question</span></header>
-  <p class="justif">{md(t)}</p>
-  <div class="rep">
-    <div class="choix" role="group" aria-label="Réponse à {qid}">
-      <button type="button" data-choix="ok">Je suis la reco</button>
-      <button type="button" data-choix="revoir">Autre choix</button>
-    </div>
+  <h3>{E(q['titre'])}</h3>
+  <div class="bloc"><p class="etiq">Ce que dit le BO</p><p>{E(q['bo'])}</p></div>
+  {liste("Aujourd’hui", q.get('aujourdhui'))}
+  {liste("Après la coupe décidée", q.get('apres'))}
+  <div class="opts" role="group" aria-label="Choix pour {qid}">{opts}</div>
+  <div class="rep rep-q">
     <label class="com-l" for="c-{qid}">Commentaire</label>
-    <textarea id="c-{qid}" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+    <textarea id="c-{qid}" rows="2" placeholder="Une remarque, une autre option…"></textarea>
     <span class="etat" aria-live="polite"></span>
   </div>
 </article>'''
@@ -109,7 +113,7 @@ def main():
     rs = lignes()
     qs = questions()
     sections = [f'<section class="prog" data-prog="questions"><h2>Questions à trancher <small>{len(qs)} questions · elles couvrent les fiches « à trancher »</small></h2>'
-                + '\n'.join(fiche_q(q, t) for q, t in qs) + '</section>']
+                + '\n'.join(fiche_q(q) for q in qs) + '</section>']
     for p, nom in PROGRAMMES.items():
         du = [r for r in rs if r['programme'].strip() == p]
         if not du:
@@ -121,7 +125,7 @@ def main():
             + '\n'.join(fiche(r) for r in du)
             + '</section>'
         )
-    ids = [q for q, _ in qs] + [r['id'] for r in rs if r['statut'].strip() != 'A_TRANCHER']
+    ids = [q['id'] for q in qs] + [r['id'] for r in rs if r['statut'].strip() != 'A_TRANCHER']
     tpl = (ICI / 'gabarit.html').read_text(encoding='utf-8')
     out = (
         tpl.replace('%%SECTIONS%%', '\n'.join(sections))

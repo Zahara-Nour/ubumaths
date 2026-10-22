@@ -341,6 +341,73 @@
 			margin-left: 0;
 		}
 	}
+	.fiche.q h3 {
+		font: 600 1.12rem/1.35 var(--f-display);
+		margin: 0;
+		text-wrap: balance;
+	}
+	.bloc {
+		display: grid;
+		gap: 2px;
+	}
+	.bloc ul {
+		margin: 0;
+		padding-left: 1.1em;
+		display: grid;
+		gap: 2px;
+	}
+	.etiq {
+		font: 500 0.72rem var(--f-mono);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.opts {
+		display: grid;
+		gap: 8px;
+		margin-top: 4px;
+	}
+	.opt {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 4px 10px;
+		align-items: baseline;
+		padding: 8px 10px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+	}
+	.opt p {
+		grid-column: 1 / -1;
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+	.opt button {
+		justify-self: start;
+		font: 600 0.9rem var(--f-body);
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--ink);
+		border-radius: 6px;
+		padding: 6px 10px;
+		cursor: pointer;
+		text-align: left;
+	}
+	.opt button[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+	}
+	.reco {
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: var(--ok);
+	}
+	.rep-q {
+		grid-template-columns: 1fr;
+	}
+	.rep-q .etat {
+		grid-column: 1;
+	}
 </style>
 
 <div class="wrap">
@@ -353,9 +420,10 @@
 			réponds OK, ou « À revoir » avec un commentaire.
 		</p>
 		<p>
-			Commence par les questions : elles tranchent toutes les fiches marquées « à trancher ». Le
-			bouton en tête de chaque programme marque OK d'un coup les fiches auxquelles tu n'as pas
-			répondu ; « À revoir » reste possible ensuite.
+			Commence par les questions : chacune montre la ligne du BO, le point actuel et ce que donne
+			chaque option ; clique sur l'option que tu choisis. Elles tranchent toutes les fiches marquées
+			« à trancher ». Le bouton en tête de chaque programme marque OK d'un coup les fiches
+			auxquelles tu n'as pas répondu ; « À revoir » reste possible ensuite.
 		</p>
 		<p>
 			Le premier libellé d'une coupe garde le code actuel ; « neuf » reçoit un nouveau code, rangé
@@ -404,7 +472,7 @@
 	    const r = rep[f.dataset.id];
 	    const repondable = IDS.includes(f.dataset.id);
 	    let v = filtreStatut === 'tout'
-	      || (filtreStatut === 'reste' && repondable && (!r || r.choix !== 'ok'))
+	      || (filtreStatut === 'reste' && repondable && (!r || !r.choix || r.choix === 'revoir'))
 	      || (filtreStatut === 'trancher' && f.dataset.prog === 'questions')
 	      || (filtreStatut === 'revoir' && r && r.choix === 'revoir');
 	    if (filtreProg !== 'tous' && f.dataset.prog !== filtreProg && f.dataset.prog !== 'questions') v = false;
@@ -417,8 +485,8 @@
 
 	function peindre(id) {
 	  const f = parId[id]; if (!f || !f.querySelector('.rep')) return; const r = rep[id] || {};
-	  f.classList.toggle('rep-ok', r.choix === 'ok'); f.classList.toggle('rep-revoir', r.choix === 'revoir');
-	  f.querySelectorAll('.choix button').forEach(b => b.setAttribute('aria-pressed', b.dataset.choix === r.choix));
+	  f.classList.toggle('rep-ok', r.choix === 'ok' || (f.classList.contains('q') && !!r.choix)); f.classList.toggle('rep-revoir', r.choix === 'revoir');
+	  f.querySelectorAll('.choix button, .opt button').forEach(b => b.setAttribute('aria-pressed', b.dataset.choix === r.choix));
 	  const t = f.querySelector('textarea'); if (document.activeElement !== t) t.value = r.commentaire || '';
 	}
 
@@ -460,7 +528,7 @@
 	    }
 	    return;
 	  }
-	  const b = e.target.closest('.choix button'); if (!b) return;
+	  const b = e.target.closest('.choix button, .opt button'); if (!b) return;
 	  const id = b.closest('.fiche').dataset.id; rep[id] = rep[id] || {};
 	  rep[id].choix = rep[id].choix === b.dataset.choix ? null : b.dataset.choix;
 	  peindre(id); ecrire(id);

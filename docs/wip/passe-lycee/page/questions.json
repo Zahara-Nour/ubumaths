@@ -1,0 +1,340 @@
+[
+	{
+		"id": "Q01",
+		"titre": "Quand le BO demande de choisir la méthode, coupe-t-on par méthode ?",
+		"bo": "2de l. 714 : « Résoudre une équation ou une inéquation du type f(x) = k, f(x) < k, en choisissant une méthode adaptée : graphique, algébrique, logicielle. » Même tournure en 1re spé : produit scalaire « en choisissant une méthode adaptée » (l. 550), factorisation « en diversifiant les stratégies » (l. 378).",
+		"aujourdhui": [
+			"2-336 · Résoudre une équation ou une inéquation du type f(x) = k, f(x) < k, en choisissant une méthode adaptée : graphique, algébrique, logicielle",
+			"1SPE-321 · … calculer le produit scalaire de deux vecteurs en choisissant une méthode adaptée (projection orthogonale, coordonnées, normes et angle, normes)",
+			"1SPE-253 · Factoriser une fonction polynôme du second degré, en diversifiant les stratégies : racine évidente, somme et produit, identité remarquable, formules"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Ne pas couper par méthode",
+				"effet": "Ces trois points gardent la liste des méthodes. Ici, le savoir, c'est de choisir la méthode ; chaque méthode a déjà son propre point ailleurs (2-338, 2-339 à 2-344…).",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Couper : un point par méthode",
+				"effet": "2-336 donne 6 points (équation / inéquation × graphique / algébrique / logicielle), 1SPE-321 en donne 4, 1SPE-253 en donne 4."
+			}
+		]
+	},
+	{
+		"id": "Q02",
+		"titre": "Les symboles ∅, ∈, ⊂, ∩, ∪, {…} : un point ou un point par symbole ?",
+		"bo": "2de l. 211 : « savoir utiliser les symboles de base correspondants : ∅, ∈, ⊂, ∩, ∪, {…} ».",
+		"aujourdhui": ["2-203 · Symboles de base correspondants : ∅, ∈, ⊂, ∩, ∪, {…}"],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un seul point",
+				"effet": "2-203 reste entier. Chaque symbole note une notion qui a déjà son point (appartenance, inclusion, intersection, réunion…).",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Six points",
+				"effet": "Un point par symbole : « Utiliser le symbole ∅ », « … ∈ », etc."
+			}
+		]
+	},
+	{
+		"id": "Q03",
+		"titre": "Multiple, diviseur, pair, impair : en combien de points ?",
+		"bo": "2de l. 431 : « Définition des notions de multiple, de diviseur, de nombre pair, de nombre impair. » La coupe est décidée (règle 1a). Il reste à choisir le nombre de morceaux.",
+		"aujourdhui": [
+			"2-236 · Définition des notions de multiple, de diviseur, de nombre pair, de nombre impair : a est multiple de b s'il existe un entier k tel que a = kb"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Deux points",
+				"effet": "« Définition des notions de multiple, de diviseur : a est multiple de b s'il existe un entier k tel que a = kb » · « Définition des notions de nombre pair, de nombre impair »."
+			},
+			{
+				"cle": "B",
+				"titre": "Trois points",
+				"effet": "« Définition de la notion de multiple : a est multiple de b s'il existe… » · « Définition de la notion de diviseur » · « Définition des notions de nombre pair, de nombre impair ». Comme au primaire, où multiple et diviseur sont séparés (CM2-008 / CM2-130).",
+				"reco": true
+			},
+			{
+				"cle": "C",
+				"titre": "Quatre points",
+				"effet": "Multiple · diviseur · nombre pair · nombre impair, chacun son point."
+			}
+		]
+	},
+	{
+		"id": "Q04",
+		"titre": "Une ligne d'automatisme qui ne vise qu'un morceau d'un point coupé",
+		"bo": "2de l. 819 : « Décrire les différences entre deux séries statistiques, en s'appuyant sur des indicateurs ou couples d'indicateurs (moyenne–écart type, médiane–écart interquartile) ou sur des représentations graphiques données. » La coupe en trois est décidée.",
+		"aujourdhui": [
+			"2-382 · Décrire les différences entre deux séries… (moyenne–écart type, médiane–EIQ) ou sur des représentations graphiques données",
+			"Dans la liste des automatismes de 2de, la ligne « Comparer des distributions à l'aide de boîtes à moustaches » (l. 383) renvoie aujourd'hui à 2-382."
+		],
+		"apres": [
+			"2-382 · … en s'appuyant sur le couple moyenne–écart type",
+			"neuf · … en s'appuyant sur le couple médiane–écart interquartile",
+			"neuf · … en s'appuyant sur des représentations graphiques données"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "La ligne « boîtes à moustaches » renvoie au 3e morceau",
+				"effet": "Elle vise alors « … représentations graphiques données », ce qu'elle dit vraiment. C'est une exception à la règle « on ne déplace aucune référence ».",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Elle reste sur 2-382",
+				"effet": "Elle visera « … le couple moyenne–écart type », qui ne parle pas de boîtes à moustaches."
+			}
+		]
+	},
+	{
+		"id": "Q05",
+		"titre": "Variance et écart type : un point ou deux ?",
+		"bo": "1re spé l. 638 : « Espérance, variance, écart type d'une variable aléatoire. » et l. 647 : « Calculer une espérance, une variance, un écart type. » L'espérance a déjà son point à part.",
+		"aujourdhui": [
+			"1SPE-350 · Variance, écart type d'une variable aléatoire",
+			"1SPE-357 · Calculer une variance, un écart type (3 modèles tagués)"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un point (variance et écart type ensemble)",
+				"effet": "L'écart type est la racine de la variance : un exercice sur σ passe toujours par V. C'est déjà le grain de la Terminale : TSPE-522 « Application à l'espérance, la variance et l'écart type de la loi binomiale ».",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Deux points",
+				"effet": "« Variance d'une variable aléatoire » · « Écart type d'une variable aléatoire », et de même pour « Calculer… ». La famille de Terminale suivrait."
+			}
+		]
+	},
+	{
+		"id": "Q06",
+		"titre": "Une propriété écrite deux fois dans le BO, mais l'une en approfondissement",
+		"bo": "1re spé : l. 483 donne « Pour tous réels x et y, exp(x + y) = exp(x) exp(y) » dans les contenus ; l. 500 redonne la même phrase dans « Approfondissements possibles », c'est-à-dire sa démonstration.",
+		"aujourdhui": [
+			"1SPE-290 · Pour tous réels x et y, exp(x + y) = exp(x) exp(y) et exp(x) exp(−x) = 1 (contenu)",
+			"1SPE-301 · Pour tous réels x et y, exp(x + y) = exp(x) exp(y) (approfondissement)"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Garder les deux",
+				"effet": "1SPE-301 reste comme point d'approfondissement (démontrer la propriété), comme 1SPE-300.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Archiver 1SPE-301",
+				"effet": "C'est un doublon du BO ; aucune référence ne le vise."
+			}
+		]
+	},
+	{
+		"id": "Q07",
+		"titre": "Interpolation et extrapolation : un point ou deux ?",
+		"bo": "1re gén. l. 253 « Interpolation, extrapolation. » · 1re techno l. 580 « Interpoler ou extrapoler des valeurs inconnues à l'aide d'un ajustement affine » · Tle compl. l. 754 et l. 761.",
+		"aujourdhui": [
+			"1GEN-005 · Interpolation, extrapolation",
+			"1TECHNO-088 · Interpoler ou extrapoler des valeurs inconnues à l'aide d'un ajustement affine",
+			"TCOMP-324 · Application des ajustements à des interpolations ou extrapolations",
+			"TCOMP-328 · … utiliser un ajustement pour interpoler, extrapoler"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un point chacun (pas de coupe)",
+				"effet": "C'est le même calcul (on lit ou on calcule une valeur avec l'ajustement) ; seule la place de x change, dans l'intervalle des données ou en dehors.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Couper partout",
+				"effet": "« Interpolation » · « Extrapolation » dans les quatre points (+4 points)."
+			}
+		]
+	},
+	{
+		"id": "Q08",
+		"titre": "Associer une parabole à son expression : couper par forme ?",
+		"bo": "1re gén. l. 368 et 1re techno l. 485 : « Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme x ↦ ax², x ↦ ax² + c, x ↦ a(x − x₁)(x − x₂). »",
+		"aujourdhui": [
+			"1GEN-024 · Associer une parabole à une expression algébrique de degré 2, pour les fonctions de la forme ax², ax² + c, a(x − x₁)(x − x₂)",
+			"1TECHNO-061 · (même libellé)"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un point",
+				"effet": "Le geste est d'associer : un exercice d'association montre plusieurs paraboles et plusieurs expressions à la fois, souvent de formes différentes.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Trois points",
+				"effet": "« … pour les fonctions de la forme x ↦ ax² » · « … ax² + c » · « … a(x − x₁)(x − x₂) », dans les deux programmes."
+			}
+		]
+	},
+	{
+		"id": "Q09",
+		"titre": "« Représenter … afin de calculer » : un point ou deux ?",
+		"bo": "1re (spé, gén., techno) : « Représenter par un arbre de probabilités la répétition de n épreuves de Bernoulli (n ⩽ 4) afin de calculer des probabilités. » · Tle techno l. 595 : « Représenter un nuage de points en effectuant un changement de variable donné … afin de conjecturer une relation de linéarité entre de nouvelles variables. »",
+		"aujourdhui": [
+			"1SPE-343, 1GEN-011, 1TECHNO-094 · Représenter par un arbre … afin de calculer des probabilités",
+			"TTECHNO-052 · Représenter un nuage de points en effectuant un changement de variable … afin de conjecturer une relation de linéarité"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Couper en deux",
+				"effet": "« Représenter par un arbre … la répétition de n épreuves » · « Calculer des probabilités associées à la répétition de n épreuves » (et de même : « Représenter un nuage … » · « Conjecturer une relation de linéarité … »). Le calcul s'évalue seul.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Garder entier",
+				"effet": "Le « afin de » relie les deux gestes en un seul savoir."
+			}
+		]
+	},
+	{
+		"id": "Q10",
+		"titre": "« Déterminer le coefficient directeur à partir de deux points » : faut-il un point ⚙ ?",
+		"bo": "Ligne d'automatisme de 1re (spé l. 277, gén. l. 210, techno l. 393) : « Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points. » Aucun point ne dit exactement cela : le plus proche, 2-314, parle de l'équation de la droite passant par deux points.",
+		"aujourdhui": [
+			"2-314 · Déterminer une équation de droite à partir de deux points, d'un point et un vecteur directeur, ou d'un point et la pente (le coefficient directeur n'y est qu'une étape)"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un point ⚙ neuf dans chaque programme de 1re",
+				"effet": "1SPE, 1GEN et 1TECHNO reçoivent chacun « Déterminer le coefficient directeur d'une droite à partir des coordonnées de deux de ses points » (règle T5).",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Pas de point neuf",
+				"effet": "La ligne renvoie à 2-314 (le morceau « à partir de deux points »)."
+			}
+		]
+	},
+	{
+		"id": "Q11",
+		"titre": "La puce rétablie de Tle spé (l. 421) : un point ou quatre ?",
+		"bo": "Tle spé l. 421 : « Résoudre des problèmes impliquant des grandeurs et mesures : longueur, angle, aire, volume. » Elle est rétablie (règle T6) : c'est une puce large, évaluée par compétences.",
+		"aujourdhui": ["Aucun point (retirée au seed du 2026-10-08)."],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un point",
+				"effet": "« Résoudre des problèmes impliquant des grandeurs et mesures : longueur, angle, aire, volume ». La liste dit le champ de la compétence, pas quatre savoirs.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Quatre points",
+				"effet": "« … impliquant des longueurs » · « … des angles » · « … des aires » · « … des volumes »."
+			}
+		]
+	},
+	{
+		"id": "Q12",
+		"titre": "Loi binomiale en Tle techno : couper par évènement ?",
+		"bo": "Tle techno l. 657 : « calculer les probabilités des évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et de ceux qui s'en déduisent par réunion ».",
+		"aujourdhui": [
+			"TTECHNO-064 · Lorsque X suit une loi binomiale : calculer les probabilités des évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et de ceux qui s'en déduisent par réunion"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Un point",
+				"effet": "Un seul geste : calculer directement, sans coefficients binomiaux. La liste dit quels évènements sont au programme.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Cinq points",
+				"effet": "Un par évènement ({X = 0}, {X = 1}, {X = n}, {X = n − 1}) et un pour les réunions."
+			}
+		]
+	},
+	{
+		"id": "Q13",
+		"titre": "Huit phrases du BO écartées au seed pour une autre raison que « trop large »",
+		"bo": "Ce ne sont pas des puces larges : ce sont des phrases d'introduction ou des précisions du type « ce n'est pas un objectif ».",
+		"aujourdhui": [
+			"Tle spé : « La notion de bijection est rencontrée naturellement en analyse, en géométrie… » (l. 213)",
+			"Tle spé : « La composition de deux fonctions est utilisée principalement dans le cadre des fonctions d'une variable réelle » (l. 214) — la composée a déjà son point (TSPE-407)",
+			"Tle spé et Tle compl. : « Le symbole Σ peut être introduit… mais sa manipulation n'est pas un objectif » (l. 217 ; Tle compl. l. 182)",
+			"1re spé et Tle spé : « La génération des listes en compréhension et en extension est mise en lien avec la notion d'ensemble » (l. 236 ; l. 256)",
+			"1re spé : « utiliser les quantificateurs (∀ et ∃ ne sont pas exigibles) » (l. 209) — déjà le point de 2de 2-215, référencé en 1re",
+			"1re spé ex-062 « Résoudre ces problèmes à l'aide du discriminant… » : la phrase n'existe plus dans le BO en vigueur"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Ne pas les rétablir",
+				"effet": "Ces phrases ne demandent rien à l'élève, ou redisent un point qui existe déjà.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Les rétablir (dis lesquelles en commentaire)",
+				"effet": "Chacune devient un point."
+			}
+		]
+	},
+	{
+		"id": "Q14",
+		"titre": "Lignes d'automatisme à relier à des points qui existent déjà",
+		"bo": "Une « référence » relie une ligne de la liste d'automatismes du BO au point qui la décrit (c'est ce qui fait apparaître le point dans la rubrique Automatismes du programme). Ces lignes n'ont pas besoin de point neuf : il suffit d'ajouter des liens.",
+		"aujourdhui": [
+			"2de l. 310 « Comparer deux nombres directement ou par calcul » → 5-017, 5-025, 6-133",
+			"2de l. 347 « Calculer, appliquer, exprimer une proportion sous différentes formes » (le verbe « appliquer ») et Tle techno l. 395 → 5-086, 5-140",
+			"1re (spé, gén., techno) et Tle techno « lire graphiquement l'équation réduite d'une droite » → 3-045, 3-067",
+			"1re (spé, gén., techno) « distinguer P(A ∩ B) et P_A(B) » → les deux morceaux de 2-395",
+			"1re techno l. 384 → 3-015 · Tle techno l. 405 → TTECHNO-023 · Tle techno l. 427 et l. 429 → les points ⚙ de 1re techno"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Ajouter ces liens",
+				"effet": "Aucun point neuf, seulement des liens.",
+				"reco": true
+			},
+			{ "cle": "B", "titre": "Ne pas les ajouter", "effet": "Ces lignes restent sans point." }
+		]
+	},
+	{
+		"id": "Q15",
+		"titre": "Quel morceau garde le code quand on coupe ?",
+		"bo": "Règle : le premier morceau garde le code actuel, les autres reçoivent un code neuf. Le code compte, parce que les modèles déjà tagués en prod pointent vers lui. Dans sept cas, le modèle tagué parle du 2e morceau du BO.",
+		"aujourdhui": [
+			"TCOMP-205 · Approche intuitive du passage à la limite dans les inégalités et du théorème des gendarmes — le modèle tagué porte sur les gendarmes",
+			"TCOMP-219 · Notion de limite d'une fonction ; asymptotes — le modèle tagué porte sur les asymptotes",
+			"Même cas : TCOMP-225, TCOMP-228, TEXP-314, 2-354, 2-355"
+		],
+		"options": [
+			{
+				"cle": "A",
+				"titre": "Le code va au morceau du modèle tagué",
+				"effet": "TCOMP-205 devient « Approche intuitive du théorème des gendarmes » et le morceau « passage à la limite dans les inégalités » reçoit un code neuf. Le modèle reste bien rangé ; à l'écran, l'ordre du BO est gardé.",
+				"reco": true
+			},
+			{
+				"cle": "B",
+				"titre": "Le code va au premier morceau du BO",
+				"effet": "Le modèle tagué devra être déplacé vers le code neuf à l'étape c."
+			}
+		]
+	}
+]

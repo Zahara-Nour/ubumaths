@@ -341,6 +341,73 @@
 			margin-left: 0;
 		}
 	}
+	.fiche.q h3 {
+		font: 600 1.12rem/1.35 var(--f-display);
+		margin: 0;
+		text-wrap: balance;
+	}
+	.bloc {
+		display: grid;
+		gap: 2px;
+	}
+	.bloc ul {
+		margin: 0;
+		padding-left: 1.1em;
+		display: grid;
+		gap: 2px;
+	}
+	.etiq {
+		font: 500 0.72rem var(--f-mono);
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.opts {
+		display: grid;
+		gap: 8px;
+		margin-top: 4px;
+	}
+	.opt {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		gap: 4px 10px;
+		align-items: baseline;
+		padding: 8px 10px;
+		border: 1px solid var(--line);
+		border-radius: 8px;
+	}
+	.opt p {
+		grid-column: 1 / -1;
+		font-size: 0.9rem;
+		color: var(--muted);
+	}
+	.opt button {
+		justify-self: start;
+		font: 600 0.9rem var(--f-body);
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--ink);
+		border-radius: 6px;
+		padding: 6px 10px;
+		cursor: pointer;
+		text-align: left;
+	}
+	.opt button[aria-pressed='true'] {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+	}
+	.reco {
+		font-size: 0.78rem;
+		font-weight: 600;
+		color: var(--ok);
+	}
+	.rep-q {
+		grid-template-columns: 1fr;
+	}
+	.rep-q .etat {
+		grid-column: 1;
+	}
 </style>
 
 <div class="wrap">
@@ -353,9 +420,10 @@
 			réponds OK, ou « À revoir » avec un commentaire.
 		</p>
 		<p>
-			Commence par les questions : elles tranchent toutes les fiches marquées « à trancher ». Le
-			bouton en tête de chaque programme marque OK d'un coup les fiches auxquelles tu n'as pas
-			répondu ; « À revoir » reste possible ensuite.
+			Commence par les questions : chacune montre la ligne du BO, le point actuel et ce que donne
+			chaque option ; clique sur l'option que tu choisis. Elles tranchent toutes les fiches marquées
+			« à trancher ». Le bouton en tête de chaque programme marque OK d'un coup les fiches
+			auxquelles tu n'as pas répondu ; « À revoir » reste possible ensuite.
 		</p>
 		<p>
 			Le premier libellé d'une coupe garde le code actuel ; « neuf » reçoit un nouveau code, rangé
@@ -379,250 +447,707 @@
 		</h2>
 		<article class="fiche q" id="Q01" data-id="Q01" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q01</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>T2 quand le BO demande de CHOISIR la méthode</b> (P049 2-336, P127 1SPE-321, P101
-				1SPE-253 « en diversifiant ») : couper par méthode ? <b>Non</b> : le choix est le savoir,
-				chaque méthode a déjà ses points (2-338, 2-339…344, 1SPE-310/313).
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q01">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Quand le BO demande de choisir la méthode, coupe-t-on par méthode ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					2de l. 714 : « Résoudre une équation ou une inéquation du type f(x) = k, f(x) &lt; k, en
+					choisissant une méthode adaptée : graphique, algébrique, logicielle. » Même tournure en
+					1re spé : produit scalaire « en choisissant une méthode adaptée » (l. 550), factorisation
+					« en diversifiant les stratégies » (l. 378).
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						2-336 · Résoudre une équation ou une inéquation du type f(x) = k, f(x) &lt; k, en
+						choisissant une méthode adaptée : graphique, algébrique, logicielle
+					</li>
+					<li>
+						1SPE-321 · … calculer le produit scalaire de deux vecteurs en choisissant une méthode
+						adaptée (projection orthogonale, coordonnées, normes et angle, normes)
+					</li>
+					<li>
+						1SPE-253 · Factoriser une fonction polynôme du second degré, en diversifiant les
+						stratégies : racine évidente, somme et produit, identité remarquable, formules
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q01">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Ne pas couper par méthode</button>
+					<span class="reco">ma reco</span>
+					<p>
+						Ces trois points gardent la liste des méthodes. Ici, le savoir, c&#x27;est de choisir la
+						méthode ; chaque méthode a déjà son propre point ailleurs (2-338, 2-339 à 2-344…).
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Couper : un point par méthode</button>
+					<p>
+						2-336 donne 6 points (équation / inéquation × graphique / algébrique / logicielle),
+						1SPE-321 en donne 4, 1SPE-253 en donne 4.
+					</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q01">Commentaire</label>
-				<textarea id="c-Q01" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q01" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q02" data-id="Q02" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q02</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>P003 2-203, symboles Ø, ∈, ⊂, ∩, ∪, {…}</b> : un point par symbole (T1) ? <b>Non</b> :
-				une notation, six quasi-doublons de 2-201/2-202 coupés.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q02">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Les symboles ∅, ∈, ⊂, ∩, ∪, {…} : un point ou un point par symbole ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					2de l. 211 : « savoir utiliser les symboles de base correspondants : ∅, ∈, ⊂, ∩, ∪, {…} ».
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>2-203 · Symboles de base correspondants : ∅, ∈, ⊂, ∩, ∪, {…}</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q02">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Un seul point</button>
+					<span class="reco">ma reco</span>
+					<p>
+						2-203 reste entier. Chaque symbole note une notion qui a déjà son point (appartenance,
+						inclusion, intersection, réunion…).
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Six points</button>
+					<p>Un point par symbole : « Utiliser le symbole ∅ », « … ∈ », etc.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q02">Commentaire</label>
-				<textarea id="c-Q02" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q02" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q03" data-id="Q03" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q03</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>P019 2-236 multiple, diviseur, pair, impair</b> : ×2, ×3 ou ×4 ? <b>×3</b> (multiple /
-				diviseur comme au primaire ; pair et impair ensemble).
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q03">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Multiple, diviseur, pair, impair : en combien de points ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					2de l. 431 : « Définition des notions de multiple, de diviseur, de nombre pair, de nombre
+					impair. » La coupe est décidée (règle 1a). Il reste à choisir le nombre de morceaux.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						2-236 · Définition des notions de multiple, de diviseur, de nombre pair, de nombre
+						impair : a est multiple de b s&#x27;il existe un entier k tel que a = kb
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q03">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Deux points</button>
+					<p>
+						« Définition des notions de multiple, de diviseur : a est multiple de b s&#x27;il existe
+						un entier k tel que a = kb » · « Définition des notions de nombre pair, de nombre impair
+						».
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Trois points</button>
+					<span class="reco">ma reco</span>
+					<p>
+						« Définition de la notion de multiple : a est multiple de b s&#x27;il existe… » · «
+						Définition de la notion de diviseur » · « Définition des notions de nombre pair, de
+						nombre impair ». Comme au primaire, où multiple et diviseur sont séparés (CM2-008 /
+						CM2-130).
+					</p>
+				</div>
+				<div class="opt">
+					<button type="button" data-choix="C">C. Quatre points</button>
+					<p>Multiple · diviseur · nombre pair · nombre impair, chacun son point.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q03">Commentaire</label>
-				<textarea id="c-Q03" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q03" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q04" data-id="Q04" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q04</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>P071 2-382</b> (coupé ×3) : la référence de la ligne l. 383 (boîtes à moustaches) vise la
-				3e moitié. La déplacer, par exception à « aucune référence déplacée » ? <b>Oui.</b>
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q04">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Une ligne d&#x27;automatisme qui ne vise qu&#x27;un morceau d&#x27;un point coupé</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					2de l. 819 : « Décrire les différences entre deux séries statistiques, en s&#x27;appuyant
+					sur des indicateurs ou couples d&#x27;indicateurs (moyenne–écart type, médiane–écart
+					interquartile) ou sur des représentations graphiques données. » La coupe en trois est
+					décidée.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						2-382 · Décrire les différences entre deux séries… (moyenne–écart type, médiane–EIQ) ou
+						sur des représentations graphiques données
+					</li>
+					<li>
+						Dans la liste des automatismes de 2de, la ligne « Comparer des distributions à
+						l&#x27;aide de boîtes à moustaches » (l. 383) renvoie aujourd&#x27;hui à 2-382.
+					</li>
+				</ul>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Après la coupe décidée</p>
+				<ul>
+					<li>2-382 · … en s&#x27;appuyant sur le couple moyenne–écart type</li>
+					<li>neuf · … en s&#x27;appuyant sur le couple médiane–écart interquartile</li>
+					<li>neuf · … en s&#x27;appuyant sur des représentations graphiques données</li>
+				</ul>
+			</div>
+			<div class="opts" role="group" aria-label="Choix pour Q04">
+				<div class="opt">
+					<button type="button" data-choix="A">
+						A. La ligne « boîtes à moustaches » renvoie au 3e morceau
+					</button>
+					<span class="reco">ma reco</span>
+					<p>
+						Elle vise alors « … représentations graphiques données », ce qu&#x27;elle dit vraiment.
+						C&#x27;est une exception à la règle « on ne déplace aucune référence ».
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Elle reste sur 2-382</button>
+					<p>
+						Elle visera « … le couple moyenne–écart type », qui ne parle pas de boîtes à moustaches.
+					</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q04">Commentaire</label>
-				<textarea id="c-Q04" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q04" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q05" data-id="Q05" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q05</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>Variance / écart type</b> (P140 1SPE-350, P142 1SPE-357) : un point ou deux ?
-				<b>Un</b> (σ = √V), grain déjà tenu par TCOMP-310, TSPE-522, 524, 528.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q05">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Variance et écart type : un point ou deux ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					1re spé l. 638 : « Espérance, variance, écart type d&#x27;une variable aléatoire. » et l.
+					647 : « Calculer une espérance, une variance, un écart type. » L&#x27;espérance a déjà son
+					point à part.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>1SPE-350 · Variance, écart type d&#x27;une variable aléatoire</li>
+					<li>1SPE-357 · Calculer une variance, un écart type (3 modèles tagués)</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q05">
+				<div class="opt">
+					<button type="button" data-choix="A">
+						A. Un point (variance et écart type ensemble)
+					</button>
+					<span class="reco">ma reco</span>
+					<p>
+						L&#x27;écart type est la racine de la variance : un exercice sur σ passe toujours par V.
+						C&#x27;est déjà le grain de la Terminale : TSPE-522 « Application à l&#x27;espérance, la
+						variance et l&#x27;écart type de la loi binomiale ».
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Deux points</button>
+					<p>
+						« Variance d&#x27;une variable aléatoire » · « Écart type d&#x27;une variable aléatoire
+						», et de même pour « Calculer… ». La famille de Terminale suivrait.
+					</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q05">Commentaire</label>
-				<textarea id="c-Q05" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q05" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q06" data-id="Q06" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q06</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>P119 1SPE-301</b> = mot pour mot la moitié de 1SPE-290, mais en approfondissement (la
-				démonstration). <b>Garder</b> ; sinon archiver (T4).
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q06">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Une propriété écrite deux fois dans le BO, mais l&#x27;une en approfondissement</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					1re spé : l. 483 donne « Pour tous réels x et y, exp(x + y) = exp(x) exp(y) » dans les
+					contenus ; l. 500 redonne la même phrase dans « Approfondissements possibles »,
+					c&#x27;est-à-dire sa démonstration.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						1SPE-290 · Pour tous réels x et y, exp(x + y) = exp(x) exp(y) et exp(x) exp(−x) = 1
+						(contenu)
+					</li>
+					<li>1SPE-301 · Pour tous réels x et y, exp(x + y) = exp(x) exp(y) (approfondissement)</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q06">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Garder les deux</button>
+					<span class="reco">ma reco</span>
+					<p>
+						1SPE-301 reste comme point d&#x27;approfondissement (démontrer la propriété), comme
+						1SPE-300.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Archiver 1SPE-301</button>
+					<p>C&#x27;est un doublon du BO ; aucune référence ne le vise.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q06">Commentaire</label>
-				<textarea id="c-Q06" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q06" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q07" data-id="Q07" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q07</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>Interpolation / extrapolation</b> (P150 1GEN-005, P206 1TECHNO-088, P322 TCOMP-324, P323
-				TCOMP-328) : T1 couperait. <b>Garder</b> les quatre : un même calcul.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q07">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Interpolation et extrapolation : un point ou deux ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					1re gén. l. 253 « Interpolation, extrapolation. » · 1re techno l. 580 « Interpoler ou
+					extrapoler des valeurs inconnues à l&#x27;aide d&#x27;un ajustement affine » · Tle compl.
+					l. 754 et l. 761.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>1GEN-005 · Interpolation, extrapolation</li>
+					<li>
+						1TECHNO-088 · Interpoler ou extrapoler des valeurs inconnues à l&#x27;aide d&#x27;un
+						ajustement affine
+					</li>
+					<li>TCOMP-324 · Application des ajustements à des interpolations ou extrapolations</li>
+					<li>TCOMP-328 · … utiliser un ajustement pour interpoler, extrapoler</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q07">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Un point chacun (pas de coupe)</button>
+					<span class="reco">ma reco</span>
+					<p>
+						C&#x27;est le même calcul (on lit ou on calcule une valeur avec l&#x27;ajustement) ;
+						seule la place de x change, dans l&#x27;intervalle des données ou en dehors.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Couper partout</button>
+					<p>« Interpolation » · « Extrapolation » dans les quatre points (+4 points).</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q07">Commentaire</label>
-				<textarea id="c-Q07" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q07" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q08" data-id="Q08" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q08</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>Trois formes de parabole</b> (P160 1GEN-024, P199 1TECHNO-061) : couper par forme ?
-				<b>Non</b> : un modèle d&#x27;association a besoin des trois.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q08">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Associer une parabole à son expression : couper par forme ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					1re gén. l. 368 et 1re techno l. 485 : « Associer une parabole à une expression algébrique
+					de degré 2, pour les fonctions de la forme x ↦ ax², x ↦ ax² + c, x ↦ a(x − x₁)(x − x₂). »
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						1GEN-024 · Associer une parabole à une expression algébrique de degré 2, pour les
+						fonctions de la forme ax², ax² + c, a(x − x₁)(x − x₂)
+					</li>
+					<li>1TECHNO-061 · (même libellé)</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q08">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Un point</button>
+					<span class="reco">ma reco</span>
+					<p>
+						Le geste est d&#x27;associer : un exercice d&#x27;association montre plusieurs paraboles
+						et plusieurs expressions à la fois, souvent de formes différentes.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Trois points</button>
+					<p>
+						« … pour les fonctions de la forme x ↦ ax² » · « … ax² + c » · « … a(x − x₁)(x − x₂) »,
+						dans les deux programmes.
+					</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q08">Commentaire</label>
-				<textarea id="c-Q08" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q08" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q09" data-id="Q09" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q09</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>« … afin de calculer / conjecturer »</b> (P208 1TECHNO-094, P152 1GEN-011, P138 1SPE-343,
-				P362 TTECHNO-052) : <b>couper</b> (représenter / calculer), le calcul est évaluable seul.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q09">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>« Représenter … afin de calculer » : un point ou deux ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					1re (spé, gén., techno) : « Représenter par un arbre de probabilités la répétition de n
+					épreuves de Bernoulli (n ⩽ 4) afin de calculer des probabilités. » · Tle techno l. 595 : «
+					Représenter un nuage de points en effectuant un changement de variable donné … afin de
+					conjecturer une relation de linéarité entre de nouvelles variables. »
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						1SPE-343, 1GEN-011, 1TECHNO-094 · Représenter par un arbre … afin de calculer des
+						probabilités
+					</li>
+					<li>
+						TTECHNO-052 · Représenter un nuage de points en effectuant un changement de variable …
+						afin de conjecturer une relation de linéarité
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q09">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Couper en deux</button>
+					<span class="reco">ma reco</span>
+					<p>
+						« Représenter par un arbre … la répétition de n épreuves » · « Calculer des probabilités
+						associées à la répétition de n épreuves » (et de même : « Représenter un nuage … » · «
+						Conjecturer une relation de linéarité … »). Le calcul s&#x27;évalue seul.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Garder entier</button>
+					<p>Le « afin de » relie les deux gestes en un seul savoir.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q09">Commentaire</label>
-				<textarea id="c-Q09" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q09" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q10" data-id="Q10" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q10</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>⚙ « coefficient directeur à partir de deux points »</b> (P084, P148, P183) :
-				<b>⚙ ×3</b> (T5) ; sinon 2-314 « à partir de deux points » suffit (mais c&#x27;est une
-				équation, pas une pente).
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q10">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>
+				« Déterminer le coefficient directeur à partir de deux points » : faut-il un point ⚙ ?
+			</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					Ligne d&#x27;automatisme de 1re (spé l. 277, gén. l. 210, techno l. 393) : « Déterminer le
+					coefficient directeur d&#x27;une droite à partir des coordonnées de deux de ses points. »
+					Aucun point ne dit exactement cela : le plus proche, 2-314, parle de l&#x27;équation de la
+					droite passant par deux points.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						2-314 · Déterminer une équation de droite à partir de deux points, d&#x27;un point et un
+						vecteur directeur, ou d&#x27;un point et la pente (le coefficient directeur n&#x27;y est
+						qu&#x27;une étape)
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q10">
+				<div class="opt">
+					<button type="button" data-choix="A">
+						A. Un point ⚙ neuf dans chaque programme de 1re
+					</button>
+					<span class="reco">ma reco</span>
+					<p>
+						1SPE, 1GEN et 1TECHNO reçoivent chacun « Déterminer le coefficient directeur d&#x27;une
+						droite à partir des coordonnées de deux de ses points » (règle T5).
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Pas de point neuf</button>
+					<p>La ligne renvoie à 2-314 (le morceau « à partir de deux points »).</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q10">Commentaire</label>
-				<textarea id="c-Q10" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q10" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q11" data-id="Q11" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q11</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>P236, Tle spé l. 421</b> « grandeurs et mesures : longueur, angle, aire, volume » : un
-				point ou quatre ? <b>Un</b>.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q11">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>La puce rétablie de Tle spé (l. 421) : un point ou quatre ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					Tle spé l. 421 : « Résoudre des problèmes impliquant des grandeurs et mesures : longueur,
+					angle, aire, volume. » Elle est rétablie (règle T6) : c&#x27;est une puce large, évaluée
+					par compétences.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>Aucun point (retirée au seed du 2026-10-08).</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q11">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Un point</button>
+					<span class="reco">ma reco</span>
+					<p>
+						« Résoudre des problèmes impliquant des grandeurs et mesures : longueur, angle, aire,
+						volume ». La liste dit le champ de la compétence, pas quatre savoirs.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Quatre points</button>
+					<p>
+						« … impliquant des longueurs » · « … des angles » · « … des aires » · « … des volumes ».
+					</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q11">Commentaire</label>
-				<textarea id="c-Q11" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q11" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q12" data-id="Q12" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q12</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>P364 TTECHNO-064</b> {X = 0}, {X = 1}, {X = n}, {X = n − 1}, réunions : couper par
-				évènement ? <b>Non</b> : un geste.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q12">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Loi binomiale en Tle techno : couper par évènement ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					Tle techno l. 657 : « calculer les probabilités des évènements {X = 0}, {X = 1}, {X = n},
+					{X = n − 1} et de ceux qui s&#x27;en déduisent par réunion ».
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						TTECHNO-064 · Lorsque X suit une loi binomiale : calculer les probabilités des
+						évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et de ceux qui s&#x27;en déduisent par
+						réunion
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q12">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Un point</button>
+					<span class="reco">ma reco</span>
+					<p>
+						Un seul geste : calculer directement, sans coefficients binomiaux. La liste dit quels
+						évènements sont au programme.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Cinq points</button>
+					<p>Un par évènement ({X = 0}, {X = 1}, {X = n}, {X = n − 1}) et un pour les réunions.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q12">Commentaire</label>
-				<textarea id="c-Q12" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q12" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q13" data-id="Q13" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q13</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>Autres retraits</b> (P078 ex-012a, P079 ex-1SPE-017, P145 ex-1SPE-062, P214-P216
-				ex-TSPE-007/008/009, P219 ex-TSPE-025, P282 ex-TCOMP-131) : <b>ne pas rétablir</b> — phrases
-				de présentation, « pas un objectif » (Σ), redondance (2-215, 1SPE-206/207, TSPE-407/408) ;
-				ex-1SPE-062 n&#x27;existe pas dans le BO en vigueur.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q13">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Huit phrases du BO écartées au seed pour une autre raison que « trop large »</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					Ce ne sont pas des puces larges : ce sont des phrases d&#x27;introduction ou des
+					précisions du type « ce n&#x27;est pas un objectif ».
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						Tle spé : « La notion de bijection est rencontrée naturellement en analyse, en
+						géométrie… » (l. 213)
+					</li>
+					<li>
+						Tle spé : « La composition de deux fonctions est utilisée principalement dans le cadre
+						des fonctions d&#x27;une variable réelle » (l. 214) — la composée a déjà son point
+						(TSPE-407)
+					</li>
+					<li>
+						Tle spé et Tle compl. : « Le symbole Σ peut être introduit… mais sa manipulation
+						n&#x27;est pas un objectif » (l. 217 ; Tle compl. l. 182)
+					</li>
+					<li>
+						1re spé et Tle spé : « La génération des listes en compréhension et en extension est
+						mise en lien avec la notion d&#x27;ensemble » (l. 236 ; l. 256)
+					</li>
+					<li>
+						1re spé : « utiliser les quantificateurs (∀ et ∃ ne sont pas exigibles) » (l. 209) —
+						déjà le point de 2de 2-215, référencé en 1re
+					</li>
+					<li>
+						1re spé ex-062 « Résoudre ces problèmes à l&#x27;aide du discriminant… » : la phrase
+						n&#x27;existe plus dans le BO en vigueur
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q13">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Ne pas les rétablir</button>
+					<span class="reco">ma reco</span>
+					<p>Ces phrases ne demandent rien à l&#x27;élève, ou redisent un point qui existe déjà.</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">
+						B. Les rétablir (dis lesquelles en commentaire)
+					</button>
+					<p>Chacune devient un point.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q13">Commentaire</label>
-				<textarea id="c-Q13" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q13" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q14" data-id="Q14" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q14</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>Références d&#x27;automatismes à ajouter</b> (pas de point) : <b>accepter</b> — l. 310
-				2de → 5-017, 5-025, 6-133 ; l. 347 2de et l. 395 Tle techno → 5-086, 5-140 ; « lire
-				graphiquement l&#x27;équation réduite » (1re l. 276/209/392, Tle techno l. 430) → 3-045,
-				3-067 ; « distinguer P(A ∩ B), P_A(B) » (1re l. 288/221/403) → 2-395 (les deux moitiés) ;
-				1re techno l. 384 → 3-015 ; Tle techno l. 405 → TTECHNO-023 ; l. 427/429 → les ⚙ de 1re
-				techno.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q14">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Lignes d&#x27;automatisme à relier à des points qui existent déjà</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					Une « référence » relie une ligne de la liste d&#x27;automatismes du BO au point qui la
+					décrit (c&#x27;est ce qui fait apparaître le point dans la rubrique Automatismes du
+					programme). Ces lignes n&#x27;ont pas besoin de point neuf : il suffit d&#x27;ajouter des
+					liens.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						2de l. 310 « Comparer deux nombres directement ou par calcul » → 5-017, 5-025, 6-133
+					</li>
+					<li>
+						2de l. 347 « Calculer, appliquer, exprimer une proportion sous différentes formes » (le
+						verbe « appliquer ») et Tle techno l. 395 → 5-086, 5-140
+					</li>
+					<li>
+						1re (spé, gén., techno) et Tle techno « lire graphiquement l&#x27;équation réduite
+						d&#x27;une droite » → 3-045, 3-067
+					</li>
+					<li>
+						1re (spé, gén., techno) « distinguer P(A ∩ B) et P_A(B) » → les deux morceaux de 2-395
+					</li>
+					<li>
+						1re techno l. 384 → 3-015 · Tle techno l. 405 → TTECHNO-023 · Tle techno l. 427 et l.
+						429 → les points ⚙ de 1re techno
+					</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q14">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Ajouter ces liens</button>
+					<span class="reco">ma reco</span>
+					<p>Aucun point neuf, seulement des liens.</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Ne pas les ajouter</button>
+					<p>Ces lignes restent sans point.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q14">Commentaire</label>
-				<textarea id="c-Q14" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q14" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
 		<article class="fiche q" id="Q15" data-id="Q15" data-prog="questions" data-statut="A_TRANCHER">
 			<header><span class="pid">Q15</span><span class="atr">question</span></header>
-			<p class="justif">
-				<b>Code au morceau que vise le modèle tagué, contre l&#x27;ordre du BO</b> (TCOMP-205, 219,
-				225, 228 ; TEXP-314 ; 2-354, 2-355 « variations » avant « signe ») : <b>oui</b>,
-				l&#x27;ordre d&#x27;affichage suit quand même le BO.
-			</p>
-			<div class="rep">
-				<div class="choix" role="group" aria-label="Réponse à Q15">
-					<button type="button" data-choix="ok">Je suis la reco</button>
-					<button type="button" data-choix="revoir">Autre choix</button>
+			<h3>Quel morceau garde le code quand on coupe ?</h3>
+			<div class="bloc">
+				<p class="etiq">Ce que dit le BO</p>
+				<p>
+					Règle : le premier morceau garde le code actuel, les autres reçoivent un code neuf. Le
+					code compte, parce que les modèles déjà tagués en prod pointent vers lui. Dans sept cas,
+					le modèle tagué parle du 2e morceau du BO.
+				</p>
+			</div>
+			<div class="bloc">
+				<p class="etiq">Aujourd’hui</p>
+				<ul>
+					<li>
+						TCOMP-205 · Approche intuitive du passage à la limite dans les inégalités et du théorème
+						des gendarmes — le modèle tagué porte sur les gendarmes
+					</li>
+					<li>
+						TCOMP-219 · Notion de limite d&#x27;une fonction ; asymptotes — le modèle tagué porte
+						sur les asymptotes
+					</li>
+					<li>Même cas : TCOMP-225, TCOMP-228, TEXP-314, 2-354, 2-355</li>
+				</ul>
+			</div>
+
+			<div class="opts" role="group" aria-label="Choix pour Q15">
+				<div class="opt">
+					<button type="button" data-choix="A">A. Le code va au morceau du modèle tagué</button>
+					<span class="reco">ma reco</span>
+					<p>
+						TCOMP-205 devient « Approche intuitive du théorème des gendarmes » et le morceau «
+						passage à la limite dans les inégalités » reçoit un code neuf. Le modèle reste bien
+						rangé ; à l&#x27;écran, l&#x27;ordre du BO est gardé.
+					</p>
 				</div>
+				<div class="opt">
+					<button type="button" data-choix="B">B. Le code va au premier morceau du BO</button>
+					<p>Le modèle tagué devra être déplacé vers le code neuf à l&#x27;étape c.</p>
+				</div>
+			</div>
+			<div class="rep rep-q">
 				<label class="com-l" for="c-Q15">Commentaire</label>
-				<textarea id="c-Q15" rows="2" placeholder="Ton choix, ta remarque…"></textarea>
+				<textarea id="c-Q15" rows="2" placeholder="Une remarque, une autre option…"></textarea>
 				<span class="etat" aria-live="polite"></span>
 			</div>
 		</article>
@@ -16549,7 +17074,7 @@
 			const repondable = IDS.includes(f.dataset.id);
 			let v =
 				filtreStatut === 'tout' ||
-				(filtreStatut === 'reste' && repondable && (!r || r.choix !== 'ok')) ||
+				(filtreStatut === 'reste' && repondable && (!r || !r.choix || r.choix === 'revoir')) ||
 				(filtreStatut === 'trancher' && f.dataset.prog === 'questions') ||
 				(filtreStatut === 'revoir' && r && r.choix === 'revoir');
 			if (filtreProg !== 'tous' && f.dataset.prog !== filtreProg && f.dataset.prog !== 'questions')
@@ -16566,9 +17091,9 @@
 		const f = parId[id];
 		if (!f || !f.querySelector('.rep')) return;
 		const r = rep[id] || {};
-		f.classList.toggle('rep-ok', r.choix === 'ok');
+		f.classList.toggle('rep-ok', r.choix === 'ok' || (f.classList.contains('q') && !!r.choix));
 		f.classList.toggle('rep-revoir', r.choix === 'revoir');
-		f.querySelectorAll('.choix button').forEach((b) =>
+		f.querySelectorAll('.choix button, .opt button').forEach((b) =>
 			b.setAttribute('aria-pressed', b.dataset.choix === r.choix)
 		);
 		const t = f.querySelector('textarea');
@@ -16648,7 +17173,7 @@
 			}
 			return;
 		}
-		const b = e.target.closest('.choix button');
+		const b = e.target.closest('.choix button, .opt button');
 		if (!b) return;
 		const id = b.closest('.fiche').dataset.id;
 		rep[id] = rep[id] || {};
