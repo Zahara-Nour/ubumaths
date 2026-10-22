@@ -14,8 +14,8 @@ _Mis à jour le 2026-10-22, étape b rédigée._
   collections `reponses` et `libelles`). Tout est commité sur `main` (docs pur).
 - **Prochaine action** : lire les réponses de David (ArtifactData `list` des 2 collections), les reporter dans les
   questions (`decision`, `decide_le`) et dans les bornes (force `décision`), puis étape c.
-- **En attente de David** : la page à cocher ; les documents d'accompagnement du lycée s'il en trouve
-  (`docs/ref/programmes/Accompagnement/lycee/`).
+- **En attente de David** : la page à cocher. Sources : BO seul, définitif (aucun document d'accompagnement
+  approprié sur eduscol, David, 2026-10-22).
 - **Pièges en cours** : 85 points techno sans borne ni remarque (hérités des bornes générales, à vérifier) ;
   1SPE-243/247/384 absents du nouveau BO (étape a à revoir) ; 1SPE-244 à re-ranger sur « racines » à l'étape c ;
   `undoLaterMigrations` (tests) à compléter pour toute future migration de données.
@@ -82,3 +82,5 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   l'étape a : 1SPE-243 (forme développée), 247 (sommet), 384 (axe de symétrie) absents du nouveau BO de 1re spé ;
   doublons possibles TSPE-304 / 386 (récurrence) et 1SPE-290 / 301 ; capacités de Tle techno sans point (arbres et
   probabilités conditionnelles, espérance, automatismes en italique) ; PPCM absent de tous les BO du lycée.
+- **2026-10-22 — Pas de document d'accompagnement (David).** « il n'y a pas de document d'accompagnement approprié
+  pour les bornes sur eduscol » : les bornes du lycée reposent sur le BO seul, pas de passe complémentaire.
