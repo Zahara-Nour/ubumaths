@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après Q5 (§ 24)._
+_Mis à jour le 2026-10-22, après Q6 (§ 26)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 10 tranchées (E1, § 10, E2, D1, D2, D3, D4, Q4, § 9, Q5), 2 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : Q6 révisée après sonde, § 25 — présentée, pas tranchée) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : Q6, Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom ; **Q6** (§ 25-26) : trois fonctions numériques (valeur sûre `number | null` en rationnels, variante ±∞/échec, `compile` pour les boucles), aucun résultat changé ; bug `sin²` des limites trouvé.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 11 tranchées (E1, § 10, E2, D1, D2, D3, D4, Q4, § 9, Q5, Q6), 1 ouverte. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : Q7, code mort) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -443,3 +443,13 @@ David : « point sensible, explore en profondeur ». Deux agents (évaluateurs ;
 - ~20 appels laissent l'erreur remonter sans capture (ex. `solve.ts:1133`, `:1817`, `periodicity.ts`, ubumark `number-line-parser.ts:159`).
 
 Conclusion : **une seule fonction `number | null` ne suffit pas** ; ma proposition initiale est retirée. Proposition révisée présentée à David (voir la page).
+
+## 26. Q6 tranchée (David, 2026-10-22 : « 1 »)
+
+Trois fonctions, une par besoin, **sans changer aucun résultat** :
+
+- **(a) valeur sûre** : rationnels exacts, nombre fini ou `null` ; remplace les ~25 copies `try/catch + isFinite` (base : `computeNumericValue`).
+- **(b) variante** qui rend +∞, −∞ ou échec : limites, inéquations (`inequality/index.ts:248`), réciproque (`reciprocal/image.ts:52`), `forbidden-value`.
+- **(c) `compile`** pour les boucles (grapheur, échantillonnage).
+- Restent tels quels : décisions exactes sur les rationnels (« vaut 0 », juge de l'élève) ; version qui lève pour `evaluate` et les endroits où le message compte.
+- Les évaluateurs maison (`evaluateNumeric`, `evaluateAtPoint` des limites pédagogiques) sont remplacés **après** un test rouge sur le bug `sin²` / `cos⁻¹` (§ 25).
