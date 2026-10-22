@@ -531,13 +531,13 @@ ENTETE = f"""-- ================================================================
 ROLLBACK = f"""set local lock_timeout = '5s';
 create temporary table _rb_point (
 	code text primary key, grade text not null, role text not null,
-	ancien_nom text, ancien_chemin text
+	ancien_nom text, ancien_chemin text, nom text
 ) on commit drop;
-insert into _rb_point (code, grade, role, ancien_nom, ancien_chemin) values
-{bloc([f"('{s['origin']}', '{s['grade']}', 'origine', {q(P[s['origin']]['name'])}, {q(P[s['origin']]['node'])})" for s in splits]
-      + [f"('{c}', '{s['grade']}', 'neuf', null, null)" for s in splits for c in s['codes'][1:]]
-      + [f"('{a['code']}', '{a['grade']}', 'neuf', null, null)" for a in ajouts]
-      + [f"('{c}', '{P[c]['grade']}', 'archive', null, null)" for c in ARCHIVES])}
+insert into _rb_point (code, grade, role, ancien_nom, ancien_chemin, nom) values
+{bloc([f"('{s['origin']}', '{s['grade']}', 'origine', {q(P[s['origin']]['name'])}, {q(P[s['origin']]['node'])}, {q(s['names'][0])})" for s in splits]
+      + [f"('{c}', '{s['grade']}', 'neuf', null, null, null)" for s in splits for c in s['codes'][1:]]
+      + [f"('{a['code']}', '{a['grade']}', 'neuf', null, null, null)" for a in ajouts]
+      + [f"('{c}', '{P[c]['grade']}', 'archive', null, null, null)" for c in ARCHIVES])}
 create temporary table _rb_ref (
 	code text not null, grade text not null, avant boolean not null, apres boolean not null,
 	primary key (code, grade)
@@ -553,6 +553,9 @@ with recursive c as (
 	  from public.classification_nodes n join c on n.parent_id = c.id
 )
 select id, kind, archived_at, chemin from c;
+-- Verrou sur les points en jeu : une écriture d'élève qui viserait un point neuf (clé étrangère,
+-- FOR KEY SHARE) attend la fin de cette transaction ; la garde ci-dessous reste vraie jusqu'au delete.
+select 1 from public.curriculum_points p join _rb_point r on r.code = p.code for update of p;
 do $rb_garde$
 declare
 	v_detail text;
@@ -588,6 +591,13 @@ begin
 	         where c.chemin = r.ancien_chemin and c.archived_at is null and c.kind in ('notion', 'subnotion')) <> 1;
 	if v_detail is not null then
 		raise exception 'rollback refusé : nœud d''avant introuvable pour : %', v_detail;
+	end if;
+	select string_agg(r.code, ', ' order by r.code) into v_detail
+	  from _rb_point r
+	 where r.role = 'origine'
+	   and not exists (select 1 from public.curriculum_points p where p.code = r.code and p.name = r.nom);
+	if v_detail is not null then
+		raise exception 'rollback refusé : libellé modifié depuis la migration (il serait écrasé) : %', v_detail;
 	end if;
 end $rb_garde$;
 delete from public.curriculum_point_automatismes a
@@ -658,6 +668,10 @@ with recursive c as (
 select id, kind, archived_at, chemin from c;
 
 -- ---- 2. Gardes : l'état attendu, sinon RIEN ne change ---------------------------
+-- Verrou sur les points en jeu : une écriture d'élève qui viserait l'un d'eux attend la fin de la
+-- migration ; les gardes ci-dessous restent vraies jusqu'aux écritures.
+select 1 from public.curriculum_points p join _pl_point s on s.code = p.code
+ where s.role in ('origine', 'archive') for no key update of p;
 do $garde$
 declare
 	v_detail text;
@@ -681,9 +695,11 @@ begin
 	   and (exists (select 1 from public.exercise_curriculum_points u where u.point_id = p.id)
 	     or exists (select 1 from public.student_point_state u where u.point_id = p.id)
 	     or exists (select 1 from public.journal_entry_points u where u.point_id = p.id)
-	     or exists (select 1 from public.srs_anti_fraud_flags u where u.capacity_point_id = p.id));
+	     or exists (select 1 from public.srs_anti_fraud_flags u where u.capacity_point_id = p.id)
+	     or (s.role = 'archive'
+	         and exists (select 1 from public.question_template_points u where u.point_id = p.id)));
 	if v_detail is not null then
-		raise exception 'état inattendu : données d''élèves ou tags d''exercices accrochés aux points en jeu : % (leur partage entre les morceaux n''est pas tranché)', v_detail;
+		raise exception 'état inattendu : données d''élèves, tags d''exercices (ou de modèles, sur un point à archiver) accrochés aux points en jeu : % (leur partage entre les morceaux n''est pas tranché)', v_detail;
 	end if;
 	-- 2c. aucun code neuf n'existe
 	select string_agg(p.code, ', ' order by p.code) into v_detail

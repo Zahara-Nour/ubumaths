@@ -34,6 +34,7 @@ interface Split {
 	origin: string;
 	grade: string;
 	nameBefore: string;
+	pathBefore: string;
 	codes: string[];
 	names: string[];
 	paths: string[];
@@ -319,6 +320,7 @@ describe('Passe lycée : rollback puis rejeu (transaction annulée)', () => {
 		}
 		for (const s of fixture.splits) {
 			expect(before.points.get(s.origin)?.name, s.origin).toBe(s.nameBefore);
+			expect(before.points.get(s.origin)?.path, s.origin).toBe(s.pathBefore);
 		}
 		expect(NEW_CODES.filter((c) => before.points.has(c))).toEqual([]);
 		for (const a of fixture.archived) {
