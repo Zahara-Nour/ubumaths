@@ -6,12 +6,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1587._
+_Mis à jour le 2026-10-22, après le deploy:prod v0.44.0._
 
-- **État** : **chantier clos.** #1587 mergée (après #1582). Rien en prod tant que David n'a pas
-  lancé `pnpm deploy:prod` ; la colonne `asleep` y est déjà.
-- **Prochaine action** : aucune. Vérifications manuelles #1582 et #1587 notées.
-- **En attente de David** : `deploy:prod` (à sa demande), puis les vérifications manuelles.
+- **État** : **chantier clos, en prod.** #1575, #1579, #1582 et #1587 livrées par la v0.44.0
+  (2026-10-21, déploiement Vercel `success`) ; colonne `asleep` et policy prof vérifiées en base.
+  Rythme des animations validé par David le 2026-10-22.
+- **Prochaine action** : aucune ; archiver les journaux `mathoux-*` une fois les vérifications faites.
+- **En attente de David** : vérifications manuelles #1575, #1579, #1582, #1587 (sur chiph.re) ;
+  relecture des 59 noms (`mathoux-noms.md`).
 - **Pièges en cours** : limites acceptées documentées dans `docs/systeme/mathoux.md` § Mémoire.
 - **Worktree / branche** : supprimés.
 
