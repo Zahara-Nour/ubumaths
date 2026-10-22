@@ -8,7 +8,7 @@ _Mis à jour le 2026-10-22, après #1609._
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — les 12 questions ouvertes détaillées avec recommandations. À tenir à jour avec le journal.
 - **Prochaine action** : David répond aux 12 questions de la page ; ensuite plan de lots (fin de la page).
 - **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
-- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; `normalize` applique déjà `ln(eˣ) = x` en silence (contraire à S4 tant que `réduire` passe par lui).
+- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; `normalize` applique en bloc des identités de tous niveaux, dont 3 qui perdent ou changent le domaine (`e^{ln x}`, `(√x)²`, `ln(xy)`, § 12) — contraire à S3 et S4 tant que `réduire` passe par lui.
 - **Worktree / branche** : aucun (worktree du test retiré après #1609).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
