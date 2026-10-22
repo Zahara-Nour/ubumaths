@@ -3,12 +3,19 @@
  * GET    - List user's demo scripts
  * POST   - Create or update (upsert by name) a demo script
  * DELETE - Delete a demo script by id
+ *
+ * Réservée au prof et à l'admin (décision de David du 2026-10-23) ; la RLS tient la
+ * même règle (migration 20261023150000).
  */
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireRoles } from '$lib/server/middleware/auth';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
+import { createServerLogger } from '$lib/utils/logger';
+
+const logger = createServerLogger('api/construction-demo-scripts/+server');
 
 const upsertSchema = z.object({
 	name: z.string().min(1, 'Le nom est requis').max(100, 'Nom trop long'),
@@ -21,7 +28,7 @@ const deleteSchema = z.object({
 
 // GET — list all demo scripts for the authenticated user
 export const GET: RequestHandler = async ({ locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	const { data, error: dbError } = await locals.supabase
 		.from('construction_demo_scripts')
@@ -29,14 +36,17 @@ export const GET: RequestHandler = async ({ locals }) => {
 		.eq('author_id', user.id)
 		.order('name');
 
-	if (dbError) throw error(500, dbError.message);
+	if (dbError) {
+		logger.error('Error fetching demo scripts:', dbError);
+		throw error(500, 'Impossible de charger les scripts');
+	}
 
 	return json(data);
 };
 
 // POST — create or update a demo script (upsert by name)
 export const POST: RequestHandler = async ({ request, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	const body = await request.json().catch(() => {
 		throw error(400, 'Corps de requête JSON invalide');
@@ -55,27 +65,38 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		.select('id, name, dsl_script, created_at, updated_at')
 		.single();
 
-	if (dbError) throw error(500, dbError.message);
+	if (dbError) {
+		logger.error('Error saving demo script:', dbError);
+		throw error(500, 'Impossible d’enregistrer le script');
+	}
 
 	return json(data, { status: 201 });
 };
 
 // DELETE — delete a demo script by id
 export const DELETE: RequestHandler = async ({ url, locals }) => {
-	const { user } = await requireAuth(locals);
+	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	const validation = deleteSchema.safeParse({ id: url.searchParams.get('id') });
 	if (!validation.success) {
 		throw error(400, validation.error.issues[0].message);
 	}
 
-	const { error: dbError } = await locals.supabase
+	// Un refus RLS (ou un id étranger) rend zéro ligne, sans erreur
+	const { data: deleted, error: dbError } = await locals.supabase
 		.from('construction_demo_scripts')
 		.delete()
 		.eq('id', validation.data.id)
-		.eq('author_id', user.id);
+		.eq('author_id', user.id)
+		.select('id');
 
-	if (dbError) throw error(500, dbError.message);
+	if (dbError) {
+		logger.error('Error deleting demo script:', dbError);
+		throw error(500, 'Impossible de supprimer le script');
+	}
+	if (!deleted || deleted.length === 0) {
+		throw error(404, 'Script introuvable');
+	}
 
 	return json({ ok: true });
 };

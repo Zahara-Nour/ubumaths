@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1616._
+_Mis à jour le 2026-10-23, lot 3 en cours (PR à ouvrir)._
 
-- **État** : lot 2 **livré** — #1616 mergée (consignes des sous-étapes, convertisseur `masque`/`montre`, ménage), vérifié par David en local le 2026-10-23. Part en prod au prochain `deploy:prod`, avec le code du lot 1 (#1615).
-- **Prochaine action** : choisir le lot 3 avec David (aucun worktree ouvert).
-- **En attente de David** : le choix du lot 3. Restent : API des scripts de démo (suppression d'un id étranger → `ok: true`, message brut de la base en 500 ; revue sécurité) · parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique, relevé par la revue).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; test par Tailscale = tunnel SSH ([environnement-de-dev.md](../pratiques/environnement-de-dev.md)).
-- **Worktree / branche** : aucun (supprimé après #1616). Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
+- **État** : lot 3 = API des scripts de démo, codé sur `fix/constructions-demo-scripts` : réservée au prof et à l'admin (API + RLS, migration `20261023150000`), `DELETE` vérifié (zéro ligne → 404), messages de la base gardés côté serveur. Lots 1 et 2 mergés (#1615, #1616), en prod au prochain `deploy:prod`.
+- **Prochaine action** : PR, revue `code-reviewer` + `security-auditor`, merge, puis `db:migrate` depuis la branche mergée (4 conditions : accès tranché par David le 2026-10-23, tests d'intégration rouges sans la migration, audit, additive avec rollback).
+- **En attente de David** : rien. Restent après ce lot : parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` (policy déjà posée hors historique) → migration du lot appliquée à la main par `docker exec … psql`.
+- **Worktree / branche** : `../ubumaths-wt-constructions` · `fix/constructions-demo-scripts`.
 
 ---
 
@@ -73,3 +73,15 @@ Revue : `code-reviewer` (Sonnet).
 - **B** : `converter.ts` écrit `masque(A)` / `montre(A)`. 2 tests dans `converter.test.ts` (sortie + point réellement masqué à l'exécution) : rouges sans le correctif, verts avec.
 - **C** : code mort retiré, `any` de l'éditeur → `StateEffectType<number[]>`, coloration tirée de `BUILTIN_NAMES` / `MATH_FUNCTIONS` (sur-ensemble strict de l'ancienne liste, aucun mot ne change de couleur), 7 commentaires corrigés, `constructions.md` recalé (numéros de ligne, lignes réglées retirées, les 3 constructions de prod notées).
 - `check:incremental` 0 erreur · `types:cliquet` tenu · `lint:fast` propre · `test:server constructions-v2` 189 ✓ / 21 ignorés.
+
+## Lot 3 — API des scripts de démo (2026-10-23)
+
+**Phase 0 validée par David** : `DELETE` d'un id étranger ou inconnu → 404 « Script introuvable », rien de supprimé ; erreur de la base → 500 en français, détail au journal serveur ; question d'accès : **prof et admin seulement** (lecture comprise), comme l'écriture des constructions. Mesuré en prod : 5 scripts, tous de l'admin ; personne ne perd rien.
+
+### Réalisé
+
+- `+server.ts` : `requireRoles(CONSTRUCTION_AUTHOR_ROLES)` sur les trois verbes, `DELETE … .select('id')` (zéro ligne → 404), `logger.error` + message fixe en 500.
+- Migration `20261023150000_construction_demo_scripts_prof_admin.sql` : la policy `*` « les siens » devient « les siens, prof ou admin » (`is_teacher_or_admin()`), rollback en commentaire.
+- Tests : `api/construction-demo-scripts/__tests__/api.test.ts` (7 rouges sans le correctif, 9/9 verts) ; `tests/integration/construction-demo-scripts-reserves.test.ts` (2 rouges sans la migration — cas élève —, 5/5 verts avec).
+- `constructions.md` : tables, API, dette réglée retirée.
+- Non fait (hors lot) : la page `/construction-demo` montre toujours « Sauvegarder » à un élève, qui reçoit un toast d'erreur 403.
