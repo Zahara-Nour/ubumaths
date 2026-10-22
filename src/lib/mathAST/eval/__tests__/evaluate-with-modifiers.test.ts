@@ -1,48 +1,54 @@
 /**
- * Unit tests for evaluateWithModifiers function
+ * Unit tests for evaluateAstWithModifiers
  *
- * Tests the convenience API for evaluating LaTeX expressions
+ * Tests the evaluation of LaTeX expressions
  * with formatting modifiers (decimal, addPositive, bracketNegative).
  */
 
 import { describe, it, expect } from 'vitest';
-import { evaluateWithModifiers, evaluateAstWithModifiers } from '../evaluate-with-modifiers';
+import { evaluateAstWithModifiers } from '../evaluate-with-modifiers';
 import { parseLatex } from '$lib/mathAST/parser';
 import { parseCustom } from '$lib/mathAST/parser/custom';
 import { evaluate } from '../evaluate';
 import { substitute } from '../substitute';
+import type { EvalModifiers } from '$lib/ubumark';
+
+// Parse puis évalue : l'ancienne enveloppe de production, supprimée
+function evaluateLatex(latex: string, modifiers: EvalModifiers = {}): string {
+	return evaluateAstWithModifiers(parseLatex(latex), modifiers);
+}
 
 // =============================================================================
 // Basic Evaluation Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - basic evaluation', () => {
+describe('evaluateAstWithModifiers - basic evaluation', () => {
 	it('evaluates simple addition: 3+4 -> 7', () => {
-		expect(evaluateWithModifiers('3+4', {})).toBe('7');
+		expect(evaluateLatex('3+4', {})).toBe('7');
 	});
 
 	it('evaluates simple subtraction: 10-3 -> 7', () => {
-		expect(evaluateWithModifiers('10-3', {})).toBe('7');
+		expect(evaluateLatex('10-3', {})).toBe('7');
 	});
 
 	it('evaluates simple multiplication: 5*2 -> 10', () => {
-		expect(evaluateWithModifiers('5 \\cdot 2', {})).toBe('10');
+		expect(evaluateLatex('5 \\cdot 2', {})).toBe('10');
 	});
 
 	it('evaluates power: 2^3 -> 8', () => {
-		expect(evaluateWithModifiers('2^3', {})).toBe('8');
+		expect(evaluateLatex('2^3', {})).toBe('8');
 	});
 
 	it('evaluates negative number: -5 -> -5', () => {
-		expect(evaluateWithModifiers('-5', {})).toBe('-5');
+		expect(evaluateLatex('-5', {})).toBe('-5');
 	});
 
 	it('evaluates zero: 0 -> 0', () => {
-		expect(evaluateWithModifiers('0', {})).toBe('0');
+		expect(evaluateLatex('0', {})).toBe('0');
 	});
 
 	it('evaluates complex expression: 3^2 + 4^2 -> 25', () => {
-		expect(evaluateWithModifiers('3^2+4^2', {})).toBe('25');
+		expect(evaluateLatex('3^2+4^2', {})).toBe('25');
 	});
 });
 
@@ -50,34 +56,34 @@ describe('evaluateWithModifiers - basic evaluation', () => {
 // Decimal Modifier Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - decimal modifier', () => {
+describe('evaluateAstWithModifiers - decimal modifier', () => {
 	it('converts fraction to decimal: 1/2 -> 0.5', () => {
-		const result = evaluateWithModifiers('\\frac{1}{2}', { decimal: true });
+		const result = evaluateLatex('\\frac{1}{2}', { decimal: true });
 		expect(result).toBe('0.5');
 	});
 
 	it('converts fraction to decimal: 1/3 -> 0.333...', () => {
-		const result = evaluateWithModifiers('\\frac{1}{3}', { decimal: true });
+		const result = evaluateLatex('\\frac{1}{3}', { decimal: true });
 		expect(result.startsWith('0.333')).toBe(true);
 	});
 
 	it('converts fraction to decimal: 1/4 -> 0.25', () => {
-		const result = evaluateWithModifiers('\\frac{1}{4}', { decimal: true });
+		const result = evaluateLatex('\\frac{1}{4}', { decimal: true });
 		expect(result).toBe('0.25');
 	});
 
 	it('converts 2/3 to decimal', () => {
-		const result = evaluateWithModifiers('\\frac{2}{3}', { decimal: true });
+		const result = evaluateLatex('\\frac{2}{3}', { decimal: true });
 		expect(result.startsWith('0.666')).toBe(true);
 	});
 
 	it('keeps integer as integer even in decimal mode', () => {
-		const result = evaluateWithModifiers('6', { decimal: true });
+		const result = evaluateLatex('6', { decimal: true });
 		expect(result).toBe('6');
 	});
 
 	it('evaluates expression and converts to decimal', () => {
-		const result = evaluateWithModifiers('1+\\frac{1}{2}', { decimal: true });
+		const result = evaluateLatex('1+\\frac{1}{2}', { decimal: true });
 		expect(result).toBe('1.5');
 	});
 });
@@ -86,27 +92,27 @@ describe('evaluateWithModifiers - decimal modifier', () => {
 // Add Positive Modifier Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - addPositive modifier', () => {
+describe('evaluateAstWithModifiers - addPositive modifier', () => {
 	it('adds + sign to positive number: 5 -> +5', () => {
-		expect(evaluateWithModifiers('5', { addPositive: true })).toBe('+5');
+		expect(evaluateLatex('5', { addPositive: true })).toBe('+5');
 	});
 
 	it('adds + sign to positive result: 3+4 -> +7', () => {
-		expect(evaluateWithModifiers('3+4', { addPositive: true })).toBe('+7');
+		expect(evaluateLatex('3+4', { addPositive: true })).toBe('+7');
 	});
 
 	it('does not add + sign to negative number: -3 -> -3', () => {
-		expect(evaluateWithModifiers('-3', { addPositive: true })).toBe('-3');
+		expect(evaluateLatex('-3', { addPositive: true })).toBe('-3');
 	});
 
 	// Décision de David (2026-10-03) : « ;+ » écrit aussi le signe de 0, sinon `y{{c;+}}`
 	// donne « y0 », lu comme un produit (mesuré : 3 modèles cassés en production)
 	it('adds + sign to zero: 0 -> +0', () => {
-		expect(evaluateWithModifiers('0', { addPositive: true })).toBe('+0');
+		expect(evaluateLatex('0', { addPositive: true })).toBe('+0');
 	});
 
 	it('does not add + sign to negative result: 3-5 -> -2', () => {
-		expect(evaluateWithModifiers('3-5', { addPositive: true })).toBe('-2');
+		expect(evaluateLatex('3-5', { addPositive: true })).toBe('-2');
 	});
 });
 
@@ -114,25 +120,25 @@ describe('evaluateWithModifiers - addPositive modifier', () => {
 // Bracket Negative Modifier Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - bracketNegative modifier', () => {
+describe('evaluateAstWithModifiers - bracketNegative modifier', () => {
 	it('brackets negative number: -3 -> (-3)', () => {
-		expect(evaluateWithModifiers('-3', { bracketNegative: true })).toBe('(-3)');
+		expect(evaluateLatex('-3', { bracketNegative: true })).toBe('(-3)');
 	});
 
 	it('brackets negative result: 3-5 -> (-2)', () => {
-		expect(evaluateWithModifiers('3-5', { bracketNegative: true })).toBe('(-2)');
+		expect(evaluateLatex('3-5', { bracketNegative: true })).toBe('(-2)');
 	});
 
 	it('does not bracket positive number: 5 -> 5', () => {
-		expect(evaluateWithModifiers('5', { bracketNegative: true })).toBe('5');
+		expect(evaluateLatex('5', { bracketNegative: true })).toBe('5');
 	});
 
 	it('does not bracket zero: 0 -> 0', () => {
-		expect(evaluateWithModifiers('0', { bracketNegative: true })).toBe('0');
+		expect(evaluateLatex('0', { bracketNegative: true })).toBe('0');
 	});
 
 	it('brackets negative fraction result (exact par défaut)', () => {
-		const result = evaluateWithModifiers('-\\frac{1}{2}', { bracketNegative: true });
+		const result = evaluateLatex('-\\frac{1}{2}', { bracketNegative: true });
 		expect(result).toBe('(-\\dfrac{1}{2})');
 	});
 });
@@ -141,14 +147,14 @@ describe('evaluateWithModifiers - bracketNegative modifier', () => {
 // Combined Modifiers Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - combined modifiers', () => {
+describe('evaluateAstWithModifiers - combined modifiers', () => {
 	it('combines decimal and addPositive for positive result', () => {
-		const result = evaluateWithModifiers('\\frac{2}{3}', { decimal: true, addPositive: true });
+		const result = evaluateLatex('\\frac{2}{3}', { decimal: true, addPositive: true });
 		expect(result.startsWith('+0.666')).toBe(true);
 	});
 
 	it('combines decimal and bracketNegative for negative result', () => {
-		const result = evaluateWithModifiers('-\\frac{1}{4}', {
+		const result = evaluateLatex('-\\frac{1}{4}', {
 			decimal: true,
 			bracketNegative: true
 		});
@@ -156,17 +162,17 @@ describe('evaluateWithModifiers - combined modifiers', () => {
 	});
 
 	it('combines addPositive and bracketNegative - positive case', () => {
-		const result = evaluateWithModifiers('5', { addPositive: true, bracketNegative: true });
+		const result = evaluateLatex('5', { addPositive: true, bracketNegative: true });
 		expect(result).toBe('+5');
 	});
 
 	it('combines addPositive and bracketNegative - negative case', () => {
-		const result = evaluateWithModifiers('-5', { addPositive: true, bracketNegative: true });
+		const result = evaluateLatex('-5', { addPositive: true, bracketNegative: true });
 		expect(result).toBe('(-5)');
 	});
 
 	it('combines all three modifiers - positive decimal', () => {
-		const result = evaluateWithModifiers('\\frac{1}{2}', {
+		const result = evaluateLatex('\\frac{1}{2}', {
 			decimal: true,
 			addPositive: true,
 			bracketNegative: true
@@ -175,7 +181,7 @@ describe('evaluateWithModifiers - combined modifiers', () => {
 	});
 
 	it('combines all three modifiers - negative decimal', () => {
-		const result = evaluateWithModifiers('-\\frac{1}{2}', {
+		const result = evaluateLatex('-\\frac{1}{2}', {
 			decimal: true,
 			addPositive: true,
 			bracketNegative: true
@@ -188,30 +194,30 @@ describe('evaluateWithModifiers - combined modifiers', () => {
 // Edge Cases Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - edge cases', () => {
+describe('evaluateAstWithModifiers - edge cases', () => {
 	it('handles empty modifiers object', () => {
-		expect(evaluateWithModifiers('5', {})).toBe('5');
+		expect(evaluateLatex('5', {})).toBe('5');
 	});
 
 	it('handles undefined modifiers', () => {
-		expect(evaluateWithModifiers('5')).toBe('5');
+		expect(evaluateLatex('5')).toBe('5');
 	});
 
 	it('handles very small decimals', () => {
-		const result = evaluateWithModifiers('\\frac{1}{1000}', { decimal: true });
+		const result = evaluateLatex('\\frac{1}{1000}', { decimal: true });
 		expect(result).toBe('0.001');
 	});
 
 	it('handles large numbers', () => {
-		expect(evaluateWithModifiers('2^{10}', {})).toBe('1024');
+		expect(evaluateLatex('2^{10}', {})).toBe('1024');
 	});
 
 	it('handles sqrt of perfect square', () => {
-		expect(evaluateWithModifiers('\\sqrt{16}', {})).toBe('4');
+		expect(evaluateLatex('\\sqrt{16}', {})).toBe('4');
 	});
 
 	it('handles sqrt of non-perfect square in decimal mode', () => {
-		const result = evaluateWithModifiers('\\sqrt{2}', { decimal: true });
+		const result = evaluateLatex('\\sqrt{2}', { decimal: true });
 		expect(result.startsWith('1.414')).toBe(true);
 	});
 });
@@ -220,17 +226,17 @@ describe('evaluateWithModifiers - edge cases', () => {
 // Error Cases Tests
 // =============================================================================
 
-describe('evaluateWithModifiers - error cases', () => {
+describe('evaluateAstWithModifiers - error cases', () => {
 	it('throws on expression with unsubstituted variable', () => {
-		expect(() => evaluateWithModifiers('x+1', {})).toThrow();
+		expect(() => evaluateLatex('x+1', {})).toThrow();
 	});
 
 	it('throws on division by zero', () => {
-		expect(() => evaluateWithModifiers('\\frac{1}{0}', {})).toThrow('Division by zero');
+		expect(() => evaluateLatex('\\frac{1}{0}', {})).toThrow('Division by zero');
 	});
 
 	it('throws on invalid LaTeX', () => {
-		expect(() => evaluateWithModifiers('\\frac{1}', {})).toThrow();
+		expect(() => evaluateLatex('\\frac{1}', {})).toThrow();
 	});
 });
 
@@ -264,62 +270,60 @@ describe('evaluateAstWithModifiers - AST input', () => {
 // Résultat exact par défaut (comme TinyMath) — `;d` pour le décimal
 // =============================================================================
 
-describe('evaluateWithModifiers - résultat exact par défaut', () => {
+describe('evaluateAstWithModifiers - résultat exact par défaut', () => {
 	it('fraction irréductible : 90/70 → \\dfrac{9}{7}', () => {
-		expect(evaluateWithModifiers('\\frac{90}{70}', {})).toBe('\\dfrac{9}{7}');
+		expect(evaluateLatex('\\frac{90}{70}', {})).toBe('\\dfrac{9}{7}');
 	});
 
 	it('signe devant la fraction : -6/8 → -\\dfrac{3}{4}', () => {
-		expect(evaluateWithModifiers('\\frac{-6}{8}', {})).toBe('-\\dfrac{3}{4}');
+		expect(evaluateLatex('\\frac{-6}{8}', {})).toBe('-\\dfrac{3}{4}');
 	});
 
 	it('somme de fractions : 1/3 + 1/6 → \\dfrac{1}{2}', () => {
-		expect(evaluateWithModifiers('\\frac{1}{3}+\\frac{1}{6}', {})).toBe('\\dfrac{1}{2}');
+		expect(evaluateLatex('\\frac{1}{3}+\\frac{1}{6}', {})).toBe('\\dfrac{1}{2}');
 	});
 
 	it('entier si le résultat tombe juste : 12/4 → 3', () => {
-		expect(evaluateWithModifiers('\\frac{12}{4}', {})).toBe('3');
+		expect(evaluateLatex('\\frac{12}{4}', {})).toBe('3');
 	});
 
 	it('racine simplifiée : √8 → 2 \\sqrt{2}', () => {
-		expect(evaluateWithModifiers('\\sqrt{8}', {})).toBe('2 \\sqrt{2}');
+		expect(evaluateLatex('\\sqrt{8}', {})).toBe('2 \\sqrt{2}');
 	});
 
 	it('min de fractions : garde la fraction exacte', () => {
-		expect(evaluateWithModifiers('\\min(\\frac{2}{3}, \\frac{2}{9})', {})).toBe('\\dfrac{2}{9}');
+		expect(evaluateLatex('\\min(\\frac{2}{3}, \\frac{2}{9})', {})).toBe('\\dfrac{2}{9}');
 	});
 
 	it('un décimal dans le calcul donne un décimal : 0.5 + 0.25 → 0.75', () => {
-		expect(evaluateWithModifiers('0.5+0.25', {})).toBe('0.75');
+		expect(evaluateLatex('0.5+0.25', {})).toBe('0.75');
 	});
 
 	it('décimal × entier : 1.2 × 3 → 3.6', () => {
-		expect(evaluateWithModifiers('1.2 \\times 3', {})).toBe('3.6');
+		expect(evaluateLatex('1.2 \\times 3', {})).toBe('3.6');
 	});
 
 	it('`;d` force le décimal : 7/10 → 0.7', () => {
-		expect(evaluateWithModifiers('\\frac{7}{10}', { decimal: true })).toBe('0.7');
+		expect(evaluateLatex('\\frac{7}{10}', { decimal: true })).toBe('0.7');
 	});
 
 	it('`;+` sur une fraction exacte : +\\dfrac{3}{4}', () => {
-		expect(evaluateWithModifiers('\\frac{3}{4}', { addPositive: true })).toBe('+\\dfrac{3}{4}');
+		expect(evaluateLatex('\\frac{3}{4}', { addPositive: true })).toBe('+\\dfrac{3}{4}');
 	});
 
 	it('`;()` sur une fraction négative : (-\\dfrac{3}{4})', () => {
-		expect(evaluateWithModifiers('\\frac{-3}{4}', { bracketNegative: true })).toBe(
-			'(-\\dfrac{3}{4})'
-		);
+		expect(evaluateLatex('\\frac{-3}{4}', { bracketNegative: true })).toBe('(-\\dfrac{3}{4})');
 	});
 });
 
-describe('evaluateWithModifiers - exact aussi pour ln, exponentielle, π ; `;d` pour la valeur', () => {
+describe('evaluateAstWithModifiers - exact aussi pour ln, exponentielle, π ; `;d` pour la valeur', () => {
 	it('ln(2) exact, 0.693… avec `;d`', () => {
-		expect(evaluateWithModifiers('\\ln(2)', {})).toContain('\\ln');
-		expect(evaluateWithModifiers('\\ln(2)', { decimal: true }).startsWith('0.693147')).toBe(true);
+		expect(evaluateLatex('\\ln(2)', {})).toContain('\\ln');
+		expect(evaluateLatex('\\ln(2)', { decimal: true }).startsWith('0.693147')).toBe(true);
 	});
 
 	it('π reste exact', () => {
-		expect(evaluateWithModifiers('12\\pi', {})).toBe('12 \\pi');
+		expect(evaluateLatex('12\\pi', {})).toBe('12 \\pi');
 	});
 });
 
@@ -401,8 +405,8 @@ describe('evaluateAstWithModifiers - base négative et exposant littéral', () =
 
 // Multiple rationnel de π écrit comme au tableau : `\dfrac{\pi}{6}`, pas `\dfrac{1}{6} \pi`
 // (décision de David, 2026-10-05 : convention des cartes de trigonométrie).
-describe('evaluateWithModifiers - multiple rationnel de π', () => {
-	const evalCustom = (source: string, modifiers = {}) => evaluateWithModifiers(source, modifiers);
+describe('evaluateAstWithModifiers - multiple rationnel de π', () => {
+	const evalCustom = (source: string, modifiers = {}) => evaluateLatex(source, modifiers);
 
 	it.each([
 		['\\frac{2\\pi}{12}', '\\dfrac{\\pi}{6}'],

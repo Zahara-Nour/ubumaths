@@ -588,10 +588,10 @@ function withScientificQuantity(writing: string, modifiers: EvalModifiers): stri
 // =============================================================================
 
 /**
- * Evaluate a LaTeX expression with optional formatting modifiers.
+ * Evaluate a MathNode AST with optional formatting modifiers.
  *
- * This function provides a simple API for evaluating mathematical expressions
- * that matches the interface expected by the ubumark parameterization system.
+ * Matches the interface expected by the ubumark parameterization system.
+ * The AST usually comes from parseCustom + substitute (variable-resolver).
  *
  * Résultat exact par défaut, comme TinyMath : `\dfrac{9}{7}`, `2 \sqrt{2}`
  * (décimal si le calcul contient un décimal). Modifiers:
@@ -600,52 +600,41 @@ function withScientificQuantity(writing: string, modifiers: EvalModifiers): stri
  * - `bracketNegative`: Wrap negative results in parentheses
  * - `derivative`: Not implemented (reserved for future use)
  *
- * @param latex - LaTeX expression to evaluate
- * @param modifiers - Optional formatting modifiers
- * @returns Formatted result as string
- * @throws Error if parsing or evaluation fails
- *
- * @example Basic evaluation
- * ```typescript
- * evaluateWithModifiers('3+4', {})           // Returns: '7'
- * evaluateWithModifiers('2^3', {})           // Returns: '8'
- * ```
- *
- * @example Decimal modifier
- * ```typescript
- * evaluateWithModifiers('1/3', { decimal: true })  // Returns: '0.3333333333333333'
- * evaluateWithModifiers('\\frac{1}{2}', { decimal: true })  // Returns: '0.5'
- * ```
- *
- * @example Positive sign modifier
- * ```typescript
- * evaluateWithModifiers('5', { addPositive: true })      // Returns: '+5'
- * evaluateWithModifiers('-3', { addPositive: true })     // Returns: '-3' (no change for negative)
- * evaluateWithModifiers('0', { addPositive: true })      // Returns: '+0' (« y0 » serait lu comme un produit)
- * ```
- *
- * @example Bracket negative modifier
- * ```typescript
- * evaluateWithModifiers('-3', { bracketNegative: true })  // Returns: '(-3)'
- * evaluateWithModifiers('5', { bracketNegative: true })   // Returns: '5' (no change for positive)
- * ```
- *
- * @example Combined modifiers
- * ```typescript
- * evaluateWithModifiers('2/3', { decimal: true, addPositive: true })  // Returns: '+0.6666666666666666'
- * evaluateWithModifiers('-1/4', { decimal: true, bracketNegative: true })  // Returns: '(-0.25)'
- * ```
- */
-/**
- * Evaluate a MathNode AST with optional formatting modifiers.
- *
- * Same as evaluateWithModifiers but accepts a pre-parsed AST instead of a LaTeX string.
- * This is useful when the AST has already been constructed (e.g., via parseCustom + substitute).
- *
  * @param ast - MathNode AST to evaluate
  * @param modifiers - Optional formatting modifiers
  * @returns Formatted result as string
  * @throws Error if evaluation fails
+ *
+ * @example Basic (exemples écrits sur le LaTeX, pour `parseLatex(latex)`) evaluation
+ * ```typescript
+ * evaluateAstWithModifiers('3+4', {})           // Returns: '7'
+ * evaluateAstWithModifiers('2^3', {})           // Returns: '8'
+ * ```
+ *
+ * @example Decimal modifier
+ * ```typescript
+ * evaluateAstWithModifiers('1/3', { decimal: true })  // Returns: '0.3333333333333333'
+ * evaluateAstWithModifiers('\\frac{1}{2}', { decimal: true })  // Returns: '0.5'
+ * ```
+ *
+ * @example Positive sign modifier
+ * ```typescript
+ * evaluateAstWithModifiers('5', { addPositive: true })      // Returns: '+5'
+ * evaluateAstWithModifiers('-3', { addPositive: true })     // Returns: '-3' (no change for negative)
+ * evaluateAstWithModifiers('0', { addPositive: true })      // Returns: '+0' (« y0 » serait lu comme un produit)
+ * ```
+ *
+ * @example Bracket negative modifier
+ * ```typescript
+ * evaluateAstWithModifiers('-3', { bracketNegative: true })  // Returns: '(-3)'
+ * evaluateAstWithModifiers('5', { bracketNegative: true })   // Returns: '5' (no change for positive)
+ * ```
+ *
+ * @example Combined modifiers
+ * ```typescript
+ * evaluateAstWithModifiers('2/3', { decimal: true, addPositive: true })  // Returns: '+0.6666666666666666'
+ * evaluateAstWithModifiers('-1/4', { decimal: true, bracketNegative: true })  // Returns: '(-0.25)'
+ * ```
  */
 export function evaluateAstWithModifiers(
 	ast: MathNode,
@@ -725,19 +714,4 @@ export function evaluateAstWithModifiers(
 	}
 
 	return formattedOutput;
-}
-
-/**
- * Evaluate a LaTeX expression with optional formatting modifiers.
- *
- * Parses a LaTeX string and delegates to evaluateAstWithModifiers.
- *
- * @param latex - LaTeX expression to evaluate
- * @param modifiers - Optional formatting modifiers
- * @returns Formatted result as string
- * @throws Error if parsing or evaluation fails
- */
-export function evaluateWithModifiers(latex: string, modifiers: EvalModifiers = {}): string {
-	const ast = parseLatex(latex);
-	return evaluateAstWithModifiers(ast, modifiers);
 }

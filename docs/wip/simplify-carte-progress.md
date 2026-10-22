@@ -2,14 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après Q7 (§ 27) : les 12 questions sont tranchées._
+_Mis à jour le 2026-10-22, lot code mort (§ 28) en PR._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom ; **Q6** (§ 25-26) : trois fonctions numériques (valeur sûre `number | null` en rationnels, variante ±∞/échec, `compile` pour les boucles), aucun résultat changé ; bug `sin²` des limites trouvé ; **Q7** (§ 27) : code mort supprimé dans un premier lot à part, classe `Exp` entière comprise.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 12 tranchées sur 12. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** (demandée par David pour la session suivante) : lot « code mort » (Q7, § 27), dans un worktree `ubumaths-wt-simplify-carte`, branche `refactor/simplify-carte-code-mort` ; puis faire valider l'ordre des lots (fin de la page).
-- **En attente de David** : validation de l'ordre des lots (après le lot code mort).
-- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
-- **Worktree / branche** : aucun pour l'instant (à créer pour le lot code mort).
+- **Lot code mort** (§ 28) : PR ouverte depuis le worktree `ubumaths-wt-simplify-carte`, branche `refactor/simplify-carte-code-mort` — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
+- **Prochaine action** : merger le lot code mort (CI verte), puis faire valider l'ordre des lots (fin de la page de synthèse).
+- **En attente de David** : validation de l'ordre des lots.
+- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée », à changer avec E2 (§ 15).
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte` · `refactor/simplify-carte-code-mort`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -464,3 +465,12 @@ Premier lot à part, à faire **dans la session suivante**. Liste revérifiée l
 - `evaluateWithSubstitution` (`common/numeric.ts:363`, réexport `common/index.ts`), `approximateValueLatex` (`cli/approximation.ts:256`).
 - Dans `questions/constraint-validators.ts` : `checkSpaces`, `checkProducts`, `checkBrackets`, `checkZeros`, `checkForm`, `checkNullTerms`, `checkFactorOne`, `checkFactorZero`, `checkSigns`. **Garder `checkUnit` et `checkReducedFractions`** (vivants). ⚠️ Ne pas confondre avec le `checkForm` de `cosmetic-transforms.ts:1809`, juge actuel, vivant.
 - Avant chaque suppression : `grep -rn` collé dans la PR. Revue : `code-reviewer` (Sonnet).
+
+## 28. Lot code mort (2026-10-22, branche `refactor/simplify-carte-code-mort`)
+
+Fait comme listé au § 27, greps refaits avant chaque suppression (zéro appelant hors tests). Ce qui n'était pas prévu :
+
+- **`checkSpaces` n'était qu'une enveloppe** de `checkSpacesViolation` (`cosmetic-transforms.ts`, vivant, utilisé par le juge `checkForm`) : ses 42 assertions étaient la seule couverture fine de la détection. Déplacées dans `mathAST/__tests__/spaces-violation.test.ts`, branchées directement (17 tests ; les cas « plusieurs réponses » testaient l'enveloppe et partent avec elle). Les autres vérificateurs avaient leur propre logique, morte : leurs tests partent avec eux (513 → 94 tests, `checkReducedFractions` gardé).
+- **`evaluateWithModifiers`** : son fichier de tests (87 tests) testait en fait `evaluateAstWithModifiers` à travers l'enveloppe ; gardé, avec un helper local `parseLatex` + `evaluateAstWithModifiers`. Idem `approximateValueLatex` : helper local de même composition que la Web REPL (37 tests).
+- **Classe `Exp`** : 4 fichiers de tests réécrits par l'agent mathast avec les constructeurs bas niveau (arbres gardés tels quels, pas de `parseLatex`) ; comptes identiques (32, 26, 40, 149). Deux tests retirés : « hash is cached » et « normal form is cached », qui vérifiaient le cache privé de la classe.
+- Docs système mises à jour : `questions.md` (écart connu retiré), `grandeurs.md`, `mathast/README.md`, `mathast/pattern-matching.md`.

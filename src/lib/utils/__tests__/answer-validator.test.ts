@@ -446,7 +446,7 @@ describe('validateAnswer - Specific Constraints', () => {
 				}
 			});
 
-			// Note: checkZeros uses plain text, not LaTeX
+			// Note: la contrainte zeros lit le texte brut, pas le LaTeX
 			const result = validateAnswer('01', instance, '01');
 
 			expect(result.status).toBe('bad_form');

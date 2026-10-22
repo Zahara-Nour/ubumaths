@@ -100,10 +100,10 @@ Un seul calculateur : **`tidy(ast, { unitChoice: 'written' })`**, en rationnels 
 (`mathAST/units/exact.ts`). L'unité du résultat est celle que l'auteur ou l'élève a écrite :
 `10[km]/1[h]` → 10 km/h, `7[mm]*5[mm]` → 35 mm², `90[km/h]*2[h]` → 180 km, `3[h]/1[min]` → 180.
 
-| Qui                    | Entrée                                                                                                        |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `{{eval}}` des énoncés | `evaluateWithModifiers` (interne : `evaluateQuantity`), `valueIn` (`mathAST/eval/evaluate-with-modifiers.ts`) |
-| Calcul de l'atelier    | `computeQuantity`, `convertQuantity` (`.convertir`), `quantityProblem` (`mathAST/cli/quantities.ts`)          |
+| Qui                    | Entrée                                                                                                           |
+| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| `{{eval}}` des énoncés | `evaluateAstWithModifiers` (interne : `evaluateQuantity`), `valueIn` (`mathAST/eval/evaluate-with-modifiers.ts`) |
+| Calcul de l'atelier    | `computeQuantity`, `convertQuantity` (`.convertir`), `quantityProblem` (`mathAST/cli/quantities.ts`)             |
 
 Ce que fait `computeQuantity` en plus de `tidy` :
 

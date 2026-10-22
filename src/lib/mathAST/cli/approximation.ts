@@ -248,17 +248,6 @@ export function isScientificNotation(node: MathNode): boolean {
 	return isNumber(right.base) && right.base.value === '10' && isNumber(exponent);
 }
 
-/**
- * `\approx 0.7071`, `= 0.25`, ou `null` quand le bouton n'a rien à montrer :
- * nombre déjà écrit en décimal, expression littérale, grandeur, valeur non
- * réelle ou hors d'échelle.
- */
-export function approximateValueLatex(node: MathNode): string | null {
-	if (isWrittenNumber(node)) return null;
-	const approximation = approximateDigitsOf(node);
-	return approximation === null ? null : approximateLatexOf(approximation);
-}
-
 /** `\\approx 0.7071`, `= 0.25` : une valeur décimale déjà lue, avec sa relation. */
 export function approximateLatexOf(approximation: ApproximateDigits): string {
 	return `${approximation.exact ? '=' : '\\approx'} ${approximationLatex(approximation)}`;

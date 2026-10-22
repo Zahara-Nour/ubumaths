@@ -141,7 +141,6 @@ export { compile, createSafeEvaluator, CompileError } from './compile';
 export type { CompiledFn } from './compile';
 
 export {
-	evaluateWithModifiers,
 	evaluateAstWithModifiers,
 	evalResultToCustom,
 	evalResultToNumber

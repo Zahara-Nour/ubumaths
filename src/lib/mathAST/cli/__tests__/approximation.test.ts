@@ -10,10 +10,23 @@
 import { describe, it, expect } from 'vitest';
 import { parseLatex } from '$lib/mathAST/parser';
 import { evaluate } from '$lib/mathAST/eval/evaluate';
-import { approximateValueLatex, approximateSolutionsLatex } from '../approximation';
+import {
+	approximateDigitsOf,
+	approximateLatexOf,
+	approximateSolutionsLatex,
+	isWrittenNumber
+} from '../approximation';
 import { WebReplEngine } from '../web/web-repl-engine';
+import type { MathNode } from '$lib/mathAST/types';
 
-const approx = (latex: string) => approximateValueLatex(parseLatex(latex));
+// Même composition que la Web REPL (`web-repl-engine.ts`) : rien pour un nombre déjà écrit
+function approximationOf(node: MathNode): string | null {
+	if (isWrittenNumber(node)) return null;
+	const approximation = approximateDigitsOf(node);
+	return approximation === null ? null : approximateLatexOf(approximation);
+}
+
+const approx = (latex: string) => approximationOf(parseLatex(latex));
 
 describe('la valeur approchée d’un nombre exact', () => {
 	it('4 décimales, précédées de ≈', () => {
@@ -163,7 +176,7 @@ describe('hors de l’échelle : la notation scientifique', () => {
 	it('au-delà de l’exposant 1000 : sur le résultat exact ou dans le budget de taille', () => {
 		const ofExact = (latex: string) => {
 			const result = evaluate(parseLatex(latex), { mode: 'exact' });
-			return result.status === 'value' ? approximateValueLatex(result.node) : null;
+			return result.status === 'value' ? approximationOf(result.node) : null;
 		};
 
 		expect(ofExact('0.5^{2000}')).toBe('\\approx 8.7098 \\times 10^{-603}');
