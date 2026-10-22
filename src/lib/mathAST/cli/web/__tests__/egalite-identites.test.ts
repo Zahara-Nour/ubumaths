@@ -1,6 +1,6 @@
 /**
  * Test d'égalité `a = b` de la console (et de l'Atelier) : comparer passe par
- * `areEquivalent` (ADR 0006), pas par `normalize` seul, qui ignore les
+ * la forme d'équivalence (`equivalenceForms`, ADR 0006), pas par `normalize` seul, qui ignore les
  * identités lourdes (simplify-carte § 31 : `sin²x + cos²x = 1` répondait `false`).
  */
 

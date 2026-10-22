@@ -171,8 +171,8 @@ describe('attendue du modèle', () => {
 	});
 });
 
-// simplify-carte § 31 : comparer passe par `areEquivalent` (ADR 0006), pas par
-// `normalize` seul, qui ignore les identités lourdes
+// simplify-carte § 31 : comparer passe par la forme d'équivalence (`equivalenceForms`,
+// ADR 0006), pas par `normalize` seul, qui ignore les identités lourdes
 describe('coordonnées égales par une identité', () => {
 	it.each([
 		['(\\sin^2(2)+\\cos^2(2);0)', '(1;0)'],
@@ -180,6 +180,11 @@ describe('coordonnées égales par une identité', () => {
 		['(2^{\\pi+1};0)', '(2\\cdot2^{\\pi};0)']
 	])('%s vaut %s', (answer, expected) => {
 		expect(judgeVectorAnswer(answer, expected).status).toBe('correct');
+	});
+
+	it('e^{iπ} vaut −1 ; e^{i} n’est pas une coordonnée réelle', () => {
+		expect(judgeVectorAnswer('(e^{i\\pi};0)', '(-1;0)').status).toBe('correct');
+		expect(judgeVectorAnswer('(e^{i};0)', '(1;0)').status).toBe('incorrect');
 	});
 
 	it('une identité fausse reste fausse', () => {
