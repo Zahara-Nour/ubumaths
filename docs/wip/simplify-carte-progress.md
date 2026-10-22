@@ -2,12 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, après D3 (§ 19)._
+_Mis à jour le 2026-10-22, D3 en discussion (§ 19, sondage ; rien de tranché)._
 
-- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : expression tapée avec variable mise au propre, ordre gardé, après le lot du contrat de `tidy`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 6 tranchées (E1, § 10, E2, D1, D2, D3), 6 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (suivante : D4) ; ensuite plan de lots (fin de la page).
-- **En attente de David** : D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 5 tranchées (E1, § 10, E2, D1, D2), 7 ouvertes. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
+- **Prochaine action** : David répond aux 12 questions de la page, une à la fois dans l'ordre de la page (en cours : D3, sondage au § 19 ; David demande ce qu'on attend de l'Atelier pour une expression numérique / littérale) ; ensuite plan de lots (fin de la page).
+- **En attente de David** : D3-D4 · Q4 · § 9 (retirer `normalize` de l'affichage des expressions avec variable) · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée).
 - **Worktree / branche** : aucun.
 
@@ -366,10 +366,12 @@ Sondé avant décision (test jetable, supprimé) : `reducedDerivative` (`variati
 
 **Décision** : dans le tableau de variations, f′ passe par `factoriser` (lycée) ; quotient → numérateur factorisé, dénominateur tel quel ; étape « On factorise pour étudier le signe ». Rien ne se factorise (Δ < 0) → reste développé, signe de a. Ordre des facteurs : celui du noyau (décision du 2026-10-11), ordre interne d'un facteur gardé (`x(2 + x)eˣ`) — accepté tel quel.
 
-## 19. D3 : expression tapée avec variable dans l'Atelier (David, 2026-10-22 : « go pour D3 »)
+## 19. D3 : sondage (2026-10-22) — NON TRANCHÉE
+
+⚠️ Une première version de ce paragraphe (commit `b29d1d119`) consignait D3 comme décidée : erreur, David avait écrit « go pour D3 » pour qu'on la lui présente, pas pour la valider.
 
 **Réserve levée (sondé, test jetable supprimé).** Pour une expression avec variable, `engine.execute` rend l'entrée telle quelle : `3+2*x`, `x/x`, `3-2x+x^2`, `0.5x+1` ressortent identiques. `readable` (`atelier/render.ts:139`) reçoit donc ce que l'élève a tapé, pas un résultat passé par `normalize`.
 
-**Décision** : mettre au propre en gardant l'ordre. `3+2*x → 3 + 2x`, `3 − 2x + x²` dans cet ordre, `x*2 → 2x`, `x+0 → x`, `2x+3x → 5x` ; `x/x` reste (S3), `0,5x` reste décimal (S1).
+**Aucune variante actuelle ne « met au propre en gardant l'ordre »** : `tidy` et `tidyWithoutReordering` rangent (`2x+3`, `x^2-2x+3`) ; `tidyTerms` garde l'ordre de la somme mais donne encore `x/x → 1` et `0.5x → x/2`. Toute option autre que « telle quelle » attend le lot du contrat de `tidy` (S1-S3 + option d'ordre). Détail : `sqrt(8)x` → `2x√2` par `tidyTerms`, `2√2x` par `tidyWithoutReordering`.
 
-⚠️ Aucune variante actuelle ne le fait : `tidy` et `tidyWithoutReordering` rangent (`2x+3`, `x^2-2x+3`) ; `tidyTerms` garde l'ordre de la somme mais donne encore `x/x → 1` et `0.5x → x/2`. La garde « variable » de `readable` ne saute donc qu'après le lot du nouveau contrat de `tidy` (S1-S3 + option d'ordre, S2). Détail relevé pour ce lot : `sqrt(8)x` → `2x√2` par `tidyTerms`, `2√2x` par `tidyWithoutReordering`.
+Question de David en retour (2026-10-22) : qu'attend-on de l'Atelier pour une expression numérique, pour une expression littérale ?
