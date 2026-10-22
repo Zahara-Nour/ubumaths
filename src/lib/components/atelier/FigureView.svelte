@@ -117,9 +117,9 @@
 			return true;
 		},
 		holds: (id) => held !== null && projection.nameOf(id) === held,
-		move: (x, y, snap) => {
+		move: (x, y, snap, pixel) => {
 			if (held === null) return;
-			const done = atelier.dragPoint(held, x, y, snap);
+			const done = atelier.dragPoint(held, x, y, snap, pixel);
 			if (!done.ok) refusal = done.message;
 		},
 		release: () => {
@@ -148,7 +148,7 @@
 			// Les objets proches, par leur nom (un élément sans nom — un texte — ne compte pas)
 			const objects = [...new Set(near.elementIds.flatMap((id) => projection.nameOf(id) ?? []))];
 			refusal = null;
-			toolbox.click(x, y, point, snap, { objects, radius: near.radius });
+			toolbox.click(x, y, point, snap, { objects, radius: near.radius, pixel: near.pixel });
 			// Un point posé (outil Point, ou extrémité) devient le point des flèches ; un
 			// point visé aussi, s'il se glisse (un point construit ne bouge pas aux flèches)
 			const created = atelier.names.find((n) => !before.has(n) && atelier.get(n)?.kind === 'point');

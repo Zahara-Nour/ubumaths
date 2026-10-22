@@ -31,6 +31,11 @@
 	import AtelierSettings from './AtelierSettings.svelte';
 	import { readInputMode, writeInputMode, type InputMode } from '$lib/atelier/input-mode';
 	import { readAngleUnit, writeAngleUnit, type AngleUnit } from '$lib/atelier/angle-unit';
+	import {
+		readPointDragMode,
+		writePointDragMode,
+		type PointDragMode
+	} from '$lib/atelier/point-drag-mode';
 	import { CalcDesk } from '$lib/atelier/desk.svelte';
 	import GrapheurContainer from '$lib/components/grapheur/GrapheurContainer.svelte';
 	import { GrapheurStore } from '$lib/stores/grapheur.svelte';
@@ -237,6 +242,15 @@
 	function chooseAngleUnit(unit: AngleUnit) {
 		atelier.setAngleUnit(unit);
 		writeAngleUnit(readStorage(), unit);
+	}
+
+	/** Le réglage « Déplacement des points » (aimanté par défaut, 2026-10-22). */
+	// svelte-ignore state_referenced_locally
+	atelier.setPointDragMode(readPointDragMode(readStorage()));
+
+	function choosePointDragMode(mode: PointDragMode) {
+		atelier.setPointDragMode(mode);
+		writePointDragMode(readStorage(), mode);
 	}
 
 	/** Un historique relu : confirmer s'il y a de quoi perdre, sinon rejouer (R1, R2). */
@@ -1188,6 +1202,7 @@
 				<AtelierSettings
 					bind:inputMode={() => inputMode, chooseInputMode}
 					bind:angleUnit={() => atelier.angleUnit, chooseAngleUnit}
+					bind:pointDragMode={() => atelier.pointDragMode, choosePointDragMode}
 				/>
 			</div>
 		</div>

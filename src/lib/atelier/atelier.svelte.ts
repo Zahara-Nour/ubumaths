@@ -142,7 +142,8 @@ import {
 	withPosition,
 	type ConstructionMemo
 } from './construction';
-import { dragHoldOf, draggedCoordinates, positionAt } from './point-drag';
+import { dragHoldOf, draggedCoordinates, positionAt, positionWithin } from './point-drag';
+import { DEFAULT_POINT_DRAG_MODE, type PointDragMode } from './point-drag-mode';
 import {
 	computeGrid,
 	gridTexts,
@@ -469,16 +470,22 @@ export { constantOf } from './constant';
  * et avec la virgule, comme l'élève l'écrit (lu 0,5 — mesuré).
  */
 function formatSliderValue(value: number, step: number): string {
-	// Les décimales du pas, lues sur sa notation scientifique : `String(1e-7)`
-	// vaut « 1e-7 » et donnait 0 décimale (revue du lot 4, M1). Arrondi aux
-	// DÉCIMALES du pas — le curseur, lui, pose déjà la valeur sur un cran.
+	// Arrondi aux DÉCIMALES du pas — le curseur, lui, pose déjà la valeur sur un cran
+	return writtenNumber(Number(value.toFixed(stepDecimals(step))));
+}
+
+/**
+ * Les décimales d'un pas, lues sur sa notation scientifique : `String(1e-7)`
+ * vaut « 1e-7 » et donnait 0 décimale (revue du lot 4, M1).
+ */
+function stepDecimals(step: number): number {
 	const [mantissa, exponent] = step.toExponential().split('e');
-	const decimals = Math.min(
-		12,
-		Math.max(0, (mantissa.split('.')[1] ?? '').length - Number(exponent))
-	);
-	const rounded = Number(value.toFixed(decimals));
-	return String(rounded === 0 ? 0 : rounded).replace('.', ',');
+	return Math.min(12, Math.max(0, (mantissa.split('.')[1] ?? '').length - Number(exponent)));
+}
+
+/** Un nombre comme l'élève l'écrit : virgule décimale, jamais « -0 ». */
+function writtenNumber(value: number): string {
+	return String(value === 0 ? 0 : value).replace('.', ',');
 }
 
 const CIRCULAR = 'Définition circulaire : cet objet finit par se définir lui-même.';
@@ -1129,9 +1136,11 @@ export class Atelier {
 	/**
 	 * Glisser la position d'un `point_sur` : le nombre écrit devient celui-ci,
 	 * arrondi au pas et gardé dans les bornes — comme `slideTo` pour une valeur.
-	 * Ce qui cite le point suit.
+	 * Ce qui cite le point suit. `tolerance` (déplacement fluide, un pixel en
+	 * unités) : plus fin que le pas s'il le faut pour que le point retombe à
+	 * moins d'un pixel de la souris.
 	 */
-	slidePosition(name: string, value: number): Updated | Refused {
+	slidePosition(name: string, value: number, tolerance = 0): Updated | Refused {
 		const current = this.get(name);
 		const slider = this.positionSliderOf(name);
 		if (current === undefined || slider === null) {
@@ -1139,7 +1148,11 @@ export class Atelier {
 		}
 		if (!Number.isFinite(value)) return { ok: false, message: 'Cette valeur n’est pas un nombre.' };
 		const clamped = Math.min(slider.max, Math.max(slider.min, value));
-		const written = formatSliderValue(clamped, slider.step);
+		const support = tolerance > 0 ? supportOfPointOn(this, name) : null;
+		const written =
+			support === null
+				? formatSliderValue(clamped, slider.step)
+				: writtenNumber(positionWithin(support, clamped, stepDecimals(slider.step), tolerance));
 		// Un cran qui ne change pas le nombre ÉCRIT ne réécrit rien ; `1/3` glissé à 0,33, si
 		if (written === positionTextOf(this, name)) {
 			return { ok: true, object: current, recomputed: [] };
@@ -1168,11 +1181,13 @@ export class Atelier {
 	 * Glisser le point `name` en (x ; y) à la souris (géométrie lot 3, M1, M2) :
 	 * sa définition est réécrite (coordonnées, ou position d'un `point_sur`), et
 	 * tout ce qui le cite suit PENDANT le geste. `snap` : l'écart, en unités du
-	 * repère, sous lequel une coordonnée s'aimante à l'entier.
+	 * repère, sous lequel une coordonnée s'aimante à l'entier ; `pixel` : la
+	 * taille d'un pixel, en unités, que suit le déplacement fluide
+	 * (`pointDragMode`) — nulle, le point reste aimanté.
 	 *
 	 * Tout un glisser = UNE étape (M7), fermée au relâcher (`endGesture`).
 	 */
-	dragPoint(name: string, x: number, y: number, snap = 0): Updated | Refused {
+	dragPoint(name: string, x: number, y: number, snap = 0, pixel = 0): Updated | Refused {
 		const hold = dragHoldOf(this, name);
 		if (hold.kind === 'refused') return { ok: false, message: hold.message };
 		this.#draggedPoint = name;
@@ -1185,10 +1200,10 @@ export class Atelier {
 			if (position === null) {
 				return { ok: false, message: `« ${displayName(name)} » ne peut pas se glisser ici.` };
 			}
-			return this.slidePosition(name, position);
+			return this.slidePosition(name, position, this.fluidPixel(pixel) ?? 0);
 		}
 		const current = this.get(name)!;
-		const written = draggedCoordinates(x, y, snap);
+		const written = draggedCoordinates(x, y, snap, this.fluidPixel(pixel));
 		// Un mouvement qui ne change pas le couple ÉCRIT ne recalcule rien
 		if (written === current.definition) {
 			return { ok: true, object: current, recomputed: [] };
@@ -1944,6 +1959,25 @@ export class Atelier {
 
 	setCalcMode(mode: 'exact' | 'decimal'): void {
 		this.#calcMode = mode;
+	}
+
+	/**
+	 * Le déplacement des points à la souris (réglage, 2026-10-22) : aimanté ou
+	 * fluide. Un réglage de ce navigateur, hors `serialize()` ; rien à recalculer.
+	 */
+	#pointDragMode = $state<PointDragMode>(DEFAULT_POINT_DRAG_MODE);
+
+	get pointDragMode(): PointDragMode {
+		return this.#pointDragMode;
+	}
+
+	setPointDragMode(mode: PointDragMode): void {
+		this.#pointDragMode = mode;
+	}
+
+	/** Le pixel que suit un point glissé ou posé : en fluide seulement, s'il est connu. */
+	fluidPixel(pixel: number): number | null {
+		return this.#pointDragMode === 'fluid' && pixel > 0 ? pixel : null;
 	}
 
 	/** Changer l'unité des angles recalcule les mesures d'angle (`T = angle(…)`). */

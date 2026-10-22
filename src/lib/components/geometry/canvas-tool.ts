@@ -7,6 +7,8 @@
 export interface CanvasNear {
 	readonly elementIds: readonly string[];
 	readonly radius: number;
+	/** La taille d'un pixel, en unités du repère (`1 / ppu`). */
+	readonly pixel: number;
 }
 
 export interface CanvasTool {

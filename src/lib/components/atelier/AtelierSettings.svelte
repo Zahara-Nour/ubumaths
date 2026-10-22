@@ -2,8 +2,9 @@
 	/**
 	 * La fenêtre de réglages de l'atelier.
 	 *
-	 * Phase 0 `docs/wip/atelier-reglages-phase0.md` : un réglage pour l'instant,
-	 * la saisie dans Calcul. Le choix prend effet tout de suite, sans bouton
+	 * Phase 0 `docs/wip/atelier-reglages-phase0.md` : la saisie dans Calcul ;
+	 * puis les angles (2026-10-18) et le déplacement des points (2026-10-22).
+	 * Le choix prend effet tout de suite, sans bouton
 	 * « Enregistrer » ; c'est le conteneur qui le retient dans ce navigateur.
 	 */
 	import Settings from '@lucide/svelte/icons/settings';
@@ -12,6 +13,7 @@
 	import { Label } from '$lib/components/ui/label';
 	import type { InputMode } from '$lib/atelier/input-mode';
 	import type { AngleUnit } from '$lib/atelier/angle-unit';
+	import type { PointDragMode } from '$lib/atelier/point-drag-mode';
 
 	interface Choice {
 		value: InputMode;
@@ -23,8 +25,9 @@
 
 	let {
 		inputMode = $bindable('text'),
-		angleUnit = $bindable('deg')
-	}: { inputMode?: InputMode; angleUnit?: AngleUnit } = $props();
+		angleUnit = $bindable('deg'),
+		pointDragMode = $bindable('snap')
+	}: { inputMode?: InputMode; angleUnit?: AngleUnit; pointDragMode?: PointDragMode } = $props();
 
 	/** Le réglage « Angles » (2026-10-18) : l'unité des mesures d'angle, seulement. */
 	const ANGLE_CHOICES: readonly { value: AngleUnit; label: string; detail: string }[] = [
@@ -34,6 +37,20 @@
 			label: 'Radians',
 			detail:
 				'angle(A ; B ; C) répond π/3 rad. Un nombre seul reste en radians : cos(60) ne change pas.'
+		}
+	];
+
+	/** Le réglage « Déplacement des points » (2026-10-22) : la souris dans la vue Géométrie. */
+	const DRAG_CHOICES: readonly { value: PointDragMode; label: string; detail: string }[] = [
+		{
+			value: 'snap',
+			label: 'Aimanté',
+			detail: 'Un point glissé avance de 0,1 en 0,1 et se pose sur les entiers quand on passe près.'
+		},
+		{
+			value: 'fluid',
+			label: 'Fluide',
+			detail: 'Un point glissé suit la souris, au pixel près : 0,01 près au zoom habituel.'
 		}
 	];
 
@@ -116,6 +133,30 @@
 						<div class="flex-1">
 							<Label for="{uid}-angle-{choice.value}" class="cursor-pointer">{choice.label}</Label>
 							<p id="{uid}-angle-{choice.value}-detail" class="mt-1 text-sm text-muted-foreground">
+								{choice.detail}
+							</p>
+						</div>
+					</div>
+				{/each}
+			</RadioGroup.Root>
+		</fieldset>
+		<fieldset class="space-y-3">
+			<legend class="mb-2 font-medium">Déplacement des points</legend>
+			<RadioGroup.Root
+				value={pointDragMode}
+				onValueChange={(value) => (pointDragMode = value === 'fluid' ? 'fluid' : 'snap')}
+			>
+				{#each DRAG_CHOICES as choice (choice.value)}
+					<div class="flex items-start gap-3">
+						<RadioGroup.Item
+							value={choice.value}
+							id="{uid}-drag-{choice.value}"
+							aria-describedby="{uid}-drag-{choice.value}-detail"
+							class="mt-1"
+						/>
+						<div class="flex-1">
+							<Label for="{uid}-drag-{choice.value}" class="cursor-pointer">{choice.label}</Label>
+							<p id="{uid}-drag-{choice.value}-detail" class="mt-1 text-sm text-muted-foreground">
 								{choice.detail}
 							</p>
 						</div>

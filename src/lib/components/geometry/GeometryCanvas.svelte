@@ -711,7 +711,7 @@
 		moveFrame = null;
 		const move = pendingMove;
 		pendingMove = null;
-		if (move !== null && delegated) pointDrag?.move(move.x, move.y, SNAP_PIXELS / ppu);
+		if (move !== null && delegated) pointDrag?.move(move.x, move.y, SNAP_PIXELS / ppu, 1 / ppu);
 	}
 
 	/** Fin d'un glisser délégué : le dernier mouvement part, puis le relâcher. */
@@ -906,7 +906,7 @@
 		const radius = toolPickRadius(e) / ppu;
 		const pointId = findPointNear(figure, math.x, math.y, radius);
 		const elementIds = findElementsNear(figure, math.x, math.y, radius, viewport);
-		tool.click(math.x, math.y, pointId, SNAP_PIXELS / ppu, { elementIds, radius });
+		tool.click(math.x, math.y, pointId, SNAP_PIXELS / ppu, { elementIds, radius, pixel: 1 / ppu });
 	}
 
 	function onPointerLeave() {

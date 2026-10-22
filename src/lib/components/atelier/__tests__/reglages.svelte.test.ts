@@ -13,6 +13,7 @@ import type { MathfieldElement } from 'mathlive';
 import AtelierContainer from '../AtelierContainer.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { INPUT_MODE_KEY } from '$lib/atelier/input-mode';
+import { POINT_DRAG_MODE_KEY } from '$lib/atelier/point-drag-mode';
 import { chooseObjectAction } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 
@@ -23,10 +24,11 @@ onDesktopScreen();
 // Décor
 // =============================================================================
 
-type Choice = 'Texte' | 'Écriture mathématique';
+type Choice = 'Texte' | 'Écriture mathématique' | 'Aimanté' | 'Fluide';
 
 beforeEach(() => {
 	localStorage.removeItem(INPUT_MODE_KEY);
+	localStorage.removeItem(POINT_DRAG_MODE_KEY);
 });
 
 // Le stockage est celui de l'origine, commun à tous les fichiers de tests du
@@ -34,6 +36,7 @@ beforeEach(() => {
 // texte des tests suivants (mesuré : 7 échecs dans deux autres fichiers)
 afterEach(() => {
 	localStorage.removeItem(INPUT_MODE_KEY);
+	localStorage.removeItem(POINT_DRAG_MODE_KEY);
 });
 
 /** Un atelier reçu par lien (éphémère) : les réglages y sont aussi. */
@@ -152,6 +155,48 @@ describe('la fenêtre de réglages', () => {
 
 		await vi.waitFor(() => expect(document.querySelector('[role="dialog"]')).toBeNull());
 		await vi.waitFor(() => expect(document.activeElement).toBe(settingsButton()));
+	});
+});
+
+// =============================================================================
+// Le déplacement des points (2026-10-22)
+// =============================================================================
+
+describe('le choix du déplacement des points', () => {
+	it('« Aimanté » est choisi par défaut', async () => {
+		const atelier = new Atelier();
+		const { openSettings } = await open(atelier);
+
+		await openSettings();
+
+		await expect
+			.element(page.getByRole('radio', { name: /^Aimanté/ }))
+			.toHaveAttribute('aria-checked', 'true');
+		expect(atelier.pointDragMode).toBe('snap');
+	});
+
+	it('« Fluide » vaut tout de suite pour l’atelier, et se retient', async () => {
+		const atelier = new Atelier();
+		const { choose } = await open(atelier);
+
+		await choose('Fluide');
+
+		expect(atelier.pointDragMode).toBe('fluid');
+		expect(localStorage.getItem(POINT_DRAG_MODE_KEY)).toBe('fluid');
+
+		await choose('Aimanté');
+
+		expect(atelier.pointDragMode).toBe('snap');
+		expect(localStorage.getItem(POINT_DRAG_MODE_KEY)).toBe('snap');
+	});
+
+	it('le choix retenu vaut dès l’ouverture de l’atelier', async () => {
+		localStorage.setItem(POINT_DRAG_MODE_KEY, 'fluid');
+		const atelier = new Atelier();
+
+		await open(atelier);
+
+		expect(atelier.pointDragMode).toBe('fluid');
 	});
 });
 

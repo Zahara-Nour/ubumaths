@@ -13,8 +13,11 @@ export interface PointDrag {
 	 * refaite en plein geste (nouveaux ids) : seul le possesseur le sait.
 	 */
 	readonly holds: (elementId: string) => boolean;
-	/** Le point saisi va en (x ; y), coordonnées du repère ; `snap` : l'aimantation, en unités. */
-	readonly move: (x: number, y: number, snap: number) => void;
+	/**
+	 * Le point saisi va en (x ; y), coordonnées du repère ; `snap` : l'aimantation,
+	 * en unités ; `pixel` : la taille d'un pixel, en unités (`1 / ppu`).
+	 */
+	readonly move: (x: number, y: number, snap: number, pixel: number) => void;
 	/** Le geste est fini (relâcher, annulation du navigateur, fenêtre quittée). */
 	readonly release: () => void;
 }
