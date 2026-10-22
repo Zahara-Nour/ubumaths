@@ -499,55 +499,8 @@ export function validateAnswer(
 			(originalIndex) => choiceLetter(toDisplayedChoicePosition(instance, originalIndex))
 		);
 
-		// Apply required form check (multiple_choice only; fill_in_blanks uses per-blank)
-		let acceptableForm = false;
-		if (result.isCorrect && instance.requiredForm && userAnswerLatex) {
-			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const reading = readingOf(instance);
-			const verdicts = latex.map((l) => requiredFormVerdict(l, instance.requiredForm!, reading));
-			acceptableForm = verdicts.includes('acceptable');
-
-			if (verdicts.includes('violated')) {
-				const feedback = getRequiredFormFeedback(instance.requiredForm, latex.length > 1);
-				return {
-					isCorrect: false,
-					status: 'bad_form',
-					feedback,
-					constraintViolations: [{ constraint: 'form', severity: 'error', feedback }]
-				};
-			}
-		}
-
-		// Apply constraint checks (multiple_choice only)
-		if (result.isCorrect && userAnswerLatex) {
-			const answers = Array.isArray(userAnswer) ? userAnswer.map(String) : [String(userAnswer)];
-			const latex = Array.isArray(userAnswerLatex) ? userAnswerLatex : [userAnswerLatex];
-			const expected = Array.isArray(correctChoiceIndex)
-				? correctChoiceIndex
-				: correctChoiceIndex
-					? [correctChoiceIndex]
-					: [];
-
-			const { status, violations } = applyConstraints(
-				answers,
-				latex,
-				expected,
-				instance.options?.constraints ?? {},
-				readingOf(instance)
-			);
-
-			const form = acceptableForm ? withAcceptableForm(status, violations) : { status, violations };
-			result.status = form.status;
-			result.constraintViolations = form.violations;
-
-			if (form.status === 'bad_form') {
-				result.isCorrect = false;
-				result.feedback = form.violations[0]?.feedback;
-			} else if (form.status === 'unoptimal_form') {
-				result.feedback = form.violations[0]?.feedback;
-			}
-		}
-
+		// Un QCM ne juge pas d'écriture : l'élève coche, il n'écrit rien (aucun
+		// appelant ne passe de LaTeX pour un choix ; simplify-carte § 30)
 		return result;
 	} catch (error) {
 		return {
