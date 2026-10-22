@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, relevé fait, rien de tranché._
+_Mis à jour le 2026-10-22, réponses de David à Q1-Q2 (§ 6)._
 
-- **État** : phase 0, relevé des appelants terminé (4 relevés : `tidy`/`simplify`/`pedagogical-simplify`, `normalize`/`equivalenceForm`, `tidyTerms` et enveloppes de `tidy`, évaluation exacte et approchée). Aucun code touché.
-- **Prochaine action** : David tranche les questions du § 5 ; ensuite seulement, proposer les noms et l'ordre des PR.
-- **En attente de David** : § 5, Q1 à Q7.
+- **État** : phase 0. Relevé fait (§ 1-4) ; David a répondu à Q1 et Q2 (§ 6) ; mon analyse et 4 questions de suite en § 6. Aucun code touché.
+- **Prochaine action** : réponses de David aux questions du § 6, puis table « contexte → forme cible » (§ 6, piste B).
+- **En attente de David** : § 6 (décimaux, ordre, domaine, critère des trois tests) ; § 5 Q4-Q7.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
 - **Worktree / branche** : aucun (doc seule, sur `main`).
 
@@ -115,3 +115,45 @@ Ordre que je proposerais une fois Q1-Q7 tranchées (à valider) : (1) tests roug
 ## Historique
 
 - 2026-10-22 — relevé (4 agents en lecture seule, Sonnet) ; carte écrite. Vérifié à la main : `intent-rules.ts:151-155` (`useNormalize: true` pour `réduire`), `exp.ts:661`, `math/index.ts:191`, `eval/evaluate.ts:1533` et `:838`, `vector-answer.ts:208`, ADR 0006.
+
+## 6. Réponses de David (2026-10-22) et suite
+
+**Q1 — le besoin B.** « Les expressions que l'on retourne à l'utilisateur (Atelier, corrections des questions et des exercices) doivent être affichées proprement, pour montrer à l'élève de bonnes habitudes d'écriture. Mais "proprement" diffère selon le contexte et ce qu'on veut faire de l'expression : pour étudier une dérivée, elle doit être sous forme factorisée. »
+
+**Q2 — `tidy`.** « Réécrire sans le superflu, le plus simplement possible : parenthèses et signes inutiles, neutres et absorbants, calculs numériques effectués, fractions simplifiées, simplifications dans les fractions littérales — sans transformation comme le développement ou la factorisation. C'est peut-être ce qu'on appelle réduire en maths. » Question ouverte de David : y mettre `ln(eˣ) = x` et d'autres simplifications littérales, en tenant compte du domaine ?
+
+### Piste A — `tidy` = réduire, défini par « enlever, pas transformer »
+
+Proposé (à valider) : une réécriture entre dans `tidy` si elle passe **trois tests** :
+
+1. **elle enlève sans transformer** — ni développement, ni factorisation, ni changement de registre (décimal ↔ fraction, conversion d'unité) ;
+2. **elle est préférée quel que soit le but** — aucun contexte ne voudrait garder l'autre forme ;
+3. **elle garde le domaine** — même ensemble de définition des deux côtés ; sinon seulement sous hypothèse fournie par l'appelant (ADR 0012), ou avec la condition rendue (« pour x ≠ 0 »).
+
+| réécriture                                             | 1                        | 2                 | 3                       | verdict proposé                                                      |
+| ------------------------------------------------------ | ------------------------ | ----------------- | ----------------------- | -------------------------------------------------------------------- |
+| `ln(eˣ) → x`, `eˣ·e^{2x} → e^{3x}`                     | ✓                        | ✓                 | ✓ (ℝ)                   | `tidy`                                                               |
+| `sin²x+cos²x → 1`, `cos(−x) → cos x`, `\|−x\| → \|x\|` | ✓                        | ✓                 | ✓                       | `tidy`                                                               |
+| `√(x²) → \|x\|`                                        | ✓                        | ✓                 | ✓                       | `tidy` ; `→ x` seulement si x ≥ 0 déclaré                            |
+| `\|−3\| → 3`, `sin(0) → 0`, `cos(π/3) → 1/2`           | ✓ (calcul numérique)     | ✓                 | ✓                       | `tidy` (aujourd'hui non fait, §A.2 de la spec)                       |
+| `e^{ln x} → x`, `(√x)² → x`                            | ✓                        | ✓                 | ✗ (x > 0 / x ≥ 0 perdu) | hypothèse ou condition (aujourd'hui refusé, décision du 2026-10-05)  |
+| `x/x → 1`, `(2x)/(4x) → 1/2`, `x⁰ → 1`                 | ✓                        | ✓                 | ✗ (x ≠ 0 perdu)         | hypothèse ou condition (aujourd'hui `x/x → 1` sans condition)        |
+| `1−sin²x → cos²x`                                      | ✓                        | ✗ (dépend du but) | ✓                       | forme cible, pas `tidy`                                              |
+| `ln a + ln b → ln(ab)`, `(x²−1)/(x+1) → x−1`           | ✗ (transformation)       | —                 | ✗                       | forme cible                                                          |
+| `ln(x²) → 2 ln x`                                      | —                        | —                 | ✗ (faux pour x < 0)     | jamais                                                               |
+| `0,3 → 3/10`, `3×10²⁰ → 300…0`, `2 h 30 min → 2,5 h`   | ✗ (registre / plus long) | ✗                 | ✓                       | hors `tidy` — ce sont les gardes recopiées par les appelants (§ 2.3) |
+
+Constat : les gardes que les appelants redéfinissent à la main sont **exactement** les écarts de `tidy` à cette définition. Un `tidy` qui la respecte rend inutile la plupart des ~20 enveloppes.
+
+### Piste B — « proprement » = forme cible du contexte, puis `tidy`
+
+La forme dépend du **but**, pas de l'objet : la même dérivée est factorisée pour étudier son signe, développée réduite pour répondre à « calculer f′(x) » (`3x²+2x`, chantier `tidy`, 2026-10-20). Donc le besoin B n'est pas une fonction mais une composition : **forme cible choisie par l'appelant** (réduite / développée / factorisée / la plus propre), **puis `tidy`**. L'appelant déclare le but ; le moteur ne le devine jamais. `cleanest` (`auto`) ne sert que quand le contexte n'a pas de but (calcul libre dans l'Atelier). Avec ou sans étapes est un axe orthogonal (un seul moteur, la fusion).
+
+Livrable suivant : la table « contexte d'affichage → forme cible », dressée depuis le relevé (cartes de l'Atelier, corrections par type, variations, grapheur), à valider par David.
+
+### Questions de suite
+
+- **S1 — décimaux** : `0,5+0,25 → 0,75` (registre gardé) ou `3/4` (spec actuelle, §A.1) ?
+- **S2 — ordre canonique** : fait-il partie de `tidy` (bonne habitude) ou de la forme cible (`u′v+uv′` gardé dans une dérivée, d'où `tidyTerms`) ?
+- **S3 — perte de domaine** (`x/x`, `e^{ln x}`) : simplifier sous hypothèse déclarée, et sinon rendre la condition à l'appelant (qui l'affiche ou garde la forme) ?
+- **S4 — les trois tests** et les verdicts du tableau : à valider ligne à ligne.
