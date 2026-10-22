@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, lot code mort (§ 28) en PR._
+_Mis à jour le 2026-10-22, après #1610 (lot code mort, § 28)._
 
 - **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), « comparer » a deux sens (§ 8), `normalize` pour afficher (§ 9, reformulé), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11), identités de `normalize` / `equivalenceForm` et `normalize` dans `evaluate` (§ 12). **Tranché : A** (§ 13), une fonction « valeur exacte à afficher », `evaluate` inchangé ; **E1 oui** (§ 14), toute correction passe le juge sans remarque, toutes règles actives ; **E2** (§ 15), espace facultative à 4 chiffres, obligatoire dès 5, des deux côtés de la virgule ; **§ 10 → module de règles partagé** (§ 16) ; **D1** (§ 17, révisée) : f′ finale réduite + exponentielle commune en facteur, sans passer par `auto` ; **D2** (§ 18) : f′ factorisée dans le tableau de variations ; **D3** (§ 19) : dans Calcul, numérique calculé, littéral mis au propre en gardant l'ordre ; **D4** (§ 20) : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive, + test « correction passe le juge » si `requiredForm` aussi ; **Q4** (§ 21) : « `auto` ne factorise jamais » vise le résultat, une étape peut factoriser pour simplifier une fraction, avec la condition affichée ; **§ 9** (§ 23) : `normalize` retiré de l'affichage des expressions avec variable (développer à l'écran = règles du moteur pédagogique), gardé pour comparer et calculer en interne ; `réduire` ne développe pas (contrat de fusion confirmé) ; **Q5** (§ 24) : `normalize` garde son nom ; **Q6** (§ 25-26) : trois fonctions numériques (valeur sûre `number | null` en rationnels, variante ±∞/échec, `compile` pour les boucles), aucun résultat changé ; bug `sin²` des limites trouvé ; **Q7** (§ 27) : code mort supprimé dans un premier lot à part, classe `Exp` entière comprise.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — 12 questions détaillées, 12 tranchées sur 12. Pour la modifier : `Artifact read` (la source locale ne survit pas au `/clear`), Edit du fichier rendu, puis republier sur la même `url`. Toute nouvelle section du journal doit y être reportée.
-- **Lot code mort** (§ 28) : PR ouverte depuis le worktree `ubumaths-wt-simplify-carte`, branche `refactor/simplify-carte-code-mort` — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
-- **Prochaine action** : merger le lot code mort (CI verte), puis faire valider l'ordre des lots (fin de la page de synthèse).
+- **Lot code mort** (§ 28) : **mergé (#1610)** — classe `Exp`, `simplifyExpression`, `evaluateWithModifiers`, `evaluateWithSubstitution`, `approximateValueLatex`, 9 vérificateurs de `constraint-validators.ts` supprimés.
+- **Prochaine action** : faire valider l'ordre des lots par David (fin de la page de synthèse), puis lancer le premier dans un nouveau worktree.
 - **En attente de David** : validation de l'ordre des lots.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0, et la convention de domaine du 2026-09-20 : élargir est permis pour comparer) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; ne pas affirmer qu'une étape est « muette » sans l'avoir vu à l'écran (`exp-ln-inverse` est enregistrée) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée », à changer avec E2 (§ 15).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte` · `refactor/simplify-carte-code-mort`.
+- **Worktree / branche** : aucun (celui du lot code mort est supprimé) ; nouveau worktree au prochain lot.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
