@@ -6,17 +6,19 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, page à cocher de l'étape a publiée._
+_Mis à jour le 2026-10-22, page à cocher de l'étape a republiée (v2, questions réécrites)._
 
-- **État** : étape a consolidée (`passe-lycee/propositions.tsv`, 367 propositions ; `questions.md` Q1-Q15 ;
-  `bilan.md` : 1 105 → 1 495 points si tout passe). Page à cocher : https://claude.ai/artifact/NuDHhVAh5K5VUMQuCBKt3o
-  (base de l'artifact, collection `reponses`, un document par Qnn / Pnnn ; générée par `passe-lycee/page/generer.py`).
-- **Prochaine action** : lire les réponses (`ArtifactData list reponses`, compter avant de dire « tout est relu »),
-  appliquer, puis écrire la migration additive (points neufs, ⚙, rétablis, archivés, références) + tests d'intégration.
-- **En attente de David** : ses réponses sur la page (15 questions, 350 fiches).
+- **État** : étape a consolidée (`passe-lycee/propositions.tsv`, 367 propositions ; `bilan.md` : 1 105 → 1 495 points).
+  Page : https://claude.ai/artifact/NuDHhVAh5K5VUMQuCBKt3o — base de l'artifact, collection `reponses`, un document
+  par Qnn (`choix` = clé d'option A/B/C) ou Pnnn (`choix` = ok/revoir), + `commentaire`. Questions dans
+  `passe-lycee/page/questions.json` (BO, point actuel, libellés de chaque option, reco) ; page = `page/generer.py`.
+- **Prochaine action** : attendre que David ait répondu ; lire `reponses` (compter : 15 questions + 350 fiches),
+  appliquer à `propositions.tsv`, puis migration additive (points neufs, ⚙, rétablis, archivés, références) + tests.
+- **En attente de David** : ses réponses. Déjà : Q01 = A, Q02 = A ; Q03 et Q04 commentées « je ne comprends pas »
+  avant la réécriture (à lui faire reprendre).
 - **Pièges en cours** : Tle = textes de la rentrée 2027, expertes = 2019 ; 85 points coupés portent 167 tags (étape c) ;
-  Q4 déplace une référence (exception à « aucune référence déplacée »).
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `refactor/passe-lycee`.
+  le pre-commit reformate `page/gabarit.html` (remplacements par ancre, pas par texte exact).
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `refactor/passe-lycee` (poussée, pas de PR).
 
 ## Les 5 étapes
 
@@ -51,3 +53,6 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   (T1-T6, familles harmonisées, 7 conflits résolus). Vérifié : citations retrouvées dans `bo/`, codes existants, 211
   nœuds proposés tous présents dans l'arbre. Page publiée (15 questions + 350 fiches ; les 32 fiches « à trancher »
   renvoient aux questions).
+- **2026-10-22 — Questions réécrites (David : « ce n'est pas clair »).** Q03/Q04 incomprises : les questions citaient des
+  codes sans libellés. Réécrites en `page/questions.json` (BO, point actuel, une option par bouton avec ses libellés).
+  Réponses Q01/Q02 « reco » converties en A.
