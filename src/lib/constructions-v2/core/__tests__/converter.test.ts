@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { convertXmlToDsl } from '../../converter';
+import { ConstructionExecutor } from '../executor';
 import { parseDsl } from '$lib/geometry-core/dsl';
 import { existsSync, readFileSync } from 'fs';
 import { resolve } from 'path';
@@ -133,6 +134,48 @@ describe('converter — compas (arcs)', () => {
 		expect(result.success).toBe(true);
 		// Distance = 40px = 1 math unit
 		expect(result.dsl).toContain('arc(C, rayon=1, debut=0, fin=360)');
+	});
+});
+
+describe('converter — masquer / montrer un point', () => {
+	// Lot 2 constructions (2026-10-23) : `@cacher("A")` ne cache que des
+	// instruments ; un point se masque avec le builtin `masque(A)`.
+	const xml = wrap(
+		'<action objet="point" mouvement="creer" id="12" abscisse="400" ordonnee="300" />' +
+			'<action objet="point" mouvement="nommer" id="12" nom="A" />' +
+			'<action objet="point" mouvement="masquer" id="12" />' +
+			'<action objet="point" mouvement="montrer" id="12" />'
+	);
+
+	it('écrit masque(A) et montre(A), pas les directives @cacher / @montrer', async () => {
+		const result = await convertXmlToDsl(xml);
+		expect(result.success).toBe(true);
+		expect(result.dsl).toContain('masque(A)');
+		expect(result.dsl).toContain('montre(A)');
+		expect(result.dsl).not.toContain('@cacher("A")');
+		expect(result.dsl).not.toContain('@montrer("A")');
+	});
+
+	it('le point est réellement masqué puis montré à l’exécution', async () => {
+		const result = await convertXmlToDsl(xml);
+		const lines = (result.dsl ?? '').split('\n');
+		const masqueAt = lines.findIndex((l) => l.startsWith('masque('));
+		expect(masqueAt).toBeGreaterThan(-1);
+		// Le décor n'a qu'un point : A
+		const pointA = (exec: ConstructionExecutor) =>
+			exec.figure.getAllElements().find((el) => el.type === 'freePoint');
+
+		const upToMasque = new ConstructionExecutor();
+		upToMasque.load(lines.slice(0, masqueAt + 1).join('\n'));
+		upToMasque.executeAll();
+		expect(upToMasque.loadError).toBeNull();
+		expect(pointA(upToMasque)?.visible).toBe(false);
+
+		const all = new ConstructionExecutor();
+		all.load(result.dsl ?? '');
+		all.executeAll();
+		expect(all.loadError).toBeNull();
+		expect(pointA(all)?.visible).toBe(true);
 	});
 });
 

@@ -278,15 +278,17 @@ export async function convertXmlToDsl(xml: string): Promise<DslConversionResult>
 						break;
 					case 'masquer': {
 						if (action.id) {
+							// `@cacher` ne cache que des instruments : un point se masque
+							// avec le builtin `masque`.
 							const name = getPointName(action.id);
-							emitLine(`@cacher("${name}")`);
+							emitLine(`masque(${name})`);
 						}
 						break;
 					}
 					case 'montrer': {
 						if (action.id) {
 							const name = getPointName(action.id);
-							emitLine(`@montrer("${name}")`);
+							emitLine(`montre(${name})`);
 						}
 						break;
 					}

@@ -64,6 +64,8 @@
 	let tl = $state<TimelineState>(createInitialTimelineState());
 	let figureVersion = $state(0);
 	let currentInstruction = $state<string | null>(null);
+	// Consigne de la sous-étape chorégraphiée en cours (`SubStep.instruction`)
+	let currentSubStepInstruction = $state<string | null>(null);
 	let currentFigure = $state<Figure>(new Figure());
 	let currentInstrumentStates = $state(new Map<string, InstrumentState>());
 	let animatingIds = $state<string[]>([]);
@@ -139,6 +141,7 @@
 		currentFigure = executor.figure;
 		currentInstrumentStates = new Map(executor.instrumentStates);
 		currentInstruction = executor.currentInstruction;
+		currentSubStepInstruction = executor.currentSubStep?.instruction ?? null;
 		figureVersion++;
 	}
 
@@ -353,9 +356,17 @@
 			{/if}
 		</div>
 
-		{#if currentInstruction}
+		{#if currentInstruction || currentSubStepInstruction}
 			<div class="mt-2 rounded-md bg-muted p-2 text-sm text-muted-foreground">
-				{currentInstruction}
+				{#if currentInstruction}
+					<p data-testid="consigne-auteur">{currentInstruction}</p>
+				{/if}
+				{#if currentSubStepInstruction}
+					<p class="text-xs" class:mt-1={currentInstruction}>
+						<span aria-hidden="true">↳</span>
+						<span data-testid="consigne-sous-etape">{currentSubStepInstruction}</span>
+					</p>
+				{/if}
 			</div>
 		{/if}
 
