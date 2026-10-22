@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-21, après #1597 (mergée, pas en prod)._
+_Mis à jour le 2026-10-22 : PR 1 à 3 + #1597 en prod depuis v0.44.0 (2026-10-21)._
 
-- **État** : PR M1 bis + M2 mergée : identifiant à 3 chiffres (M2) ; plafond de 5 inscriptions par classe et par 24 h par seau atomique `checkChildSignupRateLimitByClass` (M1 bis — le comptage en base était contournable, audit) ; lien au parent de « Mot de passe oublié » envoyé après la réponse (`runAfterResponse`, `@vercel/functions`). Aucune migration.
-- **Prochaine action** : `deploy:prod` (sur demande de David : il livre les PR 1 à 3 + #1597 ; voir aussi le chantier arbre des notions qui l'attendait). Puis versement du chantier (doc durable déjà dans `docs/systeme/auth.md`, journal à archiver).
-- **En attente de David** : couper le suivi des clics Brevo (F-c) ; go du `deploy:prod`.
+- **État** : PR 1 (#1585), 2 (#1592), 3 (#1594) et M1 bis + M2 (#1597) **en prod (v0.44.0)**. Reste la **PR 4** du découpage validé (décision 10 : écran « Je m'inscris », adresse du parent donnée par l'élève, lien de consentement envoyé seulement après approbation du prof ; migration probable, question d'accès Q6 déjà tranchée). Ni faite, ni abandonnée dans le journal.
+- **Prochaine action** : David dit si la PR 4 se fait maintenant (phase 0 à écrire : § « Écran « Je m'inscris » (élève seul), décision 10 ») ou plus tard ; ensuite seulement, versement (doc durable déjà dans `docs/systeme/auth.md`, journal à archiver, liens de `auth.md` vers ce journal à reprendre).
+- **En attente de David** : PR 4 maintenant ou plus tard ; couper le suivi des clics Brevo (F-c).
 - **Pièges en cours** : un changement de mot de passe par la clé service ferme TOUTES les sessions ; `waitUntil` ne fait rien hors Vercel (la tâche tourne quand même) ; un refus GoTrue d'un mot de passe consomme une place du seau de classe (accepté).
-- **Worktree / branche** : aucun (celui de #1597 supprimé).
+- **Worktree / branche** : aucun.
 
 ## Contexte
 
