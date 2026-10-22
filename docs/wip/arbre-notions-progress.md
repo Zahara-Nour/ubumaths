@@ -5,17 +5,19 @@ https://claude.ai/artifact/6g66KoBWfZdQ91tNn66Hg5 (générée depuis le scratchp
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, PR 2 de l'étape 4 ouverte._
+_Mis à jour le 2026-10-22, après #1602._
 
-- **État** : étape 4 (#1598) jouée en prod le 2026-10-22. PR 2 (`refactor/arbre-etape4-types`) : `db:types` +
-  filtres de l'ancienne génération retirés (`curriculum-generation.ts` → `curriculum-point-status.ts`, plus de
-  `isProgrammePoint` ni de cas `'ancien'`, plus de `.not('node_id', 'is', null)`, PATCH d'un point sans 409).
-- **Prochaine action** : CI verte → merge, puis **passe lycée** (5 étapes, décidée le 2026-10-21), chantier à part.
+- **État** : C5 terminée côté code et base. Étape 4 (#1598) en prod ; PR 2 (#1602) mergée : `db:types`, filtres de
+  l'ancienne génération retirés (`curriculum-point-status.ts`), docs et décors de test sans « ancien point ».
+  #1602 n'est pas encore en prod (aucune migration ; elle part au prochain `deploy:prod`).
+- **Prochaine action** : **passe lycée** (5 étapes, décidée le 2026-10-21), chantier à part : passe des points
+  (critère de scission), bornes par point, relevé des modèles, verdicts en inclusion stricte, page à cocher puis
+  migration des tags ; les 12 modèles sans point s'y traitent.
 - **En attente de David** : rien de bloquant. Signalés : 11 modèles sans corrigé ; c9d6c5db attend une règle de
   correction. 📌 Futur chantier non décidé : écran de rangement des exercices (51).
 - **Pièges en cours** : `supabase start` joue les migrations hors transaction (LOCK seulement dans un `do`) ; points
   `TEST-SK-*` sans grade, voulu ; MySelect et infobulles de l'analytique affichent le LaTeX brut.
-- **Worktree / branche** : `../ubumaths-wt-arbre-notions` · `refactor/arbre-etape4-types`.
+- **Worktree / branche** : aucun.
 
 ## Tranché avec David (2026-10-06)
 
@@ -1290,3 +1292,7 @@ contre-exemple`). « debug » reste exclu (aucun nœud). `updated_at` préservé
 - **2026-10-22 — Étape 4 jouée en prod, PR 2 (Q3).** `db:types` : tables thème/objectif retirées, `node_id` NOT
   NULL. Filtres retirés ; un tag dont la jointure est nulle (point illisible) reste écarté. Décor de test :
   `P_ANCIEN` devient `P_SANS_NIVEAU` (point posé sur un nœud, sans grade, comme `TEST-SK-*`).
+- **2026-10-22 — #1602 mergée (PR 2 de l'étape 4).** CI rouge une fois : un test d'édition d'un modèle (admin)
+  gardait un ancien tag, non lancé en local → tag au point illisible. Revues : security-auditor aucun finding ;
+  code-reviewer aucun bloquant (commentaires périmés corrigés). Garde de doc : 4 docs mises à jour, `mathoux.md`
+  en `Doc-inchangée`.
