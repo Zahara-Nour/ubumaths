@@ -4,9 +4,9 @@
 
 _Mis à jour le 2026-10-22, avant la première PR._
 
-- **État** : doc système écrite ([constructions.md](../systeme/geometrie/constructions.md), sur `main`). Lot en cours : **sécurité** (création/publication réservées au prof et à l'admin). Phase 0 écrite ci-dessous, **en attente de validation**.
-- **Prochaine action** : après le go de David → tests d'intégration rouges (RLS) + tests serveur (API) → migration → code → PR (`code-reviewer` + `security-auditor`).
-- **En attente de David** : validation des comportements de la phase 0.
+- **État** : lot sécurité codé (phase 0 validée par David le 2026-10-22) : migration `20261022200000`, API, pages, tests rouges prouvés puis verts. Migration appliquée sur la base **locale** seulement.
+- **Prochaine action** : PR → revues `code-reviewer` + `security-auditor` → CI verte → merge → `db:migrate` (4 conditions) depuis `main`.
+- **En attente de David** : rien.
 - **Pièges en cours** : un client Supabase tourne dans le navigateur → la règle doit être tenue en base (RLS), pas seulement par l'API.
 - **Worktree / branche** : `../ubumaths-wt-constructions` · `fix/constructions-securite`.
 - **Suite du chantier** (ordre proposé, non validé) : consignes des sous-étapes affichées · convertisseur `@cacher` · ménage → parallèle double perpendiculaire · formes `(P, d)` décorées → `@mesure` (rapporteur).
@@ -39,3 +39,9 @@ Erreur :
 7. Un élève qui écrit **directement en base** (client Supabase du navigateur) : `insert` refusé (erreur `42501`), `update` → zéro ligne modifiée. Tenu par la RLS : `INSERT` et `UPDATE` exigent `is_teacher_or_admin()` en plus de `auth.uid() = author_id`.
 
 Migration : **additive au sens du risque** (resserre deux policies, aucune donnée touchée) ; rollback écrit en commentaire (les deux policies d'origine).
+
+### Réalisé (2026-10-22)
+
+- Migration `20261022200000_constructions_ecriture_prof_admin.sql` : `INSERT` et `UPDATE` exigent `is_teacher_or_admin()`. Test `tests/integration/constructions-ecriture-reservee.test.ts` : 3 rouges sans la migration (création élève ×2, modification élève), 7/7 verts avec.
+- API : `POST` et `PUT` → `requireRoles(CONSTRUCTION_AUTHOR_ROLES)` (`src/lib/server/constructions-access.ts`) ; `DELETE` avec `.select()` (zéro ligne → 404).
+- Pages : `/constructions/new` et `/constructions/[id]/edit` → 403 pour un élève ; boutons « nouvelle », « importer XML », « modifier » masqués (`canAuthor`). Test `src/routes/api/constructions/__tests__/ecriture-reservee.test.ts` : 6 rouges sans le correctif, 10/10 verts avec.

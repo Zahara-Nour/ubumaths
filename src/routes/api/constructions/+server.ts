@@ -7,7 +7,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import { z } from 'zod';
-import { requireAuth } from '$lib/server/middleware/auth';
+import { requireAuth, requireRoles } from '$lib/server/middleware/auth';
+import { CONSTRUCTION_AUTHOR_ROLES } from '$lib/server/constructions-access';
 import { constructionScriptSchema } from '$lib/constructions';
 import type { TablesInsert } from '$lib/types/database';
 import { toJson } from '$lib/types/database-helpers';
@@ -139,10 +140,10 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 /**
  * POST /api/constructions
  * Create a new construction
- * Authenticated users only
+ * Prof et admin seuls (la RLS tient la même règle, migration 20261022200000)
  */
 export const POST: RequestHandler = async ({ locals, request }) => {
-	const { user } = await requireAuth(locals);
+	const { user } = await requireRoles(locals, CONSTRUCTION_AUTHOR_ROLES);
 
 	// Parse and validate request body
 	let body: unknown;

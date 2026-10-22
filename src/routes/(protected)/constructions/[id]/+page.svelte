@@ -114,10 +114,12 @@
 
 		{#if data.isOwner}
 			<div class="flex gap-2">
-				<Button variant="outline" href="/constructions/{data.construction.id}/edit">
-					<Edit class="mr-2 h-4 w-4" />
-					Modifier
-				</Button>
+				{#if data.canAuthor}
+					<Button variant="outline" href="/constructions/{data.construction.id}/edit">
+						<Edit class="mr-2 h-4 w-4" />
+						Modifier
+					</Button>
+				{/if}
 				<Button variant="destructive" onclick={handleDelete}>
 					<Trash2 class="mr-2 h-4 w-4" />
 					Supprimer
