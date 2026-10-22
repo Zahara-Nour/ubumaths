@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, réponses de David à Q1-Q2 (§ 6)._
+_Mis à jour le 2026-10-22, recommandations S1-S4 écrites, rien de tranché._
 
 - **État** : phase 0. Relevé fait (§ 1-4) ; David a répondu à Q1 et Q2 (§ 6) ; mon analyse et 4 questions de suite en § 6. Aucun code touché.
 - **Prochaine action** : David tranche S1-S4 (recommandations en fin de § 6), puis table « contexte → forme cible » (§ 6, piste B).
-- **En attente de David** : § 6 (décimaux, ordre, domaine, critère des trois tests) ; § 5 Q4-Q7.
+- **En attente de David** : S1-S4 (fin de § 6 : registre décimal gardé, ordre des sommes en option, domaine prudent par défaut, 4e test « ne cache aucune leçon » qui sort les identités de `tidy` vers `réduire` avec étapes) ; § 5 Q4-Q7.
 - **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
 - **Worktree / branche** : aucun (doc seule, sur `main`).
 
