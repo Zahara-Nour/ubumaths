@@ -66,6 +66,7 @@ Toutes les sessions commitent leur doc dans le **même dépôt principal** : son
 6. `git push -u origin <branche>`.
 7. `gh pr create` — corps structuré : **Quoi / Pourquoi / Risque / Tests**.
 8. `gh pr checks <n> --watch` → corriger jusqu'à **tout vert**. **Jamais merger en rouge.**
+   - ⛔ **Branche déjà poussée : jamais `git pull --rebase origin main` dessus.** Le rebase réécrit les commits poussés → push refusé, et le seul push qui passe est `--force` (liste `ask`). Pour la remettre à jour : `git merge origin/main`, ou rien (GitHub merge quand même). Rattrapage si c'est fait : `git merge origin/<branche>` (le commit en double est identique, sans conflit), puis push normal (#1603, 2026-10-22).
 9. Revue (voir §6).
 10. `gh pr merge --merge` (merge commit).
 11. **Supprimer la branche** : `git branch -d <b>` + `git push origin --delete <b>`, **seulement après avoir lu `MERGED`** (`gh pr view <n> --json state -q .state`), dans une commande **séparée** du merge.
