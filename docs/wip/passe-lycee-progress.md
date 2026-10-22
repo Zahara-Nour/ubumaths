@@ -44,4 +44,4 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   - T4 **Doublons du BO** : on archive celui qu'aucune référence ne vise (2-373, 2-374, et non 2-380, 2-381) ; un
     doublon né d'une coupe (notation Σ, Tle techno) n'est pas créé.
   - T5 **⚙ des automatismes de 1re** : un jumeau dans chacun des trois programmes (1SPE, 1GEN, 1TECHNO).
-  - T6 **Puces larges** : rétablies, entières (y compris l. 421 de Tle spé, sans la couper par grandeur).
+  - T6 **Puces larges** : rétablies (l. 421 de Tle spé comprise ; un point ou quatre grandeurs : sur la page).
