@@ -2,15 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, test d'invariant E1 écrit (§ 11)._
+_Mis à jour le 2026-10-22, après #1609._
 
-- **État** : phase 0 + un test. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » : 67/70, seul écart = espaces dans les nombres (§ 11).
-- **Prochaine action** : merger la PR du test ; puis David tranche E2, D1-D4, § 9, § 10 ; ensuite plan de lots.
-- **En attente de David** : § 8 E1 (une seule définition de « bien écrit », toute correction passe le juge — jamais répondue) ; § 11 E2 (espace dans les nombres de 4 chiffres) ; § 10 (partager les règles élémentaires) ; § 9 (`normalize` pour développer) ; § 7 D1-D4 ; § 5 Q4-Q7.
-- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; les bugs du § 4 sont à confirmer par un test rouge, pas affirmés.
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `test/simplify-carte` (le test du § 11).
-
----
+- **État** : phase 0. Relevé (§ 1-4), S1-S4 validées (§ 6), table contexte → forme (§ 7), `normalize` pour développer (§ 9), validation ↔ `tidy` (§ 10), test « `tidy` passe le juge » mergé (#1609 : 67/70, seul écart = espaces dans les nombres, § 11).
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — les 12 questions ouvertes détaillées avec recommandations. À tenir à jour avec le journal.
+- **Prochaine action** : David répond aux 12 questions de la page ; ensuite plan de lots (fin de la page).
+- **En attente de David** : E1 (une seule définition de « bien écrit ») · § 10 (règles partagées) · E2 (espace à 4 chiffres) · D1-D4 · Q4 · § 9 · Q5-Q7. Aucune n'est tranchée : ne pas appliquer une recommandation sans réponse.
+- **Pièges en cours** : ne pas re-proposer ce qui est figé (§ 0) ; bugs du § 4 et du § 10 à confirmer par un test rouge ; `normalize` applique déjà `ln(eˣ) = x` en silence (contraire à S4 tant que `réduire` passe par lui).
+- **Worktree / branche** : aucun (worktree du test retiré après #1609).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -293,3 +292,18 @@ Conclusion : sur le superflu, écrire et juger sont **d'accord** aujourd'hui →
 Question **E2** pour David : un nombre de 4 chiffres (`1024`, `2469`) — espace obligatoire (juge actuel) ou facultative (usage BIPM : « pour un nombre de quatre chiffres, l'espace n'est en général pas utilisée ») ? Et `toLatex` doit-il espacer les nombres de 5 chiffres et plus (`30\,000`) dans les corrections ? Recommandation : 4 chiffres facultatif côté juge ; `toLatex` espace à partir de 5 chiffres.
 
 Limite du test : il mesure `toLatex`, pas le rendu final d'une correction (une couche d'affichage pourrait espacer après coup — aucune trouvée dans les tests de corrections, à confirmer).
+
+## 12. `normalize` et `equivalenceForm` : qui gère les identités (sondé le 2026-10-22)
+
+Question de David sur l'ADR 0006. `toCustom(denormalize(·))` des deux formes :
+
+| Entrée                 | `normalize`                    | `equivalenceForm` |
+| ---------------------- | ------------------------------ | ----------------- |
+| `ln(e^x)`              | `x`                            | `x`               |
+| `e^x*e^(2x)`           | `e^{3x}`                       | `exp(3x)`         |
+| `log(100)`             | `2`                            | `2`               |
+| `sin(x)^2+cos(x)^2`    | `cos(x)^2+sin(x)^2`            | `1`               |
+| `tan(x)-sin(x)/cos(x)` | `{cos(x)tan(x)-sin(x)}/cos(x)` | `0`               |
+| `2^(x+1)-2*2^x`        | inchangé                       | `0`               |
+
+`equivalenceForm` (`normal/normalize.ts:2164`) = réécritures de notation (`e^x`→`exp`, `log_b`, Euler, `2^x`→`exp(x ln 2)`, puissances fractionnaires → radicaux), définitions trigo, puis `normalize`, puis `sin²+cos² = 1`. Les identités simples sont déjà dans `normalize` ; ⚠️ `ln(e^x) → x` y est appliquée en silence, contraire à S4 tant que `réduire` passe par `normalize`.
