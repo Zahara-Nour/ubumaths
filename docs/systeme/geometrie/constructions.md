@@ -275,7 +275,7 @@ Composant : `components/__tests__/ConstructionPlayer-consignes.svelte.test.ts` (
 l'auteur et des sous-étapes, 5, `pnpm test:client`) et
 `ConstructionPlayer-double-perpendiculaire.svelte.test.ts` (les deux voies jouées jusqu'au bout,
 `P ∈ (AB)` interrompu, 3) et `ConstructionPlayer-arret-execution.svelte.test.ts` (ligne
-d'arrêt au dernier pas seulement, 4). **Aucun** test de composant pour
+d'arrêt au dernier pas seulement, frise vide, script corrigé, 6). **Aucun** test de composant pour
 `ConstructionCanvas` ni `ScriptEditor`.
 
 ## 9. Écarts et reste à faire
