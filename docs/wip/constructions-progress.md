@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 7 lancé (phase 0 validée)._
+_Mis à jour le 2026-10-23, après #1626._
 
-- **État** : lot 7 = formes décorées `parallele(P, d)` / `perpendiculaire(P, d)` (section « Lot 7 » plus bas). Phase 0 validée par David. Lots 1 à 6 partent au prochain `deploy:prod`.
-- **Prochaine action** : tests rouges → correctif → verts → PR (revue `code-reviewer` opus : géométrie).
-- **En attente de David** : supprimer `../ubumaths-wt-constructions` (lot 5) une fois #1621 vérifiée sur 5177 ? Après le lot 7 : `@mesure` (chantier à part) ; côté du carré d'angle droit (double perpendiculaire à l'équerre).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. `movePoint` ne fait que marquer sale → `figure.recompute()`. Positions d'instruments figées au chargement.
-- **Worktree / branche** : `../ubumaths-wt-constructions-droite` · `feat/constructions-droite`.
+- **État** : lot 7 **livré** — #1626 mergée : `parallele(P, d)` / `perpendiculaire(P, d)` décorées s'animent comme `(P, A, B)` ; point caché de d révélé en fondu ; message explicite pour une variable nommée `e` ou `π`. Lots 1 à 7 partent au prochain `deploy:prod`. Vérification de #1626 notée dans `verifications-manuelles.md` (serveur 5178).
+- **Prochaine action** : selon la réponse de David — lot 8 (consignes neutres) ou autre.
+- **En attente de David** : (1) consignes qui écrivent « Compas en A », « (AB) », « |PA| » en dur, fausses avec `(P, d)` ou d'autres noms (`parallele.ts:297`, `:321` ; `perpendiculaire.ts:358`, `:391`, `:1133`) → reco : consignes neutres, lot 8 ; (2) supprimer `../ubumaths-wt-constructions` (lot 5) et `../ubumaths-wt-constructions-droite` (lot 7) une fois les vérifications faites ; puis `@mesure` (chantier à part), côté du carré d'angle droit.
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. `e` = constante d'Euler : jamais comme nom dans un script d'exemple. Description de `parallele @equerre @pose_equerre` dans le registre (« coin sur A ») inexacte : l'équerre est posée près du projeté de P.
+- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
 
 ---
 
@@ -129,3 +129,10 @@ Revue : `code-reviewer` (Sonnet).
 - **Point caché de `d`** (ex. `d` elle-même construite) : pour les voies qui posent l'instrument sur A ou B (`parallelogramme`, `arcs_egaux`, `pose_equerre` de la parallèle), le point caché apparaît en fondu comme point auxiliaire (masqué en `@epure`). Voies qui n'utilisent que la direction : inchangées.
 - **Erreurs** : inchangées (premier argument non-point, second non-droite, `P ∈ d` en `double_perpendiculaire`).
 - Tests d'abord : suite de sous-étapes `(P, d)` = `(P, A, B)` voie par voie, droite finale juste, visibilité 3 modes, point caché, rendu dans le lecteur.
+
+### Réalisé (2026-10-23)
+
+- `executor.ts` : `expandLineArgument` ramène `(P, d)` à `(P, A, B)` (ordre de `resolveLinePoints`) ; la pré-passe applique la visibilité finale après chaque chorégraphie, comme l'exécution (sinon fondu rejoué sur un point déjà visible).
+- `choreographies/reveal-points.ts` : fondu des points cachés de d sur lesquels un instrument se pose — `parallelogramme` (A, B), `perpendiculaire @arcs_egaux` et `@pose_equerre` (A), donc `parallele @equerre @double_perpendiculaire` ; pas `parallele @equerre @pose_equerre` (équerre près du projeté).
+- Hors phase 0, demandé par David en cours de route : message de `e`/`π` réservés (`interpreter.ts`).
+- Tests : 44 rouges sans le code puis verts (+ 3 réutilisation de d, + 2 rendu du lecteur, + 2 message) ; `test:server constructions-v2` 277 ✓ / 21 ignorés, `geometry-core/dsl` 2009 ✓. Revue `code-reviewer` opus : aucun bloquant ; mineur 1 (pré-passe) et trou de test corrigés, mineur 2 (consignes en dur) → David. CI verte, mergée (#1626).
