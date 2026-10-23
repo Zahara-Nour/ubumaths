@@ -8,7 +8,10 @@ sont jouées en prod et se régénèrent à l'identique) :
 - chaque modèle, origine ou neuf, peut recevoir PLUSIEURS tags (Tle spé et Tle compl. sur un même
   modèle) ;
 - les tags qu'une origine porte déjà (relevés) sont exigés à l'identique et laissés en place ; un
-  modèle neuf les reçoit s'ils figurent dans sa liste.
+  modèle neuf les reçoit s'ils figurent dans sa liste ;
+- dédoublement (PR 2 des scissions) : une variation peut aller dans plusieurs parts, réécrite par la
+  retouche de chacune ; une origine peut rester intacte (contenu et `updated_at` inchangés, aucun tag
+  posé), ses modèles neufs emportant seuls la réécriture.
 
 Un script de lot décrit chaque origine par une liste de parts : la première est l'origine, les
 suivantes ses modèles neufs. Chaque part = variations gardées (base 0), codes de ses points, titre,
@@ -29,7 +32,7 @@ sys.path.insert(0, 'docs/wip/arbre-notions/analyse')
 from lot_2bis_outils import garder_variations, texte_jsonb  # noqa: E402
 
 CHAMPS = ('title', 'description', 'variations', 'shared', 'test_specs')
-GRADES = {'1SPE': '1_SPE', 'TSPE': 'T_SPE', 'TCOMP': 'T_COMP', 'TEXP': 'T_EXP', '2': '2'}
+GRADES = {'1SPE': '1_SPE', 'TSPE': 'T_SPE', 'TCOMP': 'T_COMP', 'TEXP': 'T_EXP', '2': '2', '1TECHNO': '1_TECHNO'}
 
 
 # ============================================================================
@@ -60,7 +63,8 @@ def partager(avant: dict, garder: list[int], titre: str, sous_titre: str, retouc
 # ============================================================================
 
 def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, migration: str, fixture: str,
-            prefixe: str, entete: str, retouches_avant: dict | None = None) -> None:
+            prefixe: str, entete: str, retouches_avant: dict | None = None, dedoubles: set[str] | None = None,
+            intactes: set[str] | None = None) -> None:
     """`lot` : court (8 caractères) → liste de parts `(variations, codes, titre, sous_titre[, retouche])`,
     l'origine d'abord, puis ses neufs ; un neuf porte en plus son UUID fixé, en tête :
     `(uuid, variations, codes, titre, sous_titre[, retouche])`.
@@ -69,9 +73,15 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
     `niveaux_pris` : (thème, domaine, sous-domaine) → niveau le plus haut pris en prod, brouillons
     compris ; les neufs d'une même catégorie prennent les niveaux suivants, dans l'ordre des origines.
     `retouches_avant` : court → fonction qui modifie le contenu de l'origine AVANT le partage (une
-    variation réécrite qui reste sur l'origine)."""
+    variation réécrite qui reste sur l'origine).
+    `dedoubles` : origines dont une variation peut aller dans plusieurs parts (chacune la réécrit).
+    `intactes` : origines (parmi `dedoubles`) dont le contenu ne change pas : la mise à jour et le
+    rollback ne les touchent pas (`tag_seul` de la fixture, `updated_at` gardé)."""
     sortie_modeles = sys.argv[1] if len(sys.argv) > 1 else None
     retouches_avant = retouches_avant or {}
+    dedoubles = dedoubles or set()
+    intactes = intactes or set()
+    assert dedoubles <= set(lot) and intactes <= dedoubles, (dedoubles, intactes)
     noeuds = {n['id']: n for n in json.load(open(etat + 'nodes.json'))}
     tous_points = json.load(open(etat + 'points.json'))
     points = {(p['grade'], p['code']): p for p in tous_points if p['archived_at'] is None}
@@ -111,9 +121,12 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
             retouches_avant[court](base)
             assert base != avant, court
         n_var = len(avant['variations'])
-        # Chaque variation va dans exactement une part.
+        # Chaque variation va dans exactement une part (dédoublement : dans une part au moins).
         vues = sorted(list(parts[0][0]) + [v for p in parts[1:] for v in p[1]])
-        assert vues == list(range(n_var)), (court, vues)
+        if court in dedoubles:
+            assert sorted(set(vues)) == list(range(n_var)) and len(vues) > n_var, (court, vues)
+        else:
+            assert vues == list(range(n_var)), (court, vues)
         noeud = t['classification_node_id']
         categorie = {k: t[k] for k in ('theme', 'domain', 'subdomain', 'level', 'status')}
         cle = (t['theme'], t['domain'], t['subdomain'] or '')
@@ -123,7 +136,8 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
             tags = [tag(c) for c in codes]
             assert len({x['code'] for x in tags}) == len(tags), (court, codes)
             for x in tags:
-                assert x['grade'] in t['grades'], (court, x, t['grades'])
+                # Un tag d'avant d'un autre programme (1re techno) est gardé sans son niveau scolaire.
+                assert x['grade'] in t['grades'] or x in avant_tags, (court, x, t['grades'])
                 assert (x['grade'], x['code']) in points, (court, x)
             # Un tag par niveau scolaire du modèle, au plus (deux programmes : Tle spé et Tle compl.).
             assert len({x['grade'] for x in tags}) == len(tags), (court, codes)
@@ -142,6 +156,8 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
             noeud_apres = points[(tags_origine[0]['grade'], tags_origine[0]['code'])]['node_id']
             assert all(sur_le_noeud(noeud_apres, x) for x in tags_origine), (court, tags_origine)
         apres = partager(base, variations, titre, sous_titre, *r)
+        assert (apres == avant) == (court in intactes), court
+        assert court not in intactes or not poses, (court, 'origine intacte : aucun tag posé')
         m = {
             'id': t['id'],
             'noeud': chemin(noeud),
@@ -155,6 +171,8 @@ def generer(lot: dict, *, releve: list[dict], etat: str, niveaux_pris: dict, mig
         }
         if noeud_apres != noeud:
             m['noeud_apres'] = chemin(noeud_apres)
+        if court in intactes:
+            m['tag_seul'] = True
         for uuid, variations, codes, titre, sous_titre, *r in parts[1:]:
             assert re.fullmatch(r'[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}', uuid), uuid
             assert uuid not in ids_neufs and uuid[:8] not in releves, uuid
@@ -235,6 +253,10 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
     poses = [(m['id'], t) for m in modeles for t in m['tags']]
     liste = ', '.join(f"'{m['id']}'" for m in modeles)
     liste_neufs = ', '.join(f"'{x['id']}'" for x in neufs)
+    # Origines intactes (dédoublement) : ni la mise à jour ni le rollback ne les touchent.
+    reecrits = [m for m in modeles if not m.get('tag_seul')]
+    assert reecrits, 'aucune origine réécrite : le rollback rendrait un `values` vide'
+    filtre = ' and r.apres is distinct from r.avant' if len(reecrits) < n else ''
 
     # ---- Rollback -----------------------------------------------------------------------
     rb = [
@@ -334,7 +356,7 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
         "--    set title = r.c->>'title', description = r.c->>'description', variations = r.c->'variations',",
         "--        shared = nullif(r.c->'shared', 'null'::jsonb), test_specs = nullif(r.c->'test_specs', 'null'::jsonb)",
         "--   from (values",
-        *valeurs([f"('{m['id']}'::uuid, {contenu(m['avant'])})" for m in modeles], '--   '),
+        *valeurs([f"('{m['id']}'::uuid, {contenu(m['avant'])})" for m in reecrits], '--   '),
         "--   ) as r(id, c)",
         "--  where q.id = r.id;",
         "-- ROLLBACK:END",
@@ -517,7 +539,7 @@ update public.question_templates q
        shared = nullif(r.apres->'shared', 'null'::jsonb),
        test_specs = nullif(r.apres->'test_specs', 'null'::jsonb)
   from {tmp}_modeles r
- where q.id = r.id;
+ where q.id = r.id{filtre};
 
 -- R2 : les origines dont les points vivent ailleurs passent sur le nœud de leurs points, AVANT les
 -- tags (le trigger des tags lit le nœud du modèle) ; elles n'ont aucun tag d'avant.
