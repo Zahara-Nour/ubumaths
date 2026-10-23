@@ -6,20 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, phase 0 du lot MODIFIER + TAG_PAR_VARIATION validée._
+_Mis à jour le 2026-10-23, PR des lots A + B ouverte (branche `feat/passe-lycee-modifier`)._
 
-- **État** : phase 0 validée en bloc par David (« je valide tout », page non cochée) : 18 questions = la reco, 18
-  MODIFIER et 47 scissions tels quels (`analyse/lot-modifier.md`, `scissions-plan.csv`, `scissions-notes.md`, page
-  `analyse/page/gen-lot-modifier.py`).
-- **Prochaine action** : worktree `passe-lycee-modifier`, relire en prod (MCP) le contenu des modèles du lot, puis une
-  migration par lot, méthode `arbre-notions/analyse/lot-2bis-*.py` : (1) lots A + B (8 modèles, + neufs de B1-B3) ;
-  (2) lot C (10) ; (3) scissions (47 → 62 neufs, S6-S11 compris), en deux PR si trop gros ; (4) E3 (5 modèles
-  dédoublés et réécrits) ; (5) H : plan des 10 modèles hors programme à leur niveau, à faire (non planifiés).
-- **En attente de David** : rien.
-- **Pièges en cours** : modèles neufs = catégories et niveaux à poser (incident #1570 du collège : catégorie copiée
-  interdite entre modèles publiés) ; `95ee8348` à la fois lot A et scindé ; S8 change V5 en TSPE-316 ; X1 → TSPE-445 /
-  595 pour les neufs exp ; X2 → TEXP-223 ; X3 → variance acceptée. Instantané : `analyse/etat-prod-2026-10-23b/`.
-- **Worktree / branche** : aucun.
+- **État** : lots A + B écrits (`analyse/lot-modifier-ab.py` → migration `20261024001000_passe_lycee_lot_ab`) :
+  6 modèles modifiés et tagués, 3 neufs (B1-B3) ; tests d'intégration verts, rouges sans la migration.
+- **Prochaine action** : revues, CI, merge, `db:migrate` (4 conditions), vérification MCP ; puis lot C (10 modèles + C4),
+  puis scissions (47 → 62 neufs + `95ee8348`, reporté du lot A), E3, H.
+- **En attente de David** : rien (question d'accès des lots A + B : personne).
+- **Pièges en cours** : `95ee8348` traité avec les scissions (une seule migration sur son contenu) ; neufs sur une
+  sous-notion voisine → nœud du point (outil étendu) ; niveau neuf libre dans la catégorie, brouillons compris ;
+  `question:specs --file` ne lit pas les lignes de base (adaptateur dans le scratchpad, à recréer) ; S8, X1-X3 :
+  voir phase 0. Instantané : `analyse/etat-prod-2026-10-23b/`, contenu dans `releves/templates.json`.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee-modifier` · `feat/passe-lycee-modifier`.
 
 ## Les 5 étapes
 
@@ -195,3 +193,15 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   C1-C4 (a), H (a, traiter les 10 modèles dans leur vrai programme), E3 (a, dédoubler et réécrire), S6 (a), S7 (a, 4),
   S8 (b, V5 en TSPE-316, 4 modèles), S9 (a, 4), S10 (a, 4), S11 (b, enrichir V2), X1 (a, TSPE-445 / 595), X2 (a,
   TEXP-223), X3 (a, variance acceptée). Les 18 MODIFIER et 47 scissions : OK.
+- **2026-10-23 — Lots A + B écrits (worktree `passe-lycee-modifier`).** Question d'accès tranchée par David : personne
+  ne gagne d'accès (6 brouillons + 9f00da01 publié ; neufs en brouillon comme leur origine). Prod relue par le MCP :
+  empreintes md5 du contenu des 18 MODIFIER identiques à `releves/templates.json` ; 0 donnée d'élève sur les modèles
+  des lots A + B. `95ee8348` reporté aux scissions (modification de V2 et scission dans une même migration).
+  `lot_2bis_outils.py` étendu sans toucher aux migrations du collège : instantané et liste en paramètres, tags déjà
+  posés exigés à l'identique et laissés (f3e68e4b : TCOMP-302), nœud propre d'un modèle neuf dont le point vit sur
+  une sous-notion voisine (les 3 neufs). Choix d'écriture : 9f00da01 V2 → condition `mod(b,a) == 0` (axes −3 à 3,
+  pas de 1/2, vérifié sur 300 tirages) ; 6be786ef perd aussi « ce n'est pas un cycle » du corrigé de V1, QCM à 3
+  choix ; neuf de f2133048 : distracteur « rotation » remplacé par « symétrie d'axe y = x » ; neufs au niveau 3 de
+  la catégorie de l'origine (seule au niveau 2). Specs 64/64, tirages 2 600/2 600, audit du rendu sans défaut ;
+  migration jouée hors transaction en local (sans effet, base vide), 19 tests verts, rouges sans la migration ; les
+  4 suites du collège restent vertes.
