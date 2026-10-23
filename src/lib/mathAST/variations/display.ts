@@ -140,6 +140,8 @@ function kernelFactored(node: MathNode): MathNode | null {
  *   sortir le coefficient ne dit rien du signe ; `3(x − 1)(x + 1)` l'est.
  *   Sauf devant un polynôme de degré ≥ 2, forme de classe de la phase 0
  *   (`−2(x² + 9)/(x² − 9)²`, § 49 du journal) ;
+ * - aucun facteur ne mêle racine et fraction (`x − √2/2`, `x − 1/3 − √10/3`) :
+ *   `(1 − 2x²)e^{−x²}` se lit mieux (David, 2026-10-24) ; `x − 2√3` passe ;
  * - ses exponentielles sont celles de `node`, exposants compris ;
  * - un décimal tapé reste décimal (S1) : pas de fraction de nombres que
  *   `withTypedDecimals` n'a pu récrire (`3x² − 0,75` garde ses décimaux).
@@ -152,6 +154,7 @@ function acceptable(candidate: MathNode, node: MathNode): boolean {
 	if (nonNumeric.length === 1 && isSum(unwrap(nonNumeric[0].factor))) {
 		if (!isPolynomialOfDegreeTwoOrMore(unwrap(nonNumeric[0].factor))) return false;
 	}
+	if (flattenProductShallow(inner).some(({ factor }) => isRootWithFraction(factor))) return false;
 	if (exponentialKeys(candidate) !== exponentialKeys(node)) return false;
 	if (hasDecimalLiteral(node) && findNodes(candidate, isNumericFraction).length > 0) return false;
 	return true;
@@ -205,6 +208,12 @@ function exponentialKeys(node: MathNode): string {
 function isPolynomialOfDegreeTwoOrMore(node: MathNode): boolean {
 	if (findNodes(node, (n) => isFunction(n) || isExponential(n)).length > 0) return false;
 	return findNodes(node, isSuperscript).length > 0;
+}
+
+/** Un facteur qui porte à la fois une racine carrée et une fraction : `x − √2/2`. */
+function isRootWithFraction(factor: MathNode): boolean {
+	const hasRoot = findNodes(factor, (n) => isFunction(n) && n.name === 'sqrt').length > 0;
+	return hasRoot && findNodes(factor, isDivision).length > 0;
 }
 
 function isSum(node: MathNode): boolean {

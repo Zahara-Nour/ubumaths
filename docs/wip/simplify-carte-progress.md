@@ -770,3 +770,7 @@ D2 (§ 18) + Q18 (§ 50) dans `reducedDerivative` (`variations/display.ts`) : on
 Revue `code-reviewer` (opus, 82 fonctions comparées numériquement) : aucune forme fausse. Corrigés (rouges d'abord) : `factoriser` touchait l'exposant (`2x e^{(x−1)(x+1)}`) → exponentielles gardées telles qu'écrites ; un nombre seul devant une somme non polynomiale ou de degré 1 refusé (`2(e^{2x} − 2eˣ)`, `4(x − 2)` → forme de 5a ; `−2(x² + 9)/(x² − 9)²` gardé, forme de la phase 0) ; décimal tapé gardé (`x(3x − 4,8)`, S1) ; **bug de 5a** : `(−x²/(x+2))′` gardait le numérateur `x² − 2x(x+2)` (− devant le quotient), corrigé dans `final-form.ts` (`withOppositeInNumerator`) → `−(x² + 4x)/(x+2)²`, `.dériver` compris.
 
 Laissés, à montrer à David : `x e^{−x²}` → `−2(x − √2/2)(x + √2/2)e^{−x²}` (juste, lourd ; `(1 − 2x²)e^{−x²}` se lit mieux) ; `(x² − 3x + 2)/(x² + 1)` → `3(x − 1/3 − √10/3)(x − 1/3 + √10/3)/(x²+1)²`. Pas factorisés (forme de 5a) : `x − 1/x`, `2e^{2x} − 3eˣ`, bicarrés à racines irrationnelles.
+
+## 56. Lot 5b mergé (#1658, 2026-10-24) ; racines avec fraction (David : « je te suis »)
+
+CI verte. Suite (branche `fix/simplify-carte-5b-racines`) : un facteur qui mêle racine et fraction n'est pas affiché, la forme de 5a reste — `x e^{−x²}` → `(1 − 2x²)e^{−x²}`, `(x² − 3x + 2)/(x² + 1)` → `(3x² − 2x − 3)/(x² + 1)²` ; `(x − √2)(x + √2)`, `x²(x − 2√3)(x + 2√3)` gardées. 2 tests rouges avant.
