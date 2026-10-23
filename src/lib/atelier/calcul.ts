@@ -3641,9 +3641,22 @@ export function valueAnswerOf(
 		latex: result.latex ?? result.output,
 		...(result.ast !== undefined && { ast: result.ast }),
 		...(alternative !== null && exactDecimal && { decimalLatex: shown.slice(1).trim() }),
-		...(alternative !== null &&
-			!exactDecimal && { approximate: `≈ ${shown.replace(/\{,\}/g, ',')}` })
+		...(alternative !== null && !exactDecimal && { approximate: `≈ ${plainApproximate(shown)}` })
 	};
+}
+
+/**
+ * Une valeur approchée en clair, depuis son LaTeX : `1{,}4142~\mathrm{cm}` →
+ * `1,4142 cm`, `36{,}87~{}^{\circ}` → `36,87°` (revue de #1630 : le LaTeX
+ * brut s'affichait).
+ */
+function plainApproximate(latex: string): string {
+	return latex
+		.replace(/\{,\}/g, ',')
+		.replace(/~?\{\}\^\{\\circ\}/g, '°')
+		.replace(/~\\(?:mathrm|text)\{([^{}]*)\}/g, ' $1')
+		.replace(/\^2/g, '²')
+		.replace(/\^3/g, '³');
 }
 
 /** Le LaTeX de l'unité d'une grandeur approchée : `°`, `rad` comme le moteur les écrit. */

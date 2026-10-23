@@ -54,6 +54,20 @@ describe('les propriétés d’une valeur', () => {
 		expect(row.text).toBe('√2');
 		expect(row.approximate).toBe('≈ 1,4142');
 	});
+
+	// Revue de #1630 : l'unité sortait au format rangé (`√2[cm]`, `~\\mathrm{cm}` visible)
+	it('une grandeur : l’unité écrite en clair, dans la valeur et à côté', () => {
+		const atelier = atelierWith([['value', 'a', 'sqrt(2)[cm]']]);
+		const [value, unit] = propertiesOf(atelier, 'a');
+		expect(value.text).toBe('√2 cm');
+		expect(value.approximate).toBe('≈ 1,4142 cm');
+		expect(unit.text).toBe('cm');
+	});
+
+	it('une unité au carré s’écrit m²', () => {
+		const atelier = atelierWith([['value', 's', '3[m^2]']]);
+		expect(rowsOf(atelier, 's')).toEqual(['Valeur : 3 m²', 'Unité : m²']);
+	});
 });
 
 describe('les propriétés d’une fonction', () => {
@@ -87,6 +101,16 @@ describe('les propriétés d’une suite', () => {
 			'Premier rang : 0',
 			'Premier terme : u_0 = 3'
 		]);
+	});
+});
+
+describe('le nom indicé d’une suite', () => {
+	// Revue de #1630 : `u_1_{0}`, un double indice que MathLive compose mal
+	it('u_1 par récurrence : {u_{1}}_{0} = 3', () => {
+		const atelier = atelierWith([['sequence', 'u_1', '2u_1(n)+1']]);
+		atelier.setSequence('u_1', { firstTerm: '3' });
+		const first = propertiesOf(atelier, 'u_1').find((r) => r.label === 'Premier terme');
+		expect(first?.latex).toBe('{u_{1}}_{0}=3');
 	});
 });
 

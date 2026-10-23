@@ -39,7 +39,20 @@
 	 * Ici, et pas dans la carte : un renommage change la clé de la carte, qui
 	 * renaît, et le panneau la suit sous son nouveau nom.
 	 */
-	let openProperties = $state<{ name: string; focus: 'name' | 'panel' } | null>(null);
+	let openProperties = $state<{ name: string; focus: 'name' | 'panel'; opening: number } | null>(
+		null
+	);
+	/** Chaque ouverture a son numéro : rechoisir « Propriétés » y remet le focus. */
+	let openings = 0;
+
+	// L'objet supprimé (menu, console, Annuler) emporte son panneau : sans quoi un
+	// homonyme recréé le rouvrirait (revue de #1630). Un renommage a déjà rouvert
+	// le panneau sous le nouveau nom, qui existe
+	$effect.pre(() => {
+		if (openProperties !== null && atelier.get(openProperties.name) === undefined) {
+			openProperties = null;
+		}
+	});
 
 	/** Vide, il reste déplié : ses boutons « + » sont la seule entrée. */
 	const expanded = $derived(opened || atelier.objects.length === 0);
@@ -105,10 +118,13 @@
 					selected={object.name === selected}
 					{onAction}
 					{onTabulate}
-					properties={openProperties?.name === object.name ? openProperties.focus : null}
-					onProperties={(focus) =>
-						(openProperties = focus === null ? null : { name: object.name, focus })}
-					onRenamed={(name) => (openProperties = { name, focus: 'name' })}
+					properties={openProperties?.name === object.name ? openProperties : null}
+					onProperties={(focus) => {
+						// Refermer celui d'une carte qui n'est plus le panneau ouvert ne touche à rien
+						if (focus !== null) openProperties = { name: object.name, focus, opening: ++openings };
+						else if (openProperties?.name === object.name) openProperties = null;
+					}}
+					onRenamed={(name) => (openProperties = { name, focus: 'name', opening: ++openings })}
 				/>
 			{:else}
 				<p class="vide">Rien encore. Crée un objet pour commencer à chercher.</p>

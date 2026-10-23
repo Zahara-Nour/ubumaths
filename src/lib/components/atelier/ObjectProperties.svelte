@@ -32,12 +32,14 @@
 		object: AtelierObject;
 		/** `name` : ouvert par « Renommer », le focus va au champ du nom. */
 		focus: 'name' | 'panel';
+		/** Le numéro de l'ouverture : une nouvelle (« Propriétés » rechoisi) remet le focus. */
+		opening: number;
 		onclose: () => void;
 		/** Le nouveau nom, après un renommage réussi : le panneau reste ouvert. */
 		onrenamed: (name: string) => void;
 	}
 
-	let { object, focus, onclose, onrenamed }: Props = $props();
+	let { object, focus, opening, onclose, onrenamed }: Props = $props();
 
 	const atelier = useAtelier();
 	const uid = $props.id();
@@ -65,6 +67,7 @@
 	// À l'ouverture, le focus va au panneau (ou au nom, pour « Renommer ») : le
 	// menu de la carte le lui laisse (`actionMovesFocus`)
 	$effect(() => {
+		void opening;
 		if (focus === 'name') {
 			field?.focus();
 			field?.select();

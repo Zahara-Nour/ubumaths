@@ -226,8 +226,19 @@ function lineProperties(from: GeoPoint, to: GeoPoint): readonly PropertyRow[] {
 			valueRow('Ordonnée à l’origine', geoSub(from.y, geoMul(slope, from.x)))
 		);
 	}
-	rows.push(pointRow('Vecteur directeur', { x: geoOpposite(b), y: a }));
+	rows.push(pointRow('Vecteur directeur', directionOf(geoOpposite(b), a)));
 	return rows;
+}
+
+/**
+ * Le vecteur directeur qu'écrit un élève : entier et réduit quand c'est
+ * possible, première composante non nulle positive (`2y = 3` → (1 ; 0), pas
+ * (−2 ; 0) — revue de #1630).
+ */
+function directionOf(x: GeoValue, y: GeoValue): GeoPoint {
+	const [ix, iy] = integerMultiple([x, y]) ?? [x, y];
+	const lead = geoIsZero(ix) ? iy : ix;
+	return geoToNumber(lead) < 0 ? { x: geoOpposite(ix), y: geoOpposite(iy) } : { x: ix, y: iy };
 }
 
 function circleProperties(center: GeoPoint, radius: GeoValue): readonly PropertyRow[] {

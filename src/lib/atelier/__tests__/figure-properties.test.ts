@@ -127,6 +127,17 @@ describe('figurePropertiesOf : segment et demi-droite', () => {
 // =============================================================================
 
 describe('figurePropertiesOf : une droite', () => {
+	// Revue de #1630 : `h : 2y = 3` donnait (-2 ; 0), juste mais pas ce qu'écrit un élève
+	it('une horizontale : vecteur directeur (1 ; 0)', () => {
+		const s = plane('h : 2y = 3');
+		expect(row(s, 'h', 'Vecteur directeur')?.text).toBe('(1 ; 0)');
+	});
+
+	it('le vecteur directeur est réduit, première composante positive', () => {
+		const s = plane('d : 4x + 2y = 6');
+		expect(row(s, 'd', 'Vecteur directeur')?.text).toBe('(1 ; -2)');
+	});
+
 	it('la droite (AB)', () => {
 		const s = plane('d = (AB)');
 		expect(rows(s, 'd')).toEqual([
@@ -172,7 +183,7 @@ describe('figurePropertiesOf : une droite', () => {
 			'Équation cartésienne : x + 2y - 3 = 0',
 			'Coefficient directeur : -1/2',
 			'Ordonnée à l’origine : 3/2',
-			'Vecteur directeur : (-2 ; 1)'
+			'Vecteur directeur : (2 ; -1)'
 		]);
 	});
 

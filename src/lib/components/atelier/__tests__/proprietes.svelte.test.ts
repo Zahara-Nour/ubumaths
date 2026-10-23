@@ -99,6 +99,33 @@ describe('ouvrir le panneau', () => {
 		expect(document.activeElement?.getAttribute('aria-label')).toBe('Options de s');
 	});
 
+	// Revue de #1630 : le focus tombait sur `body` (l'effet ne rejouait pas)
+	it('rechoisir « Propriétés » garde le focus dans le panneau', async () => {
+		const atelier = atelierWith(SEGMENT);
+		const { container } = await render(WithAtelier, { atelier });
+		await chooseObjectAction(container, 's', 'Propriétés');
+		await vi.waitFor(() => expect(document.activeElement).toBe(panelOf(container, 's')));
+
+		await chooseObjectAction(container, 's', 'Propriétés');
+
+		await vi.waitFor(() => expect(document.activeElement).toBe(panelOf(container, 's')));
+	});
+
+	// Revue de #1630 : le panneau d'un A supprimé se rouvrait sur le nouveau A
+	it('un objet supprimé emporte son panneau ; un homonyme recréé ne le rouvre pas', async () => {
+		const atelier = atelierWith(SEGMENT);
+		const { container } = await render(WithAtelier, { atelier });
+		await chooseObjectAction(container, 's', 'Propriétés');
+		await vi.waitFor(() => panelOf(container, 's'));
+
+		atelier.remove('s');
+		await vi.waitFor(() => expect(container.querySelector('section.proprietes')).toBeNull());
+		atelier.create({ kind: 'curve', name: 's', definition: '[AB]' }, 'text');
+
+		await new Promise((resolve) => setTimeout(resolve, 100));
+		expect(container.querySelector('section.proprietes')).toBeNull();
+	});
+
 	it('un seul panneau à la fois', async () => {
 		const atelier = atelierWith(SEGMENT);
 		const { container } = await render(WithAtelier, { atelier });

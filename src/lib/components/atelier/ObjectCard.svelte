@@ -31,8 +31,8 @@
 			name: string,
 			bounds: { from: string; to: string; step: string }
 		) => { text: string; failed: boolean };
-		/** Le panneau « Propriétés » déplié, et où va le focus ; `null` : replié. */
-		properties?: 'name' | 'panel' | null;
+		/** Le panneau « Propriétés » déplié, où va le focus, et le numéro de l'ouverture ; `null` : replié. */
+		properties?: { focus: 'name' | 'panel'; opening: number } | null;
 		onProperties?: (focus: 'name' | 'panel' | null) => void;
 		/** Un renommage réussi depuis le panneau : la liste suit le nouveau nom. */
 		onRenamed?: (name: string) => void;
@@ -72,7 +72,8 @@
 {#if properties !== null}
 	<ObjectProperties
 		{object}
-		focus={properties}
+		focus={properties.focus}
+		opening={properties.opening}
 		onclose={() => onProperties?.(null)}
 		onrenamed={(name) => onRenamed?.(name)}
 	/>

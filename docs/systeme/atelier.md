@@ -1625,10 +1625,12 @@ cartes ont, en fin de menu, **Propriétés**, **Renommer** et **Supprimer** (`AL
 le plafond d'actions d'une liste passe de 11 à 12, David, même jour). Propriétés et Renommer ne
 sortent pas de la carte (`PROPERTIES_ACTIONS`) : ils déplient `ObjectProperties` juste sous elle,
 un seul à la fois. Son état vit dans `ObjectPanel` : renommer change la clé de la carte, qui
-renaît, et le panneau la suit sous son nouveau nom.
+renaît, et le panneau la suit sous son nouveau nom. Un objet supprimé (menu, console, Annuler)
+emporte son panneau : un homonyme recréé ne le rouvre pas.
 
 - **Le focus** : au panneau à l'ouverture, au champ du nom pour Renommer (`actionMovesFocus` :
-  le menu ne le ramène pas sur son bouton). Échap ou ✕ le referme et rend le focus au menu de la
+  le menu ne le ramène pas sur son bouton ; chaque ouverture a son numéro, rechoisir
+  « Propriétés » y remet le focus). Échap ou ✕ le referme et rend le focus au menu de la
   carte.
 - **Nom ✎** : `Atelier.rename`, qui réécrit les objets qui citent l'ancien nom (`d = [AB]` devient
   `[EB]`) ; une annonce dit qui suit. Un refus (nom pris, réservé…) s'affiche sous le champ
@@ -1641,11 +1643,12 @@ renaît, et le panneau la suit sous son nouveau nom.
     vecteur directeur ;
   - droite (construction ou équation) : équation réduite, équation cartésienne (entiers premiers
     entre eux, premier coefficient positif), coefficient directeur, ordonnée à l'origine
-    (« aucun (droite verticale) »), vecteur directeur ;
+    (« aucun (droite verticale) »), vecteur directeur (entier réduit, première composante
+    positive : `(1 ; 0)` pour `2y = 3`) ;
   - cercle (construction ou équation, centre et rayon tirés des coefficients) : centre, rayon,
     équation, périmètre et aire exacts (`6π`, `2π√5`) et approchés ; autre courbe : sa nature ;
   - valeur : sa valeur comme Calcul la dit (`valueAnswerOf`), approchée à côté, un décimal exact
-    en décimal (`3,4`, pas `17/5`), unité ; fonction : variable, ensemble de définition (l'écrit
+    en décimal (`3,4`, pas `17/5`), unité écrite en clair (`√2 cm`, `m²`) ; fonction : variable, ensemble de définition (l'écrit
     croisé avec le domaine calculé par `computeDomain`) ; suite : mode, premier rang, premier
     terme (relu, jamais recopié) ; liste : nombre de valeurs ;
   - pour tous, « Dépend de » et « Utilisé par » (`citedNames`, `dependents`), dans l'ordre des
@@ -1653,6 +1656,9 @@ renaît, et le panneau la suit sous son nouveau nom.
 - **Ce qui se règle** : le style du point de couleur (`FigureStyleSettings`, `CurveStyleSettings`,
   les mêmes composants que les fenêtres), l'étiquette d'un point (`MyCheckbox`), les bornes et le
   pas du curseur d'une valeur (`SliderSettings`).
+- **Écart connu** (revue de #1630, mineur) : des coefficients irrationnels ne sont pas réduits —
+  la droite par (0 ; 0) et (√2 ; √2) s'écrit `√2x - √2y = 0`, le rayon de `3x² + 3y² = 1`
+  `√(1/3)`. Justes, mais pas sous la forme qu'attend un élève.
 
 ### Vues
 

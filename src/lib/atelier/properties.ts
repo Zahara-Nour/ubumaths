@@ -52,6 +52,17 @@ function setLatex(text: string): string {
 		.replace(/;/g, '\\,;\\,');
 }
 
+/**
+ * Une unité en clair : `m^2` → `m²` ; et une valeur rangée avec la sienne,
+ * `√2[cm]` → `√2 cm` (revue de #1630 : le format de rangement était lu tel quel).
+ */
+function plainUnit(text: string): string {
+	return text
+		.replace(/\[([^\]]*)\]/g, ' $1')
+		.replace(/\^2/g, '²')
+		.replace(/\^3/g, '³');
+}
+
 /** Une ligne dont la valeur s'écrit en mathématiques, lue en clair par `text`. */
 function mathRow(label: string, latex: string, text: string): PropertyRow {
 	return { label, latex, text };
@@ -65,13 +76,13 @@ function valueRows(atelier: Atelier, object: ValueObject): PropertyRow[] {
 		const decimal = answer.decimalLatex;
 		rows.push(mathRow('Valeur', decimal, decimal.replace(/\{,\}/g, ',')));
 	} else if (answer !== null) {
-		const text = answer.ast === undefined ? answer.text : plainText(answer.ast);
+		const text = plainUnit(answer.ast === undefined ? answer.text : plainText(answer.ast));
 		rows.push({
 			...mathRow('Valeur', answer.latex, text),
 			...(answer.approximate !== undefined && { approximate: answer.approximate })
 		});
 	}
-	if (object.unit !== undefined) rows.push(wordRow('Unité', object.unit));
+	if (object.unit !== undefined) rows.push(wordRow('Unité', plainUnit(object.unit)));
 	return rows;
 }
 
@@ -111,12 +122,19 @@ function sequenceRows(object: SequenceObject): PropertyRow[] {
 		rows.push(
 			mathRow(
 				'Premier terme',
-				`${object.name}_{${object.firstIndex}}=${plainLatex(first)}`,
+				`${termLatex(object.name, object.firstIndex)}=${plainLatex(first)}`,
 				`${object.name}_${object.firstIndex} = ${plainText(first)}`
 			)
 		);
 	}
 	return rows;
+}
+
+/** Le LaTeX du terme de rang n : `u_{0}`, et `{u_{1}}_{0}` pour une suite indicée. */
+function termLatex(name: string, index: number): string {
+	const indexed = /^(.+)_(\d+)$/.exec(name);
+	const base = indexed === null ? name : `{${indexed[1]}_{${indexed[2]}}}`;
+	return `${base}_{${index}}`;
 }
 
 function listRows(object: ListObject): PropertyRow[] {
