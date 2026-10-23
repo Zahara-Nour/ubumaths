@@ -16,19 +16,26 @@
  * bisector by symmetry of |VA'| = |VB'|).
  */
 
-import type {
-	Voie,
-	ChoreographyFn,
-	ChoreographyCtx,
-	ChoreographyResult,
-	SubStep,
-	TraceTag
+import {
+	ChoreographyError,
+	type Voie,
+	type ChoreographyFn,
+	type ChoreographyCtx,
+	type ChoreographyResult,
+	type SubStep,
+	type TraceTag
 } from './types';
 import { isAngle } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { de, droite, en, labelAux, nom, role } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
+/** Rayon extérieur du rapporteur (`Protractor.svelte`, 156 px à 40 px/u). */
+const PROTRACTOR_RADIUS = 156 / 40;
+/** Distance V → repère `@mesure` : juste hors du bord du rapporteur. */
+const REPERE_DISTANCE = PROTRACTOR_RADIUS + 0.3;
+/** Tolérance des comparaisons `@mesure` (unités math, degrés). */
+const MESURE_EPS = 1e-9;
 const CERCLE_V_RADIUS_FACTOR = 0.6; // r1 = 0.6 × min(|VA|, |VB|)
 const ARC_RADIUS_FACTOR = 0.7; // r2 = 0.7 × |A'B'|
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° default for the small arcs (at V, A', B')
@@ -411,7 +418,10 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
  */
 function buildRulerTraceSubStep(
 	ctx: Parameters<ChoreographyFn>[0],
-	common: ReturnType<typeof setupCommonGeometry>,
+	common: Pick<
+		ReturnType<typeof setupCommonGeometry>,
+		'V' | 'bisDirX0' | 'bisDirY0' | 'Vx' | 'Vy' | 'bisDirXScalar' | 'bisDirYScalar'
+	>,
 	targetPointDistanceScalar: string,
 	targetPointDistance0: number,
 	instruction: string
@@ -897,7 +907,197 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	};
 }
 
+/** « 74 » · « 37,5 » : degrés écrits à la française, sans zéro inutile. */
+function formatDeg(value: number): string {
+	return value
+		.toFixed(1)
+		.replace(/\.?0+$/, '')
+		.replace('.', ',');
+}
+
+/**
+ * `bissectrice @mesure @rapporteur` : la méthode de 6e.
+ *
+ * 4 sous-étapes :
+ *   SS1 — le rapporteur se pose, centre sur V, 0 sur [VA) ; on lit l'angle
+ *         (arrondi au degré, comme l'élève le lit).
+ *   SS2 — on divise la valeur lue par 2 ; le crayon va au bord du
+ *         rapporteur, en face de cette graduation ; le rapporteur reste.
+ *   SS3 — le repère P apparaît.
+ *   SS4 — règle et crayon tracent la bissectrice par V et P.
+ *
+ * Le corps du rapporteur (`Protractor.svelte`) est du côté trigonométrique
+ * de sa base, l'échelle extérieure part de 0 à droite. Si B est dans le
+ * sens horaire de A, la base est retournée (rotation + 180°) : le 0 de
+ * l'échelle intérieure tombe alors sur [VA), et le corps couvre l'angle.
+ *
+ * Le calcul de la consigne part de la valeur lue ; le repère, lui, est sur
+ * la bissectrice exacte. Le codage des deux angles égaux est rangé avec les
+ * marqueurs : visible en `@complet`, retiré par `-marqueurs`.
+ */
+function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
+	const { figure, args, principalId } = ctx;
+	const [Aid, Vid, Bid] = args.ids;
+	const [A, V, B] = args.coords;
+	const nV = role(figure, Vid, 'le sommet');
+	const nA = role(figure, Aid, 'le premier point');
+	const nB = role(figure, Bid, 'le second point');
+
+	// A ou B confondu avec V : le builtin refuse avant la chorégraphie.
+	const VAx = A.x - V.x;
+	const VAy = A.y - V.y;
+	const VBx = B.x - V.x;
+	const VBy = B.y - V.y;
+	const angleRad = Math.atan2(Math.abs(VAx * VBy - VAy * VBx), VAx * VBx + VAy * VBy);
+	// Lecture au degré ; le calcul de la consigne part de cette valeur.
+	const read = Math.round((angleRad * 180) / Math.PI + MESURE_EPS);
+	if (read === 0) {
+		throw new ChoreographyError("Les deux côtés sont confondus : il n'y a pas d'angle à mesurer.");
+	}
+	const half = read / 2;
+
+	// Corps du rapporteur côté trigonométrique de sa base : retourné si B
+	// est dans le sens horaire de A.
+	const clockwise = VAx * VBy - VAy * VBx < -MESURE_EPS;
+	const sideDeg = (Math.atan2(VAy, VAx) * 180) / Math.PI;
+	const rotation = clockwise ? (sideDeg > 0 ? sideDeg - 180 : sideDeg + 180) : sideDeg;
+
+	figure.hideElement(principalId);
+
+	// ─── Direction de la bissectrice (réactive) ───
+	// (VA/|VA| + VB/|VB|) normalisé. L'angle plat est refusé par le
+	// builtin ; s'il survient en déplaçant un point, VA tourné d'un quart de tour.
+	const Vx = figure.createScalarCoordinate(Vid, 'x');
+	const Vy = figure.createScalarCoordinate(Vid, 'y');
+	const Axs = figure.createScalarCoordinate(Aid, 'x');
+	const Ays = figure.createScalarCoordinate(Aid, 'y');
+	const Bxs = figure.createScalarCoordinate(Bid, 'x');
+	const Bys = figure.createScalarCoordinate(Bid, 'y');
+	const bisDir = (vals: ReadonlyMap<string, number>): { x: number; y: number } => {
+		const vx = vals.get(Vx) ?? 0;
+		const vy = vals.get(Vy) ?? 0;
+		const ax = (vals.get(Axs) ?? 0) - vx;
+		const ay = (vals.get(Ays) ?? 0) - vy;
+		const bx = (vals.get(Bxs) ?? 0) - vx;
+		const by = (vals.get(Bys) ?? 0) - vy;
+		const la = Math.max(Math.hypot(ax, ay), 1e-12);
+		const lb = Math.max(Math.hypot(bx, by), 1e-12);
+		const rx = ax / la + bx / lb;
+		const ry = ay / la + by / lb;
+		const len = Math.hypot(rx, ry);
+		if (len > 1e-9) return { x: rx / len, y: ry / len };
+		return { x: -ay / la, y: ax / la };
+	};
+	const deps = [Vx, Vy, Axs, Ays, Bxs, Bys];
+	const bisDirXScalar = figure.createScalarExpression((vals) => bisDir(vals).x, deps);
+	const bisDirYScalar = figure.createScalarExpression((vals) => bisDir(vals).y, deps);
+
+	// Repère P, juste hors du bord du rapporteur.
+	const PxScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Vx) ?? 0) + (vals.get(bisDirXScalar) ?? 0) * REPERE_DISTANCE,
+		[Vx, bisDirXScalar]
+	);
+	const PyScalar = figure.createScalarExpression(
+		(vals) => (vals.get(Vy) ?? 0) + (vals.get(bisDirYScalar) ?? 0) * REPERE_DISTANCE,
+		[Vy, bisDirYScalar]
+	);
+	const P = figure.createComputedPoint({ scalarRef: PxScalar }, { scalarRef: PyScalar });
+	figure.hideElement(P);
+	const nP = labelAux(ctx, P, 'P');
+	const VPScalar = figure.createScalarExpression(() => REPERE_DISTANCE, []);
+
+	// Valeurs initiales (positions des instruments).
+	const la0 = Math.hypot(VAx, VAy);
+	const lb0 = Math.hypot(VBx, VBy);
+	const raw0 = { x: VAx / la0 + VBx / lb0, y: VAy / la0 + VBy / lb0 };
+	const rawLen0 = Math.hypot(raw0.x, raw0.y);
+	const bisDirX0 = rawLen0 > 1e-9 ? raw0.x / rawLen0 : -VAy / la0;
+	const bisDirY0 = rawLen0 > 1e-9 ? raw0.y / rawLen0 : VAx / la0;
+
+	// Codage des deux angles égaux, créé caché ; la visibilité finale le
+	// range en marqueur.
+	const marks = [
+		figure.createAngle(Aid, Vid, P, { marque: 'arcs2' }),
+		figure.createAngle(P, Vid, Bid, { marque: 'arcs2' })
+	];
+	for (const mark of marks) figure.hideElement(mark);
+
+	const rulerStep = buildRulerTraceSubStep(
+		ctx,
+		{ V, bisDirX0, bisDirY0, Vx, Vy, bisDirXScalar, bisDirYScalar },
+		VPScalar,
+		REPERE_DISTANCE,
+		`Règle ${de(nV)} à ${nP} : on trace la bissectrice`
+	);
+
+	const side = nV.name && nA.name ? `[${nV.name}${nA.name})` : 'le premier côté';
+	const reading =
+		nA.name && nV.name && nB.name
+			? `l’angle ${nA.name}${nV.name}${nB.name} = ${formatDeg(read)}°`
+			: `l’angle : ${formatDeg(read)}°`;
+	const subSteps: SubStep[] = [
+		{
+			kind: 'compass-measure',
+			instrument: 'protractor',
+			instrumentTarget: { x: V.x, y: V.y, rotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: `On place le centre du rapporteur sur ${nom(nV)}, le 0 sur ${side}, et on lit ${reading}`
+		},
+		{
+			kind: 'compass-measure',
+			instrument: 'pencil',
+			secondaryInstrument: 'protractor',
+			instrumentTarget: {
+				x: V.x + bisDirX0 * REPERE_DISTANCE,
+				y: V.y + bisDirY0 * REPERE_DISTANCE,
+				rotation: 0
+			},
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: `${formatDeg(read)} ÷ 2 = ${formatDeg(half)} : on repère la graduation ${formatDeg(half)}°`
+		},
+		{
+			kind: 'point-fade-in',
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [P],
+			animateLineIds: [],
+			instruction: `On marque le repère ${nP} en face de ${formatDeg(half)}°`
+		},
+		rulerStep.subStep
+	];
+
+	return {
+		subSteps,
+		produced: {
+			principal: principalId,
+			charnieres: [P],
+			traces: marks,
+			traceTags: new Map<string, TraceTag>(marks.map((id) => [id, 'marker'])),
+			hiddenSupport: [
+				...rulerStep.supportIds,
+				...deps,
+				bisDirXScalar,
+				bisDirYScalar,
+				PxScalar,
+				PyScalar,
+				VPScalar
+			]
+		}
+	};
+}
+
 const arcsEgauxChoreography: ChoreographyFn = (ctx) => buildArcsEgaux(normalizeBissectriceCtx(ctx));
+
+const rapporteurChoreography: ChoreographyFn = (ctx) =>
+	buildRapporteur(normalizeBissectriceCtx(ctx));
 
 const arcMilieuChoreography: ChoreographyFn = (ctx) => buildArcMilieu(normalizeBissectriceCtx(ctx));
 
@@ -919,5 +1119,17 @@ export const VOIES_BISSECTRICE_EUCLIDE: readonly Voie[] = [
 			'Cercle de centre `V` coupe `(VA)` en `A′` et `(VB)` en `B′`. Le milieu `M` de `[A′B′]` est sur la bissectrice ; on trace `(VM)`.',
 		defaut: false,
 		choreography: arcMilieuChoreography
+	}
+];
+
+export const VOIES_BISSECTRICE_MESURE: readonly Voie[] = [
+	{
+		id: 'rapporteur',
+		nom_humain: 'Au rapporteur',
+		source: 'Construction de 6e',
+		description:
+			'On pose le centre du rapporteur sur `V`, le 0 sur `[VA)`, on lit l’angle au degré, on le divise par 2 et on marque un repère `P` en face de cette graduation ; on trace `(VP)`. Le codage des deux angles égaux apparaît en `@complet`.',
+		defaut: true,
+		choreography: rapporteurChoreography
 	}
 ];
