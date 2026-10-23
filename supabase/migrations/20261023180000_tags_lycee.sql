@@ -18,7 +18,7 @@
 -- est prouvée par tests/integration/tags-lycee.test.ts, qui fabrique des copies des
 -- identifiants de la prod (à leur nœud et leurs tags d'avant) puis rejoue CE fichier.
 --
--- Garde : chaque modèle doit être encore au nœud relevé et porter EXACTEMENT les tags du lycée
+-- Garde : chaque modèle doit être encore au nœud relevé et porter EXACTEMENT les tags
 -- relevés (sinon une saisie faite depuis serait écrasée ou contredite). Les nœuds sont désignés
 -- par leur chemin, résolu STRICTEMENT. Ordre : retraits, déplacements, puis poses (les gardes
 -- des tags restent actives et valident chaque étape).
@@ -265,9 +265,8 @@
 -- update public.question_templates q set classification_node_id = r.node_id
 --   from _tl_retour r where q.id = r.id;
 -- alter table public.question_templates enable trigger update_question_templates_updated_at;
--- insert into public.question_template_points (template_id, point_id)
--- select r.template_id, p.id
---   from (values
+-- create temporary table _tl_repose on commit drop as
+-- select * from (values
 --   ('0140fdfa-1066-4885-b0ab-c597ff503283'::uuid, '1_SPE', '1SPE-274'),
 --   ('044a3ae3-c54a-4521-9265-3997fcc6b0d2'::uuid, '1_SPE', '1SPE-323'),
 --   ('0495289a-abb1-4fed-b058-5e924a5f05ed'::uuid, '1_SPE', '1SPE-223'),
@@ -453,17 +452,30 @@
 --   ('f69a6e9e-28cf-46e3-b823-5712a2e028d9'::uuid, '1_SPE', '1SPE-248'),
 --   ('f7194c9d-5056-4444-8a66-78205d1dde32'::uuid, '1_SPE', '1SPE-304'),
 --   ('f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709'::uuid, '1_SPE', '1SPE-244')
---   ) as r(template_id, grade, code)
+--   ) as r(template_id, grade, code);
+-- insert into public.question_template_points (template_id, point_id)
+-- select r.template_id, p.id
+--   from _tl_repose r
 --   join public.question_templates q on q.id = r.template_id
 --   join public.curriculum_points p on p.grade = r.grade and p.code = r.code and p.archived_at is null
 --  on conflict do nothing;
+-- do $repose$ declare v_attendus integer; v_reposes integer; begin
+-- 	select count(*) into v_attendus from _tl_repose r join public.question_templates q on q.id = r.template_id;
+-- 	select count(*) into v_reposes from _tl_repose r
+-- 	  join public.curriculum_points p on p.grade = r.grade and p.code = r.code
+-- 	  join public.question_template_points q on q.template_id = r.template_id and q.point_id = p.id;
+-- 	if v_reposes <> v_attendus then
+-- 		raise exception 'rollback : % tag(s) reposé(s) sur %', v_reposes, v_attendus;
+-- 	end if;
+-- end $repose$;
+-- drop table _tl_repose;
 -- drop table _tl_retour;
 -- ROLLBACK:END
 -- ============================================================================
 
+-- Pas de `lock table` : `supabase db push` n'ouvre pas de bloc de transaction, et LOCK TABLE y
+-- est refusé (25P01). Les verrous sont pris après l'étape 1, ligne par ligne.
 set local lock_timeout = '5s';
--- Verrous avant les gardes : un tag ou un rangement saisi pendant la migration attend sa fin.
-lock table public.question_template_points, public.question_templates in share row exclusive mode;
 
 -- ---- 1. Le lot, en tables temporaires ----------------------------------------------
 drop table if exists pg_temp._tl_modeles;
@@ -1129,6 +1141,11 @@ insert into _tl_tags values
   ('f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709', '1_SPE', '1SPE-244', true, false),
   ('fece187e-691f-488b-84c6-d37c84173066', 'T_SPE', 'TSPE-457', false, true);
 
+-- Verrous avant les gardes : le verrou consultatif par modèle que prennent les triggers des tags
+-- (un tag ou un déplacement saisi pendant la migration attend sa fin), et les lignes des modèles.
+select pg_advisory_xact_lock(hashtextextended('question_template_points:' || id::text, 0))
+  from _tl_modeles order by id;
+select 1 from public.question_templates where id in (select id from _tl_modeles) order by id for update;
 -- ---- 2. Résolution STRICTE des chemins et des points ------------------------------------
 create temporary table _tl_noeuds as
 	select r.id,
@@ -1155,7 +1172,7 @@ begin
 	end if;
 end $resolution$;
 
--- ---- 3. Gardes : présence TOUT ou RIEN, nœud relevé, tags du lycée EXACTEMENT relevés ---
+-- ---- 3. Gardes : présence TOUT ou RIEN, nœud relevé, tags EXACTEMENT relevés -----------
 do $garde$
 declare v_presents integer; v_ecarts integer; v_detail text;
 begin
@@ -1169,14 +1186,14 @@ begin
 	if v_ecarts <> 0 then
 		raise exception 'modèles déplacés depuis le relevé : %', v_ecarts;
 	end if;
-	-- « + » : tag en base non relevé ; « - » : tag relevé absent de la base
+	-- « + » : tag en base non relevé (tout niveau : prod le 2026-10-23, aucun tag hors lycée sur ces
+	-- modèles) ; « - » : tag relevé absent de la base
 	select string_agg(d.r, ', ' order by d.r) into v_detail from (
 		(select '+' || left(q.template_id::text, 8) || ' ' || p.code as r
 		   from public.question_template_points q
 		   join _tl_modeles m on m.id = q.template_id
 		   join public.curriculum_points p on p.id = q.point_id
-		  where p.grade in ('2', '1_SPE', '1_GEN', '1_TECHNO', 'T_SPE', 'T_COMP', 'T_EXP', 'T_TECHNO')
-		    and not exists (select 1 from _tl_tags t where t.template_id = q.template_id and t.point_id = q.point_id and t.avant))
+		  where not exists (select 1 from _tl_tags t where t.template_id = q.template_id and t.point_id = q.point_id and t.avant))
 		union all
 		(select '-' || left(t.template_id::text, 8) || ' ' || t.code
 		   from _tl_tags t
@@ -1184,7 +1201,7 @@ begin
 		  where t.avant
 		    and not exists (select 1 from public.question_template_points u where u.template_id = t.template_id and u.point_id = t.point_id))) d;
 	if v_detail is not null then
-		raise exception 'tags du lycée différents du relevé : %', v_detail;
+		raise exception 'tags différents du relevé : %', v_detail;
 	end if;
 end $garde$;
 
@@ -1212,18 +1229,17 @@ begin
 	select count(*) into v_presents from _tl_modeles r join public.question_templates q on q.id = r.id;
 	select count(*) into v_noeuds from _tl_noeuds x
 	  join public.question_templates q on q.id = x.id and q.classification_node_id = x.apres;
-	-- tags du lycée de ces modèles : tous, et ceux du lot d'après (doivent coïncider)
+	-- tags de ces modèles (tout niveau) : tous, et ceux du lot d'après (doivent coïncider)
 	select count(*), count(*) filter (where exists (select 1 from _tl_tags t
 	                                                where t.template_id = q.template_id and t.point_id = q.point_id and t.apres))
 	  into v_total, v_tags
 	  from public.question_template_points q
 	  join _tl_modeles m on m.id = q.template_id
-	  join public.curriculum_points p on p.id = q.point_id
-	 where p.grade in ('2', '1_SPE', '1_GEN', '1_TECHNO', 'T_SPE', 'T_COMP', 'T_EXP', 'T_TECHNO');
+	  join public.curriculum_points p on p.id = q.point_id;
 	-- Base sans les modèles (locale) : aucun tag attendu.
 	v_tags_attendus := least(v_presents, 1) * 236;
 	if v_noeuds <> v_presents or v_tags <> v_tags_attendus or v_total <> v_tags_attendus then
-		raise exception 'lot incohérent : modèles %/%, tags du lot %/%, tags du lycée %', v_noeuds, v_presents, v_tags, v_tags_attendus, v_total;
+		raise exception 'lot incohérent : modèles %/%, tags du lot %/%, tags en base %', v_noeuds, v_presents, v_tags, v_tags_attendus, v_total;
 	end if;
 end $check$;
 

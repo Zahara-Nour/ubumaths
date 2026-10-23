@@ -269,7 +269,57 @@ describe('Tags du lycée : les branches d’échec de la migration', () => {
 				[m.id, t.grade, t.code]
 			);
 			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
-				new RegExp(`tags du lycée différents du relevé : -${m.id.slice(0, 8)} ${t.code}`)
+				new RegExp(`tags différents du relevé : -${m.id.slice(0, 8)} ${t.code}`)
+			);
+		} finally {
+			await pg.query('rollback');
+		}
+	});
+
+	it('un tag posé depuis le relevé fait échouer la migration', async () => {
+		await pg.query('begin');
+		try {
+			await poserEtatProd(pg, auteur);
+			// Un modèle non déplacé, dont un tag à poser est sur un programme qu'il n'a pas encore.
+			const m = fixture.modeles.find(
+				(x) =>
+					x.noeud_avant.join() === x.noeud_apres.join() &&
+					x.tags_apres.some((t) => !x.tags_avant.some((a) => a.grade === t.grade))
+			);
+			const t = m?.tags_apres.find((x) => !m.tags_avant.some((a) => a.grade === x.grade));
+			if (!m || !t) throw new Error('aucun tag à poser sur un modèle non déplacé');
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points where grade = $2 and code = $3 and archived_at is null`,
+				[m.id, t.grade, t.code]
+			);
+			await expect(pg.query(readFileSync(MIGRATION, 'utf-8'))).rejects.toThrow(
+				new RegExp(`tags différents du relevé : \\+${m.id.slice(0, 8)} ${t.code}`)
+			);
+		} finally {
+			await pg.query('rollback');
+		}
+	});
+
+	it('le rollback refuse de finir si un tag retiré ne peut pas être reposé', async () => {
+		await pg.query('begin');
+		try {
+			await poserEtatProd(pg, auteur);
+			await pg.query(readFileSync(MIGRATION, 'utf-8'));
+			// Un point retiré que plus aucun modèle du lot ne porte : on l'archive.
+			const apresCodes = new Set(
+				fixture.modeles.flatMap((x) => x.tags_apres.map((t) => `${t.grade}§${t.code}`))
+			);
+			const retire = fixture.modeles
+				.flatMap((x) => x.tags_avant)
+				.find((t) => !apresCodes.has(`${t.grade}§${t.code}`));
+			if (!retire) throw new Error('aucun point retiré sans autre tag');
+			await pg.query(
+				`update public.curriculum_points set archived_at = now() where grade = $1 and code = $2 and archived_at is null`,
+				[retire.grade, retire.code]
+			);
+			await expect(pg.query(extractRollback(MIGRATION))).rejects.toThrow(
+				/rollback : \d+ tag\(s\) reposé\(s\) sur 185/
 			);
 		} finally {
 			await pg.query('rollback');
