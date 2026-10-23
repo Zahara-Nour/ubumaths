@@ -2,13 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1630._
+_Mis à jour le 2026-10-23, PR « π fractionnaire » ouverte._
 
 - **État** : chantier livré — PR 1 #1627 (point de couleur, cartes sans nature ni mesure, console qui défile, noms en couleur du texte) et PR 2 #1630 (panneau Propriétés, Renommer, retours de revue, formes du cahier) mergées. Pas encore en prod.
 - **Prochaine action** : verser ce journal (`docs/archive/wip/`) quand David clôt le chantier ; les renvois du code vers ce chemin (`properties.ts`, `ObjectProperties.svelte`, tests) suivront dans une PR.
-- **En attente de David** : périmètre et aire en `(2/3)π√3` (coefficient devant) ou `2π√3/3` ? ; vérifications manuelles (`docs/wip/verifications-manuelles.md`).
+- **Tranché (David, 2026-10-23)** : périmètre et aire en `2π√3/3`, `π/4` (comme au cahier), pas `(2/3)π√3` → PR `fix/atelier-pi-fraction` (texte `2√5/3` sans parenthèses au passage).
+- **En attente de David** : vérifications manuelles (`docs/wip/verifications-manuelles.md`).
 - **Pièges en cours** : aucun ; #1627 et #1630 partent ensemble au prochain `deploy:prod`.
-- **Worktree / branche** : supprimés.
+- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `fix/atelier-pi-fraction`.
 
 ## Décisions de David (2026-10-23)
 
