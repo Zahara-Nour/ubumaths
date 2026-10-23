@@ -6,17 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, phase 0 du lot MODIFIER + TAG_PAR_VARIATION._
+_Mis à jour le 2026-10-23, phase 0 du lot MODIFIER + TAG_PAR_VARIATION validée._
 
-- **État** : étape e close, en prod. Instantané à jour : `analyse/etat-prod-2026-10-23b/` (tags compris). Lot
-  MODIFIER + TAG_PAR_VARIATION en phase 0 : principes tranchés (journal), listes prêtes : `analyse/lot-modifier.md`
-  (18 MODIFIER en lots A/B/C, 7 choix, 10 modèles hors programme à leur niveau), `analyse/scissions-plan.csv` +
-  `scissions-notes.md` (47 scissions → 62 neufs, 2 sans tag, 11 à trancher, 4 contradictions).
-- **Prochaine action** : relire les réponses de la page https://claude.ai/artifact/4ZcL4ioFtit4ncQExRmT5D (collections `q`, `l`), puis migrations par lot (méthode `arbre-notions/analyse/lot-2bis-*.py`).
-- **En attente de David** : validation de la page (choix B1-B3, C1-C4, § 4 hors programme, A_TRANCHER, contradictions).
-- **Pièges en cours** : l'ancien `etat-prod-2026-10-23/` reste pour `generer-migration-tags.py`. Base locale :
-  `20261022200000` et `20261023150000` notées jouées (`migration repair --local`).
-- **Worktree / branche** : aucun (analyse en doc sur `main`).
+- **État** : phase 0 validée en bloc par David (« je valide tout », page non cochée) : 18 questions = la reco, 18
+  MODIFIER et 47 scissions tels quels (`analyse/lot-modifier.md`, `scissions-plan.csv`, `scissions-notes.md`, page
+  `analyse/page/gen-lot-modifier.py`).
+- **Prochaine action** : worktree `passe-lycee-modifier`, relire en prod (MCP) le contenu des modèles du lot, puis une
+  migration par lot, méthode `arbre-notions/analyse/lot-2bis-*.py` : (1) lots A + B (8 modèles, + neufs de B1-B3) ;
+  (2) lot C (10) ; (3) scissions (47 → 62 neufs, S6-S11 compris), en deux PR si trop gros ; (4) E3 (5 modèles
+  dédoublés et réécrits) ; (5) H : plan des 10 modèles hors programme à leur niveau, à faire (non planifiés).
+- **En attente de David** : rien.
+- **Pièges en cours** : modèles neufs = catégories et niveaux à poser (incident #1570 du collège : catégorie copiée
+  interdite entre modèles publiés) ; `95ee8348` à la fois lot A et scindé ; S8 change V5 en TSPE-316 ; X1 → TSPE-445 /
+  595 pour les neufs exp ; X2 → TEXP-223 ; X3 → variance acceptée. Instantané : `analyse/etat-prod-2026-10-23b/`.
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -187,3 +190,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   `analyse/page/gen-lot-modifier.py` → https://claude.ai/artifact/4ZcL4ioFtit4ncQExRmT5D : 18 questions (B1-B3, C1-C4,
   H, E3, S6-S11, X1-X3), 18 MODIFIER, 47 scissions ; file d'écriture avec nouvel essai. Base vide vérifiée à la
   publication.
+- **2026-10-23 — Phase 0 validée (David : « je valide tout »).** Rien de coché sur la page (base vide, vérifiée) :
+  validation en bloc, comme à l'étape e. Réponses = les recos : B1-B3 (a, modèles neufs TSPE-323, TEXP-357, TEXP-316),
+  C1-C4 (a), H (a, traiter les 10 modèles dans leur vrai programme), E3 (a, dédoubler et réécrire), S6 (a), S7 (a, 4),
+  S8 (b, V5 en TSPE-316, 4 modèles), S9 (a, 4), S10 (a, 4), S11 (b, enrichir V2), X1 (a, TSPE-445 / 595), X2 (a,
+  TEXP-223), X3 (a, variance acceptée). Les 18 MODIFIER et 47 scissions : OK.
