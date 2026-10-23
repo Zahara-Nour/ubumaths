@@ -162,7 +162,7 @@ describe('racine n-ième — moteur (differentiate)', () => {
 
 describe('racine n-ième — correction pédagogique (étapes + mise au propre)', () => {
 	it.each(CASES)('$latex : valeur de la réponse', ({ latex, f }) => {
-		const tidied = withTidyStep([], pedagogical(latex).derivative);
+		const tidied = withTidyStep([], pedagogical(latex).derivative, parseLatex(latex));
 		expect(valueGap(tidied.derivative, f)).toBeNull();
 		// Affiché = calculé : le LaTeX montré, relu, a la même valeur
 		expect(valueGap(parseLatex(tidied.derivativeLatex), f)).toBeNull();
@@ -171,7 +171,7 @@ describe('racine n-ième — correction pédagogique (étapes + mise au propre)'
 	it.each(CASES.filter((c) => c.expected !== undefined))(
 		'$latex : forme $expected',
 		({ latex, expected }) => {
-			const tidied = withTidyStep([], pedagogical(latex).derivative);
+			const tidied = withTidyStep([], pedagogical(latex).derivative, parseLatex(latex));
 			const valid = checkForm(tidied.derivativeLatex, expected ?? '', {}).valid;
 			expect(valid, tidied.derivativeLatex).toBe(true);
 		}

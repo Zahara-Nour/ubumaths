@@ -319,7 +319,7 @@ function derivativeTexts(): Text[] {
 			const rendered = renderer.renderAll(result.steps, { schoolLevel, verbosity: 'detailed' });
 			const where = `(${latex})' (${schoolLevel})`;
 			texts.push(
-				...renderedTexts(where, withTidyStep(rendered, result.derivative).steps),
+				...renderedTexts(where, withTidyStep(rendered, result.derivative, parseLatex(latex)).steps),
 				...descriptions(where, result.steps)
 			);
 		}
@@ -607,7 +607,10 @@ function demoTexts(): Text[] {
 						verbosity: 'detailed'
 					});
 					return [
-						...renderedTexts(where, withTidyStep(rendered, result.derivative).steps),
+						...renderedTexts(
+							where,
+							withTidyStep(rendered, result.derivative, parseLatex(testCase.latex)).steps
+						),
 						...descriptions(where, result.steps)
 					];
 				})

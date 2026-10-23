@@ -104,7 +104,7 @@ Les rendus sont en LaTeX, tels que `toLatex` les imprime.
 | `\frac{x^2-1}{x+1}`           | `x - 1`                                   | `x - 1`                                   | `\dfrac{x^2 - 1}{x + 1}`                  | `x - 1`                              | `x - 1`                                   |
 | `\frac{x^2-y^2}{x-y}`         | `x + y`                                   | `x + y`                                   | `\dfrac{x^2 - y^2}{x - y}`                | `x + y`                              | `x + y`                                   |
 | `\frac{x^2-y^2}{x^2+2xy+y^2}` | `\dfrac{x - y}{x + y}`                    | `\dfrac{x - y}{x + y}`                    | `\dfrac{x^2 - y^2}{2 x y + x^2 + y^2}`    | `\dfrac{x - y}{x + y}`               | `\dfrac{x - y}{x + y}`                    |
-| `\frac{x}{x}`                 | `1`                                       | `1`                                       | `1`                                       | `1`                                  | `1`                                       |
+| `\frac{x}{x}`                 | `1`                                       | `1`                                       | `\dfrac{x}{x}`                            | `1`                                  | `1`                                       |
 | `\frac{(x+y)^2}{x+2y}`        | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` | `\dfrac{2 x y + x^2 + y^2}{x + 2 y}` | `\dfrac{\left( x + y \right)^2}{x + 2 y}` |
 
 ## Puissances

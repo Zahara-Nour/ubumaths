@@ -24,8 +24,8 @@ describe('tidy — une base qui peut s’annuler ne quitte pas le dénominateur'
 	it.each([
 		['x/x', 'x/x'],
 		['3x/x', '{3x}/x'],
-		['x^2/x', 'x^2/x'],
-		['x^3/x', 'x^3/x'],
+		['x^2/x', '{x^2}/x'],
+		['x^3/x', '{x^3}/x'],
 		['(x*y)/(x*z)', '{xy}/{xz}'],
 		['x*x^(-1)', 'x/x'],
 		['(x+1)/(x+1)', '{x+1}/{x+1}'],
@@ -103,5 +103,30 @@ describe('tidy — invariants sur les formes gardées', () => {
 	it.each(cases)('valeur conservée : %s', (input) => {
 		const node = parseCustom(input);
 		expect(areEquivalent(tidy(node), node)).toBe(true);
+	});
+});
+
+describe('tidy — domaine acquis (`domain`, celui de f pour sa dérivée)', () => {
+	const withDomain = (s: string, f: string) =>
+		toCustom(tidy(parseCustom(s), { domain: [parseCustom(f)] }));
+
+	it.each([
+		['k/(k*x)', 'ln(k*x)', '1/x'],
+		['x*(1/x)', 'x*ln(x)', '1'],
+		['x/x', '1/x', '1'],
+		['x/x', 'x^x', '1'],
+		['(x+1)/(x+1)', 'ln(x+1)', '1'],
+		['(x+1)/(x+1)', '1/(x+1)', '1']
+	])('%s, domaine de %s → %s', (input, f, expected) => {
+		expect(withDomain(input, f)).toBe(expected);
+	});
+
+	it.each([
+		// `√x` et `x^π` sont définis en 0 : ils ne disent pas x ≠ 0
+		['x/x', 'sqrt(x)'],
+		['x/x', 'x^2+1'],
+		['y/y', 'ln(x)']
+	])('%s, domaine de %s : rien d’acquis, inchangé', (input, f) => {
+		expect(withDomain(input, f)).toBe(input === 'x/x' ? 'x/x' : 'y/y');
 	});
 });

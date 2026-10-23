@@ -18,7 +18,8 @@ import { parseLatex } from '../../parser';
 import type { MathNode } from '../../types';
 
 function derive(latex: string) {
-	const result = generatePedagogicalDifferentiationSteps(parseLatex(latex) as MathNode, {
+	const f = parseLatex(latex) as MathNode;
+	const result = generatePedagogicalDifferentiationSteps(f, {
 		variable: 'x',
 		schoolLevel: 'lycee',
 		verbosity: 'detailed'
@@ -27,7 +28,7 @@ function derive(latex: string) {
 		schoolLevel: 'lycee',
 		verbosity: 'detailed'
 	});
-	return withTidyStep(steps, result.derivative);
+	return withTidyStep(steps, result.derivative, f);
 }
 
 describe('withTidyStep : la dernière ligne est la dérivée rangée', () => {
@@ -63,6 +64,6 @@ describe('withTidyStep : une dérivée déjà propre n’a pas d’étape en plu
 			verbosity: 'detailed'
 		});
 
-		expect(withTidyStep(steps, result.derivative).steps).toEqual(steps);
+		expect(withTidyStep(steps, result.derivative, parseLatex(input)).steps).toEqual(steps);
 	});
 });

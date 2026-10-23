@@ -239,7 +239,9 @@ describe('panel de référence — docs/systeme/mathast/panel-simplifications.md
 				'\\dfrac{x - y}{x + y}',
 				'\\dfrac{x - y}{x + y}'
 			],
-			['\\frac{x}{x}', '1', '1', '1', '1', '1'],
+			// S3 (2026-10-23) : `reduire` ne simplifie plus par une base qui peut
+			// s'annuler ; `auto` et `factoriser` le font en étape, condition écrite.
+			['\\frac{x}{x}', '1', '1', '\\dfrac{x}{x}', '1', '1'],
 			[
 				'\\frac{(x+y)^2}{x+2y}',
 				'\\dfrac{\\left( x + y \\right)^2}{x + 2 y}',

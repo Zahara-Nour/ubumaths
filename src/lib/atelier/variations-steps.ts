@@ -108,7 +108,7 @@ export function variationsRendering(
 		const f = `${name}(${variable})`;
 		const fPrime = `${name}'(${variable})`;
 		// Numérateur réduit : le signe de f′ doit se lire dans ce qui est écrit
-		const answer = `${fPrime} = ${toLatex(reducedDerivative(result.derivative))}`;
+		const answer = `${fPrime} = ${toLatex(reducedDerivative(result.derivative, result.expression))}`;
 		const derivativeAt = createSafeEvaluator(result.derivative, variable);
 
 		const steps: RenderedStep[] = [];

@@ -49,12 +49,14 @@ export function withExplicitNumberProducts(node: MathNode): MathNode {
  *
  * @param steps - Les étapes déjà rendues (`PedagogicalDifferentiationRenderer`)
  * @param derivative - La dérivée brute (`result.derivative`)
+ * @param f - La fonction dérivée : son domaine est acquis pour f′ (S3)
  */
 export function withTidyStep(
 	steps: readonly RenderedStep[],
-	derivative: MathNode
+	derivative: MathNode,
+	f: MathNode
 ): TidiedDerivation {
-	const tidied = tidyTerms(derivative);
+	const tidied = tidyTerms(derivative, { domain: [f] });
 	const derivativeLatex = toLatex(tidied);
 	if (derivativeLatex === toLatex(derivative)) {
 		return { steps, derivative: tidied, derivativeLatex };

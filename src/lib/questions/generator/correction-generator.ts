@@ -627,7 +627,8 @@ function renderDifferentiate({
 	const renderOptions: PedagogicalRenderOptions = { schoolLevel, verbosity };
 	// La dernière ligne est la dérivée RANGÉE : sans cette étape, la correction
 	// finissait sur `e^{3x} 3` ou `\cos x + (-\sin x)` (2026-10-06)
-	return withTidyStep(renderer.renderAll(result.steps, renderOptions), result.derivative).steps;
+	return withTidyStep(renderer.renderAll(result.steps, renderOptions), result.derivative, node)
+		.steps;
 }
 
 interface IntegrateDispatch {

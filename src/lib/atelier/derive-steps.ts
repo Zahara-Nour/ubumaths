@@ -115,7 +115,8 @@ export function deriveSteps(
 		// corrections de questions (`pedagogical-differentiation/tidy-step.ts`).
 		const { steps: allSteps, derivativeLatex: derivative } = withTidyStep(
 			steps,
-			indexed.restore(result.derivative)
+			indexed.restore(result.derivative),
+			indexed.restore(node)
 		);
 		if (derivative.trim() === '') return null;
 
@@ -125,7 +126,8 @@ export function deriveSteps(
 			allSteps,
 			withTidyStep(
 				renderer.renderAll(restored, { schoolLevel: 'lycee', verbosity: 'summarized' }),
-				indexed.restore(result.derivative)
+				indexed.restore(result.derivative),
+				indexed.restore(node)
 			).steps
 		);
 

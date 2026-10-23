@@ -1055,7 +1055,7 @@ function cleanDerivative(u: MathNode, variable: string): MathNode | null {
 		return value === null ? null : rationalToNode(value);
 	}
 	try {
-		return tidyTerms(du);
+		return tidyTerms(du, { domain: [u] });
 	} catch {
 		return du;
 	}
