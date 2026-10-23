@@ -6,19 +6,19 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR des lots A + B ouverte (branche `feat/passe-lycee-modifier`)._
+_Mis à jour le 2026-10-23, après #1639 (lots A + B, `db:migrate` fait)._
 
-- **État** : lots A + B écrits (`analyse/lot-modifier-ab.py` → migration `20261024001000_passe_lycee_lot_ab`) :
-  6 modèles modifiés et tagués, 3 neufs (B1-B3) ; tests d'intégration verts, rouges sans la migration.
-- **Prochaine action** : PR #1639 ouverte ; revues `code-reviewer` + `security-auditor` (Opus) lancées le 2026-10-23
-  (à relancer si la session a été vidée avant leur retour), CI, merge, `db:migrate` (4 conditions), vérification MCP ; puis lot C (10 modèles + C4),
-  puis scissions (47 → 62 neufs + `95ee8348`, reporté du lot A), E3, H.
-- **En attente de David** : rien (question d'accès des lots A + B : personne).
-- **Pièges en cours** : `95ee8348` traité avec les scissions (une seule migration sur son contenu) ; neufs sur une
-  sous-notion voisine → nœud du point (outil étendu) ; niveau neuf libre dans la catégorie, brouillons compris ;
-  `question:specs --file` ne lit pas les lignes de base (adaptateur dans le scratchpad, à recréer) ; S8, X1-X3 :
-  voir phase 0. Instantané : `analyse/etat-prod-2026-10-23b/`, contenu dans `releves/templates.json`.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee-modifier` · `feat/passe-lycee-modifier`.
+- **État** : lots A + B en prod (6 modèles modifiés et tagués, 3 neufs) ; restent lot C, scissions, E3, H.
+- **Prochaine action** : worktree neuf, lot C (10 modèles + C4 `646b4cd3`, simple tag) sur le modèle de
+  `analyse/lot-modifier-ab.py` (outil `arbre-notions/analyse/lot_2bis_outils.py`, `etat=`, `liste=`, neufs à nœud propre),
+  puis scissions (47 → 62 neufs + `95ee8348`, reporté du lot A), E3, H. Question d'accès à reposer pour chaque PR.
+- **En attente de David** : rien.
+- **Pièges en cours** : relevé du contenu = `releves/templates.json` (vérifier ses empreintes md5 en prod avant chaque lot ;
+  les modèles des lots A + B ont changé) ; neufs : niveau libre dans la catégorie, brouillons compris ;
+  `question:specs --file` ne lit pas les lignes de base (adaptateur `toQuestionTemplate` à recréer, sans
+  created_at/updated_at/created_by) ; un script ne réécrit une migration existante qu'avec `REECRIRE_MIGRATION=1` ;
+  `test:integration --reporter=verbose` pour voir les tests sautés. S8, X1-X3 : voir phase 0.
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -206,3 +206,12 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   la catégorie de l'origine (seule au niveau 2). Specs 64/64, tirages 2 600/2 600, audit du rendu sans défaut ;
   migration jouée hors transaction en local (sans effet, base vide), 19 tests verts, rouges sans la migration ; les
   4 suites du collège restent vertes.
+- **2026-10-23 — #1639 mergée, `db:migrate` fait.** Revues Opus : `code-reviewer` sans bloquant (migration régénérée à
+  l'identique, contenus conformes, suites du collège vertes) ; `security-auditor` sans bloquant (personne ne gagne
+  d'accès, toutes les tables d'élèves comptées par le rollback). Corrigé : rollback des neufs refusé s'ils ont été
+  publiés, rangés ailleurs ou retagués ; consigne « une transaction » explicite (pas de `begin`/`commit` dans le bloc :
+  `migration-rollback.ts` l'interdit) ; nœud propre d'un neuf exigé actif et égal à celui de son point ; un script ne
+  réécrit plus en silence une migration existante (l'outil étendu ne régénère plus les fichiers du collège à
+  l'identique). Laissé : pas de contrôle de concurrence dans l'éditeur (antérieur), tags lisibles des brouillons (déjà
+  accepté en #1632). 22 tests, CI verte. Seule migration en attente ; vérifiée par le MCP : 9 empreintes de contenu =
+  fixture, tags, nœuds, statuts (neufs en brouillon) et niveaux attendus.
