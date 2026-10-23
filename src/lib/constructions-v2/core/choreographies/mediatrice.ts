@@ -24,10 +24,9 @@
 
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
 import { droite, en, labelAux, nom, role, shownName } from './names';
-import { hasVisibleSegment, measureSegment } from './milieu';
+import { hasVisibleSegment, measureSegment, rulerStartsAtA } from './milieu';
 import type { Figure } from '$lib/geometry-core/graph/figure';
-import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { isPointElement } from '$lib/geometry-core/types/elements';
+import { isMidpoint } from '$lib/geometry-core/types/elements';
 
 /**
  * Length of the segment-trace (math units). Matches the default `Ruler`
@@ -49,9 +48,6 @@ const EQUERRE_EDGE_MATH_UNITS = 5;
 
 /** Recouvrement de la règle sur la portion tracée à l'équerre (idem). */
 const RULER_OVERLAP_MATH_UNITS = 2;
-
-/** Tolérance des comparaisons de position (unités math). */
-const EPS = 1e-9;
 
 /**
  * Build the `arcs_egaux` choreography for a given radius factor.
@@ -527,25 +523,22 @@ export const VOIES_MEDIATRICE_EUCLIDE: readonly Voie[] = [
 ];
 
 /**
- * Point nommé, visible, déjà au milieu exact de [AB] (ex. `I = milieu(A, B)`
+ * Point nommé et visible construit comme milieu de [AB] (ex. `I = milieu(A, B)`
  * plus haut dans le script) : la voie `@mesure` part de lui, sans remesurer.
+ * Un point qui n'est au milieu que par hasard (pied d'une hauteur, point
+ * libre) ne compte pas : il ne suivrait pas A et B quand on les déplace.
  */
-function existingMidpoint(
-	figure: Figure,
-	Aid: string,
-	Bid: string,
-	mid: { x: number; y: number }
-): string | null {
-	for (const el of figure.getAllElements()) {
-		if (!isPointElement(el) || el.id === Aid || el.id === Bid) continue;
-		if (!shownName(figure, el.id)) continue;
-		const pos = figure.getPosition(el.id);
-		if (!pos) continue;
-		const dx = geoToNumber(pos.x) - mid.x;
-		const dy = geoToNumber(pos.y) - mid.y;
-		if (Math.hypot(dx, dy) < EPS) return el.id;
-	}
-	return null;
+function existingMidpoint(figure: Figure, Aid: string, Bid: string): string | null {
+	const found = figure
+		.getAllElements()
+		.find(
+			(el) =>
+				isMidpoint(el) &&
+				((el.point1Id === Aid && el.point2Id === Bid) ||
+					(el.point1Id === Bid && el.point2Id === Aid)) &&
+				shownName(figure, el.id) !== null
+		);
+	return found?.id ?? null;
 }
 
 /**
@@ -577,12 +570,12 @@ function buildRegleEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResu
 
 	// ─── Milieu : déjà construit, ou mesuré puis marqué ───
 	const mid0 = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
-	const existing = existingMidpoint(figure, Aid, Bid, mid0);
+	const existing = existingMidpoint(figure, Aid, Bid);
 	const measureSteps: SubStep[] = [];
 	let I: string;
 	let nI: string;
 	// Sens de [AB] lu par la règle : de l'extrémité de gauche vers l'autre.
-	let startsAtA = Math.abs(A.x - B.x) > EPS ? A.x < B.x : A.y < B.y;
+	let startsAtA = rulerStartsAtA(A, B);
 	if (existing) {
 		I = existing;
 		nI = shownName(figure, existing) ?? 'le milieu';

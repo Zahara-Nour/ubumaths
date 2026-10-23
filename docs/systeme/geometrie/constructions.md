@@ -225,8 +225,7 @@ erreurs), puis « On marque le milieu I à 3,2 cm de A » (point auxiliaire `lab
 l'équerre, on trace la perpendiculaire à (AB) en I », « On retire l'équerre et on pose la règle le
 long de la portion tracée », « On prolonge le tracé le long de la règle : c’est la médiatrice de
 [AB] ». L'équerre est au-dessus de [AB] : à gauche du sens qui va de l'extrémité où se pose le 0 vers
-l'autre ; le prolongement part de l'autre côté. **Milieu déjà construit** (point visible et nommé au
-milieu exact, `existingMidpoint`) : pas de mesure, on part de l'équerre sur ce point, sous son nom
+l'autre ; le prolongement part de l'autre côté. **Milieu déjà construit** (point visible et nommé construit comme milieu de A et B, `existingMidpoint` ; un point au milieu par hasard ne compte pas) : pas de mesure, on part de l'équerre sur ce point, sous son nom
 (ni erreur de longueur, ni charnière). Codage AI = IB (`segmentMark`) et angle droit en I (`angle`
 `carre`), étiquetés `marker`, seulement si un segment visible joint A et B (`hasVisibleSegment`).
 

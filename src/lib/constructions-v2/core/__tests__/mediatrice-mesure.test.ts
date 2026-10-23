@@ -9,6 +9,7 @@ import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { isSegment } from '$lib/geometry-core/types/elements';
+import { numeric } from '$lib/geometry-core/types/geo-value';
 
 /** Charge le script et rend les sous-étapes chorégraphiées, dans l'ordre. */
 function subSteps(lines: string[]): { exec: ConstructionExecutor; steps: SubStep[] } {
@@ -28,9 +29,14 @@ function position(exec: ConstructionExecutor, id: string | undefined): { x: numb
 	return { x: pos ? geoToNumber(pos.x) : NaN, y: pos ? geoToNumber(pos.y) : NaN };
 }
 
-/** Extrémités du segment tracé par la sous-étape `step` (figure exécutée). */
+/** Extrémités du segment tracé par la sous-étape `step`, figure exécutée. */
 function tracedEnds(exec: ConstructionExecutor, step: SubStep) {
 	exec.executeAll();
+	return segmentEnds(exec, step);
+}
+
+/** Extrémités du segment tracé par `step`, sur la figure telle qu'elle est. */
+function segmentEnds(exec: ConstructionExecutor, step: SubStep) {
 	const el = exec.figure.getElementById(step.animateDrawableIds[0]);
 	if (!el || !isSegment(el)) throw new Error('pas de segment tracé');
 	return { start: position(exec, el.startId), end: position(exec, el.endId) };
@@ -225,6 +231,16 @@ describe('mediatrice @mesure — milieu déjà construit', () => {
 		expect(labels).not.toContain('I');
 	});
 
+	it('point au milieu par hasard (non construit comme milieu) : on mesure', () => {
+		const lines = [
+			'O = point(3.2, 0)',
+			'A = point(0, 0)',
+			'B = point(6.4, 0)',
+			'd = mediatrice(A, B) @mesure'
+		];
+		expect(instructions(lines)[0]).toBe('On place le 0 de la règle sur A et on lit AB = 6,4 cm');
+	});
+
 	it('milieu masqué : on le mesure à nouveau', () => {
 		const masked = [
 			'A = point(0, 0)',
@@ -296,6 +312,45 @@ describe('mediatrice @mesure — visibilité finale', () => {
 		]);
 		expect(ids('marker')).toHaveLength(0);
 	});
+});
+
+describe('mediatrice @mesure — déplacement de B après la construction', () => {
+	function moved(lines: string[]) {
+		const { exec, steps } = subSteps(lines);
+		exec.executeAll();
+		const Bid = exec.symbols.get('B')?.figureId ?? '';
+		exec.figure.movePoint(Bid, numeric(5), numeric(4));
+		exec.figure.recompute();
+		const A = position(exec, exec.symbols.get('A')?.figureId);
+		const B = position(exec, Bid);
+		const up = segmentEnds(exec, steps[steps.length - 3]);
+		const down = segmentEnds(exec, steps[steps.length - 1]);
+		return { A, B, up, down };
+	}
+	const dist = (p: { x: number; y: number }, q: { x: number; y: number }) =>
+		Math.hypot(p.x - q.x, p.y - q.y);
+
+	for (const [label, lines] of [
+		['milieu mesuré', ['A = point(0, 0)', 'B = point(6.4, 0)', 'd = mediatrice(A, B) @mesure']],
+		[
+			'milieu déjà construit',
+			['A = point(0, 0)', 'B = point(6.4, 0)', 'M = milieu(A, B)', 'd = mediatrice(A, B) @mesure']
+		]
+	] as const) {
+		it(`${label} : les deux portions restent sur la médiatrice, l’équerre au-dessus`, () => {
+			const { A, B, up, down } = moved([...lines]);
+			for (const p of [up.start, up.end, down.end]) {
+				expect(dist(p, A)).toBeCloseTo(dist(p, B));
+			}
+			// Portion à l'équerre perpendiculaire à [AB], à gauche du sens A → B.
+			const ux = B.x - A.x;
+			const uy = B.y - A.y;
+			const vx = up.end.x - up.start.x;
+			const vy = up.end.y - up.start.y;
+			expect(ux * vx + uy * vy).toBeCloseTo(0);
+			expect(ux * vy - uy * vx).toBeGreaterThan(0);
+		});
+	}
 });
 
 describe('mediatrice @mesure — erreurs', () => {

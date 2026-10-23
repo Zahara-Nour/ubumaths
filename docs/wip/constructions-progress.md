@@ -226,3 +226,9 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - **Choix tranchés** : équerre **au-dessus** de [AB] (à gauche du sens extrémité de gauche → droite), prolongement en dessous ; **milieu déjà présent** (point visible au milieu exact, ex. `I = milieu(A, B)`) → pas de mesure, on part de l'équerre sur ce point, sous son nom.
 - **Visibilité** : I charnière (`@squelette`, `@complet`) ; codage AI = IB + angle droit en I en `marker`, seulement si [AB] est tracé ; deux portions tracées en `segment-trace`.
 - **Erreurs** : A = B → message du builtin ; lecture 0 et AB > 15 cm → messages de `milieu @mesure`. `mediatrice(s)` hors PR (le builtin ne l'accepte pas).
+
+### PR 3 — réalisé (2026-10-23)
+
+- `buildRegleEquerre` + `VOIES_MEDIATRICE_MESURE` (`mediatrice.ts`), ligne du registre ; mesure extraite de `milieu.ts` (`measureSegment`, `rulerStartsAtA`, `hasVisibleSegment` exportés).
+- Revue `code-reviewer` Opus : aucun bloquant. **Importants corrigés** : un milieu existant n'est repris que s'il est **construit comme milieu de A et B** (`isMidpoint`) — un point au milieu par hasard (pied d'une hauteur d'isocèle, point libre) ne suivrait pas A et B (1 test rouge sans le correctif) ; tests de déplacement de B après coup (portions sur la médiatrice, équerre au-dessus ; passaient déjà). Mineur corrigé : règle « 0 à gauche » partagée (`rulerStartsAtA`). Accepté : A = B refusé par le builtin avant la chorégraphie.
+- Tests : `mediatrice-mesure.test.ts` 30 ; `test:server constructions-v2` 463 ✓.

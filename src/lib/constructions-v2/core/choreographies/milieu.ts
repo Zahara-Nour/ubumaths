@@ -60,6 +60,14 @@ export function hasVisibleSegment(figure: Figure, Aid: string, Bid: string): boo
 		);
 }
 
+/**
+ * Le 0 de la règle se pose-t-il sur A ? Sur l'extrémité la plus à gauche, la
+ * plus basse si [AB] est vertical : les chiffres se lisent à l'endroit.
+ */
+export function rulerStartsAtA(A: { x: number; y: number }, B: { x: number; y: number }): boolean {
+	return Math.abs(A.x - B.x) > EPS ? A.x < B.x : A.y < B.y;
+}
+
 /** Mesure de [AB] à la règle graduée : les deux premiers gestes du milieu. */
 export interface MesureSegment {
 	/** Pose de la règle (lecture), puis crayon à la graduation de la moitié. */
@@ -104,9 +112,7 @@ export function measureSegment(
 	}
 	const half = read / 2;
 
-	// Origine de la règle : l'extrémité la plus à gauche, la plus basse si
-	// le segment est vertical.
-	const startsAtA = Math.abs(A.x - B.x) > EPS ? A.x < B.x : A.y < B.y;
+	const startsAtA = rulerStartsAtA(A, B);
 	const [O, T] = startsAtA ? [A, B] : [B, A];
 	const nameO = startsAtA ? nameA : nameB;
 	const rotation = (Math.atan2(T.y - O.y, T.x - O.x) * 180) / Math.PI;
