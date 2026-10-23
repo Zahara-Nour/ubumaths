@@ -1,0 +1,3076 @@
+<title>Lot MODIFIER lycée</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	rel="stylesheet"
+	href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
+/>
+<style>
+	/* Mise en page : une colonne de lecture, sections numérotées dans l'ordre de relecture,
+   chaque groupe est un registre qu'on valide en bloc ou ligne à ligne. */
+	:root {
+		--bg: #f6f7f5;
+		--surface: #ffffff;
+		--ink: #1d2421;
+		--muted: #5c6863;
+		--line: #d9dfdb;
+		--accent: #1f6b52;
+		--accent-soft: #e2f0ea;
+		--ok: #1f7a46;
+		--ok-soft: #e3f3e9;
+		--no: #b03a2e;
+		--no-soft: #f8e4e1;
+		--wait: #8a6d1a;
+		--wait-soft: #f6efd9;
+		--code-bg: #eef1ef;
+		--font-display: 'Fraunces', Georgia, 'Times New Roman', serif;
+		--font-body: 'IBM Plex Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+		--font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root:not([data-theme='light']) {
+			--bg: #121715;
+			--surface: #1a201d;
+			--ink: #e4ebe7;
+			--muted: #9aa8a1;
+			--line: #2e3833;
+			--accent: #6cc6a2;
+			--accent-soft: #1d3329;
+			--ok: #6fcf97;
+			--ok-soft: #1c3326;
+			--no: #f08a7e;
+			--no-soft: #3a211e;
+			--wait: #e2c26a;
+			--wait-soft: #332b17;
+			--code-bg: #222a26;
+			color-scheme: dark;
+		}
+	}
+	:root[data-theme='dark'] {
+		--bg: #121715;
+		--surface: #1a201d;
+		--ink: #e4ebe7;
+		--muted: #9aa8a1;
+		--line: #2e3833;
+		--accent: #6cc6a2;
+		--accent-soft: #1d3329;
+		--ok: #6fcf97;
+		--ok-soft: #1c3326;
+		--no: #f08a7e;
+		--no-soft: #3a211e;
+		--wait: #e2c26a;
+		--wait-soft: #332b17;
+		--code-bg: #222a26;
+		color-scheme: dark;
+	}
+	* {
+		box-sizing: border-box;
+	}
+	body {
+		background: var(--bg);
+		color: var(--ink);
+		font-family: var(--font-body);
+		font-size: 15px;
+		line-height: 1.5;
+	}
+	.wrap {
+		max-width: 980px;
+		margin: 0 auto;
+		padding-inline: 16px;
+		padding-block: 24px 80px;
+	}
+	h1 {
+		font-family: var(--font-display);
+		font-weight: 650;
+		font-size: clamp(1.6rem, 4vw, 2.2rem);
+		line-height: 1.15;
+		margin: 0 0 8px;
+		text-wrap: balance;
+	}
+	h2 {
+		font-family: var(--font-display);
+		font-weight: 650;
+		font-size: 1.35rem;
+		margin: 0;
+		text-wrap: balance;
+	}
+	.lede {
+		color: var(--muted);
+		max-width: 68ch;
+		margin: 0;
+	}
+	.status {
+		position: sticky;
+		top: env(safe-area-inset-top, 0px);
+		z-index: 5;
+		background: var(--bg);
+		border-bottom: 1px solid var(--line);
+		padding-block: 10px;
+		margin-block: 16px 24px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px 16px;
+		align-items: center;
+	}
+	.bar {
+		flex: 1 1 220px;
+		height: 8px;
+		background: var(--line);
+		border-radius: 4px;
+		overflow: hidden;
+		min-width: 0;
+	}
+	.bar > i {
+		display: block;
+		height: 100%;
+		background: var(--accent);
+		width: 0;
+		transition: width 0.3s;
+	}
+	.count {
+		font-variant-numeric: tabular-nums;
+		font-weight: 600;
+	}
+	.conn {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.conn.bad {
+		color: var(--no);
+		font-weight: 600;
+	}
+	nav.toc {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		margin-bottom: 28px;
+	}
+	nav.toc a {
+		text-decoration: none;
+		color: var(--ink);
+		border: 1px solid var(--line);
+		background: var(--surface);
+		padding: 6px 12px;
+		border-radius: 999px;
+		font-size: 14px;
+	}
+	nav.toc a span {
+		font-variant-numeric: tabular-nums;
+		color: var(--muted);
+		margin-left: 4px;
+	}
+	section.part {
+		margin-top: 40px;
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+	}
+	.part-head {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.part-head .num {
+		font-family: var(--font-mono);
+		font-size: 12px;
+		letter-spacing: 0.08em;
+		text-transform: uppercase;
+		color: var(--accent);
+	}
+	.part-head p {
+		margin: 0;
+		color: var(--muted);
+		max-width: 70ch;
+	}
+	details.group {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+	}
+	details.group > summary {
+		list-style: none;
+		cursor: pointer;
+		padding: 12px 14px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px 12px;
+		align-items: center;
+	}
+	details.group > summary::-webkit-details-marker {
+		display: none;
+	}
+	details.group > summary:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	.g-title {
+		font-weight: 600;
+		flex: 1 1 260px;
+		min-width: 0;
+	}
+	.g-title small {
+		display: block;
+		font-weight: 400;
+		color: var(--muted);
+	}
+	.chev {
+		font-family: var(--font-mono);
+		color: var(--muted);
+		width: 1em;
+	}
+	details[open] > summary .chev {
+		transform: rotate(90deg);
+	}
+	.pill {
+		font-size: 12px;
+		font-weight: 600;
+		padding: 2px 8px;
+		border-radius: 999px;
+		white-space: nowrap;
+		font-variant-numeric: tabular-nums;
+	}
+	.pill.ok {
+		background: var(--ok-soft);
+		color: var(--ok);
+	}
+	.pill.no {
+		background: var(--no-soft);
+		color: var(--no);
+	}
+	.pill.wait {
+		background: var(--wait-soft);
+		color: var(--wait);
+	}
+	.g-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		padding: 0 14px 12px;
+	}
+	button {
+		font: inherit;
+		font-size: 14px;
+		cursor: pointer;
+		border-radius: 6px;
+		border: 1px solid var(--line);
+		background: var(--surface);
+		color: var(--ink);
+		padding: 6px 12px;
+	}
+	button:focus-visible {
+		outline: 2px solid var(--accent);
+		outline-offset: 2px;
+	}
+	button.primary {
+		background: var(--accent);
+		border-color: var(--accent);
+		color: var(--surface);
+		font-weight: 600;
+	}
+	button.on-ok {
+		background: var(--ok-soft);
+		border-color: var(--ok);
+		color: var(--ok);
+		font-weight: 600;
+	}
+	button.on-no {
+		background: var(--no-soft);
+		border-color: var(--no);
+		color: var(--no);
+		font-weight: 600;
+	}
+	button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+	.rows {
+		border-top: 1px solid var(--line);
+	}
+	.row {
+		padding: 12px 14px;
+		border-bottom: 1px solid var(--line);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 8px 16px;
+	}
+	.row:last-child {
+		border-bottom: 0;
+	}
+	.row.is-ok {
+		background: linear-gradient(90deg, var(--ok-soft), transparent 40%);
+	}
+	.row.is-no {
+		background: linear-gradient(90deg, var(--no-soft), transparent 40%);
+	}
+	.row.is-avis {
+		background: linear-gradient(90deg, var(--wait-soft), transparent 40%);
+	}
+	button.on-avis {
+		background: var(--wait-soft);
+		border-color: var(--wait);
+		color: var(--wait);
+		font-weight: 600;
+	}
+	.note textarea:not(:focus) {
+		border-color: var(--line);
+	}
+	.r-main {
+		min-width: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.r-title {
+		font-weight: 600;
+	}
+	.r-title .id {
+		font-family: var(--font-mono);
+		font-weight: 400;
+		font-size: 12px;
+		color: var(--muted);
+		margin-left: 6px;
+	}
+	.cards {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+		gap: 8px;
+	}
+	.card {
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		background: var(--surface);
+		padding: 8px 10px;
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		min-width: 0;
+	}
+	.card-h {
+		font-family: var(--font-mono);
+		font-size: 11px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+	}
+	.card-q,
+	.card-r,
+	.card-c {
+		overflow-x: auto;
+		font-size: 15px;
+	}
+	.card-q p,
+	.card-r p,
+	.card-c p {
+		margin: 0 0 4px;
+	}
+	.card-q ul,
+	.card-r ul {
+		margin: 0;
+		padding-left: 18px;
+	}
+	.card-a summary {
+		cursor: pointer;
+		font-size: 13px;
+		color: var(--accent);
+	}
+	.card-r {
+		padding-top: 4px;
+	}
+	.card-c {
+		font-size: 13px;
+		color: var(--muted);
+		border-top: 1px dashed var(--line);
+		padding-top: 4px;
+		margin-top: 4px;
+	}
+	math {
+		font-size: 1.05em;
+	}
+	.enonce {
+		font-family: var(--font-mono);
+		font-size: 13px;
+		background: var(--code-bg);
+		padding: 4px 8px;
+		border-radius: 4px;
+		overflow-x: auto;
+		white-space: pre-wrap;
+		word-break: break-word;
+	}
+	.point {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 4px 8px;
+		align-items: baseline;
+	}
+	.code {
+		font-family: var(--font-mono);
+		font-weight: 500;
+		color: var(--accent);
+		background: var(--accent-soft);
+		padding: 1px 6px;
+		border-radius: 4px;
+	}
+	.move {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.move b {
+		color: var(--ink);
+		font-weight: 600;
+	}
+	.why {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.multi {
+		font-size: 13px;
+		color: var(--wait);
+	}
+	.r-act {
+		display: flex;
+		gap: 6px;
+		align-items: flex-start;
+	}
+	.note {
+		grid-column: 1 / -1;
+	}
+	.note textarea {
+		width: 100%;
+		font: inherit;
+		font-size: 14px;
+		border: 1px solid var(--no);
+		border-radius: 6px;
+		padding: 6px 8px;
+		background: var(--surface);
+		color: var(--ink);
+		min-height: 2.4em;
+		resize: vertical;
+	}
+	.sub {
+		font-size: 12px;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		color: var(--muted);
+		padding: 10px 14px 0;
+		font-weight: 600;
+	}
+	.empty {
+		color: var(--muted);
+		font-style: italic;
+	}
+	.choice {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 6px;
+	}
+	@media (max-width: 560px) {
+		.row {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+	@media (prefers-reduced-motion: reduce) {
+		.bar > i {
+			transition: none;
+		}
+	}
+</style>
+<style>
+	.vd {
+		font-size: 12px;
+		font-weight: 600;
+		padding: 2px 8px;
+		border-radius: 999px;
+		white-space: nowrap;
+	}
+	.vd.TAG {
+		background: var(--ok-soft);
+		color: var(--ok);
+	}
+	.vd.MODIFIER,
+	.vd.TAG_PAR_VARIATION {
+		background: var(--wait-soft);
+		color: var(--wait);
+	}
+	.vd.HORS_PROGRAMME {
+		background: var(--code-bg);
+		color: var(--muted);
+	}
+	.vd.A_TRANCHER {
+		background: var(--no-soft);
+		color: var(--no);
+	}
+	.mod {
+		font-size: 14px;
+		background: var(--wait-soft);
+		border-radius: 6px;
+		padding: 6px 10px;
+	}
+	.mod b {
+		color: var(--wait);
+	}
+	.just {
+		font-size: 14px;
+	}
+	.anc {
+		font-size: 12px;
+		color: var(--muted);
+	}
+	.var {
+		border-top: 1px dashed var(--line);
+		padding-top: 6px;
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.var-h {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.var-h b {
+		color: var(--ink);
+		font-family: var(--font-mono);
+		font-weight: 500;
+	}
+	.bp {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.bp summary {
+		cursor: pointer;
+		color: var(--accent);
+	}
+	.bp ul {
+		margin: 4px 0 0;
+		padding-left: 18px;
+	}
+	.f {
+		font-size: 11px;
+		font-weight: 600;
+		padding: 1px 6px;
+		border-radius: 999px;
+		background: var(--accent-soft);
+		color: var(--accent);
+	}
+	.q {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		padding: 14px;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+	.q h3 {
+		margin: 0;
+		font-size: 1rem;
+	}
+	.q p {
+		margin: 0;
+		max-width: 78ch;
+	}
+	.q .src {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.q.is-ok {
+		border-color: var(--ok);
+	}
+	.q.is-no {
+		border-color: var(--no);
+	}
+	.q.is-avis {
+		border-color: var(--wait);
+	}
+	.reco {
+		font-size: 14px;
+		background: var(--accent-soft);
+		border-radius: 6px;
+		padding: 8px 12px;
+		max-width: 78ch;
+	}
+	.reco b {
+		color: var(--accent);
+	}
+	.is-reco {
+		box-shadow: inset 0 -2px 0 var(--accent);
+	}
+	textarea.c {
+		width: 100%;
+		font: inherit;
+		font-size: 13px;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 4px 8px;
+		background: var(--surface);
+		color: var(--ink);
+		min-height: 1.9em;
+		resize: vertical;
+	}
+	.qlink {
+		font-size: 13px;
+		color: var(--no);
+	}
+	.qlink a {
+		color: var(--no);
+	}
+	.rq {
+		max-width: 78ch;
+	}
+	.r-act {
+		flex-direction: column;
+	}
+	.qn {
+		font-size: 12px;
+		color: var(--muted);
+		font-family: var(--font-mono);
+	}
+	.qex {
+		font-size: 1.05rem;
+		font-weight: 600;
+	}
+	.qq {
+		font-size: 15px;
+	}
+	.qreco {
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.qreco b {
+		color: var(--accent);
+		font-weight: 600;
+	}
+	.dossier {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		margin-top: 8px;
+		color: var(--ink);
+		max-width: 78ch;
+	}
+</style>
+<style>
+	.box {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.box .sub:first-child {
+		padding-top: 12px;
+	}
+	.grp {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-top: 4px;
+	}
+	.g {
+		display: grid;
+		grid-template-columns: 5.5em minmax(0, 1fr);
+		gap: 2px 10px;
+		font-size: 14px;
+		border-left: 3px solid var(--line);
+		padding-left: 8px;
+	}
+	.g.ORIGINE {
+		border-left-color: var(--accent);
+	}
+	.g.NEUF {
+		border-left-color: var(--wait);
+	}
+	.g .role {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.g .vars {
+		font-family: var(--font-mono);
+		font-size: 13px;
+	}
+	.g .tp {
+		grid-column: 2;
+		font-weight: 500;
+	}
+	.g .pts {
+		grid-column: 2;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.g .rq {
+		grid-column: 2;
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.lotlab {
+		font-size: 12px;
+		font-weight: 600;
+		padding: 2px 8px;
+		border-radius: 999px;
+		background: var(--wait-soft);
+		color: var(--wait);
+	}
+	.banner {
+		display: none;
+		background: var(--no-soft);
+		color: var(--no);
+		border: 1px solid var(--no);
+		border-radius: 6px;
+		padding: 8px 12px;
+		font-weight: 600;
+	}
+	.banner.on {
+		display: block;
+	}
+	.done {
+		display: none;
+		background: var(--ok-soft);
+		color: var(--ok);
+		border-radius: 6px;
+		padding: 8px 12px;
+		font-weight: 600;
+	}
+	.done.on {
+		display: block;
+	}
+	.ctx {
+		font-size: 14px;
+		max-width: 78ch;
+		margin: 0;
+	}
+	.bulk {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		font-size: 13px;
+		color: var(--muted);
+	}
+</style>
+<div class="wrap">
+	<header>
+		<h1>Lot MODIFIER et scissions du lycée</h1>
+		<p class="lede">
+			Phase 0 du lot : rien n'est encore modifié en base. Tranche d'abord les questions (la reco est
+			soulignée), puis valide les modifications et les scissions, ligne par ligne ou en bloc. Chaque
+			réponse est enregistrée aussitôt ; « À revoir » ouvre une case pour dire quoi changer.
+		</p>
+	</header>
+	<div class="status" role="status">
+		<span class="count" id="count">…</span>
+		<div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+		<span class="conn" id="conn">Connexion à l'enregistrement…</span>
+	</div>
+	<p class="banner" id="banner"></p>
+	<p class="done" id="done">Tout est tranché et enregistré. Tu peux le dire à Claude.</p>
+	<nav class="toc" id="toc"></nav>
+	<main id="main"></main>
+</div>
+<script>
+	const D = {
+		q: [
+			{
+				id: 'B1',
+				t: '`a69dfde7` Python : générer les paires, les triplets — V5',
+				x: "V5 calcule une ligne du triangle de Pascal par la relation de Pascal : ce n'est pas TSPE-325 (énumérer des parties à 2 ou 3 éléments).",
+				o: [
+					['a', 'Modèle neuf tagué TSPE-323'],
+					['b', 'Retirer V5']
+				],
+				reco: 'a',
+				w: 'Comme les scissions : rien n’est perdu.'
+			},
+			{
+				id: 'B2',
+				t: '`f2133048` Ensembles de points, images de z̄ et iz — V4',
+				x: 'V4 (image de z̄ = symétrie d’axe réel) relève de TEXP-357, pas de TEXP-264.',
+				o: [
+					['a', 'Modèle neuf tagué TEXP-357'],
+					['b', 'Retirer V4']
+				],
+				reco: 'a',
+				w: 'Comme les scissions : rien n’est perdu.'
+			},
+			{
+				id: 'B3',
+				t: '`6be786ef` Chaîne, cycle, connexité — V4',
+				x: 'V4 (connexité) relève de TEXP-316.',
+				o: [
+					['a', 'Modèle neuf tagué TEXP-316'],
+					['b', 'La garder sur TEXP-315 (connexité définie par les chaînes)']
+				],
+				reco: 'a',
+				w: 'Un point par tâche, comme les scissions.'
+			},
+			{
+				id: 'C1',
+				t: '`227f2c9c` Dériver une exponentielle de fonction affine',
+				x: 'Le corrigé énonce (e^u)′ = u′e^u, absent de 1SPE-295.',
+				o: [
+					['a', 'Corrigé par e^(ax+b) = e^b·e^(ax), sans la règle (e^u)′'],
+					['b', 'Retirer b : e^(ax) seulement']
+				],
+				reco: 'a',
+				w: 'Le modèle garde toutes ses questions.'
+			},
+			{
+				id: 'C2',
+				t: '`8d69e3a9` Matrice d’une rotation, d’une symétrie, d’une homothétie — V3',
+				x: 'L’homothétie n’est pas définie dans l’énoncé, alors que V1 définit la rotation.',
+				o: [
+					['a', 'Définir l’homothétie dans l’énoncé, comme V1'],
+					['b', 'Retirer V3']
+				],
+				reco: 'a',
+				w: 'Même traitement que V1, rien n’est perdu.'
+			},
+			{
+				id: 'C3',
+				t: '`cd4f9fb3` Inverse d’une matrice carrée d’ordre 2 — V1, V2, V4',
+				x: 'La formule de l’inverse n’est pas au programme : V3 la donne déjà dans l’énoncé.',
+				o: [
+					['a', 'Donner la formule dans l’énoncé, comme V3'],
+					['b', 'Demander de vérifier AB = I']
+				],
+				reco: 'a',
+				w: 'Aligne les variations sur V3.'
+			},
+			{
+				id: 'C4',
+				t: '`646b4cd3` Équation d’une sphère, centre et rayon — V4',
+				x: 'V4 lit le centre et le rayon sur x² + y² + z² + px + qy + rz + d = 0 (complétion des carrés).',
+				o: [
+					['a', 'L’accepter (lecture inverse du même savoir) : simple tag TSPE-376'],
+					['b', 'Retirer V4']
+				],
+				reco: 'a',
+				w: 'La complétion du carré est une technique de 1re ; V1-V3 sont exactement TSPE-376.'
+			},
+			{
+				id: 'H',
+				t: '10 modèles de 1re spé hors programme à leur niveau',
+				x: 'Ta décision « pas de tag pour un autre programme » partait de ma reco, qui supposait qu’un modèle s’appauvrirait à son niveau. Ces 10 modèles sont HORS_PROGRAMME en 1re spé : rien à appauvrir, et sans traitement ils restent sans aucun tag. Tle spé : 463f483e, fccd570b (MODIFIER TSPE-458), 99c772c0 (MODIFIER TSPE-457), 7eec7032 (TSPE-597 / 598). 2de : 68db64b0, 9724dc3d, 0a1ff14f, 219c9470, 6c3ee9e6, 5426cead (plusieurs points chacun).',
+				o: [
+					['a', 'Les traiter dans leur vrai programme (modifier, scinder)'],
+					['b', 'Pas de tag, liste gardée']
+				],
+				reco: 'a',
+				w: 'Leur niveau (grades) reste une question à part, comme les 3 changements de niveau du collège.'
+			},
+			{
+				id: 'E3',
+				t: 'Famille E3 : arithmétique ou géométrique ? (61e2ac1f, d2943133, f63408c5, d2067413, c90fa022)',
+				x: 'Chaque question (arithmétique / géométrique / ni l’un ni l’autre) mobilise les deux définitions : aucune répartition par variation possible.',
+				o: [
+					[
+						'a',
+						'Dédoubler et réécrire : deux modèles à question binaire, toutes les variations (5 neufs)'
+					],
+					['b', 'Répartir par réponse attendue, QCM à 3 choix gardé'],
+					['c', 'Sans tag de 1re spé']
+				],
+				reco: 'a',
+				w: 'C’est ta décision m-1spe-a-3 ; énoncés et choix à réécrire, comme un MODIFIER. B contredit l’inclusion stricte.'
+			},
+			{
+				id: 'S6',
+				t: '`0dee4515` Somme et produit des racines',
+				x: 'Chaque variation demande la somme ET le produit.',
+				o: [
+					['a', 'Scission par case : origine = somme (1SPE-245), neuf = produit (1SPE-383)'],
+					['b', 'Garder 1SPE-245 tel quel'],
+					['c', 'Sans tag']
+				],
+				reco: 'a',
+				w: 'Ta décision m-1spe-a-6.'
+			},
+			{
+				id: 'S7',
+				t: '`37ce7759` Convexité et inflexion : lecture graphique',
+				x: 'Tle spé : 4 points (V1 419, V2 588, V3 590, V4 587) ; Tle compl. : V1-V3 264, V4 353. Une variation par groupe.',
+				o: [
+					['a', 'Scinder en 4'],
+					['b', 'Scinder en 2 selon la Tle compl. (la Tle spé perd 3 questions)'],
+					['c', 'Sans tag']
+				],
+				reco: 'a',
+				w: 'Quatre capacités distinctes du BO, chaque variation tient seule.'
+			},
+			{
+				id: 'S8',
+				t: '`ef3c495c` Coefficients binomiaux : chemins, symétrie, Pascal',
+				x: 'Tle spé : 5 points ; Tle compl. : 3. Partition commune : 5 groupes.',
+				o: [
+					['a', 'Scinder en 5'],
+					['b', 'Relire V5 en TSPE-316 (relation de Pascal, comme V3) : 4 modèles'],
+					['c', 'Sans tag']
+				],
+				reco: 'b',
+				w: 'V5 déduit une ligne du triangle de la précédente : c’est la relation de Pascal, et la Tle compl. met déjà V3 et V5 ensemble. Change le verdict de V5 (TSPE-547 → TSPE-316).'
+			},
+			{
+				id: 'S9',
+				t: '`6c80b4ec` Loi binomiale : table de P(X ⩽ k)',
+				x: 'Tle spé : 4 points ; Tle compl. : 2.',
+				o: [
+					['a', 'Scinder en 4'],
+					['b', 'Scinder en 2 selon la Tle compl.'],
+					['c', 'Sans tag']
+				],
+				reco: 'a',
+				w: 'Chaque variation a sa table et son k tirés : elle tient seule.'
+			},
+			{
+				id: 'S10',
+				t: '`45d1cdd6` Euler, Moivre, addition, duplication (Tle expertes)',
+				x: '4 groupes ; V1 à V4 n’ont aucune variable (toujours la même question).',
+				o: [
+					['a', 'Scinder en 4 (deux neufs à instance unique)'],
+					['b', 'Scinder en 2 en retirant V3 et V4'],
+					['c', 'Sans tag']
+				],
+				reco: 'a',
+				w: 'Questions de cours fixes mais légitimes ; B perdrait Moivre et les formules d’addition.'
+			},
+			{
+				id: 'S11',
+				t: '`30b597c3` Bernoulli, binomiale ou géométrique : identifier la loi',
+				x: '3 groupes nets, mais chaque neuf aurait toujours la même réponse ; V2 sans variable.',
+				o: [
+					['a', 'Scinder en 3 tel quel'],
+					['b', 'Scinder, puis enrichir V2 (dé à n faces, p tirée) comme un MODIFIER'],
+					['c', 'Sans tag']
+				],
+				reco: 'b',
+				w: 'L’origine garde V1 et V4, où la discrimination subsiste.'
+			},
+			{
+				id: 'X1',
+				t: '`d3301f2d`, `14036c68` : équations et inéquations avec exp, en Tle spé',
+				x: 'Le CSV tague tout en TSPE-446 / TSPE-596 (équation fonctionnelle du logarithme). La Tle spé a aussi TSPE-445 / TSPE-595 (… de l’exponentielle). Les neufs en exp (eˣ = b, e^{−x} ⩾ k) relèvent de quel point ?',
+				o: [
+					['a', 'Points exp : TSPE-445 / TSPE-595'],
+					['b', 'Points ln, comme le CSV : TSPE-446 / TSPE-596']
+				],
+				reco: 'a',
+				w: 'Proposition de l’agent : chaque neuf porte sur l’exponentielle.'
+			},
+			{
+				id: 'X2',
+				t: '`7690e290` V3 (affixe du milieu), Tle expertes',
+				x: 'Le CSV met V3 en TEXP-212 « Affixe d’un point » (notion) et dit que le tag actuel TEXP-223 « Déterminer l’affixe d’un point » ne décrit aucune variation. Or TEXP-223 décrit V3.',
+				o: [
+					['a', 'TEXP-223 (tag actuel)'],
+					['b', 'TEXP-212, comme le CSV']
+				],
+				reco: 'a',
+				w: 'TEXP-223 est la capacité, TEXP-212 la notion.'
+			},
+			{
+				id: 'X3',
+				t: '`dbee4649` en Tle compl. : variance sous des points « écart type »',
+				x: 'V2 et V4 demandent une variance ; TCOMP-363 et TCOMP-359 parlent d’écart type.',
+				o: [
+					['a', 'Accepter : la variance est le carré de l’écart type'],
+					['b', 'MODIFIER : demander l’écart type']
+				],
+				reco: 'a',
+				w: 'Le modèle sert aussi la Tle spé, où la variance est au programme : demander l’écart type la lui retirerait.'
+			}
+		],
+		mod: [
+			{
+				k: 'm-9f00da01',
+				lot: 'A',
+				id: '9f00da01',
+				t: "Déterminer l'équation de l'axe de symétrie de la parabole",
+				p: { c: '1SPE-384', l: "Axe de symétrie d'une parabole" },
+				x: 'V2 : b/(2a) entier ou demi-entier ; et retirer V3 (forme factorisée)'
+			},
+			{
+				k: 'm-95ee8348',
+				lot: 'A',
+				id: '95ee8348',
+				t: 'Dérivée de x ↦ ∫ₐˣ f(t) dt',
+				p: {
+					c: 'TCOMP-272',
+					l: 'Théorème : si $f$ est continue sur $[a, b]$, la fonction $F$ définie sur $[a, b]$ par $F(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est dérivable sur $[a, b]$ et a pour dérivée $f$'
+				},
+				x: 'V2 : intégrande √(t² + c) → 1/(t² + c) ou ln(t² + c), F′(2) exact'
+			},
+			{
+				k: 'm-f3e68e4b',
+				lot: 'B',
+				id: 'f3e68e4b',
+				t: 'Tableau croisé : probabilité de A sachant B',
+				p: {
+					c: '2-396',
+					l: "Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs"
+				},
+				x: 'Retirer V2 (tableau en pourcentages)'
+			},
+			{
+				k: 'm-0ab3faa5',
+				lot: 'B',
+				id: '0ab3faa5',
+				t: 'Nier une proposition',
+				p: { c: '1SPE-204', l: 'Formuler la négation de propositions quantifiées' },
+				x: 'Retirer V3 (négation sans quantificateur, de la 2de)'
+			},
+			{
+				k: 'm-a69dfde7',
+				lot: 'B',
+				id: 'a69dfde7',
+				t: 'Python : générer les paires, les triplets, les parties',
+				p: { c: 'TSPE-325', l: "Génération des parties à 2, 3 éléments d'un ensemble fini" },
+				x: 'Retirer V2 (couples i ≠ j) et V4 (toutes les parties) ; V5 : question B1'
+			},
+			{
+				k: 'm-f2133048',
+				lot: 'B',
+				id: 'f2133048',
+				t: 'Ensembles de points et images de z̄, iz dans le plan complexe',
+				p: {
+					c: 'TEXP-264',
+					l: 'Dans le cadre de la résolution de problème, utiliser les nombres complexes pour déterminer des ensembles de points'
+				},
+				x: 'Retirer V5 (rotation nommée) et « rotation » des distracteurs ; V4 : question B2'
+			},
+			{
+				k: 'm-6be786ef',
+				lot: 'B',
+				id: '6be786ef',
+				t: 'Chaîne, cycle, connexité',
+				p: { c: 'TEXP-315', l: "Chaîne, longueur d'une chaîne" },
+				x: 'Retirer V2 (cycle) et les distracteurs « C’est un cycle » ; V4 : question B3'
+			},
+			{
+				k: 'm-849aabbc',
+				lot: 'C',
+				id: '849aabbc',
+				t: "Déterminer la limite d'une suite",
+				p: {
+					c: '1SPE-231',
+					l: "Conjecturer, dans des cas simples, la limite éventuelle d'une suite"
+				},
+				x: '« Détermine la limite » → « Quelle semble être la limite » (conjecture)'
+			},
+			{
+				k: 'm-bb554c62',
+				lot: 'C',
+				id: 'bb554c62',
+				t: "Étude de fonction : ce qu'on cherche",
+				p: { c: '1SPE-283', l: "Étudier les variations d'une fonction" },
+				x: 'Retirer « limites aux bornes de l’ensemble de définition » du verso'
+			},
+			{
+				k: 'm-227f2c9c',
+				lot: 'C',
+				id: '227f2c9c',
+				t: 'Dériver une exponentielle de fonction affine',
+				p: { c: '1SPE-295', l: 'Pour $a$ réel, dérivée de la fonction $t \\mapsto e^{at}$' },
+				x: 'Question C1'
+			},
+			{
+				k: 'm-f7194c9d',
+				lot: 'C',
+				id: 'f7194c9d',
+				t: "Mesure principale d'un angle",
+				p: {
+					c: '1SPE-304',
+					l: "Enroulement de la droite sur le cercle trigonométrique ; image d'un nombre réel"
+				},
+				x: '« angle orienté de mesure x » → « réel x » ; « mesure principale » → « réel de ]−π ; π] associé au même point du cercle »'
+			},
+			{
+				k: 'm-f2cc01fc',
+				lot: 'C',
+				id: 'f2cc01fc',
+				t: 'Orthogonaux ou non ?',
+				p: { c: '1SPE-318', l: 'Utiliser le produit scalaire pour démontrer une orthogonalité' },
+				x: 'V3 : « une mesure en radians de l’angle (u, v) », sans « orienté »'
+			},
+			{
+				k: 'm-293f8225',
+				lot: 'C',
+				id: '293f8225',
+				t: "Racines d'un polynôme : compter les solutions, compléter par conjugaison",
+				p: { c: 'TEXP-246', l: 'Un polynôme de degré $n$ admet au plus $n$ racines' },
+				x: 'V1 : l’énoncé rappelle « on admet que le conjugué d’une racine est racine »'
+			},
+			{
+				k: 'm-6ff00846',
+				lot: 'C',
+				id: '6ff00846',
+				t: "Nombre de racines d'un polynôme, racines conjuguées",
+				p: { c: 'TEXP-246', l: 'Un polynôme de degré $n$ admet au plus $n$ racines' },
+				x: 'V1 : « à coefficients réels » ; V3-V4 : même rappel'
+			},
+			{
+				k: 'm-8d69e3a9',
+				lot: 'C',
+				id: '8d69e3a9',
+				t: "Matrice d'une rotation, d'une symétrie, d'une homothétie",
+				p: {
+					c: 'TEXP-323',
+					l: 'Représentation matricielle des transformations géométriques du plan'
+				},
+				x: 'Question C2'
+			},
+			{
+				k: 'm-93539700',
+				lot: 'C',
+				id: '93539700',
+				t: "Image d'un point par une transformation, composée = produit de matrices",
+				p: {
+					c: 'TEXP-323',
+					l: 'Représentation matricielle des transformations géométriques du plan'
+				},
+				x: 'V2 : donner la matrice de la rotation, comme V3'
+			},
+			{
+				k: 'm-cd4f9fb3',
+				lot: 'C',
+				id: 'cd4f9fb3',
+				t: "Inverse d'une matrice carrée d'ordre 2",
+				p: { c: 'TEXP-338', l: "Calculer l'inverse d'une matrice carrée" },
+				x: 'Question C3'
+			},
+			{
+				k: 'm-646b4cd3',
+				lot: 'C',
+				id: '646b4cd3',
+				t: "Espace : équation d'une sphère, centre et rayon",
+				p: { c: 'TSPE-376', l: "Équation d'une sphère dont on connait le centre et le rayon" },
+				x: 'Question C4'
+			}
+		],
+		lots: {
+			A: 'Lot A — nombres ou fonction',
+			B: 'Lot B — retirer des variations',
+			C: 'Lot C — énoncé ou corrigé'
+		},
+		sc: [
+			{
+				id: '536c01bb',
+				t: 'Identité, équation, statut des lettres',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1',
+						p: [{ c: '1SPE-202', l: 'Identifier le statut des égalités (identité, équation)' }],
+						tp: 'Identité ou équation : reconnaître une identité',
+						rq: 'égalité 1-1 : tag actuel 1SPE-202'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{
+								c: '1SPE-366',
+								l: 'Identifier le statut des lettres utilisées (variable, inconnue, paramètre)'
+							}
+						],
+						tp: "Statut d'une lettre : variable, inconnue ou paramètre",
+						rq: 'une variation, 6 énoncés (k = 0..5)'
+					}
+				],
+				k: 's-536c01bb'
+			},
+			{
+				id: '27d77564',
+				t: "Valeur d'un placement à intérêts simples ou composés",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2,V3',
+						p: [
+							{
+								c: '1SPE-379',
+								l: 'Modéliser un phénomène discret à croissance exponentielle par une suite géométrique'
+							}
+						],
+						tp: "Valeur d'un placement à intérêts composés",
+						rq: 'tag actuel 1SPE-230 passe au neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{
+								c: '1SPE-230',
+								l: 'Modéliser un phénomène discret à croissance linéaire par une suite arithmétique'
+							}
+						],
+						tp: "Valeur d'un placement à intérêts simples",
+						rq: ''
+					}
+				],
+				k: 's-27d77564'
+			},
+			{
+				id: 'a86442c1',
+				t: 'Calculer une dérivée',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1-V4,V6',
+						p: [
+							{
+								c: '1SPE-266',
+								l: 'Pour $n$ dans $\\mathbb{Z}$, fonction dérivée de la fonction $x \\mapsto x^n$'
+							}
+						],
+						tp: 'Calculer une dérivée',
+						rq: 'variable commune a (3..5) : sert à V3 et V6 seulement, ne pas la copier ; tag actuel 1SPE-264 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [{ c: '1SPE-393', l: 'Fonction dérivée de la fonction racine carrée' }],
+						tp: 'Dérivée de la fonction racine carrée',
+						rq: 'instance unique ; le CSV propose aussi de retirer V5'
+					}
+				],
+				k: 's-a86442c1'
+			},
+			{
+				id: '68166a11',
+				t: "Valeurs et signe de l'exponentielle",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2-V4',
+						p: [{ c: '1SPE-292', l: 'Signe de la fonction exponentielle' }],
+						tp: "Signe de l'exponentielle",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{
+								c: '1SPE-289',
+								l: "Définition de la fonction exponentielle comme unique fonction dérivable sur $\\mathbb{R}$ vérifiant $f' = f$ et $f(0) = 1$ (existence et unicité admises) ; notation $\\exp(x)$"
+							}
+						],
+						tp: 'Valeur de e⁰',
+						rq: 'instance unique'
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [{ c: '1SPE-291', l: 'Nombre $e$ ; notation $e^x$' }],
+						tp: 'Valeur approchée du nombre e',
+						rq: 'instance unique'
+					}
+				],
+				k: 's-68166a11'
+			},
+			{
+				id: '9a4592bf',
+				t: "Équations particulières avec l'exponentielle",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2-V4',
+						p: [{ c: '1SPE-292', l: 'Signe de la fonction exponentielle' }],
+						tp: "Équations particulières avec l'exponentielle",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [{ c: '1SPE-405', l: 'Sens de variation de la fonction exponentielle' }],
+						tp: 'Résoudre e^(ax+b) = 1',
+						rq: "ou rattacher V1 à l'un des 4 modèles 1SPE-405 de m-1spe-b-1"
+					}
+				],
+				k: 's-9a4592bf'
+			},
+			{
+				id: '74363137',
+				t: "Norme d'une somme ou d'une différence",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2,V4',
+						p: [
+							{
+								c: '1SPE-320',
+								l: 'Utiliser le produit scalaire pour calculer une longueur dans le plan'
+							}
+						],
+						tp: "Norme d'une somme ou d'une différence",
+						rq: 'tag actuel 1SPE-315 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [
+							{
+								c: '1SPE-321',
+								l: "En vue de la résolution d'un problème, calculer le produit scalaire de deux vecteurs en choisissant une méthode adaptée (projection orthogonale, coordonnées, normes et angle, normes)"
+							}
+						],
+						tp: 'Produit scalaire à partir de trois normes',
+						rq: ''
+					}
+				],
+				k: 's-74363137'
+			},
+			{
+				id: 'dfb727cd',
+				t: "Nombre de parties d'un ensemble : 2 puissance n",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V3,V4',
+						p: [{ c: 'TSPE-308', l: "Nombre des parties d'un ensemble à $n$ éléments" }],
+						tp: "Nombre de parties d'un ensemble : 2 puissance n",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{
+								c: 'TSPE-542',
+								l: "Nombre des parties d'un ensemble à $n$ éléments : lien avec les mots de longueur $n$ sur un alphabet à deux éléments"
+							}
+						],
+						tp: 'Nombre de mots binaires de longueur n',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [
+							{
+								c: 'TSPE-543',
+								l: "Nombre des parties d'un ensemble à $n$ éléments : lien avec les chemins dans un arbre"
+							}
+						],
+						tp: "Nombre de chemins d'un arbre à n niveaux",
+						rq: ''
+					}
+				],
+				k: 's-dfb727cd'
+			},
+			{
+				id: '0bde6091',
+				t: 'Chemins sur un quadrillage et mots à deux lettres',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-546',
+								l: "Combinaisons de $k$ éléments d'un ensemble à $n$ éléments : représentation en termes de chemins"
+							}
+						],
+						tp: 'Chemins sur un quadrillage : combinaisons',
+						rq: 'tag actuel TSPE-312 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [
+							{
+								c: 'TSPE-545',
+								l: "Combinaisons de $k$ éléments d'un ensemble à $n$ éléments : représentation en termes de mots"
+							}
+						],
+						tp: 'Mots à deux lettres : combinaisons',
+						rq: ''
+					}
+				],
+				k: 's-0bde6091'
+			},
+			{
+				id: '7d9d9b81',
+				t: 'Factorielle, arrangements et formule des coefficients binomiaux',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-313',
+								l: 'Pour $0 \\leqslant k \\leqslant n$, formules : $\\binom{n}{k} = \\frac{n(n-1)\\cdots(n-k+1)}{k!} = \\frac{n!}{(n-k)!\\,k!}$'
+							}
+						],
+						tp: 'Formule des coefficients binomiaux',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TSPE-311', l: "Nombre de permutations d'un ensemble fini à $n$ éléments" }],
+						tp: 'Permutations : ranger n objets',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V4',
+						p: [
+							{
+								c: 'TSPE-309',
+								l: "Nombre des $k$-uplets d'éléments distincts d'un ensemble à $n$ éléments"
+							}
+						],
+						tp: 'Arrangements : nombre de podiums',
+						rq: ''
+					}
+				],
+				k: 's-7d9d9b81'
+			},
+			{
+				id: '119b9148',
+				t: "Espace : norme d'un vecteur, distance entre deux points",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1',
+						p: [
+							{
+								c: 'TSPE-557',
+								l: "Coordonnées d'un vecteur dans une base orthonormée. Expression de la norme"
+							}
+						],
+						tp: "Espace : norme d'un vecteur",
+						rq: 'égalité 1-1, tag actuel TSPE-345 hors des deux : premier code du CSV'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [{ c: 'TSPE-346', l: 'Expression de la distance entre deux points' }],
+						tp: 'Espace : distance entre deux points',
+						rq: ''
+					}
+				],
+				k: 's-119b9148'
+			},
+			{
+				id: '1277a5b6',
+				t: 'Espace : calculer un produit scalaire',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-345',
+								l: "Coordonnées d'un vecteur dans une base orthonormée. Expression du produit scalaire"
+							}
+						],
+						tp: 'Espace : calculer un produit scalaire',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TSPE-558', l: 'Formules de polarisation' }],
+						tp: 'Espace : produit scalaire par polarisation',
+						rq: ''
+					}
+				],
+				k: 's-1277a5b6'
+			},
+			{
+				id: '536db399',
+				t: 'Espace : plans perpendiculaires, droite orthogonale à un plan',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1',
+						p: [
+							{
+								c: 'TSPE-353',
+								l: 'Utiliser le produit scalaire pour démontrer la perpendicularité de deux plans'
+							}
+						],
+						tp: 'Espace : plans perpendiculaires ?',
+						rq: 'égalité 1-1 : tag actuel'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{
+								c: 'TSPE-563',
+								l: "Étudier des problèmes de configuration dans l'espace : orthogonalité d'une droite et d'un plan"
+							}
+						],
+						tp: 'Espace : droite orthogonale à un plan ?',
+						rq: ''
+					}
+				],
+				k: 's-536db399'
+			},
+			{
+				id: '95f04c3e',
+				t: 'Espace : projeté orthogonal sur un plan, distance à un plan',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V3',
+						p: [
+							{
+								c: 'TSPE-369',
+								l: "Déterminer les coordonnées du projeté orthogonal d'un point sur un plan donné par une équation cartésienne"
+							}
+						],
+						tp: 'Espace : projeté orthogonal sur un plan',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{
+								c: 'TSPE-562',
+								l: "Utiliser la projection orthogonale pour déterminer la distance d'un point à un plan"
+							}
+						],
+						tp: "Espace : distance d'un point à un plan",
+						rq: ''
+					}
+				],
+				k: 's-95f04c3e'
+			},
+			{
+				id: '68b13d33',
+				t: 'Espace : points alignés ? vecteurs formant une base ?',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2',
+						p: [
+							{
+								c: 'TSPE-371',
+								l: "Dans un cadre géométrique repéré, traduire par un système d'équations linéaires des problèmes de types suivants : décider si trois vecteurs forment une base"
+							}
+						],
+						tp: 'Espace : trois vecteurs forment-ils une base ?',
+						rq: 'égalité 1-1 : tag actuel'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [{ c: 'TSPE-550', l: 'Vecteurs colinéaires' }],
+						tp: 'Espace : trois points alignés ?',
+						rq: ''
+					}
+				],
+				k: 's-68b13d33'
+			},
+			{
+				id: '2b240d8c',
+				t: 'Espace : trouver un vecteur directeur ou un vecteur normal',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V3,V4',
+						p: [
+							{
+								c: 'TSPE-375',
+								l: 'Déterminer un vecteur orthogonal à deux vecteurs non colinéaires'
+							}
+						],
+						tp: 'Espace : trouver un vecteur directeur ou un vecteur normal',
+						rq: "V3 normal à (ABC), V4 directeur d'une intersection : titre encore juste"
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [{ c: 'TSPE-365', l: "Déterminer une représentation paramétrique d'une droite" }],
+						tp: 'Espace : vecteur directeur de la droite (AB)',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [{ c: 'TSPE-559', l: "Orthogonalité d'un plan et d'une droite" }],
+						tp: "Espace : direction d'une droite orthogonale à un plan",
+						rq: ''
+					}
+				],
+				k: 's-2b240d8c'
+			},
+			{
+				id: '34b03dee',
+				t: "Espace : point d'une sphère, intersection d'une sphère et d'un plan",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2,V3',
+						p: [{ c: 'TSPE-360', l: "Intersection d'une sphère et d'un plan" }],
+						tp: "Espace : intersection d'une sphère et d'un plan",
+						rq: 'tag actuel TSPE-376 passe au neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{ c: 'TSPE-376', l: "Équation d'une sphère dont on connait le centre et le rayon" }
+						],
+						tp: "Espace : point d'une sphère d'équation donnée",
+						rq: ''
+					}
+				],
+				k: 's-34b03dee'
+			},
+			{
+				id: 'c0f49b76',
+				t: 'Définition de la limite : un rang à partir duquel tous les termes conviennent',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1',
+						p: [
+							{
+								c: 'TSPE-378',
+								l: "La suite $(u_n)$ tend vers $+\\infty$ si tout intervalle de la forme $[A\\,;\\,+\\infty[$ contient toutes les valeurs $u_n$ à partir d'un certain rang"
+							}
+						],
+						tp: 'Définition de la limite : un rang à partir duquel tous les termes conviennent',
+						rq: 'égalité 1-1-1 : tag actuel ; titre encore juste'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{
+								c: 'TSPE-380',
+								l: "La suite $(u_n)$ converge vers le nombre réel $\\ell$ si tout intervalle ouvert contenant $\\ell$ contient toutes les valeurs $u_n$ à partir d'un certain rang"
+							}
+						],
+						tp: 'Définition de la convergence : un rang à partir duquel tous les termes conviennent',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TSPE-379', l: 'Suite tendant vers $-\\infty$' }],
+						tp: 'Suite tendant vers −∞ : un rang à partir duquel tous les termes conviennent',
+						rq: ''
+					}
+				],
+				k: 's-c0f49b76'
+			},
+			{
+				id: 'b97dabe1',
+				t: 'Croissances comparées : exponentielle, puissances, logarithme',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1-V3',
+						p: [
+							{
+								c: 'TSPE-580',
+								l: "Déterminer dans des cas simples la limite d'une fonction en un point, en $\\pm\\infty$, en utilisant les croissances comparées"
+							}
+						],
+						tp: 'Croissances comparées : exponentielle et puissances',
+						rq: 'tag actuel TSPE-403 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V4,V5',
+						p: [
+							{
+								c: 'TSPE-443',
+								l: 'Croissance comparée du logarithme népérien et de $x \\mapsto x^n$ en $0$ et en $+\\infty$'
+							}
+						],
+						tp: 'Croissances comparées : logarithme et puissances',
+						rq: ''
+					}
+				],
+				k: 's-b97dabe1'
+			},
+			{
+				id: '7d552757',
+				t: 'Reconnaître une équation ou une inéquation sur le cercle trigonométrique',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-458',
+								l: 'Résoudre une inéquation de la forme $\\cos(x) \\leqslant a$ sur $[-\\pi, \\pi]$'
+							}
+						],
+						tp: 'Reconnaître une inéquation sur le cercle trigonométrique',
+						rq: 'libellé de TSPE-458 en cos, V2 en sin ; tag actuel TSPE-457 passe au neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TSPE-457', l: 'Résoudre une équation du type $\\cos(x) = a$' }],
+						tp: 'Reconnaître une équation sur le cercle trigonométrique',
+						rq: 'libellé en cos, V3 en sin'
+					}
+				],
+				k: 's-7d552757'
+			},
+			{
+				id: '23402520',
+				t: 'Primitive de sinus et cosinus vérifiant une condition',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2,V5,V6',
+						p: [
+							{
+								c: 'TSPE-467',
+								l: 'Calculer une primitive en utilisant les primitives de référence'
+							}
+						],
+						tp: 'Primitive de sinus et cosinus vérifiant une condition',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3,V4,V7',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							}
+						],
+						tp: 'Primitive de cos(ωx) et sin(ωx)',
+						rq: ''
+					}
+				],
+				k: 's-23402520'
+			},
+			{
+				id: 'aced2e6c',
+				t: 'Échantillon de taille n : espérance et variance de Sₙ et Mₙ',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2-V4',
+						p: [
+							{
+								c: 'TSPE-622',
+								l: 'Variance, écart type de la somme $S_n = X_1 + \\cdots + X_n$ et de la moyenne $M_n = \\frac{S_n}{n}$'
+							}
+						],
+						tp: 'Échantillon de taille n : variance et écart type de Sₙ et Mₙ',
+						rq: 'tag actuel TSPE-524 passe au neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{
+								c: 'TSPE-524',
+								l: 'Espérance de la somme $S_n = X_1 + \\cdots + X_n$ et de la moyenne $M_n = \\frac{S_n}{n}$'
+							}
+						],
+						tp: 'Échantillon de taille n : espérance de Sₙ',
+						rq: ''
+					}
+				],
+				k: 's-aced2e6c'
+			},
+			{
+				id: '71cb8ab7',
+				t: 'Somme de variables aléatoires : espérance et variance',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2-V5',
+						p: [
+							{
+								c: 'TSPE-527',
+								l: "Calculer la variance d'une variable aléatoire, notamment en l'exprimant comme somme de variables aléatoires indépendantes"
+							}
+						],
+						tp: 'Somme de variables aléatoires indépendantes : variance',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{
+								c: 'TSPE-526',
+								l: "Calculer l'espérance d'une variable aléatoire, notamment en utilisant la propriété de linéarité"
+							}
+						],
+						tp: 'Espérance de aX + bY : linéarité',
+						rq: ''
+					}
+				],
+				k: 's-71cb8ab7'
+			},
+			{
+				id: '91db0034',
+				t: "Inégalité de concentration : majorant et taille d'échantillon",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2,V3',
+						p: [
+							{
+								c: 'TSPE-533',
+								l: "Appliquer l'inégalité de Bienaymé-Tchebychev pour définir une taille d'échantillon, en fonction de la précision et du risque choisi"
+							}
+						],
+						tp: "Inégalité de concentration : taille d'échantillon",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{
+								c: 'TSPE-531',
+								l: "Inégalité de concentration. Si $M_n$ est la variable aléatoire moyenne d'un échantillon de taille $n$ d'une variable aléatoire d'espérance $\\mu$ et de variance $V$, alors pour tout $\\delta > 0$, $P(\\lvert M_n - \\mu \\rvert \\geqslant \\delta) \\leqslant \\frac{V}{n\\delta^2}$"
+							}
+						],
+						tp: 'Inégalité de concentration : majorant',
+						rq: ''
+					}
+				],
+				k: 's-91db0034'
+			},
+			{
+				id: '9ad36217',
+				t: 'Courbes de ln et exp : reconnaître, symétrie par rapport à y = x',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2,V3',
+						p: [
+							{
+								c: 'TSPE-442',
+								l: 'Lien entre les courbes représentatives des fonctions logarithme népérien et exponentielle'
+							},
+							{ c: 'TCOMP-225', l: 'Représentation graphique de la fonction logarithme népérien' }
+						],
+						tp: 'Courbes de ln et exp : symétrie par rapport à y = x',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [
+							{ c: 'TSPE-594', l: 'Courbe représentative' },
+							{ c: 'TCOMP-225', l: 'Représentation graphique de la fonction logarithme népérien' }
+						],
+						tp: 'Reconnaître la courbe de ln',
+						rq: 'instance unique (z = 1)'
+					}
+				],
+				k: 's-9ad36217'
+			},
+			{
+				id: '806c10f4',
+				t: "Limite d'une fonction par opérations, sans forme indéterminée",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1-V4',
+						p: [
+							{
+								c: 'TSPE-415',
+								l: "Déterminer les limites d'une fonction construite simplement à partir des fonctions de référence"
+							},
+							{ c: 'TCOMP-230', l: 'Calculer des limites' }
+						],
+						tp: "Limite d'une fonction par opérations, sans forme indéterminée",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [
+							{ c: 'TSPE-441', l: 'Limites en $0$ et en $+\\infty$' },
+							{ c: 'TCOMP-230', l: 'Calculer des limites' }
+						],
+						tp: 'Limite de b + a ln x en 0',
+						rq: ''
+					}
+				],
+				k: 's-806c10f4'
+			},
+			{
+				id: '14036c68',
+				t: 'Résoudre une inéquation avec ln ou exp',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2,V4',
+						p: [
+							{
+								c: 'TSPE-596',
+								l: "Utiliser l'équation fonctionnelle du logarithme pour résoudre une inéquation"
+							},
+							{
+								c: 'TCOMP-345',
+								l: "Utiliser l'équation fonctionnelle du logarithme pour résoudre une inéquation"
+							}
+						],
+						tp: 'Résoudre une inéquation avec ln',
+						rq: 'tags actuels TCOMP-238 et TSPE-446 retirés'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3,V5',
+						p: [
+							{
+								c: 'TSPE-595',
+								l: "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une inéquation"
+							},
+							{
+								c: 'TCOMP-344',
+								l: "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une inéquation"
+							}
+						],
+						tp: 'Résoudre une inéquation avec exp',
+						rq: 'TSPE-595 (exp) au lieu du TSPE-596 de tspe-tcomp.csv'
+					}
+				],
+				k: 's-14036c68'
+			},
+			{
+				id: 'd3301f2d',
+				t: 'Résoudre une équation avec ln ou exp',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V3,V5',
+						p: [
+							{
+								c: 'TSPE-446',
+								l: "Utiliser l'équation fonctionnelle du logarithme pour résoudre une équation"
+							},
+							{
+								c: 'TCOMP-238',
+								l: "Utiliser l'équation fonctionnelle du logarithme pour résoudre une équation"
+							}
+						],
+						tp: 'Résoudre une équation avec ln',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V2,V4',
+						p: [
+							{
+								c: 'TSPE-445',
+								l: "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation"
+							},
+							{
+								c: 'TCOMP-237',
+								l: "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation"
+							}
+						],
+						tp: 'Résoudre une équation avec exp',
+						rq: 'TSPE-445 (exp) au lieu du TSPE-446 de tspe-tcomp.csv'
+					}
+				],
+				k: 's-d3301f2d'
+			},
+			{
+				id: 'efb12f4b',
+				t: "Reconnaître une solution d'une équation différentielle",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1',
+						p: [
+							{ c: 'TSPE-464', l: "Équation différentielle $y' = ay$, où $a$ est un nombre réel" },
+							{
+								c: 'TCOMP-250',
+								l: "Vérifier qu'une fonction donnée est solution d'une équation différentielle"
+							}
+						],
+						tp: "Reconnaître une solution d'une équation différentielle y′ = ay",
+						rq: 'égalité 1-1-1, aucun tag T_SPE actuel : premier code du CSV'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{ c: 'TSPE-466', l: "Équation différentielle $y' = ay + b$" },
+							{
+								c: 'TCOMP-250',
+								l: "Vérifier qu'une fonction donnée est solution d'une équation différentielle"
+							}
+						],
+						tp: "Reconnaître une solution d'une équation différentielle y′ = ay + b",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [
+							{ c: 'TSPE-461', l: "Équation différentielle $y' = f$" },
+							{
+								c: 'TCOMP-250',
+								l: "Vérifier qu'une fonction donnée est solution d'une équation différentielle"
+							}
+						],
+						tp: "Reconnaître une solution d'une équation différentielle y′ = f",
+						rq: ''
+					}
+				],
+				k: 's-efb12f4b'
+			},
+			{
+				id: '2d480f3d',
+				t: 'Primitive de u′eᵘ, 2uu′ ou u′/u vérifiant une condition',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V4,V5',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							},
+							{
+								c: 'TCOMP-350',
+								l: "Déterminer les primitives d'une fonction de la forme $e^{u}u'$"
+							}
+						],
+						tp: 'Primitive de la forme u′eᵘ',
+						rq: 'tag actuel TCOMP-252 passe à un neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2,V6',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							},
+							{ c: 'TCOMP-252', l: "Déterminer les primitives d'une fonction de la forme $2uu'$" }
+						],
+						tp: 'Primitive de la forme 2uu′',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3,V7',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							},
+							{
+								c: 'TCOMP-351',
+								l: "Déterminer les primitives d'une fonction de la forme $\\frac{u'}{u}$"
+							}
+						],
+						tp: 'Primitive de la forme u′/u',
+						rq: ''
+					}
+				],
+				k: 's-2d480f3d'
+			},
+			{
+				id: 'f01270c2',
+				t: "Coefficient d'une primitive de la forme u′eᵘ, 2uu′ ou u′/u",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							},
+							{
+								c: 'TCOMP-350',
+								l: "Déterminer les primitives d'une fonction de la forme $e^{u}u'$"
+							}
+						],
+						tp: "Coefficient d'une primitive de la forme u′eᵘ",
+						rq: 'tag actuel TCOMP-252 passe à un neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							},
+							{ c: 'TCOMP-252', l: "Déterminer les primitives d'une fonction de la forme $2uu'$" }
+						],
+						tp: "Coefficient d'une primitive de la forme 2uu′",
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V4',
+						p: [
+							{
+								c: 'TSPE-468',
+								l: "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$"
+							},
+							{
+								c: 'TCOMP-351',
+								l: "Déterminer les primitives d'une fonction de la forme $\\frac{u'}{u}$"
+							}
+						],
+						tp: "Coefficient d'une primitive de la forme u′/u",
+						rq: ''
+					}
+				],
+				k: 's-f01270c2'
+			},
+			{
+				id: '95ee8348',
+				t: 'Dérivée de x ↦ ∫ₐˣ f(t) dt',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-476',
+								l: "Théorème : si $f$ est une fonction continue positive sur $[a, b]$, alors la fonction $F_a$ définie sur $[a, b]$ par $F_a(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est la primitive de $f$ qui s'annule en $a$"
+							},
+							{
+								c: 'TCOMP-272',
+								l: 'Théorème : si $f$ est continue sur $[a, b]$, la fonction $F$ définie sur $[a, b]$ par $F(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est dérivable sur $[a, b]$ et a pour dérivée $f$'
+							}
+						],
+						tp: 'Dérivée de x ↦ ∫ₐˣ f(t) dt',
+						rq: 'égalité 2-2 : tag actuel ; T_COMP MODIFIER en attente sur V2 (√(t² + c))'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3,V4',
+						p: [
+							{
+								c: 'TSPE-479',
+								l: 'Définition par les primitives de $\\int_a^b f(x)\\,\\mathrm{d}x$ lorsque $f$ est une fonction continue de signe quelconque sur un intervalle contenant $a$ et $b$'
+							},
+							{
+								c: 'TCOMP-272',
+								l: 'Théorème : si $f$ est continue sur $[a, b]$, la fonction $F$ définie sur $[a, b]$ par $F(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est dérivable sur $[a, b]$ et a pour dérivée $f$'
+							}
+						],
+						tp: 'Fonction x ↦ ∫ₐˣ f(t) dt : sens de variation et valeur en a',
+						rq: ''
+					}
+				],
+				k: 's-95ee8348'
+			},
+			{
+				id: 'dd0ee69a',
+				t: 'Encadrer une intégrale ou une valeur moyenne',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V3',
+						p: [
+							{ c: 'TSPE-481', l: 'Positivité et intégration des inégalités' },
+							{ c: 'TCOMP-354', l: 'Encadrer une intégrale' }
+						],
+						tp: 'Encadrer une intégrale',
+						rq: 'tags actuels TCOMP-275 et TSPE-486 retirés'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{ c: 'TSPE-481', l: 'Positivité et intégration des inégalités' },
+							{
+								c: 'TCOMP-269',
+								l: 'La valeur moyenne est comprise entre les bornes de la fonction'
+							}
+						],
+						tp: 'Encadrer une valeur moyenne',
+						rq: ''
+					}
+				],
+				k: 's-dd0ee69a'
+			},
+			{
+				id: 'f26151ff',
+				t: 'Interpréter une intégrale ou une valeur moyenne en contexte',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [
+							{
+								c: 'TSPE-492',
+								l: "Interpréter une intégrale dans un contexte issu d'une autre discipline"
+							},
+							{
+								c: 'TCOMP-280',
+								l: "Interpréter une intégrale dans un contexte issu d'une autre discipline"
+							}
+						],
+						tp: 'Interpréter une intégrale en contexte',
+						rq: 'tags actuels TSPE-493 et TCOMP-281 passent au neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [
+							{
+								c: 'TSPE-493',
+								l: "Interpréter une valeur moyenne dans un contexte issu d'une autre discipline"
+							},
+							{
+								c: 'TCOMP-281',
+								l: "Interpréter une valeur moyenne dans un contexte issu d'une autre discipline"
+							}
+						],
+						tp: 'Interpréter une valeur moyenne en contexte : vitesse moyenne',
+						rq: ''
+					}
+				],
+				k: 's-f26151ff'
+			},
+			{
+				id: '3cb90b97',
+				t: 'Loi uniforme sur {1, …, n} : probabilités et espérance',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2,V3',
+						p: [{ c: 'TCOMP-285', l: 'Loi uniforme sur $\\{1, 2, \\ldots, n\\}$' }],
+						tp: 'Loi uniforme sur {1, …, n} : probabilités',
+						rq: 'égalité 2-2 : tag actuel'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1,V4',
+						p: [{ c: 'TCOMP-357', l: 'Loi uniforme sur $\\{1, 2, \\ldots, n\\}$ : espérance' }],
+						tp: 'Loi uniforme sur {1, …, n} : espérance',
+						rq: ''
+					}
+				],
+				k: 's-3cb90b97'
+			},
+			{
+				id: 'dbee4649',
+				t: 'Loi binomiale et loi de Bernoulli : espérance, variance, écart type',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V5',
+						p: [
+							{ c: 'TSPE-522', l: "Application à l'espérance de la loi binomiale" },
+							{ c: 'TCOMP-291', l: 'Loi binomiale : espérance (admise)' }
+						],
+						tp: 'Loi binomiale : espérance',
+						rq: 'égalité 2-2 : tag actuel'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2,V3',
+						p: [
+							{ c: 'TSPE-621', l: "Application à la variance et l'écart type de la loi binomiale" },
+							{ c: 'TCOMP-363', l: 'Loi binomiale : écart type (admis)' }
+						],
+						tp: 'Loi binomiale : variance et écart type',
+						rq: 'V2 demande la variance, TCOMP-363 dit écart type'
+					},
+					{
+						r: 'NEUF',
+						v: 'V4',
+						p: [
+							{ c: 'TSPE-502', l: 'Épreuve de Bernoulli, loi de Bernoulli' },
+							{ c: 'TCOMP-359', l: 'Loi de Bernoulli : écart type' }
+						],
+						tp: 'Loi de Bernoulli : variance',
+						rq: 'V4 demande la variance, TCOMP-359 dit écart type'
+					}
+				],
+				k: 's-dbee4649'
+			},
+			{
+				id: '13e2d419',
+				t: 'Loi géométrique : P(X = k), P(X ⩽ k), espérance, absence de mémoire',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1-V3',
+						p: [
+							{ c: 'TSPE-516', l: 'Loi géométrique' },
+							{
+								c: 'TCOMP-298',
+								l: 'Calculer explicitement les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$ pour une variable aléatoire $X$ suivant une loi géométrique'
+							}
+						],
+						tp: 'Loi géométrique : P(X = k), P(X ⩽ k), P(X > k)',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V4',
+						p: [
+							{ c: 'TSPE-516', l: 'Loi géométrique' },
+							{ c: 'TCOMP-365', l: 'Loi géométrique : espérance (admise)' }
+						],
+						tp: 'Loi géométrique : nombre moyen de tentatives',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [
+							{ c: 'TSPE-516', l: 'Loi géométrique' },
+							{
+								c: 'TCOMP-301',
+								l: "Utiliser en situation la caractérisation d'une loi géométrique par l'absence de mémoire"
+							}
+						],
+						tp: 'Loi géométrique : absence de mémoire',
+						rq: ''
+					}
+				],
+				k: 's-13e2d419'
+			},
+			{
+				id: '89e16891',
+				t: 'Loi uniforme sur [a ; b] : probabilités et espérance',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2,V4',
+						p: [
+							{
+								c: 'TCOMP-315',
+								l: 'Calculer des probabilités pour une variable aléatoire à densité'
+							}
+						],
+						tp: 'Loi uniforme sur [a ; b] : probabilités',
+						rq: 'tag actuel TCOMP-311 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TCOMP-373', l: 'Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : espérance' }],
+						tp: "Loi uniforme sur [a ; b] : temps d'attente moyen",
+						rq: ''
+					}
+				],
+				k: 's-89e16891'
+			},
+			{
+				id: 'c6b5894c',
+				t: 'Loi exponentielle : probabilités, espérance, absence de mémoire',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1-V3',
+						p: [
+							{
+								c: 'TCOMP-315',
+								l: 'Calculer des probabilités pour une variable aléatoire à densité'
+							}
+						],
+						tp: 'Loi exponentielle : probabilités',
+						rq: 'tag actuel TCOMP-312 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V4',
+						p: [{ c: 'TCOMP-376', l: 'Loi exponentielle : espérance' }],
+						tp: 'Loi exponentielle : durée moyenne',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [{ c: 'TCOMP-313', l: "Propriété d'absence de mémoire de la loi exponentielle" }],
+						tp: 'Loi exponentielle : absence de mémoire',
+						rq: ''
+					}
+				],
+				k: 's-c6b5894c'
+			},
+			{
+				id: '3cfcc718',
+				t: 'Loi à densité : probabilité = aire sous la courbe, constante de normalisation',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V3,V4',
+						p: [{ c: 'TCOMP-314', l: 'Déterminer si une fonction est une densité de probabilité' }],
+						tp: 'Loi à densité : constante de normalisation',
+						rq: 'tag actuel TCOMP-315 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1',
+						p: [{ c: 'TCOMP-370', l: "Représentation d'une probabilité comme une aire" }],
+						tp: 'Loi à densité : probabilité = aire sous la courbe',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [
+							{
+								c: 'TCOMP-372',
+								l: 'Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de répartition'
+							}
+						],
+						tp: 'Loi uniforme sur [0 ; b] : fonction de répartition',
+						rq: ''
+					}
+				],
+				k: 's-3cfcc718'
+			},
+			{
+				id: '49fac266',
+				t: "Ajustement affine : interpréter le coefficient directeur, l'ordonnée à l'origine et r",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [{ c: 'TCOMP-321', l: 'Ajustement affine. Droite des moindres carrés' }],
+						tp: "Ajustement affine : interpréter le coefficient directeur et l'ordonnée à l'origine",
+						rq: 'égalité 2-2, tag actuel TCOMP-328 hors des deux : premier code du CSV'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3,V4',
+						p: [{ c: 'TCOMP-322', l: 'Coefficient de corrélation' }],
+						tp: 'Coefficient de corrélation : interpréter r',
+						rq: ''
+					}
+				],
+				k: 's-49fac266'
+			},
+			{
+				id: '8b435b9d',
+				t: 'Résoudre une équation du premier degré dans ℂ, avec z ou son conjugué',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [{ c: 'TEXP-207', l: 'Résoudre une équation linéaire $az = b$' }],
+						tp: 'Résoudre une équation az = b dans ℂ',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [
+							{
+								c: 'TEXP-208',
+								l: 'Résoudre une équation simple faisant intervenir $z$ et $\\bar{z}$'
+							}
+						],
+						tp: 'Résoudre une équation en z et son conjugué',
+						rq: ''
+					}
+				],
+				k: 's-8b435b9d'
+			},
+			{
+				id: '7690e290',
+				t: "Affixe d'un vecteur, distance, milieu, parallélogramme",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V4',
+						p: [{ c: 'TEXP-358', l: "Affixe d'un vecteur" }],
+						tp: "Affixe d'un vecteur, quatrième sommet d'un parallélogramme",
+						rq: 'tag actuel TEXP-223 retiré'
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [{ c: 'TEXP-359', l: "Module d'un nombre complexe : interprétation géométrique" }],
+						tp: 'Distance entre deux points par le module',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TEXP-212', l: "Affixe d'un point" }],
+						tp: "Affixe du milieu d'un segment",
+						rq: "TEXP-223 (déterminer l'affixe d'un point) plus juste que TEXP-212 ?"
+					}
+				],
+				k: 's-7690e290'
+			},
+			{
+				id: 'acd9104c',
+				t: 'Factoriser un polynôme dont une racine est connue, équation de degré 3',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V2,V3',
+						p: [{ c: 'TEXP-249', l: 'Factoriser un polynôme dont une racine est connue' }],
+						tp: 'Factoriser un polynôme dont une racine est connue',
+						rq: 'égalité 2-2 : tag actuel'
+					},
+					{
+						r: 'NEUF',
+						v: 'V1,V4',
+						p: [
+							{
+								c: 'TEXP-248',
+								l: 'Résoudre une équation de degré $3$ à coefficients réels dont une racine est connue'
+							}
+						],
+						tp: 'Équation de degré 3 dont une racine est connue',
+						rq: ''
+					}
+				],
+				k: 's-acd9104c'
+			},
+			{
+				id: '2bf66851',
+				t: "Racines n-ièmes de l'unité et polygones réguliers",
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2,V4,V6,V7',
+						p: [
+							{
+								c: 'TEXP-257',
+								l: "Racines $n$-ièmes de l'unité. Description de l'ensemble $\\mathbb{U}_n$ des racines $n$-ièmes de l'unité"
+							}
+						],
+						tp: "Racines n-ièmes de l'unité",
+						rq: 'tag actuel TEXP-265 passe à un neuf'
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TEXP-268', l: "Somme des racines $n$-ièmes de l'unité" }],
+						tp: "Somme des racines n-ièmes de l'unité",
+						rq: "point d'approfondissement"
+					},
+					{
+						r: 'NEUF',
+						v: 'V5',
+						p: [
+							{
+								c: 'TEXP-265',
+								l: "Utiliser les racines de l'unité dans l'étude de configurations liées aux polygones réguliers"
+							}
+						],
+						tp: "Polygones réguliers inscrits : longueur d'un côté",
+						rq: ''
+					}
+				],
+				k: 's-2bf66851'
+			},
+			{
+				id: '44a4236b',
+				t: 'Gauss, Bézout, premiers entre eux : quelle conclusion ?',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2',
+						p: [{ c: 'TEXP-279', l: 'Théorème de Gauss' }],
+						tp: 'Théorème de Gauss : quelle conclusion ?',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V4',
+						p: [{ c: 'TEXP-278', l: 'Théorème de Bézout' }],
+						tp: 'Théorème de Bézout : premiers entre eux ?',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TEXP-275', l: 'PGCD de deux entiers' }],
+						tp: 'PGCD et combinaison linéaire : quelle conclusion ?',
+						rq: ''
+					}
+				],
+				k: 's-44a4236b'
+			},
+			{
+				id: '629c231b',
+				t: 'Décomposition en facteurs premiers et nombre de diviseurs',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V3',
+						p: [
+							{
+								c: 'TEXP-282',
+								l: "Existence et unicité de la décomposition d'un entier en produit de facteurs premiers"
+							}
+						],
+						tp: 'Décomposition en facteurs premiers',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V2',
+						p: [{ c: 'TEXP-284', l: "Déterminer les diviseurs d'un entier" }],
+						tp: "Nombre de diviseurs d'un entier",
+						rq: ''
+					}
+				],
+				k: 's-629c231b'
+			},
+			{
+				id: '5a53d098',
+				t: 'Somme des degrés et graphe complet',
+				g: [
+					{
+						r: 'ORIGINE',
+						v: 'V1,V2,V4',
+						p: [{ c: 'TEXP-313', l: 'Exemple du graphe complet' }],
+						tp: 'Graphe complet : arêtes et degré',
+						rq: ''
+					},
+					{
+						r: 'NEUF',
+						v: 'V3',
+						p: [{ c: 'TEXP-314', l: 'Degré' }],
+						tp: "Somme des degrés : nombre d'arêtes",
+						rq: ''
+					}
+				],
+				k: 's-5a53d098'
+			}
+		],
+		sans: [
+			{
+				id: 'f8ccc8b6',
+				t: 'Vrai ou Faux sur les polynômes du second degré',
+				g: [
+					{
+						r: 'SANS_TAG',
+						v: 'V1-V12',
+						p: [],
+						tp: 'Vrai ou Faux sur les polynômes du second degré',
+						rq: 'vrai/faux, 7 points ; V12 reste à revoir'
+					}
+				]
+			},
+			{
+				id: 'a80a780f',
+				t: "Caractérisations de la convexité et du point d'inflexion",
+				g: [
+					{
+						r: 'SANS_TAG',
+						v: 'V1-V5',
+						p: [],
+						tp: "Caractérisations de la convexité et du point d'inflexion",
+						rq: 'QCM de cours, 4 groupes dans les deux programmes'
+					}
+				]
+			}
+		]
+	};
+	const state = { q: {}, l: {} };
+	let db = null,
+		canWrite = true;
+	const drafts = {},
+		timers = {},
+		pending = new Map();
+	let queueRunning = false;
+	function el(tag, attrs, ...kids) {
+		const e = document.createElement(tag);
+		for (const [k, v] of Object.entries(attrs || {})) {
+			if (k === 'class') e.className = v;
+			else if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+			else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+		}
+		for (const k of kids.flat(Infinity))
+			if (k != null && k !== '') e.append(k.nodeType ? k : document.createTextNode(String(k)));
+		return e;
+	}
+	const ids = (s) =>
+		String(s)
+			.split(/(`[^`]+`)/)
+			.map((p) => (p.startsWith('`') ? el('span', { class: 'code' }, p.slice(1, -1)) : p));
+	function setConn(t, bad) {
+		const c = document.getElementById('conn');
+		c.textContent = t;
+		c.classList.toggle('bad', !!bad);
+	}
+	function banner() {
+		const b = document.getElementById('banner');
+		b.classList.toggle('on', pending.size > 0);
+		b.textContent = pending.size
+			? pending.size +
+				' réponse(s) pas encore enregistrée(s) : nouvel essai automatique. Ne ferme pas la page.'
+			: '';
+	}
+	// File d'écriture unique : une écriture toutes les 400 ms, nouvel essai de 2 s à 30 s.
+	function write(path, body) {
+		pending.set(path, { body, delay: 2000 });
+		local(path, body);
+		banner();
+		runQueue();
+	}
+	function local(path, body) {
+		const [coll, id] = path.split('/');
+		const next = { ...state[coll] };
+		if (body === null) delete next[id];
+		else next[id] = body;
+		state[coll] = next;
+		render();
+	}
+	async function runQueue() {
+		if (queueRunning || !db) return;
+		queueRunning = true;
+		while (pending.size) {
+			const [path, job] = pending.entries().next().value;
+			try {
+				if (job.body === null) await db.doc(path).delete();
+				else await db.doc(path).set(job.body);
+				if (pending.get(path) === job) pending.delete(path);
+				setConn('Réponses enregistrées en direct.');
+				await new Promise((r) => setTimeout(r, 400));
+			} catch (e) {
+				if (e && (e.code === 'not_granted' || e.code === 'permission_denied')) {
+					canWrite = false;
+					pending.clear();
+					setConn('Lecture seule : réponses non enregistrées.', true);
+					break;
+				}
+				setConn(
+					'Écriture refusée (' +
+						((e && e.code) || 'erreur') +
+						') : nouvel essai dans ' +
+						Math.round(job.delay / 1000) +
+						' s.',
+					true
+				);
+				await new Promise((r) => setTimeout(r, job.delay));
+				job.delay = Math.min(job.delay * 2, 30000);
+			}
+			banner();
+			render();
+		}
+		queueRunning = false;
+	}
+	function btn(on, label, onclick, cls, reco) {
+		return el(
+			'button',
+			{
+				class: (on ? cls || 'on-ok' : '') + (reco ? ' is-reco' : ''),
+				disabled: !canWrite,
+				'aria-pressed': on ? 'true' : 'false',
+				onclick
+			},
+			label
+		);
+	}
+	function choose(coll, id, c) {
+		const cur = state[coll][id];
+		write(
+			coll + '/' + id,
+			cur && cur.c === c ? null : { c, note: (cur && cur.note) || '', at: new Date().toISOString() }
+		);
+	}
+	function noteBox(coll, id, ph, show) {
+		const key = coll + '-' + id,
+			cur = state[coll][id];
+		if (!show && !(cur && cur.note)) return null;
+		const ta = el('textarea', {
+			class: 'c',
+			id: key,
+			placeholder: ph,
+			disabled: !canWrite,
+			oninput: (ev) => {
+				drafts[key] = ev.target.value;
+				clearTimeout(timers[key]);
+				timers[key] = setTimeout(() => {
+					const c = state[coll][id],
+						t = drafts[key];
+					if (c && c.note === t) return;
+					if (!c && !t.trim()) return;
+					write(coll + '/' + id, {
+						...(c || { c: 'avis' }),
+						note: t,
+						at: new Date().toISOString()
+					});
+				}, 700);
+			}
+		});
+		ta.value = drafts[key] ?? ((cur && cur.note) || '');
+		return el('div', { class: 'note' }, ta);
+	}
+	function qView(q) {
+		const cur = state.q[q.id];
+		return el(
+			'div',
+			{
+				class:
+					'q' +
+					(cur ? (cur.c === 'avis' ? ' is-avis' : cur.c === q.reco ? ' is-ok' : ' is-no') : ''),
+				id: 'q-' + q.id
+			},
+			el('div', { class: 'qn' }, q.id),
+			el('p', { class: 'qex' }, ids(q.t)),
+			el('p', { class: 'ctx' }, ids(q.x)),
+			el(
+				'div',
+				{ class: 'choice' },
+				q.o.map(([o, l]) =>
+					btn(
+						cur && cur.c === o,
+						l,
+						() => choose('q', q.id, o),
+						o === q.reco ? 'on-ok' : 'on-no',
+						o === q.reco
+					)
+				),
+				btn(
+					cur && cur.c === 'avis',
+					'Je ne tranche pas',
+					() => choose('q', q.id, 'avis'),
+					'on-avis'
+				)
+			),
+			el('p', { class: 'qreco' }, el('b', {}, 'Reco (soulignée) : '), q.w),
+			noteBox('q', q.id, 'Une remarque ? (facultatif)', true)
+		);
+	}
+	function ptView(p) {
+		return el('div', { class: 'point' }, el('span', { class: 'code' }, p.c), el('span', {}, p.l));
+	}
+	function lineState(k) {
+		const c = state.l[k];
+		return c ? c.c : null;
+	}
+	function rowWrap(k, main) {
+		const s = lineState(k);
+		return el(
+			'div',
+			{ class: 'row' + (s === 'ok' ? ' is-ok' : s === 'no' ? ' is-no' : '') },
+			main,
+			el(
+				'div',
+				{ class: 'r-act' },
+				btn(s === 'ok', 'OK', () => choose('l', k, 'ok'), 'on-ok'),
+				btn(s === 'no', 'À revoir', () => choose('l', k, 'no'), 'on-no')
+			),
+			noteBox('l', k, 'Que faut-il changer ?', s === 'no')
+		);
+	}
+	function modView(m) {
+		return rowWrap(
+			m.k,
+			el(
+				'div',
+				{ class: 'r-main' },
+				el('div', { class: 'r-title' }, m.t, el('span', { class: 'id' }, m.id)),
+				ptView(m.p),
+				el('div', { class: 'mod' }, el('b', {}, 'Modification : '), m.x)
+			)
+		);
+	}
+	function scView(s) {
+		return rowWrap(
+			s.k,
+			el(
+				'div',
+				{ class: 'r-main' },
+				el('div', { class: 'r-title' }, s.t, el('span', { class: 'id' }, s.id)),
+				el(
+					'div',
+					{ class: 'grp' },
+					s.g.map((g) =>
+						el(
+							'div',
+							{ class: 'g ' + g.r },
+							el('span', { class: 'role' }, g.r === 'ORIGINE' ? 'Origine' : 'Neuf'),
+							el('span', { class: 'vars' }, g.v),
+							el('span', { class: 'tp' }, g.tp),
+							el('div', { class: 'pts' }, g.p.map(ptView)),
+							g.rq ? el('span', { class: 'rq' }, g.rq) : null
+						)
+					)
+				)
+			)
+		);
+	}
+	function bulk(keys, label) {
+		const left = keys.filter((k) => !lineState(k));
+		return el(
+			'div',
+			{ class: 'bulk' },
+			btn(
+				false,
+				'Tout le reste OK (' + left.length + ')',
+				() =>
+					left.forEach((k) => write('l/' + k, { c: 'ok', note: '', at: new Date().toISOString() })),
+				'on-ok'
+			),
+			left.length ? '' : 'Tout est coché.'
+		);
+	}
+	function part(id, num, title, lede, ...kids) {
+		return el(
+			'section',
+			{ class: 'part', id },
+			el(
+				'div',
+				{ class: 'part-head' },
+				el('span', { class: 'num' }, num),
+				el('h2', {}, title),
+				lede ? el('p', {}, lede) : null
+			),
+			...kids
+		);
+	}
+	function render() {
+		const act = document.activeElement,
+			fid = act && act.tagName === 'TEXTAREA' ? act.id : null,
+			sel = fid ? [act.selectionStart, act.selectionEnd] : null;
+		renderAll();
+		if (fid) {
+			const t = document.getElementById(fid);
+			if (t) {
+				t.focus();
+				t.setSelectionRange(sel[0], sel[1]);
+			}
+		}
+	}
+	function renderAll() {
+		const lk = [...D.mod.map((m) => m.k), ...D.sc.map((s) => s.k)];
+		const nq = D.q.filter((q) => state.q[q.id] && state.q[q.id].c !== 'avis').length;
+		const nl = lk.filter((k) => lineState(k)).length;
+		document.getElementById('count').textContent =
+			nq + ' / ' + D.q.length + ' questions · ' + nl + ' / ' + lk.length + ' lignes';
+		document.getElementById('barfill').style.width =
+			((100 * (nq + nl)) / (D.q.length + lk.length)).toFixed(1) + '%';
+		document
+			.getElementById('done')
+			.classList.toggle('on', nq === D.q.length && nl === lk.length && pending.size === 0 && !!db);
+		document
+			.getElementById('toc')
+			.replaceChildren(
+				el('a', { href: '#questions' }, 'Questions', el('span', {}, D.q.length)),
+				el('a', { href: '#modifier' }, 'Modifications', el('span', {}, D.mod.length)),
+				el('a', { href: '#scissions' }, 'Scissions', el('span', {}, D.sc.length)),
+				el('a', { href: '#sans' }, 'Sans tag', el('span', {}, D.sans.length))
+			);
+		const lots = Object.keys(D.lots);
+		document.getElementById('main').replaceChildren(
+			part(
+				'questions',
+				'Partie 1',
+				'Questions à trancher',
+				'Choix ponctuels du lot MODIFIER (B, C), modèles hors programme à leur niveau (H), scissions douteuses (E3, S6-S11) et écarts relevés dans les verdicts (X).',
+				...D.q.map(qView)
+			),
+			part(
+				'modifier',
+				'Partie 2',
+				'Modifications au niveau du modèle',
+				'18 modèles. Chaque modèle reçoit le tag de son point une fois modifié. Les lignes qui renvoient à une question suivent ta réponse.',
+				...lots.map((l) =>
+					el(
+						'div',
+						{ class: 'box' },
+						el('div', { class: 'sub' }, D.lots[l]),
+						el('div', { class: 'rows' }, D.mod.filter((m) => m.lot === l).map(modView))
+					)
+				),
+				bulk(D.mod.map((m) => m.k))
+			),
+			part(
+				'scissions',
+				'Partie 3',
+				'Scissions',
+				D.sc.length +
+					' modèles scindés en ' +
+					D.sc.reduce((n, s) => n + s.g.length, 0) +
+					' : l’origine garde son identifiant et le groupe le plus fourni, chaque neuf reçoit ses variations et son point.',
+				el('div', { class: 'box' }, el('div', { class: 'rows' }, D.sc.map(scView))),
+				bulk(D.sc.map((s) => s.k))
+			),
+			part(
+				'sans',
+				'Partie 4',
+				'Restent sans tag',
+				'Pour information, selon ta règle (QCM de cours et vrai/faux à 4 points ou plus).',
+				el(
+					'div',
+					{ class: 'box' },
+					el(
+						'div',
+						{ class: 'rows' },
+						D.sans.map((s) =>
+							el(
+								'div',
+								{ class: 'row' },
+								el(
+									'div',
+									{ class: 'r-main' },
+									el('div', { class: 'r-title' }, s.t, el('span', { class: 'id' }, s.id)),
+									el('div', { class: 'why' }, s.g[0].rq || s.g[0].tp)
+								)
+							)
+						)
+					)
+				)
+			)
+		);
+	}
+	render();
+	(async () => {
+		const c = window.claude;
+		if (!c || !c.use) {
+			canWrite = false;
+			setConn('Enregistrement indisponible ici : ouvre la page sur claude.ai.', true);
+			render();
+			return;
+		}
+		db = await c.use('db');
+		if (!db) {
+			canWrite = false;
+			setConn('Enregistrement indisponible : connecte-toi à claude.ai.', true);
+			render();
+			return;
+		}
+		const user = await c.use('user');
+		if (user && (await user.can('data.write')) === false) {
+			canWrite = false;
+			setConn('Lecture seule.', true);
+		}
+		let ready = 0;
+		for (const [coll, bit] of [
+			['q', 1],
+			['l', 2]
+		]) {
+			db.collection(coll).onSnapshot(
+				(snap) => {
+					const next = {};
+					for (const d of snap.docs) next[d.id] = d.data();
+					for (const [p, job] of pending) {
+						const [cc, id] = p.split('/');
+						if (cc === coll) {
+							if (job.body === null) delete next[id];
+							else next[id] = job.body;
+						}
+					}
+					state[coll] = next;
+					ready |= bit;
+					if (ready === 3 && canWrite && !pending.size) setConn('Réponses enregistrées en direct.');
+					render();
+				},
+				(e) => setConn('Enregistrement interrompu (' + e.code + '). Recharge la page.', true)
+			);
+		}
+		runQueue();
+	})();
+</script>

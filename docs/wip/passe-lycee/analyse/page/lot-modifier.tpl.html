@@ -1,0 +1,266 @@
+<title>Lot MODIFIER lycée</title>
+/*STYLE*/
+<style>
+	.box {
+		background: var(--surface);
+		border: 1px solid var(--line);
+		border-radius: 8px;
+		overflow: hidden;
+	}
+	.box .sub:first-child {
+		padding-top: 12px;
+	}
+	.grp {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+		margin-top: 4px;
+	}
+	.g {
+		display: grid;
+		grid-template-columns: 5.5em minmax(0, 1fr);
+		gap: 2px 10px;
+		font-size: 14px;
+		border-left: 3px solid var(--line);
+		padding-left: 8px;
+	}
+	.g.ORIGINE {
+		border-left-color: var(--accent);
+	}
+	.g.NEUF {
+		border-left-color: var(--wait);
+	}
+	.g .role {
+		font-size: 12px;
+		font-weight: 600;
+		color: var(--muted);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+	.g .vars {
+		font-family: var(--font-mono);
+		font-size: 13px;
+	}
+	.g .tp {
+		grid-column: 2;
+		font-weight: 500;
+	}
+	.g .pts {
+		grid-column: 2;
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.g .rq {
+		grid-column: 2;
+		font-size: 13px;
+		color: var(--muted);
+	}
+	.lotlab {
+		font-size: 12px;
+		font-weight: 600;
+		padding: 2px 8px;
+		border-radius: 999px;
+		background: var(--wait-soft);
+		color: var(--wait);
+	}
+	.banner {
+		display: none;
+		background: var(--no-soft);
+		color: var(--no);
+		border: 1px solid var(--no);
+		border-radius: 6px;
+		padding: 8px 12px;
+		font-weight: 600;
+	}
+	.banner.on {
+		display: block;
+	}
+	.done {
+		display: none;
+		background: var(--ok-soft);
+		color: var(--ok);
+		border-radius: 6px;
+		padding: 8px 12px;
+		font-weight: 600;
+	}
+	.done.on {
+		display: block;
+	}
+	.ctx {
+		font-size: 14px;
+		max-width: 78ch;
+		margin: 0;
+	}
+	.bulk {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 8px;
+		align-items: center;
+		font-size: 13px;
+		color: var(--muted);
+	}
+</style>
+<div class="wrap">
+	<header>
+		<h1>Lot MODIFIER et scissions du lycée</h1>
+		<p class="lede">
+			Phase 0 du lot : rien n'est encore modifié en base. Tranche d'abord les questions (la reco est
+			soulignée), puis valide les modifications et les scissions, ligne par ligne ou en bloc. Chaque
+			réponse est enregistrée aussitôt ; « À revoir » ouvre une case pour dire quoi changer.
+		</p>
+	</header>
+	<div class="status" role="status">
+		<span class="count" id="count">…</span>
+		<div class="bar" aria-hidden="true"><i id="barfill"></i></div>
+		<span class="conn" id="conn">Connexion à l'enregistrement…</span>
+	</div>
+	<p class="banner" id="banner"></p>
+	<p class="done" id="done">Tout est tranché et enregistré. Tu peux le dire à Claude.</p>
+	<nav class="toc" id="toc"></nav>
+	<main id="main"></main>
+</div>
+<script>
+	const D = /*DATA*/;
+	const state = { q: {}, l: {} };
+	let db = null, canWrite = true;
+	const drafts = {}, timers = {}, pending = new Map();
+	let queueRunning = false;
+	function el(tag, attrs, ...kids) {
+	  const e = document.createElement(tag);
+	  for (const [k, v] of Object.entries(attrs || {})) {
+	    if (k === 'class') e.className = v; else if (k.startsWith('on')) e.addEventListener(k.slice(2), v); else if (v !== false && v != null) e.setAttribute(k, v === true ? '' : v);
+	  }
+	  for (const k of kids.flat(Infinity)) if (k != null && k !== '') e.append(k.nodeType ? k : document.createTextNode(String(k)));
+	  return e;
+	}
+	const ids = (s) => String(s).split(/(`[^`]+`)/).map((p) => p.startsWith('`') ? el('span', { class: 'code' }, p.slice(1, -1)) : p);
+	function setConn(t, bad) { const c = document.getElementById('conn'); c.textContent = t; c.classList.toggle('bad', !!bad); }
+	function banner() {
+	  const b = document.getElementById('banner');
+	  b.classList.toggle('on', pending.size > 0);
+	  b.textContent = pending.size ? pending.size + ' réponse(s) pas encore enregistrée(s) : nouvel essai automatique. Ne ferme pas la page.' : '';
+	}
+	// File d'écriture unique : une écriture toutes les 400 ms, nouvel essai de 2 s à 30 s.
+	function write(path, body) { pending.set(path, { body, delay: 2000 }); local(path, body); banner(); runQueue(); }
+	function local(path, body) { const [coll, id] = path.split('/'); const next = { ...state[coll] }; if (body === null) delete next[id]; else next[id] = body; state[coll] = next; render(); }
+	async function runQueue() {
+	  if (queueRunning || !db) return;
+	  queueRunning = true;
+	  while (pending.size) {
+	    const [path, job] = pending.entries().next().value;
+	    try {
+	      if (job.body === null) await db.doc(path).delete(); else await db.doc(path).set(job.body);
+	      if (pending.get(path) === job) pending.delete(path);
+	      setConn('Réponses enregistrées en direct.');
+	      await new Promise((r) => setTimeout(r, 400));
+	    } catch (e) {
+	      if (e && (e.code === 'not_granted' || e.code === 'permission_denied')) { canWrite = false; pending.clear(); setConn('Lecture seule : réponses non enregistrées.', true); break; }
+	      setConn('Écriture refusée (' + ((e && e.code) || 'erreur') + ') : nouvel essai dans ' + Math.round(job.delay / 1000) + ' s.', true);
+	      await new Promise((r) => setTimeout(r, job.delay));
+	      job.delay = Math.min(job.delay * 2, 30000);
+	    }
+	    banner(); render();
+	  }
+	  queueRunning = false;
+	}
+	function btn(on, label, onclick, cls, reco) { return el('button', { class: (on ? (cls || 'on-ok') : '') + (reco ? ' is-reco' : ''), disabled: !canWrite, 'aria-pressed': on ? 'true' : 'false', onclick }, label); }
+	function choose(coll, id, c) { const cur = state[coll][id]; write(coll + '/' + id, cur && cur.c === c ? null : { c, note: (cur && cur.note) || '', at: new Date().toISOString() }); }
+	function noteBox(coll, id, ph, show) {
+	  const key = coll + '-' + id, cur = state[coll][id];
+	  if (!show && !(cur && cur.note)) return null;
+	  const ta = el('textarea', { class: 'c', id: key, placeholder: ph, disabled: !canWrite, oninput: (ev) => {
+	    drafts[key] = ev.target.value; clearTimeout(timers[key]);
+	    timers[key] = setTimeout(() => { const c = state[coll][id], t = drafts[key]; if (c && c.note === t) return; if (!c && !t.trim()) return; write(coll + '/' + id, { ...(c || { c: 'avis' }), note: t, at: new Date().toISOString() }); }, 700);
+	  } });
+	  ta.value = drafts[key] ?? ((cur && cur.note) || '');
+	  return el('div', { class: 'note' }, ta);
+	}
+	function qView(q) {
+	  const cur = state.q[q.id];
+	  return el('div', { class: 'q' + (cur ? (cur.c === 'avis' ? ' is-avis' : cur.c === q.reco ? ' is-ok' : ' is-no') : ''), id: 'q-' + q.id },
+	    el('div', { class: 'qn' }, q.id),
+	    el('p', { class: 'qex' }, ids(q.t)),
+	    el('p', { class: 'ctx' }, ids(q.x)),
+	    el('div', { class: 'choice' }, q.o.map(([o, l]) => btn(cur && cur.c === o, l, () => choose('q', q.id, o), o === q.reco ? 'on-ok' : 'on-no', o === q.reco)), btn(cur && cur.c === 'avis', 'Je ne tranche pas', () => choose('q', q.id, 'avis'), 'on-avis')),
+	    el('p', { class: 'qreco' }, el('b', {}, 'Reco (soulignée) : '), q.w),
+	    noteBox('q', q.id, 'Une remarque ? (facultatif)', true));
+	}
+	function ptView(p) { return el('div', { class: 'point' }, el('span', { class: 'code' }, p.c), el('span', {}, p.l)); }
+	function lineState(k) { const c = state.l[k]; return c ? c.c : null; }
+	function rowWrap(k, main) {
+	  const s = lineState(k);
+	  return el('div', { class: 'row' + (s === 'ok' ? ' is-ok' : s === 'no' ? ' is-no' : '') },
+	    main,
+	    el('div', { class: 'r-act' }, btn(s === 'ok', 'OK', () => choose('l', k, 'ok'), 'on-ok'), btn(s === 'no', 'À revoir', () => choose('l', k, 'no'), 'on-no')),
+	    noteBox('l', k, 'Que faut-il changer ?', s === 'no'));
+	}
+	function modView(m) {
+	  return rowWrap(m.k, el('div', { class: 'r-main' },
+	    el('div', { class: 'r-title' }, m.t, el('span', { class: 'id' }, m.id)),
+	    ptView(m.p),
+	    el('div', { class: 'mod' }, el('b', {}, 'Modification : '), m.x)));
+	}
+	function scView(s) {
+	  return rowWrap(s.k, el('div', { class: 'r-main' },
+	    el('div', { class: 'r-title' }, s.t, el('span', { class: 'id' }, s.id)),
+	    el('div', { class: 'grp' }, s.g.map((g) => el('div', { class: 'g ' + g.r },
+	      el('span', { class: 'role' }, g.r === 'ORIGINE' ? 'Origine' : 'Neuf'), el('span', { class: 'vars' }, g.v),
+	      el('span', { class: 'tp' }, g.tp),
+	      el('div', { class: 'pts' }, g.p.map(ptView)),
+	      g.rq ? el('span', { class: 'rq' }, g.rq) : null)))));
+	}
+	function bulk(keys, label) {
+	  const left = keys.filter((k) => !lineState(k));
+	  return el('div', { class: 'bulk' }, btn(false, 'Tout le reste OK (' + left.length + ')', () => left.forEach((k) => write('l/' + k, { c: 'ok', note: '', at: new Date().toISOString() })), 'on-ok'), left.length ? '' : 'Tout est coché.');
+	}
+	function part(id, num, title, lede, ...kids) {
+	  return el('section', { class: 'part', id }, el('div', { class: 'part-head' }, el('span', { class: 'num' }, num), el('h2', {}, title), lede ? el('p', {}, lede) : null), ...kids);
+	}
+	function render() {
+	  const act = document.activeElement, fid = act && act.tagName === 'TEXTAREA' ? act.id : null, sel = fid ? [act.selectionStart, act.selectionEnd] : null;
+	  renderAll();
+	  if (fid) { const t = document.getElementById(fid); if (t) { t.focus(); t.setSelectionRange(sel[0], sel[1]); } }
+	}
+	function renderAll() {
+	  const lk = [...D.mod.map((m) => m.k), ...D.sc.map((s) => s.k)];
+	  const nq = D.q.filter((q) => state.q[q.id] && state.q[q.id].c !== 'avis').length;
+	  const nl = lk.filter((k) => lineState(k)).length;
+	  document.getElementById('count').textContent = nq + ' / ' + D.q.length + ' questions · ' + nl + ' / ' + lk.length + ' lignes';
+	  document.getElementById('barfill').style.width = (100 * (nq + nl) / (D.q.length + lk.length)).toFixed(1) + '%';
+	  document.getElementById('done').classList.toggle('on', nq === D.q.length && nl === lk.length && pending.size === 0 && !!db);
+	  document.getElementById('toc').replaceChildren(
+	    el('a', { href: '#questions' }, 'Questions', el('span', {}, D.q.length)),
+	    el('a', { href: '#modifier' }, 'Modifications', el('span', {}, D.mod.length)),
+	    el('a', { href: '#scissions' }, 'Scissions', el('span', {}, D.sc.length)),
+	    el('a', { href: '#sans' }, 'Sans tag', el('span', {}, D.sans.length)));
+	  const lots = Object.keys(D.lots);
+	  document.getElementById('main').replaceChildren(
+	    part('questions', 'Partie 1', 'Questions à trancher', 'Choix ponctuels du lot MODIFIER (B, C), modèles hors programme à leur niveau (H), scissions douteuses (E3, S6-S11) et écarts relevés dans les verdicts (X).', ...D.q.map(qView)),
+	    part('modifier', 'Partie 2', 'Modifications au niveau du modèle', '18 modèles. Chaque modèle reçoit le tag de son point une fois modifié. Les lignes qui renvoient à une question suivent ta réponse.',
+	      ...lots.map((l) => el('div', { class: 'box' }, el('div', { class: 'sub' }, D.lots[l]), el('div', { class: 'rows' }, D.mod.filter((m) => m.lot === l).map(modView)))),
+	      bulk(D.mod.map((m) => m.k))),
+	    part('scissions', 'Partie 3', 'Scissions', D.sc.length + ' modèles scindés en ' + D.sc.reduce((n, s) => n + s.g.length, 0) + ' : l’origine garde son identifiant et le groupe le plus fourni, chaque neuf reçoit ses variations et son point.',
+	      el('div', { class: 'box' }, el('div', { class: 'rows' }, D.sc.map(scView))), bulk(D.sc.map((s) => s.k))),
+	    part('sans', 'Partie 4', 'Restent sans tag', 'Pour information, selon ta règle (QCM de cours et vrai/faux à 4 points ou plus).',
+	      el('div', { class: 'box' }, el('div', { class: 'rows' }, D.sans.map((s) => el('div', { class: 'row' }, el('div', { class: 'r-main' }, el('div', { class: 'r-title' }, s.t, el('span', { class: 'id' }, s.id)), el('div', { class: 'why' }, s.g[0].rq || s.g[0].tp))))))));
+	}
+	render();
+	(async () => {
+	  const c = window.claude;
+	  if (!c || !c.use) { canWrite = false; setConn('Enregistrement indisponible ici : ouvre la page sur claude.ai.', true); render(); return; }
+	  db = await c.use('db');
+	  if (!db) { canWrite = false; setConn('Enregistrement indisponible : connecte-toi à claude.ai.', true); render(); return; }
+	  const user = await c.use('user');
+	  if (user && (await user.can('data.write')) === false) { canWrite = false; setConn('Lecture seule.', true); }
+	  let ready = 0;
+	  for (const [coll, bit] of [['q', 1], ['l', 2]]) {
+	    db.collection(coll).onSnapshot((snap) => {
+	      const next = {}; for (const d of snap.docs) next[d.id] = d.data();
+	      for (const [p, job] of pending) { const [cc, id] = p.split('/'); if (cc === coll) { if (job.body === null) delete next[id]; else next[id] = job.body; } }
+	      state[coll] = next; ready |= bit; if (ready === 3 && canWrite && !pending.size) setConn('Réponses enregistrées en direct.'); render();
+	    }, (e) => setConn('Enregistrement interrompu (' + e.code + '). Recharge la page.', true));
+	  }
+	  runQueue();
+	})();
+</script>

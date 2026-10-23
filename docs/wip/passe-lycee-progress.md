@@ -12,7 +12,7 @@ _Mis à jour le 2026-10-23, phase 0 du lot MODIFIER + TAG_PAR_VARIATION._
   MODIFIER + TAG_PAR_VARIATION en phase 0 : principes tranchés (journal), listes prêtes : `analyse/lot-modifier.md`
   (18 MODIFIER en lots A/B/C, 7 choix, 10 modèles hors programme à leur niveau), `analyse/scissions-plan.csv` +
   `scissions-notes.md` (47 scissions → 62 neufs, 2 sans tag, 11 à trancher, 4 contradictions).
-- **Prochaine action** : page à cocher de ces choix, puis migrations par lot (méthode `arbre-notions/analyse/lot-2bis-*.py`).
+- **Prochaine action** : relire les réponses de la page https://claude.ai/artifact/4ZcL4ioFtit4ncQExRmT5D (collections `q`, `l`), puis migrations par lot (méthode `arbre-notions/analyse/lot-2bis-*.py`).
 - **En attente de David** : validation de la page (choix B1-B3, C1-C4, § 4 hors programme, A_TRANCHER, contradictions).
 - **Pièges en cours** : l'ancien `etat-prod-2026-10-23/` reste pour `generer-migration-tags.py`. Base locale :
   `20261022200000` et `20261023150000` notées jouées (`migration repair --local`).
@@ -181,3 +181,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   QCM de cours et vrai/faux à 4 points ou plus, laissés sans tag**. Écarté : tags par variation (reviendrait sur
   l'ADR 0020 § 7). Suite : liste modèle par modèle (lots A nombres, B variations, C consigne ou corrigé, D scissions)
   à faire valider.
+- **2026-10-23 — Plan des scissions et page à cocher publiée.** Agent Opus : 47 modèles scindés → 62 neufs, 2 sans
+  tag (`f8ccc8b6`, `a80a780f`), 11 à trancher, contradictions relevées (`scissions-notes.md`) ; la n° 3 (`7d552757`,
+  sinus) écartée : la borne de TSPE-457/458 renvoie à la décision lts-1 « cos et sin ». Page
+  `analyse/page/gen-lot-modifier.py` → https://claude.ai/artifact/4ZcL4ioFtit4ncQExRmT5D : 18 questions (B1-B3, C1-C4,
+  H, E3, S6-S11, X1-X3), 18 MODIFIER, 47 scissions ; file d'écriture avec nouvel essai. Base vide vérifiée à la
+  publication.
