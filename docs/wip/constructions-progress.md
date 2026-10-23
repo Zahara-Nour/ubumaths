@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR #1653 ouverte (lot 12), pas mergée._
+_Mis à jour le 2026-10-23, après #1653 (lot 12, finitions)._
 
-- **État** : #1653 `fix/constructions-finitions` poussée : bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre, trait visible le long de la règle. Revue Opus : aucun bloquant. CI rouge pour une cause extérieure : `template-fact-sheet.test.ts` cassé sur `main` (#1650 × #1652), réparé par #1655 (autre session) ; shard client 1/2 relancé (`wrapDynamicImport`).
-- **Prochaine action** : après le merge de #1655 → `git merge origin/main` dans la branche, push, CI verte → merger #1653 ; puis vérifications manuelles notées (scripts du lot 12 dans la section « Lot 12 »), serveur 5187 arrêté, worktree `-finitions` supprimé.
-- **En attente de David** : (1) `@arc_milieu` sur un angle plat : refus recommandé (le milieu de [A′B′] est V ; message vers `@arcs_egaux`/`@mesure`), pas encore tranché. (2) Vérifications #1621 → #1649 (serveurs 5183-5186) puis suppression des worktrees mergés. (3) Suites : consignes automatiques (reco : phase 0) ; marqueurs d'angle droit seulement en `@complet`.
-- **Pièges en cours** : le journal à jour est dans `../ubumaths-wt-constructions-finitions`, PAS dans `../ubumaths-wt-constructions` (resté à #1629). `e` = constante d'Euler. Commits et PR : aucune mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-constructions-finitions` · `fix/constructions-finitions` · serveur de test 5187.
+- **État** : lots 1 à 12 mergés ; #1653 (bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre, trait visible le long de la règle) mergée, pas encore en prod. Worktree `-finitions` supprimé, vérifications notées dans `docs/wip/verifications-manuelles.md`.
+- **Prochaine action** : aucune en cours ; attendre que David tranche les points ci-dessous.
+- **En attente de David** : (1) `@arc_milieu` sur un angle plat : refus recommandé (le milieu de [A′B′] est V ; message vers `@arcs_egaux`/`@mesure`), pas encore tranché. (2) Vérifications #1621 → #1653 (serveurs 5183-5186 pour les worktrees encore là, sinon `main` sur 5175), puis suppression des worktrees mergés (`-auxiliaires`, `-bissectrice-mesure`, `-consignes`, `-droite`, `-mediatrice-mesure`, `-mesure`, `-pause`, `-rythme`, `ubumaths-wt-constructions`). (3) Suites : consignes automatiques (reco : phase 0) ; marqueurs d'angle droit seulement en `@complet`.
+- **Pièges en cours** : `e` = constante d'Euler. Commits et PR : aucune mention Claude.
+- **Worktree / branche** : aucun (prochain lot : nouveau worktree depuis `origin/main`).
 
 ---
 
