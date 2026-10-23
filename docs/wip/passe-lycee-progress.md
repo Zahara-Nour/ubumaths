@@ -6,18 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot C écrit (PR à ouvrir)._
+_Mis à jour le 2026-10-23, après #1640 (lot C, `db:migrate` fait)._
 
-- **État** : lots A + B en prod ; lot C écrit (10 modèles modifiés + `646b4cd3` tag seul), tests verts, revues à faire.
-- **Prochaine action** : PR du lot C (revues Opus `code-reviewer` + `security-auditor`), merge, `db:migrate` ;
-  puis scissions (47 → 62 neufs + `95ee8348`, reporté du lot A), E3, H. Question d'accès à reposer pour chaque PR.
+- **État** : lots A, B, C en prod (16 modèles modifiés et tagués, 3 neufs, `646b4cd3` tag seul) ; restent scissions, E3, H.
+- **Prochaine action** : worktree neuf, scissions (47 → 62 neufs + `95ee8348`, reporté du lot A ; plan
+  `analyse/scissions-plan.csv`, notes `scissions-notes.md`) sur le modèle de `analyse/lot-modifier-ab.py` (neufs) ;
+  puis E3, H. Question d'accès à reposer pour chaque PR.
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé du contenu = `releves/templates.json` (vérifier ses empreintes md5 en prod avant chaque lot ;
   les modèles des lots A, B, C ont changé) ; neufs : niveau libre dans la catégorie, brouillons compris ;
   `question:specs --file` : passer par `toQuestionTemplate` (sans created_at/updated_at/created_by) et
   `svelte-kit sync` dans un worktree neuf ; `REECRIRE_MIGRATION=1` pour réécrire une migration jamais jouée ;
-  `test:integration --reporter=verbose` pour voir les tests sautés. S8, X1-X3 : voir phase 0.
-- **Worktree / branche** : `ubumaths-wt-passe-lycee-c` / `feat/passe-lycee-lot-c`.
+  `test:integration --reporter=verbose` pour voir les tests sautés ; shard client de la CI parfois annulé à 15 min
+  (relancer `--failed`). S8, X1-X3 : voir phase 0.
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -227,3 +229,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   `93539700` V1, `f2cc01fc` V4), laissés hors du lot. Migration jouée hors transaction en local (sans effet, base
   vide) ; 22 tests verts (11 sautés : neufs, options, tags d'avant, absents du lot), rouges sans la migration ;
   lots A + B toujours verts avec le helper étendu.
+- **2026-10-23 — #1640 mergée, `db:migrate` fait.** Revues Opus : `security-auditor` et `code-reviewer` sans
+  bloquant ; corrigé : outil qui refuse un lot de tags seuls (rollback à `values` vide). Laissé : la garde md5 du
+  rollback compte aussi `646b4cd3` (refus prudent s'il est retouché) ; pas de test qui relise `updated_at` après le
+  rollback. CI verte (shard client annulé au délai, relancé). Seule migration en attente (`--dry-run`) ; vérifiée par
+  le MCP : 11 contenus = fixture, 11 tags, 10 `updated_at` avancés, `646b4cd3` inchangé (2026-10-04).
