@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1645._
+_Mis à jour le 2026-10-23, après le marquage en prod (v0.45.0, #1648)._
 
-- **État** : lots mergés jusqu'à **#1645 (lot 4d PR 2 : script `pnpm corrections:marquage-espaces`)** (§ 44) ; #1642 (espaces, BIPM + réglage « Espaces dès 4 chiffres ») et le script attendent le `deploy:prod`. Simulation prod : 55/55 verts (51 marqués, 4 brouillons de 1re spé corrigés au BIPM).
+- **État** : **lot 4d terminé et en prod** : v0.45.0 déployée (#1642 espaces BIPM + réglage, #1645 script), marquage publié par David le 2026-10-23 (51 modèles marqués, 5 brouillons de 1re spé corrigés ; sauvegarde `data/migration-output/backups/marquage-espaces-2026-10-23T14-52-59-666Z.json`) ; relance : 56 déjà traités. #1648 a ajouté `103cf8d9`, scindé de `27d77564` par #1646 (§ 45).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d PR 1~~ → ~~4d PR 2~~ → **marquage en prod (après deploy)** → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : après le `deploy:prod` de David et sur son feu vert, depuis le dépôt principal : `pnpm corrections:marquage-espaces` (simulation, 55/55 attendu) puis `--publier` ; noter la sauvegarde. Ensuite lot 4e (nouveau worktree depuis `origin/main`).
-- **En attente de David** : `deploy:prod`, puis feu vert du `--publier`.
-- **Pièges en cours** : ⚠️ **ne pas déployer #1642 sans enchaîner le script** (sinon la numération accepte `7900` sans remarque) ; marquer AVANT le deploy est impossible (schéma strict de l'éditeur en prod). Relance après interruption : modèles déjà traités sautés. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (worktree retiré après #1645) ; le lot 4e en créera un.
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d~~ → **4e module de règles partagé (§ 10)** → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : vérification manuelle de #1642 en prod (`verifications-manuelles.md`) ; puis lot 4e, phase 0 (comportements à valider), worktree neuf depuis `origin/main`.
+- **En attente de David** : la vérification manuelle des espaces sur chiph.re.
+- **Pièges en cours** : un modèle neuf de numération avec une spec `7900` attendra le réglage « Espaces dès 4 chiffres » coché à la main. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -658,3 +658,7 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 **Ordre de livraison** : merge de cette PR → `deploy:prod` (David) → `pnpm corrections:marquage-espaces --publier` depuis le dépôt principal, sur le feu vert de David, aussitôt après.
 
 **Mergé : #1645** (2026-10-23, CI verte).
+
+## 45. Lot 4d en prod (2026-10-23)
+
+`deploy:prod` → v0.45.0 (#1642, #1645, avec #1646 et #1647 d'autres sessions). Simulation du marquage aussitôt après : **refus**, un 56e modèle sélectionné hors liste, `103cf8d9` « Valeur d'un placement à intérêts simples » (brouillon 1re spé créé à 14 h 09 par la scission de `27d77564`, #1646), même spec `2300` sans espace. Même traitement que les brouillons de lycée : **#1648** (liste à 5 brouillons), CI verte, mergée ; simulation 56/56. `--publier` lancé par David : 56 écrits (51 `options`, 5 `test_specs`), vérifié en base (51 marqués, 5 brouillons sans spec `spaces`) et par relance (56 déjà traités, rien à écrire). La garde des listes figées a servi : sans elle, le brouillon scindé serait resté avec une spec rouge.
