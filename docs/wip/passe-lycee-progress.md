@@ -6,20 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1640 (lot C, `db:migrate` fait)._
+_Mis à jour le 2026-10-23, scissions en cours (PR 1 : scissions mécaniques)._
 
-- **État** : lots A, B, C en prod (16 modèles modifiés et tagués, 3 neufs, `646b4cd3` tag seul) ; restent scissions, E3, H.
-- **Prochaine action** : worktree neuf, scissions (47 → 62 neufs + `95ee8348`, reporté du lot A ; plan
-  `analyse/scissions-plan.csv`, notes `scissions-notes.md`) sur le modèle de `analyse/lot-modifier-ab.py` (neufs) ;
-  puis E3, H. Question d'accès à reposer pour chaque PR.
-- **En attente de David** : rien.
-- **Pièges en cours** : relevé du contenu = `releves/templates.json` (vérifier ses empreintes md5 en prod avant chaque lot ;
-  les modèles des lots A, B, C ont changé) ; neufs : niveau libre dans la catégorie, brouillons compris ;
-  `question:specs --file` : passer par `toQuestionTemplate` (sans created_at/updated_at/created_by) et
-  `svelte-kit sync` dans un worktree neuf ; `REECRIRE_MIGRATION=1` pour réécrire une migration jamais jouée ;
-  `test:integration --reporter=verbose` pour voir les tests sautés ; shard client de la CI parfois annulé à 15 min
-  (relancer `--failed`). S8, X1-X3 : voir phase 0.
-- **Worktree / branche** : aucun.
+- **État** : lots A, B, C en prod ; PR 1 des scissions écrite sur `feat/passe-lycee-scissions` (50 modèles → 72
+  neufs, 6 origines déplacées R2, 7 conflits de nœud en retrait forcé) ; restent PR 2 (S6, S11, E3) puis PR 3 (H).
+- **Prochaine action** : tests d'intégration locaux, specs et tirages des neufs, revues, PR.
+- **En attente de David** : rien (question d'accès tranchée : personne ne gagne ; conflits : recos suivies).
+- **Pièges en cours** : générateur `analyse/scissions_outils.py` (plusieurs neufs, plusieurs tags, R2), helper de
+  test `lot-2bis-migration.ts` généralisé (deux formes de fixture) ; trigger des tags : point sur le nœud du modèle
+  ou sa notion, jamais une sous-notion sœur ; `question:specs --file` : passer par `toQuestionTemplate` et
+  `svelte-kit sync` ; `REECRIRE_MIGRATION=1` pour réécrire une migration jamais jouée ; shard client de la CI
+  parfois annulé à 15 min (relancer `--failed`).
+- **Worktree / branche** : `ubumaths-wt-passe-lycee` · `feat/passe-lycee-scissions`.
 
 ## Les 5 étapes
 
@@ -234,3 +232,27 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   rollback compte aussi `646b4cd3` (refus prudent s'il est retouché) ; pas de test qui relise `updated_at` après le
   rollback. CI verte (shard client annulé au délai, relancé). Seule migration en attente (`--dry-run`) ; vérifiée par
   le MCP : 11 contenus = fixture, 11 tags, 10 `updated_at` avancés, `646b4cd3` inchangé (2026-10-04).
+- **2026-10-23 — Scissions, PR 1 (worktree `passe-lycee`).** Question d'accès tranchée par David : personne ne gagne
+  d'accès (57 brouillons ; seul publié `a86442c1`, 0 donnée d'élève, son neuf V5 √x publié comme lui). Découpage
+  validé : PR 1 = 47 SCINDER + S7-S10 (mécaniques, `95ee8348` avec sa V2 du lot A : 1/(t² + c)) ; PR 2 = S6, S11,
+  E3 ; PR 3 = H. Prod relue par le MCP : contenu, nœud et tags des 51 modèles = relevé ; seuls 8 portent un tag (de
+  l'autre programme, gardé, vaut pour tous les groupes) ; aucun tag à retirer. Contrôle des nœuds : 6 origines et
+  31 neufs hors du nœud de l'origine → R2 ; 7 conflits Tle spé / Tle compl. → retrait forcé, recos suivies par
+  David : 806c10f4 neuf V5 TSPE-441 seul ; efb12f4b NON scindé (sort du lot : ses parts n'auraient que TCOMP-250) ;
+  95ee8348 neuf TCOMP-272 seul ; dd0ee69a origine TSPE-481 seul, neuf TCOMP-269 seul ; ef3c495c origine TCOMP-296
+  seul, neuf V1 TCOMP-288 seul ; 13e2d419 neuf V5 TCOMP-301 seul. Bilan : 50 modèles, 72 neufs, 145 tags posés.
+  Outils : `analyse/scissions_outils.py` (nouveau, l'outil du collège reste tel quel) + `analyse/lot-scissions.py` ;
+  niveaux des neufs = au-dessus du plus haut pris dans la catégorie, brouillons compris (relevé en prod).
+- **2026-10-23 — Scissions PR 1 : preuves.** 23 tests d'intégration verts (1 sauté : `options`, non touchées),
+  rouges sans la migration (étapes 4 retirées : la suite nominale tombe dès sa mise en place) ; les suites
+  lot-ab, lot-c, lot-2bis-scissions, lot-2bis-nombres restent vertes avec le helper généralisé.
+  `check:incremental` 0 erreur, cliquet des types tenu. Specs : 120/122 importables ; les 2 rouges (`27d77564` et
+  son neuf `103cf8d9`, « nombre sans espace » attendu perfectible) l'étaient déjà dans le modèle d'avant (18/20).
+  Tirages 100 % réussis. Audit du rendu : 11 modèles à défauts, tous identiques à ceux des modèles d'avant
+  (termes nuls, `1/(6-0)`… ; 119b9148 : 17 = 9 + 8), laissés hors du lot.
+- **2026-10-23 — Revues Opus de #1646.** `security-auditor` et `code-reviewer` : aucun bloquant. Corrigé : garde du
+  statut des origines (les neufs en héritent ; publiée depuis le relevé → refus), test ; test « carte SRS sur un
+  neuf » (seule table en cascade réellement éprouvée ; `skill_attempts` refuse déjà d'elle-même). Laissé : les neufs
+  et origines en retrait forcé gardent `grades` [T_SPE, T_COMP] de l'origine (comme en #1632) ; tables sans clé
+  étrangère vers les modèles (favoris, stats, chapitres : 0 ligne en prod sur les 50) ; pas de garde dédiée à une
+  origine déplacée puis retaguée (le trigger fait échouer tout le rollback).
