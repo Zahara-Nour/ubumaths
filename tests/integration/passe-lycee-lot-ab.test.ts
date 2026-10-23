@@ -20,5 +20,6 @@ decrireLotModifier({
 	migration: 'supabase/migrations/20261024001000_passe_lycee_lot_ab.sql',
 	fixture: 'tests/integration/fixtures/passe-lycee-lot-ab.json',
 	taille: 6,
-	neufs: 3
+	neufs: 3,
+	gardeRangementNeufs: true
 });

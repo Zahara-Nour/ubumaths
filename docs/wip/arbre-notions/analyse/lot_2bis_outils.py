@@ -4,7 +4,7 @@ B `lot-2bis-variations.py`…).
 Un script de lot écrit une fonction par modèle (clé = 8 premiers caractères de l'id), qui modifie
 le contenu relevé en prod en vérifiant chaque ancienne valeur, puis appelle `generer`. Celle-ci
 écrit la fixture du test d'intégration et la migration : garde sur le contenu, le nœud, les
-niveaux et l'absence de tag ; nouveau contenu ; tag du point ; rollback à empreinte md5.
+niveaux et les tags (exactement ceux du relevé) ; nouveau contenu ; tag du point ; rollback à empreinte md5.
 
 Une SCISSION (lot D) garde le modèle d'origine, qui reçoit une partie du contenu et le premier point de
 sa ligne (« 5-026,5-123 »), et crée un modèle neuf (UUID fixé par le script) qui reçoit l'autre partie
@@ -225,7 +225,9 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
         return 'array[' + ', '.join("'" + v + "'" for v in g) + ']'
 
     n = len(lot)
-    neufs = [m['scission'] | {'origine': m['id']} for m in lot if 'scission' in m]
+    neufs = [m['scission'] | {'origine': m['id'], 'statut': m['categorie']['status'],
+                              'chemin': m['scission'].get('noeud', m['noeud'])}
+             for m in lot if 'scission' in m]
     k = len(neufs)
     empreinte = ("jsonb_build_object('title', q.title, 'description', q.description, 'variations', q.variations,"
                  " 'shared', q.shared, 'test_specs', q.test_specs)")
@@ -237,7 +239,7 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
             "-- -- retouché depuis la migration ou porte une donnée d'élève (la suppression emporterait en",
             "-- -- cascade cartes SRS et activités de journal).",
             "-- do $retour_neufs$",
-            "-- declare v_intacts integer; v_eleves integer;",
+            "-- declare v_intacts integer; v_eleves integer; v_ranges integer; v_tags integer; v_poses integer;",
             "-- begin",
             f"-- \tperform 1 from public.question_templates where id in ({liste_neufs}) for update;",
             "-- \tselect count(*) into v_intacts from public.question_templates q join (values",
@@ -249,6 +251,33 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
             f"-- \t where md5({empreinte}::text) = r.h;",
             f"-- \tif v_intacts <> {k} then",
             f"-- \t\traise exception 'rollback : % modèle(s) neuf(s) sur {k} portent encore le contenu de la migration', v_intacts;",
+            "-- \tend if;",
+            "-- \t-- Ni publiés, ni rangés ailleurs, ni retagués depuis (la suppression emporterait ce travail).",
+            "-- \tselect count(*) into v_ranges from public.question_templates q join (values",
+        ]
+        rb_neufs += [f"-- \t\t('{x['id']}'::uuid, '{x['statut']}', {ch(x['chemin'])})" + (',' if i < k - 1 else '')
+                     for i, x in enumerate(neufs)]
+        rb_neufs += [
+            "-- \t) as r(id, statut, branche, notion, sous_notion) on r.id = q.id",
+            "-- \t join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche",
+            "-- \t join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion",
+            "-- \t left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion",
+            "-- \t where q.status = r.statut",
+            "-- \t   and q.classification_node_id = case when r.sous_notion is null then nn.id else s.id end;",
+            f"-- \tif v_ranges <> {k} then",
+            f"-- \t\traise exception 'rollback : % modèle(s) neuf(s) sur {k} ont encore le statut et le nœud de la migration', v_ranges;",
+            "-- \tend if;",
+            f"-- \tselect count(*) into v_tags from public.question_template_points where template_id in ({liste_neufs});",
+            "-- \tselect count(*) into v_poses from public.question_template_points t",
+            "-- \t  join public.curriculum_points p on p.id = t.point_id",
+            "-- \t  join (values",
+        ]
+        rb_neufs += [f"-- \t\t('{x['id']}'::uuid, '{x['tag']['grade']}', '{x['tag']['code']}')" + (',' if i < k - 1 else '')
+                     for i, x in enumerate(neufs)]
+        rb_neufs += [
+            "-- \t  ) as r(id, grade, code) on r.id = t.template_id and p.grade = r.grade and p.code = r.code;",
+            f"-- \tif v_tags <> {k} or v_poses <> {k} then",
+            f"-- \t\traise exception 'rollback : les modèles neufs portent % tag(s), dont % posé(s) par la migration (attendu : {k})', v_tags, v_poses;",
             "-- \tend if;",
             "-- \tselect (select count(*) from public.srs_cards where template_id in (" + liste_neufs + "))",
             "-- \t     + (select count(*) from public.skill_attempts where template_id in (" + liste_neufs + "))",
@@ -265,7 +294,9 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
         "-- Rollback (il rend aux modèles leur contenu d'avant et retire les tags posés ; aucune",
         "-- donnée d'élève). Garde : il refuse si un modèle n'a plus EXACTEMENT le contenu posé par",
         "-- la migration (empreinte md5), pour ne pas écraser une modification faite depuis dans",
-        "-- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :",
+        "-- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction (sinon une",
+        "-- garde qui échoue n'arrête pas la suite) : `psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL",
+        "-- en un seul envoi :",
         "-- ROLLBACK:BEGIN",
         *rb_neufs,
         "-- do $retour$",
@@ -466,6 +497,10 @@ drop table pg_temp.{tmp}_modeles;
         # 3 empreintes (garde, vérification, rollback) ; 2 de plus pour les modèles neufs
         # (vérification des neufs, rollback des neufs).
         assert texte.count("'options', q.options)") == (5 if neufs else 3)
+    if os.path.exists(migration) and open(migration).read() != texte and not os.environ.get('REECRIRE_MIGRATION'):
+        # Une migration jouée en prod ne se réécrit pas en silence (outil étendu depuis : la sortie
+        # d'un script du collège n'est plus celle qui a tourné).
+        sys.exit(f'{migration} existe et différerait : REECRIRE_MIGRATION=1 pour la réécrire (jamais une migration jouée).')
     open(migration, 'w').write(texte)
 
 
@@ -479,8 +514,9 @@ def ajouter_neufs(texte: str, tmp: str, k: int, empreinte: str) -> str:
 
     inserer('end $resolution$;\n', f'''
 create temporary table {tmp}_resolus_neufs as
-	select n.id, p.id as point_id, n.branche is not null as noeud_propre,
-	       case when n.sous_notion is null then nn.id else s.id end as noeud
+	select n.id, p.id as point_id, p.node_id as noeud_du_point, n.branche is not null as noeud_propre,
+	       case when n.sous_notion is null then nn.id else s.id end as noeud,
+	       case when n.sous_notion is null then nn.archived_at else s.archived_at end as noeud_archive
 	  from {tmp}_neufs n
 	  left join public.curriculum_points p on p.grade = n.tag_grade and p.code = n.tag_code and p.archived_at is null
 	  left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = n.branche
@@ -488,9 +524,15 @@ create temporary table {tmp}_resolus_neufs as
 	  left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = n.sous_notion;
 do $resolution_neufs$
 begin
-	if exists (select 1 from {tmp}_resolus_neufs where point_id is null or (noeud_propre and noeud is null)) then
+	-- Nœud propre : actif, et celui du point du modèle neuf (la garde des tags n'accepte que lui
+	-- ou sa notion ; un point déplacé depuis le relevé fait échouer ici, pas plus loin).
+	if exists (select 1 from {tmp}_resolus_neufs
+	            where point_id is null
+	               or (noeud_propre and (noeud is null or noeud_archive is not null or noeud <> noeud_du_point))) then
 		raise exception 'points ou nœuds des modèles neufs introuvables : %',
-			(select count(*) from {tmp}_resolus_neufs where point_id is null or (noeud_propre and noeud is null));
+			(select count(*) from {tmp}_resolus_neufs
+			  where point_id is null
+			     or (noeud_propre and (noeud is null or noeud_archive is not null or noeud <> noeud_du_point)));
 	end if;
 end $resolution_neufs$;
 ''')

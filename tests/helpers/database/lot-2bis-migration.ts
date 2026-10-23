@@ -105,6 +105,11 @@ export interface LotModifier {
 	taille: number;
 	/** Nombre de modèles neufs (lot de scissions). */
 	neufs?: number;
+	/**
+	 * Le rollback refuse aussi un modèle neuf publié, rangé ailleurs ou retagué depuis (générateur de
+	 * la passe lycée ; les migrations du collège, déjà jouées, ne gardent que le contenu).
+	 */
+	gardeRangementNeufs?: boolean;
 }
 
 // ============================================================================
@@ -569,6 +574,52 @@ export function decrireLotModifier(lot: LotModifier): void {
 						),
 					/rollback : 1 donnée\(s\) d'élève tiennent aux modèles neufs/
 				);
+			}
+		);
+
+		it.runIf(avecNeufs && lot.gardeRangementNeufs)(
+			'le rollback refuse si un modèle neuf a été publié depuis la migration',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query(`update public.question_templates set status = 'published' where id = $1`, [
+							neufs[0].id
+						]),
+					new RegExp(
+						`rollback : ${neufs.length - 1} modèle\\(s\\) neuf\\(s\\) sur ${neufs.length} ont encore le statut et le nœud de la migration`
+					)
+				);
+			}
+		);
+
+		it.runIf(avecNeufs && lot.gardeRangementNeufs)(
+			'le rollback refuse si les tags d’un modèle neuf ont changé depuis la migration',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query('delete from public.question_template_points where template_id = $1', [
+							neufs[0].id
+						]),
+					new RegExp(
+						`rollback : les modèles neufs portent ${neufs.length - 1} tag\\(s\\), dont ${neufs.length - 1} posé\\(s\\)`
+					)
+				);
+			}
+		);
+
+		it.runIf(neufs.some((x) => x.noeud))(
+			'le point d’un modèle neuf déplacé hors de son nœud propre fait échouer la migration',
+			async () => {
+				const x = neufs.find((n) => n.noeud)!;
+				const origine = modeles.find((m) => m.id === x.origine)!;
+				await echoue(async () => {
+					const parChemin = await noeudsParChemin(pg);
+					await pg.query(
+						`update public.curriculum_points set node_id = $3
+						  where grade = $1 and code = $2 and archived_at is null`,
+						[x.tag.grade, x.tag.code, parChemin.get(origine.noeud.join(' > '))]
+					);
+				}, /points ou nœuds des modèles neufs introuvables : 1/);
 			}
 		);
 

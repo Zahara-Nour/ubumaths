@@ -28,13 +28,15 @@
 -- Rollback (il rend aux modèles leur contenu d'avant et retire les tags posés ; aucune
 -- donnée d'élève). Garde : il refuse si un modèle n'a plus EXACTEMENT le contenu posé par
 -- la migration (empreinte md5), pour ne pas écraser une modification faite depuis dans
--- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans une transaction :
+-- l'éditeur. Bloc éprouvé par le test d'intégration, à jouer dans UNE transaction (sinon une
+-- garde qui échoue n'arrête pas la suite) : `psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL
+-- en un seul envoi :
 -- ROLLBACK:BEGIN
 -- -- Modèles neufs des scissions : le rollback les SUPPRIME. Il refuse si l'un d'eux a été
 -- -- retouché depuis la migration ou porte une donnée d'élève (la suppression emporterait en
 -- -- cascade cartes SRS et activités de journal).
 -- do $retour_neufs$
--- declare v_intacts integer; v_eleves integer;
+-- declare v_intacts integer; v_eleves integer; v_ranges integer; v_tags integer; v_poses integer;
 -- begin
 -- 	perform 1 from public.question_templates where id in ('b954c37d-b331-4d60-92df-2ab76110ae8e', '96be181c-6cd4-43e9-9291-1cd526955408', 'eb2089bf-418e-4a36-916f-2c0c2a549b8c') for update;
 -- 	select count(*) into v_intacts from public.question_templates q join (values
@@ -45,6 +47,31 @@
 -- 	 where md5(jsonb_build_object('title', q.title, 'description', q.description, 'variations', q.variations, 'shared', q.shared, 'test_specs', q.test_specs, 'options', q.options)::text) = r.h;
 -- 	if v_intacts <> 3 then
 -- 		raise exception 'rollback : % modèle(s) neuf(s) sur 3 portent encore le contenu de la migration', v_intacts;
+-- 	end if;
+-- 	-- Ni publiés, ni rangés ailleurs, ni retagués depuis (la suppression emporterait ce travail).
+-- 	select count(*) into v_ranges from public.question_templates q join (values
+-- 		('b954c37d-b331-4d60-92df-2ab76110ae8e'::uuid, 'draft', $plab$Graphes$plab$, $plab$Chaînes et connexité$plab$, $plab$connexité$plab$),
+-- 		('96be181c-6cd4-43e9-9291-1cd526955408'::uuid, 'draft', $plab$Dénombrement$plab$, $plab$Combinaisons$plab$, $plab$triangle de Pascal$plab$),
+-- 		('eb2089bf-418e-4a36-916f-2c0c2a549b8c'::uuid, 'draft', $plab$Nombres complexes$plab$, $plab$Interprétation géométrique$plab$, $plab$affixes et distances$plab$)
+-- 	) as r(id, statut, branche, notion, sous_notion) on r.id = q.id
+-- 	 join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = r.branche
+-- 	 join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion
+-- 	 left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion
+-- 	 where q.status = r.statut
+-- 	   and q.classification_node_id = case when r.sous_notion is null then nn.id else s.id end;
+-- 	if v_ranges <> 3 then
+-- 		raise exception 'rollback : % modèle(s) neuf(s) sur 3 ont encore le statut et le nœud de la migration', v_ranges;
+-- 	end if;
+-- 	select count(*) into v_tags from public.question_template_points where template_id in ('b954c37d-b331-4d60-92df-2ab76110ae8e', '96be181c-6cd4-43e9-9291-1cd526955408', 'eb2089bf-418e-4a36-916f-2c0c2a549b8c');
+-- 	select count(*) into v_poses from public.question_template_points t
+-- 	  join public.curriculum_points p on p.id = t.point_id
+-- 	  join (values
+-- 		('b954c37d-b331-4d60-92df-2ab76110ae8e'::uuid, 'T_EXP', 'TEXP-316'),
+-- 		('96be181c-6cd4-43e9-9291-1cd526955408'::uuid, 'T_SPE', 'TSPE-323'),
+-- 		('eb2089bf-418e-4a36-916f-2c0c2a549b8c'::uuid, 'T_EXP', 'TEXP-357')
+-- 	  ) as r(id, grade, code) on r.id = t.template_id and p.grade = r.grade and p.code = r.code;
+-- 	if v_tags <> 3 or v_poses <> 3 then
+-- 		raise exception 'rollback : les modèles neufs portent % tag(s), dont % posé(s) par la migration (attendu : 3)', v_tags, v_poses;
 -- 	end if;
 -- 	select (select count(*) from public.srs_cards where template_id in ('b954c37d-b331-4d60-92df-2ab76110ae8e', '96be181c-6cd4-43e9-9291-1cd526955408', 'eb2089bf-418e-4a36-916f-2c0c2a549b8c'))
 -- 	     + (select count(*) from public.skill_attempts where template_id in ('b954c37d-b331-4d60-92df-2ab76110ae8e', '96be181c-6cd4-43e9-9291-1cd526955408', 'eb2089bf-418e-4a36-916f-2c0c2a549b8c'))
@@ -191,8 +218,9 @@ begin
 end $resolution$;
 
 create temporary table _plab_resolus_neufs as
-	select n.id, p.id as point_id, n.branche is not null as noeud_propre,
-	       case when n.sous_notion is null then nn.id else s.id end as noeud
+	select n.id, p.id as point_id, p.node_id as noeud_du_point, n.branche is not null as noeud_propre,
+	       case when n.sous_notion is null then nn.id else s.id end as noeud,
+	       case when n.sous_notion is null then nn.archived_at else s.archived_at end as noeud_archive
 	  from _plab_neufs n
 	  left join public.curriculum_points p on p.grade = n.tag_grade and p.code = n.tag_code and p.archived_at is null
 	  left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = n.branche
@@ -200,9 +228,15 @@ create temporary table _plab_resolus_neufs as
 	  left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = n.sous_notion;
 do $resolution_neufs$
 begin
-	if exists (select 1 from _plab_resolus_neufs where point_id is null or (noeud_propre and noeud is null)) then
+	-- Nœud propre : actif, et celui du point du modèle neuf (la garde des tags n'accepte que lui
+	-- ou sa notion ; un point déplacé depuis le relevé fait échouer ici, pas plus loin).
+	if exists (select 1 from _plab_resolus_neufs
+	            where point_id is null
+	               or (noeud_propre and (noeud is null or noeud_archive is not null or noeud <> noeud_du_point))) then
 		raise exception 'points ou nœuds des modèles neufs introuvables : %',
-			(select count(*) from _plab_resolus_neufs where point_id is null or (noeud_propre and noeud is null));
+			(select count(*) from _plab_resolus_neufs
+			  where point_id is null
+			     or (noeud_propre and (noeud is null or noeud_archive is not null or noeud <> noeud_du_point)));
 	end if;
 end $resolution_neufs$;
 
