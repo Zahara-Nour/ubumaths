@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 6 lancé (phase 0 validée)._
+_Mis à jour le 2026-10-23, après #1623._
 
-- **État** : lot 6 = (A) tests de la double perpendiculaire sur d'autres décors ; (B) ligne « ⚠ Arrêt à la ligne N : … » sous les consignes quand l'exécution s'est arrêtée. Phase 0 validée (section « Lot 6 »). Lots 1 à 5 partent au prochain `deploy:prod`.
-- **Prochaine action** : A (agent `geometry-expert`) + B (lecteur) → PR `fix/constructions-lot6` (revue `code-reviewer` opus).
-- **En attente de David** : vérification de #1621 sur 5177 (worktree `../ubumaths-wt-constructions` gardé pour elle, à supprimer ensuite). Après le lot 6 : formes `(P, d)` décorées (à préciser par David) · `@mesure` (chantier à part).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. Test qui déplace un point : `movePoint` ne fait que marquer sale → `figure.recompute()`. Une erreur d'exécution (`ChoreographyError`) est levée AVANT les sous-étapes : l'instruction fautive n'a aucune entrée dans la frise.
-- **Worktree / branche** : `../ubumaths-wt-constructions-lot6` · `fix/constructions-lot6`.
+- **État** : lot 6 **livré** — #1623 mergée : ligne « ⚠ Arrêt à la ligne N » sous les consignes au dernier pas ; 12 tests de la double perpendiculaire sur d'autres décors, tous verts (aucun bug). Lots 1 à 6 partent au prochain `deploy:prod`. Vérifications de #1621 et #1623 notées dans `verifications-manuelles.md`.
+- **Prochaine action** : choisir le lot 7 avec David.
+- **En attente de David** : le lot 7 — formes `parallele(P, d)` / `perpendiculaire(P, d)` décorées (aujourd'hui repli sans animation et sans erreur, `executor.ts:511-529`) · `@mesure` (chantier à part). À juger à l'œil : le carré d'angle droit en P (double perpendiculaire à l'équerre) est du côté de (AB), l'équerre de l'autre — à changer ?
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. `movePoint` ne fait que marquer sale → `figure.recompute()`. Positions d'instruments figées au chargement : P glissé → l'équerre ne se retourne qu'au rechargement.
+- **Worktree / branche** : `../ubumaths-wt-constructions` (lot 5) gardé pour la vérification de #1621 sur 5177, puis supprimé. Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
 
 ---
 
@@ -113,3 +113,10 @@ Revue : `code-reviewer` (Sonnet).
   1. droite finale ∥ (AB) passant par P ; 2. `e` ⟂ (AB) passant par P ; 3. à l'équerre, angle droit du côté de P à chaque pose, marqueurs d'angle droit (F, P) du bon côté ; 4. au compas, R distinct de P et hors de `e`.
   2. Limite : P glissé de l'autre côté de (AB) après coup → la parallèle suit, l'équerre se retourne au rejeu.
 - **B. Arrêt d'exécution signalé dans les consignes** : constat — la « sous-étape fautive » n'existe pas (l'erreur est levée avant les sous-étapes, l'instruction est retirée de la frise). Donc : au **dernier pas** de la frise, si l'exécution s'est arrêtée ensuite, une ligne « ⚠ Arrêt à la ligne N : <message> » s'ajoute sous les consignes ; la consigne du dernier pas joué reste (règle 4 du lot 2) ; curseur reculé → la ligne disparaît. Erreur de syntaxe (pas de frise) ou script sans erreur → rien ne change.
+
+### Réalisé (2026-10-23)
+
+- `ConstructionPlayer.svelte` : `$derived` `executionStop` (dernier pas + `loadError` → ligne d'arrêt). 6 tests de composant (2 rouges sans le code ; frise vide et script corrigé ajoutés après revue).
+- `choreographies-integration.test.ts` : 12 tests « autres décors » (3 décors × 4), tous verts ; preuve : rotation de la 2e pose d'équerre inversée à la main → 6 rouges.
+- Revue `code-reviewer` opus : aucun bloquant ; mineurs 1-2 corrigés, 3 (préfixe « Ligne N » ailleurs qu'en tête) laissé, aucun message actuel concerné.
+- `check:incremental` 0 erreur · `types:cliquet` tenu · `lint:fast` propre · `docs:check-a-jour` OK · CI verte, mergée (#1623).
