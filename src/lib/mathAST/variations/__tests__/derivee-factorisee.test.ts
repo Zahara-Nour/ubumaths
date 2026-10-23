@@ -110,6 +110,26 @@ describe('f′ factorisée pour lire son signe', () => {
 		);
 	});
 
+	// Racines avec fraction (David, 2026-10-24 : « je te suis ») : la forme de 5a,
+	// plus lisible que `−2(x − √2/2)(x + √2/2)e^{−x²}`
+	it.each([
+		[String.raw`xe^{-x^2}`],
+		[String.raw`\frac{x^2-3x+2}{x^2+1}`],
+		[String.raw`\frac{x^3}{3}-\frac{x}{2}`]
+	])('%s : racines avec fraction, pas de factorisation', (f) => {
+		const { final, factored } = forms(f);
+		expect(factored).toBe(final);
+	});
+
+	it.each([
+		[String.raw`\frac{x^3}{x^2-4}`, String.raw`2 \sqrt{3}`],
+		[String.raw`\frac{x^3}{3}-2x`, String.raw`\sqrt{2}`]
+	])('%s : racines sans fraction, factorisée', (f, root) => {
+		const { final, factored } = forms(f);
+		expect(factored).not.toBe(final);
+		expect(factored).toContain(root);
+	});
+
 	it('reducedDerivative (CLI) rend la forme factorisée', () => {
 		const result = computeVariations(parseLatex(String.raw`\frac{x^2}{x+1}`), { variable: 'x' });
 		expect(toLatex(reducedDerivative(result.derivative, result.expression))).toBe(

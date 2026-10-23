@@ -1124,7 +1124,8 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `x(x + 2)/(x + 1)²`, `x(2 − x)e^{−x}`, `(x − √2)(x + √2)`, `−2(x² + 9)/(x² − 9)²`. Rien ne se
   factorise (`x² + 1`), reste une somme, nombre seul devant une somme qui n'est pas un polynôme de
   degré ≥ 2 (`2(e^{2x} − 2eˣ)`, `4(x − 2)`), exponentielle ou exposant changé (`e^{x²−1}` reste),
-  fraction là où un décimal était tapé (S1 : `x(3x − 4,8)`), ou budget dépassé (1 s) → la forme finale. `reducedDerivative`
+  fraction là où un décimal était tapé (S1 : `x(3x − 4,8)`), facteur mêlant racine et fraction (`x − √2/2` :
+  `(1 − 2x²)e^{−x²}` reste, David 2026-10-24 ; `x − 2√3` passe), ou budget dépassé (1 s) → la forme finale. `reducedDerivative`
   (CLI) rend la forme factorisée ; le signe se calcule toujours sur `result.derivative`. Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
   `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
