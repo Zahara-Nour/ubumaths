@@ -25,7 +25,8 @@ import {
 	type SubStep,
 	type TraceTag
 } from './types';
-import { isAngle } from '$lib/geometry-core/types/elements';
+import { isAngle, isLine, isRay, isSegment } from '$lib/geometry-core/types/elements';
+import type { Figure } from '$lib/geometry-core/graph/figure';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { de, droite, en, labelAux, nom, role } from './names';
 import { PROTRACTOR_RADIUS } from '../../constants';
@@ -915,6 +916,23 @@ function formatDeg(value: number): string {
 }
 
 /**
+ * Le côté [VX) est-il tracé ? Segment [VX] (dans un sens ou l'autre),
+ * demi-droite d'origine V passant par X, ou droite (VX), visibles.
+ */
+function hasVisibleSide(figure: Figure, Vid: string, Xid: string): boolean {
+	const joins = (p: string, q: string) => (p === Vid && q === Xid) || (p === Xid && q === Vid);
+	return figure
+		.getAllElements()
+		.some(
+			(el) =>
+				el.visible !== false &&
+				((isSegment(el) && joins(el.startId, el.endId)) ||
+					(isLine(el) && joins(el.point1Id, el.point2Id)) ||
+					(isRay(el) && el.originId === Vid && el.throughId === Xid))
+		);
+}
+
+/**
  * `bissectrice @mesure @rapporteur` : la méthode de 6e.
  *
  * 4 sous-étapes :
@@ -931,8 +949,9 @@ function formatDeg(value: number): string {
  * l'échelle intérieure tombe alors sur [VA), et le corps couvre l'angle.
  *
  * Le calcul de la consigne part de la valeur lue ; le repère, lui, est sur
- * la bissectrice exacte. Le codage des deux angles égaux est rangé avec les
- * marqueurs : visible en `@complet`, retiré par `-marqueurs`.
+ * la bissectrice exacte. Le codage des deux angles égaux, posé seulement si
+ * les deux côtés sont tracés, est rangé avec les marqueurs : visible en
+ * `@complet`, retiré par `-marqueurs`.
  */
 function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
@@ -1013,13 +1032,16 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 	const bisDirX0 = rawLen0 > 1e-9 ? raw0.x / rawLen0 : -VAy / la0;
 	const bisDirY0 = rawLen0 > 1e-9 ? raw0.y / rawLen0 : VAx / la0;
 
-	// Codage des deux angles égaux, créé caché ; la visibilité finale le
-	// range en marqueur.
-	const marks = [
-		figure.createAngle(Aid, Vid, P, { marque: 'arcs2' }),
-		figure.createAngle(P, Vid, Bid, { marque: 'arcs2' })
-	];
-	for (const mark of marks) figure.hideElement(mark);
+	// Codage des deux angles égaux, seulement si les deux côtés sont tracés ;
+	// créé caché, la visibilité finale le range en marqueur.
+	const marks: string[] = [];
+	if (hasVisibleSide(figure, Vid, Aid) && hasVisibleSide(figure, Vid, Bid)) {
+		marks.push(
+			figure.createAngle(Aid, Vid, P, { marque: 'arcs2' }),
+			figure.createAngle(P, Vid, Bid, { marque: 'arcs2' })
+		);
+		for (const mark of marks) figure.hideElement(mark);
+	}
 
 	const rulerStep = buildRulerTraceSubStep(
 		ctx,
@@ -1127,7 +1149,7 @@ export const VOIES_BISSECTRICE_MESURE: readonly Voie[] = [
 		nom_humain: 'Au rapporteur',
 		source: 'Construction de 6e',
 		description:
-			'On pose le centre du rapporteur sur `V`, le 0 sur `[VA)`, on lit l’angle au degré, on le divise par 2 et on marque un repère `P` en face de cette graduation ; on trace `(VP)`. Le codage des deux angles égaux apparaît en `@complet`.',
+			'On pose le centre du rapporteur sur `V`, le 0 sur `[VA)`, on lit l’angle au degré, on le divise par 2 et on marque un repère `P` en face de cette graduation ; on trace `(VP)`. Le codage des deux angles égaux apparaît en `@complet` si les deux côtés de l’angle sont tracés.',
 		defaut: true,
 		choreography: rapporteurChoreography
 	}

@@ -216,8 +216,14 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 		return [...tags.entries()].filter(([, t]) => t === 'marker').map(([id]) => id);
 	}
 
+	/** Angle de 74° aux deux côtés tracés : le codage porte sur eux. */
+	const withSides = (extra = '') => {
+		const lines = angleScript(74, extra);
+		return [...lines.slice(0, 3), 'c1 = demidroite(V, A)', 'c2 = demidroite(V, B)', lines[3]];
+	};
+
 	it('deux angles marqués pareil, étiquetés « marqueur »', () => {
-		const { exec } = subSteps(angleScript(74, '@complet'));
+		const { exec } = subSteps(withSides('@complet'));
 		exec.executeAll();
 		const ids = marks(exec);
 		expect(ids).toHaveLength(2);
@@ -228,7 +234,7 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 	});
 
 	it('@complet : codage visible en fin de lecture', () => {
-		const { exec } = subSteps(angleScript(74, '@complet'));
+		const { exec } = subSteps(withSides('@complet'));
 		exec.executeAll();
 		exec.step();
 		const ids = marks(exec);
@@ -241,7 +247,7 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 	});
 
 	it('@squelette : codage caché', () => {
-		const { exec } = subSteps(angleScript(74));
+		const { exec } = subSteps(withSides());
 		exec.executeAll();
 		exec.step();
 		const ids = marks(exec);
@@ -250,7 +256,7 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 	});
 
 	it('@complet -marqueurs : codage caché', () => {
-		const { exec } = subSteps(angleScript(74, '@complet -marqueurs'));
+		const { exec } = subSteps(withSides('@complet -marqueurs'));
 		exec.executeAll();
 		exec.step();
 		const ids = marks(exec);
@@ -260,6 +266,44 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 			expect(el).toBeDefined();
 			expect(el?.visible).toBe(false);
 		}
+	});
+});
+
+describe('bissectrice @mesure — codage seulement sur des côtés tracés', () => {
+	function markCount(lines: string[]): number {
+		const exec = new ConstructionExecutor();
+		exec.load(lines.join('\n'));
+		exec.executeAll();
+		const tags = exec.lastChoreographyResult?.produced.traceTags ?? new Map();
+		return [...tags.values()].filter((t) => t === 'marker').length;
+	}
+	const points = angleScript(74).slice(0, 3);
+	const call = 'd = bissectrice(A, V, B) @mesure @complet';
+
+	it('aucun côté tracé : aucun codage, même en @complet', () => {
+		expect(markCount([...points, call])).toBe(0);
+	});
+
+	it('un seul côté tracé : aucun codage', () => {
+		expect(markCount([...points, 'c1 = demidroite(V, A)', call])).toBe(0);
+	});
+
+	it('côtés en segments, dans un sens ou l’autre : codage', () => {
+		expect(markCount([...points, 's1 = segment(A, V)', 's2 = segment(V, B)', call])).toBe(2);
+	});
+
+	it('côtés en droites : codage', () => {
+		expect(markCount([...points, 'd1 = droite(V, A)', 'd2 = droite(B, V)', call])).toBe(2);
+	});
+
+	it('demi-droite d’origine A (ne porte pas [VA)) : aucun codage', () => {
+		expect(markCount([...points, 'c1 = demidroite(A, V)', 'c2 = demidroite(V, B)', call])).toBe(0);
+	});
+
+	it('côté masqué : aucun codage', () => {
+		expect(
+			markCount([...points, 'c1 = demidroite(V, A)', 'c2 = demidroite(V, B)', 'masque(c1)', call])
+		).toBe(0);
 	});
 });
 

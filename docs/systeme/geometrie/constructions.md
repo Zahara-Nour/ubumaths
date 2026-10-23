@@ -213,7 +213,7 @@ valeur lue (75 ÷ 2 = 37,5) ; le repère P (point auxiliaire nommé, `labelAux`,
 bissectrice exacte, à `REPERE_DISTANCE` de V (rayon du rapporteur + 0,3). Le corps du rapporteur
 (`Protractor.svelte`) est du côté trigonométrique de sa base : si B est dans le sens horaire de A, la
 base est retournée de 180° et le 0 de l’échelle intérieure tombe sur [VA). Même droite tracée qu’en
-`@euclide` (`buildRulerTraceSubStep`). Codage : deux `angle` `arcs2` (AVP, PVB) étiquetés `marker`.
+`@euclide` (`buildRulerTraceSubStep`). Codage : deux `angle` `arcs2` (AVP, PVB) étiquetés `marker`, posés seulement si les deux côtés sont tracés (`hasVisibleSide` : segment [VA] dans un sens ou l’autre, demi-droite d’origine V par A, ou droite (VA), visibles).
 Lecture 0° → « Les deux côtés sont confondus » ; A ou B confondu avec V et angle plat sont refusés
 par le builtin avant la chorégraphie.
 
@@ -308,8 +308,8 @@ Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/reto
 
 ## 8. Tests
 
-`pnpm test:server src/lib/constructions-v2/` le 2026-10-23 : **15 fichiers, 427 réussis,
-21 ignorés (448)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
+`pnpm test:server src/lib/constructions-v2/` le 2026-10-23 : **15 fichiers, 433 réussis,
+21 ignorés (454)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
 `converter.test.ts` (`:274`, `:330`, `:369`), faute du dossier `extern/instrumenpoche-main`.
 
 | Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                                                                                                                            |

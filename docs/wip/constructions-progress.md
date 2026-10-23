@@ -210,3 +210,12 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - **Lecture** au degré, moitié sur la valeur lue (75 ÷ 2 = 37,5), repère sur la bissectrice exacte. Codage des deux angles égaux (`arcs2`) en `marker`.
 - **Écarts constatés au codage** (le builtin refuse avant la chorégraphie, inchangé) : A ou B confondu avec V → message du builtin « `A` ou `B` est confondu avec `V`, l’angle n’est pas défini » ; **angle plat refusé par le builtin** (« alignés et opposés — bissectrice indéterminée »), alors que la phase 0 l’annonçait possible. Côtés confondus (lecture 0°) → « Les deux côtés sont confondus : il n’y a pas d’angle à mesurer ».
 - Tests : `core/__tests__/bissectrice-mesure.test.ts` (23 ; 21 rouges sans le code).
+
+### PR 2 — réalisé (2026-10-23)
+
+- `buildRapporteur` + `VOIES_BISSECTRICE_MESURE` (`bissectrice.ts`), ligne du registre ; `buildRulerTraceSubStep` réutilisé (paramètre réduit à un `Pick`). `PROTRACTOR_RADIUS` dans `constants.ts`, lu par `Protractor.svelte` et le repère.
+- Revue `code-reviewer` Opus : aucun bloquant. **Important tranché par David (« je te suis », sur reco)** : cas horaire laissé tel quel — rapporteur retourné, 37 se lit sur l’échelle intérieure (143 à l’extérieur), comme un vrai rapporteur. Mineurs corrigés : tests de codage qui passaient sans codage ; rayon recopié en dur → constante partagée. Acceptés : 179,6° se lit 180° ; message « côtés confondus » sous 0,5°.
+- **Décidé (reco suivie)** : codage des angles égaux seulement si les deux côtés sont tracés (`hasVisibleSide`) ; angle plat laissé refusé par le builtin (hors PR).
+- Vérifié en navigateur sans fenêtre (agent, port 5184) : sens direct et horaire, rapporteur centré sur V, 0 côté A, corps sur l’angle, crayon au bord, P juste dehors, consignes justes.
+- Tests : 29 dans `bissectrice-mesure.test.ts` (4 rouges sans `hasVisibleSide`) ; `test:server constructions-v2` 433 ✓ ; `test:client` 19 ✓.
+- Constat hors PR : à l’arrêt entre deux étapes, le lecteur n’affiche plus les instruments (comportement général, milieu compris).
