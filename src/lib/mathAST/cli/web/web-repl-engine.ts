@@ -91,7 +91,6 @@ import {
 	isWrittenNumber,
 	type ApproximateDigits
 } from '../approximation';
-import { hasDecimalLiteral } from '../../tidy/decimal';
 import { tidy } from '../../tidy';
 import { mapNode } from '../../transforms';
 
@@ -135,11 +134,11 @@ function approximationFields(
 /**
  * Un résultat exact mis au propre pour l'écrire (π/3, √2/2) : la forme de
  * calcul d'`evaluate` (« coefficient × π ») passée par `tidy` — sauf avec une
- * variable ou un décimal, que `tidy` simplifierait ou réécrirait en fraction
- * (même règle que l'écran de l'atelier, `render.ts`).
+ * variable, que `tidy` rangerait (même règle que l'écran de l'atelier,
+ * `render.ts`). Un décimal reste décimal : `tidy` garde son registre (S1).
  */
 function readableExact(node: MathNode): MathNode {
-	if (getVariables(node).size > 0 || hasDecimalLiteral(node)) return node;
+	if (getVariables(node).size > 0) return node;
 	try {
 		return tidy(node);
 	} catch {

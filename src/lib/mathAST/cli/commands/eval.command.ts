@@ -325,11 +325,10 @@ function displayedValue(
 
 /**
  * Un résultat exact mis au propre (π/3, √2/2), comme la ligne d'un calcul
- * (`readableExact` de `web-repl-engine.ts`) : sans variable ni décimal, que
- * `tidy` simplifierait ou réécrirait en fraction.
+ * (`readableExact` de `web-repl-engine.ts`). Un décimal reste décimal : `tidy`
+ * garde son registre (S1).
  */
 function readableExact(node: MathNode): MathNode {
-	if (hasDecimalLiteral(node)) return node;
 	try {
 		return tidy(node);
 	} catch {

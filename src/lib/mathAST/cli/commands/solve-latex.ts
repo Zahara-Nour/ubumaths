@@ -32,8 +32,7 @@ import {
 } from '../../guards';
 import { toLatex } from '../../latex-generator';
 import { toCustom } from '../../custom-generator';
-import { findNodes, mapNode } from '../../transforms';
-import { getVariables } from '../../eval/substitute';
+import { findNodes } from '../../transforms';
 import { evaluateNodeToApproximatedNumber } from '../../eval/evaluate';
 import { tidy } from '../../tidy';
 import { tidyCriticalAbscissa } from '../../variations/critical-points';
@@ -57,14 +56,11 @@ function tidyValue(value: MathNode): MathNode {
 // 2026-10-09 — seuils des suites géométriques, 1re / Tle)
 // =============================================================================
 
-/** Les logarithmes dont l'argument décimal tapé par l'élève est gardé. */
+/** Les logarithmes : une valeur qui en contient se lit avec sa valeur approchée. */
 const LOGARITHMS = new Set(['ln', 'log']);
 
 /** Nombre de décimales de la valeur approchée. */
 const APPROXIMATION_PLACES = 2;
-
-/** Écart toléré pour reconnaître le décimal d'origine sous sa fraction. */
-const SAME_VALUE_TOLERANCE = 1e-12;
 
 /**
  * Un ln (ou log) ou une exponentielle (`e^2`, `exp(…)`) quelque part dans la
@@ -92,34 +88,6 @@ function numericValue(node: MathNode): number | null {
 	}
 }
 
-/**
- * Remettre dans les ln les décimaux que `tidy` a changés en fractions :
- * `\ln(\frac{4}{5})` redevient `\ln(0,8)` quand l'élève a tapé 0.8.
- */
-function keepLogDecimals(original: MathNode, tidied: MathNode): MathNode {
-	const decimals = findNodes(
-		original,
-		(n) =>
-			isFunction(n) &&
-			LOGARITHMS.has(n.name) &&
-			n.args.length === 1 &&
-			isNumber(n.args[0]) &&
-			n.args[0].value.includes('.')
-	).flatMap((n) => (isFunction(n) ? [n.args[0]] : []));
-	if (decimals.length === 0) return tidied;
-	return mapNode(tidied, (node) => {
-		if (!isFunction(node) || !LOGARITHMS.has(node.name) || node.args.length !== 1) return node;
-		const [argument] = node.args;
-		if (getVariables(argument).size > 0) return node;
-		const value = numericValue(argument);
-		const decimal = decimals.find(
-			(d) =>
-				value !== null && isNumber(d) && Math.abs(Number(d.value) - value) < SAME_VALUE_TOLERANCE
-		);
-		return decimal === undefined ? node : { ...node, args: [decimal] };
-	});
-}
-
 /** Les décimaux d'une écriture LaTeX, à la française : `0.8` → `0{,}8`. */
 function frenchDecimals(latex: string): string {
 	return latex.replace(/(\d)\.(\d)/g, '$1{,}$2');
@@ -139,7 +107,7 @@ function rounded(value: number): string {
 export function logarithmicValueLatex(value: MathNode, approximate?: number): string | null {
 	const tidied = tidyValue(value);
 	if (!hasLogarithm(tidied)) return null;
-	const written = frenchDecimals(toLatex(keepLogDecimals(value, tidied)));
+	const written = frenchDecimals(toLatex(tidied));
 	const approximation = approximate ?? numericValue(value);
 	return approximation === null
 		? written
@@ -151,10 +119,11 @@ export function logarithmicValueLatex(value: MathNode, approximate?: number): st
  * `ln(0.1)/ln(0.8) ≈ 10.32`. `null` sans ln.
  */
 export function logarithmicValueText(value: MathNode, approximate?: number): string | null {
-	if (!hasLogarithm(tidyValue(value))) return null;
-	const approximation = approximate ?? numericValue(value);
 	// Mis au propre comme le LaTeX : ln(3)/2, pas {1/2}ln(3)
-	const written = toCustom(keepLogDecimals(value, tidyValue(value)));
+	const tidied = tidyValue(value);
+	if (!hasLogarithm(tidied)) return null;
+	const approximation = approximate ?? numericValue(value);
+	const written = toCustom(tidied);
 	return approximation === null ? written : `${written} ≈ ${rounded(approximation)}`;
 }
 
@@ -406,11 +375,9 @@ export function solutionsApproximationLatex(result: SolveResult): string | null 
 /** Une borne d'intervalle : `+\infty`, `-\infty`, sinon la valeur mise au propre. */
 function boundLatex(value: MathNode): string {
 	if (isInfinity(value)) return value.sign === 'negative' ? '-\\infty' : '+\\infty';
-	// Décimaux gardés dans les ln (`\ln(0{,}1)`), comme un seuil
+	// Décimaux gardés dans les ln (`\ln(0{,}1)`, S1), à la française comme un seuil
 	const tidied = tidyValue(value);
-	return hasLogarithm(tidied)
-		? frenchDecimals(toLatex(keepLogDecimals(value, tidied)))
-		: toLatex(tidied);
+	return hasLogarithm(tidied) ? frenchDecimals(toLatex(tidied)) : toLatex(tidied);
 }
 
 /**

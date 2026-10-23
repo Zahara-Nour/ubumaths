@@ -33,7 +33,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'poly-11 @ latex-péda': 'x - \\dfrac{3}{2}',
 	'poly-11 @ commande': 'x - \\dfrac{3}{2}',
 	'poly-11 @ bouton': 'x - \\dfrac{3}{2}',
-	'poly-11 @ carte': 'x - \\dfrac{3}{2}',
 	'rat-04 @ commande': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
 	'rat-04 @ bouton': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
 	'rat-05 @ latex-péda':
@@ -130,7 +129,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'exp-22 @ latex-péda': 'e^{\\dfrac{x}{2}}',
 	'exp-22 @ commande': '\\exponentialE^{\\dfrac{x}{2}}',
 	'exp-22 @ bouton': 'e^{\\dfrac{x}{2}}',
-	'exp-22 @ carte': '\\exponentialE^{\\dfrac{x}{2}}',
 	'ln-12 @ latex-péda': '\\dfrac{\\dfrac{1}{x}}{\\ln\\left( x \\right)}',
 	'ln-12 @ commande': '\\dfrac{\\dfrac{1}{x}}{\\ln\\left( x \\right)}',
 	'ln-12 @ bouton': '\\dfrac{\\dfrac{1}{x}}{\\ln\\left( x \\right)}',

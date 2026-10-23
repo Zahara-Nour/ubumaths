@@ -19,11 +19,10 @@ import type { ReplExecutionResult } from '$lib/mathAST/cli/web/types';
 import { displayUnitsInLatex } from '$lib/mathAST/units/display';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { tidy } from '$lib/mathAST/tidy';
-import { hasDecimalLiteral } from '$lib/mathAST/tidy/decimal';
 import { isScientificNotation } from '$lib/mathAST/cli/approximation';
 import { getVariables } from '$lib/mathAST/eval/substitute';
 import { findNodes } from '$lib/mathAST/transforms';
-import { isUnit } from '$lib/mathAST/guards';
+import { isNumber, isOpposite, isUnit } from '$lib/mathAST/guards';
 import type { MathNode } from '$lib/mathAST/types';
 
 // =============================================================================
@@ -137,9 +136,9 @@ function cleanText(output: string): string {
  * (« coefficient × π » : ⅓ π), `tidy` la remet au propre (π/3, √2/2).
  */
 function readable(ast: MathNode): MathNode {
-	// Un décimal (mode décimal, `0.1+0.2`, `3.5`) reste tel quel : `tidy` le
-	// réécrirait en fraction (`3/10`)
-	if (hasDecimalLiteral(ast)) return ast;
+	// Un nombre seul est déjà écrit : la valeur approchée du mode décimal garde ses
+	// 4 décimales, zéro final compris (`5,0990`), que `tidy` retirerait (revue du lot 4b)
+	if (isNumber(ast) || (isOpposite(ast) && isNumber(ast.operand))) return ast;
 	// Une notation scientifique (mode décimal) aussi : `tidy` recalculerait `3 × 10²⁰`
 	// en 300000000000000000000
 	if (isScientificNotation(ast)) return ast;
