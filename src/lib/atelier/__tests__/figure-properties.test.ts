@@ -138,6 +138,18 @@ describe('figurePropertiesOf : une droite', () => {
 		expect(row(s, 'd', 'Vecteur directeur')?.text).toBe('(1 ; -2)');
 	});
 
+	// Revue de #1630 : `√2x - √2y = 0`, juste, mais un élève écrit `x - y = 0`
+	it('des coefficients irrationnels proportionnels se réduisent', () => {
+		const s = plane('R = (sqrt(2) ; sqrt(2))', 'd = (OR)');
+		expect(row(s, 'd', 'Équation cartésienne')?.text).toBe('x - y = 0');
+		expect(row(s, 'd', 'Vecteur directeur')?.text).toBe('(1 ; 1)');
+	});
+
+	it('des coefficients vraiment irrationnels restent tels quels', () => {
+		const s = plane('R = (1 ; sqrt(2))', 'd = (OR)');
+		expect(row(s, 'd', 'Équation réduite')?.text).toBe('y = √2x');
+	});
+
 	it('la droite (AB)', () => {
 		const s = plane('d = (AB)');
 		expect(rows(s, 'd')).toEqual([
@@ -202,6 +214,20 @@ describe('figurePropertiesOf : une droite', () => {
 // =============================================================================
 
 describe('figurePropertiesOf : un cercle', () => {
+	// Revue de #1630 : `√(1/3)` ; au lycée, pas de racine au dénominateur
+	it('3x² + 3y² = 1 : rayon √3/3, sans racine d’une fraction', () => {
+		const s = plane('c : 3x^2 + 3y^2 = 1');
+		const radius = row(s, 'c', 'Rayon');
+		expect(radius?.text).toBe('√3/3');
+		expect(radius?.latex).toBe('\\dfrac{\\sqrt{3}}{3}');
+		expect(radius?.approximate).toBe('≈ 0,5774');
+	});
+
+	it('un segment de longueur √(1/2) se dit √2/2', () => {
+		const s = plane('P = (1/2 ; 1/2)', 's = [OP]');
+		expect(row(s, 's', 'Longueur')?.text).toBe('√2/2');
+	});
+
 	it('cercle(O ; 3) : périmètre 6π, aire 9π', () => {
 		const s = plane('c = cercle(O ; 3)');
 		expect(rows(s, 'c')).toEqual([

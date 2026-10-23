@@ -1656,9 +1656,10 @@ emporte son panneau : un homonyme recréé ne le rouvre pas.
 - **Ce qui se règle** : le style du point de couleur (`FigureStyleSettings`, `CurveStyleSettings`,
   les mêmes composants que les fenêtres), l'étiquette d'un point (`MyCheckbox`), les bornes et le
   pas du curseur d'une valeur (`SliderSettings`).
-- **Écart connu** (revue de #1630, mineur) : des coefficients irrationnels ne sont pas réduits —
-  la droite par (0 ; 0) et (√2 ; √2) s'écrit `√2x - √2y = 0`, le rayon de `3x² + 3y² = 1`
-  `√(1/3)`. Justes, mais pas sous la forme qu'attend un élève.
+- **Formes du cahier** (revue de #1630) : des coefficients irrationnels mais proportionnels se
+  réduisent (la droite par (0 ; 0) et (√2 ; √2) : `x - y = 0`, vecteur `(1 ; 1)` ;
+  `proportionalIntegers`) ; une longueur ou un rayon racine d'une fraction s'écrit sans racine au
+  dénominateur, `√3/3` pour `3x² + 3y² = 1` (`withoutRootOfFraction`, `rootOverInteger`).
 
 ### Vues
 

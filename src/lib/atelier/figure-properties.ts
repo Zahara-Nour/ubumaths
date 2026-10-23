@@ -36,7 +36,7 @@ import {
 	expandedEquation,
 	quadraticOrImplicit
 } from '$lib/geometry-core/geometry/curve-nature';
-import { equals, multiply, piConstant, variable } from '$lib/mathAST/factory';
+import { divide, equals, multiply, piConstant, variable } from '$lib/mathAST/factory';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import {
 	approximatePoint,
@@ -172,7 +172,7 @@ function segmentProperties(from: GeoPoint, to: GeoPoint): readonly PropertyRow[]
 	const [a, b] = [pointValue(from), pointValue(to)];
 	return [
 		natureRow('segment'),
-		valueRow('Longueur', segmentLength(from, to)),
+		valueRow('Longueur', withoutRootOfFraction(segmentLength(from, to))),
 		{
 			label: 'Extrémités',
 			latex: `${a.latex}\\text{ et }${b.latex}`,
@@ -236,12 +236,13 @@ function lineProperties(from: GeoPoint, to: GeoPoint): readonly PropertyRow[] {
  * (−2 ; 0) — revue de #1630).
  */
 function directionOf(x: GeoValue, y: GeoValue): GeoPoint {
-	const [ix, iy] = integerMultiple([x, y]) ?? [x, y];
+	const [ix, iy] = proportionalIntegers([x, y]) ?? [x, y];
 	const lead = geoIsZero(ix) ? iy : ix;
 	return geoToNumber(lead) < 0 ? { x: geoOpposite(ix), y: geoOpposite(iy) } : { x: ix, y: iy };
 }
 
-function circleProperties(center: GeoPoint, radius: GeoValue): readonly PropertyRow[] {
+function circleProperties(center: GeoPoint, exactRadius: GeoValue): readonly PropertyRow[] {
+	const radius = withoutRootOfFraction(exactRadius);
 	return [
 		natureRow('cercle'),
 		pointRow('Centre', center),
@@ -306,9 +307,24 @@ function valueRow(label: string, value: GeoValue): PropertyRow {
 			text: `≈ ${approximate}`
 		};
 	}
-	const node = nodeOf(value);
+	const node = rootOverInteger(nodeOf(value));
 	const row = { label, latex: plainLatex(node), text: textOf(node) };
 	return isSimpleDecimal(value) ? row : { ...row, approximate: `≈ ${approximateText(value)}` };
+}
+
+/**
+ * `(1/3)√3` écrit comme au cahier, `√3/3` ; `(2/3)√5` → `2√5/3` (revue de
+ * #1630). Toute autre forme est rendue telle quelle.
+ */
+function rootOverInteger(node: MathNode): MathNode {
+	if (node.type !== 'multiplication' || !isSqrt(node.right)) return node;
+	const coefficient = rationalOf(node.left);
+	if (coefficient === null || coefficient.d === 1n || coefficient.n <= 0n) return node;
+	const top =
+		coefficient.n === 1n
+			? node.right
+			: multiply(numericNode(Number(coefficient.n)), node.right, 'implicit');
+	return divide(top, numericNode(Number(coefficient.d)), 'fraction');
 }
 
 /** `k·π` (périmètre, aire), exact ; π écrit avant une racine (`2π√5`). */
@@ -383,15 +399,52 @@ function half(value: GeoValue): GeoValue {
  * entiers premiers entre eux ; dans tous les cas, le premier non nul positif.
  */
 function normalizedCoefficients(values: readonly GeoValue[]): readonly GeoValue[] {
-	const scaled = integerMultiple(values) ?? values;
+	const scaled = proportionalIntegers(values) ?? values;
 	const first = scaled.find((value) => !geoIsZero(value));
 	return first !== undefined && geoToNumber(first) < 0 ? scaled.map(geoOpposite) : scaled;
 }
 
 /** Un vecteur directeur au plus simple, dans le MÊME sens (entiers si possible). */
 function simplestDirection(dx: GeoValue, dy: GeoValue): GeoPoint {
-	const [x, y] = integerMultiple([dx, dy]) ?? [dx, dy];
+	const [x, y] = proportionalIntegers([dx, dy]) ?? [dx, dy];
 	return { x, y };
+}
+
+/**
+ * Comme `integerMultiple`, et aussi pour des valeurs irrationnelles mais
+ * PROPORTIONNELLES à des rationnels (`[√2, −√2, 0]` → `[1, −1, 0]`, revue de
+ * #1630) : divisées par la première non nulle, puis ramenées en entiers. Le
+ * sens est gardé (un vecteur directeur reste dans le sien). `null` sinon.
+ */
+function proportionalIntegers(values: readonly GeoValue[]): readonly GeoValue[] | null {
+	const direct = integerMultiple(values);
+	if (direct !== null) return direct;
+	const pivot = values.find((value) => !geoIsZero(value));
+	if (pivot === undefined) return null;
+	const ratios: GeoValue[] = [];
+	for (const value of values) {
+		const ratio = geoDiv(value, pivot);
+		if (ratio === null) return null;
+		ratios.push(ratio);
+	}
+	const scaled = integerMultiple(ratios);
+	if (scaled === null) return null;
+	return geoToNumber(pivot) < 0 ? scaled.map(geoOpposite) : scaled;
+}
+
+/**
+ * La racine d'une fraction écrite sans racine au dénominateur, comme au
+ * lycée : `√(1/3)` → `√3/3`, `√(1/2)` → `√2/2` (revue de #1630). Une valeur
+ * dont le carré n'est pas une fraction (ou déjà entier) est rendue telle quelle.
+ */
+function withoutRootOfFraction(value: GeoValue): GeoValue {
+	if (!isExact(value) || geoToNumber(value) <= 0) return value;
+	const square = geoMul(value, value);
+	const rational = isExact(square) ? rationalOf(square.node) : null;
+	if (rational === null || rational.d === 1n) return value;
+	const root = geoSqrt(geoFromNumber(Number(rational.n * rational.d)));
+	if (root === null) return value;
+	return geoDiv(root, geoFromNumber(Number(rational.d))) ?? value;
 }
 
 /**
