@@ -151,7 +151,7 @@ montre(M)
 	onMount(async () => {
 		const mod = await import('$lib/constructions-v2/components/ScriptEditor.svelte');
 		EditorComponent = mod.default;
-		await loadSavedScripts();
+		if (data.canAuthor) await loadSavedScripts();
 	});
 </script>
 
@@ -176,19 +176,22 @@ montre(M)
 			placeholder="Choisir un script..."
 		/>
 
-		<input
-			type="text"
-			bind:value={scriptName}
-			placeholder="Nom du script"
-			class="h-9 rounded-md border bg-background px-3 text-sm"
-		/>
+		{#if data.canAuthor}
+			<input
+				type="text"
+				bind:value={scriptName}
+				placeholder="Nom du script"
+				class="h-9 rounded-md border bg-background px-3 text-sm"
+			/>
 
-		<Button size="sm" onclick={handleSave} disabled={!scriptName.trim() || saving}>
-			{saving ? 'Sauvegarde...' : 'Sauvegarder'}
-		</Button>
+			<Button size="sm" onclick={handleSave} disabled={!scriptName.trim() || saving}>
+				{saving ? 'Sauvegarde...' : 'Sauvegarder'}
+			</Button>
 
-		{#if selectedSource.startsWith('saved:')}
-			<Button size="sm" variant="destructive" onclick={handleDelete}>{lore.actions.delete}</Button>
+			{#if selectedSource.startsWith('saved:')}
+				<Button size="sm" variant="destructive" onclick={handleDelete}>{lore.actions.delete}</Button
+				>
+			{/if}
 		{/if}
 	</div>
 
