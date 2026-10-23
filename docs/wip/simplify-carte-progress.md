@@ -2,10 +2,10 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1620 (lot 4a)._
+_Mis à jour le 2026-10-23, après #1620 (lot 4a)._
 
 - **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), **4a `tidy` ne perd plus le domaine (#1620, § 35-36)** : options `typeCtx` et `domain` (les dérivées passent f), `factoriser` simplifie une fraction en étape. Rien en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — pas à jour des lots 3 et 4a. Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1620 (lot 4a ; bugs sondés du lot 1 reclassés). Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
 - **Ordre des lots** (§ 29, § 35) : ~~4a domaine~~ → **4b décimaux (S1)** → 4c `order: 'kept'` (S2) → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, variante `{ result, conditions }`, Q2 du § 35) → 6 valeurs approchées → 7 renommages.
 - **Prochaine action** : lot 4b, nouveau worktree ; comportements déjà validés (§ 35, Q3 : une barre de fraction compte comme opérande fraction). Ouvrir par les tests rouges (`0,5+0,25 → 0,75`, `x×0,5 → 0,5x`, `0,5/2 → 1/4`…), puis retirer les gardes des appelants (`hasDecimalLiteral` : `atelier/render.ts`, `web-repl-engine`, `eval.command`, limites, `solve-latex`).
 - **En attente de David** : rien (vérification manuelle de #1620 notée dans `verifications-manuelles.md`).
