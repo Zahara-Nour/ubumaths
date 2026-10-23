@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1647._
+_Mis à jour le 2026-10-23, après #1649._
 
-- **État** : lot 10 `@mesure` **terminé** — `milieu` (#1637), rythme (#1638), `bissectrice` (#1643), **`mediatrice` (#1647, règle graduée + équerre)** mergées ; partent au prochain `deploy:prod`.
-- **Prochaine action** : choisir la suite avec David (voir (2) et (3) ci-dessous).
-- **En attente de David** : (1) vérifications #1637 + #1638 (serveur 5183, worktree `-rythme`) et #1643 (serveur 5184, worktree `-bissectrice-mesure`) et #1647 (serveur 5185, worktree `-mediatrice-mesure`), lignes dans `verifications-manuelles.md` ; #1633 et marqueurs d’angle droit en `@complet` sur 5183 → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`, `-mediatrice-mesure`. (2) Étiquette d’un segment nommé posée sur celle du milieu I : à traiter ? Consignes automatiques pour les étapes non chorégraphiées : à trancher. (3) Suites hors `@mesure` : côté du carré d’angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; angle plat refusé par le builtin `bissectrice` ; instruments invisibles à l’arrêt entre deux étapes.
-- **Pièges en cours** : `e` = constante d’Euler, jamais comme nom dans un script. DSL : `demidroite`, pas `demi_droite`. Étiquette auxiliaire provisoire (`setProvisionalLabel`). Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet. Commits et PR : aucune mention Claude (ni `Claude-Session:`, ni lien de session).
-- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`), 5185 (`-mediatrice-mesure`), branches mergées.
+- **État** : lot 11 **livré** — #1649 mergée : instruments automatiques visibles à l’arrêt entre deux étapes, en position finale (crayon au bout du trait, compas à la fin de l’arc), aussi pendant `@pause`/`@instruction` ; cachés à la fin de la construction. Lots 10 et 11 partent au prochain `deploy:prod`.
+- **Prochaine action** : choisir la suite avec David — reco : phase 0 des consignes automatiques pour les étapes non chorégraphiées (compter d’abord les constructions concernées).
+- **En attente de David** : (1) vérifications notées dans `verifications-manuelles.md` (#1621 → #1649 ; serveurs 5183, 5184, 5185, 5186), David les fera plus tard → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`, `-mediatrice-mesure`, `-pause`. (2) Suites possibles : consignes automatiques ; angle plat refusé par `bissectrice` ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; côté du carré d’angle droit. Étiquette d’un segment nommé sur le milieu I : **hors lot** (aucun segment nommé en prod).
+- **Pièges en cours** : `e` = constante d’Euler, jamais comme nom dans un script. DSL : `demidroite`, pas `demi_droite`. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet. Commits et PR : aucune mention Claude.
+- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`), 5185 (`-mediatrice-mesure`), 5186 (`-pause`), branches mergées.
 
 ---
 
@@ -232,3 +232,16 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - `buildRegleEquerre` + `VOIES_MEDIATRICE_MESURE` (`mediatrice.ts`), ligne du registre ; mesure extraite de `milieu.ts` (`measureSegment`, `rulerStartsAtA`, `hasVisibleSegment` exportés).
 - Revue `code-reviewer` Opus : aucun bloquant. **Importants corrigés** : un milieu existant n'est repris que s'il est **construit comme milieu de A et B** (`isMidpoint`) — un point au milieu par hasard (pied d'une hauteur d'isocèle, point libre) ne suivrait pas A et B (1 test rouge sans le correctif) ; tests de déplacement de B après coup (portions sur la médiatrice, équerre au-dessus ; passaient déjà). Mineur corrigé : règle « 0 à gauche » partagée (`rulerStartsAtA`). Accepté : A = B refusé par le builtin avant la chorégraphie.
 - Tests : `mediatrice-mesure.test.ts` 30 ; `test:server constructions-v2` 463 ✓.
+
+## Lot 11 — Instruments visibles à l’arrêt (2026-10-23, #1649)
+
+### Phase 0
+
+- Constat en prod (lecture seule) : les 9 constructions tracent avec `segment`/`arc` + `@pause`, instruments posés automatiquement → le défaut les touche toutes. Aucun segment nommé en prod → l’étiquette de segment sur le milieu I sort du lot (David : « on passe à la suite »).
+- Comportements : instruments de l’étape finie affichés à l’arrêt, en position finale, aussi pendant les directives qui suivent ; un instrument réutilisé glisse, les autres disparaissent au pas suivant ; étape qui ne crée que des points : instruments cachés (inchangé) ; fin de construction : cachés ; arrêt sur erreur : restent. Les deux points restés sans réponse (fin de construction, étiquette) ont pris le choix qui ne change rien.
+
+### Réalisé
+
+- `holdAutoInstruments` / `heldInstruments`, `instrumentEndPoses` (`pencilEndPose`, angle de fin du compas), `constructionFinished` (`progress >= 1` et pas d’erreur — pas l’index : une `@instruction` finale à 0 ms) ; `visibleInstruments` + `instrumentEndPose` (`render-helpers.ts`).
+- Tests : `instruments-fin-etape.test.ts` 18, `visible-instruments.test.ts` (+8, test qui assertait le défaut réécrit), `ConstructionPlayer-instruments-fin-etape.svelte.test.ts` 6 ; 19 + 3 rouges sans le code. `test:server constructions-v2` 489 ✓ · `test:client` 25 ✓.
+- Revue `code-reviewer` : aucun bloquant ni important. Mineurs acceptés : `seekToEnd` d’une construction en erreur sans instruments ; branche `catch` de `handleStepChange` qui ne vide pas l’état des instruments (déjà le cas) ; crayon sans glissement d’un trait au suivant (déjà le cas) ; pose de fin sur le dernier segment si une étape en crée plusieurs (théorique).
