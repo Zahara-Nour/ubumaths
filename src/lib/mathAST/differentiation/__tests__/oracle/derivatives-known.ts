@@ -30,9 +30,6 @@ export const KNOWN_RESIDUE: Readonly<Record<string, string>> = {};
  * La valeur est la forme rendue ; la forme attendue est `expected` du corpus.
  */
 export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
-	'poly-11 @ latex-péda': 'x - \\dfrac{3}{2}',
-	'poly-11 @ commande': 'x - \\dfrac{3}{2}',
-	'poly-11 @ bouton': 'x - \\dfrac{3}{2}',
 	'rat-04 @ commande': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
 	'rat-04 @ bouton': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
 	// La carte ne regroupe plus en `−2` : elle n'y arrivait qu'en distribuant le − d'une
@@ -126,9 +123,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'exp-18 @ commande': '2 \\left( \\exponentialE^x \\right)^2',
 	'exp-18 @ bouton': '2 \\left( \\exponentialE^x \\right)^2',
 	'exp-18 @ carte': '2 \\left( \\exponentialE^x \\right)^2',
-	'exp-22 @ latex-péda': 'e^{\\dfrac{x}{2}}',
-	'exp-22 @ commande': '\\exponentialE^{\\dfrac{x}{2}}',
-	'exp-22 @ bouton': 'e^{\\dfrac{x}{2}}',
 	'ln-12 @ latex-péda': '\\dfrac{\\dfrac{1}{x}}{\\ln\\left( x \\right)}',
 	'ln-12 @ commande': '\\dfrac{\\dfrac{1}{x}}{\\ln\\left( x \\right)}',
 	'ln-12 @ bouton': '\\dfrac{\\dfrac{1}{x}}{\\ln\\left( x \\right)}',
@@ -304,8 +298,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'comp-12 @ commande': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
 	'comp-12 @ bouton': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
 	'comp-12 @ carte': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
-	't-02 @ latex-péda': '20 - \\dfrac{49 t}{5}',
-	't-02 @ commande': '20 - \\dfrac{49 t}{5}',
 	't-07 @ latex-péda': 'e^{-t} - t e^{-t}',
 	't-07 @ commande': '\\exponentialE^{-t} - t \\exponentialE^{-t}',
 	'lit-05 @ commande': 'A ω \\cos\\left( t ω + φ \\right)',
