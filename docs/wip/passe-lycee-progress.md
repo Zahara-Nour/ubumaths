@@ -301,3 +301,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   (8 600 tirages). Intégration : 26 verts (2 sautés : options, tags d'avant) ; sans l'étape 4, 8 rouges et la suite
   nominale tombe à sa mise en place ; les 10 suites des lots précédents restent vertes (179 tests).
   `check:incremental` 0 erreur, cliquet tenu, `lint:fast` propre.
+- **2026-10-23 — Revues Opus de la PR 3.** `code-reviewer` : aucun bloquant (réponses recalculées à la main sur
+  toutes les specs réécrites ; ajouts SQL bien conditionnels). `security-auditor` : aucun bloquant ; aucune policy ni
+  fonction ne lit `grades`, brouillons invisibles des élèves ; le prof verra ces brouillons dans le cahier de texte de
+  ses classes de 2de / Tle au lieu de 1re. Laissé : rollback sans garde du statut des ORIGINES (une origine publiée
+  depuis serait réécrite, sans perte de donnée) ; pas de `for update` dans `$retour_neufs$` ; `$check$` ne relit pas
+  `grades` des neufs (copiés par construction, vérifié par le test) ; 99c772c0 garde ]−π ; π] et [0 ; 2π[ (réponse ∅).
