@@ -23,7 +23,7 @@ import type { Voie, ChoreographyCtx, ChoreographyResult, SubStep, TraceTag } fro
 import { isAngle, isPointElement } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { numeric } from '$lib/geometry-core/types/geo-value';
-import { de, en, role } from './names';
+import { de, en, labelAux, role } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 /** Compass opening for the 2 first arcs (units of math). Q1 in the spec. */
@@ -440,6 +440,10 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 		initial,
 		hiddenSupport
 	} = setup;
+	const nA1 = labelAux(ctx, Aprime, 'A′');
+	const nB1 = labelAux(ctx, Bprime, 'B′');
+	const nA2 = labelAux(ctx, Adoubleprime, 'A″');
+	const nB2 = labelAux(ctx, Bdoubleprime, 'B″');
 
 	// Noms des arguments : sommet de α, V', α et β (angles nommés à l'écran seulement).
 	const alphaEl = ctx.figure.getElementById(ctx.args.ids[0]);
@@ -492,7 +496,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime, Adoubleprime],
 			animateLineIds: [],
-			instruction: `On marque A', B' (sur les côtés ${de(nameAlpha)}) et A'' (sur la direction)`
+			instruction: `On marque ${nA1}, ${nB1} (sur les côtés ${de(nameAlpha)}) et ${nA2} (sur la direction)`
 		},
 		// SS4 : compass at A', opens to B' (measures |A'B'|).
 		{
@@ -508,7 +512,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en A', on prend la mesure |A'B'|"
+			instruction: `Compas en ${nA1}, on prend la mesure |${nA1}${nB1}|`
 		},
 		// SS5 : compass moves to A'' keeping opening |A'B'|, traces arc
 		// oriented toward B''.
@@ -525,7 +529,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcApp],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "On reporte cette ouverture en A'' et on trace un arc"
+			instruction: `On reporte cette ouverture en ${nA2} et on trace un arc`
 		},
 		// SS5 : B'' fade in (intersection of arc(V', r) with arc(A'', |A'B'|)).
 		{
@@ -534,7 +538,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Bdoubleprime],
 			animateLineIds: [],
-			instruction: "Les deux arcs se coupent en B''"
+			instruction: `Les deux arcs se coupent en ${nB2}`
 		},
 		// SS6 : ruler + pencil trace the segment V' → B''.
 		{
@@ -550,7 +554,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `Règle ${de(nameVp)} à B'' : on trace le second côté ${de(nameBeta)}`
+			instruction: `Règle ${de(nameVp)} à ${nB2} : on trace le second côté ${de(nameBeta)}`
 		}
 	];
 
@@ -582,7 +586,7 @@ export const VOIES_TRANSPORTE_EUCLIDE: readonly Voie[] = [
 		nom_humain: 'Report au compas (Euclide I.23)',
 		source: 'Euclide, Éléments I.23',
 		description:
-			"Compas en `V`, écartement `r = 1`, arc qui coupe les côtés en `A'` et `B'`. Compas en `V'` même ouverture, arc qui coupe la direction en `A''`. Compas écarté à `|A'B'|`, placé en `A''`, arc qui croise le précédent en `B''`. Règle de `V'` à `B''` trace le second côté de β.",
+			'Compas en `V`, écartement `r = 1`, arc qui coupe les côtés en `A′` et `B′`. Compas en `V′` même ouverture, arc qui coupe la direction en `A″`. Compas écarté à `|A′B′|`, placé en `A″`, arc qui croise le précédent en `B″`. Règle de `V′` à `B″` trace le second côté de β.',
 		defaut: true,
 		choreography: buildTransporteEuclide
 	}

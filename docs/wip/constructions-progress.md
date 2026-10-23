@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1629._
+_Mis à jour le 2026-10-23, lot 9 en cours (PR à ouvrir)._
 
-- **État** : lot 8 **livré** — #1629 mergée : consignes des six chorégraphies avec les vrais noms du script (`names.ts`), tournure neutre pour un argument caché/sans nom ; angle nommé seulement si son nom s'affiche (règle validée par David). Lots 1 à 8 partent au prochain `deploy:prod`. Vérifications #1626 (5178) et #1629 (5179) notées.
-- **Prochaine action** : choisir la suite avec David.
-- **En attente de David** : (1) vérifications de #1621 (5177), #1626 (5178), #1629 (5179) → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes` ; (2) suite possible : points auxiliaires (Q, R, C*, A′…) nommés dans les consignes mais sans étiquette sur la figure (afficher ou retirer ?) ; `@mesure` (chantier à part) ; côté du carré d'angle droit (double perpendiculaire à l'équerre).
-- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Étiquettes écrites brutes dans les consignes (`A_1` tel quel). Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` (vitest) → relancer le job. 3 constructions en prod avec des `@cacher` sans effet (choix de David).
-- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
+- **État** : lot 9 (points auxiliaires nommés, phase 0 validée : afficher + prime) codé et vert sur `feat/constructions-auxiliaires`. Lots 1 à 8 partent au prochain `deploy:prod`.
+- **Prochaine action** : PR, revue `code-reviewer` opus (géométrie), CI, merge.
+- **En attente de David** : vérifications #1621/#1626/#1629 faites en Playwright (section « Lot 9 ») — reste les marqueurs d'angle droit en `@complet` ; puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`. Suites possibles : `@mesure` ; côté du carré d'angle droit ; C\* proche d'un vrai C.
+- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet (choix de David).
+- **Worktree / branche** : `../ubumaths-wt-constructions-auxiliaires` · `feat/constructions-auxiliaires`.
 
 ---
 
@@ -151,3 +151,25 @@ Revue : `code-reviewer` (Sonnet).
 - `choreographies/names.ts` (rôles `en`, `de`, `mesure`, `droite`, `lineFormRoles`…) ; `args.lineName` rempli par `expandLineArgument`, transmis par `ctx.sub`. Corrigé au passage : 2e médiatrice de `cercle_circonscrit` (« Compas en A » au lieu de B).
 - Choix validé par David : un angle (α, β de `transporte`) n'est nommé que si son nom s'affiche, sinon « l'angle ».
 - Tests : 44 + 7 (tournures neutres par famille) ; 33 rouges sans le code ; 13 non-régressions (textes d'avant). `test:server constructions-v2` 321 ✓. Revue `code-reviewer` Sonnet : aucun bloquant ; tests des tournures neutres ajoutés. CI verte (shard client 1 relancé : blocage `wrapDynamicImport` sans rapport), mergée (#1629).
+
+## Lot 9 — Points auxiliaires nommés (2026-10-23)
+
+**Phase 0 validée par David** (2026-10-23) : **afficher** (pas retirer), collision → **prime**.
+
+- **Nominal** : tout point auxiliaire nommé par une consigne (Q, R, C\*, D\*, A\*, B\*, A′, B′, A″, B″, M, O, P de la bissectrice `@arcs_egaux`) et la droite `e` portent cette lettre sur la figure, dès leur apparition et tant qu'ils sont visibles (charnières `@squelette`/`@complet`, autres `@complet`, rien `@epure`).
+- **Lettre prise** (figure, script même plus loin, chorégraphie précédente) → prime de plus (Q → Q′ → Q″), même lettre dans la consigne.
+- **Inchangé** : auxiliaires non nommés (F, croisements des médiatrices) ; textes des consignes hors collision — sauf le prime, désormais typographique (B' → B′, A'' → A″), comme l'étiquette (le canevas écrit les étiquettes en texte brut).
+- Constat de l'inventaire : collision réelle avant ce lot (script avec un point Q, O, M, R ou P → consigne qui désignait le mauvais point ; deux parallèles → deux « Q »).
+
+### Réalisé (2026-10-23)
+
+- `Figure.setLabel` ; `ctx.auxName` (`createAuxNamer` dans `names.ts`, un générateur par instruction, partagé avec `ctx.sub`) ; `labelAux(ctx, id, base)` ; noms du script relevés au chargement (`declaredNames`, `executor.ts`). Six chorégraphies : `parallele`, `perpendiculaire`, `bissectrice`, `cercle_circonscrit`, `transporte` (A″, B″ = points de β créés par le builtin, étiquetés après coup) ; `mediatrice` sans lettre. Descriptions des voies passées aux primes typographiques.
+- Tests : `choreographies-auxiliaires.test.ts` (29, dont 26 rouges sans le code) ; `ConstructionPlayer-points-auxiliaires.svelte.test.ts` (2, rouges sans `setLabel`) ; non-régressions du lot 8 passées aux primes typographiques. `test:server constructions-v2` 357 ✓ / 21 ignorés ; `test:client` constructions + atelier 26 ✓. `check:incremental` 0 · `types:cliquet` tenu · `lint:fast` propre.
+
+### Vérifications #1621, #1626, #1629 (Playwright sans fenêtre, 2026-10-23)
+
+Faites par un agent (aucun navigateur pilotable dans la session) : consignes relevées pas à pas et captures.
+
+- #1621 : compas OK (19 étapes, figure finale juste) ; équerre OK (consignes, angle droit en P, côté cohérent) ; P sur (AB) → « Arrêt à la ligne 4 : … P est sur la droite (AB)… » OK — écart mineur : le message cite `@double_perpendiculaire` sans `@equerre`. Marqueurs d'angle droit : visibles en `@complet` seulement, à revoir dans ce mode.
+- #1626 : `m` = animation de `(P, A, B)` OK ; consigne « On choisit un point de la droite » OK, fondu non jugeable sur captures instantanées ; message `e` réservé OK.
+- #1629 : OK. Remarque de l'agent : « C\* » à côté d'un vrai point C du script se lit mal (« plus grand que MC\* » après « Compas en C… »).

@@ -30,7 +30,7 @@
 import { exact } from '$lib/geometry-core/types/geo-value';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
-import { fixed, mesure, role, type Role } from './names';
+import { fixed, labelAux, mesure, role, type Role } from './names';
 
 const PI_OVER_2 = Math.PI / 2;
 
@@ -72,6 +72,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 	// O = intersection(m1, m2) (= circumcenter). Created hidden.
 	const O = figure.createIntersectionLL(m1, m2);
 	figure.hideElement(O);
+	const nO = labelAux(ctx, O, 'O');
 
 	// ─── Sub-chorégraphies for m1 and m2 ───
 	// Triple : @euclide @arcs_egaux (default voie of mediatrice).
@@ -133,7 +134,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			animateDrawableIds: [],
 			animatePointIds: [O],
 			animateLineIds: [],
-			instruction: 'Les médiatrices se croisent en O, centre du cercle'
+			instruction: `Les médiatrices se croisent en ${nO}, centre du cercle`
 		},
 		// Compass measures |OA| (compass at O, opens to A).
 		{
@@ -145,7 +146,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: `Compas en O, on prend ${mesure(fixed('O'), nameA)}`
+			instruction: `Compas en ${nO}, on prend ${mesure(fixed(nO), nameA)}`
 		},
 		// Compass draws the circle (full 360° around O).
 		{

@@ -26,7 +26,7 @@ import type {
 } from './types';
 import { isAngle } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-import { de, droite, en, nom, role } from './names';
+import { de, droite, en, labelAux, nom, role } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const CERCLE_V_RADIUS_FACTOR = 0.6; // r1 = 0.6 × min(|VA|, |VB|)
@@ -197,6 +197,8 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 	figure.hideElement(Aprime);
 	const Bprime = figure.createComputedPoint({ scalarRef: BpxScalar }, { scalarRef: BpyScalar });
 	figure.hideElement(Bprime);
+	const nAprime = labelAux(ctx, Aprime, 'A′');
+	const nBprime = labelAux(ctx, Bprime, 'B′');
 
 	// Bisector direction (reactive unit vector).
 	const bisDirRawXScalar = figure.createScalarExpression(
@@ -357,6 +359,9 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		// Reactive elements
 		Aprime,
 		Bprime,
+		// Noms affichés de A′, B′ (lettres des consignes).
+		nAprime,
+		nBprime,
 		arcNearA,
 		arcNearB,
 		// Reactive scalars (for downstream use + hidden support).
@@ -502,6 +507,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const { figure, principalId } = ctx;
 	const N = bissectriceRoles(ctx);
 	const common = setupCommonGeometry(ctx);
+	const { nAprime, nBprime } = common;
 	const {
 		Aprime,
 		Bprime,
@@ -571,6 +577,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	);
 	const P = figure.createComputedPoint({ scalarRef: PxScalar }, { scalarRef: PyScalar });
 	figure.hideElement(P);
+	const nP = labelAux(ctx, P, 'P');
 
 	// Small arcs at A' and B' centered on the direction toward P. Two
 	// such arcs cross exactly at P (the intersection that defines the
@@ -646,7 +653,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		common,
 		VPScalar,
 		VP0,
-		`Règle ${de(N.V)} à P : on trace la bissectrice`
+		`Règle ${de(N.V)} à ${nP} : on trace la bissectrice`
 	);
 	// Ensure bisDir vars are referenced even when used only via the closure.
 	void bisDirX0;
@@ -684,7 +691,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime],
 			animateLineIds: [],
-			instruction: "Les arcs coupent les côtés en A' et B'"
+			instruction: `Les arcs coupent les côtés en ${nAprime} et ${nBprime}`
 		},
 		// SS4 : compass at A', petit arc orienté vers P.
 		{
@@ -696,7 +703,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [arcAtAprime],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en A', petit arc en direction du croisement"
+			instruction: `Compas en ${nAprime}, petit arc en direction du croisement`
 		},
 		// SS5 : compass at B', petit arc orienté vers P.
 		{
@@ -708,7 +715,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [arcAtBprime],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en B' (même ouverture), petit arc qui croise le précédent"
+			instruction: `Compas en ${nBprime} (même ouverture), petit arc qui croise le précédent`
 		},
 		// SS6 : P fade-in (intersection of arcs, on the bisector).
 		{
@@ -717,7 +724,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [],
 			animatePointIds: [P],
 			animateLineIds: [],
-			instruction: 'Les arcs se coupent en P'
+			instruction: `Les arcs se coupent en ${nP}`
 		},
 		// SS7 : ruler + pencil trace the bisector.
 		rulerStep.subStep
@@ -775,6 +782,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	const { figure, principalId } = ctx;
 	const N = bissectriceRoles(ctx);
 	const common = setupCommonGeometry(ctx);
+	const { nAprime, nBprime } = common;
 	const {
 		Aprime,
 		Bprime,
@@ -797,6 +805,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 	// M = midpoint(A', B') — reactive via createMidpoint.
 	const M = figure.createMidpoint(Aprime, Bprime);
 	figure.hideElement(M);
+	const nM = labelAux(ctx, M, 'M');
 
 	// |VM| (reactive)
 	const MxScalar = figure.createScalarCoordinate(M, 'x');
@@ -820,7 +829,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		common,
 		VMScalar,
 		VM0,
-		`Règle ${de(N.V)} à M : on trace la bissectrice`
+		`Règle ${de(N.V)} à ${nM} : on trace la bissectrice`
 	);
 
 	const subSteps: SubStep[] = [
@@ -855,7 +864,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime],
 			animateLineIds: [],
-			instruction: "Les arcs coupent les côtés en A' et B'"
+			instruction: `Les arcs coupent les côtés en ${nAprime} et ${nBprime}`
 		},
 		// SS4 : M fade-in (midpoint of A'B').
 		{
@@ -864,7 +873,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [],
 			animatePointIds: [M],
 			animateLineIds: [],
-			instruction: "On marque le milieu M de [A'B']"
+			instruction: `On marque le milieu ${nM} de [${nAprime}${nBprime}]`
 		},
 		// SS4 : ruler trace.
 		rulerStep.subStep
@@ -898,7 +907,7 @@ export const VOIES_BISSECTRICE_EUCLIDE: readonly Voie[] = [
 		nom_humain: 'Arcs égaux d’Euclide (I.9)',
 		source: 'Euclide, Éléments I.9',
 		description:
-			"Cercle de centre `V` coupe `(VA)` en `A'` et `(VB)` en `B'`. Deux arcs égaux centrés en `A'` et `B'` se coupent en `P`. La bissectrice est la droite `(VP)`.",
+			'Cercle de centre `V` coupe `(VA)` en `A′` et `(VB)` en `B′`. Deux arcs égaux centrés en `A′` et `B′` se coupent en `P`. La bissectrice est la droite `(VP)`.',
 		defaut: true,
 		choreography: arcsEgauxChoreography
 	},
@@ -907,7 +916,7 @@ export const VOIES_BISSECTRICE_EUCLIDE: readonly Voie[] = [
 		nom_humain: 'Arc et milieu',
 		source: 'Variante par milieu',
 		description:
-			"Cercle de centre `V` coupe `(VA)` en `A'` et `(VB)` en `B'`. Le milieu `M` de `[A'B']` est sur la bissectrice ; on trace `(VM)`.",
+			'Cercle de centre `V` coupe `(VA)` en `A′` et `(VB)` en `B′`. Le milieu `M` de `[A′B′]` est sur la bissectrice ; on trace `(VM)`.',
 		defaut: false,
 		choreography: arcMilieuChoreography
 	}

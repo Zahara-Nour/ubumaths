@@ -46,6 +46,58 @@ export function fixed(name: string): Role {
 	return { name, neutral: name };
 }
 
+const PRIMES = ['', '′', '″', '‴'];
+
+/** « Q », « Q′ », « Q″ », « Q‴ », puis « Q′′′′ »… */
+function withPrimes(stem: string, count: number): string {
+	return stem + (PRIMES[count] ?? '′'.repeat(count));
+}
+
+/** Sépare « A″ » en { stem: « A », count: 2 }. */
+function splitPrimes(base: string): { stem: string; count: number } {
+	let stem = base;
+	let count = 0;
+	for (;;) {
+		const last = stem.at(-1);
+		const n = last ? PRIMES.indexOf(last) : -1;
+		if (n <= 0) return { stem, count };
+		count += n;
+		stem = stem.slice(0, -1);
+	}
+}
+
+/**
+ * Fabrique `ctx.auxName` pour une instruction : un nom est pris s'il est
+ * l'étiquette d'un élément de la figure, un nom du script (`reserved`) ou
+ * déjà rendu par ce générateur. Un nom pris reçoit un prime de plus.
+ */
+export function createAuxNamer(
+	figure: Figure,
+	reserved: ReadonlySet<string>
+): (base: string) => string {
+	const given = new Set<string>();
+	return (base) => {
+		const taken = new Set([...reserved, ...given]);
+		for (const el of figure.getAllElements()) if (el.label) taken.add(el.label);
+		const { stem, count } = splitPrimes(base);
+		let k = count;
+		while (taken.has(withPrimes(stem, k))) k++;
+		const name = withPrimes(stem, k);
+		given.add(name);
+		return name;
+	};
+}
+
+/**
+ * Nomme l'élément auxiliaire `id` (`ctx.auxName(base)`) et pose ce nom sur
+ * la figure : la consigne et l'étiquette disent la même lettre.
+ */
+export function labelAux(ctx: ChoreographyCtx, id: string, base: string): string {
+	const name = ctx.auxName(base);
+	ctx.figure.setLabel(id, name);
+	return name;
+}
+
 /** « A » ou « le point choisi ». */
 export function nom(r: Role): string {
 	return r.name ?? r.neutral;

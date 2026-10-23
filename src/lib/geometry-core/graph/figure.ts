@@ -4634,6 +4634,15 @@ export class Figure {
 		this.elements.set(id, updated);
 	}
 
+	/** Nom affiché d'un élément créé sans étiquette (points auxiliaires des constructions). */
+	setLabel(id: string, label: string): void {
+		const el = this.elements.get(id);
+		if (!el) throw new Error(`setLabel: "${id}" does not exist`);
+		const updated = { ...el, label } as GeoElement;
+		this.undo_manager.recordUpdate(id, el, updated);
+		this.elements.set(id, updated);
+	}
+
 	/** Masque (ou réaffiche) le nom seul, l'élément restant dessiné (DSL `etiquette="aucune"`). */
 	setLabelHidden(id: string, hidden: boolean): void {
 		const el = this.elements.get(id);
