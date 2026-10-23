@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 12 en cours (PR à ouvrir)._
+_Mis à jour le 2026-10-23, PR #1653 ouverte (lot 12), pas mergée._
 
-- **État** : lot 12 « finitions » codé et commité sur `fix/constructions-finitions` : bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre, trait visible le long de la règle. Tests et typecheck verts.
-- **Prochaine action** : PR, revue `code-reviewer` (Opus), CI, merge ; noter les vérifications manuelles.
-- **En attente de David** : `@arc_milieu` sur un angle plat → refus (le milieu de [A′B′] est V) qui renvoie vers `@arcs_egaux`/`@mesure` : à confirmer. Vérifications #1621 → #1649 (serveurs 5183-5186), puis suppression des worktrees mergés. Suites possibles : consignes automatiques (reco : phase 0, compter d'abord les constructions concernées) ; marqueurs d'angle droit seulement en `@complet`.
-- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. DSL : `demidroite`. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. Commits et PR : aucune mention Claude.
-- **Worktree / branche** : `../ubumaths-wt-constructions-finitions` · `fix/constructions-finitions`.
+- **État** : #1653 `fix/constructions-finitions` poussée : bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre, trait visible le long de la règle. Revue Opus : aucun bloquant. CI rouge pour une cause extérieure : `template-fact-sheet.test.ts` cassé sur `main` (#1650 × #1652), réparé par #1655 (autre session) ; shard client 1/2 relancé (`wrapDynamicImport`).
+- **Prochaine action** : après le merge de #1655 → `git merge origin/main` dans la branche, push, CI verte → merger #1653 ; puis vérifications manuelles notées (scripts du lot 12 dans la section « Lot 12 »), serveur 5187 arrêté, worktree `-finitions` supprimé.
+- **En attente de David** : (1) `@arc_milieu` sur un angle plat : refus recommandé (le milieu de [A′B′] est V ; message vers `@arcs_egaux`/`@mesure`), pas encore tranché. (2) Vérifications #1621 → #1649 (serveurs 5183-5186) puis suppression des worktrees mergés. (3) Suites : consignes automatiques (reco : phase 0) ; marqueurs d'angle droit seulement en `@complet`.
+- **Pièges en cours** : le journal à jour est dans `../ubumaths-wt-constructions-finitions`, PAS dans `../ubumaths-wt-constructions` (resté à #1629). `e` = constante d'Euler. Commits et PR : aucune mention Claude.
+- **Worktree / branche** : `../ubumaths-wt-constructions-finitions` · `fix/constructions-finitions` · serveur de test 5187.
 
 ---
 
@@ -257,3 +257,4 @@ Phase 0 validée par David (« je suis tes recos ») : règle C\*/D\* limitée �
 - **Carré en P** (double perpendiculaire à l'équerre) : entre la parallèle et P + (F→P), dans le coin de l'équerre ; l'ancien test assertait le carré du côté de (AB).
 - **Trait caché sous la règle** (signalé par David pendant la relecture) : la règle est posée bord sur le trait (y = 0) et son contour gris de 2 px recouvrait le trait bleu de 2 px pendant tout le tracé (défaut antérieur au lot, aussi sur `main`). `Ruler.svelte` : corps décalé de 2 px vers son côté (`EDGE_GAP_PX`), lecture des graduations inchangée ; test `Ruler-bord.svelte.test.ts`.
 - **Revue (Opus)** : aucun bloquant. Mineurs laissés : `@arc_milieu` sur un angle rendu plat après coup (milieu = V, déjà le cas avant) ; `starPairStems` pourrait finir sur Q\*/R\* si C à P sont tous pris.
+- **Scripts de vérification** (`/construction-demo`, port 5187) : angle plat `A = point(4, 0)` · `V = point(0, 0)` · `B = point(-4, 0)` · `c1 = demidroite(V, A)` · `c2 = demidroite(V, B)` · `d = bissectrice(A, V, B) @euclide @arcs_egaux @complet` (arcs au-dessus, droite verticale), même chose en `@mesure @complet` (180°, « 180 ÷ 2 = 90 »), en `@euclide @arc_milieu` (refus) ; `P = point(8, 2)` sur (AB) avec `parallele(P, A, B) @equerre @double_perpendiculaire` (message avec `@equerre`) ; `C = point(0, 0)` · `D = point(4, 1)` · `M = point(1, 3)` · `m = parallele(M, C, D) @euclide @double_perpendiculaire @complet` (E\*, F\*) ; `A = point(0, 0)` · `B = point(4, 1)` · `P = point(1, 3)` · `d = parallele(P, A, B) @equerre @double_perpendiculaire @complet` (carré en P dans le coin de l'équerre) ; `segment(A, B)` : trait visible le long de la règle pendant le tracé.
