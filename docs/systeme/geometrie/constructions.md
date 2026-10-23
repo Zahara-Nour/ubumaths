@@ -77,7 +77,7 @@ Chaque directive occupe **une entrée du curseur** (0 ms sauf `@pause`).
 | Directive                                    | Effet                                                                                                                                                     |
 | -------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `@instrument("regle", x=…, y=…, rotation=…)` | Montre l'instrument et le place (unités math, rotation en degrés). Noms : `regle`, `compas`, `rapporteur`, `equerre`, `crayon` (`executor.ts:80-86`).     |
-| `@instruction("texte")`                      | Consigne affichée sous la toile (`ConstructionPlayer.svelte:368-380`) jusqu'à la suivante. La consigne de la sous-étape en cours s'affiche dessous (§ 4). |
+| `@instruction("texte")`                      | Consigne affichée sous la toile (`ConstructionPlayer.svelte:381-402`) jusqu'à la suivante. La consigne de la sous-étape en cours s'affiche dessous (§ 4). |
 | `@vitesse(f)`                                | Multiplie les vitesses par `f > 0` à partir de cette ligne (lue à la pré-simulation seulement, `executor.ts:1015-1019`).                                  |
 | `@pause(ms)`                                 | Entrée vide de `ms` millisecondes (300 par défaut).                                                                                                       |
 | `@cacher` / `@cacher("compas")`              | Cache tous les instruments / un instrument.                                                                                                               |
@@ -128,7 +128,10 @@ Sous-étapes (`SubStep`, `types.ts:73`), abrégées : **CM** `compass-measure` (
 tracé), **CD** `compass-draw`, **RT** `ruler-trace`, **PF** `point-fade-in`, **LF** `line-fade-in`.
 Chaque sous-étape peut porter une consigne (`SubStep.instruction`) : le lecteur l'affiche sous la
 consigne `@instruction` de l'auteur, précédée de « ↳ », le temps de la sous-étape
-(`ConstructionPlayer.svelte:144`, `:374-377`).
+(`ConstructionPlayer.svelte:157`, `:387-390`). Si l'exécution s'est arrêtée (`loadError`), le
+**dernier pas** de la frise ajoute dessous la ligne « ⚠ Arrêt à la ligne N : <message> »
+(`executionStop`, `:118-133`) : l'instruction fautive n'a aucune sous-étape, la consigne du dernier
+pas joué reste ; curseur reculé → la ligne disparaît.
 Les trois visibilités et les modificateurs valent pour **toutes** les voies (passe commune).
 Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« int. ») et
 `transporte-choreography.test.ts`.
@@ -271,7 +274,8 @@ Ailleurs : `geometry-core/dsl/__tests__/directives.test.ts` (21), `parser-decora
 Composant : `components/__tests__/ConstructionPlayer-consignes.svelte.test.ts` (consignes de
 l'auteur et des sous-étapes, 5, `pnpm test:client`) et
 `ConstructionPlayer-double-perpendiculaire.svelte.test.ts` (les deux voies jouées jusqu'au bout,
-`P ∈ (AB)` interrompu, 3). **Aucun** test de composant pour
+`P ∈ (AB)` interrompu, 3) et `ConstructionPlayer-arret-execution.svelte.test.ts` (ligne
+d'arrêt au dernier pas seulement, frise vide, script corrigé, 6). **Aucun** test de composant pour
 `ConstructionCanvas` ni `ScriptEditor`.
 
 ## 9. Écarts et reste à faire

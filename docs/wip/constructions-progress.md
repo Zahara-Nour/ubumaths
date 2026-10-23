@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1621._
+_Mis à jour le 2026-10-23, lot 6 lancé (phase 0 validée)._
 
-- **État** : lot 5 **livré** — #1621 mergée : `parallele @euclide @double_perpendiculaire` (16 sous-étapes) et `@equerre @double_perpendiculaire` (10), `P ∈ (AB)` → erreur à la ligne. Code des lots 1 à 5 (#1615, #1616, #1618, #1619, #1621) part au prochain `deploy:prod`. Vérification à l'œil notée dans `verifications-manuelles.md`.
-- **Prochaine action** : choisir le lot 6 avec David.
-- **En attente de David** : le lot 6. Restent : formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique) · (revue #1621, mineur) tests de la double perpendiculaire sur d'autres décors ((AB) verticale, P dessous).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` ; `db:migrate` depuis le dépôt principal seulement. Test qui déplace un point : `movePoint` ne fait que marquer sale → appeler `figure.recompute()`.
-- **Worktree / branche** : `../ubumaths-wt-constructions` gardé le temps de la vérification de David (serveur 5177), puis supprimé. Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
+- **État** : lot 6 = (A) tests de la double perpendiculaire sur d'autres décors ; (B) ligne « ⚠ Arrêt à la ligne N : … » sous les consignes quand l'exécution s'est arrêtée. Phase 0 validée (section « Lot 6 »). Lots 1 à 5 partent au prochain `deploy:prod`.
+- **Prochaine action** : A (agent `geometry-expert`) + B (lecteur) → PR `fix/constructions-lot6` (revue `code-reviewer` opus).
+- **En attente de David** : vérification de #1621 sur 5177 (worktree `../ubumaths-wt-constructions` gardé pour elle, à supprimer ensuite). Après le lot 6 : formes `(P, d)` décorées (à préciser par David) · `@mesure` (chantier à part).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. Test qui déplace un point : `movePoint` ne fait que marquer sale → `figure.recompute()`. Une erreur d'exécution (`ChoreographyError`) est levée AVANT les sous-étapes : l'instruction fautive n'a aucune entrée dans la frise.
+- **Worktree / branche** : `../ubumaths-wt-constructions-lot6` · `fix/constructions-lot6`.
 
 ---
 
@@ -104,3 +104,12 @@ Revue : `code-reviewer` (Sonnet).
 - `parallele.ts` : les deux voies (sous-perpendiculaires `rayon_libre` / `pose_equerre` par `ctx.sub`, méthodes passées explicitement) ; rayons fixes 1,5 et 2,5 pour la perpendiculaire en P ; charnières `[e, R]` (`@euclide`), `[e]` (`@equerre`), deux marqueurs d'angle droit. `ChoreographyError` (`types.ts`) → `DslRuntimeError` à la ligne (`executor.ts`).
 - Tests : 17 d'intégration rouges sans le code + 3 de rendu du lecteur ; 208 ✓ / 21 ignorés. Revue `code-reviewer` opus : aucun bloquant ; mineurs 1-2 corrigés (direction de la parallèle à l'équerre tirée de `u`, juste quand P glisse sur (AB) — test rouge sans, vert avec) ; mineur 3 (autres décors) non fait.
 - `check:incremental` 0 erreur · `types:cliquet` tenu · `lint:fast` propre · `docs:check-a-jour` sans alerte · CI verte, mergée (#1621).
+
+## Lot 6 — Autres décors, arrêt d'exécution signalé (2026-10-23)
+
+**Phase 0 validée par David** (2026-10-23, « je suis tes recos » : B = proposition 1) :
+
+- **A. Double perpendiculaire sur d'autres décors** (tests seulement ; rouge = vrai bug, corrigé dans la PR) — `@euclide` et `@equerre`, décors (AB) verticale avec P à gauche puis à droite, (AB) oblique avec P dessous :
+  1. droite finale ∥ (AB) passant par P ; 2. `e` ⟂ (AB) passant par P ; 3. à l'équerre, angle droit du côté de P à chaque pose, marqueurs d'angle droit (F, P) du bon côté ; 4. au compas, R distinct de P et hors de `e`.
+  2. Limite : P glissé de l'autre côté de (AB) après coup → la parallèle suit, l'équerre se retourne au rejeu.
+- **B. Arrêt d'exécution signalé dans les consignes** : constat — la « sous-étape fautive » n'existe pas (l'erreur est levée avant les sous-étapes, l'instruction est retirée de la frise). Donc : au **dernier pas** de la frise, si l'exécution s'est arrêtée ensuite, une ligne « ⚠ Arrêt à la ligne N : <message> » s'ajoute sous les consignes ; la consigne du dernier pas joué reste (règle 4 du lot 2) ; curseur reculé → la ligne disparaît. Erreur de syntaxe (pas de frise) ou script sans erreur → rien ne change.

@@ -318,7 +318,8 @@ d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
 
 - **Erreurs** : `ConstructionExecutor.load()` ne lève que les erreurs de syntaxe ; une erreur
   d'exécution est rangée dans `executor.loadError` (le lecteur garde la figure partielle et affiche
-  le panneau). `ConstructionPlayer` lit `loadError` après `load()`.
+  le panneau, et la ligne « ⚠ Arrêt à la ligne N » sous les consignes au dernier pas).
+  `ConstructionPlayer` lit `loadError` après `load()`.
 - **Rendu animé** : `ConstructionCanvas` masque dans `GeometryCanvas` les objets en cours de tracé et
   les dessine partiellement (`render-helpers.ts`) sous l'instrument.
 
