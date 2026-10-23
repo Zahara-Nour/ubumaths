@@ -151,6 +151,11 @@ type Accumulator = {
 	 * dénominateur est un nombre (Q3, Q9) : `0,5/2 → 1/4`, mais `0,5/x` reste.
 	 */
 	bar: boolean;
+	/**
+	 * Un décimal a été lu sous une racine (Q8). Le registre se décide sur le
+	 * terme fini : `√0,5·√0,5 → 0,5`, mais `√0,5 → √2/2` si une racine reste.
+	 */
+	decimalRoot: boolean;
 };
 
 /**
@@ -738,10 +743,7 @@ function absorbFactor(
 			if (radicand !== null && absorbSquareRoot(radicand, exponent, acc)) {
 				// `√0,25 → 0,5`, mais `√(1/4) → 1/2` : le registre du radicande ;
 				// `√0,5 → √2/2`, sans écriture décimale finie (Q8)
-				if (hasDecimalLiteral(node.args[0])) {
-					if (isRationalRoot(radicand, exponent)) acc.decimal = true;
-					else acc.fraction = true;
-				}
+				if (hasDecimalLiteral(node.args[0])) acc.decimalRoot = true;
 				if (findNodes(node.args[0], (n) => n.type === 'division').length > 0) {
 					acc.fraction = true;
 				}
@@ -930,10 +932,13 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 	});
 	if (sums.length === 0) return term;
 	// Sous une barre dont le dénominateur a une variable, les décimaux d'une
-	// somme restent (Q9) : `(0,5x+1)/(x+1)`, `x/(0,5x+1)`
+	// somme restent (Q9) : `(0,5x+1)/(x+1)`, `x/(0,5x+1)` ; une fraction lue
+	// à côté se chasse, eux avec (revue) : `(x/3+0,5)/x → (2x+3)/(6x)`
+	const bases = sums.map(({ index }) => term.factors[index].base);
 	if (
 		hasVariableDenominator(term.factors) &&
-		sums.some(({ index }) => hasDecimalLiteral(term.factors[index].base))
+		bases.some(hasDecimalLiteral) &&
+		!bases.some((base) => findNodes(base, (n) => n.type === 'division').length > 0)
 	) {
 		return term;
 	}
@@ -1047,7 +1052,8 @@ function toTerm(
 		keepSumSign,
 		decimal: false,
 		fraction: false,
-		bar: false
+		bar: false,
+		decimalRoot: false
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
@@ -1077,7 +1083,10 @@ function toTerm(
 		unit,
 		verbatim: false,
 		quantity,
-		decimal: acc.decimal && !readsFraction(acc, factors) && writesDecimal(coefficient),
+		decimal:
+			(acc.decimal || acc.decimalRoot) &&
+			!readsFraction(acc, factors) &&
+			writesDecimal(coefficient),
 		written:
 			settings.unitChoice === 'written' && unit !== null && quantity !== null
 				? writtenUnitOf(acc.unitSymbols, unit)
@@ -1273,19 +1282,21 @@ function writesDecimal(coefficient: Rational): boolean {
  * s'écrit `0,5/x`, relu de même : `tidy` reste idempotent (revue du lot 4b).
  */
 function readsFraction(acc: Accumulator, factors: readonly TidyFactor[]): boolean {
-	return acc.fraction || (acc.bar && !hasVariableDenominator(factors));
+	return (
+		acc.fraction ||
+		(acc.bar && !hasVariableDenominator(factors)) ||
+		(acc.decimalRoot && hasRootFactor(factors))
+	);
+}
+
+/** Une racine carrée reste parmi les facteurs : `√2` dans `√0,5 → √2/2` (Q8). */
+function hasRootFactor(factors: readonly TidyFactor[]): boolean {
+	return factors.some((factor) => squareRootRadicand(factor.base) !== null);
 }
 
 /** Un facteur autre qu'un nombre est sous la barre : `x`, `x+1`. */
 function hasVariableDenominator(factors: readonly TidyFactor[]): boolean {
 	return factors.some((factor) => factor.exponent.n < 0n);
-}
-
-/** `√r` élevé à `exponent` est-il rationnel ? `√0,25`, `(√0,5)²` oui ; `√0,5` non. */
-function isRationalRoot(radicand: Rational, exponent: Rational): boolean {
-	if (exponent.d === 1n && exponent.n % 2n === 0n) return true;
-	const [, rest] = extractPerfectPower(radicand.n * radicand.d, 2n);
-	return rest === 1n;
 }
 
 /** Un coefficient écrit en fraction : non entier, hors du registre décimal (S1). */

@@ -94,6 +94,9 @@ describe("tidy — la racine d'un décimal sans écriture décimale finie s'écr
 		// Racine rationnelle : le registre décimal reste
 		['sqrt(0.25)', '0.5'],
 		['sqrt(0.5)^2', '0.5'],
+		// Revue : le registre se décide sur le terme fini, pas racine par racine
+		['sqrt(0.5)*sqrt(0.5)', '0.5'],
+		['sqrt(0.5)*sqrt(0.5)*x', '0.5x'],
 		// Un décimal écrit DEVANT la racine n'est pas touché
 		['0.5*sqrt(2)', '0.5sqrt(2)'],
 		['sqrt(2)*0.5', '0.5sqrt(2)']
@@ -115,7 +118,10 @@ describe('tidy — sous une barre dont le dénominateur a une variable, les déc
 		['0.5x/x', '{0.5x}/x'],
 		['0.25x^(-1)+0.25x^(-1)', '0.5/x'],
 		// Une vraie fraction interne se chasse toujours
-		['(x/2+1)/(x+1)', '{x+2}/{2(x+1)}']
+		['(x/2+1)/(x+1)', '{x+2}/{2(x+1)}'],
+		// Revue : une fraction dans la même somme qu'un décimal se chasse
+		['(x/3+0.5)/x', '{2x+3}/{6x}'],
+		['(0.5x+1/3)/(x+1)', '{3x+2}/{6(x+1)}']
 	])('%s → %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});
