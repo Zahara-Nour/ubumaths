@@ -183,6 +183,7 @@ Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« i
 | `perpendiculaire`    | `@equerre` | `pose_equerre`\*            | 5           | pose équerre, glissement jusqu'au pied F, RT, échange → règle, RT                                                   | idem                                         | livrée (int. :667)                                               |
 | `cercle_circonscrit` | `@euclide` | `mediatrices`\*             | 17          | médiatrice(A,B) (6), LF, médiatrice(B,C) (6), LF, PF (O), CM \|OA\|, CD (cercle)                                    | reprises des médiatrices                     | **livrée, par `ctx.sub`** (int. :448)                            |
 | `transporte`         | `@euclide` | `compas_report`\* (I.23)    | 7           | CD ×2, PF (A′, B′, A″), CM \|A′B′\|, CD, PF (B″), RT                                                                | `arc`                                        | livrée, 4 modes de direction (`transporte-choreography.test.ts`) |
+| `milieu`             | `@mesure`  | `regle_graduee`\*           | 3           | CM règle (0 sur l'extrémité de gauche), CM crayon à la graduation (règle en second), PF (I)                         | `marker` (codage AI = IB)                    | livrée (`milieu-mesure.test.ts`) ; > 15 cm ou confondus → erreur |
 
 **`ctx.sub` est implémenté** (`executor.ts:484-503`, `buildSubChoreographyFn`) : la chorégraphie
 parente crée elle-même l'élément principal du sous-appel puis demande la voie ; une voie inconnue
@@ -194,7 +195,16 @@ l'exécuteur la convertit en `DslRuntimeError` à la ligne de l'instruction (`ex
 donc en `loadError`, sans animation (seul usage : `P ∈ (AB)` pour la double perpendiculaire,
 `parallele.ts:908`).
 
-Aucune voie n'existe pour la contrainte `@mesure`, ni pour un autre builtin que les six ci-dessus.
+**`milieu @mesure`** (`choreographies/milieu.ts`) : `milieu(A, B)` ou `milieu(s)` (le segment est
+ramené à ses extrémités par `expandSegmentArgument`, `executor.ts`). Consignes avec la valeur lue et
+le calcul : « On place le 0 de la règle sur A et on lit AB = 6,4 cm », « 6,4 ÷ 2 = 3,2 : on repère
+la graduation 3,2 », « On marque I à 3,2 cm de A ». Lecture arrondie au millimètre, moitié calculée
+sur la valeur lue (6,3 ÷ 2 = 3,15), virgule décimale, pas de « ,0 » ; I est le milieu exact. Le 0 se
+pose sur l'extrémité la plus à gauche (la plus basse si vertical). Lecture nulle → « A et B sont
+confondus » ; lecture > 15 cm (longueur de la règle) → erreur. Codage AI = IB : deux `segmentMark`
+étiquetés `marker`.
+
+Aucune voie `@mesure` pour un autre builtin, ni de voie pour un builtin hors des sept ci-dessus.
 Le repli « hérité » s'applique aussi quand une chorégraphie rend 0 sous-étape
 (`executor.ts:1140-1157`).
 
@@ -227,8 +237,11 @@ L'état (`InstrumentState`, `types.ts:9`) est en **unités math** ; la toile con
 zoom de `GeometryCanvas`. Placement automatique : `instruments/positioning.ts`
 (`rulerPosition`, `compassPosition`, `applyPosition`). Dans les voies `@equerre`, l'équerre et la
 règle se déplacent par des sous-étapes `compass-measure` ; `secondaryInstrument` garde un second
-instrument visible (crayon placé au début du segment, `executor.ts:404-421`). Le rapporteur n'est
-jamais animé automatiquement : seulement `@instrument("rapporteur", …)`.
+instrument visible (crayon placé au début du segment, `executor.ts:404-421`). Le crayon reste caché
+pendant le déplacement d'un autre instrument et n'apparaît qu'au début du tracé, sauf quand il est
+lui-même l'instrument qui se déplace (`milieu @mesure`) : règle commune dans `visibleInstruments`
+(`core/render-helpers.ts`), lue par `ConstructionCanvas.svelte`. Le rapporteur n'est jamais animé
+automatiquement : seulement `@instrument("rapporteur", …)`.
 
 Les instruments de l'ancien module (`src/lib/constructions/components/instruments/`) en sont une
 copie distincte, utilisée par le tableau blanc (§ 9).
@@ -319,11 +332,11 @@ Faits relevés dans le code le 2026-10-22.
 
 ### Fonctions manquantes
 
-| Point                                                                                                            | Où                                                |
-| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Contrainte `@mesure` déclarée, aucune voie : toute utilisation est une erreur ; le rapporteur n'est jamais animé | `choreographies/types.ts:18`, `registry.ts:25-63` |
-| Six builtins chorégraphiés seulement (`milieu`, `cercle`, `triangle_equilateral`… refusent les décorateurs)      | `registry.ts:66`                                  |
-| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                               | `types.ts:83`                                     |
+| Point                                                                                                    | Où                                          |
+| -------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Contrainte `@mesure` : une seule voie (`milieu`) ; le rapporteur n'est jamais animé (bissectrice prévue) | `choreographies/types.ts:18`, `registry.ts` |
+| Sept builtins chorégraphiés seulement (`cercle`, `triangle_equilateral`… refusent les décorateurs)       | `registry.ts`                               |
+| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                       | `types.ts:83`                               |
 
 ### Comportements connus
 

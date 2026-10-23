@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1633._
+_Mis à jour le 2026-10-23, lot 10 en cours (`@mesure`, PR 1/3 : `milieu`)._
 
-- **État** : lot 9 **livré** — #1633 mergée : points auxiliaires nommés sur la figure (étiquette provisoire), prime si la lettre est prise, nom donné par le script l'emporte (`centre(c)`, `cote(be, 2)`). Lots 1 à 9 partent au prochain `deploy:prod`.
-- **Prochaine action** : choisir la suite avec David.
-- **En attente de David** : (1) vérification #1633 (serveur 5182, worktree `-auxiliaires`) ; #1621/#1626/#1629 faites en Playwright (section « Lot 9 ») sauf les marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`. (2) Suites possibles : `@mesure` ; côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
+- **État** : lot 10 `@mesure` lancé, plan validé par David (3 PR : `milieu` à la règle graduée → `bissectrice` au rapporteur → `mediatrice` milieu mesuré + équerre ; pas `perpendiculaire`). PR 1 `milieu` : tests rouges commités, code en cours. Lots 1 à 9 partent au prochain `deploy:prod`.
+- **Prochaine action** : coder la voie `milieu @mesure` (`choreographies/milieu.ts`), verts, revue `code-reviewer` Sonnet, doc `constructions.md`, PR.
+- **En attente de David** : (1) vérification #1633 (serveur 5182, worktree `-auxiliaires`) ; marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`. (2) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
 - **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Étiquette auxiliaire = provisoire (`setProvisionalLabel`) : `updateLabel` la rend définitive. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet.
-- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
+- **Worktree / branche** : `../ubumaths-wt-constructions-mesure`, `feat/constructions-mesure`.
 
 ---
 
@@ -175,3 +175,22 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - #1621 : compas OK (19 étapes, figure finale juste) ; équerre OK (consignes, angle droit en P, côté cohérent) ; P sur (AB) → « Arrêt à la ligne 4 : … P est sur la droite (AB)… » OK — écart mineur : le message cite `@double_perpendiculaire` sans `@equerre`. Marqueurs d'angle droit : visibles en `@complet` seulement, à revoir dans ce mode.
 - #1626 : `m` = animation de `(P, A, B)` OK ; consigne « On choisit un point de la droite » OK, fondu non jugeable sur captures instantanées ; message `e` réservé OK.
 - #1629 : OK. Remarque de l'agent : « C\* » à côté d'un vrai point C du script se lit mal (« plus grand que MC\* » après « Compas en C… »).
+
+## Lot 10 — `@mesure` (2026-10-23)
+
+**Plan validé par David** (2026-10-23, « je suis tes recos ») : trois PR — (1) `milieu` à la règle graduée ; (2) `bissectrice` au rapporteur (mesure de l'angle, moitié, repère, tracé) ; (3) `mediatrice` = milieu mesuré + angle droit à l'équerre. **Pas** `perpendiculaire` au rapporteur (au collège : équerre, et `@equerre` existe). Consignes avec **valeur lue et calcul** ; lecture arrondie au **mm** (longueur) / au **degré** (angle), calcul fait sur la valeur lue, point placé à la valeur exacte ; unité **cm**, virgule décimale.
+
+### PR 1 — `milieu @mesure` : phase 0 validée (2026-10-23)
+
+- **Nominal** : `I = milieu(A, B) @mesure` (ou `milieu(s)`) → (1) règle posée le long de A–B, 0 sur A, rien de tracé : « On place le 0 de la règle sur A et on lit AB = 6,4 cm » ; (2) crayon à la graduation, règle visible : « 6,4 ÷ 2 = 3,2 : on repère la graduation 3,2 » ; (3) I apparaît : « On marque I à 3,2 cm de A ».
+- **Visibilité** : codage AI = IB (deux marques égales) étiqueté `marker`, comme les angles droits des voies `@equerre` : visible en `@complet`, retiré par `-marqueurs`, caché en `@squelette`/`@epure`.
+- **Limites** : 0 sur le point le plus à gauche (le plus bas si vertical) → consigne « sur B… de B » ; 6,37 → « 6,4 » ; 6,3 ÷ 2 = 3,15 ; entier sans « ,0 » ; noms : règle des consignes du lot 8.
+- **Erreurs** : A = B → « A et B sont confondus : il n'y a pas de longueur à mesurer » ; AB > 15 cm → « AB = 17,2 cm : trop long pour la règle de 15 cm, rapprochez les points » (règle de longueur fixe, choix de David sur reco) ; `milieu @euclide` → « non disponible ».
+- Tests : `core/__tests__/milieu-mesure.test.ts` (22, tous rouges sans le code).
+
+### PR 1 — réalisé (2026-10-23)
+
+- `choreographies/milieu.ts` (voie `regle_graduee`, seule et par défaut) ; ligne `milieu` du registre ; `expandSegmentArgument` (`executor.ts`) pour `milieu(s)`.
+- Revue `code-reviewer` Sonnet : aucun bloquant. **Important corrigé** : le crayon, instrument principal d'un `compass-measure`, était caché pendant tout son déplacement (règle « crayon caché jusqu'au tracé » du canevas) → règle extraite dans `visibleInstruments` (`core/render-helpers.ts`), le crayon qui se déplace lui-même reste visible ; test `visible-instruments.test.ts` (1 rouge sans le correctif). Mineurs corrigés : 15,04 cm accepté (comparaison sur la valeur lue), lecture 0 → confondus, accord « confondues » en tournure neutre, 6,35 → 6,4 (EPS). Accepté : tournure neutre « la première / seconde extrémité » selon l'ordre du script.
+- Vérifié en navigateur sans fenêtre (port 5183) : règle posée 0 sur A, 6,8 en face de B ; crayon visible pendant son glissement ; I puis codage en `@complet`.
+- Tests : `milieu-mesure.test.ts` 25 + `visible-instruments.test.ts` 4 ; `test:server constructions-v2` 390 ✓ / 21 ignorés. `check:incremental` 0 · `types:cliquet` tenu · `lint:fast` propre. Doc : `docs/systeme/geometrie/constructions.md` § 4, § 5, § 9.

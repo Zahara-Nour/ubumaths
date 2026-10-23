@@ -22,6 +22,7 @@ import { VOIES_PARALLELE_EUCLIDE, VOIES_PARALLELE_EQUERRE } from './parallele';
 import { VOIES_PERPENDICULAIRE_EUCLIDE, VOIES_PERPENDICULAIRE_EQUERRE } from './perpendiculaire';
 import { VOIES_CERCLE_CIRCONSCRIT_EUCLIDE } from './cercle_circonscrit';
 import { VOIES_TRANSPORTE_EUCLIDE } from './transporte';
+import { VOIES_MILIEU_MESURE } from './milieu';
 
 export const REGISTRY: ChoreographyRegistry = {
 	mediatrice: {
@@ -59,6 +60,12 @@ export const REGISTRY: ChoreographyRegistry = {
 		euclide: VOIES_TRANSPORTE_EUCLIDE,
 		equerre: undefined,
 		mesure: undefined
+	},
+	milieu: {
+		direct: undefined,
+		euclide: undefined,
+		equerre: undefined,
+		mesure: VOIES_MILIEU_MESURE
 	}
 };
 
