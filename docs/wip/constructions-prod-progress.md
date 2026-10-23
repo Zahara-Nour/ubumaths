@@ -5,7 +5,7 @@
 _Mis à jour le 2026-10-23, PR à ouvrir._
 
 - **État** : 3 constructions réécrites (`scripts/constructions-prod/contenu.ts`), titres et descriptions accentués pour les 9, « Repérage de points » dépublié ; script `pnpm constructions:reecrire` (simulation par défaut). Aperçu inséré dans la base LOCALE, serveur 5188 (worktree `-constructions-prod`). Rien d'écrit en prod.
-- **Prochaine action** : David regarde l'aperçu sur 5188 ; PR, CI, merge ; puis David lance lui-même `pnpm constructions:reecrire --cible prod` (simulation + sauvegarde), commit de `data/constructions-prod/avant-2026-10-23.json`, puis `--publier`.
+- **Prochaine action** : David regarde l'aperçu sur 5188 ; PR, CI, merge ; puis David lance lui-même `pnpm constructions:reecrire --cible prod` (simulation + sauvegarde), commit de `scripts/constructions-prod/avant-2026-10-23.json` (hors de `data/`, ignoré par git), puis `--publier`.
 - **En attente de David** : sa relecture du rendu ; le lancement en prod (la lecture de la prod par un script avec la clé de service est refusée à Claude par le garde-fou).
 - **Pièges en cours** : un identifiant ne peut pas contenir `'` (`M'` refusé dès la lecture : le script de prod de la symétrie ne se chargeait pas) → point `Ms`, nom masqué, texte « M′ » ; une droite affectée affiche le nom de sa variable, sans moyen de le masquer (« d1 », « d2 » du partage).
 - **Worktree / branche** : `../ubumaths-wt-constructions-prod` · `fix/constructions-prod` · serveur 5188.

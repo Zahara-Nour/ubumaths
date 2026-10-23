@@ -13,12 +13,14 @@
  *
  * Local (`.env.local`) : aperçu du rendu seulement, sans lire la prod. Prod (`.env`),
  * avant toute écriture :
- * 1. sauvegarde des lignes lues dans `data/constructions-prod/avant-2026-10-23.json`
- *    (à commiter : c'est le retour arrière) ;
+ * 1. sauvegarde des lignes lues dans `scripts/constructions-prod/avant-2026-10-23.json`
+ *    (à commiter : c'est le retour arrière ; hors de `data/`, ignoré par git) ; `--publier`
+ *    refuse si la sauvegarde ne contient pas l'état d'avant de chaque ligne à écrire ;
  * 2. chaque ligne doit porter son titre d'avant (sinon : déjà faite → sautée, ou modifiée
  *    entre-temps → lot refusé en entier) ;
- * 3. écriture sous condition `updated_at` inchangé, ligne rendue relue (une garde qui
- *    échoue rend 0 ligne, sans erreur).
+ * 3. écriture sous condition `updated_at` inchangé, ligne rendue relue et comparée aux
+ *    valeurs voulues (une garde qui échoue rend 0 ligne, sans erreur). Une écriture
+ *    interrompue se relance telle quelle : les lignes déjà faites sont sautées.
  */
 
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
@@ -52,7 +54,7 @@ type Row = Pick<
 
 const PROD_HOST = 'cnevnzsvixxpnurautls.supabase.co';
 const LOCAL_HOSTS = new Set(['127.0.0.1', 'localhost']);
-const BACKUP_FILE = 'data/constructions-prod/avant-2026-10-23.json';
+const BACKUP_FILE = 'scripts/constructions-prod/avant-2026-10-23.json';
 const COLUMNS =
 	'id, title, description, script, dsl_script, format, is_public, author_id, created_at, updated_at';
 
@@ -100,6 +102,33 @@ function writeBackup(rows: Row[]): void {
 	mkdirSync(dirname(BACKUP_FILE), { recursive: true });
 	writeFileSync(BACKUP_FILE, content);
 	console.log(`  sauvegarde : ${BACKUP_FILE}`);
+}
+
+/** Lignes à écrire dont la sauvegarde ne garde pas l'état lu (retour arrière incomplet) */
+function missingFromBackup(rows: Row[]): string[] {
+	const saved: unknown = existsSync(BACKUP_FILE)
+		? JSON.parse(readFileSync(BACKUP_FILE, 'utf8'))
+		: [];
+	const savedById = new Map<string, unknown>(
+		Array.isArray(saved)
+			? saved.flatMap((s: unknown) =>
+					s && typeof s === 'object' && 'id' in s && typeof s.id === 'string' ? [[s.id, s]] : []
+				)
+			: []
+	);
+	return rows
+		.filter((row) => {
+			const s = savedById.get(row.id);
+			return !(
+				s &&
+				typeof s === 'object' &&
+				'title' in s &&
+				s.title === row.title &&
+				'dsl_script' in s &&
+				s.dsl_script === row.dsl_script
+			);
+		})
+		.map((row) => row.id);
 }
 
 /** 'todo' à écrire, 'done' déjà écrite, sinon la raison du refus */
@@ -173,10 +202,13 @@ async function applyChange(
 		})
 		.eq('id', row.id)
 		.eq('updated_at', row.updated_at)
-		.select('id');
+		.select(COLUMNS);
 	if (error) throw new Error(`${row.id} : ${error.message}`);
 	if ((data ?? []).length !== 1) {
 		throw new Error(`${row.id} : 0 ligne écrite (modifiée entre la lecture et l'écriture ?)`);
+	}
+	if (rowState(data?.[0], change) !== 'done') {
+		throw new Error(`${row.id} : la ligne rendue ne porte pas les valeurs voulues`);
 	}
 }
 
@@ -217,7 +249,18 @@ async function main(): Promise<void> {
 		console.log(`Simulation : ${todo.length} ligne(s) à écrire. Relancer avec --publier.`);
 		return;
 	}
-	for (const { row, change } of todo) await applyChange(prod, row, change);
+	const unsaved = missingFromBackup(todo.map((t) => t.row));
+	if (unsaved.length > 0) {
+		throw new Error(
+			`sauvegarde ${BACKUP_FILE} sans l'état d'avant de : ${unsaved.join(', ')} ; rien n'est écrit`
+		);
+	}
+	try {
+		for (const { row, change } of todo) await applyChange(prod, row, change);
+	} catch (err) {
+		const message = err instanceof Error ? err.message : String(err);
+		throw new Error(`${message} — relancer la même commande : les lignes faites sont sautées`);
+	}
 	console.log(`${todo.length} ligne(s) écrite(s).`);
 }
 
