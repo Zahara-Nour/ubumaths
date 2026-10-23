@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1643._
+_Mis à jour le 2026-10-23, après #1643 (PR 3 en cours)._
 
-- **État** : lot 10 `@mesure` — PR 1/3 `milieu` (#1637) et rythme de lecture (#1638) livrées ; **PR 2/3 `bissectrice @mesure` au rapporteur livrée (#1643)** : 0 sur [VA), rapporteur retourné dans le sens horaire (lecture sur l’échelle intérieure), repère P, codage des angles égaux seulement si les deux côtés sont tracés. Partent au prochain `deploy:prod`.
-- **Prochaine action** : PR 3/3 `mediatrice @mesure` = milieu mesuré + angle droit à l’équerre — phase 0 à faire valider. Worktree : `git worktree add -b feat/constructions-mediatrice-mesure ../ubumaths-wt-constructions-mediatrice-mesure origin/main`.
+- **État** : lot 10 `@mesure` — PR 1/3 `milieu` (#1637), rythme (#1638), PR 2/3 `bissectrice` (#1643) livrées. **PR 3/3 `mediatrice @mesure` : phase 0 validée** (recos suivies), en cours sur `feat/constructions-mediatrice-mesure`.
+- **Prochaine action** : tests rouges (`mediatrice-mesure.test.ts`) → voie `regle_equerre` → revue → PR.
 - **En attente de David** : (1) vérifications #1637 + #1638 (serveur 5183, worktree `-rythme`) et #1643 (serveur 5184, worktree `-bissectrice-mesure`), lignes dans `verifications-manuelles.md` ; #1633 et marqueurs d’angle droit en `@complet` sur 5183 → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`. (2) Étiquette d’un segment nommé posée sur celle du milieu I : à traiter ? Consignes automatiques pour les étapes non chorégraphiées : à trancher. (3) Suites hors `@mesure` : côté du carré d’angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; angle plat refusé par le builtin `bissectrice` ; instruments invisibles à l’arrêt entre deux étapes.
 - **Pièges en cours** : `e` = constante d’Euler, jamais comme nom dans un script. DSL : `demidroite`, pas `demi_droite`. Étiquette auxiliaire provisoire (`setProvisionalLabel`). Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet. Commits et PR : aucune mention Claude (ni `Claude-Session:`, ni lien de session).
-- **Worktree / branche** : PR 3 : voir prochaine action. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`, branche mergée).
+- **Worktree / branche** : `../ubumaths-wt-constructions-mediatrice-mesure`, `feat/constructions-mediatrice-mesure`. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`, branche mergée).
 
 ---
 
@@ -219,3 +219,10 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - Vérifié en navigateur sans fenêtre (agent, port 5184) : sens direct et horaire, rapporteur centré sur V, 0 côté A, corps sur l’angle, crayon au bord, P juste dehors, consignes justes.
 - Tests : 29 dans `bissectrice-mesure.test.ts` (4 rouges sans `hasVisibleSide`) ; `test:server constructions-v2` 433 ✓ ; `test:client` 19 ✓.
 - Constat hors PR : à l’arrêt entre deux étapes, le lecteur n’affiche plus les instruments (comportement général, milieu compris).
+
+### PR 3 — `mediatrice @mesure` : phase 0 validée (2026-10-23, « je suis tes recos »)
+
+- **Nominal** : `d = mediatrice(A, B) @mesure` → voie `regle_equerre` (seule, par défaut), 7 sous-étapes : (1) règle, 0 sur l'extrémité de gauche : « On place le 0 de la règle sur A et on lit AB = 6,4 cm » ; (2) crayon à la graduation : « 6,4 ÷ 2 = 3,2 : on repère la graduation 3,2 » ; (3) milieu = point auxiliaire I (prime si pris) : « On marque le milieu I à 3,2 cm de A » ; (4) équerre bord sur (AB), coin sur I, sans glissement : « On pose l'équerre avec son bord sur (AB), le coin sur I » ; (5) « Le long du bord de l'équerre, on trace la perpendiculaire à (AB) en I » ; (6) « On retire l'équerre et on pose la règle le long de la portion tracée » ; (7) « On prolonge le tracé le long de la règle : c'est la médiatrice de [AB] ». Même droite qu'en `@euclide`.
+- **Choix tranchés** : équerre **au-dessus** de [AB] (à gauche du sens extrémité de gauche → droite), prolongement en dessous ; **milieu déjà présent** (point visible au milieu exact, ex. `I = milieu(A, B)`) → pas de mesure, on part de l'équerre sur ce point, sous son nom.
+- **Visibilité** : I charnière (`@squelette`, `@complet`) ; codage AI = IB + angle droit en I en `marker`, seulement si [AB] est tracé ; deux portions tracées en `segment-trace`.
+- **Erreurs** : A = B → message du builtin ; lecture 0 et AB > 15 cm → messages de `milieu @mesure`. `mediatrice(s)` hors PR (le builtin ne l'accepte pas).
