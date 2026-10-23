@@ -35,6 +35,9 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'poly-11 @ bouton': 'x - \\dfrac{3}{2}',
 	'rat-04 @ commande': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
 	'rat-04 @ bouton': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
+	// La carte ne regroupe plus en `−2` : elle n'y arrivait qu'en distribuant le − d'une
+	// somme sans parenthèse (lot 4c, simplify-carte) ; elle rejoint le bouton et la commande
+	'rat-04 @ carte': '\\dfrac{x - 1 - \\left( x + 1 \\right)}{\\left( x - 1 \\right)^2}',
 	'rat-05 @ latex-péda':
 		'\\dfrac{2 \\left( x - 3 \\right) - \\left( 2 x + 1 \\right)}{\\left( x - 3 \\right)^2}',
 	'rat-05 @ commande':
@@ -68,18 +71,15 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'rat-18 @ bouton': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
 	'rat-18 @ carte': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
 	'rat-19 @ commande':
-		'\\dfrac{-\\left( x + 1 \\right) - \\left( 1 - x \\right)}{\\left( x + 1 \\right)^2}',
+		'\\dfrac{-\\left( 1 + x \\right) - \\left( 1 - x \\right)}{\\left( 1 + x \\right)^2}',
 	'rat-19 @ bouton':
-		'\\dfrac{-\\left( x + 1 \\right) - \\left( 1 - x \\right)}{\\left( x + 1 \\right)^2}',
-	'rat-19 @ carte': '\\dfrac{x - \\left( x + 1 \\right) - 1}{\\left( x + 1 \\right)^2}',
+		'\\dfrac{-\\left( 1 + x \\right) - \\left( 1 - x \\right)}{\\left( 1 + x \\right)^2}',
+	'rat-19 @ carte':
+		'\\dfrac{-\\left( 1 + x \\right) - \\left( 1 - x \\right)}{\\left( 1 + x \\right)^2}',
 	'rat-21 @ latex-péda': '\\dfrac{x \\left( 2 x + 1 \\right) - \\left( x^2 + x + 1 \\right)}{x^2}',
 	'rat-21 @ commande': '\\dfrac{x \\left( 2 x + 1 \\right) - \\left( x^2 + x + 1 \\right)}{x^2}',
 	'rat-21 @ bouton': '\\dfrac{x \\left( 2 x + 1 \\right) - \\left( x^2 + x + 1 \\right)}{x^2}',
 	'rat-21 @ carte': '\\dfrac{x \\left( 2 x + 1 \\right) - \\left( x^2 + x + 1 \\right)}{x^2}',
-	'rat-22 @ latex-péda': '\\dfrac{-2 x - 1}{\\left( x^2 + x + 1 \\right)^2}',
-	'rat-22 @ commande': '\\dfrac{-2 x - 1}{\\left( x^2 + x + 1 \\right)^2}',
-	'rat-22 @ bouton': '\\dfrac{-2 x - 1}{\\left( x^2 + x + 1 \\right)^2}',
-	'rat-22 @ carte': '\\dfrac{-2 x - 1}{\\left( x^2 + x + 1 \\right)^2}',
 	'rac-06 @ latex-péda': '\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}',
 	'rac-06 @ commande': '\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}',
 	'rac-06 @ bouton': '\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}',
@@ -300,10 +300,10 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 	'comp-10 @ commande': '\\dfrac{\\dfrac{1}{x}}{2 \\sqrt{\\ln\\left( x \\right)}}',
 	'comp-10 @ bouton': '\\dfrac{\\dfrac{1}{x}}{2 \\sqrt{\\ln\\left( x \\right)}}',
 	'comp-10 @ carte': '\\dfrac{\\dfrac{1}{x}}{2 \\sqrt{\\ln\\left( x \\right)}}',
-	'comp-12 @ latex-péda': '\\dfrac{e^x}{\\left( e^x \\right)^2 + 1}',
-	'comp-12 @ commande': '\\dfrac{\\exponentialE^x}{\\left( \\exponentialE^x \\right)^2 + 1}',
-	'comp-12 @ bouton': '\\dfrac{\\exponentialE^x}{\\left( \\exponentialE^x \\right)^2 + 1}',
-	'comp-12 @ carte': '\\dfrac{\\exponentialE^x}{\\left( \\exponentialE^x \\right)^2 + 1}',
+	'comp-12 @ latex-péda': '\\dfrac{e^x}{1 + \\left( e^x \\right)^2}',
+	'comp-12 @ commande': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
+	'comp-12 @ bouton': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
+	'comp-12 @ carte': '\\dfrac{\\exponentialE^x}{1 + \\left( \\exponentialE^x \\right)^2}',
 	't-02 @ latex-péda': '20 - \\dfrac{49 t}{5}',
 	't-02 @ commande': '20 - \\dfrac{49 t}{5}',
 	't-07 @ latex-péda': 'e^{-t} - t e^{-t}',
@@ -318,8 +318,6 @@ export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
 		'\\dfrac{a \\left( c x + d \\right) - c \\left( a x + b \\right)}{\\left( c x + d \\right)^2}',
 	'lit-25 @ latex-péda': '\\dfrac{\\dfrac{1}{a}}{1 + \\dfrac{x^2}{a^2}}',
 	'lit-25 @ commande': '\\dfrac{\\dfrac{1}{a}}{1 + \\dfrac{x^2}{a^2}}',
-	'lit-28 @ latex-péda': 'x - b + x - a',
-	'lit-28 @ commande': 'x - b + x - a',
 	'lit-30 @ latex-péda': 'a e^{-k x} - a k x e^{-k x}',
 	'lit-30 @ commande': 'a \\exponentialE^{-k x} - a k x \\exponentialE^{-k x}',
 	'lit-33 @ commande': '-ω \\sin\\left( t ω \\right)',
