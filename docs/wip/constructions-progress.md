@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1637._
+_Mis à jour le 2026-10-23, PR « rythme de lecture » en cours._
 
-- **État** : lot 10 `@mesure`, PR 1/3 **livrée** — #1637 mergée : `milieu @mesure` à la règle graduée (lecture au mm, calcul dans les consignes, codage AI = IB en `@complet`) ; crayon visible quand il se déplace seul (`visibleInstruments`). Lots 1 à 10.1 partent au prochain `deploy:prod`.
-- **Prochaine action** : PR 2/3 `bissectrice @mesure` au rapporteur (mesure de l'angle au degré, moitié, repère, tracé) — phase 0 à écrire et faire valider ; brique neuve : animer le rapporteur (jamais animé jusqu'ici). Nouveau worktree `-bissectrice-mesure` depuis `origin/main`.
+- **État** : `milieu @mesure` livré (#1637). Retours de David au test : (1) codage sans segment bizarre → codage seulement si un segment visible joint A et B ; (2) consignes trop rapides à lire → pause de lecture proportionnelle à la consigne, toutes voies (validé, « oui »). PR `fix/constructions-rythme-lecture` en cours.
+- **Prochaine action** : merger cette PR, puis PR 2/3 `bissectrice @mesure` au rapporteur (phase 0 à faire valider).
 - **En attente de David** : (1) vérification #1637 (serveur 5183, worktree `-mesure`, ligne dans `verifications-manuelles.md`) ; vérification #1633 (5182, `-auxiliaires`) ; marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`. (2) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
 - **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Étiquette auxiliaire = provisoire (`setProvisionalLabel`) : `updateLabel` la rend définitive. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet.
-- **Worktree / branche** : PR 2 : `git worktree add -b feat/constructions-bissectrice-mesure ../ubumaths-wt-constructions-bissectrice-mesure origin/main`. `-mesure` gardé pour la vérification (branche distante supprimée).
+- **Worktree / branche** : en cours `../ubumaths-wt-constructions-rythme` (`fix/constructions-rythme-lecture`), serveur 5183 ; PR 2 : `git worktree add -b feat/constructions-bissectrice-mesure ../ubumaths-wt-constructions-bissectrice-mesure origin/main`. `-mesure` gardé pour la vérification (branche distante supprimée).
 
 ---
 
@@ -194,3 +194,9 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - Revue `code-reviewer` Sonnet : aucun bloquant. **Important corrigé** : le crayon, instrument principal d'un `compass-measure`, était caché pendant tout son déplacement (règle « crayon caché jusqu'au tracé » du canevas) → règle extraite dans `visibleInstruments` (`core/render-helpers.ts`), le crayon qui se déplace lui-même reste visible ; test `visible-instruments.test.ts` (1 rouge sans le correctif). Mineurs corrigés : 15,04 cm accepté (comparaison sur la valeur lue), lecture 0 → confondus, accord « confondues » en tournure neutre, 6,35 → 6,4 (EPS). Accepté : tournure neutre « la première / seconde extrémité » selon l'ordre du script.
 - Vérifié en navigateur sans fenêtre (port 5183) : règle posée 0 sur A, 6,8 en face de B ; crayon visible pendant son glissement ; I puis codage en `@complet`.
 - Tests : `milieu-mesure.test.ts` 25 + `visible-instruments.test.ts` 4 ; `test:server constructions-v2` 390 ✓ / 21 ignorés. `check:incremental` 0 · `types:cliquet` tenu · `lint:fast` propre. Doc : `docs/systeme/geometrie/constructions.md` § 4, § 5, § 9.
+
+### PR « rythme de lecture » (2026-10-23)
+
+- **Validé par David** (« oui », sur recos) : pause après chaque sous-étape chorégraphiée = 60 ms par caractère de consigne, bornée à [0,5 s ; 4 s], toutes voies ; codage AI = IB seulement si un segment visible joint A et B (pas de segment ajouté par la chorégraphie).
+- `readingPauseMs` (`executor.ts`), `READING_MS_PER_CHAR`, `MAX_READING_PAUSE` (`constants.ts`) ; `hasVisibleSegment` (`milieu.ts`).
+- Tests : `pause-lecture.test.ts` (6) + 4 de codage dans `milieu-mesure.test.ts` ; 8 rouges sans le code. `test:server constructions-v2` 400 ✓ ; `test:client constructions-v2` 19 ✓.

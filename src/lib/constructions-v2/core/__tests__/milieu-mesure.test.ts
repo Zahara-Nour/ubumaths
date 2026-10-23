@@ -167,9 +167,11 @@ describe('milieu @mesure — forme milieu(s)', () => {
 });
 
 describe('milieu @mesure — codage AI = IB', () => {
+	// Le codage porte sur le segment [AB] : il n'existe que si le script le trace.
 	const script = (vis: string) => [
 		'A = point(0, 0)',
 		'B = point(6.4, 0)',
+		's = segment(A, B)',
 		`I = milieu(A, B) @mesure ${vis}`.trim()
 	];
 
@@ -209,6 +211,56 @@ describe('milieu @mesure — codage AI = IB', () => {
 		exec.executeAll();
 		exec.step();
 		for (const id of marks(exec)) expect(exec.figure.getElementById(id)?.visible).toBe(false);
+	});
+});
+
+describe('milieu @mesure — pas de codage sans segment', () => {
+	function markCount(lines: string[]): number {
+		const exec = new ConstructionExecutor();
+		exec.load(lines.join('\n'));
+		exec.executeAll();
+		const tags = exec.lastChoreographyResult?.produced.traceTags ?? new Map();
+		return [...tags.values()].filter((t) => t === 'marker').length;
+	}
+
+	it('A et B sans segment : aucun codage, même en @complet', () => {
+		expect(
+			markCount(['A = point(0, 0)', 'B = point(6.4, 0)', 'I = milieu(A, B) @mesure @complet'])
+		).toBe(0);
+	});
+
+	it('segment tracé dans l’autre sens [BA] : codage', () => {
+		expect(
+			markCount([
+				'A = point(0, 0)',
+				'B = point(6.4, 0)',
+				's = segment(B, A)',
+				'I = milieu(A, B) @mesure @complet'
+			])
+		).toBe(2);
+	});
+
+	it('milieu(s) : codage', () => {
+		expect(
+			markCount([
+				'A = point(0, 0)',
+				'B = point(6.4, 0)',
+				's = segment(A, B)',
+				'I = milieu(s) @mesure @complet'
+			])
+		).toBe(2);
+	});
+
+	it('segment masqué : aucun codage', () => {
+		expect(
+			markCount([
+				'A = point(0, 0)',
+				'B = point(6.4, 0)',
+				's = segment(A, B)',
+				'masque(s)',
+				'I = milieu(A, B) @mesure @complet'
+			])
+		).toBe(0);
 	});
 });
 
