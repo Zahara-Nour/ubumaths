@@ -2642,8 +2642,9 @@ stockent des décimaux, une loi B(20 ; 0,3) n'y serait plus exacte — Q142).
    26 × 200, 200 caractères par cellule.
 9. **Visible et désactivé avec sa raison**, jamais caché : actions de carte et commandes.
 10. **On ne reparse jamais la sortie texte du moteur** (`render.ts`). Un **calcul** s'écrit depuis
-    son arbre, mis au propre par `tidy` (π/3, √2/2 ; un résultat qui porte un décimal ou une variable
-    libre est laissé tel quel — `x/x` ne devient pas 1), unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
+    son arbre, mis au propre par `tidy` (π/3, √2/2 ; un décimal le reste, S1 de `tidy` ; un nombre
+    seul — la valeur approchée `≈ 5,0990`, zéro final compris — et un résultat à variable
+    libre sont laissés tels quels — `x/x` ne devient pas 1), unités traduites par `displayUnitsInLatex` ; seule une **commande** peut encore montrer
     son texte s'il ne contient que du LaTeX sûr (lot B des grandeurs, 2026-10-11).
     La constante d'Euler y arrive écrite `e` : `toCustom` l'écrit ainsi et tous les
     parseurs la relisent comme Euler (depuis le 2026-10-10 ; `withPlainEuler` et le

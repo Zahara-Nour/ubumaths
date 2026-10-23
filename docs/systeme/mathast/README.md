@@ -117,11 +117,11 @@ syntaxe maison ──── parseCustom ─┤
 
 **Trois formes, trois rôles** (ne pas les confondre) :
 
-| Fonction          | Rend         | Développe ? | Sert à                                                                                     |
-| ----------------- | ------------ | ----------- | ------------------------------------------------------------------------------------------ |
-| `tidy`            | `MathNode`   | jamais      | écrire proprement : `2x+3x−x → 4x`, `(x+1)²` reste. Spec : [tidy-spec.md](tidy-spec.md) §A |
-| `normalize`       | `NormalForm` | toujours    | calcul exact, forme canonique (`denormalize` pour revenir à un arbre)                      |
-| `equivalenceForm` | `NormalForm` | toujours    | **comparer seulement** : y vivent les réductions trigonométriques (ADR 0006)               |
+| Fonction          | Rend         | Développe ? | Sert à                                                                                                                                   |
+| ----------------- | ------------ | ----------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `tidy`            | `MathNode`   | jamais      | écrire proprement : `2x+3x−x → 4x`, `(x+1)²` reste, un décimal reste décimal (`0,5+0,25 → 0,75`). Spec : [tidy-spec.md](tidy-spec.md) §A |
+| `normalize`       | `NormalForm` | toujours    | calcul exact, forme canonique (`denormalize` pour revenir à un arbre)                                                                    |
+| `equivalenceForm` | `NormalForm` | toujours    | **comparer seulement** : y vivent les réductions trigonométriques (ADR 0006)                                                             |
 
 **`simplify(node, options)`** (`simplify/simplify.ts`) tourne sur le moteur `rewrite`
 (`common/rewriting-engine.ts`), stratégie `cost-fixpoint`. Par itération : `tidy` →
