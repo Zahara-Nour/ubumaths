@@ -36,6 +36,8 @@
 	import { questionTemplatesCache } from '$lib/stores/questionTemplates.svelte';
 	import { onMount } from 'svelte';
 	import { GRADES, isGradeCode } from '$lib/types/grades';
+	import TemplateFactSheet from '$lib/components/questions/TemplateFactSheet.svelte';
+	import { lowestGradeLabel } from '$lib/questions/template-fact-sheet';
 
 	let { data }: { data: PageData } = $props();
 
@@ -181,6 +183,9 @@
 		];
 	}
 
+	// Les programmes proposés partent de la plus basse classe du modèle (`getGradesAtOrAbove`)
+	const lowestGrade = $derived(lowestGradeLabel(data.template.grades ?? []));
+
 	/** « 1ère spécialité maths » plutôt que « 1_SPE » : le code est interne. */
 	function gradeLabel(grade: string): string {
 		return isGradeCode(grade) ? GRADES[grade].displayName : grade;
@@ -204,6 +209,12 @@
 			</div>
 		</div>
 	</div>
+
+	<TemplateFactSheet
+		result={{ ok: true, sheet: data.factSheet }}
+		templateId={data.template.id}
+		variant="compact"
+	/>
 
 	<!-- Main Form -->
 	<Card.Root>
@@ -250,7 +261,12 @@
 				</div>
 			{:else if data.programmeTags.programmes.length === 0}
 				<div class="text-sm text-muted-foreground">
-					Aucun point du programme n'est posé sur le nœud de ce modèle ni sur sa notion.
+					{#if lowestGrade}
+						Aucun point de {lowestGrade} ou d'une classe suivante n'est posé sur le nœud de ce modèle
+						ni sur sa notion.
+					{:else}
+						Aucun point du programme n'est posé sur le nœud de ce modèle ni sur sa notion.
+					{/if}
 				</div>
 			{:else}
 				{#each data.programmeTags.programmes as programme (programme.grade)}

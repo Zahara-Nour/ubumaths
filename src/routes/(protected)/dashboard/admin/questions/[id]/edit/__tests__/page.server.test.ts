@@ -159,3 +159,15 @@ describe('édition d’un modèle — tags par programme', () => {
 		expect(quatrieme?.points.map((p) => p.code)).toEqual(['4-010', '4-099']);
 	});
 });
+
+describe('édition d’un modèle — fiche du modèle (version courte)', () => {
+	it('le chemin dans l’arbre, de la branche au nœud du modèle', async () => {
+		const { result } = await loadWith('sous-notion', []);
+		expect(result.factSheet.path?.map((n) => n.name)).toEqual(['Nombres', 'Fractions', 'Addition']);
+	});
+
+	it('modèle sans nœud : pas de chemin', async () => {
+		const { result } = await loadWith(null, []);
+		expect(result.factSheet.path).toBeNull();
+	});
+});

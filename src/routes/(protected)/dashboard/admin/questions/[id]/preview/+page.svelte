@@ -7,6 +7,7 @@
 
 	Features:
 	- Load question template by ID
+	- Fiche du modèle en tête : statut, classes, arbre des notions, points, réglages
 	- Generate multiple instances (different seeds)
 	- Show the REAL student renderings in tabs (Flash-card, Entraînement, En classe),
 	  with the same components and props as the student screens (decision Q61)
@@ -20,6 +21,8 @@
 		toDisplayedChoicePosition
 	} from '$lib/questions/choices';
 	import { page } from '$app/state';
+	import type { PageData } from './$types';
+	import TemplateFactSheet from '$lib/components/questions/TemplateFactSheet.svelte';
 	import { untrack } from 'svelte';
 	import type { QuestionInstance } from '$lib/questions/types';
 	import { getQuestionType } from '$lib/questions/types';
@@ -40,6 +43,8 @@
 	// ===========================
 	// PROPS & DERIVED STATE
 	// ===========================
+
+	let { data }: { data: PageData } = $props();
 
 	// Get template ID from URL params (/dashboard/admin/questions/[id]/preview)
 	const templateId = $derived(page.params.id);
@@ -179,6 +184,9 @@ TEMPLATE - PAGE LAYOUT
 			Template ID: {templateId}
 		</Badge>
 	</div>
+
+	<!-- ========== FICHE DU MODÈLE ========== -->
+	<TemplateFactSheet result={data.factSheet} templateId={data.templateId} />
 
 	<!-- ========== CONTROLS CARD: Generation & Display Options ========== -->
 	<Card.Root>
