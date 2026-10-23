@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 4c-bis en cours (avant PR)._
+_Mis à jour le 2026-10-23, après #1636._
 
-- **État** : lots mergés jusqu'à #1631. **4c mergé (#1631)** (§ 41) : `tidy({ order: 'kept' })` + `tidyTerms` reconstruit dessus ; revue opus : une régression corrigée (clé de regroupement triée). Rien en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1631. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → ~~4c `order: 'kept'`~~ → **4c-bis ordre des facteurs (Q13, ordre et découpage validés le 2026-10-23)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c-bis codé, revu (opus, findings corrigés, § 42) : lire la suite serveur complète (`suite-final.txt` du scratchpad, ou la relancer), puis PR, CI, merge ; montrer à David les 26 tirages factorisés (ordre x₁, x₂) et le bug `factoriser` `(a+b)·1/(a+b)` (hors lot).
+- **État** : lots mergés jusqu'à #1636. **4c-bis mergé (#1636)** (§ 42) : ordre des facteurs Q13 (parenthèses avant fonctions et exponentielles, ordre écrit entre deux parenthèses), `\times` devant `3^x` (Q15), `one-sided.ts` corrigé (revue opus). Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1636. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → ~~4c `order: 'kept'`~~ → ~~4c-bis ordre des facteurs~~ → **4d espaces (E2)** → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : lot 4d espaces (E2, § 15) : phase 0 (comportements) puis tests rouges ; nouveau worktree `../ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-espaces`. Montrer à David, s'il ne les a pas vus : les 26 tirages factorisés de #1636 (ordre x₁, x₂) et le bug hors lot `factoriser` `(a+b)(a−b)/((a−b)(a+b)) → (a+b)·1/(a+b)` (déjà sur `main`).
 - **En attente de David** : rien.
-- **Pièges en cours** : bug de `tidy` (somme sans nœud de parenthèse après un −, distribuée) contourné dans `tidyTerms` seulement (§ 41) ; `rat-04 @ carte` quitte la forme de classe (lot 5) ; banc des 1 008 modèles AVEUGLE à `tidyTerms` (témoin) ; banc copié dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/effec7c4-4847-44a7-8ea8-a18dcc986d3e/scratchpad` (`tirages.mts`, `modeles.json`, `banc-main.txt`) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `feat/simplify-carte-ordre-facteurs`.
+- **Pièges en cours** : bug de `tidy` (somme sans nœud de parenthèse après un −, distribuée) contourné dans `tidyTerms` seulement (§ 41) ; `rat-04 @ carte` quitte la forme de classe (lot 5) ; banc des 1 008 modèles AVEUGLE à `tidyTerms` (témoin) ; banc copié dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/dae22210-a98b-4adc-812f-85c2165d4542/scratchpad/banc` (`tirages.mts` copié à la racine du worktree, `pnpm exec tsx tirages.mts modeles.json sortie.txt`, ~5 s ; `main` mesuré en remplaçant les fichiers par `git show origin/main:…` sous **bash**, zsh ne découpe pas une liste) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun (retiré après #1636) ; à recréer pour 4d.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
