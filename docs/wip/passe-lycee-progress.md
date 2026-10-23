@@ -6,19 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1646 (scissions PR 1, `db:migrate` fait)._
+_Mis à jour le 2026-10-23, PR 2 des scissions (réécritures) en cours._
 
-- **État** : lots A, B, C et scissions PR 1 en prod (50 modèles scindés → 72 neufs, 145 tags, 6 origines déplacées
-  R2, 7 conflits en retrait forcé ; efb12f4b non scindé). Restent PR 2 (S6 `0dee4515`, S11 `30b597c3`, E3 : 5
-  modèles à dédoubler et réécrire) puis PR 3 (H : 10 modèles dans leur vrai programme).
-- **Prochaine action** : worktree neuf `passe-lycee`, PR 2 (réécritures) avec `analyse/scissions_outils.py` ;
-  reprendre le relevé de ces 7 modèles en prod (empreintes) ; contrôler les nœuds des points AVANT d'écrire.
+- **État** : lots A, B, C et scissions PR 1 en prod. PR 2 écrite (worktree `passe-lycee`) : 7 modèles, 10 neufs,
+  18 tags ; preuves faites (specs, tirages, intégration verte et rouge sans la migration). Reste PR 3 (H : 10
+  modèles dans leur vrai programme).
+- **Prochaine action** : commit poussé (typecheck 0 erreur, cliquet tenu, lint rapide propre) ; ouvrir la PR,
+  revues Opus (`code-reviewer` + `security-auditor`), merge, `db:migrate`, vérification MCP ; puis PR 3.
 - **En attente de David** : rien. À reposer pour chaque PR : la question d'accès.
-- **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion (sous-notion sœur refusée) →
-  R2 ou retrait forcé ; neufs : niveau au-dessus du plus haut pris dans la catégorie (brouillons compris) ;
-  `question:specs --file` : convertir par `toQuestionTemplate` ; la fixture est reformatée par prettier au commit
-  (relancer `prettier --write` après régénération) ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée.
-- **Worktree / branche** : aucun.
+- **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
+  niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par
+  `toQuestionTemplate` (et retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync`
+  avant tout `tsx` ; fixture reformatée par prettier ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée ;
+  audit du rendu : « courbe invisible » = faux positif sur un bloc qui ne trace qu'une suite.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-reecritures`.
 
 ## Les 5 étapes
 
@@ -260,3 +261,18 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
 - **2026-10-23 — #1646 mergée, `db:migrate` fait.** CI verte (dont intégration Supabase). Seule migration en attente
   (`--dry-run`) ; vérifiée par le MCP : 72 neufs (1 publié, `ff36ebdf` √x), 91 tags sur les neufs, V2 de 95ee8348 en
   1/(4 + c). Vérification manuelle notée (carte publiée a86442c1 et son neuf).
+- **2026-10-23 — Scissions, PR 2 (réécritures) écrite (worktree `passe-lycee`).** Question d'accès tranchée par
+  David : personne ne gagne d'accès (7 brouillons, 0 donnée d'élève, neufs brouillons). Prod relue par le MCP :
+  empreintes md5 des 7 = relevé ; `c90fa022` porte 1TECHNO-042 et `d2067413` 1TECHNO-045 (nœud « représentation
+  graphique ») ; le 1SPE-214 que le plan disait retirer n'existe pas. Décision de David : ces deux origines restent
+  INTACTES (leur point de 1re techno décrit la question à trois choix) et reçoivent DEUX neufs de 1re spé
+  (« arithmétique ? », « géométrique ? ») ; les trois autres d'E3 : origine « arithmétique ? » (1SPE-213), neuf
+  « géométrique ? » (1SPE-216, nœud propre). S6 : case somme (1SPE-245) / produit (1SPE-383). S11 : origine V1, V4
+  (TSPE-618 + TCOMP-367, R2 vers « expression de la loi »), neufs V2 enrichie (dé à n ∈ {4…20} faces ; TSPE-516 +
+  TCOMP-368) et V3 (TSPE-502 + TCOMP-295). `scissions_outils.py` étendu : `dedoubles` (une variation dans plusieurs
+  parts), `intactes` (origine sans écriture ni `updated_at`, `tag_seul` de la fixture), tag d'avant de 1re techno ;
+  PR 1 régénérée à l'identique. Choix d'écriture : QCM « Oui, elle (semble|est)… » / « Non… » ; « pas géométrique »
+  prouvé par u₁² ≠ u₀u₂ quand un terme peut être nul ; neuf « géométrique ? » des premiers termes : conditions
+  a ≠ 0, a + r ≠ 0 (quotients définis). Specs 158/158, tirages 21 600/21 600 ; audit du rendu sans défaut hors
+  faux positif « courbe invisible » (nuage de points, origine comprise). Intégration : 25 tests verts ; sans
+  l'étape 4, 7 rouges et la suite nominale tombe à sa mise en place ; lots précédents toujours verts.
