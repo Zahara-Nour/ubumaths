@@ -6,21 +6,21 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, nœuds des 54 tags refusés tranchés._
+_Mis à jour le 2026-10-23, migration des tags écrite (PR 1/2 de l'étape e)._
 
-- **État** : étapes a-d faites ; page à cocher validée en bloc par David, recos reportées (`decision`/`decide_le`
-  dans `questions-modeles.json` ; 7 CSV finaux : 478 TAG, 60 MODIFIER, 81 TAG_PAR_VARIATION, 31 HORS_PROGRAMME).
-- **Prochaine action** : générateur de migration (modèle : `arbre-notions/analyse/lot-2bis-migration.py`) qui lit
-  les 7 CSV + `analyse/noeuds-decides.csv` (32 modèles déplacés, 17 tags retirés ; 521 tags posés, 0 refusé par le
-  trigger, contrôle `noeuds-decides.py`), puis worktree avancé sur `origin/main`, PR.
-- **En attente de David** : rien (décisions de migration prises, cf. journal du 2026-10-23).
-- **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031) et 2 points neufs
-  (exponentielle, à côté de TSPE-444 et TCOMP-236). Automatisme 1re spé BO l. 274 sans point. 85 points techno sans
-  borne ; 1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Modèle `9a6087c5` : 2 % d'échecs. Instantanés de
-  prod : MCP seulement (clé de service refusée). Lot à part après la migration : MODIFIER + scissions des
+- **État** : PR 1 = migration `20261023180000_tags_lycee.sql` (générateur `passe-lycee/generer-migration-tags.py`,
+  test `tests/integration/tags-lycee.test.ts`, 9 verts, rouge vérifié sans la migration) : 221 modèles, 185 tags
+  retirés, 175 posés, 32 déplacés ; après : 463 tags du lycée, 80 modèles sans tag.
+- **Prochaine action** : revues (`code-reviewer` + `security-auditor`, Opus), PR, CI, merge ; puis ⛔ **stop avant
+  `db:migrate`** (retrait de 185 tags = DELETE : à expliquer à David). Ensuite PR 2 : 4 libellés (2-273,
+  1GEN-029/030/031) + 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236), seeds compris.
+- **En attente de David** : le go de `db:migrate` après merge.
+- **Pièges en cours** : la garde exige l'état relevé (empreintes md5 prod = instantané le 2026-10-23 : nœuds, points,
+  modèles, tags) — un tag saisi d'ici là la fera échouer. Automatisme 1re spé BO l. 274 sans point. 85 points techno
+  sans borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `undoLaterMigrations` à compléter (cette migration ne
+  touche rien en local, inutile ici). Modèle `9a6087c5` : 2 % d'échecs. Lot à part : MODIFIER + scissions des
   TAG_PAR_VARIATION.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
-  retard sur `main` : à avancer sur `origin/main` pour la PR de migration).
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-tags`.
 
 ## Les 5 étapes
 
@@ -138,3 +138,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   précis) : 12 modèles + 3 détectés au contrôle (e814175b TCOMP-261, 50feeefd TCOMP-229, 4ff9d049 TSPE-618, dont
   le déplacement R2 cassait l'autre tag). Duplication de modèles citée, non retenue. Points qui perdent leur seul
   exercice : 2-232, TSPE-432, TSPE-466, TSPE-596 notamment. Bilan : 32 modèles déplacés, 17 tags retirés, 521 posés.
+- **2026-10-23 — Migration des tags écrite (PR 1/2 de l'étape e).** Instantané vérifié par empreintes md5 (MCP) :
+  nœuds (699), points du lycée (1 509), modèles (432) et tags (473 = ceux de la migration du 2026-10-13) identiques
+  à la prod. Bilan réel (les ≈ 197 / ≈ 92 du 2026-10-23 étaient des estimations d'avant le report des recos) : 463
+  tags finaux, 288 actuels gardés, 185 retirés, 175 posés ; 221 modèles touchés, 32 déplacés ; 80 modèles sans tag.
+  Ordre : retraits → déplacements → poses, gardes des tags actives. Points (libellés, 2 neufs) : PR 2, à part (elle
+  touche aussi les seeds).
