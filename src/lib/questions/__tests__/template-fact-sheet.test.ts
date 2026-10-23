@@ -25,8 +25,9 @@ describe('describeValidationSettings', () => {
 				constraints: { zeros: 'off', brackets: 'strict', form: 'warn' }
 			})
 		).toEqual([
-			'Parenthèses : strict',
+			// Ordre du registre des règles de superflu (#1652) : zéros avant parenthèses
 			'Zéros inutiles : désactivé',
+			'Parenthèses : strict',
 			'Forme générale : avertissement'
 		]);
 	});
