@@ -1,0 +1,3955 @@
+{
+	"modeles": [
+		{
+			"id": "0140fdfa-1066-4885-b0ab-c597ff503283",
+			"noeud_avant": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-274"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-395"
+				}
+			]
+		},
+		{
+			"id": "044a3ae3-c54a-4521-9265-3997fcc6b0d2",
+			"noeud_avant": ["Géométrie", "Produit scalaire", "lieux de points"],
+			"noeud_apres": ["Géométrie", "Produit scalaire", "lieux de points"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-323"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-317"
+				}
+			]
+		},
+		{
+			"id": "0495289a-abb1-4fed-b058-5e924a5f05ed",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-223"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-377"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-118"
+				}
+			]
+		},
+		{
+			"id": "05387201-2403-409a-8ebe-5898b6e77e3c",
+			"noeud_avant": ["Fonctions", "Dérivation", "tangente"],
+			"noeud_apres": ["Fonctions", "Dérivation", "tangente"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-272"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-272"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-079"
+				}
+			]
+		},
+		{
+			"id": "0718f490-bfdd-4a62-b78f-b15753c27d8a",
+			"noeud_avant": ["Probabilités", "Variables aléatoires", "espérance"],
+			"noeud_apres": ["Probabilités", "Variables aléatoires", "espérance"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-358"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-358"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-138"
+				}
+			]
+		},
+		{
+			"id": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
+			"noeud_avant": ["Suites", "Limites de suites", "opérations"],
+			"noeud_apres": ["Suites", "Limites de suites", "opérations"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-382"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-204"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-382"
+				}
+			]
+		},
+		{
+			"id": "08f9ad7b-7885-474f-b0a1-630a8847140e",
+			"noeud_avant": ["Fonctions", "Convexité", "point d'inflexion"],
+			"noeud_apres": ["Fonctions", "Convexité", "point d'inflexion"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-265"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-420"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-265"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-412"
+				}
+			]
+		},
+		{
+			"id": "0a1ff14f-ac73-4b9e-ab4c-a4d465c78e76",
+			"noeud_avant": ["Ensembles", "Cardinal et produit cartésien", "cardinal"],
+			"noeud_apres": ["Ensembles", "Cardinal et produit cartésien", "cardinal"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-207"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "0ab3faa5-a660-4841-9a5f-6563458d2489",
+			"noeud_avant": ["Logique", "Quantificateurs et négation", "négation d'une proposition"],
+			"noeud_apres": ["Logique", "Quantificateurs et négation", "négation d'une proposition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-204"
+				},
+				{
+					"grade": "2",
+					"code": "2-211"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "0af4bf32-b97e-493d-bea4-917b6bbdf6f2",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "terme général"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "terme général"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-014"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-037"
+				}
+			]
+		},
+		{
+			"id": "0b686e01-725c-448d-9e10-b295cf9b4128",
+			"noeud_avant": ["Suites", "Modèles d'évolution", "seuil"],
+			"noeud_apres": ["Suites", "Modèles d'évolution", "seuil"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-237"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-061"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-237"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-052"
+				}
+			]
+		},
+		{
+			"id": "0bde6091-c122-46c0-94d5-a97cdde28d9d",
+			"noeud_avant": ["Dénombrement", "Combinaisons", "combinaisons"],
+			"noeud_apres": ["Dénombrement", "Combinaisons", "combinaisons"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-312"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "0dee4515-8030-441c-bd7c-f1b7418e664b",
+			"noeud_avant": ["Fonctions", "Second degré", "somme et produit des racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "somme et produit des racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-245"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "119b9148-e95b-4865-b0d4-52f0cf264de2",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"produit scalaire dans l'espace"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"produit scalaire dans l'espace"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-345"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "1239554b-d442-4be6-8867-d9dc38311999",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-223"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-377"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-118"
+				}
+			]
+		},
+		{
+			"id": "1277a5b6-b979-4e3b-b5b6-e10aedfbedfb",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"produit scalaire dans l'espace"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"produit scalaire dans l'espace"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-345"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "1315d326-1a4b-4abc-af93-f8ab9aeecc66",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-013"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-035"
+				}
+			]
+		},
+		{
+			"id": "13e2d419-770b-4e97-a2f8-972d467cf2fc",
+			"noeud_avant": ["Probabilités", "Autres lois", "loi géométrique"],
+			"noeud_apres": ["Probabilités", "Autres lois", "loi géométrique"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-298"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-516"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-516"
+				}
+			]
+		},
+		{
+			"id": "14036c68-6854-422b-b06d-3890b3745573",
+			"noeud_avant": ["Fonctions", "Logarithmes", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Logarithmes", "équations et inéquations"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-238"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-446"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-596"
+				}
+			]
+		},
+		{
+			"id": "146a7c79-ad5c-443c-85a1-c8d0014c2ad8",
+			"noeud_avant": ["Suites", "Suites récurrentes", "escalier"],
+			"noeud_apres": ["Suites", "Limites de suites", "définition"],
+			"tags_avant": [],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-231"
+				}
+			]
+		},
+		{
+			"id": "15d3aaa0-5eef-4c08-a38c-5b5c8d5ed6e1",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "courbe"],
+			"noeud_apres": ["Fonctions", "Dérivation", "tangente"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-289"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-272"
+				}
+			]
+		},
+		{
+			"id": "1602c40d-818f-4218-beb9-0d7f116992a4",
+			"noeud_avant": ["Géométrie", "Géométrie repérée", "équation de cercle"],
+			"noeud_apres": ["Géométrie", "Géométrie repérée", "équation de cercle"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-332"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-418"
+				}
+			]
+		},
+		{
+			"id": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
+			"noeud_avant": ["Fonctions", "Dérivation", "fonctions dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-266"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-265"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-080"
+				}
+			]
+		},
+		{
+			"id": "17f64f63-9af0-48ea-96b1-a74e0bef16f4",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-281"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-281"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-075"
+				}
+			]
+		},
+		{
+			"id": "18e26873-dca0-4c73-bc23-f181e0164a66",
+			"noeud_avant": ["Fonctions", "Second degré", "racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-026"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-065"
+				}
+			]
+		},
+		{
+			"id": "19961e67-88c4-43bf-a76b-6a2af61dedf3",
+			"noeud_avant": ["Suites", "Modèles d'évolution", "seuil"],
+			"noeud_apres": ["Suites", "Modèles d'évolution", "seuil"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-237"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-237"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-052"
+				}
+			]
+		},
+		{
+			"id": "1acb6d47-5d88-4ccf-830f-98dc57d0022c",
+			"noeud_avant": ["Fonctions", "Second degré", "variations"],
+			"noeud_apres": ["Fonctions", "Second degré", "parabole"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-287"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-022"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-402"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-057"
+				}
+			]
+		},
+		{
+			"id": "1b1a6d7b-d776-491b-b2bc-b2bc9fe629fe",
+			"noeud_avant": ["Fonctions", "Second degré", "racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-026"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-065"
+				}
+			]
+		},
+		{
+			"id": "1bbfa5f2-1c32-4a81-92cf-b9e7c5996977",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "sens de variation"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "sens de variation"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-219"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-219"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-033"
+				}
+			]
+		},
+		{
+			"id": "1c65d58e-8596-4e11-b917-6c8a86d8ef0f",
+			"noeud_avant": ["Statistiques", "Statistique à deux variables", "point moyen"],
+			"noeud_apres": ["Statistiques", "Statistique à deux variables", "point moyen"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-326"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-008"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-086"
+				},
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-326"
+				}
+			]
+		},
+		{
+			"id": "1cfc575d-e122-406d-9b4e-60556d3260a5",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "arbres pondérés"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "arbres pondérés"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-399"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-399"
+				},
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-302"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-616"
+				}
+			]
+		},
+		{
+			"id": "1ebd1c86-7970-49c9-a373-74ba4d71d9ec",
+			"noeud_avant": ["Suites", "Limites de suites", "suites géométriques"],
+			"noeud_apres": ["Suites", "Limites de suites", "suites géométriques"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-209"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-402"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-209"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-383"
+				}
+			]
+		},
+		{
+			"id": "219c9470-ffe0-48a6-bebf-39fb814ad613",
+			"noeud_avant": ["Logique", "Proposition mathématique", "et, ou, non"],
+			"noeud_apres": ["Logique", "Proposition mathématique", "et, ou, non"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-210"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "227f2c9c-3494-412d-bf88-e9b2c48c01a6",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "dérivée"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "dérivée"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-295"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "23402520-cbc3-4d49-b6dc-999e1ff17e3c",
+			"noeud_avant": [
+				"Équations différentielles",
+				"y′ = f",
+				"primitives des fonctions de référence"
+			],
+			"noeud_apres": [
+				"Équations différentielles",
+				"y′ = f",
+				"primitives des fonctions de référence"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-467"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "25a7549a-34f5-4afc-a97d-d61c0a9efe4d",
+			"noeud_avant": ["Algèbre", "Équations : second degré", "discriminant"],
+			"noeud_apres": ["Algèbre", "Équations : second degré", "discriminant"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-248"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-386"
+				}
+			]
+		},
+		{
+			"id": "27d77564-e109-4681-8a64-13a3ee1729cd",
+			"noeud_avant": ["Suites", "Modèles d'évolution"],
+			"noeud_apres": ["Proportionnalité", "Évolutions", "évolutions successives et réciproque"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-230"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "293f8225-0268-48bc-8487-52c6bf5b01e3",
+			"noeud_avant": ["Nombres complexes", "Équations polynomiales", "racines d'un polynôme"],
+			"noeud_apres": ["Nombres complexes", "Équations polynomiales", "racines d'un polynôme"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-246"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "294206b9-0b78-412f-9528-505d53b372eb",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"produit scalaire dans l'espace"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"orthogonalité de droites et plans"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-343"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-352"
+				}
+			]
+		},
+		{
+			"id": "2a1413ff-de6d-4380-912f-e8fbd977a8c9",
+			"noeud_avant": ["Équations différentielles", "y′ = ay + b"],
+			"noeud_apres": ["Équations différentielles", "y′ = ay + b"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-255"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-469"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-255"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-607"
+				}
+			]
+		},
+		{
+			"id": "2b240d8c-bdc2-4a55-a8db-a028f02ec889",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"vecteur normal et équation cartésienne"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"vecteur normal et équation cartésienne"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-375"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "2bf66851-c1e0-4531-b2eb-153803a573bf",
+			"noeud_avant": ["Nombres complexes", "Interprétation géométrique", "racines de l'unité"],
+			"noeud_apres": ["Nombres complexes", "Interprétation géométrique", "racines de l'unité"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-265"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "2bf6edc7-e12f-450e-951c-cbf2b20b1e19",
+			"noeud_avant": ["Suites", "Limites de suites", "convergence monotone"],
+			"noeud_apres": ["Suites", "Limites de suites", "convergence monotone"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-384"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-385"
+				}
+			]
+		},
+		{
+			"id": "2c116f4d-d7ef-4d8c-8114-9f113a983c4c",
+			"noeud_avant": [
+				"Probabilités",
+				"Probabilités conditionnelles",
+				"inversion du conditionnement"
+			],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-400"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				}
+			]
+		},
+		{
+			"id": "2d480f3d-2092-4f25-91b5-b92887f7b71b",
+			"noeud_avant": ["Équations différentielles", "y′ = f", "forme (v′∘u)×u′"],
+			"noeud_apres": ["Équations différentielles", "y′ = f", "forme (v′∘u)×u′"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-252"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-468"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-468"
+				}
+			]
+		},
+		{
+			"id": "2dcb4b3c-e5ad-4b8b-9728-1b4e614bcba1",
+			"noeud_avant": ["Nombres complexes", "Forme algébrique", "inverse et quotient"],
+			"noeud_apres": ["Nombres complexes", "Forme algébrique", "calculs"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-204"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-206"
+				}
+			]
+		},
+		{
+			"id": "2dd2b712-3687-4910-ab92-378c46125129",
+			"noeud_avant": ["Fonctions", "Second degré", "racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-253"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-253"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-063"
+				}
+			]
+		},
+		{
+			"id": "30b597c3-a350-4027-8c6f-b6678ab0868f",
+			"noeud_avant": ["Probabilités", "Loi binomiale", "schéma de Bernoulli"],
+			"noeud_apres": ["Probabilités", "Loi binomiale", "schéma de Bernoulli"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-295"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-508"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "318ea542-65cb-4040-9b46-1d5803d9dee5",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-283"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "31a77ba9-520c-4f35-82b3-066492b512c1",
+			"noeud_avant": ["Suites", "Généralités sur les suites"],
+			"noeud_apres": ["Suites", "Généralités sur les suites"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-236"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-236"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-050"
+				}
+			]
+		},
+		{
+			"id": "32993a13-829a-4876-bfe2-965c4a404d03",
+			"noeud_avant": ["Algèbre", "Équations : second degré", "discriminant"],
+			"noeud_apres": ["Algèbre", "Équations : second degré", "discriminant"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-248"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-386"
+				}
+			]
+		},
+		{
+			"id": "337d31c3-5d6b-4bd0-b9da-f025ddb26145",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-013"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-035"
+				}
+			]
+		},
+		{
+			"id": "34b03dee-865d-405c-a284-abfac4248997",
+			"noeud_avant": ["Géométrie", "Orthogonalité et distances dans l'espace", "sphère"],
+			"noeud_apres": ["Géométrie", "Orthogonalité et distances dans l'espace", "sphère"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-376"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "36010981-8f6b-4b95-bc86-4fcbf87be4ac",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "indépendance"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "indépendance"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-341"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-012"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-341"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-091"
+				}
+			]
+		},
+		{
+			"id": "373fc5b4-63af-409d-a1b9-1320ae9b3b75",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "terme général"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "terme général"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-014"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-037"
+				}
+			]
+		},
+		{
+			"id": "37ce7759-c2fa-4353-a726-f0c942284053",
+			"noeud_avant": ["Fonctions", "Convexité"],
+			"noeud_apres": ["Fonctions", "Convexité"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-264"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-419"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "3bace561-460f-466d-b834-a605a59500a7",
+			"noeud_avant": ["Géométrie", "Espace", "positions relatives et intersections"],
+			"noeud_apres": ["Géométrie", "Espace", "positions relatives et intersections"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-371"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-567"
+				}
+			]
+		},
+		{
+			"id": "3cb90b97-2ec4-4050-973e-4b194aa65fb3",
+			"noeud_avant": ["Probabilités", "Autres lois", "loi uniforme discrète"],
+			"noeud_apres": ["Probabilités", "Autres lois", "loi uniforme discrète"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-285"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "3cfcc718-445a-42f5-8d5e-fe4d8339f4bf",
+			"noeud_avant": ["Probabilités", "Autres lois", "densité et aire"],
+			"noeud_apres": ["Probabilités", "Autres lois", "densité et aire"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-315"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "3dbc5a7b-ceea-4ab9-8922-b77ee206f329",
+			"noeud_avant": ["Équations différentielles", "y′ = f", "primitives : notion"],
+			"noeud_apres": ["Équations différentielles", "y′ = f", "primitives : notion"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-247"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-462"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-247"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-602"
+				}
+			]
+		},
+		{
+			"id": "4016b05c-f6cf-4fe1-a1e8-19067a57a931",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-396"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-396"
+				},
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-302"
+				}
+			]
+		},
+		{
+			"id": "44a4236b-be18-4835-a6e0-c50f0b36833f",
+			"noeud_avant": ["Arithmétique", "PGCD, Bézout et Gauss", "théorèmes de Bézout et de Gauss"],
+			"noeud_apres": ["Arithmétique", "PGCD, Bézout et Gauss", "théorèmes de Bézout et de Gauss"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-279"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "45d1cdd6-9c17-4b83-be67-067df8c3f816",
+			"noeud_avant": ["Nombres complexes", "Formes trigo. et exponentielle", "formules d'Euler"],
+			"noeud_apres": ["Nombres complexes", "Formes trigo. et exponentielle", "formules d'Euler"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-240"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+			"noeud_avant": ["Fonctions", "Dérivation", "nombre dérivé"],
+			"noeud_apres": ["Fonctions", "Dérivation", "nombre dérivé"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-260"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-260"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-070"
+				}
+			]
+		},
+		{
+			"id": "496f958d-4733-45a2-be3c-243dc9f7dd66",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "dérivée"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-289"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-274"
+				}
+			]
+		},
+		{
+			"id": "49fac266-f622-4ef5-8a2b-5638ca5a4c99",
+			"noeud_avant": ["Statistiques", "Statistique à deux variables", "ajustement affine"],
+			"noeud_apres": ["Statistiques", "Statistique à deux variables", "ajustement affine"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-328"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "4b3c1d88-c064-45da-8976-820dff5be28e",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "cercle et radians"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "cercle et radians"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-303"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-409"
+				}
+			]
+		},
+		{
+			"id": "4c4d43dc-966d-4661-be5c-85272a3d73cf",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "parité et périodicité"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "parité et périodicité"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-453"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-597"
+				}
+			]
+		},
+		{
+			"id": "4cc21ccd-03d9-4e62-b669-f5ca03a1cc9a",
+			"noeud_avant": ["Algèbre", "Inégalités", "règles de calcul"],
+			"noeud_apres": ["Fonctions", "Fonctions affines", "variations et signe"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-263"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-328"
+				}
+			]
+		},
+		{
+			"id": "4ff9d049-afd9-4fd2-be40-f8e242923af4",
+			"noeud_avant": ["Probabilités", "Loi binomiale", "schéma de Bernoulli"],
+			"noeud_apres": ["Probabilités", "Loi binomiale", "schéma de Bernoulli"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-295"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-508"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-367"
+				},
+				{
+					"grade": "T_TECHNO",
+					"code": "TTECHNO-089"
+				}
+			]
+		},
+		{
+			"id": "5062197a-5ffa-47bf-805d-8ec39d4445b8",
+			"noeud_avant": ["Ensembles", "Ensembles de nombres", "appartenance et inclusion"],
+			"noeud_apres": ["Ensembles", "Ensembles de nombres", "appartenance et inclusion"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-201"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-403"
+				}
+			]
+		},
+		{
+			"id": "5072030d-8036-4621-a92b-75df54d371f9",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "parité et périodicité"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "parité et périodicité"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-456"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-601"
+				}
+			]
+		},
+		{
+			"id": "50feeefd-27d8-4b73-9e97-e3226091fb0a",
+			"noeud_avant": ["Fonctions", "Dérivation", "fonctions composées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "fonctions composées"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-228"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-413"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-413"
+				}
+			]
+		},
+		{
+			"id": "536c01bb-8401-4f53-b8ca-faf9bf4c243d",
+			"noeud_avant": ["Logique", "Proposition mathématique", "statut des lettres et des égalités"],
+			"noeud_apres": ["Logique", "Proposition mathématique", "statut des lettres et des égalités"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-202"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "536db399-2e04-45fc-9f0b-a37a7678d8e8",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"orthogonalité de droites et plans"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"orthogonalité de droites et plans"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-353"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "5426cead-c0c2-48d3-a10b-2e46714f9129",
+			"noeud_avant": ["Logique", "Implication et équivalence"],
+			"noeud_apres": ["Logique", "Implication et équivalence"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-214"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "568c7bee-093c-4765-839c-7b94e95d4a67",
+			"noeud_avant": ["Fonctions", "Second degré", "signe"],
+			"noeud_apres": ["Fonctions", "Second degré", "signe"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-251"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-249"
+				}
+			]
+		},
+		{
+			"id": "5a53d098-b331-4d64-bcad-e14dbab53591",
+			"noeud_avant": ["Graphes", "Vocabulaire des graphes", "sommets, arêtes, degré"],
+			"noeud_apres": ["Graphes", "Vocabulaire des graphes", "sommets, arêtes, degré"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-313"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "5a89b292-e311-40fb-9115-e6572d031e40",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "cosinus et sinus d'un réel"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "cosinus et sinus d'un réel"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-305"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-410"
+				}
+			]
+		},
+		{
+			"id": "5b20321f-e86a-4a13-b478-1cf4f441e920",
+			"noeud_avant": ["Ensembles", "Ensembles de nombres", "appartenance et inclusion"],
+			"noeud_apres": ["Ensembles", "Ensembles de nombres", "appartenance et inclusion"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-201"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-204"
+				}
+			]
+		},
+		{
+			"id": "5ba712bc-fda7-4d3c-80ee-b2aa8de6cc4f",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-092"
+				}
+			]
+		},
+		{
+			"id": "5cb7f6ce-8c71-4874-9b42-cd9afd4a1c29",
+			"noeud_avant": ["Suites", "Suites arithmétiques"],
+			"noeud_apres": ["Suites", "Suites arithmétiques"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-228"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-015"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-228"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-048"
+				}
+			]
+		},
+		{
+			"id": "60a428b9-72d0-4375-99a3-26ef6f594d3b",
+			"noeud_avant": ["Géométrie", "Géométrie repérée", "équation de cercle"],
+			"noeud_apres": ["Géométrie", "Géométrie repérée", "équation de cercle"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-333"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-419"
+				}
+			]
+		},
+		{
+			"id": "618d795c-5f19-49ba-be65-9a9ecd491e70",
+			"noeud_avant": ["Suites", "Raisonnement par récurrence", "structure d'une récurrence"],
+			"noeud_apres": ["Suites", "Raisonnement par récurrence", "structure d'une récurrence"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-386"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-304"
+				}
+			]
+		},
+		{
+			"id": "61e2ac1f-c21d-46ce-b5e2-57a72b9680af",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "624bf511-0830-4aa7-91cc-1d016a94df2b",
+			"noeud_avant": ["Équations différentielles", "Généralités", "allure des courbes"],
+			"noeud_apres": ["Équations différentielles", "Généralités", "allure des courbes"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-249"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-465"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-249"
+				}
+			]
+		},
+		{
+			"id": "629c231b-50d4-459f-9361-fa8098f4d079",
+			"noeud_avant": ["Arithmétique", "Nombres premiers", "décomposition en facteurs premiers"],
+			"noeud_apres": ["Arithmétique", "Nombres premiers", "décomposition en facteurs premiers"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-282"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "62b99aa7-ad93-43aa-b7af-7b48c0f8af50",
+			"noeud_avant": ["Fonctions", "Fonction valeur absolue", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction valeur absolue", "équations et inéquations"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-340"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-458"
+				}
+			]
+		},
+		{
+			"id": "646b4cd3-71da-4092-9542-5fee745b3043",
+			"noeud_avant": ["Géométrie", "Orthogonalité et distances dans l'espace", "sphère"],
+			"noeud_apres": ["Géométrie", "Orthogonalité et distances dans l'espace", "sphère"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-376"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "65e96f31-31fe-4c2b-b894-e689b998b849",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "terme général"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "terme général"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-014"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-037"
+				}
+			]
+		},
+		{
+			"id": "68166a11-b481-44cc-b881-07252a6fb98f",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "propriétés algébriques"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "propriétés algébriques"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "68b13d33-57b5-4f5f-a3d0-ffbc80d78587",
+			"noeud_avant": ["Géométrie", "Espace"],
+			"noeud_apres": ["Géométrie", "Espace"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-371"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "69a05f98-9dd9-4ce5-b23e-5376e85fbbaf",
+			"noeud_avant": [
+				"Probabilités",
+				"Probabilités conditionnelles",
+				"inversion du conditionnement"
+			],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-400"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				}
+			]
+		},
+		{
+			"id": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "variations"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-405"
+				}
+			]
+		},
+		{
+			"id": "6be786ef-507f-4fdb-80ec-74db1b9179f5",
+			"noeud_avant": ["Graphes", "Chaînes et connexité", "chaînes et cycles"],
+			"noeud_apres": ["Graphes", "Chaînes et connexité", "chaînes et cycles"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-315"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "6c3ee9e6-3c71-4ff9-943b-22691a9a92c7",
+			"noeud_avant": ["Logique", "Proposition mathématique", "et, ou, non"],
+			"noeud_apres": ["Logique", "Proposition mathématique", "et, ou, non"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-210"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "6c80b4ec-541d-47dc-a652-13b51f9b8b9b",
+			"noeud_avant": ["Probabilités", "Loi binomiale", "expression de la loi"],
+			"noeud_apres": ["Probabilités", "Loi binomiale", "expression de la loi"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-297"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-510"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "6dd2f133-e203-4cf6-a422-6a0e716203f3",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-092"
+				}
+			]
+		},
+		{
+			"id": "6ed907d7-03b3-43b2-b737-37bf7c633f16",
+			"noeud_avant": ["Intégration", "Intégrale et aire", "aire algébrique"],
+			"noeud_apres": ["Intégration", "Intégrale et aire", "aire algébrique"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-274"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-485"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-266"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-475"
+				}
+			]
+		},
+		{
+			"id": "6fbc355c-aca7-4e2e-8a55-78b3a5722e17",
+			"noeud_avant": ["Probabilités", "Variables aléatoires", "espérance"],
+			"noeud_apres": ["Probabilités", "Variables aléatoires", "espérance"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-356"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-356"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-099"
+				}
+			]
+		},
+		{
+			"id": "6fe11613-789b-43c1-a38b-0d72bcb0d44e",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "variations"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-405"
+				}
+			]
+		},
+		{
+			"id": "6ff00846-f06d-49f3-b6cb-336821ea8649",
+			"noeud_avant": ["Nombres complexes", "Équations polynomiales", "racines d'un polynôme"],
+			"noeud_apres": ["Nombres complexes", "Équations polynomiales", "racines d'un polynôme"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-246"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "7063979e-b3b5-4b12-8ff9-e6df2c05b23c",
+			"noeud_avant": ["Suites", "Limites de suites", "comparaison et encadrement"],
+			"noeud_apres": ["Suites", "Limites de suites", "comparaison et encadrement"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-381"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-385"
+				}
+			]
+		},
+		{
+			"id": "708f8a08-31c0-49f2-85f9-8f9b8a2b4a44",
+			"noeud_avant": ["Suites", "Limites de suites", "suites géométriques"],
+			"noeud_apres": ["Suites", "Limites de suites", "suites géométriques"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-210"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-402"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-210"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-383"
+				}
+			]
+		},
+		{
+			"id": "7179a3b5-580a-4696-a22e-cd5f89c32c29",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "variations"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-405"
+				}
+			]
+		},
+		{
+			"id": "71cb8ab7-664a-45f6-83b0-6b0739ebb5a1",
+			"noeud_avant": [
+				"Probabilités",
+				"Sommes et concentration",
+				"espérance et variance d'une somme"
+			],
+			"noeud_apres": [
+				"Probabilités",
+				"Sommes et concentration",
+				"espérance et variance d'une somme"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-527"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "723779c8-23a5-4768-9648-a19cab5558be",
+			"noeud_avant": ["Fonctions", "Logarithmes", "dérivée"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-227"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-440"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-229"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-414"
+				}
+			]
+		},
+		{
+			"id": "7247dbb0-eeb4-49f0-9c54-4b6ce26f2db8",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-013"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-035"
+				}
+			]
+		},
+		{
+			"id": "74363137-8fef-4a59-bb0a-ce1c0908198f",
+			"noeud_avant": ["Géométrie", "Produit scalaire", "angles et longueurs"],
+			"noeud_apres": ["Géométrie", "Produit scalaire", "angles et longueurs"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-315"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "74d77343-34b9-4259-94c2-c9e2c473b052",
+			"noeud_avant": ["Fonctions", "Dérivation", "fonctions dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-264"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-265"
+				}
+			]
+		},
+		{
+			"id": "7690e290-8eaa-4729-9d34-6fd58107e294",
+			"noeud_avant": ["Nombres complexes", "Interprétation géométrique", "affixes et distances"],
+			"noeud_apres": ["Nombres complexes", "Interprétation géométrique", "affixes et distances"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-223"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "7703e625-8a3e-48bd-b4d3-245201766457",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-223"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-223"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-043"
+				}
+			]
+		},
+		{
+			"id": "77b5e06d-1040-49ca-b8a4-f524ab0448ac",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "dérivées et variations"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "dérivées et variations"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-454"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-600"
+				}
+			]
+		},
+		{
+			"id": "77d6fedc-1643-4451-a685-2451dc1616cb",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-395"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-390"
+				},
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-302"
+				}
+			]
+		},
+		{
+			"id": "782bf7f8-b6af-43f2-a1d7-78089cdb9485",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-281"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-281"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-075"
+				}
+			]
+		},
+		{
+			"id": "7844be9a-36f9-4f27-8c6a-34529c3e6523",
+			"noeud_avant": ["Fonctions", "Limites de fonctions", "formes indéterminées"],
+			"noeud_apres": ["Fonctions", "Limites de fonctions", "formes indéterminées"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-403"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-583"
+				}
+			]
+		},
+		{
+			"id": "79d69593-e815-496c-b429-637a1cd68b4d",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-223"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-377"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-118"
+				}
+			]
+		},
+		{
+			"id": "7b4b149a-5a82-4aca-8b7f-7ef48d0ffd48",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-453"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-599"
+				}
+			]
+		},
+		{
+			"id": "7d552757-61db-493a-a846-7d2cdc0ec631",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "équations"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "équations"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-457"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "7d9d9b81-e11f-4572-8221-21e95107112d",
+			"noeud_avant": ["Dénombrement", "Combinaisons", "coefficients binomiaux"],
+			"noeud_apres": ["Dénombrement", "Combinaisons", "coefficients binomiaux"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-313"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "7df468d6-647c-4b59-9a6c-026a2279fd86",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "parité et périodicité"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "parité et périodicité"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-453"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-598"
+				}
+			]
+		},
+		{
+			"id": "7eec7032-a49c-4662-a2af-73c9ef8f2f98",
+			"noeud_avant": ["Fonctions", "Généralités sur les fonctions", "parité"],
+			"noeud_apres": ["Fonctions", "Généralités sur les fonctions", "parité"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-280"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "80489c90-34aa-4212-bf2e-62438ab017a0",
+			"noeud_avant": ["Fonctions", "Second degré", "parabole"],
+			"noeud_apres": ["Algèbre", "Équations : second degré", "discriminant"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-287"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-248"
+				}
+			]
+		},
+		{
+			"id": "806c10f4-d04c-44c2-9af1-84a65b636aca",
+			"noeud_avant": ["Fonctions", "Limites de fonctions", "opérations"],
+			"noeud_apres": ["Fonctions", "Limites de fonctions", "opérations"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-230"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-415"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-230"
+				}
+			]
+		},
+		{
+			"id": "81ff485d-b40a-4778-bb95-43c3c17818f2",
+			"noeud_avant": ["Suites", "Suites arithmético-géométriques", "solution constante"],
+			"noeud_apres": ["Suites", "Suites arithmético-géométriques", "solution constante"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-213"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-208"
+				}
+			]
+		},
+		{
+			"id": "83b1f614-95db-4d74-9fbf-d4d502ee8c01",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-283"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-401"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-133"
+				}
+			]
+		},
+		{
+			"id": "849aabbc-4576-4644-a5c6-5b840b4dbbb9",
+			"noeud_avant": ["Suites", "Limites de suites", "définition"],
+			"noeud_apres": ["Suites", "Limites de suites", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-231"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "8997f7c6-4a99-44e0-bd03-e76c7e69c596",
+			"noeud_avant": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-274"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-394"
+				}
+			]
+		},
+		{
+			"id": "89e16891-1301-4b1c-af75-a8f03ba0dcdb",
+			"noeud_avant": ["Probabilités", "Autres lois", "loi uniforme continue"],
+			"noeud_apres": ["Probabilités", "Autres lois", "loi uniforme continue"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-311"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "8b435b9d-ca30-44db-b4ce-1e1bd581387d",
+			"noeud_avant": ["Nombres complexes", "Forme algébrique", "équations"],
+			"noeud_apres": ["Nombres complexes", "Forme algébrique", "équations"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-207"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "8b599a53-7e46-44a1-8e48-860c4d501b14",
+			"noeud_avant": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "fonctions composées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-274"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-408"
+				}
+			]
+		},
+		{
+			"id": "8d4e5302-a133-441d-a618-69abb9cb4b63",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "représentation graphique"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "représentation graphique"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-221"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-050"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-221"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-119"
+				}
+			]
+		},
+		{
+			"id": "8d69e3a9-3b97-4ec5-a768-adac14a53ca3",
+			"noeud_avant": ["Matrices", "Transformations du plan", "matrice d'une transformation"],
+			"noeud_apres": ["Matrices", "Transformations du plan", "matrice d'une transformation"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-323"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "8ed02829-51de-40e2-af77-8fa47d01ea98",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "terme général"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "terme général"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-049"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				}
+			]
+		},
+		{
+			"id": "91c7b083-8714-4559-9a6e-8e9fe86b59bd",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"vecteur normal et équation cartésienne"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"vecteur normal et équation cartésienne"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-368"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-565"
+				}
+			]
+		},
+		{
+			"id": "91db0034-86d4-49bf-b190-0884db19e9b7",
+			"noeud_avant": ["Probabilités", "Sommes et concentration", "inégalité de concentration"],
+			"noeud_apres": ["Probabilités", "Sommes et concentration", "inégalité de concentration"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-533"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "93539700-7047-4edd-98fa-85a80276931e",
+			"noeud_avant": ["Matrices", "Transformations du plan", "matrice d'une transformation"],
+			"noeud_apres": ["Matrices", "Transformations du plan", "matrice d'une transformation"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-323"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "939153b6-9aa8-4a59-809e-071a7d3b8b77",
+			"noeud_avant": ["Fonctions", "Fonction valeur absolue", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction valeur absolue", "définition et distance"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-340"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-420"
+				}
+			]
+		},
+		{
+			"id": "94e4d691-ad7e-4e7a-9130-acb805864764",
+			"noeud_avant": ["Suites", "Limites de suites", "opérations"],
+			"noeud_apres": ["Suites", "Limites de suites", "opérations"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-204"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-402"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-204"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-577"
+				}
+			]
+		},
+		{
+			"id": "95ee8348-8d34-4cf4-a798-544ee0622aa7",
+			"noeud_avant": ["Intégration", "Fonction intégrale", "dérivée d'une fonction intégrale"],
+			"noeud_apres": ["Intégration", "Fonction intégrale", "dérivée d'une fonction intégrale"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-272"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-476"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "95f04c3e-03e1-4db4-a16e-36b713a2273f",
+			"noeud_avant": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"projeté orthogonal"
+			],
+			"noeud_apres": [
+				"Géométrie",
+				"Orthogonalité et distances dans l'espace",
+				"projeté orthogonal"
+			],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-369"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "9724dc3d-8df6-4c45-b936-439b18ed4c39",
+			"noeud_avant": ["Ensembles", "Opérations sur les ensembles"],
+			"noeud_apres": ["Ensembles", "Opérations sur les ensembles"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-202"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "9755a856-1059-40aa-abf7-cb531d85cebc",
+			"noeud_avant": ["Fonctions", "Dérivation", "fonctions dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-264"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-265"
+				}
+			]
+		},
+		{
+			"id": "9765d776-cc70-4472-95e9-1c0d05396584",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "courbe"],
+			"noeud_apres": ["Fonctions", "Dérivation", "tangente"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-289"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-272"
+				}
+			]
+		},
+		{
+			"id": "97b3a376-01de-42cd-8297-b0f7937e38f1",
+			"noeud_avant": ["Probabilités", "Variables aléatoires", "loi d'une variable aléatoire"],
+			"noeud_apres": ["Probabilités", "Variables aléatoires", "loi d'une variable aléatoire"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-353"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-353"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-137"
+				}
+			]
+		},
+		{
+			"id": "98ba277c-b99f-4e3f-b33c-8138755eb917",
+			"noeud_avant": ["Suites", "Limites de suites", "comparaison et encadrement"],
+			"noeud_apres": ["Suites", "Limites de suites", "comparaison et encadrement"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-205"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-402"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-205"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-578"
+				}
+			]
+		},
+		{
+			"id": "9a04eb9f-18f7-413e-97b7-7ce41a899747",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-283"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-281"
+				}
+			]
+		},
+		{
+			"id": "9a4592bf-5e79-4a4a-bb1a-698a715a4a34",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "équations et inéquations"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "9ad36217-5f60-45c7-83ce-a1a870adc5da",
+			"noeud_avant": ["Fonctions", "Logarithmes", "courbe"],
+			"noeud_apres": ["Fonctions", "Logarithmes", "courbe"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-225"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-442"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-225"
+				}
+			]
+		},
+		{
+			"id": "9d7c4d98-c7fe-4c2e-8993-d162294e1dde",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "arbres pondérés"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "arbres pondérés"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-398"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-398"
+				},
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-302"
+				}
+			]
+		},
+		{
+			"id": "9f00da01-a030-4697-8d69-20c380fa0b78",
+			"noeud_avant": ["Fonctions", "Second degré", "parabole"],
+			"noeud_apres": ["Fonctions", "Second degré", "parabole"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-247"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "a0089728-f07a-46ba-8109-7550d2ac800d",
+			"noeud_avant": ["Fonctions", "Second degré", "racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-253"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-063"
+				}
+			]
+		},
+		{
+			"id": "a3f92832-2daf-4f00-94b5-68b57275e93a",
+			"noeud_avant": ["Probabilités", "Variables aléatoires", "espérance"],
+			"noeud_apres": ["Probabilités", "Variables aléatoires", "espérance"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-349"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-349"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-138"
+				}
+			]
+		},
+		{
+			"id": "a430a698-851d-40b9-b4b0-146153788397",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "représentation graphique"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "représentation graphique"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-221"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-221"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-119"
+				}
+			]
+		},
+		{
+			"id": "a573d517-be46-442b-a298-03469d286e79",
+			"noeud_avant": ["Statistiques", "Statistique à deux variables", "ajustement affine"],
+			"noeud_apres": ["Statistiques", "Statistique à deux variables", "ajustement affine"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-328"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-045"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-088"
+				},
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-328"
+				}
+			]
+		},
+		{
+			"id": "a69dfde7-44b7-489e-a248-be0a1e5c5117",
+			"noeud_avant": ["Dénombrement", "Combinaisons", "combinaisons"],
+			"noeud_apres": ["Dénombrement", "Combinaisons", "combinaisons"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-325"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "a80a780f-bed5-404c-b5fe-db4211437ac8",
+			"noeud_avant": ["Fonctions", "Convexité", "caractérisations"],
+			"noeud_apres": ["Fonctions", "Convexité", "caractérisations"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-262"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-411"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "a86442c1-78a0-42d1-af23-7f43d217bfa3",
+			"noeud_avant": ["Fonctions", "Dérivation", "fonctions dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "fonctions dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-264"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "a86fc757-1639-4b22-84bd-af5abcf2b9e0",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-283"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-401"
+				}
+			]
+		},
+		{
+			"id": "a8b51d16-261f-4acd-a2c2-933d3ea9bab5",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "terme général"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "terme général"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-014"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-037"
+				}
+			]
+		},
+		{
+			"id": "a9c71276-30e3-406f-8082-248cce389824",
+			"noeud_avant": [
+				"Probabilités",
+				"Probabilités conditionnelles",
+				"inversion du conditionnement"
+			],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "probabilités totales"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-400"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-340"
+				}
+			]
+		},
+		{
+			"id": "aad6c700-242c-40a4-bd13-f24b016a8a59",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "cercle et radians"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "cercle et radians"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-306"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-304"
+				}
+			]
+		},
+		{
+			"id": "acd9104c-e29e-4df6-89cc-3d549a21b3fb",
+			"noeud_avant": ["Nombres complexes", "Équations polynomiales", "degré 3 et factorisation"],
+			"noeud_apres": ["Nombres complexes", "Équations polynomiales", "degré 3 et factorisation"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-249"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "aced2e6c-0f00-49ac-bcde-821d2bc91e9b",
+			"noeud_avant": ["Probabilités", "Sommes et concentration", "échantillons"],
+			"noeud_apres": ["Probabilités", "Sommes et concentration", "échantillons"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-524"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "ae0ad163-0c3a-4334-8748-8ccdefc7134c",
+			"noeud_avant": [
+				"Fonctions",
+				"Fonctions affines",
+				"coefficient directeur et ordonnée à l'origine"
+			],
+			"noeud_apres": [
+				"Fonctions",
+				"Fonctions affines",
+				"coefficient directeur et ordonnée à l'origine"
+			],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-347"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-474"
+				}
+			]
+		},
+		{
+			"id": "aeb1389d-0805-4421-9b25-1fcb4e4f4670",
+			"noeud_avant": ["Suites", "Modèles d'évolution"],
+			"noeud_apres": ["Suites", "Modèles d'évolution"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-230"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-379"
+				}
+			]
+		},
+		{
+			"id": "afd9b3ff-c4ee-4061-ab99-7589aa1dc045",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "équations"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "équations"],
+			"tags_avant": [],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-457"
+				}
+			]
+		},
+		{
+			"id": "affceacd-5dab-474e-aa7e-75d2d542a935",
+			"noeud_avant": ["Géométrie", "Espace", "colinéarité et alignement"],
+			"noeud_apres": ["Géométrie", "Espace", "colinéarité et alignement"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-371"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-550"
+				}
+			]
+		},
+		{
+			"id": "b48d72dd-e93b-4f5c-ac81-117ff1c2c79c",
+			"noeud_avant": ["Fonctions", "Second degré", "signe"],
+			"noeud_apres": ["Fonctions", "Second degré", "signe"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-251"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-249"
+				}
+			]
+		},
+		{
+			"id": "b59fe450-e57a-4dfc-8aa7-29337b3fa28f",
+			"noeud_avant": ["Suites", "Limites de suites", "suites majorées, minorées"],
+			"noeud_apres": ["Suites", "Limites de suites", "convergence monotone"],
+			"tags_avant": [],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-384"
+				}
+			]
+		},
+		{
+			"id": "b97dabe1-0c52-483e-a738-e62386d5a638",
+			"noeud_avant": ["Fonctions", "Limites de fonctions", "croissances comparées"],
+			"noeud_apres": ["Fonctions", "Limites de fonctions", "croissances comparées"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-403"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "baefb288-6fb4-4fad-8e71-114145799ab6",
+			"noeud_avant": ["Suites", "Suites récurrentes", "escalier"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "représentation graphique"],
+			"tags_avant": [],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-221"
+				}
+			]
+		},
+		{
+			"id": "bb554c62-ed89-4c2f-817b-c5aed549a469",
+			"noeud_avant": ["Fonctions", "Dérivation", "variations et extremums"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-283"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "bf3e3211-3dc9-4a91-964a-eb8a68350903",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "sens de variation"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "sens de variation"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-219"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-219"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-033"
+				}
+			]
+		},
+		{
+			"id": "c0f49b76-fe50-44cf-80b6-3ee8ee5ab9f5",
+			"noeud_avant": ["Suites", "Limites de suites", "définition"],
+			"noeud_apres": ["Suites", "Limites de suites", "définition"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-378"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "c23840b6-f01c-4d33-ac40-4c5f9c2b6eab",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "terme général"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-014"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-224"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-037"
+				}
+			]
+		},
+		{
+			"id": "c2e70ba1-08e2-4d6e-ba97-9194e2d2109d",
+			"noeud_avant": ["Algèbre", "Équations : second degré", "discriminant"],
+			"noeud_apres": ["Algèbre", "Équations : second degré", "discriminant"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-248"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-386"
+				}
+			]
+		},
+		{
+			"id": "c611f92b-490e-468f-935a-06ec654fb3de",
+			"noeud_avant": ["Suites", "Limites de suites", "formes indéterminées"],
+			"noeud_apres": ["Suites", "Limites de suites", "formes indéterminées"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-402"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-579"
+				}
+			]
+		},
+		{
+			"id": "c6b5894c-c753-4dc4-b92b-18702b1f1f81",
+			"noeud_avant": ["Probabilités", "Autres lois", "loi exponentielle"],
+			"noeud_apres": ["Probabilités", "Autres lois", "loi exponentielle"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-312"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "c7b5130d-15f7-4b80-b678-34c3c13dff40",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "variations"],
+			"noeud_apres": ["Fonctions", "Dérivation", "variations et extremums"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-283"
+				}
+			]
+		},
+		{
+			"id": "c7cdca01-326b-487f-8400-ba25d382de74",
+			"noeud_avant": ["Algèbre", "Inégalités", "règles de calcul"],
+			"noeud_apres": ["Fonctions", "Fonctions affines", "variations et signe"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-263"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-328"
+				}
+			]
+		},
+		{
+			"id": "c90fa022-9493-4812-adb7-c785babee9d4",
+			"noeud_avant": ["Suites", "Modèles d'évolution"],
+			"noeud_apres": ["Suites", "Modèles d'évolution"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-230"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-042"
+				}
+			]
+		},
+		{
+			"id": "cd4f9fb3-9deb-402d-8fa5-278ef5089d61",
+			"noeud_avant": ["Matrices", "Calcul matriciel", "inverse"],
+			"noeud_apres": ["Matrices", "Calcul matriciel", "inverse"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-338"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "cda8e0d2-366c-482f-8cf3-2564b4b7083d",
+			"noeud_avant": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-274"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-265"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-080"
+				}
+			]
+		},
+		{
+			"id": "cf548ea1-2333-42f8-8d6c-e5af54f2b492",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-395"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "2",
+					"code": "2-488"
+				}
+			]
+		},
+		{
+			"id": "cffdd283-49ee-4292-b8ca-b6096b8b1ae2",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "dérivée"],
+			"noeud_apres": ["Fonctions", "Dérivation", "opérations sur les dérivées"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-289"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-274"
+				}
+			]
+		},
+		{
+			"id": "d2067413-da43-42bb-a24c-642d2a3cc5e8",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "représentation graphique"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-214"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-045"
+				}
+			]
+		},
+		{
+			"id": "d2943133-ebf7-424d-946a-8fed6cfa76be",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "d3301f2d-6293-4766-a789-d432cb11b489",
+			"noeud_avant": ["Fonctions", "Logarithmes", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Logarithmes", "équations et inéquations"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-238"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-446"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-446"
+				}
+			]
+		},
+		{
+			"id": "d400a330-ede5-4167-ab2a-1919eeed2468",
+			"noeud_avant": [
+				"Nombres complexes",
+				"Interprétation géométrique",
+				"alignement et orthogonalité"
+			],
+			"noeud_apres": ["Nombres complexes", "Interprétation géométrique", "angles et quotient"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-260"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-365"
+				}
+			]
+		},
+		{
+			"id": "d5780995-4cd1-49f9-af54-45edca0a27b8",
+			"noeud_avant": [
+				"Probabilités",
+				"Probabilités conditionnelles",
+				"épreuves indépendantes successives"
+			],
+			"noeud_apres": [
+				"Probabilités",
+				"Probabilités conditionnelles",
+				"épreuves indépendantes successives"
+			],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-338"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-046"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-338"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-135"
+				}
+			]
+		},
+		{
+			"id": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
+			"noeud_avant": ["Fonctions", "Dérivation", "nombre dérivé"],
+			"noeud_apres": ["Fonctions", "Dérivation", "nombre dérivé"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-270"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-270"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-077"
+				}
+			]
+		},
+		{
+			"id": "d683e906-b1ca-44f0-bed5-8df2a9740b11",
+			"noeud_avant": ["Probabilités", "Variables aléatoires", "loi d'une variable aléatoire"],
+			"noeud_apres": ["Probabilités", "Variables aléatoires", "loi d'une variable aléatoire"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-355"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-355"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-095"
+				}
+			]
+		},
+		{
+			"id": "d73d7929-fd39-4234-963c-80038c22f5a3",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "équations et inéquations"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "variations"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-292"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-405"
+				}
+			]
+		},
+		{
+			"id": "dbee4649-3ab6-49f0-8a5e-5814ce15ba43",
+			"noeud_avant": ["Probabilités", "Loi binomiale", "espérance et variance"],
+			"noeud_apres": ["Probabilités", "Loi binomiale", "espérance et variance"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-291"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-522"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "dd0ee69a-2203-47a3-b2b8-af70a77281d3",
+			"noeud_avant": ["Intégration", "Valeur moyenne"],
+			"noeud_apres": ["Intégration", "Calcul d'intégrales", "positivité et inégalités"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-275"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-486"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-481"
+				}
+			]
+		},
+		{
+			"id": "dfb727cd-c55b-439c-8738-0e20484369c5",
+			"noeud_avant": ["Dénombrement", "Principes de dénombrement", "parties d'un ensemble"],
+			"noeud_apres": ["Dénombrement", "Principes de dénombrement", "parties d'un ensemble"],
+			"tags_avant": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-308"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "e5205176-140d-4376-9761-8172ca8bf10a",
+			"noeud_avant": [
+				"Logique",
+				"Implication et équivalence",
+				"condition nécessaire, condition suffisante"
+			],
+			"noeud_apres": [
+				"Logique",
+				"Implication et équivalence",
+				"condition nécessaire, condition suffisante"
+			],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-201"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-201"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-002"
+				}
+			]
+		},
+		{
+			"id": "e7cfe442-6653-4f97-a74e-08b8853d3305",
+			"noeud_avant": ["Suites", "Suites géométriques", "somme des termes"],
+			"noeud_apres": ["Suites", "Suites géométriques", "somme des termes"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-227"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-218"
+				}
+			]
+		},
+		{
+			"id": "eae2ff6a-5e46-445b-bfa6-02cadb6d956a",
+			"noeud_avant": ["Fonctions", "Second degré", "racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "eafd17a1-6e78-4bf3-932c-da806ac9d889",
+			"noeud_avant": ["Probabilités", "Variables aléatoires", "espérance"],
+			"noeud_apres": ["Probabilités", "Variables aléatoires", "espérance"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-358"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-356"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-099"
+				}
+			]
+		},
+		{
+			"id": "eb9517ed-85ed-4702-b8d0-e155f5a5d474",
+			"noeud_avant": ["Suites", "Modèles d'évolution", "seuil"],
+			"noeud_apres": ["Suites", "Modèles d'évolution", "seuil"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-237"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-021"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-237"
+				}
+			]
+		},
+		{
+			"id": "ebe7e788-3fdc-4d48-8429-ecc959f35349",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "indépendance"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "indépendance"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-341"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_GEN",
+					"code": "1GEN-047"
+				},
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-424"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-134"
+				}
+			]
+		},
+		{
+			"id": "ecba8a9e-bedb-478d-a324-a4f3fbdb3967",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "sens de variation"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "sens de variation"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-219"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-219"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-033"
+				}
+			]
+		},
+		{
+			"id": "ed8444bb-dfa3-4b6c-8414-27afb3066d2b",
+			"noeud_avant": ["Fonctions", "Dérivation", "tangente"],
+			"noeud_apres": ["Fonctions", "Dérivation", "tangente"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-261"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-261"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-079"
+				}
+			]
+		},
+		{
+			"id": "ef3c495c-632b-40ec-840d-fbbf7bfc879a",
+			"noeud_avant": ["Dénombrement", "Combinaisons", "coefficients binomiaux"],
+			"noeud_apres": ["Dénombrement", "Combinaisons", "coefficients binomiaux"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-296"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-314"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "f01270c2-3c63-45c5-bfbb-8233154fadc6",
+			"noeud_avant": ["Équations différentielles", "y′ = f", "forme (v′∘u)×u′"],
+			"noeud_apres": ["Équations différentielles", "y′ = f", "forme (v′∘u)×u′"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-252"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-468"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-468"
+				}
+			]
+		},
+		{
+			"id": "f1963ef2-4618-4ae7-9491-9955dacd0258",
+			"noeud_avant": ["Suites", "Modèles d'évolution", "seuil"],
+			"noeud_apres": ["Suites", "Modèles d'évolution", "seuil"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-239"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-387"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-239"
+				}
+			]
+		},
+		{
+			"id": "f2133048-6672-4519-ba1c-133c3f59cea0",
+			"noeud_avant": ["Nombres complexes", "Interprétation géométrique", "ensembles de points"],
+			"noeud_apres": ["Nombres complexes", "Interprétation géométrique", "ensembles de points"],
+			"tags_avant": [
+				{
+					"grade": "T_EXP",
+					"code": "TEXP-264"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "f26151ff-9b70-414b-9c92-b53a1839bd79",
+			"noeud_avant": ["Intégration", "Valeur moyenne"],
+			"noeud_apres": ["Intégration", "Valeur moyenne"],
+			"tags_avant": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-281"
+				},
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-493"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "f2cc01fc-a317-4052-92d9-2c9f67255a14",
+			"noeud_avant": ["Géométrie", "Produit scalaire", "propriétés"],
+			"noeud_apres": ["Géométrie", "Produit scalaire", "propriétés"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-318"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "f36ce3ff-9ae5-435e-b6c2-affe0ad902ec",
+			"noeud_avant": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"noeud_apres": ["Suites", "Généralités sur les suites", "explicite ou par récurrence"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-223"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-377"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-118"
+				}
+			]
+		},
+		{
+			"id": "f3e68e4b-9855-4e91-bc0d-7363b7650b86",
+			"noeud_avant": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"noeud_apres": ["Probabilités", "Probabilités conditionnelles", "tableaux croisés"],
+			"tags_avant": [
+				{
+					"grade": "2",
+					"code": "2-396"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "T_COMP",
+					"code": "TCOMP-302"
+				}
+			]
+		},
+		{
+			"id": "f40e8a4a-bddc-43aa-8c2c-ccf7cb5d4ae6",
+			"noeud_avant": ["Fonctions", "Fonction exponentielle", "courbe"],
+			"noeud_apres": ["Fonctions", "Fonction exponentielle", "courbe"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-296"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-406"
+				}
+			]
+		},
+		{
+			"id": "f52395d1-31ca-4bdb-be8f-723c5d96d2ac",
+			"noeud_avant": ["Fonctions", "Dérivation", "tangente"],
+			"noeud_apres": ["Fonctions", "Dérivation", "tangente"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-272"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-272"
+				},
+				{
+					"grade": "1_TECHNO",
+					"code": "1TECHNO-079"
+				}
+			]
+		},
+		{
+			"id": "f6219e5a-af46-4818-8537-6c65b6d9ae63",
+			"noeud_avant": ["Fonctions", "Second degré", "somme et produit des racines"],
+			"noeud_apres": ["Fonctions", "Second degré", "somme et produit des racines"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-245"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-383"
+				}
+			]
+		},
+		{
+			"id": "f63408c5-ec96-4a17-92bc-15796e0b9a61",
+			"noeud_avant": ["Suites", "Suites arithmétiques", "définition"],
+			"noeud_apres": ["Suites", "Suites arithmétiques", "définition"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-213"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "f69a6e9e-28cf-46e3-b823-5712a2e028d9",
+			"noeud_avant": ["Algèbre", "Équations : second degré", "discriminant"],
+			"noeud_apres": ["Algèbre", "Équations : second degré", "discriminant"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-248"
+				}
+			],
+			"tags_apres": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-386"
+				}
+			]
+		},
+		{
+			"id": "f7194c9d-5056-4444-8a66-78205d1dde32",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "cercle et radians"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "cercle et radians"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-304"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709",
+			"noeud_avant": ["Fonctions", "Second degré"],
+			"noeud_apres": ["Fonctions", "Second degré"],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-244"
+				}
+			],
+			"tags_apres": []
+		},
+		{
+			"id": "fece187e-691f-488b-84c6-d37c84173066",
+			"noeud_avant": ["Fonctions", "Fonctions trigonométriques", "équations"],
+			"noeud_apres": ["Fonctions", "Fonctions trigonométriques", "équations"],
+			"tags_avant": [],
+			"tags_apres": [
+				{
+					"grade": "T_SPE",
+					"code": "TSPE-457"
+				}
+			]
+		}
+	]
+}
