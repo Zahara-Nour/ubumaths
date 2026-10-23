@@ -2491,6 +2491,135 @@ describe('consignes : vrais noms', () => {
 		expect(texts[2]).toBe("Compas en D, petit arc d'un côté");
 	});
 
+	// ─── Tournures neutres, une par famille (textes exacts) ───
+
+	it('bissectrice, sommet caché : « le sommet », « le premier / second côté »', () => {
+		const texts = consignes([
+			...RENAMED.bissectrice.script,
+			'masque(S)',
+			'm = bissectrice(C, S, D) @euclide'
+		]);
+		expect(texts).toEqual([
+			'Compas sur le sommet, petit arc qui coupe le premier côté',
+			'Compas sur le sommet (même ouverture), petit arc qui coupe le second côté',
+			"Les arcs coupent les côtés en A' et B'",
+			"Compas en A', petit arc en direction du croisement",
+			"Compas en B' (même ouverture), petit arc qui croise le précédent",
+			'Les arcs se coupent en P',
+			'Règle du sommet à P : on trace la bissectrice'
+		]);
+	});
+
+	it('bissectrice, un côté caché : (SC) puis « le second côté »', () => {
+		const texts = consignes([
+			...RENAMED.bissectrice.script,
+			'masque(D)',
+			'm = bissectrice(C, S, D) @euclide @arc_milieu'
+		]);
+		expect(texts).toEqual([
+			'Compas en S, petit arc qui coupe (SC)',
+			'Compas en S (même ouverture), petit arc qui coupe le second côté',
+			"Les arcs coupent les côtés en A' et B'",
+			"On marque le milieu M de [A'B']",
+			'Règle de S à M : on trace la bissectrice'
+		]);
+	});
+
+	it('mediatrice, un point sans nom : « Compas sur le second point »', () => {
+		const texts = consignes([
+			'C = point(0, 0)',
+			'D = point(4, 1, etiquette="aucune")',
+			'm = mediatrice(C, D) @euclide'
+		]);
+		expect(texts).toEqual([
+			"Compas en C, petit arc d'un côté",
+			"Petit arc de l'autre côté, même ouverture",
+			"Compas sur le second point, petit arc d'un côté",
+			"Petit arc de l'autre côté, même ouverture",
+			'Les arcs se coupent en deux points',
+			'Règle sur les 2 points : on trace la médiatrice'
+		]);
+	});
+
+	it('cercle_circonscrit, un point sans nom : première médiatrice, « les trois points »', () => {
+		const texts = consignes([
+			'D = point(0, 0, etiquette="aucune")',
+			'E = point(4, 1)',
+			'F = point(1, 3)',
+			'm = cercle_circonscrit(D, E, F) @euclide'
+		]);
+		expect(texts[0]).toBe("Compas sur le premier point, petit arc d'un côté");
+		expect(texts[2]).toBe("Compas en E, petit arc d'un côté");
+		expect(texts.slice(6, 8)).toEqual([
+			'La première médiatrice apparaît',
+			"Compas en E, petit arc d'un côté"
+		]);
+		expect(texts.slice(13)).toEqual([
+			'La médiatrice de [EF] apparaît',
+			'Les médiatrices se croisent en O, centre du cercle',
+			"Compas en O, on prend l'écart jusqu'au premier point",
+			'On trace le cercle circonscrit passant par les trois points'
+		]);
+	});
+
+	it('perpendiculaire, P sans nom : « le point de passage »', () => {
+		const texts = consignes([
+			'C = point(0, 0)',
+			'D = point(4, 1)',
+			'M = point(1, 3, etiquette="aucune")',
+			'm = perpendiculaire(M, C, D) @euclide @arcs_egaux'
+		]);
+		expect(texts).toEqual([
+			"Compas sur le point de passage, on prend l'écart jusqu'à C",
+			"On trace un petit arc qui coupe (CD) en B'",
+			"B' apparaît : un autre point de (CD), équidistant du point de passage comme C",
+			'On reporte cette ouverture en C et on trace un petit arc',
+			"On reporte en B' : les deux petits arcs se croisent",
+			'Les arcs se croisent en Q (symétrique du point de passage par rapport à (CD))',
+			'Règle par le point de passage et Q : on trace la perpendiculaire'
+		]);
+	});
+
+	it('perpendiculaire(M, d), point de d caché : d nommée, « le point choisi »', () => {
+		const texts = consignes([
+			...HIDDEN,
+			'd = mediatrice(C, D)',
+			'm = perpendiculaire(M, d) @euclide @arcs_egaux'
+		]);
+		expect(texts).toEqual([
+			'On choisit un point de la droite',
+			"Compas en M, on prend l'écart jusqu'au point choisi",
+			"On trace un petit arc qui coupe d en B'",
+			"B' apparaît : un autre point de d, équidistant de M comme le point choisi",
+			'On reporte cette ouverture sur le point choisi et on trace un petit arc',
+			"On reporte en B' : les deux petits arcs se croisent",
+			'Les arcs se croisent en Q (symétrique de M par rapport à d)',
+			'Règle par M et Q : on trace la perpendiculaire'
+		]);
+	});
+
+	it('transporte, sommet caché : « le sommet de l’angle »', () => {
+		const [C, S, D, al, ...rest] = RENAMED.transporte.script;
+		const texts = consignes([
+			C,
+			S,
+			D,
+			al,
+			'masque(S)',
+			...rest,
+			'be = transporte(al, T, N) @euclide'
+		]);
+		expect(texts).toEqual([
+			"Compas sur le sommet de l'angle, on trace l'arc qui coupe les côtés",
+			'Compas en T (même ouverture), petit arc sur la direction',
+			"On marque A', B' (sur les côtés de l'angle) et A'' (sur la direction)",
+			"Compas en A', on prend la mesure |A'B'|",
+			"On reporte cette ouverture en A'' et on trace un arc",
+			"Les deux arcs se coupent en B''",
+			"Règle de T à B'' : on trace le second côté du nouvel angle"
+		]);
+	});
+
 	// ─── Message d'erreur « P sur la droite » ───
 
 	for (const voie of ['@euclide @double_perpendiculaire', '@equerre @double_perpendiculaire']) {
