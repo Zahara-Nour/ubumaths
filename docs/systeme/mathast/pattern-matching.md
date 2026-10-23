@@ -10,7 +10,7 @@ couvre:
 > Parseurs de chaînes : `src/lib/mathAST/parser/custom/pattern-parser.ts`, `constraint-parser.ts`,
 > `rule-parser.ts`. Vue d'ensemble du moteur : [README.md](README.md).
 > Fusion de `pattern/README.md` (janvier) et de l'ancien `pattern-matching.md` (juin).
-> **Vérifié contre le code le 2026-10-10.**
+> **Vérifié contre le code le 2026-10-10** (racines n-ièmes des règles `sqrt-*`, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -267,8 +267,10 @@ leur fichier (seul un test lit `trigPythagoreanRules`).
   `\ln(\exp(x))` reste tel quel (mesuré le 2026-10-10 ; le solveur transcendant (`solve/solvers/transcendental.ts`) filtre les
   deux formes pour cette raison). `expFunctionRules` (2026-10-23) couvre cette écriture pour le
   moteur pédagogique. Même famille d'angle mort : `-3y` se lit `opposite(3)·y` (cf. [README §Invariants](README.md#invariants-structurels-non-évidents)),
-  l'indice d'une racine est dans `function.base`, `\sin^2 x` est une `function` avec
-  `power`. **Tester une règle sur une entrée parsée, pas sur un arbre fabriqué.**
+  l'indice d'une racine est dans `function.base` — `P.func('sqrt', …)` filtre aussi `∛`,
+  d'où `sqrt-square`, `square-sqrt` et `sqrt-quotient` qui filtrent `P._('root', P.custom(isPlainSqrt))`
+  (`∛(x²)` donnait `|x|`, corrigé le 2026-10-23 ; `sqrt-product` ne regarde pas encore `power`) —,
+  `\sin^2 x` est une `function` avec `power`. **Tester une règle sur une entrée parsée, pas sur un arbre fabriqué.**
 - Coût combinatoire de `P.sum`/`P.prod` sur de longues sommes (pas de mémoïsation).
 - `applyRules` à 100 itérations sans point fixe lève `RuleIterationLimitError`
   (`maxIterations`, `lastRules` : les six dernières règles appliquées, citées dans le
