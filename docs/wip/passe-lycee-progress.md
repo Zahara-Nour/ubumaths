@@ -172,3 +172,13 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   apparent sur les points de 2de = format de `archived_at` seulement (texte Postgres ≠ ISO du JSON). Empreintes :
   `id|classification_node_id` (modèles), `template_id|point_id` (tags), `id|code|grade|node_id|archived_at` en ISO
   UTC (points), md5 de la concaténation triée des md5 de lignes.
+- **2026-10-23 — Lot MODIFIER + TAG_PAR_VARIATION, phase 0 : décisions de principe (David, recos suivies).** 141
+  lignes, 112 modèles : 18 MODIFIER au niveau du modèle, 42 MODIFIER pour un autre programme (35 sur un modèle déjà
+  tagué à son niveau), 67 TAG_PAR_VARIATION au niveau du modèle (29 à 2 points, 15 à 3, 7 à 4 et plus), 14 pour un
+  autre programme. (1) **MODIFIER pour un autre programme → pas de tag** : le modèle reste tel quel (un modèle de 1re
+  spé ne s'appauvrit pas pour la 1re techno) ; liste gardée pour un futur chantier « modèles 1re gén. / techno ». Par
+  extension, les 14 TAG_PAR_VARIATION d'un autre programme : pas de tag. (2) **TAG_PAR_VARIATION → scission**, comme
+  le lot D du collège (un modèle par point, l'origine garde son identifiant et le point le plus fourni), **sauf les
+  QCM de cours et vrai/faux à 4 points ou plus, laissés sans tag**. Écarté : tags par variation (reviendrait sur
+  l'ADR 0020 § 7). Suite : liste modèle par modèle (lots A nombres, B variations, C consigne ou corrigé, D scissions)
+  à faire valider.
