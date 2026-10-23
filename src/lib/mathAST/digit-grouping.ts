@@ -7,7 +7,9 @@
  * après le séparateur décimal, il est d'usage de ne pas isoler un chiffre par
  * une espace ». À 4 chiffres l'espace est facultative et on ne l'écrit pas ;
  * dès 5 chiffres on l'écrit. Chaque côté de la virgule est compté à part.
- * Décision E2, docs/wip/simplify-carte-progress.md § 15.
+ * Décision E2, docs/wip/simplify-carte-progress.md § 15. Un modèle de question
+ * peut garder la règle de l'école, espace dès 4 chiffres (réglage
+ * « Espaces dès 4 chiffres », § 43) : d'où le seuil `minDigits`.
  *
  * @module mathAST/digit-grouping
  */
@@ -15,15 +17,26 @@
 /** Nombre de chiffres (d'un côté de la virgule) à partir duquel on groupe. */
 export const MIN_DIGITS_FOR_GROUPING = 5;
 
+/** Seuil de la règle de l'école, pour un modèle réglé « Espaces dès 4 chiffres ». */
+export const SCHOOL_MIN_DIGITS_FOR_GROUPING = 4;
+
 /** Partie entière groupée depuis la droite : `30000` → `30 000`, `1024` inchangé. */
-export function groupIntegerDigits(digits: string, separator: string): string {
-	if (digits.length < MIN_DIGITS_FOR_GROUPING) return digits;
+export function groupIntegerDigits(
+	digits: string,
+	separator: string,
+	minDigits = MIN_DIGITS_FOR_GROUPING
+): string {
+	if (digits.length < minDigits) return digits;
 	return digits.replace(/\B(?=(\d{3})+(?!\d))/g, separator);
 }
 
 /** Partie décimale groupée depuis la virgule : `12345` → `123 45`, `1234` inchangé. */
-export function groupDecimalDigits(digits: string, separator: string): string {
-	if (digits.length < MIN_DIGITS_FOR_GROUPING) return digits;
+export function groupDecimalDigits(
+	digits: string,
+	separator: string,
+	minDigits = MIN_DIGITS_FOR_GROUPING
+): string {
+	if (digits.length < minDigits) return digits;
 	return digits.replace(/(\d{3})(?=\d)/g, `$1${separator}`);
 }
 

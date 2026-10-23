@@ -1114,6 +1114,11 @@ export interface ConstraintOptions {
 	form?: ConstraintMode;
 	/** Allow brackets around first negative term: (-5)+3 */
 	allowBracketsInFirstNegativeTerm?: boolean;
+	/**
+	 * Espaces de groupement exigées dès 4 chiffres (règle de l'école, numération)
+	 * au lieu de 5 (BIPM) ; l'affichage de la question suit le même seuil.
+	 */
+	spacesFromFourDigits?: boolean;
 	// Contraintes jugées par motifs mathAST (`cosmetic-transforms.ts`)
 	nullTerms?: ConstraintMode;
 	factorOne?: ConstraintMode;

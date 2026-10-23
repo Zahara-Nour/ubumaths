@@ -72,6 +72,7 @@
 		provideCapitalPairs,
 		readCapitalPairs
 	} from '$lib/components/markdown/content-capital-pairs';
+	import { readDigitGrouping } from '$lib/components/markdown/content-digit-grouping';
 
 	// Utility functions
 	import {
@@ -157,6 +158,12 @@
 	provideCapitalPairs(() => capitalPairs);
 	/** Sens qui repère les cases : la prop, sinon celui de la carte (`~A'B'=?~`) */
 	const blanksCapitalPairs = () => capitalPairs ?? parentCapitalPairs();
+	// Seuil des espaces de groupement de la question, posé par sa carte (« Espaces dès 4 chiffres »)
+	const digitGrouping = readDigitGrouping();
+	const digitGroupingOptions = () => {
+		const minDigits = digitGrouping();
+		return minDigits === undefined ? {} : { minDigits };
+	};
 
 	// When showing correct answers, force disabled
 	let effectiveDisabled = $derived(disabled || showCorrectAnswers);
@@ -253,7 +260,7 @@
 		if (showCorrectAnswers) {
 			return buildInputStatesForCorrection(blanks);
 		}
-		const base = buildInputStates(blanks);
+		const base = buildInputStates(blanks, digitGrouping());
 		const withValues = base.map((s, i) => ({
 			...s,
 			value: values[i] ?? s.value
@@ -541,7 +548,7 @@
 		const result: Record<string, string> = {};
 		for (let i = 0; i < blanks.length; i++) {
 			if (blanks[i].prefilled && blanks[i].type === 'math') {
-				result[String(i)] = toFrenchDecimal(blanks[i].prefilled!);
+				result[String(i)] = toFrenchDecimal(blanks[i].prefilled!, digitGroupingOptions());
 			}
 		}
 		return Object.keys(result).length > 0 ? result : undefined;
@@ -644,7 +651,8 @@
 								node.syntax,
 								genericFunctions,
 								undefined,
-								capitalPairs
+								capitalPairs,
+								digitGrouping()
 							)}
 						{@const flashLatex = mathPrefilledValues
 							? replacePromptsWithPrefilled(baseLatex, mathPrefilledValues)
@@ -654,7 +662,8 @@
 									node.syntax,
 									genericFunctions,
 									undefined,
-									capitalPairs
+									capitalPairs,
+									digitGrouping()
 								))}
 						{#key flashLatex}
 							<MathBlock expression={flashLatex} syntax="latex" />
@@ -665,7 +674,8 @@
 							node.syntax,
 							genericFunctions,
 							undefined,
-							capitalPairs
+							capitalPairs,
+							digitGrouping()
 						)}
 						{@const filledLatex = replacePromptsWithValues(latex, mathCorrectValues)}
 						{#key filledLatex}

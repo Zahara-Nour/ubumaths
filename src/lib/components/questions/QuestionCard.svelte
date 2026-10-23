@@ -36,6 +36,10 @@
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import {
+		digitGroupingOf,
+		provideDigitGrouping
+	} from '$lib/components/markdown/content-digit-grouping';
 	import { Button } from '$lib/components/ui/button';
 	import * as Card from '$lib/components/ui/card';
 	import { cn } from '$lib/utils';
@@ -107,6 +111,12 @@
 	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
 	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
 	provideCapitalPairs(() => instance.capitalPairs);
+	// Seuil des espaces de groupement : « Espaces dès 4 chiffres » du modèle, sinon BIPM
+	provideDigitGrouping(() => digitGroupingOf(instance));
+	const prefilledGrouping = () => {
+		const minDigits = digitGroupingOf(instance);
+		return minDigits === undefined ? {} : { minDigits };
+	};
 
 	// ============================================================================
 	// INITIALIZATION
@@ -123,10 +133,14 @@
 	$effect(() => {
 		if (getQuestionType(instance) === 'fill_in_blanks' && instance.blanks) {
 			fillBlankValues = instance.blanks.map((b) =>
-				b.prefilled ? (b.type === 'math' ? toFrenchDecimal(b.prefilled) : b.prefilled) : ''
+				b.prefilled
+					? b.type === 'math'
+						? toFrenchDecimal(b.prefilled, prefilledGrouping())
+						: b.prefilled
+					: ''
 			);
 			fillBlankValuesLatex = instance.blanks.map((b) =>
-				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled) : ''
+				b.prefilled && b.type === 'math' ? toFrenchDecimal(b.prefilled, prefilledGrouping()) : ''
 			);
 		}
 

@@ -170,6 +170,8 @@ function formOptionsOf(
 ): CheckFormOptions {
 	return {
 		allowFirstNegative: constraints.allowBracketsInFirstNegativeTerm === true,
+		// Règle de l'école pour la numération : espaces exigées dès 4 chiffres
+		...(constraints.spacesFromFourDigits === true && { spacesFromFourDigits: true }),
 		...(reading.genericFunctions && { genericFunctions: reading.genericFunctions }),
 		// Sens de `AB` (longueur ou produit) : celui de l'instance, pour la réponse ET l'attendu
 		...(reading.capitalPairs && { capitalPairs: reading.capitalPairs }),

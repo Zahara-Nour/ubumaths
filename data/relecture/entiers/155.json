@@ -5,6 +5,11 @@
 	"editNotes": "Correction de la variation 2 : ligne redondante « = 800 = 800 » (a×100 puis la solution, identiques) supprimée. Maths vérifiées (2a+1)×50 = 100a+50. Specs : 1 050 avec espace juste, sans espace perfectible, bornes.",
 	"template": {
 		"title": "Calculer un produit d'entiers",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Multiplication par $50$",
 		"shared": {
 			"variables": [

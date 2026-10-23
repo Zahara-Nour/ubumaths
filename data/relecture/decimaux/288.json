@@ -5,6 +5,11 @@
 	"editNotes": "Défaut de conversion : le tirage digits:… produisait des zéros finaux ou nuls (7.0, 0.70, 0.0, affichés tels quels dans l'énoncé) ; condition ajoutée pour que le dernier chiffre décimal soit non nul, comme dans TinyMath. Variables renommées sans « _ » (a_int → p, a_dec → q) : un nom souligné est lu comme un indice dans les conditions. Consigne « Calculer » → « Calcule. ». Specs : juste sur les 4 variations (espace des milliers, bornes b = 2 et 98) ; sans espace perfectible ; ×10 refusé.",
 	"template": {
 		"title": "Utiliser la distributivité",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Factorisation pour obtenir un facteur égal à $100$",
 		"shared": {
 			"variables": [

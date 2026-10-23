@@ -5,6 +5,11 @@
 	"editNotes": "Titre « a trou » → « à trou ». La plage « 0..4-a » était lue 0..4 : condition q ≤ 4 − a ; 0 exclu. Les décimaux « digits:… » pouvaient finir par 0 (ou valoir 0 / un entier déguisé) : conditions ajoutées (dernier chiffre non nul, partie entière du bon nombre de chiffres); variables b_int/b_dec renommées m/q.",
 	"template": {
 		"title": "Compléter une division à trou",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Diviser par $10$, $100$ ou $1000$",
 		"variations": [
 			{

@@ -43,6 +43,10 @@
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import {
+		digitGroupingOf,
+		provideDigitGrouping
+	} from '$lib/components/markdown/content-digit-grouping';
 	import * as Card from '$lib/components/ui/card';
 	import { Badge } from '$lib/components/ui/badge';
 	import { RotateCw, Check, X, TriangleAlert } from '@lucide/svelte';
@@ -97,6 +101,8 @@
 	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
 	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
 	provideCapitalPairs(() => instance.capitalPairs);
+	// Seuil des espaces de groupement : « Espaces dès 4 chiffres » du modèle, sinon BIPM
+	provideDigitGrouping(() => digitGroupingOf(instance));
 	const isCourseCard = $derived(getQuestionType(instance) === 'course_card');
 
 	// Réponse de l'élève, telle que le validateur la lit (absente : réponse vide)

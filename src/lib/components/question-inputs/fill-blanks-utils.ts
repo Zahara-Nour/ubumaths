@@ -117,14 +117,17 @@ function augmentMathNode(
  * - type: 'math' or 'text' from the blank definition
  * - value: prefilled value or empty string
  * - isCorrect: null (not yet validated)
+ *
+ * `minDigits` : seuil des espaces de groupement de la question (4 : « Espaces dès
+ * 4 chiffres ») ; absent, celui du BIPM.
  */
-export function buildInputStates(blanks: InstanceBlank[]): InputState[] {
+export function buildInputStates(blanks: InstanceBlank[], minDigits?: number): InputState[] {
 	return blanks.map((blank, index) => ({
 		index,
 		type: blank.type === 'graphical' ? 'graphical' : blank.type,
 		value: blank.prefilled
 			? blank.type === 'math'
-				? toFrenchDecimal(blank.prefilled)
+				? toFrenchDecimal(blank.prefilled, minDigits === undefined ? {} : { minDigits })
 				: blank.prefilled
 			: '',
 		isCorrect: null

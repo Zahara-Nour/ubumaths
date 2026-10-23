@@ -5,6 +5,11 @@
 	"editNotes": "Défaut de conversion : la variable a = « 1..9*100+0..9*10+1..9 » tirait des décimaux et l'énoncé devenait faux (numérateur non entier). Remplacée par u = 1..9, w = 0..9, v = 1..9, a = 100u+10w+v (101 à 999, chiffre des unités non nul, comme l'ancienne question). « Ecris » → « Écris ». Specs : juste aux bornes et avec zéro intercalé ; décalage de rang et recopie refusés.",
 	"template": {
 		"title": "Forme décimale d'une fraction",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Millièmes (2)",
 		"variations": [
 			{

@@ -48,7 +48,7 @@ import {
 import { areEquivalent } from './equivalence';
 import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
 import { extractRational } from './common/numeric';
-import { MIN_DIGITS_FOR_GROUPING } from './digit-grouping';
+import { MIN_DIGITS_FOR_GROUPING, SCHOOL_MIN_DIGITS_FOR_GROUPING } from './digit-grouping';
 import {
 	findNodes,
 	mapNode,
@@ -141,7 +141,7 @@ export function removeZeros(latex: string): string {
  * Groups of 3 from right: 1 234 567. Règle du BIPM (`digit-grouping.ts`) :
  * espace facultative à 4 chiffres (`1024`, `1 024`), exigée dès 5 (`30 000`).
  */
-function hasIntegerSpacingViolation(integerPart: string): boolean {
+function hasIntegerSpacingViolation(integerPart: string, minDigits: number): boolean {
 	// Remove existing spaces to get pure digits
 	const digits = integerPart.replace(/\s/g, '');
 
@@ -150,9 +150,9 @@ function hasIntegerSpacingViolation(integerPart: string): boolean {
 		return false;
 	}
 
-	// Sans espace : faute dès 5 chiffres seulement ; une espace écrite doit être bien placée
+	// Sans espace : faute dès le seuil seulement ; une espace écrite doit être bien placée
 	if (!integerPart.includes(' ')) {
-		return digits.length >= MIN_DIGITS_FOR_GROUPING;
+		return digits.length >= minDigits;
 	}
 
 	// Verify spacing is at correct positions
@@ -164,7 +164,7 @@ function hasIntegerSpacingViolation(integerPart: string): boolean {
  * Groups of 3 from left: 123 456. Même règle que la partie entière, comptée à
  * part : `0,1234` et `0,123 4` acceptés, `0,12345` reçoit une remarque.
  */
-function hasDecimalSpacingViolation(decimalPart: string): boolean {
+function hasDecimalSpacingViolation(decimalPart: string, minDigits: number): boolean {
 	if (!decimalPart) {
 		return false;
 	}
@@ -178,7 +178,7 @@ function hasDecimalSpacingViolation(decimalPart: string): boolean {
 	}
 
 	if (!decimalPart.includes(' ')) {
-		return digits.length >= MIN_DIGITS_FOR_GROUPING;
+		return digits.length >= minDigits;
 	}
 
 	return !isCorrectDecimalSpacing(decimalPart);
@@ -226,9 +226,13 @@ function isCorrectDecimalSpacing(decimalPart: string): boolean {
  * Check if a LaTeX string has spacing issues (missing grouping spaces in numbers).
  * French format uses thin spaces to group digits in groups of 3.
  *
- * Returns true if there are spacing violations.
+ * Returns true if there are spacing violations. `minDigits` : seuil à partir
+ * duquel l'espace est exigée (5, BIPM ; 4 pour un modèle « Espaces dès 4 chiffres »).
  */
-export function checkSpacesViolation(latex: string): boolean {
+export function checkSpacesViolation(
+	latex: string,
+	minDigits: number = MIN_DIGITS_FOR_GROUPING
+): boolean {
 	// Normalize LaTeX thin space (\,) to regular space
 	let normalized = latex.replace(/\\,/g, ' ');
 	// Replace {,} (French decimal comma) with a period
@@ -249,8 +253,8 @@ export function checkSpacesViolation(latex: string): boolean {
 		// Groupes de 3 : depuis la droite pour la partie entière (1 234 567),
 		// depuis la virgule pour la partie décimale (0,123 4). Une espace mal
 		// placée (34 56) est une faute, pas seulement une espace absente.
-		if (hasIntegerSpacingViolation(integerPart)) return true;
-		if (hasDecimalSpacingViolation(decimalPart)) return true;
+		if (hasIntegerSpacingViolation(integerPart, minDigits)) return true;
+		if (hasDecimalSpacingViolation(decimalPart, minDigits)) return true;
 	}
 
 	return false;
@@ -900,6 +904,11 @@ export interface CheckFormOptions {
 	 * Maps to `ConstraintOptions.allowBracketsInFirstNegativeTerm`.
 	 */
 	allowFirstNegative?: boolean;
+	/**
+	 * Règle de l'école pour les espaces de groupement : exigées dès 4 chiffres au
+	 * lieu de 5 (BIPM). Maps to `ConstraintOptions.spacesFromFourDigits`.
+	 */
+	spacesFromFourDigits?: boolean;
 	/**
 	 * Fonctions génériques à reconnaître en relisant la réponse et l'attendu (`P'(2)`
 	 * déclaré par un modèle de question). Absent : défauts du parseur, rien ne change.
@@ -1747,7 +1756,10 @@ export function cosmeticViolations(
 		violations.push({ id: 'zeros', severity });
 	}
 
-	if (checkSpacesViolation(answerLatex) && (constraints['spaces'] ?? 'warn') !== 'off') {
+	if (
+		checkSpacesViolation(answerLatex, spacesThreshold(options)) &&
+		(constraints['spaces'] ?? 'warn') !== 'off'
+	) {
 		const severity = (constraints['spaces'] ?? 'warn') as 'strict' | 'warn';
 		violations.push({ id: 'spaces', severity });
 	}
@@ -1799,6 +1811,11 @@ function withCrossMultiplication(ast: MathNode): MathNode {
 	);
 }
 
+/** Seuil des espaces de groupement selon le réglage du modèle (BIPM par défaut). */
+function spacesThreshold(options: CheckFormOptions): number {
+	return options.spacesFromFourDigits ? SCHOOL_MIN_DIGITS_FOR_GROUPING : MIN_DIGITS_FOR_GROUPING;
+}
+
 /**
  * Unified checkForm: applies cosmetic transformers to both answer and expected,
  * detects constraint violations, and compares final forms.
@@ -1827,7 +1844,10 @@ export function checkForm(
 	}
 
 	// Espaces des milliers (détection seule)
-	if (checkSpacesViolation(answerLatex) && (constraints['spaces'] ?? 'warn') !== 'off') {
+	if (
+		checkSpacesViolation(answerLatex, spacesThreshold(options)) &&
+		(constraints['spaces'] ?? 'warn') !== 'off'
+	) {
 		const severity = (constraints['spaces'] ?? 'warn') as 'strict' | 'warn';
 		violations.push({ id: 'spaces', severity });
 	}

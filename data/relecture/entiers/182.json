@@ -5,6 +5,11 @@
 	"editNotes": "Coquille « Utiiser » → « Utiliser ». Maths vérifiées (a·b = 100 pour a ∈ {20, 25, 50}).",
 	"template": {
 		"title": "Calculer astucieusement un produit",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Utiliser $2$ facteurs dont le produit est $100$",
 		"shared": {
 			"variables": [

@@ -12,7 +12,11 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
-import { groupDecimalDigits, groupIntegerDigits } from '$lib/mathAST/digit-grouping';
+import {
+	groupDecimalDigits,
+	groupIntegerDigits,
+	MIN_DIGITS_FOR_GROUPING
+} from '$lib/mathAST/digit-grouping';
 
 // =============================================================================
 // Types
@@ -28,6 +32,11 @@ export interface FrenchDecimalOptions {
 	 * @default true
 	 */
 	formatSpaces?: boolean;
+	/**
+	 * Seuil de groupement : 5 chiffres par défaut (BIPM), 4 pour un modèle de
+	 * question réglé « Espaces dès 4 chiffres » (règle de l'école).
+	 */
+	minDigits?: number;
 }
 
 // =============================================================================
@@ -35,21 +44,22 @@ export interface FrenchDecimalOptions {
 // =============================================================================
 
 const DEFAULT_OPTIONS: Required<FrenchDecimalOptions> = {
-	formatSpaces: true
+	formatSpaces: true,
+	minDigits: MIN_DIGITS_FOR_GROUPING
 };
 
 // =============================================================================
 // Internal Helpers
 // =============================================================================
 
-/** Partie entière groupée par espaces fines depuis la droite, dès 5 chiffres. */
-function formatIntegerPart(intPart: string, applySpaces: boolean): string {
-	return applySpaces ? groupIntegerDigits(intPart, '\\,') : intPart;
+/** Partie entière groupée par espaces fines depuis la droite, dès le seuil. */
+function formatIntegerPart(intPart: string, options: Required<FrenchDecimalOptions>): string {
+	return options.formatSpaces ? groupIntegerDigits(intPart, '\\,', options.minDigits) : intPart;
 }
 
-/** Partie décimale groupée par espaces fines depuis la virgule, dès 5 chiffres. */
-function formatDecimalPart(decPart: string, applySpaces: boolean): string {
-	return applySpaces ? groupDecimalDigits(decPart, '\\,') : decPart;
+/** Partie décimale groupée par espaces fines depuis la virgule, dès le seuil. */
+function formatDecimalPart(decPart: string, options: Required<FrenchDecimalOptions>): string {
+	return options.formatSpaces ? groupDecimalDigits(decPart, '\\,', options.minDigits) : decPart;
 }
 
 /**
@@ -71,7 +81,7 @@ function formatSingleNumber(
 	const [, intPart = '', decPart] = match;
 
 	// Handle case where number starts with decimal (e.g., ".5")
-	const formattedInt = intPart ? formatIntegerPart(intPart, options.formatSpaces) : '';
+	const formattedInt = intPart ? formatIntegerPart(intPart, options) : '';
 
 	// No decimal part - return integer only
 	if (!decPart) {
@@ -79,7 +89,7 @@ function formatSingleNumber(
 	}
 
 	// Format decimal part
-	const formattedDec = formatDecimalPart(decPart, options.formatSpaces);
+	const formattedDec = formatDecimalPart(decPart, options);
 
 	// `{,}` en français : espacement LaTeX correct (pas d'espace après la virgule)
 	return `${formattedInt}${separator}${formattedDec}`;
@@ -150,8 +160,26 @@ export function toLocaleDecimal(
 		/(#[0-9A-Fa-f]{3,8}(?![0-9A-Za-z]))|(\{,\})?(\d+(?:\.\d+)?)/g,
 		(match, hexColor, latexComma, numStr) => {
 			if (hexColor) return hexColor;
-			if (latexComma) return `{,}${formatDecimalPart(numStr, opts.formatSpaces)}`;
+			if (latexComma) return `{,}${formatDecimalPart(numStr, opts)}`;
 			return formatSingleNumber(numStr, opts, separator);
+		}
+	);
+}
+
+/**
+ * Espaces fines de groupement posées dès `minDigits` chiffres, SANS toucher au
+ * séparateur décimal (`3.14159` → `3.141\,59` au seuil 4) : pour un texte figé
+ * dont la langue s'applique au rendu (série d'automatismes). Les espaces déjà
+ * écrites restent ; le rendu (`toLocaleDecimal`) ne les défait pas.
+ */
+export function withDigitGrouping(latex: string, minDigits: number): string {
+	return latex.replace(
+		/(#[0-9A-Fa-f]{3,8}(?![0-9A-Za-z]))|(\{,\}|\.)?(\d+)/g,
+		(match, hexColor, decimalSeparator: string | undefined, digits: string) => {
+			if (hexColor) return hexColor;
+			return decimalSeparator
+				? `${decimalSeparator}${groupDecimalDigits(digits, '\\,', minDigits)}`
+				: groupIntegerDigits(digits, '\\,', minDigits);
 		}
 	);
 }

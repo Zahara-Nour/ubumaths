@@ -8,6 +8,11 @@
 		"level": 5,
 		"theme": "Entiers",
 		"title": "Décomposition décimale -> nombre entier (jusqu'aux milliers)",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"domain": "Apprivoiser",
 		"grades": ["CE2"],
 		"status": "draft",

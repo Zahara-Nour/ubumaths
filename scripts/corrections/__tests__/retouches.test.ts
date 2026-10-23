@@ -204,14 +204,27 @@ describe('gardes', () => {
 		expect(() => changedColumns(before, { ...before, status: 'published' })).toThrow(/status/);
 	});
 
+	// Modèles marqués « Espaces dès 4 chiffres » en prod après l'instantané (E2,
+	// simplify-carte § 43) : leurs specs attendent la règle de l'école
+	const SPACES_FROM_FOUR_DIGITS = new Set(['58f7a8dd-b8de-48f4-9cfa-5356b75e1c64']);
+
 	it('chaque modèle retouché reste importable (checkTemplate, 5 tirages par variation)', () => {
 		for (const retouche of RETOUCHES) {
 			const {
 				created_at: _a,
 				updated_at: _u,
 				created_by: _c,
-				...after
+				...retouched
 			} = retouche.apply(SNAPSHOT.get(retouche.templateId) as QuestionTemplate);
+			const after = SPACES_FROM_FOUR_DIGITS.has(retouche.templateId)
+				? {
+						...retouched,
+						options: {
+							...retouched.options,
+							constraints: { ...retouched.options?.constraints, spacesFromFourDigits: true }
+						}
+					}
+				: retouched;
 			const report = checkTemplate(after, { instances: 5 });
 			expect(report.reasons, retouche.templateId).toEqual([]);
 		}

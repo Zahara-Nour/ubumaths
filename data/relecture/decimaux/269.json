@@ -5,6 +5,11 @@
 	"editNotes": "Les décimaux « digits:a_int.a_dec » et « digits:2.1 » pouvaient finir par 0 : reconstruits par {{eval:…;d}} (partie entière à 1 ou 2 chiffres, 0 à 2 décimales, dernière non nulle). Typographie « $…$, calcule : » (espace avant la virgule supprimée), accent « Déterminer ».",
 	"template": {
 		"title": "Calculer un produit",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Déterminer un produit à partir d'un autre",
 		"shared": {
 			"variables": [

@@ -5,7 +5,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { toFrenchDecimal } from '../french-math';
+import { toFrenchDecimal, toLocaleDecimal, withDigitGrouping } from '../french-math';
 
 describe('toFrenchDecimal', () => {
 	describe('conversion basique point → virgule', () => {
@@ -189,5 +189,33 @@ describe('toFrenchDecimal — codes couleur', () => {
 		['\\textcolor{#FF5722}{80000} + 12345.5', '\\textcolor{#FF5722}{80\\,000} + 12\\,345{,}5']
 	])('%s', (input, expected) => {
 		expect(toFrenchDecimal(input)).toBe(expected);
+	});
+});
+
+// Réglage de modèle « Espaces dès 4 chiffres » (E2, option C) : l'affichage suit le juge
+describe('toLocaleDecimal — espaces dès 4 chiffres', () => {
+	it.each([
+		['7900', '7\\,900'],
+		['123', '123'],
+		['0.1234', '0{,}123\\,4'],
+		['30000', '30\\,000'],
+		['0{,}0484', '0{,}048\\,4']
+	])('%s → %s', (input, expected) => {
+		expect(toLocaleDecimal(input, 'fr', { minDigits: 4 })).toBe(expected);
+	});
+});
+
+// Groupement seul, sans changer le séparateur décimal (fiches figées : la langue
+// s'applique au rendu)
+describe('withDigitGrouping', () => {
+	it.each([
+		['7900', 4, '7\\,900'],
+		['7900', 5, '7900'],
+		['3.14159', 4, '3.141\\,59'],
+		['0{,}1234', 4, '0{,}123\\,4'],
+		['7\\,900', 4, '7\\,900'],
+		['\\textcolor{#FF5722}{1234}', 4, '\\textcolor{#FF5722}{1\\,234}']
+	])('%s (seuil %i) → %s', (input, minDigits, expected) => {
+		expect(withDigitGrouping(input, minDigits)).toBe(expected);
 	});
 });

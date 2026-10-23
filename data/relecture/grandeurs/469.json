@@ -5,6 +5,11 @@
 	"editNotes": "« Conplète » → « Complète » ; marqueur brut <<expr:…>> et unités lues comme lettres (« k m ») : énoncés et corrections réécrits avec \\unit ; fractions en \\dfrac ; 0,001 écrit 0.001 (virgule à l'affichage).",
 	"template": {
 		"title": "Convertir des vitesses",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"variations": [
 			{
 				"statement": "Complète.\n\n${{a}}~\\unit{km.h^{-1}} = ?~\\unit{m.h^{-1}}$",

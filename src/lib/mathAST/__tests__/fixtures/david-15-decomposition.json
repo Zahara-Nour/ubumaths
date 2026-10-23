@@ -9,7 +9,8 @@
 	"options": {
 		"constraints": {
 			"brackets": "off",
-			"factorOne": "off"
+			"factorOne": "off",
+			"spacesFromFourDigits": true
 		}
 	},
 	"subdomain": "Décomposition",

@@ -18,12 +18,19 @@ describe('checkSpacesViolation', () => {
 		expect(checkSpacesViolation(latex)).toBe(false);
 	});
 
-	it.each(['3456', `34${S}56`, `345${S}6`, `3${S}4${S}5${S}6`, `12${S}34${S}567`, `1${S}234567`])(
+	it.each([`34${S}56`, `345${S}6`, `3${S}4${S}5${S}6`, `12${S}34${S}567`, `1${S}234567`])(
 		'%s : espaces mal placées',
 		(latex) => {
 			expect(checkSpacesViolation(latex)).toBe(true);
 		}
 	);
+
+	// BIPM (E2) : à 4 chiffres l'espace est facultative ; exigée avec le réglage
+	// « Espaces dès 4 chiffres » (règle de l'école, questions de David)
+	it('3456 sans espace : correct par défaut, faute dès 4 chiffres', () => {
+		expect(checkSpacesViolation('3456')).toBe(false);
+		expect(checkSpacesViolation('3456', 4)).toBe(true);
+	});
 });
 
 describe('checkForm — réponse 3456 mal espacée', () => {

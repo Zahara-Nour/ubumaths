@@ -4,6 +4,11 @@
 	"reviewer": "claude",
 	"template": {
 		"title": "Calculer une somme",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Somme d’un nombre ayant au plus quatre chiffres et de $9$ ou $19$",
 		"shared": {
 			"variables": [

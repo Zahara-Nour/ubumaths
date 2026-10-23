@@ -16,6 +16,10 @@
 	import { courseCardFront } from '$lib/questions/course-card';
 	import { templateGenericFunctions } from '$lib/questions/generic-functions';
 	import { provideCapitalPairs } from '$lib/components/markdown/content-capital-pairs';
+	import {
+		digitGroupingOf,
+		provideDigitGrouping
+	} from '$lib/components/markdown/content-digit-grouping';
 	import { MarkdownRenderer } from '$lib/components/markdown';
 	import { Button } from '$lib/components/ui/button';
 	import { Badge } from '$lib/components/ui/badge';
@@ -54,6 +58,8 @@
 	// Sens de `AB` de l'instance (longueur ou produit) : posé pour toutes les formules
 	// en syntaxe maison rendues dans cette carte ; absent (instance d'avant) : produit
 	provideCapitalPairs(() => instance.capitalPairs);
+	// Seuil des espaces de groupement : « Espaces dès 4 chiffres » du modèle, sinon BIPM
+	provideDigitGrouping(() => digitGroupingOf(instance));
 	const showBack = $derived(revealed || isFlipped);
 	const sizeClasses = $derived(SIZE_CLASSES[size]);
 

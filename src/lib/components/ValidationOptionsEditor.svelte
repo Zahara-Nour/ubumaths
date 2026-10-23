@@ -29,6 +29,8 @@
 		orderIndependent: boolean;
 		shuffleChoices: boolean;
 		allowBracketsInFirstNegativeTerm: boolean;
+		/** Espaces de groupement exigées dès 4 chiffres (règle de l'école) au lieu de 5 */
+		spacesFromFourDigits: boolean;
 		constraintModes: Record<string, string>;
 		questionType: QuestionType;
 	}
@@ -38,6 +40,7 @@
 		orderIndependent = $bindable(),
 		shuffleChoices = $bindable(),
 		allowBracketsInFirstNegativeTerm = $bindable(),
+		spacesFromFourDigits = $bindable(),
 		constraintModes = $bindable(),
 		questionType
 	}: Props = $props();
@@ -101,6 +104,10 @@
 							<MyCheckbox
 								bind:checked={allowBracketsInFirstNegativeTerm}
 								label="Autoriser parenthèses sur premier terme négatif"
+							/>
+							<MyCheckbox
+								bind:checked={spacesFromFourDigits}
+								label="Espaces dès 4 chiffres (7 900, numération)"
 							/>
 						</Collapsible.Content>
 					</Collapsible.Root>

@@ -307,6 +307,10 @@
 	let optAllowBracketsInFirstNegativeTerm = $state(
 		initialTemplate?.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false
 	);
+	// Espaces de groupement exigées dès 4 chiffres (règle de l'école, numération)
+	let optSpacesFromFourDigits = $state(
+		initialTemplate?.options?.constraints?.spacesFromFourDigits ?? false
+	);
 
 	// Constraint states
 	let constraintModes = $state<Record<string, string>>(
@@ -335,6 +339,7 @@
 			}
 		}
 		if (optAllowBracketsInFirstNegativeTerm) constraints.allowBracketsInFirstNegativeTerm = true;
+		if (optSpacesFromFourDigits) constraints.spacesFromFourDigits = true;
 		if (Object.keys(constraints).length > 0) opts.constraints = constraints;
 		return Object.keys(opts).length > 0 ? opts : undefined;
 	});
@@ -884,6 +889,7 @@
 			}
 		}
 		if (optAllowBracketsInFirstNegativeTerm) constraints.allowBracketsInFirstNegativeTerm = true;
+		if (optSpacesFromFourDigits) constraints.spacesFromFourDigits = true;
 		if (Object.keys(constraints).length > 0) options.constraints = constraints;
 		// Carte de cours : marqueur explicite, lu par getQuestionType()
 		if (questionType === 'course_card') options.courseCard = true;
@@ -961,6 +967,7 @@
 		optCourseQuestion = readCourseQuestionOption(t.options);
 		optAllowBracketsInFirstNegativeTerm =
 			t.options?.constraints?.allowBracketsInFirstNegativeTerm ?? false;
+		optSpacesFromFourDigits = t.options?.constraints?.spacesFromFourDigits ?? false;
 		constraintModes = Object.fromEntries(
 			CONSTRAINT_IDS.map((id) => [id, t.options?.constraints?.[id] || ''])
 		);
@@ -1707,6 +1714,7 @@
 			bind:orderIndependent={optOrderIndependent}
 			bind:shuffleChoices={optShuffleChoices}
 			bind:allowBracketsInFirstNegativeTerm={optAllowBracketsInFirstNegativeTerm}
+			bind:spacesFromFourDigits={optSpacesFromFourDigits}
 			bind:constraintModes
 			{questionType}
 		/>

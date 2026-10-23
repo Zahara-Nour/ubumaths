@@ -131,3 +131,21 @@ describe('checkSpacesViolation', () => {
 		});
 	});
 });
+
+// Réglage de modèle « Espaces dès 4 chiffres » (option C de E2) : la règle de l'école
+// pour la numération, l'espace exigée dès 4 chiffres
+describe('checkSpacesViolation — espaces dès 4 chiffres', () => {
+	it.each([
+		['7900', true],
+		['7 900', false],
+		['7\\,900', false],
+		['79 00', true],
+		['123', false],
+		['0{,}1234', true],
+		['0{,}123\\,4', false],
+		['30000', true],
+		['30\\,000', false]
+	])('%s → faute : %s', (latex, violation) => {
+		expect(checkSpacesViolation(latex, 4)).toBe(violation);
+	});
+});

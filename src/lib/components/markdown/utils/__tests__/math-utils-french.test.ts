@@ -76,3 +76,15 @@ describe('expressionToLatex - French decimal formatting', () => {
 		});
 	});
 });
+
+// Réglage de modèle « Espaces dès 4 chiffres » (E2, option C) : la carte pose le seuil
+describe('expressionToLatex — seuil de groupement', () => {
+	it('règle par défaut (BIPM) : 7900 sans espace', () => {
+		expect(expressionToLatex('7900', 'custom')).toBe('7900');
+	});
+
+	it('espaces dès 4 chiffres : 7 900', () => {
+		expect(expressionToLatex('7900', 'custom', undefined, 'fr', undefined, 4)).toBe('7\\,900');
+		expect(expressionToLatex('7900', 'latex', undefined, 'fr', undefined, 4)).toBe('7\\,900');
+	});
+});

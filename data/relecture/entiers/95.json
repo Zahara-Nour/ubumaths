@@ -5,6 +5,11 @@
 	"editNotes": "Tirage a : 100..999 → 100..900. Pour a ≥ 901, le complément 1000 − a avait 1 ou 2 chiffres (239 + 976 + 24), contraire à « Nombres à 3 chiffres ». Specs : juste avec espace des milliers dans les deux ordres, sans espace perfectible, erreur refusée.",
 	"template": {
 		"title": "Additionner par regroupements",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"description": "Nombres à $3$ chiffres, regrouper pour faire $1000$",
 		"shared": {
 			"variables": [

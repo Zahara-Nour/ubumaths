@@ -8,6 +8,11 @@
 		"level": 9,
 		"theme": "Entiers",
 		"title": "Calculer une différence (résultat positif)",
+		"options": {
+			"constraints": {
+				"spacesFromFourDigits": true
+			}
+		},
 		"domain": "Soustraire",
 		"grades": ["CE2"],
 		"status": "draft",

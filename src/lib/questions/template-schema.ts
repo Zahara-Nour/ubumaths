@@ -365,6 +365,7 @@ export const constraintsSchema = z.object({
 	zeros: constraintModeSchema.optional(),
 	form: constraintModeSchema.optional(),
 	allowBracketsInFirstNegativeTerm: z.boolean().optional(),
+	spacesFromFourDigits: z.boolean().optional(),
 	nullTerms: constraintModeSchema.optional(),
 	factorOne: constraintModeSchema.optional(),
 	factorZero: constraintModeSchema.optional(),
