@@ -20,7 +20,7 @@ import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
 import { figureNatureOf, figureSummaryOf } from '$lib/atelier/card-state';
 import { isCurve, isPoint } from '$lib/atelier/types';
-import { cardOf, menuItemOf, openCardMenu } from './harness/function-card';
+import { cardOf, openCardMenu } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
 
 // À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
@@ -151,27 +151,13 @@ describe('la carte d’un point', () => {
 		expect(card.querySelector('.message')?.textContent ?? '').not.toBe('');
 	});
 
-	it('menu : Affichage « Étiquette » (cochée), Actions Renommer et Supprimer', async () => {
+	it('menu : Actions Propriétés, Renommer et Supprimer (l’étiquette est dans Propriétés)', async () => {
 		const atelier = figureWith();
 		const { container } = await render(WithAtelier, { atelier });
 
 		const menu = await openCardMenu(container, 'A');
 
-		expect(labelsOf(menu)).toEqual(['Étiquette', 'Renommer', 'Supprimer']);
-		expect(menuItemOf(menu, 'Étiquette').getAttribute('aria-checked')).toBe('true');
-	});
-
-	it('décocher « Étiquette » masque le nom du point dans la figure', async () => {
-		const atelier = figureWith();
-		const { container } = await render(WithAtelier, { atelier });
-
-		const menu = await openCardMenu(container, 'A');
-		menuItemOf(menu, 'Étiquette').click();
-
-		await vi.waitFor(() => {
-			const a = atelier.get('A');
-			expect(a && isPoint(a) && a.display?.showLabel).toBe(false);
-		});
+		expect(labelsOf(menu)).toEqual(['Propriétés', 'Renommer', 'Supprimer']);
 	});
 
 	it('le point de couleur ouvre couleur et taille, rangées dans l’atelier', async () => {
@@ -249,14 +235,14 @@ describe('la carte d’une courbe', () => {
 		expect(card.querySelector('.etat')).toBeNull();
 	});
 
-	it('menu : pas d’Affichage, Actions Renommer et Supprimer', async () => {
+	it('menu : pas d’Affichage, Actions Propriétés, Renommer et Supprimer', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'curve', name: 'd', definition: 'y = x' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
 		const menu = await openCardMenu(container, 'd');
 
-		expect(labelsOf(menu)).toEqual(['Renommer', 'Supprimer']);
+		expect(labelsOf(menu)).toEqual(['Propriétés', 'Renommer', 'Supprimer']);
 	});
 
 	it('le point de couleur ouvre couleur, épaisseur et style du trait', async () => {

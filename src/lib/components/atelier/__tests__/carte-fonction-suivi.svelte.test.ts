@@ -72,20 +72,24 @@ function descriptionOf(element: HTMLElement): string {
 // =============================================================================
 
 describe('carte de fonction — éléments indisponibles du menu', () => {
-	it('« Renommer » s’annonce indisponible, avec sa raison, sans être sauté', async () => {
+	// « Renommer », l'exemple d'avant, est câblé depuis le 2026-10-23 : la
+	// « Réciproque » d'une dérivée reste indisponible, avec sa raison
+	it('« Réciproque » d’une dérivée s’annonce indisponible, avec sa raison, sans être sautée', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' }, 'text');
+		const derived = atelier.createDerivative('f');
+		if (!derived.ok) throw new Error(derived.message);
 		const { container } = await render(WithAtelier, { atelier });
 
-		const menu = await openMenu(cardFor(container, 'f'), 'f');
-		const rename = menuItem(menu, 'Renommer');
-		expect(rename.getAttribute('aria-disabled')).toBe('true');
+		const menu = await openMenu(cardFor(container, 'f′'), 'f′');
+		const reciprocal = menuItem(menu, 'Réciproque');
+		expect(reciprocal.getAttribute('aria-disabled')).toBe('true');
 		// Pas `data-disabled` : bits-ui le sauterait au clavier
-		expect(rename.hasAttribute('data-disabled')).toBe(false);
-		expect(descriptionOf(rename)).toMatch(/prochain lot/);
+		expect(reciprocal.hasAttribute('data-disabled')).toBe(false);
+		expect(descriptionOf(reciprocal)).toMatch(/dérivée/);
 
 		// Un élément disponible ne s'annonce pas indisponible
-		expect(menuItem(menu, 'Dériver').getAttribute('aria-disabled')).not.toBe('true');
+		expect(menuItem(menu, 'Renommer').getAttribute('aria-disabled')).not.toBe('true');
 	});
 
 	it('courbe non tracée : tangente et aire sont indisponibles, avec leur raison', async () => {

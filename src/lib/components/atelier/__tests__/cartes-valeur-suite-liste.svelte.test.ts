@@ -501,7 +501,7 @@ describe('carte d’une liste', () => {
 		expect(labelsOf(menu)).not.toContain('Avec une autre liste');
 	});
 
-	it('Renommer et Supprimer ferment le menu, après « Modifier dans Données »', async () => {
+	it('Propriétés, Renommer et Supprimer ferment le menu, après « Modifier dans Données »', async () => {
 		const atelier = new Atelier();
 		atelier.create({ kind: 'list', name: 'L', definition: '1;2;3' });
 		atelier.create({ kind: 'list', name: 'M', definition: '4;5;6' });
@@ -511,7 +511,7 @@ describe('carte d’une liste', () => {
 		const data = labels.indexOf('Modifier dans Données');
 		expect(data).toBeGreaterThan(-1);
 		expect(labels.indexOf('Avec une autre liste')).toBeLessThan(data);
-		expect(labels.slice(-2)).toEqual(['Renommer', 'Supprimer']);
+		expect(labels.slice(-3)).toEqual(['Propriétés', 'Renommer', 'Supprimer']);
 	});
 
 	it('« Modifier dans Données » ouvre la vue Données', async () => {

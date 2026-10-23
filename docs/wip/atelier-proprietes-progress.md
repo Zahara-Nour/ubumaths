@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 1 ouverte._
+_Mis à jour le 2026-10-23, après #1627._
 
-- **État** : PR 1 (cartes allégées + point de couleur + console qui défile) ouverte.
-- **Prochaine action** : PR 2 — entrée « Propriétés » du menu ⋮ et Renommer.
+- **État** : PR 1 mergée (#1627). PR 2 (panneau Propriétés + Renommer) ouverte, en revue.
+- **Prochaine action** : PR 2 — panneau « Propriétés » déplié sous la carte (nom ✎ via `atelier.rename`, dépendances, mesures, style) ; mesures des droites et cercles par `geometry-expert` (`figure-properties.ts`).
 - **En attente de David** : rien.
-- **Pièges en cours** : entre la PR 1 et la PR 2, les coordonnées d'un point construit, l'équation d'une droite et la longueur d'un segment ne se lisent plus nulle part : **ne pas lancer `deploy:prod` entre les deux**, ou le dire à David.
-- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `feat/atelier-proprietes`.
+- **Pièges en cours** : tant que la PR 2 n'est pas mergée, les mesures d'une construction ne se lisent nulle part : **pas de `deploy:prod` avant**.
+- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `feat/atelier-proprietes-panneau`.
 
 ## Décisions de David (2026-10-23)
 
@@ -42,3 +42,12 @@ Le constat d'une courbe dégénérée (« Aucun point ne vérifie cette équatio
 - `FigureCard` : ligne grise (nature + valeur d'une construction) retirée. Les tests qui la lisaient vérifient désormais `figureNatureOf` / `figureSummaryOf`, que la PR 2 affichera dans Propriétés.
 - Console : `CalculView` descend en bas de l'historique quand une entrée s'ajoute (tapée ou écrite par une action de carte).
 - Preuves rouges : test du point (fond `rgb(37, 99, 235)` sur la cible) et test de la console (`scrollTop` 0) rouges sans le correctif.
+
+## PR 2 — panneau Propriétés et Renommer
+
+- `properties.ts` (`propertiesOf`) : valeur, fonction, suite, liste, dépendances ; `figure-properties.ts` (`figurePropertiesOf`, écrit par `geometry-expert`) : mesures exactes de la figure.
+- `ObjectProperties.svelte` déplié sous la carte, état dans `ObjectPanel` (survit au renommage) ; `FigureStyleSettings` / `CurveStyleSettings` extraits des fenêtres de style.
+- Menu : Propriétés, Renommer (câblé sur `Atelier.rename`, qui existait déjà avec ses tests), Supprimer ; l'étiquette d'un point quitte le menu.
+- `valueAnswerOf` rend aussi la valeur approchée, le décimal exact et l'arbre.
+- Plafond d'actions d'une liste : 11 → 12 (David, 2026-10-23).
+- Écart découvert et corrigé : « Convertir » s'affichait actif sans effet (ajouté après `NOT_YET`).

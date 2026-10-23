@@ -815,7 +815,9 @@ function isNegative(value: GeoValue): boolean {
 }
 
 /** `m·x + p`, signes écrits comme on les écrit (`2x − 4`, `−x + 2`, `3x`). */
-function signedSum(terms: readonly { coefficient: GeoValue; of: MathNode | null }[]): MathNode {
+export function signedSum(
+	terms: readonly { coefficient: GeoValue; of: MathNode | null }[]
+): MathNode {
 	let sum: MathNode | null = null;
 	for (const { coefficient, of } of terms) {
 		if (geoIsZero(coefficient)) continue;

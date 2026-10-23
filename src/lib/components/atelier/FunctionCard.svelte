@@ -15,7 +15,7 @@
 	 */
 	import { tick } from 'svelte';
 	import type { FunctionObject } from '$lib/atelier/types';
-	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
 	import { useAtelier } from '$lib/atelier/context';
 	import { useGrapheurStore } from '$lib/stores/grapheur-context';
 	import { astOf } from '$lib/atelier/parse';
@@ -147,8 +147,8 @@
 			return;
 		}
 		// Une carte supprimée confie le focus au panneau (WCAG 2.4.3) : le bouton
-		// du menu, lui, n'existe plus
-		if (action.id === 'remove') focusLeaves = true;
+		// du menu, lui, n'existe plus ; Propriétés le donne au panneau déplié
+		if (actionMovesFocus(action.id)) focusLeaves = true;
 		onAction?.(action, object);
 	}
 
