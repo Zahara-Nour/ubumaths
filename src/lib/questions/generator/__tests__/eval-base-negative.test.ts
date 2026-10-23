@@ -62,9 +62,12 @@ describe('{{eval:…}} : base négative et exposant littéral', () => {
 		expect(statementOf('(b)^{n+1}', vars('3', '-2'))).toContain('\\left( -2 \\right)^{n + 1}');
 	});
 
-	it.each(['-0.5', '-1/4'])('base négative non entière b = %s', (b) => {
-		const statement = statementOf('(b)^n', vars('3', b));
-		expect(statement).toMatch(/\\left\( -\\dfrac\{1\}\{\d\} \\right\)\^n/);
+	// Le décimal reste décimal (S1, simplify-carte) : `(−0,5)ⁿ`, pas `(−1/2)ⁿ`
+	it.each([
+		['-0.5', '\\left( -0.5 \\right)^n'],
+		['-1/4', '\\left( -\\dfrac{1}{4} \\right)^n']
+	])('base négative non entière b = %s', (b, expected) => {
+		expect(statementOf('(b)^n', vars('3', b))).toContain(expected);
 	});
 
 	it('-(2)^n reste -2^n', () => {
