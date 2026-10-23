@@ -4,7 +4,7 @@
 
 _Mis à jour le 2026-10-23, lot 12 en cours (PR à ouvrir)._
 
-- **État** : lot 12 « finitions » codé et commité sur `fix/constructions-finitions` : bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre. Tests et typecheck verts.
+- **État** : lot 12 « finitions » codé et commité sur `fix/constructions-finitions` : bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre, trait visible le long de la règle. Tests et typecheck verts.
 - **Prochaine action** : PR, revue `code-reviewer` (Opus), CI, merge ; noter les vérifications manuelles.
 - **En attente de David** : `@arc_milieu` sur un angle plat → refus (le milieu de [A′B′] est V) qui renvoie vers `@arcs_egaux`/`@mesure` : à confirmer. Vérifications #1621 → #1649 (serveurs 5183-5186), puis suppression des worktrees mergés. Suites possibles : consignes automatiques (reco : phase 0, compter d'abord les constructions concernées) ; marqueurs d'angle droit seulement en `@complet`.
 - **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. DSL : `demidroite`. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. Commits et PR : aucune mention Claude.
@@ -255,3 +255,5 @@ Phase 0 validée par David (« je suis tes recos ») : règle C\*/D\* limitée �
 - **Message « P sur (AB) »** (`assertPOffLine`) : cite `@euclide` ou `@equerre` avant `@double_perpendiculaire`.
 - **C\* à côté d'un vrai C** : `ctx.nameTaken` (`createNameTaken`, `names.ts`) ; `starPairStems` (`parallele.ts`) prend les deux premières lettres consécutives libres à partir de C. L'ancien test « C dans le script ne fait pas renommer C\* » asserte désormais E\*, F\*.
 - **Carré en P** (double perpendiculaire à l'équerre) : entre la parallèle et P + (F→P), dans le coin de l'équerre ; l'ancien test assertait le carré du côté de (AB).
+- **Trait caché sous la règle** (signalé par David pendant la relecture) : la règle est posée bord sur le trait (y = 0) et son contour gris de 2 px recouvrait le trait bleu de 2 px pendant tout le tracé (défaut antérieur au lot, aussi sur `main`). `Ruler.svelte` : corps décalé de 2 px vers son côté (`EDGE_GAP_PX`), lecture des graduations inchangée ; test `Ruler-bord.svelte.test.ts`.
+- **Revue (Opus)** : aucun bloquant. Mineurs laissés : `@arc_milieu` sur un angle rendu plat après coup (milieu = V, déjà le cas avant) ; `starPairStems` pourrait finir sur Q\*/R\* si C à P sont tous pris.
