@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1643 (PR 3 en cours)._
+_Mis à jour le 2026-10-23, après #1647._
 
-- **État** : lot 10 `@mesure` — PR 1/3 `milieu` (#1637), rythme (#1638), PR 2/3 `bissectrice` (#1643) livrées. **PR 3/3 `mediatrice @mesure` : phase 0 validée** (recos suivies), en cours sur `feat/constructions-mediatrice-mesure`.
-- **Prochaine action** : tests rouges (`mediatrice-mesure.test.ts`) → voie `regle_equerre` → revue → PR.
-- **En attente de David** : (1) vérifications #1637 + #1638 (serveur 5183, worktree `-rythme`) et #1643 (serveur 5184, worktree `-bissectrice-mesure`), lignes dans `verifications-manuelles.md` ; #1633 et marqueurs d’angle droit en `@complet` sur 5183 → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`. (2) Étiquette d’un segment nommé posée sur celle du milieu I : à traiter ? Consignes automatiques pour les étapes non chorégraphiées : à trancher. (3) Suites hors `@mesure` : côté du carré d’angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; angle plat refusé par le builtin `bissectrice` ; instruments invisibles à l’arrêt entre deux étapes.
+- **État** : lot 10 `@mesure` **terminé** — `milieu` (#1637), rythme (#1638), `bissectrice` (#1643), **`mediatrice` (#1647, règle graduée + équerre)** mergées ; partent au prochain `deploy:prod`.
+- **Prochaine action** : choisir la suite avec David (voir (2) et (3) ci-dessous).
+- **En attente de David** : (1) vérifications #1637 + #1638 (serveur 5183, worktree `-rythme`) et #1643 (serveur 5184, worktree `-bissectrice-mesure`) et #1647 (serveur 5185, worktree `-mediatrice-mesure`), lignes dans `verifications-manuelles.md` ; #1633 et marqueurs d’angle droit en `@complet` sur 5183 → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`, `-mediatrice-mesure`. (2) Étiquette d’un segment nommé posée sur celle du milieu I : à traiter ? Consignes automatiques pour les étapes non chorégraphiées : à trancher. (3) Suites hors `@mesure` : côté du carré d’angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; angle plat refusé par le builtin `bissectrice` ; instruments invisibles à l’arrêt entre deux étapes.
 - **Pièges en cours** : `e` = constante d’Euler, jamais comme nom dans un script. DSL : `demidroite`, pas `demi_droite`. Étiquette auxiliaire provisoire (`setProvisionalLabel`). Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet. Commits et PR : aucune mention Claude (ni `Claude-Session:`, ni lien de session).
-- **Worktree / branche** : `../ubumaths-wt-constructions-mediatrice-mesure`, `feat/constructions-mediatrice-mesure`. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`, branche mergée).
+- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`), 5185 (`-mediatrice-mesure`), branches mergées.
 
 ---
 
