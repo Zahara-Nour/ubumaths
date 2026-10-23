@@ -44,7 +44,8 @@ describe('la ligne porte la dérivée, et rien d’autre', () => {
 
 		expect(outcome.ok).toBe(true);
 		if (!outcome.ok) return;
-		expect(outcome.latex).toBe("g'(x) = 3 x^2 - 3");
+		// Factorisée pour lire le signe (lot 5b de simplify-carte, D2)
+		expect(outcome.latex).toBe(String.raw`g'(x) = 3 \left( x - 1 \right) \left( x + 1 \right)`);
 	});
 
 	it('plus rien de ce que le tableau dit déjà', () => {

@@ -86,7 +86,7 @@ describe('.variations : f′ affichée comme `.dériver` l’écrit', () => {
 		return { variations: line?.[1] ?? '', derive: derive?.[1] ?? '' };
 	}
 
-	it.each(['x^(4/3)', 'x^(1/3)', 'x^(2/3)-4', 'x^(-1/3)', 'x^3-3x'])('%s', (f) => {
+	it.each(['x^(4/3)', 'x^(1/3)', 'x^(2/3)-4', 'x^(-1/3)'])('%s', (f) => {
 		const { variations, derive } = derivatives(f);
 		expect(variations).not.toMatch(/sqrt\[/);
 		// Même expression ; `.variations` l'écrit en texte lisible (`4x^{1/3}/3`),
@@ -96,6 +96,11 @@ describe('.variations : f′ affichée comme `.dériver` l’écrit', () => {
 		expect(parsed).not.toBeNull();
 		if (parsed === null) throw new Error(`relecture impossible : ${derive}`);
 		expect(variations).toBe(readableText(parsed));
+	});
+
+	// Ce qui se factorise l'est, pour lire le signe (lot 5b de simplify-carte, D2)
+	it('x^3-3x : factorisée', () => {
+		expect(derivatives('x^3-3x')).toEqual({ variations: '3(x-1)(x+1)', derive: '3x^2-3' });
 	});
 });
 

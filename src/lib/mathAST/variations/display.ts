@@ -1,49 +1,104 @@
 /**
- * La dérivée telle qu'on l'écrit au-dessus d'un tableau de variations.
+ * La dérivée telle qu'on l'écrit au-dessus d'un tableau de variations
+ * (décision D2, lot 5b du chantier simplify-carte, 2026-10-23).
  *
- * ⚠️ L'élève lit le SIGNE de f′ dans ce qui est affiché. La règle du quotient
- * rendait `\dfrac{x-2-(x+1)}{(x-2)^2}` pour (x+1)/(x−2) : juste, mais le
- * signe ne s'y lit pas. Le numérateur est donc réduit (`-3`, `x^2-1`,
- * `x^2-2x`) ; le dénominateur, un carré la plupart du temps, reste tel quel.
- * `.dériver` n'est pas concerné : il montre la règle, pas l'étude du signe.
+ * ⚠️ L'élève lit le SIGNE de f′ dans ce qui est affiché. Deux écritures :
+ *
+ * 1. **La forme finale** (`finalDerivative`, lot 5a) : celle de `.dériver`,
+ *    quotient divisé par le facteur commun quand le domaine de f le permet
+ *    (Q18), exponentielle commune en facteur. C'est l'étape « Dérivée ».
+ * 2. **La forme factorisée** : la politique `factoriser` (ADR 0024, lycée)
+ *    sur le numérateur d'un quotient (dénominateur tel quel, un carré la
+ *    plupart du temps), sur l'expression entière sinon. `x² − 2` →
+ *    `(x − √2)(x + √2)`, `(x² + 2x)/(x + 1)²` → `x(x + 2)/(x + 1)²`,
+ *    `(2x − x²)e^{−x}` → `x(2 − x)e^{−x}`. Un − devant reste
+ *    (`−2(x² + 9)/(x² − 9)²`). L'ordre des facteurs et l'ordre interne d'un
+ *    facteur sont ceux du noyau. Rien ne se factorise (`x² + 1`,
+ *    `x² − 2x + 5`), ou budget dépassé : la forme finale reste.
+ *
+ * Le calcul du signe ne lit ni l'une ni l'autre : il part de `result.derivative`.
  *
  * @module mathAST/variations/display
  */
 
 import type { MathNode } from '../types';
 import { isDivision, isMultiplication, isOpposite } from '../guards';
-import { delimiter } from '../factory';
+import { delimiter, divide, opposite } from '../factory';
 import { mapNode } from '../transforms';
-import { simplify } from '../simplify';
 import { tidy } from '../tidy';
-import { nodeCount, tidyTerms } from '../tidy/terms';
+import { hashMathNode } from '../normal/hash';
+import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
+import { finalDerivative } from '../pedagogical-differentiation/final-form';
 import { toCustom } from '../custom-generator';
 
+/** Le budget de la politique `factoriser`, comme celui d'`auto` dans final-form. */
+const FACTOR_TIMEOUT_MS = 1000;
+
+/** Les deux écritures de f′ d'une étude de variations. */
+export interface DisplayedDerivatives {
+	/** La forme finale de `.dériver` (lot 5a) */
+	readonly final: MathNode;
+	/** La forme où se lit le signe : `final` factorisée, ou `final` elle-même */
+	readonly factored: MathNode;
+}
+
 /**
- * f′ mise au propre, numérateur d'un quotient développé et réduit.
+ * La forme finale de f′ et sa forme factorisée. Ne lève jamais.
+ *
+ * @param derivative - La dérivée calculée (`result.derivative`)
+ * @param f - La fonction dérivée : son domaine est acquis pour f′ (S3)
+ */
+export function displayedDerivatives(derivative: MathNode, f: MathNode): DisplayedDerivatives {
+	const final = finalDerivative(derivative, f);
+	try {
+		return { final, factored: factoredForSign(final) };
+	} catch {
+		return { final, factored: final };
+	}
+}
+
+/**
+ * f′ écrite pour qu'on y lise le signe : la forme factorisée. Pour le CLI.
  *
  * @param f - La fonction dérivée : son domaine est acquis pour f′ (S3)
  */
 export function reducedDerivative(derivative: MathNode, f: MathNode): MathNode {
-	const tidied = tidyTerms(derivative, { domain: [f] });
-	if (!isDivision(tidied)) return tidied;
-	return { ...tidied, numerator: reducedNumerator(tidied.numerator) };
+	return displayedDerivatives(derivative, f).factored;
+}
+
+/** Quotient (sous un éventuel −) : numérateur seul ; sinon l'expression entière. */
+function factoredForSign(node: MathNode): MathNode {
+	if (isOpposite(node) && isDivision(node.operand)) {
+		const quotient = node.operand;
+		const top = factored(quotient.numerator);
+		return top === quotient.numerator
+			? node
+			: opposite(divide(top, quotient.denominator, quotient.displayStyle));
+	}
+	if (isDivision(node)) {
+		const top = factored(node.numerator);
+		return top === node.numerator ? node : divide(top, node.denominator, node.displayStyle);
+	}
+	return factored(node);
 }
 
 /**
- * Le numérateur réduit, s'il n'est pas plus long ; sinon tel quel.
- *
- * ⚠️ Seule une SOMME se réduit (u′v − uv′) : un produit `4x^{1/3}` ressortait
- * `4∛x`, autre écriture que celle de `.dériver`, sans rien gagner au signe.
+ * `node` factorisée par la politique `factoriser`, ou `node` elle-même (même
+ * référence) si rien n'a changé, si le résultat est encore une somme, ou si le
+ * budget est dépassé. L'ordre du noyau est gardé (`tidy` sans réordonner).
  */
-function reducedNumerator(numerator: MathNode): MathNode {
-	if (numerator.type !== 'addition' && numerator.type !== 'subtraction') return numerator;
-	try {
-		const reduced = tidy(simplify(numerator).result);
-		return nodeCount(reduced) <= nodeCount(numerator) ? reduced : numerator;
-	} catch {
-		return numerator;
-	}
+function factored(node: MathNode): MathNode {
+	const result = generatePedagogicalSimplifySteps(node, {
+		intent: 'factoriser',
+		schoolLevel: 'lycee',
+		timeoutMs: FACTOR_TIMEOUT_MS
+	});
+	if (result.aborted === true) return node;
+	const candidate = tidy(result.result, { order: 'kept' });
+	const inner = isOpposite(candidate) ? candidate.operand : candidate;
+	const stillSum = inner.type === 'addition' || inner.type === 'subtraction';
+	if (stillSum || hashMathNode(candidate) === hashMathNode(node)) return node;
+	return candidate;
 }
 
 /**
