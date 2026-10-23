@@ -28,8 +28,9 @@ function position(exec: ConstructionExecutor, id: string | undefined): { x: numb
 	return { x: pos ? geoToNumber(pos.x) : NaN, y: pos ? geoToNumber(pos.y) : NaN };
 }
 
-/** Extrémités du segment tracé par la sous-étape `step`. */
+/** Extrémités du segment tracé par la sous-étape `step` (figure exécutée). */
 function tracedEnds(exec: ConstructionExecutor, step: SubStep) {
+	exec.executeAll();
 	const el = exec.figure.getElementById(step.animateDrawableIds[0]);
 	if (!el || !isSegment(el)) throw new Error('pas de segment tracé');
 	return { start: position(exec, el.startId), end: position(exec, el.endId) };
@@ -92,6 +93,7 @@ describe('mediatrice @mesure — déroulé', () => {
 
 	it('le milieu I est un point auxiliaire, au milieu exact, révélé en SS3', () => {
 		const { exec, steps } = subSteps(SCRIPT);
+		exec.executeAll();
 		const [I] = steps[2].animatePointIds;
 		expect(I).toBeDefined();
 		expect(exec.figure.getElementById(I)?.label).toBe('I');
@@ -178,6 +180,7 @@ describe('mediatrice @mesure — orientation', () => {
 			'd = mediatrice(A, B) @mesure'
 		]);
 		expect(steps[1].instruction).toBe('6,4 ÷ 2 = 3,2 : on repère la graduation 3,2');
+		exec.executeAll();
 		expect(position(exec, steps[2].animatePointIds[0]).x).toBeCloseTo(3.185);
 	});
 });

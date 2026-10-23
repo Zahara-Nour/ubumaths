@@ -168,23 +168,24 @@ nomme (pied F de l'équerre, croisements des médiatrices) : sans étiquette.
 Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« int. ») et
 `transporte-choreography.test.ts`.
 
-| Builtin              | Contrainte | Voie (\* = défaut)          | Sous-étapes | Séquence                                                                                                            | Étiquettes de traces                         | État                                                             |
-| -------------------- | ---------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------- | -------------------------------------------- | ---------------------------------------------------------------- |
-| `mediatrice`         | `@euclide` | `arcs_egaux`\* (r = 0,7·AB) | 6           | CD ×4 (petits arcs), PF (I₁, I₂), RT                                                                                | `arc`                                        | livrée (int. :136)                                               |
-| `mediatrice`         | `@euclide` | `cercles_rayon_ab` (r = AB) | 6           | idem                                                                                                                | `arc`                                        | livrée (int. :220)                                               |
-| `bissectrice`        | `@euclide` | `arcs_egaux`\*              | 7           | CD ×2 en V, PF (A′, B′), CD ×2, PF (P), RT                                                                          | `arc`, `auxiliary-point`                     | livrée ; accepte `bissectrice(α)` (int. :1155)                   |
-| `bissectrice`        | `@euclide` | `arc_milieu`                | 5           | CD ×2, PF (A′, B′), PF (M), RT                                                                                      | `arc`, `auxiliary-point`                     | livrée (int. :334)                                               |
-| `parallele`          | `@euclide` | `parallelogramme`\* (I.31)  | 6           | CM \|AB\|, CD en P, CM \|PA\|, CD en B, PF (Q), RT                                                                  | `arc`                                        | livrée (int. :377)                                               |
-| `parallele`          | `@euclide` | `double_perpendiculaire`    | 16          | perpendiculaire `rayon_libre` (7), LF (e), CD ×2 en P, PF (C\*, D\*), CM (ouverture plus grande), CD ×2, PF (R), RT | `arc`, `auxiliary-point`, `segment-trace`    | **livrée, par `ctx.sub`** (int. :911) ; `P ∈ (AB)` → erreur      |
-| `parallele`          | `@equerre` | `pose_equerre`\*            | 6           | pose équerre, pose règle-glissière, glissement, RT, échange équerre → règle, RT                                     | `segment-trace`, `marker`, `arc`             | livrée (int. :708)                                               |
-| `parallele`          | `@equerre` | `double_perpendiculaire`    | 10          | perpendiculaire `pose_equerre` (5), LF (e), pose équerre sur e (angle droit en P), RT, échange → règle, RT          | `segment-trace`, `marker`, `auxiliary-point` | **livrée, par `ctx.sub`** (int. :1004) ; `P ∈ (AB)` → erreur     |
-| `perpendiculaire`    | `@euclide` | `rayon_libre`\*             | 7           | CD ×2 en P, PF (A\*, B\*), CD ×2, PF (Q), RT                                                                        | `arc`, `auxiliary-point`, `segment-trace`    | livrée (int. :578)                                               |
-| `perpendiculaire`    | `@euclide` | `arcs_egaux`                | 7           | CM \|PA\|, CD, PF (B′), CD ×2, PF (Q), RT                                                                           | idem                                         | livrée (int. :622)                                               |
-| `perpendiculaire`    | `@equerre` | `pose_equerre`\*            | 5           | pose équerre, glissement jusqu'au pied F, RT, échange → règle, RT                                                   | idem                                         | livrée (int. :667)                                               |
-| `cercle_circonscrit` | `@euclide` | `mediatrices`\*             | 17          | médiatrice(A,B) (6), LF, médiatrice(B,C) (6), LF, PF (O), CM \|OA\|, CD (cercle)                                    | reprises des médiatrices                     | **livrée, par `ctx.sub`** (int. :448)                            |
-| `transporte`         | `@euclide` | `compas_report`\* (I.23)    | 7           | CD ×2, PF (A′, B′, A″), CM \|A′B′\|, CD, PF (B″), RT                                                                | `arc`                                        | livrée, 4 modes de direction (`transporte-choreography.test.ts`) |
-| `bissectrice`        | `@mesure`  | `rapporteur`\*              | 4           | CM rapporteur (centre en V, 0 sur [VA)), CM crayon en face de la moitié (rapporteur en second), PF (P), RT          | `marker` (deux angles égaux)                 | livrée (`bissectrice-mesure.test.ts`) ; côtés confondus → erreur |
-| `milieu`             | `@mesure`  | `regle_graduee`\*           | 3           | CM règle (0 sur l'extrémité de gauche), CM crayon à la graduation (règle en second), PF (I)                         | `marker` (codage AI = IB)                    | livrée (`milieu-mesure.test.ts`) ; > 15 cm ou confondus → erreur |
+| Builtin              | Contrainte | Voie (\* = défaut)          | Sous-étapes | Séquence                                                                                                                                   | Étiquettes de traces                             | État                                                                 |
+| -------------------- | ---------- | --------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------ | -------------------------------------------------------------------- |
+| `mediatrice`         | `@euclide` | `arcs_egaux`\* (r = 0,7·AB) | 6           | CD ×4 (petits arcs), PF (I₁, I₂), RT                                                                                                       | `arc`                                            | livrée (int. :136)                                                   |
+| `mediatrice`         | `@euclide` | `cercles_rayon_ab` (r = AB) | 6           | idem                                                                                                                                       | `arc`                                            | livrée (int. :220)                                                   |
+| `bissectrice`        | `@euclide` | `arcs_egaux`\*              | 7           | CD ×2 en V, PF (A′, B′), CD ×2, PF (P), RT                                                                                                 | `arc`, `auxiliary-point`                         | livrée ; accepte `bissectrice(α)` (int. :1155)                       |
+| `bissectrice`        | `@euclide` | `arc_milieu`                | 5           | CD ×2, PF (A′, B′), PF (M), RT                                                                                                             | `arc`, `auxiliary-point`                         | livrée (int. :334)                                                   |
+| `parallele`          | `@euclide` | `parallelogramme`\* (I.31)  | 6           | CM \|AB\|, CD en P, CM \|PA\|, CD en B, PF (Q), RT                                                                                         | `arc`                                            | livrée (int. :377)                                                   |
+| `parallele`          | `@euclide` | `double_perpendiculaire`    | 16          | perpendiculaire `rayon_libre` (7), LF (e), CD ×2 en P, PF (C\*, D\*), CM (ouverture plus grande), CD ×2, PF (R), RT                        | `arc`, `auxiliary-point`, `segment-trace`        | **livrée, par `ctx.sub`** (int. :911) ; `P ∈ (AB)` → erreur          |
+| `parallele`          | `@equerre` | `pose_equerre`\*            | 6           | pose équerre, pose règle-glissière, glissement, RT, échange équerre → règle, RT                                                            | `segment-trace`, `marker`, `arc`                 | livrée (int. :708)                                                   |
+| `parallele`          | `@equerre` | `double_perpendiculaire`    | 10          | perpendiculaire `pose_equerre` (5), LF (e), pose équerre sur e (angle droit en P), RT, échange → règle, RT                                 | `segment-trace`, `marker`, `auxiliary-point`     | **livrée, par `ctx.sub`** (int. :1004) ; `P ∈ (AB)` → erreur         |
+| `perpendiculaire`    | `@euclide` | `rayon_libre`\*             | 7           | CD ×2 en P, PF (A\*, B\*), CD ×2, PF (Q), RT                                                                                               | `arc`, `auxiliary-point`, `segment-trace`        | livrée (int. :578)                                                   |
+| `perpendiculaire`    | `@euclide` | `arcs_egaux`                | 7           | CM \|PA\|, CD, PF (B′), CD ×2, PF (Q), RT                                                                                                  | idem                                             | livrée (int. :622)                                                   |
+| `perpendiculaire`    | `@equerre` | `pose_equerre`\*            | 5           | pose équerre, glissement jusqu'au pied F, RT, échange → règle, RT                                                                          | idem                                             | livrée (int. :667)                                                   |
+| `cercle_circonscrit` | `@euclide` | `mediatrices`\*             | 17          | médiatrice(A,B) (6), LF, médiatrice(B,C) (6), LF, PF (O), CM \|OA\|, CD (cercle)                                                           | reprises des médiatrices                         | **livrée, par `ctx.sub`** (int. :448)                                |
+| `transporte`         | `@euclide` | `compas_report`\* (I.23)    | 7           | CD ×2, PF (A′, B′, A″), CM \|A′B′\|, CD, PF (B″), RT                                                                                       | `arc`                                            | livrée, 4 modes de direction (`transporte-choreography.test.ts`)     |
+| `bissectrice`        | `@mesure`  | `rapporteur`\*              | 4           | CM rapporteur (centre en V, 0 sur [VA)), CM crayon en face de la moitié (rapporteur en second), PF (P), RT                                 | `marker` (deux angles égaux)                     | livrée (`bissectrice-mesure.test.ts`) ; côtés confondus → erreur     |
+| `milieu`             | `@mesure`  | `regle_graduee`\*           | 3           | CM règle (0 sur l'extrémité de gauche), CM crayon à la graduation (règle en second), PF (I)                                                | `marker` (codage AI = IB)                        | livrée (`milieu-mesure.test.ts`) ; > 15 cm ou confondus → erreur     |
+| `mediatrice`         | `@mesure`  | `regle_equerre`\*           | 7 (4)       | CM règle, CM crayon à la graduation, PF (I) — sautés si le milieu est déjà construit —, pose équerre (coin sur I), RT, échange → règle, RT | `segment-trace`, `marker` (AI = IB, angle droit) | livrée (`mediatrice-mesure.test.ts`) ; > 15 cm ou confondus → erreur |
 
 **`ctx.sub` est implémenté** (`executor.ts:484-503`, `buildSubChoreographyFn`) : la chorégraphie
 parente crée elle-même l'élément principal du sous-appel puis demande la voie ; une voie inconnue
@@ -217,7 +218,19 @@ base est retournée de 180° et le 0 de l’échelle intérieure tombe sur [VA).
 Lecture 0° → « Les deux côtés sont confondus » ; A ou B confondu avec V et angle plat sont refusés
 par le builtin avant la chorégraphie.
 
-Aucune voie `@mesure` pour un autre builtin que `milieu` et `bissectrice`, ni de voie pour un builtin hors des sept ci-dessus.
+**`mediatrice @mesure`** (`choreographies/mediatrice.ts`, `buildRegleEquerre`) : `mediatrice(A, B)`.
+Mesure de [AB] partagée avec `milieu @mesure` (`measureSegment`, `milieu.ts` : mêmes consignes, mêmes
+erreurs), puis « On marque le milieu I à 3,2 cm de A » (point auxiliaire `labelAux`, charnière),
+« On pose l'équerre avec son bord sur (AB), le coin sur I » (pas de glissement), « Le long du bord de
+l'équerre, on trace la perpendiculaire à (AB) en I », « On retire l'équerre et on pose la règle le
+long de la portion tracée », « On prolonge le tracé le long de la règle : c’est la médiatrice de
+[AB] ». L'équerre est au-dessus de [AB] : à gauche du sens qui va de l'extrémité où se pose le 0 vers
+l'autre ; le prolongement part de l'autre côté. **Milieu déjà construit** (point visible et nommé au
+milieu exact, `existingMidpoint`) : pas de mesure, on part de l'équerre sur ce point, sous son nom
+(ni erreur de longueur, ni charnière). Codage AI = IB (`segmentMark`) et angle droit en I (`angle`
+`carre`), étiquetés `marker`, seulement si un segment visible joint A et B (`hasVisibleSegment`).
+
+Aucune voie `@mesure` pour un autre builtin que `milieu`, `bissectrice` et `mediatrice`, ni de voie pour un builtin hors des sept ci-dessus.
 Le repli « hérité » s'applique aussi quand une chorégraphie rend 0 sous-étape
 (`executor.ts:1140-1157`).
 
@@ -345,11 +358,11 @@ Faits relevés dans le code le 2026-10-22.
 
 ### Fonctions manquantes
 
-| Point                                                                                              | Où                                          |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| Contrainte `@mesure` : deux voies (`milieu`, `bissectrice`) ; `mediatrice @mesure` prévue          | `choreographies/types.ts:18`, `registry.ts` |
-| Sept builtins chorégraphiés seulement (`cercle`, `triangle_equilateral`… refusent les décorateurs) | `registry.ts`                               |
-| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                 | `types.ts:83`                               |
+| Point                                                                                                                        | Où                                          |
+| ---------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Contrainte `@mesure` : trois voies (`milieu`, `bissectrice`, `mediatrice`) ; pas `perpendiculaire` (au collège : `@equerre`) | `choreographies/types.ts:18`, `registry.ts` |
+| Sept builtins chorégraphiés seulement (`cercle`, `triangle_equilateral`… refusent les décorateurs)                           | `registry.ts`                               |
+| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                                           | `types.ts:83`                               |
 
 ### Comportements connus
 

@@ -23,7 +23,11 @@
  */
 
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
-import { en, role } from './names';
+import { droite, en, labelAux, nom, role, shownName } from './names';
+import { hasVisibleSegment, measureSegment } from './milieu';
+import type { Figure } from '$lib/geometry-core/graph/figure';
+import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { isPointElement } from '$lib/geometry-core/types/elements';
 
 /**
  * Length of the segment-trace (math units). Matches the default `Ruler`
@@ -39,6 +43,15 @@ import { en, role } from './names';
  * wide |AB|), the segment is grown to `1.2 × |I1I2|` instead.
  */
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
+
+/** Bord vertical de l'équerre, en unités math (comme `perpendiculaire @equerre`). */
+const EQUERRE_EDGE_MATH_UNITS = 5;
+
+/** Recouvrement de la règle sur la portion tracée à l'équerre (idem). */
+const RULER_OVERLAP_MATH_UNITS = 2;
+
+/** Tolérance des comparaisons de position (unités math). */
+const EPS = 1e-9;
 
 /**
  * Build the `arcs_egaux` choreography for a given radius factor.
@@ -510,5 +523,248 @@ export const VOIES_MEDIATRICE_EUCLIDE: readonly Voie[] = [
 			'Cas particulier où `r = |AB|` : les deux cercles auxiliaires passent chacun par l’autre extrémité, le quadrilatère formé est un losange dont la médiatrice est l’une des diagonales.',
 		defaut: false,
 		choreography: cerclesRayonAbChoreography
+	}
+];
+
+/**
+ * Point nommé, visible, déjà au milieu exact de [AB] (ex. `I = milieu(A, B)`
+ * plus haut dans le script) : la voie `@mesure` part de lui, sans remesurer.
+ */
+function existingMidpoint(
+	figure: Figure,
+	Aid: string,
+	Bid: string,
+	mid: { x: number; y: number }
+): string | null {
+	for (const el of figure.getAllElements()) {
+		if (!isPointElement(el) || el.id === Aid || el.id === Bid) continue;
+		if (!shownName(figure, el.id)) continue;
+		const pos = figure.getPosition(el.id);
+		if (!pos) continue;
+		const dx = geoToNumber(pos.x) - mid.x;
+		const dy = geoToNumber(pos.y) - mid.y;
+		if (Math.hypot(dx, dy) < EPS) return el.id;
+	}
+	return null;
+}
+
+/**
+ * `mediatrice @mesure @regle_equerre` : la méthode de 6e.
+ *
+ * 7 sous-étapes (4 si le milieu est déjà construit) :
+ *   SS1-SS2 — mesure de [AB] à la règle graduée (`measureSegment`).
+ *   SS3 — le milieu I apparaît (point auxiliaire, prime si la lettre est prise).
+ *   SS4 — l'équerre se pose, bord sur (AB), coin sur I, sans glissement.
+ *   SS5 — le crayon trace la portion le long du bord de l'équerre.
+ *   SS6 — on remplace l'équerre par la règle, alignée sur cette portion.
+ *   SS7 — le crayon prolonge le tracé de l'autre côté ; la médiatrice apparaît.
+ *
+ * L'équerre se pose au-dessus de [AB] : à gauche du sens qui va de
+ * l'extrémité où se pose le 0 de la règle vers l'autre (sens fixé à la
+ * création, directions réactives ensuite). Le codage AI = IB et l'angle
+ * droit en I, posés seulement si [AB] est tracé, sont des marqueurs.
+ */
+function buildRegleEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
+	const { figure, args, principalId } = ctx;
+	const [Aid, Bid] = args.ids;
+	const [A, B] = args.coords;
+	const nA = role(figure, Aid, 'la première extrémité');
+	const nB = role(figure, Bid, 'la seconde extrémité');
+	const d = droite(nA, nB);
+	const seg = nA.name && nB.name ? `de [${nA.name}${nB.name}]` : 'du segment';
+
+	figure.hideElement(principalId);
+
+	// ─── Milieu : déjà construit, ou mesuré puis marqué ───
+	const mid0 = { x: (A.x + B.x) / 2, y: (A.y + B.y) / 2 };
+	const existing = existingMidpoint(figure, Aid, Bid, mid0);
+	const measureSteps: SubStep[] = [];
+	let I: string;
+	let nI: string;
+	// Sens de [AB] lu par la règle : de l'extrémité de gauche vers l'autre.
+	let startsAtA = Math.abs(A.x - B.x) > EPS ? A.x < B.x : A.y < B.y;
+	if (existing) {
+		I = existing;
+		nI = shownName(figure, existing) ?? 'le milieu';
+	} else {
+		const mesure = measureSegment([A, B], nA, nB);
+		startsAtA = mesure.startsAtA;
+		I = figure.createMidpoint(Aid, Bid);
+		figure.hideElement(I);
+		nI = labelAux(ctx, I, 'I');
+		measureSteps.push(...mesure.subSteps, {
+			kind: 'point-fade-in',
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [I],
+			animateLineIds: [],
+			instruction: `On marque le milieu ${nI} à ${mesure.half} cm de ${nom(mesure.nameO)}`
+		});
+	}
+	const sign = startsAtA ? 1 : -1;
+
+	// ─── Directions (réactives) : u le long de [AB], n vers l'équerre ───
+	const Ax = figure.createScalarCoordinate(Aid, 'x');
+	const Ay = figure.createScalarCoordinate(Aid, 'y');
+	const Bx = figure.createScalarCoordinate(Bid, 'x');
+	const By = figure.createScalarCoordinate(Bid, 'y');
+	const Ix = figure.createScalarCoordinate(I, 'x');
+	const Iy = figure.createScalarCoordinate(I, 'y');
+	const distAB = figure.createScalarDistance(Aid, Bid);
+	const nxScalar = figure.createScalarExpression(
+		(vals) =>
+			(-sign * ((vals.get(By) ?? 0) - (vals.get(Ay) ?? 0))) /
+			Math.max(vals.get(distAB) ?? 1, 1e-12),
+		[Ay, By, distAB]
+	);
+	const nyScalar = figure.createScalarExpression(
+		(vals) =>
+			(sign * ((vals.get(Bx) ?? 0) - (vals.get(Ax) ?? 0))) / Math.max(vals.get(distAB) ?? 1, 1e-12),
+		[Ax, Bx, distAB]
+	);
+	/** Point I + k·n, réactif. */
+	const alongN = (k: number): { id: string; support: string[] } => {
+		const x = figure.createScalarExpression(
+			(vals) => (vals.get(Ix) ?? 0) + k * (vals.get(nxScalar) ?? 0),
+			[Ix, nxScalar]
+		);
+		const y = figure.createScalarExpression(
+			(vals) => (vals.get(Iy) ?? 0) + k * (vals.get(nyScalar) ?? 0),
+			[Iy, nyScalar]
+		);
+		const id = figure.createComputedPoint({ scalarRef: x }, { scalarRef: y });
+		figure.hideElement(id);
+		return { id, support: [id, x, y] };
+	};
+
+	// Portion tracée à l'équerre (I → bord), puis prolongement de l'autre côté.
+	const halfTrace = SEGMENT_TRACE_LENGTH_DEFAULT / 2;
+	const top = alongN(EQUERRE_EDGE_MATH_UNITS);
+	const bottom = alongN(-halfTrace);
+	const segmentTrace1 = figure.createSegment(I, top.id);
+	figure.hideElement(segmentTrace1);
+	const segmentTrace2 = figure.createSegment(I, bottom.id);
+	figure.hideElement(segmentTrace2);
+
+	// ─── Codage : AI = IB et angle droit en I, si [AB] est tracé ───
+	const marks: string[] = [];
+	if (hasVisibleSegment(figure, Aid, Bid)) {
+		for (const [from, to] of [
+			[Aid, I],
+			[I, Bid]
+		]) {
+			marks.push(figure.createSegmentMark(from, to, { markCount: 2 }));
+		}
+		// De u vers n : un quart de tour direct, côté de l'extrémité d'arrivée.
+		const Tid = startsAtA ? Bid : Aid;
+		marks.push(figure.createAngle(Tid, I, top.id, { marque: 'carre' }));
+		for (const mark of marks) figure.hideElement(mark);
+	}
+
+	// ─── Positions initiales des instruments ───
+	const len0 = Math.hypot(B.x - A.x, B.y - A.y);
+	const ux0 = (sign * (B.x - A.x)) / len0;
+	const uy0 = (sign * (B.y - A.y)) / len0;
+	const nx0 = -uy0;
+	const ny0 = ux0;
+	const squareTarget = {
+		x: mid0.x,
+		y: mid0.y,
+		rotation: (Math.atan2(uy0, ux0) * 180) / Math.PI
+	};
+	const rulerTarget = {
+		x: mid0.x + nx0 * RULER_OVERLAP_MATH_UNITS,
+		y: mid0.y + ny0 * RULER_OVERLAP_MATH_UNITS,
+		rotation: (Math.atan2(-ny0, -nx0) * 180) / Math.PI
+	};
+
+	const subSteps: SubStep[] = [
+		...measureSteps,
+		{
+			kind: 'compass-measure',
+			instrument: 'setSquare',
+			instrumentTarget: squareTarget,
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: `On pose l'équerre avec son bord sur ${nom(d)}, le coin sur ${nI}`
+		},
+		{
+			kind: 'ruler-trace',
+			instrument: 'setSquare',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: squareTarget,
+			geometricDistance: EQUERRE_EDGE_MATH_UNITS,
+			animateDrawableIds: [segmentTrace1],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: `Le long du bord de l'équerre, on trace la perpendiculaire à ${nom(d)} en ${nI}`
+		},
+		{
+			kind: 'compass-measure',
+			instrument: 'ruler',
+			instrumentTarget: rulerTarget,
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On retire l'équerre et on pose la règle le long de la portion tracée"
+		},
+		{
+			kind: 'ruler-trace',
+			instrument: 'ruler',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: rulerTarget,
+			geometricDistance: halfTrace,
+			animateDrawableIds: [segmentTrace2],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: `On prolonge le tracé le long de la règle : c’est la médiatrice ${seg}`
+		}
+	];
+
+	return {
+		subSteps,
+		produced: {
+			principal: principalId,
+			// Le milieu marqué ; un milieu déjà construit appartient au script.
+			charnieres: existing ? [] : [I],
+			traces: [segmentTrace1, segmentTrace2, ...marks],
+			traceTags: new Map<string, TraceTag>([
+				[segmentTrace1, 'segment-trace'],
+				[segmentTrace2, 'segment-trace'],
+				...marks.map((id): [string, TraceTag] => [id, 'marker'])
+			]),
+			hiddenSupport: [
+				...top.support,
+				...bottom.support,
+				Ax,
+				Ay,
+				Bx,
+				By,
+				Ix,
+				Iy,
+				distAB,
+				nxScalar,
+				nyScalar
+			]
+		}
+	};
+}
+
+const regleEquerreChoreography: ChoreographyFn = (ctx) => buildRegleEquerre(ctx);
+
+export const VOIES_MEDIATRICE_MESURE: readonly Voie[] = [
+	{
+		id: 'regle_equerre',
+		nom_humain: 'À la règle graduée et à l’équerre',
+		source: 'Construction de 6e',
+		description:
+			'On mesure `[AB]` à la règle graduée et on marque son milieu `I` (sauf s’il est déjà construit), puis on pose l’équerre sur `(AB)`, le coin sur `I`, et on trace la perpendiculaire, prolongée à la règle. Le codage `AI = IB` et l’angle droit apparaissent en `@complet` si le segment `[AB]` est tracé.',
+		defaut: true,
+		choreography: regleEquerreChoreography
 	}
 ];

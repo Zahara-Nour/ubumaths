@@ -49,7 +49,7 @@ function segmentName(a: Role, b: Role): string | null {
 }
 
 /** Un segment visible de la figure joint-il A et B (dans un sens ou l'autre) ? */
-function hasVisibleSegment(figure: Figure, Aid: string, Bid: string): boolean {
+export function hasVisibleSegment(figure: Figure, Aid: string, Bid: string): boolean {
 	return figure
 		.getAllElements()
 		.some(
@@ -60,13 +60,30 @@ function hasVisibleSegment(figure: Figure, Aid: string, Bid: string): boolean {
 		);
 }
 
-const regleGradueeChoreography: ChoreographyFn = (ctx) => {
-	const { figure, args, principalId } = ctx;
-	const [Aid, Bid] = args.ids;
-	const [A, B] = args.coords;
-	const nameA = role(figure, Aid, 'la première extrémité');
-	const nameB = role(figure, Bid, 'la seconde extrémité');
-	const nameI = role(figure, principalId, 'le milieu');
+/** Mesure de [AB] à la règle graduée : les deux premiers gestes du milieu. */
+export interface MesureSegment {
+	/** Pose de la règle (lecture), puis crayon à la graduation de la moitié. */
+	readonly subSteps: readonly [SubStep, SubStep];
+	/** Moitié de la valeur lue, écrite à la française (« 3,2 »). */
+	readonly half: string;
+	/** L'extrémité où se pose le 0 de la règle. */
+	readonly nameO: Role;
+	/** Le 0 se pose-t-il sur A (sinon sur B) ? */
+	readonly startsAtA: boolean;
+}
+
+/**
+ * Mesure [AB] comme l'élève : le 0 de la règle sur l'extrémité la plus à
+ * gauche (la plus basse si [AB] est vertical), lecture au millimètre, moitié
+ * calculée sur la valeur lue. Erreur si la règle lit 0 ou si [AB] dépasse
+ * la règle. Partagée par `milieu` et `mediatrice` sous `@mesure`.
+ */
+export function measureSegment(
+	coords: readonly [{ x: number; y: number }, { x: number; y: number }],
+	nameA: Role,
+	nameB: Role
+): MesureSegment {
+	const [A, B] = coords;
 	const ab = segmentName(nameA, nameB);
 	const length = Math.hypot(B.x - A.x, B.y - A.y);
 	// Lecture au millimètre ; le calcul de la consigne part de cette valeur.
@@ -97,6 +114,47 @@ const regleGradueeChoreography: ChoreographyFn = (ctx) => {
 	const uy = (T.y - O.y) / length;
 	const mid = { x: O.x + ux * (length / 2), y: O.y + uy * (length / 2) };
 
+	const reading = ab ? `${ab} = ${formatCm(read)} cm` : `la longueur : ${formatCm(read)} cm`;
+	return {
+		subSteps: [
+			{
+				kind: 'compass-measure',
+				instrument: 'ruler',
+				instrumentTarget: { x: O.x, y: O.y, rotation },
+				compassRadius: 0,
+				geometricDistance: 0,
+				animateDrawableIds: [],
+				animatePointIds: [],
+				animateLineIds: [],
+				instruction: `On place le 0 de la règle sur ${nom(nameO)} et on lit ${reading}`
+			},
+			{
+				kind: 'compass-measure',
+				instrument: 'pencil',
+				secondaryInstrument: 'ruler',
+				instrumentTarget: { x: mid.x, y: mid.y, rotation: 0 },
+				compassRadius: 0,
+				geometricDistance: 0,
+				animateDrawableIds: [],
+				animatePointIds: [],
+				animateLineIds: [],
+				instruction: `${formatCm(read)} ÷ 2 = ${formatCm(half)} : on repère la graduation ${formatCm(half)}`
+			}
+		],
+		half: formatCm(half),
+		nameO,
+		startsAtA
+	};
+}
+
+const regleGradueeChoreography: ChoreographyFn = (ctx) => {
+	const { figure, args, principalId } = ctx;
+	const [Aid, Bid] = args.ids;
+	const nameA = role(figure, Aid, 'la première extrémité');
+	const nameB = role(figure, Bid, 'la seconde extrémité');
+	const nameI = role(figure, principalId, 'le milieu');
+	const mesure = measureSegment([args.coords[0], args.coords[1]], nameA, nameB);
+
 	// Le builtin crée le milieu visible : il n'apparaît qu'en SS3.
 	figure.hideElement(principalId);
 
@@ -114,38 +172,15 @@ const regleGradueeChoreography: ChoreographyFn = (ctx) => {
 		}
 	}
 
-	const reading = ab ? `${ab} = ${formatCm(read)} cm` : `la longueur : ${formatCm(read)} cm`;
 	const subSteps: SubStep[] = [
-		{
-			kind: 'compass-measure',
-			instrument: 'ruler',
-			instrumentTarget: { x: O.x, y: O.y, rotation },
-			compassRadius: 0,
-			geometricDistance: 0,
-			animateDrawableIds: [],
-			animatePointIds: [],
-			animateLineIds: [],
-			instruction: `On place le 0 de la règle sur ${nom(nameO)} et on lit ${reading}`
-		},
-		{
-			kind: 'compass-measure',
-			instrument: 'pencil',
-			secondaryInstrument: 'ruler',
-			instrumentTarget: { x: mid.x, y: mid.y, rotation: 0 },
-			compassRadius: 0,
-			geometricDistance: 0,
-			animateDrawableIds: [],
-			animatePointIds: [],
-			animateLineIds: [],
-			instruction: `${formatCm(read)} ÷ 2 = ${formatCm(half)} : on repère la graduation ${formatCm(half)}`
-		},
+		...mesure.subSteps,
 		{
 			kind: 'point-fade-in',
 			geometricDistance: 0,
 			animateDrawableIds: [],
 			animatePointIds: [principalId],
 			animateLineIds: [],
-			instruction: `On marque ${nom(nameI)} à ${formatCm(half)} cm ${de(nameO)}`
+			instruction: `On marque ${nom(nameI)} à ${mesure.half} cm ${de(mesure.nameO)}`
 		}
 	];
 
