@@ -197,6 +197,7 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - Valeurs approchées ou encadrement d'une solution de f(x) = k (calculatrice, balayage, dichotomie) ; aucune précision imposée par le BO. — _BO Tle compl. p.4 ; 9_ (BO)
 - **TCOMP-236** — Utiliser l'équation fonctionnelle du logarithme pour transformer une écriture.
   - Propriétés : ln(ab) = ln a + ln b, ln(1/a) = −ln a, ln(qⁿ) = n ln q (a, b, q > 0). — _BO Tle compl. p.9_ (BO)
+  - → David (2026-10-23) : point neuf à créer à côté — « Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture »
 - **TCOMP-237** — Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation.
   - Propriétés de 1re spé : e^{x + y} = eˣ eʸ, eˣ e^{−x} = 1 ; la stricte croissance de exp ; passage par ln (réciproque) possible. — _BO Tle compl. p.9 ; BO 1re spé p.8_ (BO)
 - **TCOMP-344** — Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une inéquation.

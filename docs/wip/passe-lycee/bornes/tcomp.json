@@ -760,7 +760,12 @@
 						"source": "BO Tle compl. p.9",
 						"force": "BO"
 					}
-				]
+				],
+				"point_neuf": {
+					"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture",
+					"decide_le": "2026-10-23",
+					"raison": "la ligne du BO nomme exponentielle et logarithme : on coupe (règle 1a), comme pour résoudre une équation / inéquation"
+				}
 			},
 			"TCOMP-237": {
 				"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation",

@@ -14,10 +14,9 @@ _Mis à jour le 2026-10-23, libellés tranchés (15/15)._
   **questions : 10/61 répondues (l2-1 à l2-10), pas encore reportées**.
 - **Prochaine action** : quand David a rempli les questions, les reporter (`decision`, `decide_le`, force
   `décision`), puis étape c.
-- **En attente de David** : les 51 questions restantes ; TSPE-444 (+ TCOMP-236, même coupe) : point « équation fonctionnelle
-  de l'exponentielle pour transformer une écriture » en Tle, ou renvoi à 1SPE-294 (reco : point en Tle).
-- **Pièges en cours** : 4 libellés à corriger en base (2-273, 1GEN-029/030/031, nouveau texte dans
-  `libelle_corrige`) → migration de l'étape e. Automatisme 1re spé « déterminer graphiquement … son tableau de
+- **En attente de David** : les 51 questions restantes.
+- **Pièges en cours** : à la migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031, champ
+  `libelle_corrige`) et 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236, champ `point_neuf`). Automatisme 1re spé « déterminer graphiquement … son tableau de
   variations » (BO l. 274) sans point (seul 1SPE-432 « signe » existe). 85 points techno sans borne ; 1SPE-244 à
   re-ranger à l'étape c ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables :
   JSON corrigés à la main (puis `pnpm format`, les JSON sont en tabulations).
@@ -91,3 +90,5 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   nouveau BO (gardés). Questions de David : (1) lecture graphique du sommet — aucun point de 1re spé ; en 2de,
   2-350 « déterminer graphiquement les extrémums » ; en 1re ES/techno, 1GEN-053 et 1TECHNO-124 (« coordonnées du
   sommet en lien avec la symétrie ») ; (2) TSPE-444 : exponentielle → point en Tle ou renvoi en 1re, à trancher.
+- **2026-10-23 — TSPE-444 : option A (David).** Point neuf « Utiliser l'équation fonctionnelle de l'exponentielle
+  pour transformer une écriture » en Tle spé et en Tle compl. (à côté de TCOMP-236), créé à l'étape e.
