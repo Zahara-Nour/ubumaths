@@ -2,7 +2,7 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1660 (5b mergé, pas en prod)._
+_Mis à jour le 2026-10-24, après #1661 (5b mergé, pas en prod ; main reverdi)._
 
 - **État** : lot 5. ~~Q19~~ (#1655), ~~5a D1 + Q18~~ (#1656) et ~~5b D2~~ (#1658 + #1660, § 55-56) mergés. f′ finit par `finalDerivative` (`final-form.ts`) ; dans l'étude des variations, `displayedDerivatives` (`variations/display.ts`) ajoute l'étape « On factorise pour étudier le signe » (`factoriser` lycée, garde-fous : exposants, décimaux, nombre seul devant une somme, racine + fraction).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
@@ -774,3 +774,5 @@ Laissés, à montrer à David : `x e^{−x²}` → `−2(x − √2/2)(x + √2/
 ## 56. Lot 5b mergé (#1658, #1660, 2026-10-24) ; racines avec fraction (David : « je te suis »)
 
 CI verte. Suite (branche `fix/simplify-carte-5b-racines`) : un facteur qui mêle racine et fraction n'est pas affiché, la forme de 5a reste — `x e^{−x²}` → `(1 − 2x²)e^{−x²}`, `(x² − 3x + 2)/(x² + 1)` → `(3x² − 2x − 3)/(x² + 1)²` ; `(x − √2)(x + √2)`, `x²(x − 2√3)(x + 2√3)` gardées. 2 tests rouges avant.
+
+**#1661 (2026-10-24)** : main était rouge depuis #1656 — le `beforeAll` de l'oracle des dérivées (`derivatives-oracle.test.ts`) dépassait en CI les 10 s par défaut ; délai explicite de 120 s. Signalé par la session `passe-lycee` (bloquait #1657), prévenue au merge.
