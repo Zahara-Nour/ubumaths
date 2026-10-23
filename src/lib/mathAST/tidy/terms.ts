@@ -6,12 +6,13 @@
  * mais il RÉORDONNE une somme : la règle du produit donne `2x·sin x + x²·cos x`
  * (u′v + uv′), et `tidy` en faisait `x²·cos x + …`.
  *
- * La règle, en deux temps (revue des retours) :
- * - chaque TERME de la somme est mis au propre, l'ordre des termes reste ;
- * - sauf si la mise au propre COMPLÈTE regroupe des termes (`9x² + 6x²` →
- *   `15x²`, `(x−2) + (x+1)` → `2x − 1`) : regrouper l'emporte sur l'ordre ;
- * - ou si, à nombre de termes égal, elle évite un négatif en tête que l'ordre
- *   de la règle gardait (`−6x + 2` → `2 − 6x`, décision du 2026-10-06).
+ * La règle (lot 4c du chantier simplify-carte, S2, 2026-10-23) :
+ * - `tidy({ order: 'kept' })` : l'ordre écrit des termes reste, dans chaque
+ *   somme, les termes semblables regroupés à la place du premier
+ *   (`9x² + 6x² + 1` → `15x² + 1`) ;
+ * - sauf si l'ordre de la règle met un négatif en tête que l'ordre rangé évite
+ *   à nombre de termes égal (`−6x + 2` → `2 − 6x`, décision du 2026-10-06) :
+ *   l'ordre rangé l'emporte.
  * Dans un quotient, on descend dans le numérateur (u′v − uv′ reste).
  *
  * Écrit d'abord pour l'atelier (`src/lib/atelier/tidy-terms.ts`, qui le
@@ -22,8 +23,9 @@
  */
 
 import type { MathNode } from '../types';
-import { add, subtract } from '../factory';
+import { parentheses } from '../factory';
 import { isOpposite } from '../guards';
+import { mapNode } from '../transforms';
 import { tidy } from './index';
 import type { TidyOptions } from './index';
 
@@ -36,69 +38,75 @@ function tidySafe(node: MathNode, options: TidyOptions | undefined): MathNode {
 	}
 }
 
-function isSum(node: MathNode): boolean {
-	return node.type === 'addition' || node.type === 'subtraction';
-}
-
 /** Les termes de la chaîne de somme au sommet (`a + b − c` : 3 termes). */
 function countTerms(node: MathNode): number {
 	return node.type === 'addition' || node.type === 'subtraction' ? countTerms(node.left) + 1 : 1;
-}
-
-/**
- * Chaque terme de la chaîne au sommet mis au propre, sans changer leur ordre.
- *
- * Un terme mis au propre ISOLÉMENT peut ressortir négatif (`−sin x`) : sous
- * une addition, il restait `cos x + (−sin x)`. Même règle que `buildSum` dans
- * `tidy` : un terme négatif s'écrit en soustrayant sa valeur absolue
- * (`a + (−b)` → `a − b`, `a − (−b)` → `a + b`).
- */
-function termwise(node: MathNode, options: TidyOptions | undefined): MathNode {
-	if (node.type === 'addition' || node.type === 'subtraction') {
-		const left = termwise(node.left, options);
-		const right = tidySafe(node.right, options);
-		if (isOpposite(right)) {
-			return node.type === 'addition' ? subtract(left, right.operand) : add(left, right.operand);
-		}
-		return { ...node, left, right };
-	}
-	return tidySafe(node, options);
-}
-
-/**
- * Une dérivée mise au propre, en gardant l'ordre de la règle quand rien ne se regroupe.
- *
- * @param options - Transmises à `tidy` ; `domain: [f]` pour la dérivée de `f`
- *   (S3 : `x·(1/x)` ne se simplifie que si le domaine de `f` exclut 0)
- */
-export function tidyTerms(node: MathNode, options?: TidyOptions): MathNode {
-	if (node.type === 'division') {
-		// Le numérateur garde son ordre (u′v − uv′) ; mais si la mise au propre
-		// complète est plus COURTE (`{8x^3}/4` → `2x^3`), elle l'emporte
-		const ordered: MathNode = {
-			...node,
-			numerator: tidyTerms(node.numerator, options),
-			denominator: tidySafe(node.denominator, options)
-		};
-		const full = tidySafe(node, options);
-		return nodeCount(full) < nodeCount(ordered) ? full : ordered;
-	}
-	if (!isSum(node)) return tidySafe(node, options);
-	const ordered = termwise(node, options);
-	const full = tidySafe(node, options);
-	if (countTerms(full) < countTerms(ordered)) return full;
-	// Même nombre de termes, mais l'ordre de `tidy` évite un négatif en tête
-	// (somme de degré 1 : `−6x + 2` → `2 − 6x`) : il l'emporte aussi.
-	if (countTerms(full) === countTerms(ordered) && leadsNegative(ordered) && !leadsNegative(full)) {
-		return full;
-	}
-	return ordered;
 }
 
 /** Le premier terme de la chaîne de somme est-il écrit avec un signe − ? */
 function leadsNegative(node: MathNode): boolean {
 	if (node.type === 'addition' || node.type === 'subtraction') return leadsNegative(node.left);
 	return isOpposite(node);
+}
+
+/**
+ * Une dérivée mise au propre, en gardant l'ordre de la règle.
+ *
+ * @param options - Transmises à `tidy` ; `domain: [f]` pour la dérivée de `f`
+ *   (S3 : `x·(1/x)` ne se simplifie que si le domaine de `f` exclut 0)
+ */
+export function tidyTerms(node: MathNode, options?: TidyOptions): MathNode {
+	return tidyGrouped(node, options);
+}
+
+/**
+ * Les parenthèses que la priorité impose, écrites. Un arbre construit par le
+ * moteur (règle du quotient) porte `u′v − (uv′)` sans nœud de parenthèse :
+ * `tidy` y distribuait alors le signe (`x(2x+1) − x² − x − 1`), ce que son
+ * contrat interdit pour `−(x+2)` écrit.
+ */
+function withImpliedParentheses(node: MathNode): MathNode {
+	return mapNode(node, (n) => {
+		if (n.type === 'subtraction' && isSum(n.right)) return { ...n, right: parentheses(n.right) };
+		if (n.type === 'opposite' && isSum(n.operand)) return { ...n, operand: parentheses(n.operand) };
+		return n;
+	});
+}
+
+function isSum(node: MathNode): boolean {
+	return node.type === 'addition' || node.type === 'subtraction';
+}
+
+/**
+ * La somme mise au propre dans l'ordre écrit, ses parenthèses sous-entendues
+ * gardées (`u′v − (uv′)`) — sauf si les ouvrir regroupe des termes
+ * (`x − 1 − (x + 1)` → `−2`) : regrouper l'emporte.
+ */
+function keptWithGroups(node: MathNode, options: TidyOptions | undefined): MathNode {
+	const grouped = tidySafe(withImpliedParentheses(node), { ...options, order: 'kept' });
+	const opened = tidySafe(node, { ...options, order: 'kept' });
+	return countTerms(opened) < countTerms(grouped) ? opened : grouped;
+}
+
+function tidyGrouped(node: MathNode, options: TidyOptions | undefined): MathNode {
+	if (node.type === 'division') {
+		// Le numérateur garde son ordre (u′v − uv′) et son signe ; mais si la mise
+		// au propre complète est plus COURTE (`{8x^3}/4` → `2x^3`), elle l'emporte
+		const ordered: MathNode = {
+			...node,
+			numerator: tidyGrouped(node.numerator, options),
+			denominator: tidySafe(node.denominator, { ...options, order: 'kept' })
+		};
+		const full = tidySafe(withImpliedParentheses(node), { ...options, order: 'kept' });
+		return nodeCount(full) < nodeCount(ordered) ? full : ordered;
+	}
+	const kept = keptWithGroups(node, options);
+	if (!isSum(kept)) return kept;
+	if (!leadsNegative(kept)) return kept;
+	// Même nombre de termes, mais l'ordre rangé évite un négatif en tête
+	// (somme de degré 1 : `−6x + 2` → `2 − 6x`) : il l'emporte.
+	const full = tidySafe(node, options);
+	return countTerms(full) === countTerms(kept) && !leadsNegative(full) ? full : kept;
 }
 
 /** Le nombre de nœuds d'un arbre : « plus simple » veut dire « moins de nœuds ». */

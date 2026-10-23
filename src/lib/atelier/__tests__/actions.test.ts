@@ -134,8 +134,9 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 		// Supprimer est le dernier geste qui doit rester possible quand tout le
 		// reste est bloqué — jamais désactivé par l'état de l'objet.
 		expect(action('f', 'remove')?.disabledReason).toBeUndefined();
-		// Renommer existe aussi, mais attend son lot.
-		expect(ids('f')).toContain('rename');
+		// Renommer aussi, et le panneau « Propriétés » (2026-10-23)
+		expect(action('f', 'rename')?.disabledReason).toBeUndefined();
+		expect(action('f', 'properties')?.disabledReason).toBeUndefined();
 	});
 
 	// ⚠️ Une action dont la vue n'existe pas encore est VISIBLE et désactivée
@@ -143,12 +144,13 @@ describe('objets qui ne peuvent rien produire (§3 L2)', () => {
 	// fil des lots : ce test a rougi quand « Tracer » a été câblé, puis quand la
 	// vue Calcul a câblé « Dériver ». C'est le signal attendu, pas une régression.
 	it('dit qu’une action attend son lot, au lieu de ne rien faire', () => {
-		a.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		a.create({ kind: 'value', name: 'L', definition: '12[km]' });
 
-		// « Tabuler » est câblé depuis le lot 3 du tableur : « Renommer » attend encore
-		const renommer = action('f', 'rename');
-		expect(renommer).toBeDefined();
-		expect(renommer?.disabledReason).toContain('prochain lot');
+		// « Renommer » est câblé depuis le panneau « Propriétés » (2026-10-23) :
+		// « Convertir » attend encore
+		const convertir = action('L', 'convert');
+		expect(convertir).toBeDefined();
+		expect(convertir?.disabledReason).toContain('prochain lot');
 	});
 
 	// Lot 3 du tableur : « Tabuler » ouvre le formulaire de la carte

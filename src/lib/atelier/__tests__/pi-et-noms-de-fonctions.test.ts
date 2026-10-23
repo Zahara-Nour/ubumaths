@@ -28,10 +28,11 @@ function latexOf(result: ReturnType<typeof runInput>): string | undefined {
 }
 
 describe('(A) \\pi et π dans Calcul', () => {
-	it.each(['\\pi', 'π'])('.dériver cos(3x+%s/4) rend -3 sin(π/4 + 3x)', (pi) => {
+	// L'argument garde l'ordre tapé, `3x + π/4` (lot 4c, simplify-carte, S2)
+	it.each(['\\pi', 'π'])('.dériver cos(3x+%s/4) rend -3 sin(3x + π/4)', (pi) => {
 		const result = runInput(session(), `.dériver cos(3x+${pi}/4)`);
 
-		expect(latexOf(result)).toBe('-3 \\sin\\left( \\dfrac{\\pi}{4} + 3 x \\right)');
+		expect(latexOf(result)).toBe('-3 \\sin\\left( 3 x + \\dfrac{\\pi}{4} \\right)');
 	});
 
 	it('les titres d’étapes ne parlent pas de « la constante c o s »', () => {
@@ -63,7 +64,7 @@ describe('(A) \\pi et π dans Calcul', () => {
 
 		expect(outcome).toMatchObject({
 			ok: true,
-			latex: "f'(x) = -3 \\sin\\left( \\dfrac{\\pi}{4} + 3 x \\right)"
+			latex: "f'(x) = -3 \\sin\\left( 3 x + \\dfrac{\\pi}{4} \\right)"
 		});
 	});
 

@@ -128,7 +128,18 @@ export interface TidyOptions {
 	 * `ln`, dénominateur) se simplifient : avec `f = ln(kx)`, `k/(kx) → 1/x`.
 	 */
 	readonly domain?: readonly MathNode[];
+	/**
+	 * L'ordre des termes d'une somme (S2, chantier simplify-carte, 2026-10-23) :
+	 * - `'canonical'` (défaut) : rangés (`3+2x → 2x+3`) ;
+	 * - `'kept'` : l'ordre écrit, dans chaque somme, les termes semblables
+	 *   regroupés à la place du premier (`1+2x+3x → 1+5x`, `3(1+x)` inchangé).
+	 * L'ordre des facteurs d'un produit reste canonique dans les deux cas.
+	 */
+	readonly order?: TermOrder;
 }
 
 /** Les deux politiques de choix d'unité de `tidy`. */
 export type UnitChoice = 'school' | 'written';
+
+/** L'ordre des termes d'une somme : rangés, ou tels qu'écrits (S2). */
+export type TermOrder = 'canonical' | 'kept';

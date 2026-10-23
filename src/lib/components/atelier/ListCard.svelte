@@ -12,7 +12,12 @@
 	 *   partenaire (Q46) qui vivait sur la carte.
 	 */
 	import type { ListObject } from '$lib/atelier/types';
-	import { actionsFor, partnersOf, type ObjectAction } from '$lib/atelier/actions';
+	import {
+		actionsFor,
+		partnersOf,
+		actionMovesFocus,
+		type ObjectAction
+	} from '$lib/atelier/actions';
 	import { useAtelier } from '$lib/atelier/context';
 	import { displayName } from '$lib/atelier/names';
 	import { stateLabelOf } from '$lib/atelier/card-state';
@@ -43,8 +48,8 @@
 		object.definition.split(';').some((entry) => entry.trim().startsWith('='))
 	);
 
-	/** Renommer et Supprimer, toujours en fin de menu (lot 4). */
-	const LAST = new Set(['rename', 'remove']);
+	/** Propriétés, Renommer et Supprimer, toujours en fin de menu (lot 4). */
+	const LAST = new Set(['properties', 'rename', 'remove']);
 
 	/** Les actions de la liste seule : celles qui ne portent pas de partenaire. */
 	const own = $derived(actionsFor(object, atelier).filter((a) => a.partner === undefined));
@@ -96,7 +101,7 @@
 			return;
 		}
 		// Supprimer confie le focus au panneau ; Données le prend dans la grille
-		if (root === 'remove' || root === EDIT_IN_DATA.id) focusLeaves = true;
+		if (actionMovesFocus(root) || root === EDIT_IN_DATA.id) focusLeaves = true;
 		onAction?.(action, object);
 	}
 </script>

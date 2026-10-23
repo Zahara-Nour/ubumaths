@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 1 ouverte._
+_Mis à jour le 2026-10-23, après #1630._
 
-- **État** : PR 1 (cartes allégées + point de couleur + console qui défile) ouverte.
-- **Prochaine action** : PR 2 — entrée « Propriétés » du menu ⋮ et Renommer.
-- **En attente de David** : rien.
-- **Pièges en cours** : entre la PR 1 et la PR 2, les coordonnées d'un point construit, l'équation d'une droite et la longueur d'un segment ne se lisent plus nulle part : **ne pas lancer `deploy:prod` entre les deux**, ou le dire à David.
-- **Worktree / branche** : `../ubumaths-wt-atelier-proprietes` · `feat/atelier-proprietes`.
+- **État** : chantier livré — PR 1 #1627 (point de couleur, cartes sans nature ni mesure, console qui défile, noms en couleur du texte) et PR 2 #1630 (panneau Propriétés, Renommer, retours de revue, formes du cahier) mergées. Pas encore en prod.
+- **Prochaine action** : verser ce journal (`docs/archive/wip/`) quand David clôt le chantier ; les renvois du code vers ce chemin (`properties.ts`, `ObjectProperties.svelte`, tests) suivront dans une PR.
+- **En attente de David** : périmètre et aire en `(2/3)π√3` (coefficient devant) ou `2π√3/3` ? ; vérifications manuelles (`docs/wip/verifications-manuelles.md`).
+- **Pièges en cours** : aucun ; #1627 et #1630 partent ensemble au prochain `deploy:prod`.
+- **Worktree / branche** : supprimés.
 
 ## Décisions de David (2026-10-23)
 
@@ -42,3 +42,12 @@ Le constat d'une courbe dégénérée (« Aucun point ne vérifie cette équatio
 - `FigureCard` : ligne grise (nature + valeur d'une construction) retirée. Les tests qui la lisaient vérifient désormais `figureNatureOf` / `figureSummaryOf`, que la PR 2 affichera dans Propriétés.
 - Console : `CalculView` descend en bas de l'historique quand une entrée s'ajoute (tapée ou écrite par une action de carte).
 - Preuves rouges : test du point (fond `rgb(37, 99, 235)` sur la cible) et test de la console (`scrollTop` 0) rouges sans le correctif.
+
+## PR 2 — panneau Propriétés et Renommer
+
+- `properties.ts` (`propertiesOf`) : valeur, fonction, suite, liste, dépendances ; `figure-properties.ts` (`figurePropertiesOf`, écrit par `geometry-expert`) : mesures exactes de la figure.
+- `ObjectProperties.svelte` déplié sous la carte, état dans `ObjectPanel` (survit au renommage) ; `FigureStyleSettings` / `CurveStyleSettings` extraits des fenêtres de style.
+- Menu : Propriétés, Renommer (câblé sur `Atelier.rename`, qui existait déjà avec ses tests), Supprimer ; l'étiquette d'un point quitte le menu.
+- `valueAnswerOf` rend aussi la valeur approchée, le décimal exact et l'arbre.
+- Plafond d'actions d'une liste : 11 → 12 (David, 2026-10-23).
+- Écart découvert et corrigé : « Convertir » s'affichait actif sans effet (ajouté après `NOT_YET`).

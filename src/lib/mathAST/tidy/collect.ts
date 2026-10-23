@@ -22,7 +22,7 @@ import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
 import type { TypeContext } from '../numtype';
 import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
-import type { TidyOptions, TidyRule, UnitChoice } from './step-recorder';
+import type { TermOrder, TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
 import { findNodes, getChildren } from '../transforms';
@@ -90,6 +90,8 @@ type Settings = {
 	readonly typeCtx: TypeContext | undefined;
 	/** Les bases non nulles sur le domaine acquis (`domain`, S3), par leur hash. */
 	readonly nonZero: ReadonlySet<string>;
+	/** L'ordre des termes d'une somme (S2). */
+	readonly order: TermOrder;
 };
 
 /**
@@ -454,8 +456,27 @@ function quantityOf(unit: Unit): TidyQuantity | null {
 // Accumulation des facteurs
 // =============================================================================
 
+/**
+ * La clé d'une base de facteur. Avec l'ordre écrit (S2), deux écritures d'une
+ * même somme (`1+x`, `x+1`) doivent rester semblables : la clé est celle de la
+ * forme rangée, la base garde son écriture.
+ */
+function factorKey(base: MathNode, settings: Settings): string {
+	if (settings.order === 'canonical' || !containsSum(base)) return hashMathNode(base);
+	return hashMathNode(tidyExpression(base, { settings: { ...settings, order: 'canonical' } }));
+}
+
+/** Une somme quelque part dans l'arbre : sa clé dépend alors de l'ordre. */
+function containsSum(node: unknown): boolean {
+	if (node === null || typeof node !== 'object') return false;
+	if ('type' in node && (node.type === 'addition' || node.type === 'subtraction')) return true;
+	return Object.values(node).some((value) =>
+		Array.isArray(value) ? value.some(containsSum) : containsSum(value)
+	);
+}
+
 function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
-	const key = hashMathNode(base);
+	const key = factorKey(base, acc.settings);
 	const existing = acc.factors.get(key);
 	const denominator = isNegativeRational(exponent) ? exponent : ZERO;
 
@@ -977,8 +998,9 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 	);
 	const factors = [...term.factors];
 	for (const { index, primitive } of sums) {
-		const base = buildSum(sortTerms(scaleTerms(primitive, fromInteger(inSum(index)))));
-		factors[index] = { base, exponent: factors[index].exponent, key: hashMathNode(base) };
+		const scaled = scaleTerms(primitive, fromInteger(inSum(index)));
+		const base = buildSum(ordered(scaled, settings));
+		factors[index] = { base, exponent: factors[index].exponent, key: factorKey(base, settings) };
 	}
 
 	if (!hasDenominator && coefficient.d !== 1n) return term;
@@ -1204,16 +1226,23 @@ function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
 
 	const base = buildSum(sortTerms(terms.map(negateTerm)));
 	const factors = term.factors.map((factor) =>
-		factor === numerator ? { base, exponent: ONE, key: hashMathNode(base) } : factor
+		factor === numerator ? { base, exponent: ONE, key: factorKey(base, settings) } : factor
 	);
 	const merged = mergeFactors(factors, splitKeys(term.factors));
 	if (merged === null) return null;
 	return { ...term, coefficient: negRational(term.coefficient), factors: merged };
 }
 
-/** La clé des facteurs d'un terme, coefficient exclu. */
+/**
+ * La clé des facteurs d'un terme, coefficient exclu. Triée : elle ne dépend pas
+ * de l'ordre des facteurs, que l'ordre écrit (S2) peut laisser différer entre
+ * deux termes semblables (`e^x(1+x)` et `(x+1)e^x`, revue du lot 4c).
+ */
 function factorsKey(term: TidyTerm): string {
-	return term.factors.map((factor) => factor.key).join('|');
+	return term.factors
+		.map((factor) => `${factor.key}^${factor.exponent.n}/${factor.exponent.d}`)
+		.sort()
+		.join('*');
 }
 
 /**
@@ -1250,7 +1279,7 @@ function withoutDoubleSign(term: TidyTerm, settings: Settings): TidyTerm {
 		if (order === null) return factor;
 		changed = true;
 		const base = buildSum(order);
-		return { base, exponent: factor.exponent, key: hashMathNode(base) };
+		return { base, exponent: factor.exponent, key: factorKey(base, settings) };
 	});
 	return changed ? { ...term, factors: sortFactors(factors) } : term;
 }
@@ -1338,11 +1367,7 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 				: term.unit === null
 					? ''
 					: `U:${hashUnit(term.unit)}`;
-		const key = groupable
-			? term.factors.map((f) => `${f.key}^${f.exponent.n}/${f.exponent.d}`).join('*') +
-				'|' +
-				unitKey
-			: `!${index}`;
+		const key = groupable ? `${factorsKey(term)}|${unitKey}` : `!${index}`;
 
 		const existing = groups.get(key);
 		if (existing === undefined) {
@@ -1582,8 +1607,14 @@ function settingsOf(options: InnerOptions | undefined): Settings {
 	return {
 		unitChoice: options?.unitChoice ?? 'school',
 		typeCtx: options?.typeCtx,
-		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n))
+		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n)),
+		order: options?.order ?? 'canonical'
 	};
+}
+
+/** Les termes dans l'ordre réglé : rangés, ou tels qu'écrits (S2). */
+function ordered(terms: readonly TidyTerm[], settings: Settings): readonly TidyTerm[] {
+	return settings.order === 'kept' ? terms : sortTerms(terms);
 }
 
 /**
@@ -1595,7 +1626,8 @@ function innerOptions(settings: Settings): InnerOptions | undefined {
 	const isDefault =
 		settings.unitChoice === 'school' &&
 		settings.typeCtx === undefined &&
-		settings.nonZero.size === 0;
+		settings.nonZero.size === 0 &&
+		settings.order === 'canonical';
 	return isDefault ? undefined : { settings };
 }
 
@@ -1632,7 +1664,7 @@ export function tidyExpression(
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined || families === undefined) {
-		return buildSum(sortTerms(chooseUnits(collectWithSigns(terms, settings), settings)));
+		return buildSum(ordered(chooseUnits(collectWithSigns(terms, settings), settings), settings));
 	}
 
 	return narrateSum(written, terms, families, recorder, settings);
@@ -1797,6 +1829,8 @@ function narrateSum(
 	// le nombre passe d'abord en tête (sa propre phrase),
 	// puis les autres termes se rangent — l'étape de rangement ne s'attribue
 	// pas un déplacement qui n'est pas « par degré décroissant ».
+	// L'ordre écrit (S2) : rien ne se range, donc rien à raconter
+	if (settings.order === 'kept') return step('tidy-terms', buildSum(unitedCollected));
 	step('tidy-number-first', buildSum(numberFirst(unitedCollected)));
 	return step('tidy-sort-terms', buildSum(sortTerms(unitedCollected)));
 }
