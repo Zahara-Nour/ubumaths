@@ -10,7 +10,8 @@ _Mis à jour le 2026-10-23, PR des lots A + B ouverte (branche `feat/passe-lycee
 
 - **État** : lots A + B écrits (`analyse/lot-modifier-ab.py` → migration `20261024001000_passe_lycee_lot_ab`) :
   6 modèles modifiés et tagués, 3 neufs (B1-B3) ; tests d'intégration verts, rouges sans la migration.
-- **Prochaine action** : revues, CI, merge, `db:migrate` (4 conditions), vérification MCP ; puis lot C (10 modèles + C4),
+- **Prochaine action** : PR #1639 ouverte ; revues `code-reviewer` + `security-auditor` (Opus) lancées le 2026-10-23
+  (à relancer si la session a été vidée avant leur retour), CI, merge, `db:migrate` (4 conditions), vérification MCP ; puis lot C (10 modèles + C4),
   puis scissions (47 → 62 neufs + `95ee8348`, reporté du lot A), E3, H.
 - **En attente de David** : rien (question d'accès des lots A + B : personne).
 - **Pièges en cours** : `95ee8348` traité avec les scissions (une seule migration sur son contenu) ; neufs sur une
@@ -199,7 +200,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   des lots A + B. `95ee8348` reporté aux scissions (modification de V2 et scission dans une même migration).
   `lot_2bis_outils.py` étendu sans toucher aux migrations du collège : instantané et liste en paramètres, tags déjà
   posés exigés à l'identique et laissés (f3e68e4b : TCOMP-302), nœud propre d'un modèle neuf dont le point vit sur
-  une sous-notion voisine (les 3 neufs). Choix d'écriture : 9f00da01 V2 → condition `mod(b,a) == 0` (axes −3 à 3,
+  une sous-notion voisine (les 3 neufs). Choix d'écriture : 9f00da01 V2 → condition `mod(b,a) == 0` (axes de −3 à 3 par
   pas de 1/2, vérifié sur 300 tirages) ; 6be786ef perd aussi « ce n'est pas un cycle » du corrigé de V1, QCM à 3
   choix ; neuf de f2133048 : distracteur « rotation » remplacé par « symétrie d'axe y = x » ; neufs au niveau 3 de
   la catégorie de l'origine (seule au niveau 2). Specs 64/64, tirages 2 600/2 600, audit du rendu sans défaut ;
