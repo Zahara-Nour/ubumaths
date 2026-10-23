@@ -6,12 +6,12 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 3 (H) en cours._
+_Mis à jour le 2026-10-23, PR 3 (H) écrite, avant revues._
 
-- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 (#1651) en prod. PR 3 (H, 10 modèles dans leur vrai
-  programme) en écriture ; plan H = `analyse/lot-modifier.md` § 4 + verdicts de `1spe-a.csv` / `1spe-b.csv`.
-- **Prochaine action** : `analyse/lot-h.py` (outil étendu : `grades_apres`, modèle MODIFIER sans neuf), specs,
-  tirages, intégration, revues, PR.
+- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 (#1651) en prod. PR 3 (H) écrite, prouvée, commitée
+  et poussée sur `feat/passe-lycee-h` (4ef415425) ; PR pas encore ouverte.
+- **Prochaine action** : revues Opus `code-reviewer` + `security-auditor` (lancées le 2026-10-23 ; à relancer si la
+  session a été vidée), corriger, ouvrir la PR, CI, merge ; puis `db:migrate` (David, mode auto refusé).
 - **En attente de David** : rien (accès et niveau tranchés le 2026-10-23).
 - **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
   (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
@@ -289,3 +289,15 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   9724dc3d par case : réunion 2-404 (origine), intersection 2-405, complémentaire 2-406 ; 0a1ff14f V1-V3 2-207 /
   V4 2-205 ; 219c9470 « et » 2-210 (V1, V3 k = 0) / « ou » 2-408 (V2, V3 k = 1) ; 6c3ee9e6 V1, V3 2-210 / V2, V4
   2-408 ; 5426cead V2-V3 2-214 (origine) / V1 2-410 / V4 2-411.
+- **2026-10-23 — PR 3 (H) écrite et prouvée.** `analyse/lot-h.py` ; `scissions_outils.py` étendu : `grades_apres`
+  (mise à jour AVANT la création des neufs, qui copient l'origine ; vérification finale et rollback gardés ; rien
+  d'écrit sans changement de niveau : #1646 et #1651 se régénèrent à l'identique), modèle MODIFIER à une seule part.
+  Choix d'écriture : `463f483e` V3-V4 : −π devient solution ([−π ; −a[ ∪ ]a ; π]), l'ancienne spec « −π inclus »
+  devient juste ; `fccd570b` V2 réécrite (sin x > −sin a : [−π ; −π + a[ ∪ ]−a ; π]), V1 et V3 inchangées ;
+  `68db64b0` neuf : « La fonction est périodique » retiré du corrigé (hors 2de) ; `9724dc3d` : un blanc par modèle,
+  consigne « Écris cet ensemble », la V3 de l'intersection demande A ∩ B (Ā ∩ B mobilise le complémentaire) ;
+  `219c9470` V3 : k retiré, T = T1·T2 (« et ») ou T1 + T2 − T1·T2 (« ou »). Niveaux des neufs : au-dessus du plus
+  haut pris dans la catégorie (relevé en prod). Specs 259/259, tirages 14 100/14 100, audit du rendu sans défaut
+  (8 600 tirages). Intégration : 26 verts (2 sautés : options, tags d'avant) ; sans l'étape 4, 8 rouges et la suite
+  nominale tombe à sa mise en place ; les 10 suites des lots précédents restent vertes (179 tests).
+  `check:incremental` 0 erreur, cliquet tenu, `lint:fast` propre.
