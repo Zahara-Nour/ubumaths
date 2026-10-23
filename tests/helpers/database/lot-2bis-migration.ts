@@ -16,6 +16,10 @@
  * Un lot de SCISSIONS (lot D) crée en plus, pour chaque modèle, un modèle neuf (`scission` de la
  * fixture) : absent avant, présent après avec son contenu, son tag et toutes les autres colonnes de
  * son origine, supprimé par le rollback — qui refuse si une donnée d'élève y tient.
+ *
+ * Passe lycée (docs/wip/passe-lycee/analyse/lot-modifier.md) : un modèle peut déjà porter des tags
+ * (`tags_avant`), que la migration exige et laisse ; un modèle neuf peut avoir son propre nœud
+ * (`scission.noeud`, point sur une sous-notion voisine).
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -46,6 +50,8 @@ interface Modele {
 	noeud: string[];
 	grades: string[];
 	tag: { grade: string; code: string };
+	/** Tags que le modèle porte déjà (passe lycée) : posés avant, gardés après et au rollback. */
+	tags_avant?: { grade: string; code: string }[];
 	avant: Contenu;
 	apres: Contenu;
 	/**
@@ -54,7 +60,14 @@ interface Modele {
 	 */
 	categorie?: Categorie;
 	/** Lot de scissions : le modèle neuf qui reçoit l'autre partie du contenu. */
-	scission?: { id: string; niveau: number; tag: { grade: string; code: string }; contenu: Contenu };
+	scission?: {
+		id: string;
+		niveau: number;
+		tag: { grade: string; code: string };
+		contenu: Contenu;
+		/** Nœud propre (point sur une sous-notion voisine) ; absent : celui de l'origine. */
+		noeud?: string[];
+	};
 }
 
 interface Categorie {
@@ -72,6 +85,7 @@ interface Neuf {
 	niveau: number;
 	tag: { grade: string; code: string };
 	contenu: Contenu;
+	noeud?: string[];
 }
 
 interface Etat {
@@ -81,6 +95,8 @@ interface Etat {
 }
 
 export interface LotModifier {
+	/** Chantier dans les titres des suites (défaut : « Lot 2 bis »). */
+	chantier?: string;
 	/** Nom du lot dans les titres des suites (« resserrer les nombres tirés »). */
 	nom: string;
 	migration: string;
@@ -89,6 +105,11 @@ export interface LotModifier {
 	taille: number;
 	/** Nombre de modèles neufs (lot de scissions). */
 	neufs?: number;
+	/**
+	 * Le rollback refuse aussi un modèle neuf publié, rangé ailleurs ou retagué depuis (générateur de
+	 * la passe lycée ; les migrations du collège, déjà jouées, ne gardent que le contenu).
+	 */
+	gardeRangementNeufs?: boolean;
 }
 
 // ============================================================================
@@ -116,7 +137,19 @@ const PROPRES = [
 // FONCTIONS
 // ============================================================================
 
-/** Pose l'état de la prod : les copies des modèles, avec leur contenu, leur nœud et leurs niveaux d'avant. */
+/** Nœuds actifs par chemin (« branche > notion > sous-notion »). */
+async function noeudsParChemin(pg: Client): Promise<Map<string, string>> {
+	const parChemin = new Map<string, string>();
+	for (const [id, node] of await readNodePaths(pg)) {
+		if (!node.archived) parChemin.set(node.path, id);
+	}
+	return parChemin;
+}
+
+/**
+ * Pose l'état de la prod : les copies des modèles, avec leur contenu, leur nœud, leurs niveaux et
+ * leurs tags d'avant.
+ */
 async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Promise<void> {
 	await insertProdCopies(pg, {
 		templateIds: modeles.map((m) => m.id),
@@ -124,10 +157,7 @@ async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Pro
 		authorId: auteur,
 		timestamp: AVANT
 	});
-	const parChemin = new Map<string, string>();
-	for (const [id, node] of await readNodePaths(pg)) {
-		if (!node.archived) parChemin.set(node.path, id);
-	}
+	const parChemin = await noeudsParChemin(pg);
 	await pg.query(
 		'alter table public.question_templates disable trigger update_question_templates_updated_at'
 	);
@@ -169,6 +199,20 @@ async function poserEtatProd(pg: Client, auteur: string, modeles: Modele[]): Pro
 	await pg.query(
 		'alter table public.question_templates enable trigger update_question_templates_updated_at'
 	);
+	for (const m of modeles) {
+		for (const t of m.tags_avant ?? []) {
+			await pg.query(
+				`insert into public.question_template_points (template_id, point_id)
+				 select $1, id from public.curriculum_points where grade = $2 and code = $3 and archived_at is null`,
+				[m.id, t.grade, t.code]
+			);
+		}
+	}
+}
+
+/** Tags d'avant, au format de `Etat.tags`. */
+function tagsAvant(modeles: Modele[]): string[] {
+	return modeles.flatMap((m) => (m.tags_avant ?? []).map((t) => `${m.id}§${t.grade}§${t.code}`));
 }
 
 async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promise<Etat> {
@@ -207,6 +251,7 @@ async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promis
  */
 async function colonnesCopiees(pg: Client, neufs: Neuf[]): Promise<string[]> {
 	const ecartes: string[] = [];
+	const parChemin = await noeudsParChemin(pg);
 	for (const x of neufs) {
 		const r = await pg.query<{
 			neuf: Record<string, unknown> | null;
@@ -222,8 +267,11 @@ async function colonnesCopiees(pg: Client, neufs: Neuf[]): Promise<string[]> {
 			continue;
 		}
 		if (neuf.level !== x.niveau) ecartes.push(`${x.id}.level`);
+		if (x.noeud && neuf.classification_node_id !== parChemin.get(x.noeud.join(' > ')))
+			ecartes.push(`${x.id}.classification_node_id`);
 		for (const colonne of Object.keys(origine)) {
 			if (PROPRES.includes(colonne)) continue;
+			if (x.noeud && colonne === 'classification_node_id') continue;
 			if (canonique(neuf[colonne]) !== canonique(origine[colonne]))
 				ecartes.push(`${x.id}.${colonne}`);
 		}
@@ -264,8 +312,10 @@ export function decrireLotModifier(lot: LotModifier): void {
 	const idsNeufs = neufs.map((x) => x.id);
 	const tous = [...ids, ...idsNeufs];
 	const avecNeufs = neufs.length > 0;
+	const avant = tagsAvant(modeles).sort();
+	const chantier = lot.chantier ?? 'Lot 2 bis';
 
-	describe(`Lot 2 bis, ${lot.nom} (migration de données)`, () => {
+	describe(`${chantier}, ${lot.nom} (migration de données)`, () => {
 		let pg: Client;
 		let pose: Etat;
 		let apres: Etat;
@@ -301,6 +351,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 		it('l’état posé est bien celui de la prod (garde du test)', () => {
 			expect(ecarts(modeles, pose, (m) => m.avant)).toEqual([]);
 			expect(idsNeufs.filter((id) => pose.contenus.has(id))).toEqual([]);
+			expect(pose.tags).toEqual(avant);
 		});
 
 		it('chaque modèle a EXACTEMENT son nouveau contenu', () => {
@@ -319,8 +370,9 @@ export function decrireLotModifier(lot: LotModifier): void {
 			}
 		);
 
-		it('les modèles portent EXACTEMENT les tags du lot, rien de plus', () => {
+		it('les modèles portent EXACTEMENT les tags du lot et ceux d’avant, rien de plus', () => {
 			const attendus = [
+				...avant,
 				...modeles.map((m) => `${m.id}§${m.tag.grade}§${m.tag.code}`),
 				...neufs.map((x) => `${x.id}§${x.tag.grade}§${x.tag.code}`)
 			].sort();
@@ -331,14 +383,14 @@ export function decrireLotModifier(lot: LotModifier): void {
 			expect([...apres.dates.values()].filter((d) => d === AVANT)).toEqual([]);
 		});
 
-		it('le rollback écrit dans la migration rend le contenu d’avant et retire les tags', () => {
-			expect(annule.tags).toEqual([]);
+		it('le rollback écrit dans la migration rend le contenu d’avant et retire les tags posés', () => {
+			expect(annule.tags).toEqual(avant);
 			expect(ecarts(modeles, annule, (m) => m.avant)).toEqual([]);
 			expect(idsNeufs.filter((id) => annule.contenus.has(id))).toEqual([]);
 		});
 	});
 
-	describe(`Lot 2 bis, ${lot.nom} : les branches d’échec de la migration`, () => {
+	describe(`${chantier}, ${lot.nom} : les branches d’échec de la migration`, () => {
 		let pg: Client;
 		let auteur: string;
 		let eleve: string;
@@ -423,6 +475,23 @@ export function decrireLotModifier(lot: LotModifier): void {
 			);
 		});
 
+		it.runIf(avant.length > 0)(
+			'un tag relevé retiré depuis le relevé fait échouer la migration',
+			async () => {
+				const m = modeles.find((x) => (x.tags_avant ?? []).length > 0)!;
+				const t = m.tags_avant![0];
+				await echoue(
+					() =>
+						pg.query(
+							`delete from public.question_template_points q using public.curriculum_points p
+							  where q.template_id = $1 and p.id = q.point_id and p.grade = $2 and p.code = $3`,
+							[m.id, t.grade, t.code]
+						),
+					/tags relevés absents : 1/
+				);
+			}
+		);
+
 		it('le rollback refuse si un modèle a été retouché depuis la migration', async () => {
 			await pg.query('begin');
 			try {
@@ -467,7 +536,8 @@ export function decrireLotModifier(lot: LotModifier): void {
 						pg.query(
 							`insert into public.question_templates
 							 select (jsonb_populate_record(null::public.question_templates,
-							         to_jsonb(q) || jsonb_build_object('id', gen_random_uuid(), 'level', $2::integer))).*
+							         to_jsonb(q) || jsonb_build_object('id', gen_random_uuid(), 'level', $2::integer,
+							                                            'status', 'published'))).*
 							   from public.question_templates q where q.id = $1`,
 							[neufs[0].origine, neufs[0].niveau]
 						),
@@ -504,6 +574,52 @@ export function decrireLotModifier(lot: LotModifier): void {
 						),
 					/rollback : 1 donnée\(s\) d'élève tiennent aux modèles neufs/
 				);
+			}
+		);
+
+		it.runIf(avecNeufs && lot.gardeRangementNeufs)(
+			'le rollback refuse si un modèle neuf a été publié depuis la migration',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query(`update public.question_templates set status = 'published' where id = $1`, [
+							neufs[0].id
+						]),
+					new RegExp(
+						`rollback : ${neufs.length - 1} modèle\\(s\\) neuf\\(s\\) sur ${neufs.length} ont encore le statut et le nœud de la migration`
+					)
+				);
+			}
+		);
+
+		it.runIf(avecNeufs && lot.gardeRangementNeufs)(
+			'le rollback refuse si les tags d’un modèle neuf ont changé depuis la migration',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query('delete from public.question_template_points where template_id = $1', [
+							neufs[0].id
+						]),
+					new RegExp(
+						`rollback : les modèles neufs portent ${neufs.length - 1} tag\\(s\\), dont ${neufs.length - 1} posé\\(s\\)`
+					)
+				);
+			}
+		);
+
+		it.runIf(neufs.some((x) => x.noeud))(
+			'le point d’un modèle neuf déplacé hors de son nœud propre fait échouer la migration',
+			async () => {
+				const x = neufs.find((n) => n.noeud)!;
+				const origine = modeles.find((m) => m.id === x.origine)!;
+				await echoue(async () => {
+					const parChemin = await noeudsParChemin(pg);
+					await pg.query(
+						`update public.curriculum_points set node_id = $3
+						  where grade = $1 and code = $2 and archived_at is null`,
+						[x.tag.grade, x.tag.code, parChemin.get(origine.noeud.join(' > '))]
+					);
+				}, /points ou nœuds des modèles neufs introuvables : 1/);
 			}
 		);
 
