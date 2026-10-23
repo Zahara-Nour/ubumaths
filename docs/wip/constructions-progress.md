@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR « rythme de lecture » en cours._
+_Mis à jour le 2026-10-23, après #1638._
 
-- **État** : `milieu @mesure` livré (#1637). Retours de David au test : (1) codage sans segment bizarre → codage seulement si un segment visible joint A et B ; (2) consignes trop rapides à lire → pause de lecture proportionnelle à la consigne, toutes voies (validé, « oui »). PR `fix/constructions-rythme-lecture` en cours.
-- **Prochaine action** : merger cette PR, puis PR 2/3 `bissectrice @mesure` au rapporteur (phase 0 à faire valider).
-- **En attente de David** : (1) vérification #1637 (serveur 5183, worktree `-mesure`, ligne dans `verifications-manuelles.md`) ; vérification #1633 (5182, `-auxiliaires`) ; marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`. (2) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
+- **État** : lot 10 `@mesure` — PR 1/3 `milieu` livrée (#1637) ; retours de David livrés (#1638) : pause de lecture selon la consigne (60 ms/caractère, [0,5 ; 4] s, toutes voies, fondu bref puis immobile), codage AI = IB seulement sur un segment tracé. Partent au prochain `deploy:prod`.
+- **Prochaine action** : PR 2/3 `bissectrice @mesure` au rapporteur (mesure au degré, moitié, repère, tracé) — phase 0 à faire valider ; brique neuve : animer le rapporteur.
+- **En attente de David** : (1) vérification #1637 + #1638 (serveur 5183, worktree `-rythme`, ligne dans `verifications-manuelles.md`) ; #1633 et marqueurs d'angle droit en `@complet` vérifiables sur le même serveur → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`. (2) Étiquette d'un segment nommé posée au milieu, sur celle du milieu I : à traiter ? (3) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
 - **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Étiquette auxiliaire = provisoire (`setProvisionalLabel`) : `updateLabel` la rend définitive. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet.
-- **Worktree / branche** : en cours `../ubumaths-wt-constructions-rythme` (`fix/constructions-rythme-lecture`), serveur 5183 ; PR 2 : `git worktree add -b feat/constructions-bissectrice-mesure ../ubumaths-wt-constructions-bissectrice-mesure origin/main`. `-mesure` gardé pour la vérification (branche distante supprimée).
+- **Worktree / branche** : PR 2 : `git worktree add -b feat/constructions-bissectrice-mesure ../ubumaths-wt-constructions-bissectrice-mesure origin/main`. Serveur de test unique : 5183 (worktree `-rythme`, branche distante supprimée).
 
 ---
 
