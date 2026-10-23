@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, pendant le lot 4d PR 2 (PR pas encore ouverte)._
+_Mis à jour le 2026-10-23, après #1645._
 
-- **État** : lots mergés jusqu'à #1642 (lot 4d PR 1, espaces de groupement). **PR 2 en cours** sur `chore/simplify-carte-marquage-espaces` (§ 44) : script `pnpm corrections:marquage-espaces`, simulation sur la prod 55/55 verte (51 marqués + 4 brouillons de 1re spé corrigés au BIPM). Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **État** : lots mergés jusqu'à **#1645 (lot 4d PR 2 : script `pnpm corrections:marquage-espaces`)** (§ 44) ; #1642 (espaces, BIPM + réglage « Espaces dès 4 chiffres ») et le script attendent le `deploy:prod`. Simulation prod : 55/55 verts (51 marqués, 4 brouillons de 1re spé corrigés au BIPM).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d PR 1~~ → **4d PR 2 (script de marquage prod)** → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : revue `code-reviewer`, PR, CI, merge. Puis, après le `deploy:prod` de David et sur son feu vert : `pnpm corrections:marquage-espaces --publier` depuis le dépôt principal.
-- **En attente de David** : `deploy:prod`, puis le feu vert du `--publier`.
-- **Pièges en cours** : ⚠️ **ne pas déployer #1642 sans enchaîner le script** (sinon la numération accepte `7900` sans remarque) ; marquer AVANT le deploy est impossible (schéma strict de l'éditeur en prod). Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `chore/simplify-carte-marquage-espaces`.
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d PR 1~~ → ~~4d PR 2~~ → **marquage en prod (après deploy)** → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : après le `deploy:prod` de David et sur son feu vert, depuis le dépôt principal : `pnpm corrections:marquage-espaces` (simulation, 55/55 attendu) puis `--publier` ; noter la sauvegarde. Ensuite lot 4e (nouveau worktree depuis `origin/main`).
+- **En attente de David** : `deploy:prod`, puis feu vert du `--publier`.
+- **Pièges en cours** : ⚠️ **ne pas déployer #1642 sans enchaîner le script** (sinon la numération accepte `7900` sans remarque) ; marquer AVANT le deploy est impossible (schéma strict de l'éditeur en prod). Relance après interruption : modèles déjà traités sautés. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun (worktree retiré après #1645) ; le lot 4e en créera un.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -656,3 +656,5 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 **Revue `code-reviewer`** : rien de bloquant ; traités — relance après une écriture interrompue (un modèle déjà marqué ou un brouillon déjà corrigé est sauté au lieu de bloquer le lot ; les modèles des listes sont relus par identifiant), description générée limitée aux réponses concernées, preuve rouge/verte sur un modèle réel du corpus (`grandeurs/426.json` : `checkTemplate` rouge sans le réglage, vert avec). 15 tests ; simulation prod relancée : 55/55 verts, 0 déjà traité. `marquage-sonde.mts` supprimé (accord de David).
 
 **Ordre de livraison** : merge de cette PR → `deploy:prod` (David) → `pnpm corrections:marquage-espaces --publier` depuis le dépôt principal, sur le feu vert de David, aussitôt après.
+
+**Mergé : #1645** (2026-10-23, CI verte).
