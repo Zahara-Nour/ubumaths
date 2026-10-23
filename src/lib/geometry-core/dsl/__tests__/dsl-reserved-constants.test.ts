@@ -66,3 +66,17 @@ describe('Phase 6 — \\pi/e reserved as loop variables', () => {
 		expect(() => run('pour \\pi dans (1, 2, 3):\n    x = 1')).toThrow(/réservée|reservee/i);
 	});
 });
+
+describe('message des noms réservés : ce que représente le nom et quoi faire', () => {
+	it('e = perpendiculaire(…) → dit que e est le nombre e et propose un autre nom', () => {
+		expect(() => run('e = 5')).toThrow(
+			'"e" est une constante réservée : c\'est le nombre e (≈ 2,718). Choisir un autre nom, par exemple "k".'
+		);
+	});
+
+	it('\\pi = 5 → dit que π est le nombre π', () => {
+		expect(() => run('\\pi = 5')).toThrow(
+			'"π" est une constante réservée : c\'est le nombre π (≈ 3,14). Choisir un autre nom.'
+		);
+	});
+});

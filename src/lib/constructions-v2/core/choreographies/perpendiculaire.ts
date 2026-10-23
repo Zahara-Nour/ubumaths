@@ -66,6 +66,7 @@ import type {
 	ChoreographyCtx,
 	TraceTag
 } from './types';
+import { revealHiddenUsedPoints } from './reveal-points';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total
@@ -1244,9 +1245,13 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 	};
 }
 
-const arcsEgauxChoreography: ChoreographyFn = (ctx) => buildArcsEgaux(ctx);
+// Mesure |PA| et arc en A : A sert (révélé s'il est caché).
+const arcsEgauxChoreography: ChoreographyFn = (ctx) =>
+	revealHiddenUsedPoints(ctx, ctx.args.ids.slice(1, 2), buildArcsEgaux);
 const rayonLibreChoreography: ChoreographyFn = (ctx) => buildRayonLibre(ctx);
-const equerreChoreography: ChoreographyFn = (ctx) => buildEquerre(ctx);
+// Coin de l'équerre sur A : A sert (révélé s'il est caché).
+const equerreChoreography: ChoreographyFn = (ctx) =>
+	revealHiddenUsedPoints(ctx, ctx.args.ids.slice(1, 2), buildEquerre);
 
 export const VOIES_PERPENDICULAIRE_EQUERRE: readonly Voie[] = [
 	{

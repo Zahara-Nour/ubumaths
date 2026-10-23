@@ -133,6 +133,16 @@ consigne `@instruction` de l'auteur, précédée de « ↳ », le temps de la so
 (`executionStop`, `:118-133`) : l'instruction fautive n'a aucune sous-étape, la consigne du dernier
 pas joué reste ; curseur reculé → la ligne disparaît.
 Les trois visibilités et les modificateurs valent pour **toutes** les voies (passe commune).
+**Formes `parallele(P, d)` / `perpendiculaire(P, d)`** (d droite, segment ou demi-droite) :
+l'exécuteur les ramène à `(P, A, B)` avec les deux points qui portent d (`expandLineArgument`,
+`executor.ts`), dans l'ordre du langage ; toutes les voies jouent alors à l'identique. Un point de d
+**caché** sur lequel la voie pose un instrument (compas en A et B de `parallelogramme`, |PA| de
+`perpendiculaire @arcs_egaux`, coin de l'équerre de `perpendiculaire @pose_equerre`, donc aussi
+`parallele @equerre @double_perpendiculaire`) apparaît d'abord en fondu (« On choisit un point de la
+droite », `choreographies/reveal-points.ts`), classé `auxiliary-point` (visible en `@complet`
+seulement). Les voies qui n'utilisent que la direction de d n'ajoutent rien. Le critère est la
+visibilité : un point masqué par `masque(A)` dans la forme `(P, A, B)` est révélé de la même façon.
+Les consignes gardent leurs lettres en dur (« Compas en A », « (AB) »).
 Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« int. ») et
 `transporte-choreography.test.ts`.
 
@@ -254,18 +264,18 @@ Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/reto
 21 ignorés (228)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
 `converter.test.ts` (`:274`, `:330`, `:369`), faute du dossier `extern/instrumenpoche-main`.
 
-| Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                                                    |
-| --------------------------------------------------- | ------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `core/__tests__/choreographies-integration.test.ts` | 65      | décorateurs dans l'exécuteur, nombre et suite des sous-étapes de chaque voie, étiquettes, `double_perpendiculaire` (géométrie, 3 visibilités, `P ∈ (AB)`), `bissectrice(α)`, `transporte` |
-| `core/__tests__/transporte-choreography.test.ts`    | 7       | 4 modes de direction, angle plat, angle aigu, mesure conservée                                                                                                                            |
-| `core/__tests__/choreographies-resolve.test.ts`     | 23      | `resolveDecorators` (nominal, erreurs, mode direct), `lookupVoie`                                                                                                                         |
-| `core/__tests__/visibility.test.ts`                 | 10      | `applyFinalVisibility` pure, branchement dans l'exécuteur, modificateurs                                                                                                                  |
-| `core/__tests__/executor.test.ts`                   | 16      | chargement, directives, durées, déplacement depuis la dernière position, `reset`                                                                                                          |
-| `core/__tests__/timeline.test.ts`                   | 18      | navigation, défilement, vitesse, rappels, formatage                                                                                                                                       |
-| `core/__tests__/animator.test.ts`                   | 23      | `partialSegment`, `partialCircle`, `partialArc`, assouplissements                                                                                                                         |
-| `core/__tests__/render-helpers.test.ts`             | 15      | tracés SVG partiels, pointe du crayon                                                                                                                                                     |
-| `core/__tests__/converter.test.ts`                  | 35      | conversion XML → DSL, point masqué / montré (dont 21 sur fixtures, ignorés)                                                                                                               |
-| `instruments/__tests__/positioning.test.ts`         | 8       | `rulerPosition`, `compassPosition`, `applyPosition`                                                                                                                                       |
+| Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                                                                     |
+| --------------------------------------------------- | ------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `core/__tests__/choreographies-integration.test.ts` | 130     | décorateurs dans l'exécuteur, nombre et suite des sous-étapes de chaque voie, étiquettes, `double_perpendiculaire` (géométrie, 3 visibilités, `P ∈ (AB)`), `bissectrice(α)`, `transporte`, formes `(P, d)` |
+| `core/__tests__/transporte-choreography.test.ts`    | 7       | 4 modes de direction, angle plat, angle aigu, mesure conservée                                                                                                                                             |
+| `core/__tests__/choreographies-resolve.test.ts`     | 23      | `resolveDecorators` (nominal, erreurs, mode direct), `lookupVoie`                                                                                                                                          |
+| `core/__tests__/visibility.test.ts`                 | 10      | `applyFinalVisibility` pure, branchement dans l'exécuteur, modificateurs                                                                                                                                   |
+| `core/__tests__/executor.test.ts`                   | 16      | chargement, directives, durées, déplacement depuis la dernière position, `reset`                                                                                                                           |
+| `core/__tests__/timeline.test.ts`                   | 18      | navigation, défilement, vitesse, rappels, formatage                                                                                                                                                        |
+| `core/__tests__/animator.test.ts`                   | 23      | `partialSegment`, `partialCircle`, `partialArc`, assouplissements                                                                                                                                          |
+| `core/__tests__/render-helpers.test.ts`             | 15      | tracés SVG partiels, pointe du crayon                                                                                                                                                                      |
+| `core/__tests__/converter.test.ts`                  | 35      | conversion XML → DSL, point masqué / montré (dont 21 sur fixtures, ignorés)                                                                                                                                |
+| `instruments/__tests__/positioning.test.ts`         | 8       | `rulerPosition`, `compassPosition`, `applyPosition`                                                                                                                                                        |
 
 Ailleurs : `geometry-core/dsl/__tests__/directives.test.ts` (21), `parser-decorators.test.ts` (22),
 `stepper.test.ts` (19) ; `components/geometry/__tests__/GeometryCanvas.theme.svelte.test.ts`
@@ -284,12 +294,11 @@ Faits relevés dans le code le 2026-10-22.
 
 ### Fonctions manquantes
 
-| Point                                                                                                                                                                                                                      | Où                                                |
-| -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| Contrainte `@mesure` déclarée, aucune voie : toute utilisation est une erreur ; le rapporteur n'est jamais animé                                                                                                           | `choreographies/types.ts:18`, `registry.ts:25-63` |
-| Six builtins chorégraphiés seulement (`milieu`, `cercle`, `triangle_equilateral`… refusent les décorateurs)                                                                                                                | `registry.ts:66`                                  |
-| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                                                                                                                                         | `types.ts:83`                                     |
-| Formes `parallele(P, d)` / `perpendiculaire(P, d)` décorées : `resolveCallArgsOn` exige une position par argument ; une droite n'en a pas → pas de chorégraphie, repli hérité **sans erreur** (déduit du code, aucun test) | `executor.ts:511-529`                             |
+| Point                                                                                                            | Où                                                |
+| ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------- |
+| Contrainte `@mesure` déclarée, aucune voie : toute utilisation est une erreur ; le rapporteur n'est jamais animé | `choreographies/types.ts:18`, `registry.ts:25-63` |
+| Six builtins chorégraphiés seulement (`milieu`, `cercle`, `triangle_equilateral`… refusent les décorateurs)      | `registry.ts:66`                                  |
+| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                               | `types.ts:83`                                     |
 
 ### Comportements connus
 

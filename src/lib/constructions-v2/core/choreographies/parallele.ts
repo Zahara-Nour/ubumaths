@@ -30,6 +30,7 @@ import type { Figure } from '$lib/geometry-core/graph/figure';
 import { exact, numeric } from '$lib/geometry-core/types/geo-value';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import { ChoreographyError } from './types';
+import { revealHiddenUsedPoints } from './reveal-points';
 import type {
 	Voie,
 	ChoreographyFn,
@@ -810,7 +811,9 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	};
 }
 
-const parallelogrammeChoreography: ChoreographyFn = (ctx) => buildParallelogramme(ctx);
+// Compas en A puis en B : les deux points de d servent (révélés s'ils sont cachés).
+const parallelogrammeChoreography: ChoreographyFn = (ctx) =>
+	revealHiddenUsedPoints(ctx, ctx.args.ids.slice(1, 3), buildParallelogramme);
 const equerreChoreography: ChoreographyFn = (ctx) => buildEquerre(ctx);
 
 // ─── Double perpendiculaire (@euclide et @equerre) ─────────────────────────

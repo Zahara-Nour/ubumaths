@@ -112,3 +112,50 @@ describe('ConstructionPlayer — consignes des sous-étapes', () => {
 			.toBe('Règle sur les 2 points : on trace la médiatrice');
 	});
 });
+
+describe('ConstructionPlayer — parallèle à une droite d', () => {
+	it('parallele(P, d) @euclide : même première consigne que parallele(P, A, B)', async () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(4, 1)',
+			'P = point(1, 3)',
+			'd = droite(A, B)',
+			'm = parallele(P, d) @euclide'
+		].join('\n');
+		const { container } = await render(ConstructionPlayer, { script, width: 400, height: 300 });
+		// A, B, P, d, puis 1re sous-étape de la parallèle
+		await next(container, 5);
+		await expect
+			.poll(() => subStepInstruction(container))
+			.toBe('Compas en A, on prend la mesure |AB|');
+		await next(container, 5);
+		await expect
+			.poll(() => subStepInstruction(container))
+			.toBe('Règle par P et Q : on trace la parallèle');
+		expect(container.textContent).not.toContain('Exécution interrompue');
+	});
+
+	it('point caché de d : il apparaît avant que le compas s’y pose', async () => {
+		const script = [
+			'A = point(0, 0)',
+			'B = point(4, 1)',
+			'C = point(2, -1)',
+			'P = point(5, 3)',
+			'd = perpendiculaire(C, A, B)',
+			'm = parallele(P, d) @euclide'
+		].join('\n');
+		const { container } = await render(ConstructionPlayer, { script, width: 400, height: 300 });
+		// A, B, C, P, d, puis le fondu du point caché
+		await next(container, 6);
+		await expect.poll(() => subStepInstruction(container)).toBe('On choisit un point de la droite');
+		await next(container);
+		await expect
+			.poll(() => subStepInstruction(container))
+			.toBe('Compas en A, on prend la mesure |AB|');
+		await next(container, 5);
+		await expect
+			.poll(() => subStepInstruction(container))
+			.toBe('Règle par P et Q : on trace la parallèle');
+		expect(container.textContent).not.toContain('Exécution interrompue');
+	});
+});

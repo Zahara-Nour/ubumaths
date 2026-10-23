@@ -7,7 +7,7 @@
 
 import { parseDsl, createStepper } from '$lib/geometry-core/dsl';
 import type { DslStepper, DirectiveHandler } from '$lib/geometry-core/dsl';
-import type { DslStatement } from '$lib/geometry-core/dsl/types';
+import type { DslStatement, DslFunctionCallExpr } from '$lib/geometry-core/dsl/types';
 import { DslRuntimeError } from '$lib/geometry-core/dsl/errors';
 import type { DslRuntimeErrorDetails } from '$lib/geometry-core/dsl/errors';
 import { Figure } from '$lib/geometry-core/graph/figure';
@@ -17,7 +17,10 @@ import {
 	isCircleByPoint,
 	isArcByAngles,
 	isArcByPoints,
-	isPointElement
+	isPointElement,
+	isLine,
+	isSegment,
+	isRay
 } from '$lib/geometry-core/types/elements';
 import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
@@ -97,6 +100,45 @@ function resolveStringArg(val: ResolvedValue): string | undefined {
 function resolveNumberArg(val: ResolvedValue): number | undefined {
 	if (val.type === 'nombre') return val.value;
 	return undefined;
+}
+
+/**
+ * Argument d'un appel chorégraphié : expression du langage, ou id de figure
+ * déjà résolu (points porteurs d'une droite, cf. `expandLineArgument`).
+ */
+type CallArg = { readonly kind: string; readonly name?: string } | string;
+
+/** Builtins chorégraphiés qui acceptent la forme `(P, d)`. */
+const LINE_FORM_BUILTINS = new Set(['parallele', 'perpendiculaire']);
+
+/** Id de figure d'un argument identifiant, ou null. */
+function symbolFigureId(
+	arg: { readonly kind: string; readonly name?: string },
+	stepper: DslStepper
+): string | null {
+	if (arg.kind !== 'identifier' || !arg.name) return null;
+	return stepper.symbols.get(arg.name)?.figureId ?? null;
+}
+
+/**
+ * Forme `parallele(P, d)` / `perpendiculaire(P, d)` (d droite, segment ou
+ * demi-droite) : ramenée à `(P, A, B)` avec les deux points qui portent d,
+ * dans l'ordre du builtin (`resolveLinePoints`), pour que les chorégraphies
+ * pensées pour trois points jouent telles quelles. Toute autre forme est
+ * rendue inchangée.
+ */
+function expandLineArgument(callExpr: DslFunctionCallExpr, stepper: DslStepper): CallArg[] {
+	if (!LINE_FORM_BUILTINS.has(callExpr.name) || callExpr.args.length !== 2) {
+		return [...callExpr.args];
+	}
+	const [first, second] = callExpr.args;
+	const lineId = symbolFigureId(second, stepper);
+	const el = lineId ? stepper.figure.getElementById(lineId) : undefined;
+	if (!el) return [...callExpr.args];
+	if (isLine(el)) return [first, el.point1Id, el.point2Id];
+	if (isSegment(el)) return [first, el.startId, el.endId];
+	if (isRay(el)) return [first, el.originId, el.throughId];
+	return [...callExpr.args];
 }
 
 export class ConstructionExecutor {
@@ -442,7 +484,7 @@ export class ConstructionExecutor {
 		if (!principalEntry?.figureId) return null;
 		const callExpr = stmt.value;
 		if (callExpr.kind !== 'call') return null;
-		const args = this.resolveCallArgsOn(callExpr.args, stepper);
+		const args = this.resolveCallArgsOn(expandLineArgument(callExpr, stepper), stepper);
 		if (!args) return null;
 		const ctx: ChoreographyCtx = {
 			figure: stepper.figure,
@@ -503,13 +545,14 @@ export class ConstructionExecutor {
 	}
 
 	/**
-	 * Resolve a list of DSL call argument expressions to {ids, coords} for
+	 * Resolve a list of DSL call argument expressions (or figure ids already
+	 * resolved, cf. `expandLineArgument`) to {ids, coords} for
 	 * the choreography context, using the provided stepper's figure + symbols.
 	 * V1 supports only identifier args (variables referencing previously-created
 	 * points). Returns null on unresolvable args.
 	 */
 	private resolveCallArgsOn(
-		callArgs: readonly { readonly kind: string; readonly name?: string }[],
+		callArgs: readonly CallArg[],
 		stepper: DslStepper
 	): {
 		readonly ids: readonly string[];
@@ -518,12 +561,11 @@ export class ConstructionExecutor {
 		const ids: string[] = [];
 		const coords: { x: number; y: number }[] = [];
 		for (const arg of callArgs) {
-			if (arg.kind !== 'identifier' || !arg.name) return null;
-			const entry = stepper.symbols.get(arg.name);
-			if (!entry?.figureId) return null;
-			const pos = stepper.figure.getPosition(entry.figureId);
+			const figureId = typeof arg === 'string' ? arg : symbolFigureId(arg, stepper);
+			if (!figureId) return null;
+			const pos = stepper.figure.getPosition(figureId);
 			if (!pos) return null;
-			ids.push(entry.figureId);
+			ids.push(figureId);
 			coords.push({ x: geoToNumber(pos.x), y: geoToNumber(pos.y) });
 		}
 		return { ids, coords };
@@ -1112,6 +1154,11 @@ export class ConstructionExecutor {
 				// ─── Chorégraphié path : expand into N sub-step entries ───
 				if (voie && triple) {
 					const result = this.invokeChoreographyOn(stmt, voie, triple, tempStepper);
+					// Visibilité finale appliquée aussi à la pré-passe, comme à l'exécution
+					// (`drainPendingVisibility`) : une chorégraphie suivante voit les mêmes
+					// éléments visibles dans les deux passes (cf. `revealHiddenUsedPoints`).
+					// Ne crée aucun élément : l'alignement des ids est intact.
+					if (result) applyFinalVisibility(tempStepper.figure, result.produced, triple);
 					const subSteps = result?.subSteps ?? [];
 					if (subSteps.length > 0) {
 						for (let j = 0; j < subSteps.length; j++) {
