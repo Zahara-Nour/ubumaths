@@ -25,6 +25,9 @@
  * fixture donne `tags` (plusieurs tags posés) et `neufs` (plusieurs modèles neufs, chacun avec ses
  * `tags`) au lieu de `tag` et `scission`, et une origine peut changer de nœud (`noeud_apres`, R2).
  * Les deux formes sont ramenées à la seconde (`normaliser`).
+ *
+ * Passe lycée, H : un modèle peut changer de niveau scolaire (`grades_apres`, son vrai programme) ;
+ * ses neufs naissent avec ce niveau (colonne copiée de l'origine), le rollback lui rend le sien.
  */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'node:fs';
@@ -62,6 +65,8 @@ interface ModeleFixture {
 	/** Nœud d'arrivée (R2) : les points du modèle vivent ailleurs ; absent : il ne bouge pas. */
 	noeud_apres?: string[];
 	grades: string[];
+	/** Niveaux scolaires après la migration (son vrai programme) ; absent : ils ne changent pas. */
+	grades_apres?: string[];
 	tag?: Tag;
 	tags?: Tag[];
 	tags_avant?: Tag[];
@@ -85,6 +90,7 @@ interface Modele {
 	noeud: string[];
 	noeud_apres?: string[];
 	grades: string[];
+	grades_apres?: string[];
 	/** Tags posés par la migration sur le modèle. */
 	tags: Tag[];
 	/** Tags que le modèle porte déjà (passe lycée) : posés avant, gardés après et au rollback. */
@@ -125,6 +131,7 @@ interface Etat {
 	contenus: Map<string, Contenu>;
 	dates: Map<string, string>;
 	noeuds: Map<string, string>;
+	grades: Map<string, string[]>;
 	tags: string[];
 }
 
@@ -150,6 +157,8 @@ export interface LotModifier {
 	deplaces?: number;
 	/** La garde refuse aussi une origine dont le statut a changé (ses neufs en héritent). */
 	gardeStatut?: boolean;
+	/** Nombre de modèles qui changent de niveau scolaire (`grades_apres` dans la fixture). */
+	changentDeNiveau?: number;
 }
 
 // ============================================================================
@@ -271,9 +280,9 @@ function tagsAvant(modeles: Modele[]): string[] {
 
 async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promise<Etat> {
 	const q = await pg.query<
-		Contenu & { id: string; updated_at: Date; classification_node_id: string }
+		Contenu & { id: string; updated_at: Date; classification_node_id: string; grades: string[] }
 	>(
-		`select id, title, description, variations, shared, test_specs, options, updated_at, classification_node_id
+		`select id, title, description, variations, shared, test_specs, options, updated_at, classification_node_id, grades
 		   from public.question_templates where id = any($1::uuid[])`,
 		[ids]
 	);
@@ -298,6 +307,7 @@ async function lireEtat(pg: Client, ids: string[], avecOptions: boolean): Promis
 		),
 		dates: new Map(q.rows.map((r) => [r.id, r.updated_at.toISOString()])),
 		noeuds: new Map(q.rows.map((r) => [r.id, r.classification_node_id])),
+		grades: new Map(q.rows.map((r) => [r.id, r.grades])),
 		tags: t.rows.map((r) => `${r.template_id}§${r.grade}§${r.code}`).sort()
 	};
 }
@@ -367,6 +377,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 	const neufs: Neuf[] = modeles.flatMap((m) => m.neufs.map((x) => ({ ...x, origine: m.id })));
 	const tagsNeufs = neufs.flatMap((x) => x.tags.map((t) => `${x.id}§${t.grade}§${t.code}`));
 	const deplaces = modeles.filter((m) => m.noeud_apres);
+	const changent = modeles.filter((m) => m.grades_apres);
 	const idsNeufs = neufs.map((x) => x.id);
 	const tous = [...ids, ...idsNeufs];
 	const avecNeufs = neufs.length > 0;
@@ -410,6 +421,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 			expect(modeles.filter((m) => m.tag_seul)).toHaveLength(lot.tagsSeuls ?? 0);
 			expect(neufs).toHaveLength(lot.neufs ?? 0);
 			expect(deplaces).toHaveLength(lot.deplaces ?? 0);
+			expect(changent).toHaveLength(lot.changentDeNiveau ?? 0);
 		});
 
 		it('l’état posé est bien celui de la prod (garde du test)', () => {
@@ -453,6 +465,16 @@ export function decrireLotModifier(lot: LotModifier): void {
 			}
 		);
 
+		it.runIf(changent.length > 0)(
+			'chaque modèle a son niveau scolaire d’arrivée (son vrai programme), les autres gardent le leur',
+			() => {
+				const faux = modeles.filter(
+					(m) => canonique(apres.grades.get(m.id)) !== canonique(m.grades_apres ?? m.grades)
+				);
+				expect(faux.map((m) => m.id)).toEqual([]);
+			}
+		);
+
 		it('`updated_at` avance là où le contenu change, et seulement là', () => {
 			const seuls = new Set(modeles.filter((m) => m.tag_seul).map((m) => m.id));
 			const fausses = [...apres.dates].filter(([id, d]) => (d === AVANT) !== seuls.has(id));
@@ -462,6 +484,7 @@ export function decrireLotModifier(lot: LotModifier): void {
 		it('le rollback écrit dans la migration rend le contenu d’avant et retire les tags posés', () => {
 			expect(annule.tags).toEqual(avant);
 			expect(ids.map((id) => annule.noeuds.get(id))).toEqual(ids.map((id) => pose.noeuds.get(id)));
+			expect(ids.map((id) => annule.grades.get(id))).toEqual(ids.map((id) => pose.grades.get(id)));
 			expect(ecarts(modeles, annule, (m) => m.avant)).toEqual([]);
 			expect(idsNeufs.filter((id) => annule.contenus.has(id))).toEqual([]);
 		});
@@ -759,6 +782,22 @@ export function decrireLotModifier(lot: LotModifier): void {
 					},
 					new RegExp(
 						`rollback : ${deplaces.length - 1} modèle\\(s\\) déplacé\\(s\\) sur ${deplaces.length}`
+					)
+				);
+			}
+		);
+
+		it.runIf(changent.length > 0)(
+			'le rollback refuse si un modèle a de nouveau changé de niveau scolaire',
+			async () => {
+				await apresMigration(
+					() =>
+						pg.query(`update public.question_templates set grades = $2 where id = $1`, [
+							changent[0].id,
+							changent[0].grades
+						]),
+					new RegExp(
+						`rollback : ${changent.length - 1} modèle\\(s\\) sur ${changent.length} sont encore au niveau scolaire de la migration`
 					)
 				);
 			}

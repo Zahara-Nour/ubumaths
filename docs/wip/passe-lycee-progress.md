@@ -6,20 +6,21 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1651._
+_Mis à jour le 2026-10-23, #1654 ouverte, bloquée par `main` rouge._
 
-- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 réécritures (#1651) en prod (`db:migrate` fait, vérifié
-  par le MCP). Reste PR 3 (H : 10 modèles dans leur vrai programme), dernière PR des scissions.
-- **Prochaine action** : PR 3 dans un worktree neuf (`git worktree add -b feat/passe-lycee-h ../ubumaths-wt-passe-lycee
-origin/main`) ; plan H dans `docs/wip/passe-lycee/analyse/scissions-notes.md`.
-- **En attente de David** : la question d'accès de la PR 3, à reposer avant d'écrire le SQL.
+- **État** : PR 3 (H) = #1654, ouverte, revues Opus sans bloquant ; CI verte SAUF « Server Tests (shard 3/4) » :
+  `src/lib/questions/__tests__/template-fact-sheet.test.ts` (« modes en mots de l'éditeur »), rouge aussi sur `main`
+  (c9235aee7, chantier fiche-modele, 5886edff7) et en local : pas dû à #1654.
+- **Prochaine action** : quand `main` est réparé, mettre la branche à jour, CI verte, merger #1654 ; puis `db:migrate`
+  (David) et vérification par le MCP.
+- **En attente de David** : qui répare `template-fact-sheet.test.ts` sur `main` (chantier fiche-modele ou cette session).
 - **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
   (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
   niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par `toQuestionTemplate`
   (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant tout `tsx` ;
   `REECRIRE_MIGRATION=1` pour une migration jamais jouée ; `db:migrate` refusé par le mode auto → David le lance.
-- **Worktree / branche** : aucun (PR 3 à créer).
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee`, `feat/passe-lycee-h`.
 
 ## Les 5 étapes
 
@@ -280,3 +281,30 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   et `code-reviewer` sans bloquant (réponses vérifiées sur toutes les valeurs tirables). Laissé : voir « Reprendre
   ici ». CI : `vercel-maintenance.test.ts` en code 141 (SIGPIPE, instable), vert à la relance. Prod (MCP) : 10 neufs
   brouillons, 12 tags sur les neufs, 8 sur les origines ; c90fa022 et d2067413 intacts (`updated_at` du 2026-10-01).
+- **2026-10-23 — PR 3 (H) : décisions (worktree `passe-lycee`, branche `feat/passe-lycee-h`).** Question d'accès
+  tranchée par David : personne ne gagne d'accès (10 brouillons, 0 tag, 0 donnée d'élève, relu par le MCP ;
+  empreintes md5 des 10 = relevé). Niveau tranché par David : `grades` passe au vrai programme ([T_SPE] pour les 4
+  de trigonométrie, [2] pour les 6 d'ensembles, de logique et de lecture graphique) ; les neufs naissent au même
+  niveau. Plan : 463f483e, fccd570b (TSPE-458, sur [−π ; π]) et 99c772c0 (TSPE-457, V1-V2 gardées) modifiés sans
+  neuf ; 7eec7032 V1-V8 TSPE-597 / V9 TSPE-598 ; 68db64b0 V1-V2 2-491 / V3-V4 2-350 (« sur [−π ; 2π] ») ;
+  9724dc3d par case : réunion 2-404 (origine), intersection 2-405, complémentaire 2-406 ; 0a1ff14f V1-V3 2-207 /
+  V4 2-205 ; 219c9470 « et » 2-210 (V1, V3 k = 0) / « ou » 2-408 (V2, V3 k = 1) ; 6c3ee9e6 V1, V3 2-210 / V2, V4
+  2-408 ; 5426cead V2-V3 2-214 (origine) / V1 2-410 / V4 2-411.
+- **2026-10-23 — PR 3 (H) écrite et prouvée.** `analyse/lot-h.py` ; `scissions_outils.py` étendu : `grades_apres`
+  (mise à jour AVANT la création des neufs, qui copient l'origine ; vérification finale et rollback gardés ; rien
+  d'écrit sans changement de niveau : #1646 et #1651 se régénèrent à l'identique), modèle MODIFIER à une seule part.
+  Choix d'écriture : `463f483e` V3-V4 : −π devient solution ([−π ; −a[ ∪ ]a ; π]), l'ancienne spec « −π inclus »
+  devient juste ; `fccd570b` V2 réécrite (sin x > −sin a : [−π ; −π + a[ ∪ ]−a ; π]), V1 et V3 inchangées ;
+  `68db64b0` neuf : « La fonction est périodique » retiré du corrigé (hors 2de) ; `9724dc3d` : un blanc par modèle,
+  consigne « Écris cet ensemble », la V3 de l'intersection demande A ∩ B (Ā ∩ B mobilise le complémentaire) ;
+  `219c9470` V3 : k retiré, T = T1·T2 (« et ») ou T1 + T2 − T1·T2 (« ou »). Niveaux des neufs : au-dessus du plus
+  haut pris dans la catégorie (relevé en prod). Specs 259/259, tirages 14 100/14 100, audit du rendu sans défaut
+  (8 600 tirages). Intégration : 26 verts (2 sautés : options, tags d'avant) ; sans l'étape 4, 8 rouges et la suite
+  nominale tombe à sa mise en place ; les 10 suites des lots précédents restent vertes (179 tests).
+  `check:incremental` 0 erreur, cliquet tenu, `lint:fast` propre.
+- **2026-10-23 — Revues Opus de la PR 3.** `code-reviewer` : aucun bloquant (réponses recalculées à la main sur
+  toutes les specs réécrites ; ajouts SQL bien conditionnels). `security-auditor` : aucun bloquant ; aucune policy ni
+  fonction ne lit `grades`, brouillons invisibles des élèves ; le prof verra ces brouillons dans le cahier de texte de
+  ses classes de 2de / Tle au lieu de 1re. Laissé : rollback sans garde du statut des ORIGINES (une origine publiée
+  depuis serait réécrite, sans perte de donnée) ; pas de `for update` dans `$retour_neufs$` ; `$check$` ne relit pas
+  `grades` des neufs (copiés par construction, vérifié par le test) ; 99c772c0 garde ]−π ; π] et [0 ; 2π[ (réponse ∅).
