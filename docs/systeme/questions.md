@@ -28,7 +28,7 @@ couvre:
 
 > Première doc de référence du module ; le savoir était éparpillé dans les journaux de
 > [`archive/wip/`](../archive/wip/) (cités ici pour le **pourquoi**, jamais pour le code).
-> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22.
+> Vérifié contre le code le 2026-10-11 ; étape 4 des cases à unité le 2026-10-21 ; QCM et vecteurs le 2026-10-22 ; espaces de groupement le 2026-10-23.
 
 ## À quoi ça sert
 
@@ -305,6 +305,15 @@ Contraintes réglables (`options.constraints`, `ConfigurableConstraintId`) : `sp
 `reducedRadicals`, `percent`, `unit`, `intervalForm`. Mode `strict` → `bad_form`, `warn` →
 `unoptimal_form`, `off` → ignorée. Défaut `warn` (`DEFAULT_CONSTRAINT_MODE`), **sauf `form`,
 `strict`** (`DEFAULT_FORM_CONSTRAINT_MODE`, ADR 0013 : sinon `400+80` passait pour `480`).
+
+**Espaces de groupement** (`spaces`) : règle du BIPM par défaut, l'espace est facultative jusqu'à
+4 chiffres (`7900` et `7 900` justes) et exigée dès 5 (`30000` remarqué), chaque côté de la virgule
+à part. Un modèle de numération garde la règle de l'école avec la case « Espaces dès 4 chiffres »
+(`options.constraints.spacesFromFourDigits`, à côté de `allowBracketsInFirstNegativeTerm`) : le
+juge exige alors `7 900`, et l'affichage de la question écrit `7 900` (contexte
+`content-digit-grouping.ts` posé par `QuestionCard`, `FlashCard`, `CorrectionCard`,
+`CourseCardView` ; valeurs préremplies ; séries d'automatismes figées). Décision E2,
+`docs/wip/simplify-carte-progress.md` § 15 et § 43.
 
 **Lecture des formules** : réponse de l'élève et réponse attendue sont lues par le parseur avec la
 même configuration, `readingOf(instance)` (`formula-reading.ts`) : fonctions déclarées et sens de
