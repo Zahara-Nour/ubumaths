@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1623._
+_Mis à jour le 2026-10-23, lot 7 lancé (phase 0 validée)._
 
-- **État** : lot 6 **livré** — #1623 mergée : ligne « ⚠ Arrêt à la ligne N » sous les consignes au dernier pas ; 12 tests de la double perpendiculaire sur d'autres décors, tous verts (aucun bug). Lots 1 à 6 partent au prochain `deploy:prod`. Vérifications de #1621 et #1623 notées dans `verifications-manuelles.md`.
-- **Prochaine action** : choisir le lot 7 avec David.
-- **En attente de David** : le lot 7 — formes `parallele(P, d)` / `perpendiculaire(P, d)` décorées (aujourd'hui repli sans animation et sans erreur, `executor.ts:511-529`) · `@mesure` (chantier à part). À juger à l'œil : le carré d'angle droit en P (double perpendiculaire à l'équerre) est du côté de (AB), l'équerre de l'autre — à changer ?
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. `movePoint` ne fait que marquer sale → `figure.recompute()`. Positions d'instruments figées au chargement : P glissé → l'équerre ne se retourne qu'au rechargement.
-- **Worktree / branche** : `../ubumaths-wt-constructions` (lot 5) gardé pour la vérification de #1621 sur 5177, puis supprimé. Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
+- **État** : lot 7 = formes décorées `parallele(P, d)` / `perpendiculaire(P, d)` (section « Lot 7 » plus bas). Phase 0 validée par David. Lots 1 à 6 partent au prochain `deploy:prod`.
+- **Prochaine action** : tests rouges → correctif → verts → PR (revue `code-reviewer` opus : géométrie).
+- **En attente de David** : supprimer `../ubumaths-wt-constructions` (lot 5) une fois #1621 vérifiée sur 5177 ? Après le lot 7 : `@mesure` (chantier à part) ; côté du carré d'angle droit (double perpendiculaire à l'équerre).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. `movePoint` ne fait que marquer sale → `figure.recompute()`. Positions d'instruments figées au chargement.
+- **Worktree / branche** : `../ubumaths-wt-constructions-droite` · `feat/constructions-droite`.
 
 ---
 
@@ -120,3 +120,12 @@ Revue : `code-reviewer` (Sonnet).
 - `choreographies-integration.test.ts` : 12 tests « autres décors » (3 décors × 4), tous verts ; preuve : rotation de la 2e pose d'équerre inversée à la main → 6 rouges.
 - Revue `code-reviewer` opus : aucun bloquant ; mineurs 1-2 corrigés, 3 (préfixe « Ligne N » ailleurs qu'en tête) laissé, aucun message actuel concerné.
 - `check:incremental` 0 erreur · `types:cliquet` tenu · `lint:fast` propre · `docs:check-a-jour` OK · CI verte, mergée (#1623).
+
+## Lot 7 — Formes décorées `(P, d)` (2026-10-23)
+
+**Phase 0 validée par David** (2026-10-23) :
+
+- **Nominal** : `d = droite(A, B)` (ou segment `[AB]`, demi-droite `[AB)`) puis `parallele(P, d) @…` / `perpendiculaire(P, d) @…` → animation **identique** à `(P, A, B)` : mêmes sous-étapes, consignes, visibilité des 3 modes ; toutes les voies existantes. Aujourd'hui : droite tracée sans animation (les arguments non-points font abandonner la chorégraphie en silence).
+- **Point caché de `d`** (ex. `d` elle-même construite) : pour les voies qui posent l'instrument sur A ou B (`parallelogramme`, `arcs_egaux`, `pose_equerre` de la parallèle), le point caché apparaît en fondu comme point auxiliaire (masqué en `@epure`). Voies qui n'utilisent que la direction : inchangées.
+- **Erreurs** : inchangées (premier argument non-point, second non-droite, `P ∈ d` en `double_perpendiculaire`).
+- Tests d'abord : suite de sous-étapes `(P, d)` = `(P, A, B)` voie par voie, droite finale juste, visibilité 3 modes, point caché, rendu dans le lecteur.
