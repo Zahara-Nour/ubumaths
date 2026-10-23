@@ -64,6 +64,39 @@ describe('la fusion des racines s’arrête à l’indice 2', () => {
 	});
 });
 
+// Lot 5a de simplify-carte : la dérivée de x·∛x, passée par `auto`, rendait
+// `∛x + x/(3|x|)` (`sqrt-square` sur ∛(x²)) — valeur fausse pour x < 0 ; et
+// `x/(3(∛x)²)` rendait `1/3` (`square-sqrt` sur (∛x)²).
+describe('√(a²) = |a|, (√a)² = a et √(a/b) = √a/√b : racine carrée seulement', () => {
+	it.each([
+		['\\sqrt[3]{x^2}', '\\sqrt[3]{x^2}'],
+		['\\sqrt[4]{x^2}', '\\sqrt[4]{x^2}'],
+		['\\sqrt[3]{\\frac{x}{2}}', '\\sqrt[3]{\\dfrac{x}{2}}']
+	])('%s reste %s', (source, attendu) => {
+		expect(reduire(source)).toBe(attendu);
+	});
+
+	it('(∛x)² ne vaut pas x', () => {
+		expect(reduire('\\sqrt[3]{x}^{2}')).not.toBe('x');
+	});
+
+	it('la racine carrée garde ses règles', () => {
+		expect(reduire('\\sqrt{x}^{2}')).toBe('x');
+		expect(reduire('\\sqrt{\\frac{x}{2}}')).toContain('\\sqrt{x}');
+	});
+
+	it('auto : la dérivée de x·∛x garde sa valeur', () => {
+		const result = toLatex(
+			generatePedagogicalSimplifySteps(parseLatex('\\sqrt[3]{x} + \\frac{x}{3\\sqrt[3]{x^2}}'), {
+				intent: 'auto',
+				schoolLevel: 'lycee'
+			}).result
+		);
+		expect(result).not.toContain('\\left|');
+		expect(result).not.toContain('\\dfrac{1}{3}');
+	});
+});
+
 describe('les exposants se réduisent', () => {
 	it.each([
 		['e^{x}e^{2x}', '\\exponentialE^{3 x}'],

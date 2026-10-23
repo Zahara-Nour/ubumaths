@@ -97,6 +97,7 @@ import {
 	superscript
 } from '../factory';
 import { isDelimiter, isEulerConstant, isNumber, isOpposite, isSuperscript } from '../guards';
+import { findFirst } from '../transforms';
 import { expandEulerPowers } from './rules/euler-power';
 import { applyEulerIdentities } from './rules/euler-identities';
 import { expandImaginaryExponentials } from './rules/euler-formula';
@@ -2108,13 +2109,26 @@ function normalizeInner(node: MathNode, ctx?: NormalizeContext): NormalForm {
 	// (eᵃ)ⁿ, e^{ln a}), comme pour `exp(…)` — en gardant l'écriture `e^{…}`.
 	// Décision de David (option A, 2026-10-05), détail dans
 	// `rules/euler-identities.ts`. Sans base d'Euler, le nœud passe inchangé.
-	const simplified = applyEulerIdentities(preprocessed, {
-		canonicalExponent: (exponent) => denormalize(normalize(exponent))
-	});
+	const eulerContext = {
+		canonicalExponent: (exponent: MathNode) => denormalize(normalize(exponent))
+	};
+	const simplified = applyEulerIdentities(preprocessed, eulerContext);
 	recordTreeStep(ctx, 'euler-identities', preprocessed, simplified, 'summarized');
 
 	// Then normalize (Phase 2)
-	return normalizeNode(simplified, ctx);
+	const form = normalizeNode(simplified, ctx);
+
+	// Le développement fabrique de NOUVEAUX produits d'exponentielles :
+	// `eˣ(eˣ + 1) − e^{2x}` donnait `(eˣ)² − e^{2x} + eˣ`, le `eˣ·eˣ` né de la
+	// distribution restant `(eˣ)²`, sans rencontre avec le `e^{2x}` déjà réduit
+	// (bug quot-04, lot 5a de simplify-carte). Les identités repassent donc sur
+	// la forme développée, une fois ; sans base d'Euler, rien n'est relu.
+	if (findFirst(simplified, isEulerConstant) === undefined) return form;
+	const written = denormalize(form);
+	const combined = applyEulerIdentities(written, eulerContext);
+	if (hashMathNode(combined) === hashMathNode(written)) return form;
+	recordTreeStep(ctx, 'euler-identities', written, combined, 'summarized');
+	return normalizeNode(combined, ctx);
 }
 
 /** Enregistre la réécriture d'arbre d'une règle, si l'arbre a changé. */

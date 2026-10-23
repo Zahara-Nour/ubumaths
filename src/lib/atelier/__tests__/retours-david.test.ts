@@ -133,12 +133,15 @@ describe('revue : simplifier sans perdre l’ordre ni les regroupements', () => 
 		expect(derivativeOf(definition)).toBe(expected);
 	});
 
-	// 2 : l'ordre u′v − uv′ de la règle du quotient reste
-	it('la dérivée d’un quotient garde u′v − uv′', () => {
-		const answer = deriveSteps('(2x+1)/(x-1)', 'f')?.answer ?? '';
+	// 2 : l'ordre u′v − uv′ de la règle du quotient reste dans l'étape de la
+	// règle ; la dernière étape réduit le numérateur (D1, lot 5a de simplify-carte)
+	it('la dérivée d’un quotient garde u′v − uv′, puis réduit le numérateur', () => {
+		const derived = deriveSteps('(2x+1)/(x-1)', 'f');
+		const rule = derived?.steps.at(-2)?.expressionLatex ?? '';
 
-		expect(answer.replace(/\s/g, '')).not.toMatch(/-\\left\(2x\+1\\right\)\+2/);
-		expect(deriveSteps('(2x+1)/(x-1)', 'f')?.steps.at(-1)?.title).not.toBe('On simplifie');
+		expect(rule.replace(/\s/g, '')).toContain('2\\left(x-1\\right)-\\left(2x+1\\right)');
+		expect(derived?.steps.at(-1)?.title).toBe('On simplifie');
+		expect(derived?.answer).toBe("f'(x) = \\dfrac{-3}{\\left( x - 1 \\right)^2}");
 	});
 
 	// 1 : l'étape « On simplifie » montrait « 3 3 x^2 », lu 33x²

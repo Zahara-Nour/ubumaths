@@ -15,11 +15,14 @@
  * ```
  */
 
-import { multiply } from '../../factory';
+import { func, multiply } from '../../factory';
+import { isFunction } from '../../guards';
 import { tidy } from '../../tidy';
 import type { MathNode } from '../../types';
 import { P } from '../builder';
+import { tryMatch } from '../match';
 import { createRule, instantiate } from '../rule';
+import { isPlainSqrt } from './sqrt';
 import { getBindingNode } from '../types';
 import type { Rule, MatchBindings, SumPatternElement } from '../types';
 import { isMathNodeBinding } from '../types';
@@ -35,6 +38,17 @@ function isNotZero(bindings: MatchBindings): boolean {
 	const x = bindings.get('x');
 	if (!x || !isMathNodeBinding(x)) return true;
 	return !(x.type === 'number' && x.value === '0');
+}
+
+/** Le motif du radicande de `√(a²)`. */
+const SQUARE: SumPatternElement = P.pow(P._('a'), P.num(2));
+
+/** `a` quand le nœud est la racine carrée `√(a²)`, sinon `null`. */
+function squaredRadicandBase(root: MathNode | null): MathNode | null {
+	if (root === null || !isPlainSqrt(root) || !isFunction(root) || root.power !== undefined)
+		return null;
+	const bindings = tryMatch(SQUARE, root.args[0]);
+	return bindings === undefined ? null : getBindingNode(bindings, 'a');
 }
 
 // =============================================================================
@@ -133,15 +147,35 @@ export const powerRules: readonly Rule[] = [
 		name: 'neg-base-pow-odd'
 	}),
 
-	// sqrt(x^2) = |x|
-	createRule(P.func('sqrt', [P.pow(P._('x'), P.num(2))]), P.func('abs', [P._('x')]), {
-		name: 'sqrt-square'
-	}),
+	// sqrt(x^2) = |x| — racine CARRÉE seulement : `P.func('sqrt', …)` ignore
+	// l'indice (`base`), et `∛(x²)` devenait `|x|` (lot 5a de simplify-carte,
+	// dérivée de x·∛x). Même angle mort que `sqrt-product` (voir `isPlainSqrt`).
+	createRule(
+		P._('root', P.custom(isPlainSqrt, 'racine carrée')),
+		(bindings) => {
+			const base = squaredRadicandBase(getBindingNode(bindings, 'root'));
+			// Inatteignable : `condition` a déjà exigé √(a²).
+			if (base === null) throw new Error('sqrt-square: radicande carré absent');
+			return func('abs', [base]);
+		},
+		{
+			name: 'sqrt-square',
+			condition: (bindings) => squaredRadicandBase(getBindingNode(bindings, 'root')) !== null
+		}
+	),
 
 	// (sqrt(x))^2 = x (squaring undoes square root; x >= 0 implied by sqrt)
-	createRule(P.pow(P.func('sqrt', [P._('x')]), P.num(2)), P._('x'), {
-		name: 'square-sqrt'
-	}),
+	// Racine carrée seulement : `(∛x)²` ne vaut pas x.
+	createRule(
+		P.pow(P._('root', P.custom(isPlainSqrt, 'racine carrée')), P.num(2)),
+		(bindings) => {
+			const root = getBindingNode(bindings, 'root');
+			// Inatteignable : la contrainte a déjà exigé une racine carrée.
+			if (root === null || !isFunction(root)) throw new Error('square-sqrt: racine absente');
+			return root.args[0];
+		},
+		{ name: 'square-sqrt' }
+	),
 
 	// (a^m)^n = a^(m*n) (power of a power)
 	//
