@@ -48,6 +48,7 @@ import {
 import { areEquivalent } from './equivalence';
 import { assumptionOracle, isPlainAlgebra, type AnswerAssumptions } from './assumptions';
 import { extractRational } from './common/numeric';
+import { MIN_DIGITS_FOR_GROUPING } from './digit-grouping';
 import {
 	findNodes,
 	mapNode,
@@ -137,7 +138,8 @@ export function removeZeros(latex: string): string {
 
 /**
  * Check integer part for spacing violations
- * Groups of 3 from right: 1 234 567
+ * Groups of 3 from right: 1 234 567. Règle du BIPM (`digit-grouping.ts`) :
+ * espace facultative à 4 chiffres (`1024`, `1 024`), exigée dès 5 (`30 000`).
  */
 function hasIntegerSpacingViolation(integerPart: string): boolean {
 	// Remove existing spaces to get pure digits
@@ -148,9 +150,9 @@ function hasIntegerSpacingViolation(integerPart: string): boolean {
 		return false;
 	}
 
-	// 4+ digits: spacing is required (French math convention: 1 234, 12 345, etc.)
+	// Sans espace : faute dès 5 chiffres seulement ; une espace écrite doit être bien placée
 	if (!integerPart.includes(' ')) {
-		return true; // Missing required spacing
+		return digits.length >= MIN_DIGITS_FOR_GROUPING;
 	}
 
 	// Verify spacing is at correct positions
@@ -159,7 +161,8 @@ function hasIntegerSpacingViolation(integerPart: string): boolean {
 
 /**
  * Check decimal part for spacing violations
- * Groups of 3 from left: 123 456
+ * Groups of 3 from left: 123 456. Même règle que la partie entière, comptée à
+ * part : `0,1234` et `0,123 4` acceptés, `0,12345` reçoit une remarque.
  */
 function hasDecimalSpacingViolation(decimalPart: string): boolean {
 	if (!decimalPart) {
@@ -174,9 +177,8 @@ function hasDecimalSpacingViolation(decimalPart: string): boolean {
 		return false;
 	}
 
-	// 4+ digits: spacing is required (French math convention)
 	if (!decimalPart.includes(' ')) {
-		return true;
+		return digits.length >= MIN_DIGITS_FOR_GROUPING;
 	}
 
 	return !isCorrectDecimalSpacing(decimalPart);

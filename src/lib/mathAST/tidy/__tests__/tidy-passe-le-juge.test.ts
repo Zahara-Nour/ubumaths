@@ -4,7 +4,8 @@
  * `tidy` met au propre les corrections et les résultats de l'Atelier ; `checkForm`
  * (`cosmetic-transforms.ts`) juge l'écriture d'une réponse d'élève. Une écriture de
  * `tidy` que le juge signalerait serait une correction qu'on reprocherait à l'élève
- * de recopier. Réponse comparée à elle-même : seules les règles de superflu
+ * de recopier. On juge l'écriture AFFICHÉE (`toFrenchDecimal`, qui pose les espaces
+ * de groupement, règle du BIPM, § 15), celle que l'élève lit. Réponse comparée à elle-même : seules les règles de superflu
  * (`brackets`, `signs`, `reducedFractions`…) peuvent parler, pas la contrainte `form`.
  *
  * Chantier : docs/wip/simplify-carte-progress.md § 10.
@@ -15,6 +16,7 @@ import { tidy } from '../index';
 import { parseCustom } from '../../parser/custom';
 import { toLatex } from '../../latex-generator';
 import { checkForm } from '../../cosmetic-transforms';
+import { toFrenchDecimal } from '../../../utils/french-math';
 
 // Le panel des invariants de `tidy.test.ts`, puis une entrée par réécriture de `tidy`
 // (inventaire du § 10) et des écritures courantes de corrections
@@ -88,16 +90,15 @@ const PANEL = [
 	'1-x',
 	'x^2-3x+2',
 	'(x-1)/(x+1)',
-	'1/(x+1)+1'
+	'1/(x+1)+1',
+	// Espaces de groupement (E2) : `2^10`, `3*10^4`, `12345/100` plus haut
+	'1234.5678',
+	'0.12345',
+	'123456*2'
 ];
 
-// Écart connu (2026-10-22) : `toLatex` n'espace pas les chiffres (`1024`, `30000`),
-// le juge exige `1\,024` dès 4 chiffres (contrainte `spaces`). Pas un défaut de `tidy` :
-// à trancher par David (§ 10). Quand l'écart sera réglé, `it.fails` passera au rouge
-const ECART_SPACES = ['2^10', '3*10^4', '12345/100'];
-
 function judge(input: string) {
-	const written = toLatex(tidy(parseCustom(input)));
+	const written = toFrenchDecimal(toLatex(tidy(parseCustom(input))));
 	const verdict = checkForm(written, written, {});
 	expect({ written, violations: verdict.violations, messages: verdict.messages }).toEqual({
 		written,
@@ -108,10 +109,16 @@ function judge(input: string) {
 }
 
 describe('tidy passe le juge de forme', () => {
-	it.each(PANEL.filter((s) => !ECART_SPACES.includes(s)))(
-		'tidy(%s) ne reçoit aucune remarque',
-		judge
-	);
+	it.each(PANEL)('tidy(%s) ne reçoit aucune remarque', judge);
+});
 
-	it.fails.each(ECART_SPACES)('écart connu (spaces) : tidy(%s) reçoit une remarque', judge);
+describe('espaces de groupement écrits dans une correction (E2)', () => {
+	it.each([
+		['2^10', '1024'],
+		['3*10^4', '30\\,000'],
+		['1234.5678', '1234{,}5678'],
+		['0.12345', '0{,}123\\,45']
+	])('tidy(%s) s’affiche %s', (input, shown) => {
+		expect(toFrenchDecimal(toLatex(tidy(parseCustom(input))))).toBe(shown);
+	});
 });

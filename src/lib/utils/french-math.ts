@@ -3,7 +3,7 @@
  *
  * Converts decimal numbers in LaTeX expressions to French notation:
  * - Decimal point → comma with proper LaTeX spacing: {,}
- * - Thin spaces every 3 digits (if >= 4 digits): \,
+ * - Thin spaces every 3 digits (if >= 5 digits, BIPM): \,
  *
  * Un document en anglais garde le point décimal (décision du 2026-09-25) mais
  * groupe aussi par espaces fines : voir {@link toLocaleDecimal}.
@@ -12,6 +12,7 @@
  */
 
 import type { ContentLocale } from '$lib/types/locale';
+import { groupDecimalDigits, groupIntegerDigits } from '$lib/mathAST/digit-grouping';
 
 // =============================================================================
 // Types
@@ -19,7 +20,8 @@ import type { ContentLocale } from '$lib/types/locale';
 
 export interface FrenchDecimalOptions {
 	/**
-	 * Add thin spaces every 3 digits when >= 4 digits present.
+	 * Add thin spaces every 3 digits when >= 5 digits present (règle du BIPM,
+	 * `mathAST/digit-grouping.ts`) ; each side of the decimal comma counts apart.
 	 * - Integer part: spaces from right to left (1234567 → 1\,234\,567)
 	 * - Decimal part: spaces from left to right (89012345 → 890\,123\,45)
 	 *
@@ -36,43 +38,18 @@ const DEFAULT_OPTIONS: Required<FrenchDecimalOptions> = {
 	formatSpaces: true
 };
 
-/** Minimum digits to apply spacing (4 or more digits triggers spacing) */
-const MIN_DIGITS_FOR_SPACING = 4;
-
 // =============================================================================
 // Internal Helpers
 // =============================================================================
 
-/**
- * Format integer part with thin spaces from right to left.
- * Only applies spacing if >= MIN_DIGITS_FOR_SPACING digits.
- *
- * @example
- * formatIntegerPart("1234567") → "1\\,234\\,567"
- * formatIntegerPart("123") → "123"
- */
+/** Partie entière groupée par espaces fines depuis la droite, dès 5 chiffres. */
 function formatIntegerPart(intPart: string, applySpaces: boolean): string {
-	if (!applySpaces || intPart.length < MIN_DIGITS_FOR_SPACING) {
-		return intPart;
-	}
-	// Insert \, every 3 digits from the right
-	return intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+	return applySpaces ? groupIntegerDigits(intPart, '\\,') : intPart;
 }
 
-/**
- * Format decimal part with thin spaces from left to right.
- * Only applies spacing if >= MIN_DIGITS_FOR_SPACING digits.
- *
- * @example
- * formatDecimalPart("14159265") → "141\\,592\\,65"
- * formatDecimalPart("14") → "14"
- */
+/** Partie décimale groupée par espaces fines depuis la virgule, dès 5 chiffres. */
 function formatDecimalPart(decPart: string, applySpaces: boolean): string {
-	if (!applySpaces || decPart.length < MIN_DIGITS_FOR_SPACING) {
-		return decPart;
-	}
-	// Insert \, every 3 digits from the left
-	return decPart.replace(/(\d{3})(?=\d)/g, '$1\\,');
+	return applySpaces ? groupDecimalDigits(decPart, '\\,') : decPart;
 }
 
 /**
@@ -117,7 +94,7 @@ function formatSingleNumber(
  *
  * Finds standalone numbers in the LaTeX string and converts them:
  * - Decimal point → comma: 3.14 → 3{,}14
- * - Thin spaces every 3 digits (if >= 4 digits)
+ * - Thin spaces every 3 digits (if >= 5 digits)
  *
  * Preserves LaTeX commands and structure.
  *
@@ -129,8 +106,8 @@ function formatSingleNumber(
  * // Basic conversion
  * toFrenchDecimal("x = 3.14") → "x = 3{,}14"
  *
- * // With spacing (>= 4 digits)
- * toFrenchDecimal("1234.5678") → "1\\,234{,}567\\,8"
+ * // With spacing (>= 5 digits)
+ * toFrenchDecimal("12345.67891") → "12\\,345{,}678\\,91"
  *
  * // Preserves LaTeX
  * toFrenchDecimal("\\frac{3.14}{2}") → "\\frac{3{,}14}{2}"
@@ -148,11 +125,11 @@ const DECIMAL_SEPARATORS: Record<ContentLocale, string> = { fr: '{,}', en: '.' }
 /**
  * Nombres d'une formule LaTeX mis en forme selon la langue du document :
  * virgule en français (`3{,}14`), point en anglais (`3.14`) ; groupement par
- * espaces fines dès 4 chiffres dans les deux langues (`12\,500`, `3.141\,59`).
+ * espaces fines dès 5 chiffres dans les deux langues (`12\,500`, `3.141\,59`).
  * Une langue inconnue est traitée en français, comme les libellés du document.
  *
  * @example
- * toLocaleDecimal("1234.5678", "en") → "1\\,234.567\\,8"
+ * toLocaleDecimal("12345.67891", "en") → "12\\,345.678\\,91"
  */
 export function toLocaleDecimal(
 	latex: string,

@@ -26,6 +26,7 @@ import {
 	uniformDensityMoments
 } from './density';
 import type { RandomSource } from '../utils/random';
+import { groupNumberText } from '../mathAST/digit-grouping';
 
 // =============================================================================
 // Types
@@ -84,9 +85,9 @@ export const SIMULATION_LIMITS = {
 // Fonctions
 // =============================================================================
 
-/** 100000 → « 100 000 », comme dans un message à l'élève */
+/** 100000 → « 100 000 », 1000 → « 1000 » (BIPM), comme dans un message à l'élève */
 function grouped(value: number): string {
-	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+	return groupNumberText(String(value), ' ');
 }
 
 /** Un nombre de tirages : entier de 1 à `max`, sinon le message */

@@ -220,6 +220,7 @@ import { listCitedMessage } from './list-cited';
 import { cellCitedIn, cellInCalculMessage } from './grid';
 import { functionsListing, valuesListing } from './listing';
 import { commonRows, droppedNote, noCommonRowsMessage, valuesOn } from './pairs';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 
 // =============================================================================
 // Types
@@ -4189,13 +4190,14 @@ function computeInput(session: CalcSession, text: string, provenance: Provenance
 /**
  * Pourquoi la ligne garde l'écriture tapée : son résultat exact serait trop long (option A
  * de David, 2026-10-12). Le nombre de chiffres, arrondi à deux chiffres significatifs, avec
- * une espace fine insécable (« 6 000 » ne se coupe pas en fin de ligne).
+ * une espace fine insécable dès 5 chiffres (« 60 000 » ne se coupe pas en fin de ligne ;
+ * « 6000 » sans espace, BIPM).
  */
 function tooLongNote(result: ReplExecutionResult): string | null {
 	if (!result.success || result.exactTooLong === undefined) return null;
 	const magnitude = 10 ** Math.max(0, Math.floor(Math.log10(result.exactTooLong)) - 1);
 	const rounded = Math.round(result.exactTooLong / magnitude) * magnitude;
-	const written = String(rounded).replace(/\B(?=(\d{3})+(?!\d))/g, '\u202f');
+	const written = groupNumberText(String(rounded), '\u202f');
 	return `Valeur exacte trop longue (environ ${written} chiffres) : elle reste écrite telle quelle.`;
 }
 

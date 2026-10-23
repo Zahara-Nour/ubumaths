@@ -27,36 +27,42 @@ describe('toFrenchDecimal', () => {
 		});
 	});
 
-	describe('formatage avec espaces (≥ 4 chiffres)', () => {
-		it('ajoute des espaces aux entiers ≥ 4 chiffres', () => {
-			expect(toFrenchDecimal('1234')).toBe('1\\,234');
+	// Règle du BIPM (E2, simplify-carte § 15) : à 4 chiffres on n'écrit pas l'espace,
+	// dès 5 on l'écrit ; chaque côté de la virgule compte à part.
+	describe('formatage avec espaces (≥ 5 chiffres)', () => {
+		it('ajoute des espaces aux entiers ≥ 5 chiffres', () => {
+			expect(toFrenchDecimal('30000')).toBe('30\\,000');
 			expect(toFrenchDecimal('1234567')).toBe('1\\,234\\,567');
 		});
 
-		it("n'ajoute pas d'espaces aux entiers < 4 chiffres", () => {
+		it("n'ajoute pas d'espaces aux entiers de 4 chiffres ou moins", () => {
 			expect(toFrenchDecimal('123')).toBe('123');
+			expect(toFrenchDecimal('1024')).toBe('1024');
+			expect(toFrenchDecimal('2024')).toBe('2024');
 		});
 
-		it('ajoute des espaces à la partie décimale ≥ 4 chiffres', () => {
-			expect(toFrenchDecimal('3.1415')).toBe('3{,}141\\,5');
+		it('ajoute des espaces à la partie décimale ≥ 5 chiffres', () => {
+			expect(toFrenchDecimal('0.12345')).toBe('0{,}123\\,45');
 			expect(toFrenchDecimal('3.14159265')).toBe('3{,}141\\,592\\,65');
 		});
 
-		it("n'ajoute pas d'espaces à la partie décimale < 4 chiffres", () => {
+		it("n'ajoute pas d'espaces à la partie décimale de 4 chiffres ou moins", () => {
 			expect(toFrenchDecimal('3.14')).toBe('3{,}14');
 			expect(toFrenchDecimal('3.141')).toBe('3{,}141');
+			expect(toFrenchDecimal('0.1234')).toBe('0{,}1234');
 		});
 
-		it('formate correctement quand partie entière ET décimale ≥ 4 chiffres', () => {
+		it('compte chaque côté de la virgule à part', () => {
+			expect(toFrenchDecimal('1234.5678')).toBe('1234{,}5678');
 			expect(toFrenchDecimal('1234567.89012345')).toBe('1\\,234\\,567{,}890\\,123\\,45');
 		});
 
-		it('formate partie entière ≥ 4 chiffres avec partie décimale < 4 chiffres', () => {
-			expect(toFrenchDecimal('1234.5')).toBe('1\\,234{,}5');
-			expect(toFrenchDecimal('1234.56')).toBe('1\\,234{,}56');
+		it('formate partie entière ≥ 5 chiffres avec partie décimale courte', () => {
+			expect(toFrenchDecimal('12345.6')).toBe('12\\,345{,}6');
+			expect(toFrenchDecimal('1234.56')).toBe('1234{,}56');
 		});
 
-		it('formate partie décimale ≥ 4 chiffres avec partie entière < 4 chiffres', () => {
+		it('formate partie décimale ≥ 5 chiffres avec partie entière courte', () => {
 			expect(toFrenchDecimal('3.14159')).toBe('3{,}141\\,59');
 		});
 	});
@@ -116,14 +122,14 @@ describe('toFrenchDecimal', () => {
 			expect(toFrenchDecimal('y\\geq1.2')).toBe('y\\geq1{,}2');
 		});
 
-		it('convertit les entiers ≥ 4 chiffres après les opérateurs', () => {
-			expect(toFrenchDecimal('x\\times1234')).toBe('x\\times1\\,234');
+		it('convertit les entiers ≥ 5 chiffres après les opérateurs', () => {
+			expect(toFrenchDecimal('x\\times1234')).toBe('x\\times1234');
 			expect(toFrenchDecimal('y\\div12345')).toBe('y\\div12\\,345');
 		});
 
 		it('préserve les expressions complexes', () => {
-			expect(toFrenchDecimal('x = 3.14 + \\frac{1234.5}{2}')).toBe(
-				'x = 3{,}14 + \\frac{1\\,234{,}5}{2}'
+			expect(toFrenchDecimal('x = 3.14 + \\frac{12345.5}{2}')).toBe(
+				'x = 3{,}14 + \\frac{12\\,345{,}5}{2}'
 			);
 		});
 	});
@@ -147,7 +153,7 @@ describe('toFrenchDecimal', () => {
 
 		it('gère les nombres après des opérateurs', () => {
 			expect(toFrenchDecimal('x = 3.14')).toBe('x = 3{,}14');
-			expect(toFrenchDecimal('y + 1234')).toBe('y + 1\\,234');
+			expect(toFrenchDecimal('y + 12345')).toBe('y + 12\\,345');
 		});
 	});
 
@@ -156,17 +162,18 @@ describe('toFrenchDecimal', () => {
 	// nombre en deux et « 0484 » était groupé comme un entier, depuis la droite.
 	describe('virgule LaTeX {,} déjà présente', () => {
 		it('groupe les décimales depuis la gauche, comme après un point', () => {
-			expect(toFrenchDecimal('1-0{,}0484')).toBe('1-0{,}048\\,4');
-			expect(toFrenchDecimal('0{,}5625')).toBe('0{,}562\\,5');
+			expect(toFrenchDecimal('1-0{,}04841')).toBe('1-0{,}048\\,41');
+			expect(toFrenchDecimal('0{,}56255')).toBe('0{,}562\\,55');
 		});
 
-		it('laisse intacte une partie décimale de moins de 4 chiffres', () => {
+		it('laisse intacte une partie décimale de 4 chiffres ou moins', () => {
 			expect(toFrenchDecimal('0{,}105')).toBe('0{,}105');
+			expect(toFrenchDecimal('0{,}0484')).toBe('0{,}0484');
 		});
 
 		it('rend le même résultat que la notation à point, et reste stable si réappliqué', () => {
-			expect(toFrenchDecimal('0{,}0484')).toBe(toFrenchDecimal('0.0484'));
-			const once = toFrenchDecimal('0.0484');
+			expect(toFrenchDecimal('0{,}04841')).toBe(toFrenchDecimal('0.04841'));
+			const once = toFrenchDecimal('0.04841');
 			expect(toFrenchDecimal(once)).toBe(once);
 		});
 	});
@@ -179,7 +186,7 @@ describe('toFrenchDecimal — codes couleur', () => {
 		['\\textcolor{#FF5722}{3}', '\\textcolor{#FF5722}{3}'],
 		['3 \\textcolor{#2196F3}{\\times 9}', '3 \\textcolor{#2196F3}{\\times 9}'],
 		['\\color{#4CAF50} 12', '\\color{#4CAF50} 12'],
-		['\\textcolor{#FF5722}{8000} + 1234.5', '\\textcolor{#FF5722}{8\\,000} + 1\\,234{,}5']
+		['\\textcolor{#FF5722}{80000} + 12345.5', '\\textcolor{#FF5722}{80\\,000} + 12\\,345{,}5']
 	])('%s', (input, expected) => {
 		expect(toFrenchDecimal(input)).toBe(expected);
 	});
