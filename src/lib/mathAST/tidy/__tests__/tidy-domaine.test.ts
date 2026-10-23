@@ -14,6 +14,8 @@ import { parseCustom } from '../../parser/custom';
 import { toCustom } from '../../custom-generator';
 import { areEquivalent } from '../../equivalence';
 import type { TypeContext } from '../../numtype';
+import { generatePedagogicalSimplifySteps } from '../../pedagogical-simplify/pipeline';
+import type { SimplifyIntent } from '../../pedagogical-simplify/types';
 
 const t = (s: string, typeCtx?: TypeContext) => toCustom(tidy(parseCustom(s), { typeCtx }));
 
@@ -29,6 +31,10 @@ describe('tidy — une base qui peut s’annuler ne quitte pas le dénominateur'
 		['(x*y)/(x*z)', '{xy}/{xz}'],
 		['x*x^(-1)', 'x/x'],
 		['(x+1)/(x+1)', '{x+1}/{x+1}'],
+		// Revue : une somme « positif − … » n'est pas retournée (−(1−x)/(x−1))
+		['(x-1)/(x-1)', '{x-1}/{x-1}'],
+		['(x^2-4)/(x^2-4)', '{x^2-4}/{x^2-4}'],
+		['2(x^2-1)/(x^2-1)', '{2(x^2-1)}/{x^2-1}'],
 		['sqrt(x)/sqrt(x)', 'sqrt(x)/sqrt(x)']
 	])('%s → %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
@@ -128,5 +134,33 @@ describe('tidy — domaine acquis (`domain`, celui de f pour sa dérivée)', () 
 		['y/y', 'ln(x)']
 	])('%s, domaine de %s : rien d’acquis, inchangé', (input, f) => {
 		expect(withDomain(input, f)).toBe(input === 'x/x' ? 'x/x' : 'y/y');
+	});
+});
+
+describe('intentions — la base gardée par tidy est simplifiée en étape (revue)', () => {
+	const intent = (s: string, i: SimplifyIntent) =>
+		generatePedagogicalSimplifySteps(parseCustom(s), { intent: i, schoolLevel: 'lycee' });
+
+	it.each([
+		['(x-1)/(x-1)', '1'],
+		['3(x-2)/(x-2)', '3'],
+		['(x^2-1)/(x^2-1)', '1']
+	])('auto : %s → %s, avec la condition', (input, expected) => {
+		const result = intent(input, 'auto');
+		expect(toCustom(result.result)).toBe(expected);
+		expect(result.steps.some((step) => step.rule === 'fraction-cancel')).toBe(true);
+	});
+
+	it.each([
+		['3(x+2)/(x+2)', '3'],
+		['3(x-2)/(x-2)', '3']
+	])('factoriser : %s → %s', (input, expected) => {
+		expect(toCustom(intent(input, 'factoriser').result)).toBe(expected);
+	});
+
+	it('reduire : 3(x+2)/(x+2) reste, sans « on regroupe les facteurs »', () => {
+		const result = intent('3(x+2)/(x+2)', 'reduire');
+		expect(toCustom(result.result)).toBe('{3(x+2)}/{x+2}');
+		expect(result.steps.map((step) => step.rule)).not.toContain('tidy-merge-factors');
 	});
 });
