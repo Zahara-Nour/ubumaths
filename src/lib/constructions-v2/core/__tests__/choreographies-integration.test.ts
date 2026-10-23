@@ -1850,6 +1850,7 @@ describe('formes (P, d)', () => {
 		expect(steps[0].instruction).toBe('On choisit deux points de la droite');
 		expect(visibleDuring.get(M)).toEqual(steps.map(() => true));
 		expect(visibleDuring.get(H)).toEqual(steps.map(() => true));
+		expectFinalLineThrough(exec, 'parallele');
 	});
 
 	for (const call of [
@@ -1868,6 +1869,7 @@ describe('formes (P, d)', () => {
 			expect(visibleDuring.get(H)).toEqual(steps.map(() => false));
 			const produced = exec.lastChoreographyResult!.produced;
 			expect(produced.traceTags?.get(M)).toBe('auxiliary-point');
+			expectFinalLineThrough(exec, call.split('(')[0]);
 		});
 
 		it(`${call} : C visible et utilisé → aucun fondu en plus`, () => {
@@ -1908,6 +1910,51 @@ describe('formes (P, d)', () => {
 		if (builtin === 'parallele') expect(cross(dir, dirD)).toBeCloseTo(0, 9);
 		else expect(dot(dir, dirD)).toBeCloseTo(0, 9);
 		expect(cross(minus({ x: 5, y: 3 }, p1), dir)).toBeCloseTo(0, 9);
+	}
+
+	// ─── Deux constructions sur la même droite d : la pré-passe (qui bâtit le
+	// plan) doit voir R comme l'élève le voit au moment de n. ───
+
+	for (const mode of MODES) {
+		const fadeExpected = mode !== '@complet';
+		it(`m ${mode} puis n sur la même d : ${fadeExpected ? 'R remasqué → fondu' : 'R déjà visible → pas de fondu'} pour n`, () => {
+			const exec = new ConstructionExecutor();
+			exec.load(
+				[
+					...HIDDEN_DECOR,
+					'Q = point(-2, 4)',
+					'd = perpendiculaire(C, A, B)',
+					`m = parallele(P, d) @euclide ${mode}`,
+					'n = parallele(Q, d) @euclide'
+				].join('\n')
+			);
+			expect(exec.loadError).toBeNull();
+			for (let i = 0; i < HIDDEN_DECOR.length + 2; i++) exec.step();
+			const [, Rid] = carrierIds(exec, 'd');
+			const nSteps: SubStep[] = [];
+			const nVisible: boolean[] = [];
+			let inN = false;
+			while (exec.step()) {
+				const ss = exec.currentSubStep;
+				if (!ss) continue;
+				const stmt = exec.plan[exec.currentStepIndex].statement;
+				if (stmt.kind === 'assignment' && stmt.name === 'n') inN = true;
+				if (!inN) continue;
+				nSteps.push(ss);
+				nVisible.push(exec.figure.getElementById(Rid)?.visible !== false);
+			}
+			const fades = nSteps.filter(
+				(s) => s.kind === 'point-fade-in' && s.animatePointIds.includes(Rid)
+			);
+			expect(fades).toHaveLength(fadeExpected ? 1 : 0);
+			// R visible pendant toute l'animation de n.
+			expect(nVisible).toEqual(nSteps.map(() => true));
+			// Classement : rangé dans les traces de n seulement s'il a été révélé par n.
+			const produced = exec.lastChoreographyResult!.produced;
+			expect(produced.traces.includes(Rid)).toBe(fadeExpected);
+			// Visibilité finale (n en @squelette) : R masqué s'il est un point auxiliaire de n.
+			expect(exec.figure.getElementById(Rid)?.visible !== false).toBe(!fadeExpected);
+		});
 	}
 
 	// ─── Erreurs ───

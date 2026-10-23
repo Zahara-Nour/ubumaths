@@ -1154,6 +1154,11 @@ export class ConstructionExecutor {
 				// ─── Chorégraphié path : expand into N sub-step entries ───
 				if (voie && triple) {
 					const result = this.invokeChoreographyOn(stmt, voie, triple, tempStepper);
+					// Visibilité finale appliquée aussi à la pré-passe, comme à l'exécution
+					// (`drainPendingVisibility`) : une chorégraphie suivante voit les mêmes
+					// éléments visibles dans les deux passes (cf. `revealHiddenUsedPoints`).
+					// Ne crée aucun élément : l'alignement des ids est intact.
+					if (result) applyFinalVisibility(tempStepper.figure, result.produced, triple);
 					const subSteps = result?.subSteps ?? [];
 					if (subSteps.length > 0) {
 						for (let j = 0; j < subSteps.length; j++) {
