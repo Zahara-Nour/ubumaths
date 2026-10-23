@@ -19,6 +19,7 @@
 		drawingTipPosition,
 		compassDrawAngle,
 		visibleInstruments as visibleInstrumentsFor,
+		instrumentEndPose,
 		fadeInProgress
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
@@ -205,8 +206,11 @@
 				const svgPos = transformer.mathToSvg(x, y);
 				positions[state.type] = { x: svgPos.x, y: svgPos.y, rotation: -rot };
 			} else {
-				const svgPos = transformer.mathToSvg(state.x, state.y);
-				positions[state.type] = { x: svgPos.x, y: svgPos.y, rotation: -state.rotation };
+				// Étape finie : pose de fin de geste (crayon au bout du trait,
+				// compas à la fin de l'arc) ; sinon la position de l'état.
+				const pose = instrumentEndPose(state.type, animation) ?? state;
+				const svgPos = transformer.mathToSvg(pose.x, pose.y);
+				positions[state.type] = { x: svgPos.x, y: svgPos.y, rotation: -pose.rotation };
 			}
 		}
 		return positions;
@@ -233,6 +237,8 @@
 	// Compass rotation during draw phase (follows arc/circle trace)
 	let compassRotation = $derived.by(() => {
 		if (!animation || !animation.autoInstruments.has('compass') || drawProgress <= 0) return 0;
+		// Étape finie : la pose de fin de geste porte déjà l'angle de fin
+		if (instrumentEndPose('compass', animation)) return 0;
 		return compassDrawAngle(animation.animatingIds, figure, drawProgress);
 	});
 
@@ -576,6 +582,7 @@
 					{@const tip = pencilTip}
 					{@const ipos = instrumentPositions['pencil']}
 					<g
+						data-instrument="pencil"
 						transform="translate({tip?.x ?? ipos?.x ?? 0}, {tip?.y ??
 							ipos?.y ??
 							0}) rotate({isAnimating ? pencilRotation : (ipos?.rotation ?? 0)})"
@@ -586,6 +593,7 @@
 				{:else if state.type === 'ruler'}
 					{@const rpos = instrumentPositions['ruler']}
 					<g
+						data-instrument="ruler"
 						transform="translate({rpos?.x ?? 0}, {rpos?.y ?? 0}) rotate({rpos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>
@@ -595,6 +603,7 @@
 					{@const cpos = instrumentPositions['compass']}
 					{@const ca = compassAnim}
 					<g
+						data-instrument="compass"
 						transform="translate({cpos?.x ?? 0}, {cpos?.y ?? 0}) rotate({(cpos?.rotation ?? 0) +
 							compassRotation})"
 						style="perspective: 800px;"
@@ -632,6 +641,7 @@
 				{:else if state.type === 'protractor'}
 					{@const ppos = instrumentPositions['protractor']}
 					<g
+						data-instrument="protractor"
 						transform="translate({ppos?.x ?? 0}, {ppos?.y ?? 0}) rotate({ppos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>
@@ -647,6 +657,7 @@
 				{:else if state.type === 'setSquare'}
 					{@const spos = instrumentPositions['setSquare']}
 					<g
+						data-instrument="setSquare"
 						transform="translate({spos?.x ?? 0}, {spos?.y ?? 0}) rotate({spos?.rotation ?? 0})"
 						opacity={state.opacity}
 					>

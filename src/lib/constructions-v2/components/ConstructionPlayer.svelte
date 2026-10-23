@@ -9,6 +9,7 @@
 		InstrumentType,
 		InstrumentState,
 		InstrumentMove,
+		InstrumentPose,
 		DrawAnimationState
 	} from '../types';
 	import { Timeline, createInitialTimelineState } from '../core/timeline.svelte';
@@ -73,6 +74,8 @@
 	let animatingLineIds = $state<string[]>([]);
 	let autoInstruments = $state(new Set<InstrumentType>());
 	let instrumentMoves = $state(new Map<InstrumentType, InstrumentMove>());
+	let heldInstruments = $state(new Set<InstrumentType>());
+	let instrumentEndPoses = $state(new Map<InstrumentType, InstrumentPose>());
 	let movePhaseEnd = $state(0);
 	let drawPhaseStart = $state(0);
 	let drawPhaseEnd = $state(1);
@@ -80,6 +83,9 @@
 	let moveDurationMs = $state(0);
 	let compassPrevRadius = $state(0);
 	let compassCurRadius = $state(0);
+
+	// Runtime errors raised during executor.load() or .step()
+	let runtimeError = $state<RuntimeErrorInfo | null>(null);
 
 	// Pre-compute Sets once when arrays change (not every frame)
 	const EMPTY_IDS = new Set<string>();
@@ -98,6 +104,12 @@
 		animatingLineIds: tl.stepProgress < 1 ? animatingLineIdsSet : EMPTY_IDS,
 		drawProgress: tl.stepProgress,
 		autoInstruments,
+		heldInstruments,
+		instrumentEndPoses,
+		// Fin de toute la construction : figure finale sans instrument
+		// automatique, sauf arrêt sur une erreur (les instruments de la
+		// dernière étape jouée restent au-dessus du message d'arrêt).
+		constructionFinished: tl.stepCount > 0 && tl.progress >= 1 && runtimeError === null,
 		instrumentMoves,
 		movePhaseEnd,
 		drawPhaseStart,
@@ -111,9 +123,6 @@
 	// Plain JS objects (not reactive)
 	const executor = new ConstructionExecutor();
 	let timeline: Timeline | null = null;
-
-	// Runtime errors raised during executor.load() or .step()
-	let runtimeError = $state<RuntimeErrorInfo | null>(null);
 
 	// Arrêt d'exécution signalé sous les consignes, au dernier pas de la frise
 	// seulement : l'instruction fautive n'a aucune sous-étape (erreur levée
@@ -181,6 +190,8 @@
 			animatingLineIds = executor.lastStepNewLineIds;
 			autoInstruments = new Set(executor.autoInstruments);
 			instrumentMoves = new Map(executor.instrumentMoves);
+			heldInstruments = new Set(executor.heldInstruments);
+			instrumentEndPoses = new Map(executor.instrumentEndPoses);
 			movePhaseEnd = executor.movePhaseEnd;
 			drawPhaseStart = executor.drawPhaseStart;
 			drawPhaseEnd = executor.drawPhaseEnd;

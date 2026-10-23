@@ -28,7 +28,7 @@ import {
 	type GeoStyleResolved
 } from '$lib/geometry-core/rendering/svg-primitives';
 import { partialSegment, type Point2D } from './animator';
-import type { DrawAnimationState, InstrumentState } from '../types';
+import type { DrawAnimationState, InstrumentPose, InstrumentState, InstrumentType } from '../types';
 
 /**
  * Resolve a `ScalarParam` (GeoValue or `{scalarRef: id}`) to a number.
@@ -365,10 +365,11 @@ function buildArcPath(
 // =============================================================================
 
 /**
- * Instruments que le canevas affiche. Une fois l'animation finie, les
- * instruments montrés automatiquement pour l'étape disparaissent. Pendant le
- * déplacement d'un autre instrument (règle, équerre), le crayon qui trace
- * ensuite reste caché jusqu'au début du tracé ; le crayon qui se déplace
+ * Instruments que le canevas affiche. Une fois l'étape finie, les instruments
+ * montrés automatiquement restent affichés (et ceux laissés en place pendant
+ * une directive aussi) ; ils disparaissent à la fin de toute la construction.
+ * Pendant le déplacement d'un autre instrument (règle, équerre), le crayon qui
+ * trace ensuite reste caché jusqu'au début du tracé ; le crayon qui se déplace
  * lui-même (repère d'une graduation, `milieu @mesure`) reste visible.
  *
  * @param drawProgress Avancement du tracé dans l'étape (0 pendant le déplacement).
@@ -376,13 +377,23 @@ function buildArcPath(
 export function visibleInstruments(
 	states: Iterable<InstrumentState>,
 	animation:
-		Pick<DrawAnimationState, 'drawProgress' | 'autoInstruments' | 'instrumentMoves'> | undefined,
+		| Pick<
+				DrawAnimationState,
+				| 'drawProgress'
+				| 'autoInstruments'
+				| 'instrumentMoves'
+				| 'heldInstruments'
+				| 'constructionFinished'
+		  >
+		| undefined,
 	drawProgress: number
 ): InstrumentState[] {
 	const all = [...states].filter((s) => s.visible);
 	if (!animation) return all;
-	if (animation.autoInstruments.size > 0 && animation.drawProgress >= 1) {
-		return all.filter((s) => !animation.autoInstruments.has(s.type));
+	if (animation.constructionFinished) {
+		return all.filter(
+			(s) => !animation.autoInstruments.has(s.type) && !animation.heldInstruments.has(s.type)
+		);
 	}
 	if (
 		drawProgress <= 0 &&
@@ -392,6 +403,22 @@ export function visibleInstruments(
 		return all.filter((s) => s.type !== 'pencil');
 	}
 	return all;
+}
+
+/**
+ * Pose de fin de geste d'un instrument automatique, une fois l'étape finie
+ * (crayon au bout du trait, compas à la fin de l'arc) ; `null` pendant le
+ * geste ou pour un instrument qui ne bouge pas en traçant.
+ */
+export function instrumentEndPose(
+	type: InstrumentType,
+	animation:
+		Pick<DrawAnimationState, 'drawProgress' | 'autoInstruments' | 'instrumentEndPoses'> | undefined
+): InstrumentPose | null {
+	if (!animation || animation.drawProgress < 1 || !animation.autoInstruments.has(type)) {
+		return null;
+	}
+	return animation.instrumentEndPoses.get(type) ?? null;
 }
 
 /**

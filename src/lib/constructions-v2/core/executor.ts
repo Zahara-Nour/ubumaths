@@ -24,9 +24,10 @@ import {
 } from '$lib/geometry-core/types/elements';
 import { SymbolTable } from '$lib/geometry-core/dsl/symbol-table';
 import type { ResolvedArgs, ResolvedValue } from '$lib/geometry-core/dsl/builtins';
-import type { InstrumentType, InstrumentState, InstrumentMove } from '../types';
+import type { InstrumentType, InstrumentState, InstrumentMove, InstrumentPose } from '../types';
 import { createDefaultInstrumentState, DRAWABLE_TYPES } from '../types';
 import { rulerPosition, compassPosition } from '../instruments/positioning';
+import { compassDrawAngle } from './render-helpers';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import type { ScalarParam } from '$lib/geometry-core/types/geo-value';
 import { isScalarRef, isInfinityParam } from '$lib/geometry-core/types/geo-value';
@@ -220,6 +221,19 @@ export class ConstructionExecutor {
 	private _autoInstruments: Set<InstrumentType> = new Set();
 	/** Movement animations for auto-instruments (previous → new position). */
 	private _instrumentMoves = new Map<InstrumentType, InstrumentMove>();
+	/**
+	 * Instruments automatiques du dernier tracé laissés en place pendant une
+	 * directive (`@pause`, `@instruction`, `@cacher`…) : affichés immobiles
+	 * dans leur pose de fin de geste, cachés au premier pas qui n'est pas une
+	 * directive.
+	 */
+	private _heldInstruments = new Set<InstrumentType>();
+	/**
+	 * Pose de fin de geste des instruments automatiques du pas en cours dont
+	 * la position change pendant le tracé (crayon au bout du trait, compas à
+	 * l'angle de fin de l'arc).
+	 */
+	private _instrumentEndPoses = new Map<InstrumentType, InstrumentPose>();
 	/** Last known position of each instrument, independent of visibility.
 	 *  Used by recordMove to slide from the correct position even after hideAutoInstruments. */
 	private _lastInstrumentPositions = new Map<
@@ -307,6 +321,8 @@ export class ConstructionExecutor {
 		this._lastStepNewLineIds = [];
 		this._autoInstruments.clear();
 		this._instrumentMoves.clear();
+		this._heldInstruments.clear();
+		this._instrumentEndPoses.clear();
 		this._lastInstrumentPositions.clear();
 		this._timelineIndex = -1;
 		this._currentSubStep = null;
@@ -358,10 +374,15 @@ export class ConstructionExecutor {
 			// still inspect the final choreography output after `executeAll()`.
 			return false;
 		}
-		// Hide instruments that were auto-shown for the previous step
-		this.hideAutoInstruments();
 		this._timelineIndex++;
 		const entry = this._plan[this._timelineIndex];
+		// Instruments du pas précédent : laissés en place pendant une
+		// directive (pause entre deux étapes), cachés sinon.
+		if (entry.statement.kind === 'directive') {
+			this.holdAutoInstruments();
+		} else {
+			this.hideAutoInstruments();
+		}
 		this._currentSubStep = entry.subStep;
 		this._currentDecoratorTriple = entry.decoratorTriple;
 		this._currentVoie = entry.voie;
@@ -457,6 +478,7 @@ export class ConstructionExecutor {
 		this._lastStepNewLineIds = [...subStep.animateLineIds];
 		this._autoInstruments.clear();
 		this._instrumentMoves.clear();
+		this._instrumentEndPoses.clear();
 
 		// Reveal the elements that were created hidden by the choreography so
 		// the canvas overlay can animate them. The animation pipeline relies
@@ -504,6 +526,16 @@ export class ConstructionExecutor {
 				endRotation = rotation + sweepDeg;
 			}
 			this._lastInstrumentPositions.set(subStep.instrument, { x, y, rotation: endRotation });
+			// Pose de fin de geste : même balayage que la toile pendant le
+			// tracé (`compassDrawAngle`), pour que le compas ne saute pas.
+			if (
+				subStep.kind === 'compass-draw' &&
+				subStep.animateDrawableIds.length > 0 &&
+				this.stepper
+			) {
+				const sweep = compassDrawAngle(new Set(subStep.animateDrawableIds), this.stepper.figure, 1);
+				this._instrumentEndPoses.set(subStep.instrument, { x, y, rotation: rotation - sweep });
+			}
 
 			if (subStep.instrument === 'compass' && subStep.compassRadius !== undefined) {
 				this._lastCompassRadius = this._compassCurRadius;
@@ -529,6 +561,8 @@ export class ConstructionExecutor {
 						secondary.x = geoToNumber(startPos.x);
 						secondary.y = geoToNumber(startPos.y);
 					}
+					const endPose = this.pencilEndPose(seg, this.stepper.figure);
+					if (endPose) this._instrumentEndPoses.set('pencil', endPose);
 				}
 			}
 			this._autoInstruments.add(subStep.secondaryInstrument);
@@ -687,6 +721,8 @@ export class ConstructionExecutor {
 		this._lastStepNewLineIds = [];
 		this._autoInstruments.clear();
 		this._instrumentMoves.clear();
+		this._heldInstruments.clear();
+		this._instrumentEndPoses.clear();
 		this._lastInstrumentPositions.clear();
 		this._movePhaseEnd = 0;
 		this._drawPhaseStart = 0;
@@ -776,6 +812,16 @@ export class ConstructionExecutor {
 		return this._instrumentMoves;
 	}
 
+	/** Instruments automatiques du dernier tracé laissés en place pendant une directive. */
+	get heldInstruments(): Set<InstrumentType> {
+		return this._heldInstruments;
+	}
+
+	/** Pose de fin de geste des instruments automatiques du pas en cours. */
+	get instrumentEndPoses(): Map<InstrumentType, InstrumentPose> {
+		return this._instrumentEndPoses;
+	}
+
 	get movePhaseEnd(): number {
 		return this._movePhaseEnd;
 	}
@@ -810,6 +856,8 @@ export class ConstructionExecutor {
 				if (!this._instrumentStates.has(type)) {
 					this._instrumentStates.set(type, createDefaultInstrumentState(type));
 				}
+				// Le script reprend la main sur cet instrument
+				this._heldInstruments.delete(type);
 				const state = this._instrumentStates.get(type)!;
 				state.visible = true;
 				const x = args.named.get('x');
@@ -835,10 +883,12 @@ export class ConstructionExecutor {
 				const instrName = args.positional[0] ? resolveStringArg(args.positional[0]) : undefined;
 				if (instrName) {
 					const type = resolveInstrumentName(instrName);
+					if (type) this._heldInstruments.delete(type);
 					if (type && this._instrumentStates.has(type)) {
 						this._instrumentStates.get(type)!.visible = false;
 					}
 				} else {
+					this._heldInstruments.clear();
 					for (const [, state] of this._instrumentStates) {
 						state.visible = false;
 					}
@@ -854,6 +904,7 @@ export class ConstructionExecutor {
 				if (!this._instrumentStates.has(type)) {
 					this._instrumentStates.set(type, createDefaultInstrumentState(type));
 				}
+				this._heldInstruments.delete(type);
 				this._instrumentStates.get(type)!.visible = true;
 				break;
 			}
@@ -902,6 +953,7 @@ export class ConstructionExecutor {
 		const newElements = elements.slice(sizeBefore);
 		this._autoInstruments.clear();
 		this._instrumentMoves.clear();
+		this._instrumentEndPoses.clear();
 
 		for (const el of newElements) {
 			if (el.type === 'segment') {
@@ -934,6 +986,8 @@ export class ConstructionExecutor {
 				pencil.x = geoToNumber(p1.x);
 				pencil.y = geoToNumber(p1.y);
 				this._autoInstruments.add('pencil');
+				const pencilEnd = this.pencilEndPose(el, fig);
+				if (pencilEnd) this._instrumentEndPoses.set('pencil', pencilEnd);
 			} else if (
 				el.type === 'circleByRadius' ||
 				el.type === 'circleByPoint' ||
@@ -966,6 +1020,7 @@ export class ConstructionExecutor {
 				// Track last known position with END angle (where compass finishes after drawing)
 				const endAngle = this.computeCompassEndAngle(el, fig);
 				this._lastInstrumentPositions.set('compass', { x: cx, y: cy, rotation: endAngle });
+				this._instrumentEndPoses.set('compass', { x: cx, y: cy, rotation: endAngle });
 			}
 		}
 
@@ -1117,13 +1172,61 @@ export class ConstructionExecutor {
 		return 100;
 	}
 
-	/** Hide instruments that were auto-shown for the previous step. */
+	/** Cache les instruments montrés automatiquement pour le pas précédent,
+	 *  y compris ceux laissés en place pendant une directive. */
 	hideAutoInstruments(): void {
-		for (const type of this._autoInstruments) {
+		for (const type of [...this._autoInstruments, ...this._heldInstruments]) {
 			const state = this._instrumentStates.get(type);
 			if (state) state.visible = false;
 		}
 		this._autoInstruments.clear();
+		this._heldInstruments.clear();
+		this._instrumentEndPoses.clear();
+	}
+
+	/**
+	 * Pas de directive (`@pause`, `@instruction`…) : les instruments
+	 * automatiques du pas précédent restent affichés, immobiles, dans leur
+	 * pose de fin de geste. Ils ne sont plus animés (ni déplacement, ni
+	 * levée du compas) : plus rien à tracer pendant ce pas.
+	 */
+	private holdAutoInstruments(): void {
+		for (const type of this._autoInstruments) {
+			const state = this._instrumentStates.get(type);
+			if (!state) continue;
+			const end = this._instrumentEndPoses.get(type);
+			if (end) {
+				state.x = end.x;
+				state.y = end.y;
+				state.rotation = end.rotation;
+			}
+			this._heldInstruments.add(type);
+		}
+		this._autoInstruments.clear();
+		this._instrumentMoves.clear();
+		this._instrumentEndPoses.clear();
+		this._movePhaseEnd = 0;
+		this._drawPhaseStart = 0;
+		this._drawPhaseEnd = 1;
+		this._pausePhaseStart = 1;
+		this._moveDurationMs = 0;
+	}
+
+	/**
+	 * Pose du crayon au bout d'un segment tracé : à l'extrémité, incliné de
+	 * 45° sur le trait comme pendant le tracé (`pencilRotation` de la toile).
+	 */
+	private pencilEndPose(el: GeoElement, fig: Figure): InstrumentPose | null {
+		if (!isSegment(el)) return null;
+		const p1 = fig.getPosition(el.startId);
+		const p2 = fig.getPosition(el.endId);
+		if (!p1 || !p2) return null;
+		const x1 = geoToNumber(p1.x);
+		const y1 = geoToNumber(p1.y);
+		const x2 = geoToNumber(p2.x);
+		const y2 = geoToNumber(p2.y);
+		const angle = Math.atan2(y2 - y1, x2 - x1) * (180 / Math.PI);
+		return { x: x2, y: y2, rotation: angle + 45 };
 	}
 
 	// ─── Duration calculation ────────────────────────────────
