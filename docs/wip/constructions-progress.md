@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 10 en cours (`@mesure`, PR 1/3 : `milieu`)._
+_Mis à jour le 2026-10-23, après #1637._
 
-- **État** : lot 10 `@mesure` lancé, plan validé par David (3 PR : `milieu` à la règle graduée → `bissectrice` au rapporteur → `mediatrice` milieu mesuré + équerre ; pas `perpendiculaire`). PR 1 `milieu` : tests rouges commités, code en cours. Lots 1 à 9 partent au prochain `deploy:prod`.
-- **Prochaine action** : coder la voie `milieu @mesure` (`choreographies/milieu.ts`), verts, revue `code-reviewer` Sonnet, doc `constructions.md`, PR.
-- **En attente de David** : (1) vérification #1633 (serveur 5182, worktree `-auxiliaires`) ; marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`. (2) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
+- **État** : lot 10 `@mesure`, PR 1/3 **livrée** — #1637 mergée : `milieu @mesure` à la règle graduée (lecture au mm, calcul dans les consignes, codage AI = IB en `@complet`) ; crayon visible quand il se déplace seul (`visibleInstruments`). Lots 1 à 10.1 partent au prochain `deploy:prod`.
+- **Prochaine action** : PR 2/3 `bissectrice @mesure` au rapporteur (mesure de l'angle au degré, moitié, repère, tracé) — phase 0 à écrire et faire valider ; brique neuve : animer le rapporteur (jamais animé jusqu'ici). Nouveau worktree `-bissectrice-mesure` depuis `origin/main`.
+- **En attente de David** : (1) vérification #1637 (serveur 5183, worktree `-mesure`, ligne dans `verifications-manuelles.md`) ; vérification #1633 (5182, `-auxiliaires`) ; marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`. (2) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
 - **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Étiquette auxiliaire = provisoire (`setProvisionalLabel`) : `updateLabel` la rend définitive. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet.
-- **Worktree / branche** : `../ubumaths-wt-constructions-mesure`, `feat/constructions-mesure`.
+- **Worktree / branche** : PR 2 : `git worktree add -b feat/constructions-bissectrice-mesure ../ubumaths-wt-constructions-bissectrice-mesure origin/main`. `-mesure` gardé pour la vérification (branche distante supprimée).
 
 ---
 
