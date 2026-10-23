@@ -6,18 +6,17 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1635, son `db:migrate` et l'instantané repris._
+_Mis à jour le 2026-10-23, phase 0 du lot MODIFIER + TAG_PAR_VARIATION._
 
-- **État** : étape e close. #1632 (tags) et #1635 (4 libellés, TSPE-626 et TCOMP-379) mergées et **jouées en prod**,
-  vérifiées par le MCP (libellés, places 201 et 53, grades numérotés 1..326 et 1..179). Worktree supprimé.
-- **Prochaine action** : à choisir par David parmi les restes : lot MODIFIER + scissions des TAG_PAR_VARIATION ;
-  1SPE-244 à re-ranger sur « racines » puis taguer eae2ff6a ; automatisme 1re spé BO l. 274 sans point ; 85
-  points techno sans borne ; `9a6087c5` 2 % d'échecs.
-- **En attente de David** : ce choix ; vérification #1635 notée dans `verifications-manuelles.md`.
-- **Pièges en cours** : instantané à jour = `analyse/etat-prod-2026-10-23b/` (nœuds, points, modèles, **tags**),
-  empreintes = prod à 12 h 20 ; l'ancien `etat-prod-2026-10-23/` reste pour `generer-migration-tags.py`. Base locale :
-  `20261022200000` et `20261023150000` notées jouées (`migration repair --local`, policies déjà en place).
-- **Worktree / branche** : aucun.
+- **État** : étape e close, en prod. Instantané à jour : `analyse/etat-prod-2026-10-23b/` (tags compris). Lot
+  MODIFIER + TAG_PAR_VARIATION en phase 0 : principes tranchés (journal), listes prêtes : `analyse/lot-modifier.md`
+  (18 MODIFIER en lots A/B/C, 7 choix, 10 modèles hors programme à leur niveau), `analyse/scissions-plan.csv` +
+  `scissions-notes.md` (47 scissions → 62 neufs, 2 sans tag, 11 à trancher, 4 contradictions).
+- **Prochaine action** : page à cocher de ces choix, puis migrations par lot (méthode `arbre-notions/analyse/lot-2bis-*.py`).
+- **En attente de David** : validation de la page (choix B1-B3, C1-C4, § 4 hors programme, A_TRANCHER, contradictions).
+- **Pièges en cours** : l'ancien `etat-prod-2026-10-23/` reste pour `generer-migration-tags.py`. Base locale :
+  `20261022200000` et `20261023150000` notées jouées (`migration repair --local`).
+- **Worktree / branche** : aucun (analyse en doc sur `main`).
 
 ## Les 5 étapes
 

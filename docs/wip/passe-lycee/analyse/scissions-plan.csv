@@ -1,0 +1,123 @@
+template_id_origine;role;variations;T_SPE_ou_programme_1;programme_2;titre_propose;remarque
+536c01bb-8401-4f53-b8ca-faf9bf4c243d;ORIGINE;V1;1SPE-202;;Identité ou équation : reconnaître une identité;égalité 1-1 : tag actuel 1SPE-202
+536c01bb-8401-4f53-b8ca-faf9bf4c243d;NEUF;V2;1SPE-366;;Statut d'une lettre : variable, inconnue ou paramètre;une variation, 6 énoncés (k = 0..5)
+61e2ac1f-c21d-46ce-b5e2-57a72b9680af;A_TRANCHER;V1-V5;1SPE-213;;Reconnaître une suite arithmétique à partir de ses premiers termes;reco : dédoubler et réécrire (m-1spe-a-3), le double « géométrique ? » sur 1SPE-216
+d2943133-ebf7-424d-946a-8fed6cfa76be;A_TRANCHER;V1-V6;1SPE-213;;Reconnaître une suite arithmétique à partir de sa forme explicite;reco : dédoubler et réécrire (m-1spe-a-3), le double « géométrique ? » sur 1SPE-216
+f63408c5-ec96-4a17-92bc-15796e0b9a61;A_TRANCHER;V1-V5;1SPE-213;;Reconnaître une suite arithmétique à partir de sa relation de récurrence;reco : dédoubler et réécrire (m-1spe-a-3), le double « géométrique ? » sur 1SPE-216
+d2067413-da43-42bb-a24c-642d2a3cc5e8;A_TRANCHER;V1-V6;1SPE-213;;Reconnaître une suite arithmétique sur un nuage de points;"reco : dédoubler et réécrire (m-1spe-a-3), le double sur 1SPE-216 ; tag actuel 1SPE-214 retiré"
+27d77564-e109-4681-8a64-13a3ee1729cd;ORIGINE;V2,V3;1SPE-379;;Valeur d'un placement à intérêts composés;tag actuel 1SPE-230 passe au neuf
+27d77564-e109-4681-8a64-13a3ee1729cd;NEUF;V1;1SPE-230;;Valeur d'un placement à intérêts simples;
+c90fa022-9493-4812-adb7-c785babee9d4;A_TRANCHER;V1-V3;1SPE-230;;Intérêts simples ou composés : la suite est-elle arithmétique ?;reco : dédoubler et réécrire (m-1spe-a-3), le double « géométrique ? » sur 1SPE-379
+f8ccc8b6-b5ec-4fce-9c74-8dd1520bb709;SANS_TAG;V1-V12;;;Vrai ou Faux sur les polynômes du second degré;"vrai/faux, 7 points ; V12 reste à revoir"
+0dee4515-8030-441c-bd7c-f1b7418e664b;A_TRANCHER;V1,V2;1SPE-245;;Somme des racines;reco : scission par case (m-1spe-a-6), neuf V1,V2 « produit » sur 1SPE-383
+a86442c1-78a0-42d1-af23-7f43d217bfa3;ORIGINE;V1-V4,V6;1SPE-266;;Calculer une dérivée;"variable commune a (3..5) : sert à V3 et V6 seulement, ne pas la copier ; tag actuel 1SPE-264 retiré"
+a86442c1-78a0-42d1-af23-7f43d217bfa3;NEUF;V5;1SPE-393;;Dérivée de la fonction racine carrée;"instance unique ; le CSV propose aussi de retirer V5"
+68166a11-b481-44cc-b881-07252a6fb98f;ORIGINE;V2-V4;1SPE-292;;Signe de l'exponentielle;
+68166a11-b481-44cc-b881-07252a6fb98f;NEUF;V1;1SPE-289;;Valeur de e⁰;instance unique
+68166a11-b481-44cc-b881-07252a6fb98f;NEUF;V5;1SPE-291;;Valeur approchée du nombre e;instance unique
+9a4592bf-5e79-4a4a-bb1a-698a715a4a34;ORIGINE;V2-V4;1SPE-292;;Équations particulières avec l'exponentielle;
+9a4592bf-5e79-4a4a-bb1a-698a715a4a34;NEUF;V1;1SPE-405;;Résoudre e^(ax+b) = 1;ou rattacher V1 à l'un des 4 modèles 1SPE-405 de m-1spe-b-1
+74363137-8fef-4a59-bb0a-ce1c0908198f;ORIGINE;V1,V2,V4;1SPE-320;;Norme d'une somme ou d'une différence;tag actuel 1SPE-315 retiré
+74363137-8fef-4a59-bb0a-ce1c0908198f;NEUF;V3;1SPE-321;;Produit scalaire à partir de trois normes;
+dfb727cd-c55b-439c-8738-0e20484369c5;ORIGINE;V1,V3,V4;TSPE-308;;Nombre de parties d'un ensemble : 2 puissance n;
+dfb727cd-c55b-439c-8738-0e20484369c5;NEUF;V2;TSPE-542;;Nombre de mots binaires de longueur n;
+dfb727cd-c55b-439c-8738-0e20484369c5;NEUF;V5;TSPE-543;;Nombre de chemins d'un arbre à n niveaux;
+0bde6091-c122-46c0-94d5-a97cdde28d9d;ORIGINE;V1,V2;TSPE-546;;Chemins sur un quadrillage : combinaisons;tag actuel TSPE-312 retiré
+0bde6091-c122-46c0-94d5-a97cdde28d9d;NEUF;V3;TSPE-545;;Mots à deux lettres : combinaisons;
+7d9d9b81-e11f-4572-8221-21e95107112d;ORIGINE;V1,V2;TSPE-313;;Formule des coefficients binomiaux;
+7d9d9b81-e11f-4572-8221-21e95107112d;NEUF;V3;TSPE-311;;Permutations : ranger n objets;
+7d9d9b81-e11f-4572-8221-21e95107112d;NEUF;V4;TSPE-309;;Arrangements : nombre de podiums;
+119b9148-e95b-4865-b0d4-52f0cf264de2;ORIGINE;V1;TSPE-557;;Espace : norme d'un vecteur;égalité 1-1, tag actuel TSPE-345 hors des deux : premier code du CSV
+119b9148-e95b-4865-b0d4-52f0cf264de2;NEUF;V2;TSPE-346;;Espace : distance entre deux points;
+1277a5b6-b979-4e3b-b5b6-e10aedfbedfb;ORIGINE;V1,V2;TSPE-345;;Espace : calculer un produit scalaire;
+1277a5b6-b979-4e3b-b5b6-e10aedfbedfb;NEUF;V3;TSPE-558;;Espace : produit scalaire par polarisation;
+536db399-2e04-45fc-9f0b-a37a7678d8e8;ORIGINE;V1;TSPE-353;;Espace : plans perpendiculaires ?;égalité 1-1 : tag actuel
+536db399-2e04-45fc-9f0b-a37a7678d8e8;NEUF;V2;TSPE-563;;Espace : droite orthogonale à un plan ?;
+95f04c3e-03e1-4db4-a16e-36b713a2273f;ORIGINE;V1,V3;TSPE-369;;Espace : projeté orthogonal sur un plan;
+95f04c3e-03e1-4db4-a16e-36b713a2273f;NEUF;V2;TSPE-562;;Espace : distance d'un point à un plan;
+68b13d33-57b5-4f5f-a3d0-ffbc80d78587;ORIGINE;V2;TSPE-371;;Espace : trois vecteurs forment-ils une base ?;égalité 1-1 : tag actuel
+68b13d33-57b5-4f5f-a3d0-ffbc80d78587;NEUF;V1;TSPE-550;;Espace : trois points alignés ?;
+2b240d8c-bdc2-4a55-a8db-a028f02ec889;ORIGINE;V3,V4;TSPE-375;;Espace : trouver un vecteur directeur ou un vecteur normal;V3 normal à (ABC), V4 directeur d'une intersection : titre encore juste
+2b240d8c-bdc2-4a55-a8db-a028f02ec889;NEUF;V1;TSPE-365;;Espace : vecteur directeur de la droite (AB);
+2b240d8c-bdc2-4a55-a8db-a028f02ec889;NEUF;V2;TSPE-559;;Espace : direction d'une droite orthogonale à un plan;
+34b03dee-865d-405c-a284-abfac4248997;ORIGINE;V2,V3;TSPE-360;;Espace : intersection d'une sphère et d'un plan;tag actuel TSPE-376 passe au neuf
+34b03dee-865d-405c-a284-abfac4248997;NEUF;V1;TSPE-376;;Espace : point d'une sphère d'équation donnée;
+c0f49b76-fe50-44cf-80b6-3ee8ee5ab9f5;ORIGINE;V1;TSPE-378;;Définition de la limite : un rang à partir duquel tous les termes conviennent;"égalité 1-1-1 : tag actuel ; titre encore juste"
+c0f49b76-fe50-44cf-80b6-3ee8ee5ab9f5;NEUF;V2;TSPE-380;;Définition de la convergence : un rang à partir duquel tous les termes conviennent;
+c0f49b76-fe50-44cf-80b6-3ee8ee5ab9f5;NEUF;V3;TSPE-379;;Suite tendant vers −∞ : un rang à partir duquel tous les termes conviennent;
+b97dabe1-0c52-483e-a738-e62386d5a638;ORIGINE;V1-V3;TSPE-580;;Croissances comparées : exponentielle et puissances;tag actuel TSPE-403 retiré
+b97dabe1-0c52-483e-a738-e62386d5a638;NEUF;V4,V5;TSPE-443;;Croissances comparées : logarithme et puissances;
+7d552757-61db-493a-a846-7d2cdc0ec631;ORIGINE;V1,V2;TSPE-458;;Reconnaître une inéquation sur le cercle trigonométrique;"libellé de TSPE-458 en cos, V2 en sin ; tag actuel TSPE-457 passe au neuf"
+7d552757-61db-493a-a846-7d2cdc0ec631;NEUF;V3;TSPE-457;;Reconnaître une équation sur le cercle trigonométrique;libellé en cos, V3 en sin
+23402520-cbc3-4d49-b6dc-999e1ff17e3c;ORIGINE;V1,V2,V5,V6;TSPE-467;;Primitive de sinus et cosinus vérifiant une condition;
+23402520-cbc3-4d49-b6dc-999e1ff17e3c;NEUF;V3,V4,V7;TSPE-468;;Primitive de cos(ωx) et sin(ωx);
+aced2e6c-0f00-49ac-bcde-821d2bc91e9b;ORIGINE;V2-V4;TSPE-622;;Échantillon de taille n : variance et écart type de Sₙ et Mₙ;tag actuel TSPE-524 passe au neuf
+aced2e6c-0f00-49ac-bcde-821d2bc91e9b;NEUF;V1;TSPE-524;;Échantillon de taille n : espérance de Sₙ;
+71cb8ab7-664a-45f6-83b0-6b0739ebb5a1;ORIGINE;V2-V5;TSPE-527;;Somme de variables aléatoires indépendantes : variance;
+71cb8ab7-664a-45f6-83b0-6b0739ebb5a1;NEUF;V1;TSPE-526;;Espérance de aX + bY : linéarité;
+91db0034-86d4-49bf-b190-0884db19e9b7;ORIGINE;V2,V3;TSPE-533;;Inégalité de concentration : taille d'échantillon;
+91db0034-86d4-49bf-b190-0884db19e9b7;NEUF;V1;TSPE-531;;Inégalité de concentration : majorant;
+9ad36217-5f60-45c7-83ce-a1a870adc5da;ORIGINE;V2,V3;TSPE-442;TCOMP-225;Courbes de ln et exp : symétrie par rapport à y = x;
+9ad36217-5f60-45c7-83ce-a1a870adc5da;NEUF;V1;TSPE-594;TCOMP-225;Reconnaître la courbe de ln;instance unique (z = 1)
+806c10f4-d04c-44c2-9af1-84a65b636aca;ORIGINE;V1-V4;TSPE-415;TCOMP-230;Limite d'une fonction par opérations, sans forme indéterminée;
+806c10f4-d04c-44c2-9af1-84a65b636aca;NEUF;V5;TSPE-441;TCOMP-230;Limite de b + a ln x en 0;
+14036c68-6854-422b-b06d-3890b3745573;ORIGINE;V1,V2,V4;TSPE-596;TCOMP-345;Résoudre une inéquation avec ln;tags actuels TCOMP-238 et TSPE-446 retirés
+14036c68-6854-422b-b06d-3890b3745573;NEUF;V3,V5;TSPE-595;TCOMP-344;Résoudre une inéquation avec exp;TSPE-595 (exp) au lieu du TSPE-596 de tspe-tcomp.csv
+d3301f2d-6293-4766-a789-d432cb11b489;ORIGINE;V1,V3,V5;TSPE-446;TCOMP-238;Résoudre une équation avec ln;
+d3301f2d-6293-4766-a789-d432cb11b489;NEUF;V2,V4;TSPE-445;TCOMP-237;Résoudre une équation avec exp;TSPE-445 (exp) au lieu du TSPE-446 de tspe-tcomp.csv
+efb12f4b-8f51-4e22-b6a3-2a5d977583b5;ORIGINE;V1;TSPE-464;TCOMP-250;Reconnaître une solution d'une équation différentielle y′ = ay;égalité 1-1-1, aucun tag T_SPE actuel : premier code du CSV
+efb12f4b-8f51-4e22-b6a3-2a5d977583b5;NEUF;V2;TSPE-466;TCOMP-250;Reconnaître une solution d'une équation différentielle y′ = ay + b;
+efb12f4b-8f51-4e22-b6a3-2a5d977583b5;NEUF;V3;TSPE-461;TCOMP-250;Reconnaître une solution d'une équation différentielle y′ = f;
+2d480f3d-2092-4f25-91b5-b92887f7b71b;ORIGINE;V1,V4,V5;TSPE-468;TCOMP-350;Primitive de la forme u′eᵘ;tag actuel TCOMP-252 passe à un neuf
+2d480f3d-2092-4f25-91b5-b92887f7b71b;NEUF;V2,V6;TSPE-468;TCOMP-252;Primitive de la forme 2uu′;
+2d480f3d-2092-4f25-91b5-b92887f7b71b;NEUF;V3,V7;TSPE-468;TCOMP-351;Primitive de la forme u′/u;
+f01270c2-3c63-45c5-bfbb-8233154fadc6;ORIGINE;V1,V2;TSPE-468;TCOMP-350;Coefficient d'une primitive de la forme u′eᵘ;tag actuel TCOMP-252 passe à un neuf
+f01270c2-3c63-45c5-bfbb-8233154fadc6;NEUF;V3;TSPE-468;TCOMP-252;Coefficient d'une primitive de la forme 2uu′;
+f01270c2-3c63-45c5-bfbb-8233154fadc6;NEUF;V4;TSPE-468;TCOMP-351;Coefficient d'une primitive de la forme u′/u;
+a80a780f-bed5-404c-b5fe-db4211437ac8;SANS_TAG;V1-V5;;;Caractérisations de la convexité et du point d'inflexion;QCM de cours, 4 groupes dans les deux programmes
+37ce7759-c2fa-4353-a726-f0c942284053;A_TRANCHER;V1-V4;TSPE-419;TCOMP-264;Convexité et inflexion : lecture graphique sur f, f′ ou f″;"4 groupes, QCM de lecture graphique ; reco : scinder en 4"
+95ee8348-8d34-4cf4-a798-544ee0622aa7;ORIGINE;V1,V2;TSPE-476;TCOMP-272;Dérivée de x ↦ ∫ₐˣ f(t) dt;"égalité 2-2 : tag actuel ; T_COMP MODIFIER en attente sur V2 (√(t² + c))"
+95ee8348-8d34-4cf4-a798-544ee0622aa7;NEUF;V3,V4;TSPE-479;TCOMP-272;Fonction x ↦ ∫ₐˣ f(t) dt : sens de variation et valeur en a;
+dd0ee69a-2203-47a3-b2b8-af70a77281d3;ORIGINE;V1,V3;TSPE-481;TCOMP-354;Encadrer une intégrale;tags actuels TCOMP-275 et TSPE-486 retirés
+dd0ee69a-2203-47a3-b2b8-af70a77281d3;NEUF;V2;TSPE-481;TCOMP-269;Encadrer une valeur moyenne;
+f26151ff-9b70-414b-9c92-b53a1839bd79;ORIGINE;V1,V2;TSPE-492;TCOMP-280;Interpréter une intégrale en contexte;tags actuels TSPE-493 et TCOMP-281 passent au neuf
+f26151ff-9b70-414b-9c92-b53a1839bd79;NEUF;V3;TSPE-493;TCOMP-281;Interpréter une valeur moyenne en contexte : vitesse moyenne;
+3cb90b97-2ec4-4050-973e-4b194aa65fb3;ORIGINE;V2,V3;TCOMP-285;;Loi uniforme sur {1, …, n} : probabilités;égalité 2-2 : tag actuel
+3cb90b97-2ec4-4050-973e-4b194aa65fb3;NEUF;V1,V4;TCOMP-357;;Loi uniforme sur {1, …, n} : espérance;
+dbee4649-3ab6-49f0-8a5e-5814ce15ba43;ORIGINE;V1,V5;TSPE-522;TCOMP-291;Loi binomiale : espérance;égalité 2-2 : tag actuel
+dbee4649-3ab6-49f0-8a5e-5814ce15ba43;NEUF;V2,V3;TSPE-621;TCOMP-363;Loi binomiale : variance et écart type;V2 demande la variance, TCOMP-363 dit écart type
+dbee4649-3ab6-49f0-8a5e-5814ce15ba43;NEUF;V4;TSPE-502;TCOMP-359;Loi de Bernoulli : variance;V4 demande la variance, TCOMP-359 dit écart type
+30b597c3-a350-4027-8c6f-b6678ab0868f;A_TRANCHER;V1-V4;TSPE-618;TCOMP-367;Bernoulli, binomiale ou géométrique : identifier la loi;"3 groupes mais découpage douteux (V2 sans variable) ; reco : scinder et enrichir V2"
+ef3c495c-632b-40ec-840d-fbbf7bfc879a;A_TRANCHER;V1-V5;TSPE-316;TCOMP-296;Coefficients binomiaux : chemins, symétrie, triangle de Pascal;"5 groupes ; reco : 4 modèles, V5 relu en TSPE-316"
+6c80b4ec-541d-47dc-a652-13b51f9b8b9b;A_TRANCHER;V1-V5;TSPE-511;TCOMP-299;Loi binomiale : utiliser une table de P(X ⩽ k);"4 groupes ; reco : scinder en 4"
+13e2d419-770b-4e97-a2f8-972d467cf2fc;ORIGINE;V1-V3;TSPE-516;TCOMP-298;Loi géométrique : P(X = k), P(X ⩽ k), P(X > k);
+13e2d419-770b-4e97-a2f8-972d467cf2fc;NEUF;V4;TSPE-516;TCOMP-365;Loi géométrique : nombre moyen de tentatives;
+13e2d419-770b-4e97-a2f8-972d467cf2fc;NEUF;V5;TSPE-516;TCOMP-301;Loi géométrique : absence de mémoire;
+89e16891-1301-4b1c-af75-a8f03ba0dcdb;ORIGINE;V1,V2,V4;TCOMP-315;;"Loi uniforme sur [a ; b] : probabilités";tag actuel TCOMP-311 retiré
+89e16891-1301-4b1c-af75-a8f03ba0dcdb;NEUF;V3;TCOMP-373;;"Loi uniforme sur [a ; b] : temps d'attente moyen";
+c6b5894c-c753-4dc4-b92b-18702b1f1f81;ORIGINE;V1-V3;TCOMP-315;;Loi exponentielle : probabilités;tag actuel TCOMP-312 retiré
+c6b5894c-c753-4dc4-b92b-18702b1f1f81;NEUF;V4;TCOMP-376;;Loi exponentielle : durée moyenne;
+c6b5894c-c753-4dc4-b92b-18702b1f1f81;NEUF;V5;TCOMP-313;;Loi exponentielle : absence de mémoire;
+3cfcc718-445a-42f5-8d5e-fe4d8339f4bf;ORIGINE;V3,V4;TCOMP-314;;Loi à densité : constante de normalisation;tag actuel TCOMP-315 retiré
+3cfcc718-445a-42f5-8d5e-fe4d8339f4bf;NEUF;V1;TCOMP-370;;Loi à densité : probabilité = aire sous la courbe;
+3cfcc718-445a-42f5-8d5e-fe4d8339f4bf;NEUF;V2;TCOMP-372;;"Loi uniforme sur [0 ; b] : fonction de répartition";
+49fac266-f622-4ef5-8a2b-5638ca5a4c99;ORIGINE;V1,V2;TCOMP-321;;Ajustement affine : interpréter le coefficient directeur et l'ordonnée à l'origine;égalité 2-2, tag actuel TCOMP-328 hors des deux : premier code du CSV
+49fac266-f622-4ef5-8a2b-5638ca5a4c99;NEUF;V3,V4;TCOMP-322;;Coefficient de corrélation : interpréter r;
+8b435b9d-ca30-44db-b4ce-1e1bd581387d;ORIGINE;V1,V2;TEXP-207;;Résoudre une équation az = b dans ℂ;
+8b435b9d-ca30-44db-b4ce-1e1bd581387d;NEUF;V3;TEXP-208;;Résoudre une équation en z et son conjugué;
+7690e290-8eaa-4729-9d34-6fd58107e294;ORIGINE;V1,V4;TEXP-358;;Affixe d'un vecteur, quatrième sommet d'un parallélogramme;tag actuel TEXP-223 retiré
+7690e290-8eaa-4729-9d34-6fd58107e294;NEUF;V2;TEXP-359;;Distance entre deux points par le module;
+7690e290-8eaa-4729-9d34-6fd58107e294;NEUF;V3;TEXP-212;;Affixe du milieu d'un segment;TEXP-223 (déterminer l'affixe d'un point) plus juste que TEXP-212 ?
+45d1cdd6-9c17-4b83-be67-067df8c3f816;A_TRANCHER;V1-V5;TEXP-240;;Formules d'Euler et de Moivre, formules d'addition et de duplication;"4 groupes ; reco : scinder en 4"
+acd9104c-e29e-4df6-89cc-3d549a21b3fb;ORIGINE;V2,V3;TEXP-249;;Factoriser un polynôme dont une racine est connue;égalité 2-2 : tag actuel
+acd9104c-e29e-4df6-89cc-3d549a21b3fb;NEUF;V1,V4;TEXP-248;;Équation de degré 3 dont une racine est connue;
+2bf66851-c1e0-4531-b2eb-153803a573bf;ORIGINE;V1,V2,V4,V6,V7;TEXP-257;;Racines n-ièmes de l'unité;tag actuel TEXP-265 passe à un neuf
+2bf66851-c1e0-4531-b2eb-153803a573bf;NEUF;V3;TEXP-268;;Somme des racines n-ièmes de l'unité;point d'approfondissement
+2bf66851-c1e0-4531-b2eb-153803a573bf;NEUF;V5;TEXP-265;;Polygones réguliers inscrits : longueur d'un côté;
+44a4236b-be18-4835-a6e0-c50f0b36833f;ORIGINE;V1,V2;TEXP-279;;Théorème de Gauss : quelle conclusion ?;
+44a4236b-be18-4835-a6e0-c50f0b36833f;NEUF;V4;TEXP-278;;Théorème de Bézout : premiers entre eux ?;
+44a4236b-be18-4835-a6e0-c50f0b36833f;NEUF;V3;TEXP-275;;PGCD et combinaison linéaire : quelle conclusion ?;
+629c231b-50d4-459f-9361-fa8098f4d079;ORIGINE;V1,V3;TEXP-282;;Décomposition en facteurs premiers;
+629c231b-50d4-459f-9361-fa8098f4d079;NEUF;V2;TEXP-284;;Nombre de diviseurs d'un entier;
+5a53d098-b331-4d64-bcad-e14dbab53591;ORIGINE;V1,V2,V4;TEXP-313;;Graphe complet : arêtes et degré;
+5a53d098-b331-4d64-bcad-e14dbab53591;NEUF;V3;TEXP-314;;Somme des degrés : nombre d'arêtes;
