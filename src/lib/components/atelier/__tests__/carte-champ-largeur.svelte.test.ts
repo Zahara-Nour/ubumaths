@@ -127,11 +127,11 @@ describe.each([1280, 390])('panneau « Mes objets » à %i px', (width) => {
 		expect(content).toBeLessThanOrEqual(visible);
 	});
 
-	it('la nature d’une construction est sous la ligne, pas dans la ligne', async () => {
+	it('ni nature ni mesure sur la carte d’une construction (2026-10-23)', async () => {
 		const container = await mount(width);
 		const card = cardOf(container, 'c');
-		expect(card.querySelector('.ligne .type')).toBeNull();
-		expect(card.querySelector('.dessous .type')?.textContent?.trim()).toBe('cercle');
+		expect(card.querySelector('.type')).toBeNull();
+		expect(card.querySelector('.dessous')).toBeNull();
 	});
 
 	it('aucune carte ne déborde de sa largeur', async () => {

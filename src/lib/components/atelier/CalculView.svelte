@@ -73,6 +73,18 @@
 
 	let field = $state<HTMLInputElement | null>(null);
 	let root = $state<HTMLDivElement | null>(null);
+	let list = $state<HTMLOListElement | null>(null);
+
+	/** Le nombre d'entrées au dernier passage : seule une entrée NOUVELLE fait descendre. */
+	let shownCount = 0;
+
+	// Une nouvelle entrée (tapée, ou écrite par une action de carte) se montre :
+	// l'historique descend tout en bas (demande de David du 2026-10-23)
+	$effect(() => {
+		const count = desk.entries.length;
+		if (list !== null && count > shownCount) list.scrollTop = list.scrollHeight;
+		shownCount = count;
+	});
 
 	/** Le focus dans le champ, à l'ouverture de la console (lot 2). */
 	export function focusInput() {
@@ -553,7 +565,7 @@
 
 <!-- L'historique pour une fiche (ubumark) est dans le menu de la console (conteneur) -->
 <div class="calcul" bind:this={root}>
-	<ol class="historique">
+	<ol class="historique" bind:this={list}>
 		{#each desk.entries as entry, index (entry.id)}
 			{@const markup = markupOf(entry)}
 			{@const copied = answerToCopy(entry, toggled.includes(entry.id))}

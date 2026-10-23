@@ -13,6 +13,8 @@ import { userEvent } from 'vitest/browser';
 import WithAtelier from './harness/WithAtelier.svelte';
 import WithFigure from './harness/WithFigure.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { figureNatureOf, figureSummaryOf } from '$lib/atelier/card-state';
+import { isCurve, isPoint } from '$lib/atelier/types';
 import { onDesktopScreen } from './harness/desktop-screen';
 
 // À 414 px (la page des tests), « Mes objets » est replié : on teste les cartes sur bureau
@@ -51,8 +53,18 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 	return card as HTMLElement;
 }
 
-function valueText(card: HTMLElement): string {
-	return card.querySelector('.valeur .sr-only')?.textContent?.trim() ?? '';
+/**
+ * Ce que vaut une construction, en clair. Plus montré sur la carte (2026-10-23) :
+ * il ira dans les Propriétés de l'objet ; on lit le calcul en attendant.
+ */
+function valueText(atelier: Atelier, name: string): string {
+	return figureSummaryOf(atelier, name)?.text ?? '';
+}
+/** La nature d'un objet de la figure (plus montrée sur la carte, cf. `valueText`). */
+function natureOf(atelier: Atelier, name: string): string {
+	const object = atelier.get(name);
+	if (object === undefined || !(isPoint(object) || isCurve(object))) throw new Error(name);
+	return figureNatureOf(atelier, object).label;
 }
 
 function canvasOf(container: HTMLElement): SVGSVGElement {
@@ -76,11 +88,12 @@ describe('la carte d’une intersection', () => {
 		const atelier = atelierWith([['point', 'E', 'intersection(u, c, 1)']]);
 		const { container } = await render(WithAtelier, { atelier });
 
-		const card = cardFor(container, 'E');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
-		expect(valueText(card)).toBe('E(-1 ; 0)');
+		// Plus montrée sur la carte (2026-10-23) : elle ira dans les Propriétés
+		expect(cardFor(container, 'E').querySelector('.dessous')).toBeNull();
+		expect(natureOf(atelier, 'E')).toBe('point');
+		expect(valueText(atelier, 'E')).toBe('E(-1 ; 0)');
 		// Pas de caractère de contrôle dans le LaTeX rendu (\t, \r perdus)
-		expect(card.querySelector('.valeur')?.textContent ?? '').not.toMatch(/[\t\r]/);
+		expect(valueText(atelier, 'E')).not.toMatch(/[\t\r]/);
 	});
 
 	it('sans point commun : « en attente » et la raison', async () => {
@@ -93,7 +106,7 @@ describe('la carte d’une intersection', () => {
 		const card = cardFor(container, 'E');
 		expect(card.querySelector('.etat')?.textContent?.trim()).toBe('en attente');
 		expect(card.querySelector('.message')?.textContent?.trim()).toBe('c et k ne se coupent pas.');
-		expect(card.querySelector('.valeur')).toBeNull();
+		expect(figureSummaryOf(atelier, 'E')).toBeNull();
 	});
 });
 
@@ -106,7 +119,7 @@ describe('la carte d’un point_sur : le curseur de position', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardFor(container, 'M');
-		expect(valueText(card)).toBe('M(3/10 ; 8/5)');
+		expect(valueText(atelier, 'M')).toBe('M(3/10 ; 8/5)');
 		const thumb = card.querySelector('[role="slider"]');
 		expect(thumb).toBeTruthy();
 		await vi.waitFor(() => {
@@ -126,7 +139,7 @@ describe('la carte d’un point_sur : le curseur de position', () => {
 		thumb.focus();
 		await userEvent.keyboard('{ArrowRight}');
 
-		await vi.waitFor(() => expect(valueText(cardFor(container, 'M'))).toBe('M(31/100 ; 81/50)'));
+		await vi.waitFor(() => expect(valueText(atelier, 'M')).toBe('M(31/100 ; 81/50)'));
 	});
 
 	it('point_sur(s ; t) : pas de curseur sur M (c’est celui de t)', async () => {

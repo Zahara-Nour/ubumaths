@@ -82,8 +82,7 @@
 				{...props}
 				type="button"
 				class="point"
-				style:background-color={painted}
-				style:border-color={painted}
+				style:--peinte={painted}
 				aria-label={point ? `Couleur et taille de ${name}` : `Couleur et trait de ${name}`}
 				title={point ? 'Couleur et taille' : 'Couleur et trait'}
 			></button>
@@ -220,15 +219,15 @@
 		position: absolute;
 		inset: 0.4375rem;
 		border-radius: 9999px;
-		border: 1.5px solid;
-		border-color: inherit;
-		background: inherit;
+		/* La couleur sur le seul point : peinte sur le bouton, elle remplissait toute la cible */
+		border: 1.5px solid var(--peinte);
+		background: var(--peinte);
 	}
 	.point:focus-visible {
 		outline: 2px solid var(--color-ring, currentColor);
 		outline-offset: 1px;
 	}
-	.point:hover {
+	.point:hover::after {
 		filter: brightness(0.95);
 	}
 	.reglages {

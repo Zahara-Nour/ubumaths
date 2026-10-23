@@ -898,7 +898,8 @@ function poseConstruction(
 		});
 		// ⚠️ Aucune surface de `geometry-core` n'écrit le nom d'un cercle : l'y
 		// ajouter montrerait le nom de chaque cercle de toutes les figures de cours.
-		// Le nom est un TEXTE de la figure, de la couleur du cercle, accroché à un
+		// Le nom est un TEXTE de la figure (de la couleur du cercle ; la vue Géométrie
+		// l'écrit pourtant en couleur du texte, `neutralLabels`), accroché à un
 		// point CACHÉ du cercle (à 45°) — il suit rayon et centre, curseurs compris.
 		// Un texte n'est pas désigné au survol (`findElementNear`) et s'exporte en
 		// texte ; le point caché ne s'exporte pas.

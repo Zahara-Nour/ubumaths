@@ -14,6 +14,8 @@ import AtelierContainer from '../AtelierContainer.svelte';
 import WithAtelier from './harness/WithAtelier.svelte';
 import WithFigure from './harness/WithFigure.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { figureNatureOf, figureSummaryOf } from '$lib/atelier/card-state';
+import { isCurve, isPoint } from '$lib/atelier/types';
 
 // =============================================================================
 // Décor
@@ -41,8 +43,18 @@ function cardFor(container: HTMLElement, name: string): HTMLElement {
 }
 
 /** Ce que la carte dit de la valeur de l'objet, en clair (lecture d'écran). */
-function valueText(card: HTMLElement): string {
-	return card.querySelector('.valeur .sr-only')?.textContent?.trim() ?? '';
+/**
+ * Ce que vaut une construction, en clair. Plus montré sur la carte (2026-10-23) :
+ * il ira dans les Propriétés de l'objet ; on lit le calcul en attendant.
+ */
+function valueText(atelier: Atelier, name: string): string {
+	return figureSummaryOf(atelier, name)?.text ?? '';
+}
+/** La nature d'un objet de la figure (plus montrée sur la carte, cf. `valueText`). */
+function natureOf(atelier: Atelier, name: string): string {
+	const object = atelier.get(name);
+	if (object === undefined || !(isPoint(object) || isCurve(object))) throw new Error(name);
+	return figureNatureOf(atelier, object).label;
 }
 
 function canvasOf(container: HTMLElement): SVGSVGElement {
@@ -68,11 +80,11 @@ describe('L7 : la carte d’une construction', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardFor(container, 'I');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
+		expect(natureOf(atelier, 'I')).toBe('point');
 		// Lot 4b de la refonte : la construction est dans le champ de la ligne
 		expect(card.querySelector<MathfieldElement>('math-field')?.value).toContain('milieu');
 		expect(card.querySelector('.egal')?.textContent?.trim()).toBe('=');
-		expect(valueText(card)).toBe('I(1/2 ; 2)');
+		expect(valueText(atelier, 'I')).toBe('I(1/2 ; 2)');
 	});
 
 	it('s = [AB] : nature « segment », sa longueur', async () => {
@@ -80,26 +92,28 @@ describe('L7 : la carte d’une construction', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardFor(container, 's');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('segment');
+		expect(natureOf(atelier, 's')).toBe('segment');
 		// Une construction se nomme avec « = », pas « : »
 		expect(card.querySelector('.egal')?.textContent?.trim()).toBe('=');
-		expect(valueText(card)).toBe('longueur √5');
+		expect(valueText(atelier, 's')).toBe('longueur √5');
 	});
 
 	it('d = (AB) : nature « droite », son équation réduite', async () => {
 		const atelier = atelierWith([['curve', 'd', '(AB)']]);
 		const { container } = await render(WithAtelier, { atelier });
 
-		const card = cardFor(container, 'd');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
-		expect(valueText(card)).toBe('y = 2x + 1');
+		// Plus montrée sur la carte (2026-10-23) : elle ira dans les Propriétés
+		expect(cardFor(container, 'd').querySelector('.dessous')).toBeNull();
+		expect(natureOf(atelier, 'd')).toBe('droite');
+		expect(valueText(atelier, 'd')).toBe('y = 2x + 1');
 	});
 
 	it('c = cercle(O ; 3) : nature « cercle »', async () => {
 		const atelier = atelierWith([['curve', 'c', 'cercle(O ; 3)']]);
 		const { container } = await render(WithAtelier, { atelier });
 
-		expect(cardFor(container, 'c').querySelector('.type')?.textContent?.trim()).toBe('cercle');
+		expect(natureOf(atelier, 'c')).toBe('cercle');
+		expect(cardFor(container, 'c').querySelector('.dessous')).toBeNull();
 	});
 
 	it('une construction en attente le dit, sans valeur', async () => {
@@ -108,7 +122,7 @@ describe('L7 : la carte d’une construction', () => {
 
 		const card = cardFor(container, 'I');
 		expect(card.querySelector('.etat')?.textContent?.trim()).toBe('en attente');
-		expect(card.querySelector('.valeur')).toBeNull();
+		expect(figureSummaryOf(atelier, 'I')).toBeNull();
 	});
 });
 

@@ -18,6 +18,7 @@ import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { figureNatureOf, figureSummaryOf } from '$lib/atelier/card-state';
 import { isCurve, isPoint } from '$lib/atelier/types';
 import { cardOf, menuItemOf, openCardMenu } from './harness/function-card';
 import { onDesktopScreen } from './harness/desktop-screen';
@@ -53,8 +54,18 @@ function signOf(card: HTMLElement): string {
 }
 
 /** Ce que la carte dit de la valeur d'une construction, en clair. */
-function valueText(card: HTMLElement): string {
-	return card.querySelector('.valeur .sr-only')?.textContent?.trim() ?? '';
+/**
+ * Ce que vaut une construction, en clair. Plus montré sur la carte (2026-10-23) :
+ * il ira dans les Propriétés de l'objet ; on lit le calcul en attendant.
+ */
+function valueText(atelier: Atelier, name: string): string {
+	return figureSummaryOf(atelier, name)?.text ?? '';
+}
+/** La nature d'un objet de la figure (plus montrée sur la carte, cf. `valueText`). */
+function natureOf(atelier: Atelier, name: string): string {
+	const object = atelier.get(name);
+	if (object === undefined || !(isPoint(object) || isCurve(object))) throw new Error(name);
+	return figureNatureOf(atelier, object).label;
 }
 
 /** Les libellés des éléments d'un menu ouvert. */
@@ -88,9 +99,11 @@ describe('la carte d’un point', () => {
 		const card = cardOf(container, 'A');
 		expect(signOf(card)).toBe('=');
 		expect(fieldOf(card).getAttribute('aria-label')).toBe('Définition de A');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
-		// Un point par coordonnées : pas de valeur en gris, il la montre déjà
-		expect(card.querySelector('.valeur')).toBeNull();
+		expect(natureOf(atelier, 'A')).toBe('point');
+		// Un point par coordonnées : pas de valeur, il la montre déjà
+		expect(figureSummaryOf(atelier, 'A')).toBeNull();
+		// Ni nature ni mesure sous la ligne (2026-10-23)
+		expect(card.querySelector('.dessous')).toBeNull();
 		// G0 : un point ne va pas dans Graphe
 		expect(card.querySelector('button[aria-label^="Tracer"]')).toBeNull();
 		expect(card.querySelector('button[aria-label="Options de A"]')).toBeTruthy();
@@ -121,8 +134,8 @@ describe('la carte d’un point', () => {
 
 		const card = cardOf(container, 'I');
 		expect(signOf(card)).toBe('=');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
-		expect(valueText(card)).toBe('I(1/2 ; 2)');
+		expect(natureOf(atelier, 'I')).toBe('point');
+		expect(valueText(atelier, 'I')).toBe('I(1/2 ; 2)');
 		// Un objet qui dépend d'un autre porte l'icône de lien (lot 3)
 		const link = card.querySelector<HTMLButtonElement>('button.lien');
 		expect(link?.getAttribute('aria-label')).toMatch(/A.*B/);
@@ -133,8 +146,8 @@ describe('la carte d’un point', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardOf(container, 'I');
+		expect(figureSummaryOf(atelier, 'I')).toBeNull();
 		expect(card.querySelector('.etat')?.textContent?.trim()).toBe('en attente');
-		expect(card.querySelector('.valeur')).toBeNull();
 		expect(card.querySelector('.message')?.textContent ?? '').not.toBe('');
 	});
 
@@ -201,8 +214,8 @@ describe('la carte d’une courbe', () => {
 		const card = cardOf(container, 'd');
 		expect(signOf(card)).toBe(':');
 		expect(fieldOf(card).getAttribute('aria-label')).toBe('Définition de d');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
-		expect(card.querySelector('.valeur')).toBeNull();
+		expect(natureOf(atelier, 'd')).toBe('droite');
+		expect(figureSummaryOf(atelier, 'd')).toBeNull();
 	});
 
 	it('d = [(AB)] : « = » d’une construction, nature et équation réduite en gris', async () => {
@@ -211,8 +224,8 @@ describe('la carte d’une courbe', () => {
 
 		const card = cardOf(container, 'd');
 		expect(signOf(card)).toBe('=');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
-		expect(valueText(card)).toBe('y = 2x + 1');
+		expect(natureOf(atelier, 'd')).toBe('droite');
+		expect(valueText(atelier, 'd')).toBe('y = 2x + 1');
 	});
 
 	it('s = [[AB]] : nature « segment », sa longueur', async () => {
@@ -220,8 +233,10 @@ describe('la carte d’une courbe', () => {
 		const { container } = await render(WithAtelier, { atelier });
 
 		const card = cardOf(container, 's');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('segment');
-		expect(valueText(card)).toBe('longueur √5');
+		expect(natureOf(atelier, 's')).toBe('segment');
+		expect(valueText(atelier, 's')).toBe('longueur √5');
+		// La longueur n'est plus montrée sur la carte (2026-10-23)
+		expect(card.textContent).not.toContain('longueur');
 	});
 
 	it('C6 : une courbe vide le constate, sans badge d’erreur', async () => {

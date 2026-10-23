@@ -458,6 +458,7 @@
 					{pointDrag}
 					canvasTool={toolbox !== null && toolbox.tool !== 'deplacer' ? canvasTool : undefined}
 					viewGestures
+					neutralLabels
 					overlay={layer}
 					showGrid={atelier.figureFrame}
 					showGraduations={atelier.figureFrame}

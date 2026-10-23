@@ -10,6 +10,8 @@ import { userEvent } from 'vitest/browser';
 import type { MathfieldElement } from 'mathlive';
 import WithAtelier from './harness/WithAtelier.svelte';
 import { Atelier } from '$lib/atelier/atelier.svelte';
+import { figureNatureOf } from '$lib/atelier/card-state';
+import { isCurve, isPoint } from '$lib/atelier/types';
 import { WebReplEngine } from '$lib/mathAST/cli/web/web-repl-engine';
 import { runInput } from '$lib/atelier/calcul';
 import { onDesktopScreen } from './harness/desktop-screen';
@@ -20,6 +22,13 @@ onDesktopScreen();
 // =============================================================================
 // Décor
 // =============================================================================
+
+/** La nature d'un objet de la figure (plus montrée sur la carte, 2026-10-23 : elle ira dans les Propriétés). */
+function natureOf(atelier: Atelier, name: string): string {
+	const object = atelier.get(name);
+	if (object === undefined || !(isPoint(object) || isCurve(object))) throw new Error(name);
+	return figureNatureOf(atelier, object).label;
+}
 
 function cardFor(container: HTMLElement, name: string): HTMLElement {
 	const card = [...container.querySelectorAll('.objet')].find(
@@ -70,7 +79,7 @@ describe('la carte d’un objet de la figure', () => {
 		expect(card.querySelector('.egal')?.textContent?.trim()).toBe(':');
 		expect(fieldOf(card).value.replace(/\s+/g, '')).toBe('y=3x-2');
 		// PR 2 : la nature remplace le type « courbe » (C1)
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('droite');
+		expect(natureOf(atelier, 'd')).toBe('droite');
 	});
 
 	it('C2 : C : x² + y² = 1 a la nature « cercle »', async () => {
@@ -78,7 +87,9 @@ describe('la carte d’un objet de la figure', () => {
 		atelier.create({ kind: 'curve', name: 'C', definition: 'x^2 + y^2 = 1' }, 'text');
 		const { container } = await render(WithAtelier, { atelier });
 
-		expect(cardFor(container, 'C').querySelector('.type')?.textContent?.trim()).toBe('cercle');
+		expect(natureOf(atelier, 'C')).toBe('cercle');
+		// Plus montrée sur la carte (2026-10-23) : elle ira dans les Propriétés
+		expect(cardFor(container, 'C').querySelector('.dessous')).toBeNull();
 	});
 
 	it('C6 : la carte d’une courbe vide constate « Aucun point ne vérifie cette équation. »', async () => {
@@ -90,7 +101,7 @@ describe('la carte d’un objet de la figure', () => {
 		// Constaté, pas refusé : la courbe reste acceptée, sans badge d'erreur
 		expect(card.textContent).toContain('Aucun point ne vérifie cette équation.');
 		expect(card.querySelector('.etat')).toBeNull();
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('courbe');
+		expect(natureOf(atelier, 'C')).toBe('courbe');
 	});
 
 	it('P1 : le point se lit « A = (1 ; 2) », type « point », sans œil de tracé', async () => {
@@ -102,7 +113,7 @@ describe('la carte d’un objet de la figure', () => {
 
 		expect(onOneLine(card)).toBe(true);
 		expect(card.querySelector('.egal')?.textContent?.trim()).toBe('=');
-		expect(card.querySelector('.type')?.textContent?.trim()).toBe('point');
+		expect(natureOf(atelier, 'A')).toBe('point');
 		// Un point ne va pas dans Graphe (G0) : pas de bouton « Tracer »
 		expect(card.querySelector('button[aria-label^="Tracer"]')).toBeNull();
 	});

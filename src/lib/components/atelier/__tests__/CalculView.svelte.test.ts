@@ -955,3 +955,19 @@ describe('une réponse s’écrit comme en mathématiques', () => {
 		expect(lastAnswer(container).textContent?.replace(/\s+/g, '')).toContain('km');
 	});
 });
+
+describe('l’historique descend sur la nouvelle entrée (2026-10-23)', () => {
+	it('après vingt calculs, le dernier est visible en bas', async () => {
+		const { submit, container } = await open();
+		const list = container.querySelector<HTMLElement>('.historique');
+		if (list === null) throw new Error('pas d’historique');
+
+		for (let n = 1; n <= 20; n++) await submit(`${n} + 1`);
+
+		// L'historique déborde bel et bien : sinon le test ne prouverait rien
+		expect(list.scrollHeight).toBeGreaterThan(list.clientHeight);
+		await vi.waitFor(() =>
+			expect(list.scrollTop + list.clientHeight).toBeGreaterThanOrEqual(list.scrollHeight - 1)
+		);
+	});
+});

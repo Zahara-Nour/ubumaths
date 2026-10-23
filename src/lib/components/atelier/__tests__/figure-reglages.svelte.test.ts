@@ -122,11 +122,33 @@ describe('la vue Géométrie peint les réglages des cartes', () => {
 			return button;
 		};
 
-		expect(trigger('Couleur et taille de A').style.backgroundColor).toBe(point().style.fill);
-		expect(trigger('Couleur et trait de d').style.backgroundColor).toBe(line().style.stroke);
+		expect(trigger('Couleur et taille de A').style.getPropertyValue('--peinte')).toBe(
+			point().style.fill
+		);
+		expect(trigger('Couleur et trait de d').style.getPropertyValue('--peinte')).toBe(
+			line().style.stroke
+		);
 	});
 
-	it('un cercle construit et son nom prennent la couleur de la carte', async () => {
+	it('la couleur ne remplit que le petit point, pas toute la cible (2026-10-23)', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithAtelier, { atelier });
+		const button = container.querySelector<HTMLButtonElement>(
+			'button[aria-label="Couleur et taille de A"]'
+		);
+		if (button === null) throw new Error('pas de point de couleur');
+
+		// La cible de 24 px reste transparente ; seul le point de 10 px est peint
+		expect(getComputedStyle(button).width).toBe('24px');
+		expect(getComputedStyle(button).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+		const dot = getComputedStyle(button, '::after');
+		// 7 px de marge de chaque côté : un point de 10 px (la largeur d'un ::after en `inset` se lit `auto`)
+		expect(dot.top).toBe('7px');
+		expect(dot.left).toBe('7px');
+		expect(dot.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
+	});
+
+	it('un cercle construit prend la couleur de la carte, son nom reste de la couleur du texte', async () => {
 		const atelier = atelierOf([
 			['point', 'O', '(0 ; 0)'],
 			['curve', 'c', 'cercle(O ; 3)']
@@ -139,6 +161,26 @@ describe('la vue Géométrie peint les réglages des cartes', () => {
 		expect(circle().style.stroke).toBe('var(--color-curve-4)');
 		const name = one<SVGTextElement>(container, 'text.geo-text');
 		expect(name.textContent?.trim()).toBe('c');
-		expect(name.style.fill).toBe('var(--color-curve-4)');
+		// Les noms en couleur du texte, comme au cahier (décision de David du 2026-10-23)
+		expect(name.style.fill).toBe('var(--color-foreground)');
+	});
+
+	it('l’étiquette d’un point et celle d’une droite restent de la couleur du texte', async () => {
+		const atelier = atelierOf([
+			['point', 'A', '(1 ; 2)'],
+			['curve', 'd', 'y = 3x - 2']
+		]);
+		set(atelier, 'A', { color: 'curve-2' });
+		set(atelier, 'd', { color: 'curve-4' });
+		const { container } = await render(WithFigure, { atelier });
+		await vi.waitFor(() => expect(container.querySelectorAll('text.label').length).toBe(2));
+
+		for (const label of container.querySelectorAll<SVGTextElement>('text.label')) {
+			expect(label.style.fill, label.textContent ?? '').toBe('var(--color-foreground)');
+		}
+		// L'objet, lui, garde sa couleur
+		expect(one<SVGCircleElement>(container, 'circle.point').style.fill).toBe(
+			'var(--color-curve-2)'
+		);
 	});
 });
