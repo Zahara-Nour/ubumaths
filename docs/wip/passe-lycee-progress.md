@@ -6,21 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, #1654 ouverte, bloquée par `main` rouge._
+_Mis à jour le 2026-10-23, après #1654._
 
-- **État** : PR 3 (H) = #1654, ouverte, revues Opus sans bloquant ; CI verte SAUF « Server Tests (shard 3/4) » :
-  `src/lib/questions/__tests__/template-fact-sheet.test.ts` (« modes en mots de l'éditeur »), rouge aussi sur `main`
-  (c9235aee7, chantier fiche-modele, 5886edff7) et en local : pas dû à #1654.
-- **Prochaine action** : quand `main` est réparé, mettre la branche à jour, CI verte, merger #1654 ; puis `db:migrate`
-  (David) et vérification par le MCP.
-- **En attente de David** : qui répare `template-fact-sheet.test.ts` sur `main` (chantier fiche-modele ou cette session).
+- **État** : PR 3 (H) = #1654 MERGÉE (f01bcbe4c), dernière PR des scissions (PR 1 = #1646, PR 2 = #1651).
+  Migration `20261024010000_passe_lycee_h.sql` PAS ENCORE JOUÉE en prod.
+- **Prochaine action** : David lance `pnpm db:migrate` depuis le dépôt principal (refusé au mode auto) ; puis relecture
+  de la prod par le MCP (10 modèles : `grades` au vrai programme, neufs en brouillon au même niveau, tags du plan).
+- **En attente de David** : le `db:migrate` ; puis la suite du chantier (les « Laissé » ci-dessous, versement).
 - **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
   (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
   niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par `toQuestionTemplate`
   (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant tout `tsx` ;
   `REECRIRE_MIGRATION=1` pour une migration jamais jouée ; `db:migrate` refusé par le mode auto → David le lance.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee`, `feat/passe-lycee-h`.
+- **Worktree / branche** : aucun (worktree `passe-lycee` retiré après #1654).
 
 ## Les 5 étapes
 
@@ -308,3 +307,6 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   ses classes de 2de / Tle au lieu de 1re. Laissé : rollback sans garde du statut des ORIGINES (une origine publiée
   depuis serait réécrite, sans perte de donnée) ; pas de `for update` dans `$retour_neufs$` ; `$check$` ne relit pas
   `grades` des neufs (copiés par construction, vérifié par le test) ; 99c772c0 garde ]−π ; π] et [0 ; 2π[ (réponse ∅).
+- **2026-10-23 — #1654 mergée (PR 3, H).** `main` réparé par #1652 (`template-fact-sheet.test.ts`) ; branche mise à
+  jour, CI verte (« Client Tests shard 1/2 » relancé : `playwright install --with-deps` bloqué sur le miroir apt,
+  aucun test joué). `db:migrate` à lancer par David.
