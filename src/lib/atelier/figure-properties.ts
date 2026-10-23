@@ -327,7 +327,10 @@ function rootOverInteger(node: MathNode): MathNode {
 	return divide(top, numericNode(Number(coefficient.d)), 'fraction');
 }
 
-/** `k·π` (périmètre, aire), exact ; π écrit avant une racine (`2π√5`). */
+/**
+ * `k·π` (périmètre, aire), exact ; π écrit avant une racine (`2π√5`), un
+ * coefficient fractionnaire écrit comme au cahier : `2π√3/3`, `π/4`.
+ */
 function piRow(label: string, factor: GeoValue): PropertyRow {
 	if (!isExact(factor)) return valueRow(label, geoMul(factor, exact(piConstant())));
 	const node = piTimes(factor.node);
@@ -343,17 +346,25 @@ function piTimes(factor: MathNode): MathNode {
 	const pi = piConstant();
 	if (geoEqual(exact(factor), geoFromNumber(1))) return pi;
 	if (isSqrt(factor)) return multiply(pi, factor, 'implicit');
-	if (factor.type === 'multiplication' && isSqrt(factor.right)) {
-		return multiply(multiply(factor.left, pi, 'implicit'), factor.right, 'implicit');
+	const withRoot = factor.type === 'multiplication' && isSqrt(factor.right);
+	const coefficient = withRoot ? factor.left : factor;
+	const fraction = rationalOf(coefficient);
+	if (fraction !== null && fraction.d !== 1n && fraction.n > 0n) {
+		const piPart =
+			fraction.n === 1n ? pi : multiply(numericNode(Number(fraction.n)), pi, 'implicit');
+		const top = withRoot ? multiply(piPart, factor.right, 'implicit') : piPart;
+		return divide(top, numericNode(Number(fraction.d)), 'fraction');
 	}
+	if (withRoot) return multiply(multiply(factor.left, pi, 'implicit'), factor.right, 'implicit');
 	return multiply(factor, pi, 'implicit');
 }
 
-/** Le texte d'un arbre (`plainText`), π écrit π. */
+/** Le texte d'un arbre (`plainText`), π écrit π ; `2π√3/3` sans parenthèses de groupe. */
 function textOf(node: MathNode): string {
 	return plainText(node)
 		.replace(/\\pi\b/g, 'π')
-		.replace(/π\s+(?=√)/g, 'π');
+		.replace(/π\s+(?=√)/g, 'π')
+		.replace(/^\((\d*(?:π√\d+|π|√\d+))\)\/(\d+)$/, '$1/$2');
 }
 
 function isSqrt(node: MathNode): boolean {

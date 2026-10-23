@@ -248,6 +248,31 @@ describe('figurePropertiesOf : un cercle', () => {
 		expect(row(s, 'c', 'Périmètre')?.text).toBe('2π√5');
 	});
 
+	it('rayon √3/3 : périmètre 2π√3/3 et aire π/3, comme au cahier', () => {
+		const s = plane('c : 3x^2+3y^2=1');
+		expect(row(s, 'c', 'Périmètre')?.text).toBe('2π√3/3');
+		expect(row(s, 'c', 'Aire')?.text).toBe('π/3');
+	});
+
+	it('rayon √5/3 : périmètre 2π√5/3 et aire 5π/9', () => {
+		const s = plane('c : 9x^2+9y^2=5');
+		expect(row(s, 'c', 'Périmètre')?.text).toBe('2π√5/3');
+		expect(row(s, 'c', 'Aire')?.text).toBe('5π/9');
+	});
+
+	it('rayon 2√5/3 : le texte se lit sans parenthèses, 2√5/3', () => {
+		const s = plane('c : 9x^2+9y^2=20');
+		expect(row(s, 'c', 'Rayon')?.text).toBe('2√5/3');
+		expect(row(s, 'c', 'Périmètre')?.text).toBe('4π√5/3');
+		expect(row(s, 'c', 'Aire')?.text).toBe('20π/9');
+	});
+
+	it('rayon 1/2 : périmètre π et aire π/4', () => {
+		const s = plane('c : 4x^2+4y^2=1');
+		expect(row(s, 'c', 'Périmètre')?.text).toBe('π');
+		expect(row(s, 'c', 'Aire')?.text).toBe('π/4');
+	});
+
 	it('cercle par équation `x^2+y^2-2x=3` : centre (1 ; 0), rayon 2', () => {
 		const s = plane('c : x^2+y^2-2x=3');
 		expect(rows(s, 'c')).toEqual([
