@@ -198,7 +198,7 @@ copie distincte, utilisée par le tableau blanc (§ 9).
 | Table                       | Colonnes utiles                                                                                                                                                                                                                                                                                                                                                           | RLS (migrations)                                                                                                                                                                                         |
 | --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `constructions`             | `title`, `description`, `format` (`'json'` hérité \| `'dsl'`, défaut `'json'`), `dsl_script`, `script` jsonb NOT NULL (`{}` en DSL), `is_public` (défaut `false`), `author_id` (FK `profiles`, `ON DELETE SET NULL`). Contrainte `constructions_dsl_check` : `dsl` ⇒ `dsl_script` non nul. Colonne `tags` supprimée (`20260908180000`) : étiquettes dans `resource_tags`. | lecture : les siennes (baseline) + `is_public` pour tout compte **connecté** (`20261015090600`) ; création, modification : les siennes, **prof ou admin** (`20261022200000`) ; suppression : les siennes |
-| `construction_demo_scripts` | `author_id` (FK, `ON DELETE CASCADE`), `name`, `dsl_script` ; unique (`author_id`, `name`)                                                                                                                                                                                                                                                                                | tout : les siens (baseline)                                                                                                                                                                              |
+| `construction_demo_scripts` | `author_id` (FK, `ON DELETE CASCADE`), `name`, `dsl_script` ; unique (`author_id`, `name`)                                                                                                                                                                                                                                                                                | tout : les siens, **prof ou admin** (`20261023150000`)                                                                                                                                                   |
 
 ### Pages
 
@@ -223,11 +223,11 @@ Aucun lien `href="/constructions"` dans `src/` hors de ces routes : on y arrive 
 | `PUT /api/constructions/[id]`                        | prof ou admin ; auteur (vérifié avant) | `title`, `description`, `script`, `dsl_script`, `is_public` — **pas `format`**                                                                       |
 | `DELETE /api/constructions/[id]`                     | `requireAuth` ; auteur (vérifié avant) | UUID ; `.select()` : zéro ligne → 404                                                                                                                |
 | `POST /api/constructions/convert`                    | `teacher`, `admin`                     | `xml` ≤ 5 Mo ; ancien convertisseur → JSON ; 1000 étapes au plus                                                                                     |
-| `GET`/`POST`/`DELETE /api/construction-demo-scripts` | `requireAuth`                          | `name` ≤ 100, `dsl_script` ≤ 100 000 ; `upsert` sur (`author_id`, `name`) ; `DELETE ?id=` UUID                                                       |
+| `GET`/`POST`/`DELETE /api/construction-demo-scripts` | `requireRoles` prof ou admin           | `name` ≤ 100, `dsl_script` ≤ 100 000 ; `upsert` sur (`author_id`, `name`) ; `DELETE ?id=` UUID, `.select()` : zéro ligne → 404                       |
 
 Qui écrit : `CONSTRUCTION_AUTHOR_ROLES` et `canAuthorConstructions` (`src/lib/server/constructions-access.ts`),
-prof et admin (décision de David du 2026-10-22). La base tient la même règle (migration
-`20261022200000`) : les gardes de l'API et des pages ne font que répondre 403 et masquer les boutons.
+prof et admin (décision de David du 2026-10-22), et aussi pour les scripts de démo (2026-10-23). La base tient la même règle (migrations
+`20261022200000`, `20261023150000`) : les gardes de l'API et des pages ne font que répondre 403 et masquer les boutons.
 
 ## 7. Convertisseur XML InstrumenPoche → DSL
 
@@ -291,11 +291,9 @@ Faits relevés dans le code le 2026-10-22.
 
 ### Dette de code
 
-| Point                                                                       | Où                                                          |
-| --------------------------------------------------------------------------- | ----------------------------------------------------------- |
-| `applyTraceStyle` écrit dans la `Map` privée de `Figure` par un transtypage | `visibility.ts:107-121`                                     |
-| API : supprimer un identifiant étranger de script de démo répond `ok: true` | `api/construction-demo-scripts/+server.ts:74`               |
-| API démo : le message brut de la base est renvoyé en 500                    | `api/construction-demo-scripts/+server.ts:32`, `:58`, `:78` |
+| Point                                                                       | Où                      |
+| --------------------------------------------------------------------------- | ----------------------- |
+| `applyTraceStyle` écrit dans la `Map` privée de `Figure` par un transtypage | `visibility.ts:107-121` |
 
 ### Commentaires et docs périmés
 
