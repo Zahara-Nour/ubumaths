@@ -6,19 +6,17 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1632 et son `db:migrate`._
+_Mis à jour le 2026-10-23, PR 2 en cours (branche `feat/passe-lycee-libelles`)._
 
-- **État** : #1632 mergée (migration `20261023180000_tags_lycee.sql` : 221 modèles, 185 tags retirés, 175 posés,
-  32 déplacés) **jouée en prod** (`db:migrate`, empreintes vérifiées). Worktree supprimé.
-- **Prochaine action** : PR 2 (nouveau worktree `passe-lycee`) : 4 libellés (2-273,
-  1GEN-029/030/031) + 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236), seeds compris.
-- **En attente de David** : rien.
-- **Pièges en cours** : instantané `etat-prod-2026-10-23/` périmé (tags et nœuds changés) : en reprendre un pour la
-  PR 2. Base locale : `20261022200000` (autre session) refusée
-  par `db push --local` (policy absente en local). Automatisme 1re spé BO l. 274 sans point ; 85 points techno sans
-  borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `9a6087c5` 2 % d'échecs. Lot à part : MODIFIER + scissions
-  des TAG_PAR_VARIATION.
-- **Worktree / branche** : aucun (à recréer pour la PR 2).
+- **État** : PR 2 écrite — migration `20261023220000_passe_lycee_libelles_points.sql` (4 libellés, TSPE-626 et
+  TCOMP-379), test `passe-lycee-libelles.test.ts`, fixtures des seeds ; 103 tests verts, preuve rouge faite.
+- **Prochaine action** : PR, CI, revues (`security-auditor` + `code-reviewer`), merge, puis `db:migrate`.
+- **En attente de David** : rien (question d'accès tranchée : personne ne gagne d'accès).
+- **Pièges en cours** : base locale : `20261022200000` et `20261023150000` notées jouées (`migration repair
+--local`, leurs policies étaient déjà en place) ; `db push --local` passe de nouveau. Automatisme 1re spé BO
+  l. 274 sans point ; 85 points techno sans borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `9a6087c5` 2 %
+  d'échecs. Lot à part : MODIFIER + scissions des TAG_PAR_VARIATION.
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-libelles`.
 
 ## Les 5 étapes
 
@@ -150,3 +148,12 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
 - **2026-10-23 — `db:migrate` de #1632 fait (go de David).** Seule migration en attente en prod. Vérifié par le MCP :
   463 tags du lycée, empreinte = celle calculée depuis la fixture ; nœuds des 432 modèles = empreinte attendue ;
   0 `updated_at` modifié.
+- **2026-10-23 — PR 2 de l'étape e écrite.** Question d'accès tranchée par David : personne ne gagne d'accès.
+  État prod relu par le MCP (libellés, ordres : TSPE-444 en 200/325, TCOMP-236 en 52/178 ; codes max TSPE-625,
+  TCOMP-378). Migration écrite à la main (petite), gardes : libellés actuels exacts, codes neufs libres, nœud
+  unique, grades numérotés 1..N avec effectif et jumeau à sa place. Points neufs : attributs du jumeau logarithme
+  (rubrique comprise), nœud de 1SPE-294 (Fonction exponentielle > propriétés algébriques), affichés juste après le
+  jumeau. `generer-libelles-points.py` écrit la fixture et transforme les seeds. `later-migrations.ts` :
+  `undoLaterMigrations(pg, after)` défait seulement ce qui suit une migration ; `passe-points-lycee` lit ainsi
+  l'état qu'ELLE laisse. Jouée en local par `db push` (hors test), rollback éprouvé (y compris son refus si un
+  usage s'accroche à un point neuf).

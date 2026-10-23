@@ -1331,7 +1331,7 @@
 			"code": "2-273",
 			"grade": "2",
 			"display_order": 103,
-			"name": "Sur des cas simples de relations entre variables ($U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres",
+			"name": "Sur des cas simples de relations entre variables (par exemple $U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
 			"regime_acquisition": "diversite",

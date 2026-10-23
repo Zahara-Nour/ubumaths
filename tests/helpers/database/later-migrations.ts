@@ -11,12 +11,19 @@
 import type { Client } from 'pg';
 import { extractRollback } from './migration-rollback';
 
-/** La passe des points du lycée (étape a), du plus récent au plus ancien. */
+/** La passe des points du lycée (étape a). */
 export const PASSE_LYCEE = 'supabase/migrations/20261022180000_passe_points_lycee.sql';
-const LATER = [PASSE_LYCEE];
+/** Libellés et points neufs de la passe lycée (étape e, PR 2), venus après l'étape a. */
+export const PASSE_LYCEE_LIBELLES =
+	'supabase/migrations/20261023220000_passe_lycee_libelles_points.sql';
+/** Du plus récent au plus ancien. */
+const LATER = [PASSE_LYCEE_LIBELLES, PASSE_LYCEE];
 
-export async function undoLaterMigrations(pg: Client): Promise<void> {
-	for (const migration of LATER) {
+/** Défait les migrations postérieures à `after` (toutes si absent), de la plus récente à la plus ancienne. */
+export async function undoLaterMigrations(pg: Client, after?: string): Promise<void> {
+	const end = after ? LATER.indexOf(after) : LATER.length;
+	if (end < 0) throw new Error(`migration inconnue de LATER : ${after}`);
+	for (const migration of LATER.slice(0, end)) {
 		await pg.query(extractRollback(migration));
 	}
 }

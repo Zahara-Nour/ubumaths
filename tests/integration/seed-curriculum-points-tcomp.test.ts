@@ -22,6 +22,11 @@
  * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 178 points ; fixture transformée par
  * docs/wip/passe-lycee/generer-migration.py.
  *
+ * Puis la PR 2 de l'étape e (migration `20261023220000_passe_lycee_libelles_points`, décidée le
+ * 2026-10-23) : TCOMP-379, l'équation fonctionnelle de l'exponentielle pour transformer une
+ * écriture, juste après son jumeau logarithme → 179 points ; fixture transformée par
+ * docs/wip/passe-lycee/generer-libelles-points.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';
@@ -175,14 +180,14 @@ describe('Seed des points de Tle complémentaire (points + références)', () =>
 		return parts.join(' > ');
 	}
 
-	it('la fixture est bien celle du document validé (178 points, arbre .16)', () => {
+	it('la fixture est bien celle du document validé (179 points, arbre .16)', () => {
 		expect(fixture.version).toBe('2026-10-09.16'); // chemins de l'arbre nettoyé (20261012080000)
-		expect(fixture.points).toHaveLength(178);
+		expect(fixture.points).toHaveLength(179);
 		expect(fixture.points.every((p) => p.grade === 'T_COMP')).toBe(true);
 		expect(fixture.references.length).toBeGreaterThan(90);
 	});
 
-	it('les 178 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
+	it('les 179 points sont en base, IDENTIQUES à la fixture, chemin du nœud compris', () => {
 		const expected = new Set(
 			fixture.points.map((p) =>
 				signature({
@@ -197,7 +202,7 @@ describe('Seed des points de Tle complémentaire (points + références)', () =>
 		const extra = [...actual].filter((s) => !expected.has(s));
 		expect(missing, 'points du document absents ou altérés en base').toEqual([]);
 		expect(extra, 'points en base absents du document').toEqual([]);
-		expect(pointRows).toHaveLength(178);
+		expect(pointRows).toHaveLength(179);
 	});
 
 	it('les références du grade T_COMP visent EXACTEMENT les cibles du document (liste de 1re comprise)', () => {
