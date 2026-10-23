@@ -487,7 +487,8 @@ km/h`), 2026-09-27.
 - `tidyTerms` (`terms.ts`) : pour les dérivées — `tidy({ order: 'kept' })`,
   l'ordre de la règle gardé (u′v + uv′) ; un quotient garde son numérateur à
   part (signe compris : `(−sin²x − cos²x)/sin²x`), sauf si la mise au propre
-  complète est plus courte ; un négatif en tête que l'ordre rangé évite, à
+  complète est plus courte, ou si elle seule retire un décimal sous la barre
+  (Q3 : `2x/1,5 → 4x/3`, revue de #1655) ; un négatif en tête que l'ordre rangé évite, à
   nombre de termes égal, laisse l'ordre rangé l'emporter (`−6x + 2 → 2 − 6x`).
   ⚠️ Un arbre construit par le moteur porte `u′v − (uv′)` sans nœud de
   parenthèse, et `tidy` y distribue le − (écart au contrat, §A) :

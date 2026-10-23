@@ -98,6 +98,9 @@ function tidyGrouped(node: MathNode, options: TidyOptions | undefined): MathNode
 			denominator: tidySafe(node.denominator, { ...options, order: 'kept' })
 		};
 		const full = tidySafe(withImpliedParentheses(node), { ...options, order: 'kept' });
+		// Un décimal sous la barre suit Q3 (S1) : la barre compte comme opérande
+		// fraction, `2x/1,5` → `4x/3` comme dans `tidy`, même à nombre de nœuds égal
+		if (hasDecimal(ordered) && !hasDecimal(full)) return full;
 		return nodeCount(full) < nodeCount(ordered) ? full : ordered;
 	}
 	const kept = keptWithGroups(node, options);
@@ -107,6 +110,16 @@ function tidyGrouped(node: MathNode, options: TidyOptions | undefined): MathNode
 	// (somme de degré 1 : `−6x + 2` → `2 − 6x`) : il l'emporte.
 	const full = tidySafe(node, options);
 	return countTerms(full) === countTerms(kept) && !leadsNegative(full) ? full : kept;
+}
+
+/** L'arbre porte-t-il un nombre décimal (`1.5`) ? */
+function hasDecimal(node: MathNode): boolean {
+	let found = false;
+	mapNode(node, (n) => {
+		if (n.type === 'number' && n.value.includes('.')) found = true;
+		return n;
+	});
+	return found;
 }
 
 /** Le nombre de nœuds d'un arbre : « plus simple » veut dire « moins de nœuds ». */
