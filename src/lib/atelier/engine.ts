@@ -28,7 +28,10 @@ import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
-import { finalDerivative } from '$lib/mathAST/pedagogical-differentiation/final-form';
+import {
+	finalDerivative,
+	finalDerivativeOf
+} from '$lib/mathAST/pedagogical-differentiation/final-form';
 import { radiansInTrigonometry } from './angle-radians';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
@@ -723,25 +726,29 @@ function substitutedTree(
  * aller-retour texte rouvrait un défaut (`sin` relu `s i n`, `\\pi x` collé,
  * `x^{-2/3}/3` en barre oblique). Ici, l'arbre va droit à `toLatex`.
  *
- * La forme finale de f′ (`finalDerivative`, D1 et Q18) APRÈS la substitution :
- * la dérivée est mise en forme avant, mais les paramètres (a = 3) et les
- * fonctions citées (`g(h(x))`) n'arrivent qu'ensuite — sans cette passe,
- * `2 × 2 × 2x` restait tel quel et `g(h(x))′` gardait `6(3x + 1)`. Même forme
- * finale que `.dériver` dans Calcul. Le domaine acquis (S3) est celui de f
- * substituée ; à défaut, celui de la dérivée elle-même, qui porte les
- * dénominateurs de f (v² pour u/v). Appliquée deux fois, elle ne change rien.
+ * La forme finale de f′ (D1 et Q18) calculée sur f DÉJÀ substituée, une seule
+ * fois (`finalDerivativeOf`) : les paramètres (a = 3) et les fonctions citées
+ * (`g(2x)`) n'arrivent qu'à la substitution — dériver avant, puis remettre en
+ * forme après, appliquait la forme finale deux fois et la carte divergeait du
+ * bouton « Dériver » (`−1/(2x²)` contre `−2/(4x²)`, revue du lot 5a). Même
+ * calcul que le bouton et `.dériver` : étapes pédagogiques, puis
+ * `finalDerivative` avec le domaine de f (S3). Un nom qui n'est pas une
+ * dérivée, ou une f qui ne se substitue pas : la dérivée de `expandDerivatives`,
+ * déjà mise en forme.
  */
 export function derivativeAstOf(
 	atelier: Atelier,
 	name: string
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
+	// La carte elle-même d'abord : son état (erreur, en attente) décide de l'affichage
 	const result = substitutedAstOf(atelier, name);
 	if (!result.ok) return result;
-	const base = derivativeOf(name)?.base;
-	const f = base === undefined ? null : substitutedAstOf(atelier, base, { forDerivation: true });
-	const domain = f !== null && f.ok ? f.ast : result.ast;
-	return { ok: true, ast: finalDerivative(result.ast, domain) };
+	const derivative = derivativeOf(name);
+	if (derivative === null) return result;
+	const f = substitutedAstOf(atelier, derivative.base, { forDerivation: true });
+	const ast = f.ok ? finalDerivativeOf(f.ast, derivative.order) : null;
+	return ast === null ? result : { ok: true, ast };
 }
 
 export function expressionOf(

@@ -526,7 +526,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: R`\frac{2x}{x^2-9}`,
 		custom: '2x/(x^2-9)',
 		f: (x) => (2 * x) / (x * x - 9),
-		expected: R`\frac{-2x^2-18}{(x^2-9)^2}`
+		expected: R`-\frac{2x^2+18}{(x^2-9)^2}`
 	},
 	{
 		id: 'rat-19',

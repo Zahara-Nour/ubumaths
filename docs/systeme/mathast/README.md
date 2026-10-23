@@ -1101,11 +1101,16 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit au propre.
   Primitives : `tidyTerms` (`tidy/terms.ts`, l'ordre de la règle gardé : `tidy({ order: 'kept' })`).
   Dérivées : `withTidyStep` (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant
-  (corrections, `.dériver`, bouton ; la carte f′ par `derivativeAstOf`), écrit la **forme finale**
-  `finalDerivative` (`final-form.ts`, simplify-carte lot 5a) : quotient → numérateur `auto`,
-  dénominateur gardé, puis division par la puissance commune permise par le domaine de f
-  (`(2x − x²)/x⁴ → (2 − x)/x³`, `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ`) ; exponentielle commune → elle
-  seule en facteur, le reste développé réduit (`xeˣ → (x + 1)eˣ`, jamais `x(2 − x)e^{−x}`) ;
+  (corrections, `.dériver`, bouton), écrit la **forme finale** `finalDerivative` (`final-form.ts`,
+  simplify-carte lot 5a). La carte f′ (`derivativeAstOf`) la calcule UNE fois sur f déjà
+  substituée (`finalDerivativeOf` : étapes pédagogiques, repli sur `differentiate`), même rendu
+  que le bouton. Quotient → division par la puissance commune permise par le domaine de f,
+  cherchée sur le numérateur BRUT (`(2x − x²)/x⁴ → (2 − x)/x³`, `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ`,
+  `(x²/(x−1)²)′ = −2x/(x−1)³`), puis numérateur `auto`, dénominateur gardé, et le quotient entier
+  par `auto` s'il raccourcit (`((x²−1)/(x+1))′ = 1`, `−2/(4x²) → −1/(2x²)`), signe de la barre selon
+  `tidy` (« Le signe d'une fraction », [tidy-spec.md](tidy-spec.md) : `−7/(x−3)²`,
+  `−(2x² + 18)/(x² − 9)²`, David 2026-10-23) ; exponentielle commune (`eᵘ` ou `\exp(u)`) → elle seule en
+  facteur, le reste développé réduit (`xeˣ → (x + 1)eˣ`, jamais `x(2 − x)e^{−x}`) ;
   sinon `auto` (`((2x+1)²)′ = 8x + 4`). Un simple réordonnement de `tidyTerms` garde l'ordre de la
   règle (`sin x + x cos x`). La console `.diff` (`pnpm math`) reste sur `tidyTerms` (`/calc` à
   supprimer, David 2026-10-23) ; avant lui, la dérivée brute

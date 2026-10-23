@@ -88,7 +88,7 @@ describe('withTidyStep : la forme finale de f′', () => {
 		['t e^{-t}', 't', '\\left( 1 - t \\right) \\exponentialE^{-t}'],
 		['(x^2+1)e^{2x}', 'x', '\\left( 2 x^2 + 2 x + 2 \\right) \\exponentialE^{2 x}'],
 		// Quotient : numérateur réduit, puis facteur commun (Q18)
-		['\\frac{2x+1}{x-3}', 'x', '\\dfrac{-7}{\\left( x - 3 \\right)^2}'],
+		['\\frac{2x+1}{x-3}', 'x', '-\\dfrac{7}{\\left( x - 3 \\right)^2}'],
 		['\\frac{x^2}{x+1}', 'x', '\\dfrac{x^2 + 2 x}{\\left( x + 1 \\right)^2}'],
 		['\\frac{x-1}{x^2}', 'x', '\\dfrac{2 - x}{x^3}'],
 		['\\frac{\\ln(x)}{x^2}', 'x', '\\dfrac{1 - 2 \\ln\\left( x \\right)}{x^3}'],
@@ -100,6 +100,14 @@ describe('withTidyStep : la forme finale de f′', () => {
 			'x',
 			'\\dfrac{\\exponentialE^x}{\\left( \\exponentialE^x + 1 \\right)^2}'
 		],
+		// Revue : le facteur commun cherché sur le numérateur BRUT, avant `auto`
+		['\\frac{x^2}{(x-1)^2}', 'x', '-\\dfrac{2 x}{\\left( x - 1 \\right)^3}'],
+		['\\frac{2x}{(x^2+1)^2}', 'x', '\\dfrac{2 - 6 x^2}{\\left( x^2 + 1 \\right)^3}'],
+		['\\frac{x^2-1}{x+1}', 'x', '1'],
+		['\\frac{x-1}{x^2-2x+1}', 'x', '-\\dfrac{1}{x^2 - 2 x + 1}'],
+		['\\frac{1}{2x}', 'x', '-\\dfrac{1}{2 x^2}'],
+		// Revue : `\\exp(x)` est une exponentielle comme `e^{x}`
+		['x\\exp(x)', 'x', '\\left( x + 1 \\right) \\exp\\left( x \\right)'],
 		// Sinon `auto`, qui ne factorise jamais
 		['3(x+1)^5', 'x', '15 \\left( x + 1 \\right)^4'],
 		['x^2(x+1)', 'x', '3 x^2 + 2 x'],
@@ -114,7 +122,7 @@ describe('withTidyStep : la forme finale de f′', () => {
 
 		const { derivative: final, derivativeLatex } = withTidyStep([], result.derivative, f);
 		expect(derivativeLatex).toBe(derivative);
-		// Appliquée deux fois, la forme finale ne change rien (carte f′ de l'Atelier)
+		// Idempotente : la forme finale d'une forme finale ne change rien
 		expect(toLatex(finalDerivative(final, f))).toBe(derivative);
 	});
 

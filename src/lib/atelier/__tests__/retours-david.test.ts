@@ -141,7 +141,7 @@ describe('revue : simplifier sans perdre l’ordre ni les regroupements', () => 
 
 		expect(rule.replace(/\s/g, '')).toContain('2\\left(x-1\\right)-\\left(2x+1\\right)');
 		expect(derived?.steps.at(-1)?.title).toBe('On simplifie');
-		expect(derived?.answer).toBe("f'(x) = \\dfrac{-3}{\\left( x - 1 \\right)^2}");
+		expect(derived?.answer).toBe("f'(x) = -\\dfrac{3}{\\left( x - 1 \\right)^2}");
 	});
 
 	// 1 : l'étape « On simplifie » montrait « 3 3 x^2 », lu 33x²

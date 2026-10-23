@@ -6,15 +6,19 @@
  * gardait `(2(x−3) − (2x+1))/(x−3)²` et `x·eˣ` donnait `eˣ + xeˣ` (« je ne
  * trouve pas normal que f′ affiche eˣ + xeˣ », David). La règle :
  *
- * 1. **Quotient** : numérateur réduit (politique `auto`), dénominateur gardé,
- *    puis numérateur et dénominateur divisés par leur facteur commun quand le
- *    domaine de f le permet (Q18, S3) : `(2x − x²)/x⁴ → (2 − x)/x³`,
- *    `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ`. Le dénominateur de f′ est le carré de
- *    celui de f : ses facteurs sont non nuls sur le domaine de f, et eˣ ne
- *    s'annule jamais.
+ * 1. **Quotient** : numérateur et dénominateur divisés par leur facteur commun
+ *    quand le domaine de f le permet (Q18, S3), cherché sur le numérateur BRUT
+ *    — réduit d'abord, `2x(x−1)² − 2x²(x−1)` perdait son facteur (x − 1) :
+ *    `(2x − x²)/x⁴ → (2 − x)/x³`, `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ`,
+ *    `x²/(x−1)² → −2x/(x−1)³`. Puis numérateur réduit (politique `auto`),
+ *    dénominateur gardé, et le quotient entier simplifié s'il raccourcit
+ *    (fraction de polynômes `(x² + 2x + 1)/(x + 1)² → 1`, nombres
+ *    `−2/(4x²) → −1/(2x²)`), le signe de la barre celui de `tidy`. Le dénominateur de
+ *    f′ est le carré de celui de f : ses facteurs sont non nuls sur le domaine
+ *    de f, et une exponentielle ne s'annule jamais.
  * 2. **Exponentielle commune** : quand tous les termes portent la même
- *    exponentielle, elle seule est mise en facteur, le reste réduit :
- *    `xeˣ → (x + 1)eˣ`, `x²e^{−x} → (2x − x²)e^{−x}`. Rien d'autre n'est
+ *    exponentielle (`eᵘ` ou `\exp(u)`), elle seule est mise en facteur, le
+ *    reste réduit : `xeˣ → (x + 1)eˣ`, `x²e^{−x} → (2x − x²)e^{−x}`. Rien d'autre n'est
  *    factorisé (pas de `x(2 − x)`).
  * 3. **Sinon** : la politique `auto`, qui ne factorise jamais (`5(x+1)⁴` reste,
  *    `x²(x + 1)` donne `3x² + 2x`).
@@ -37,13 +41,23 @@ import {
 	unflattenSum
 } from '../flatten';
 import type { SignedTerm } from '../flatten';
-import { isDelimiter, isEulerConstant, isNumber, isSuperscript } from '../guards';
+import {
+	isDelimiter,
+	isEulerConstant,
+	isFunction,
+	isNumber,
+	isOpposite,
+	isSuperscript
+} from '../guards';
 import { hashMathNode } from '../normal/hash';
 import { generatePedagogicalSimplifySteps } from '../pedagogical-simplify/pipeline';
+import { differentiate } from '../differentiation';
+import { generatePedagogicalDifferentiationSteps } from './pipeline';
 import { tidy } from '../tidy';
 import type { TidyOptions } from '../tidy';
 import { nonZeroBases } from '../tidy/sign';
-import { tidyTerms } from '../tidy/terms';
+import { nodeCount, tidyTerms } from '../tidy/terms';
+import { findNodes } from '../transforms';
 
 /** Le budget de la politique `auto` : au-delà, la dérivée rangée reste. */
 const AUTO_TIMEOUT_MS = 1000;
@@ -64,23 +78,100 @@ export function finalDerivative(derivative: MathNode, f: MathNode): MathNode {
 	const kept = tidyTerms(derivative, options);
 	try {
 		const candidate = finalForm(derivative, f, options);
-		// Un simple réordonnement de la dérivée rangée : l'ordre de la règle reste
-		const sameTerms = hashMathNode(tidy(candidate, options)) === hashMathNode(tidy(kept, options));
-		return sameTerms ? kept : candidate;
+		// Un simple réordonnement de la dérivée rangée (mêmes termes, même
+		// écriture) : l'ordre de la règle reste. `−2/(4x²)` → `−1/(2x²)` n'en est pas un.
+		// Un quotient, lui, suit toujours la forme finale : le signe de la barre
+		// est celui de `tidy` (David, 2026-10-23), pas celui de la règle.
+		const reordered =
+			!isQuotient(candidate) &&
+			hashMathNode(tidy(candidate, options)) === hashMathNode(tidy(kept, options)) &&
+			lengthWithoutSigns(candidate) === lengthWithoutSigns(kept) &&
+			numbersTotal(candidate) === numbersTotal(kept);
+		return reordered ? kept : candidate;
 	} catch {
 		return kept;
 	}
 }
 
+/**
+ * La forme finale de la dérivée n-ième de `f`, calculée comme le bouton
+ * « Dériver » et `.dériver` : dérivée brute des étapes pédagogiques (le moteur
+ * de dérivation s'il refuse), puis `finalDerivative` une seule fois par ordre.
+ * Le domaine acquis (S3) est celui de `f`. `null` si rien ne dérive.
+ *
+ * Pour la carte f′ de l'Atelier : elle dérive f DÉJÀ substituée, sinon la forme
+ * finale était appliquée deux fois (avant et après la substitution) et la
+ * carte divergeait du bouton (revue du lot 5a).
+ */
+export function finalDerivativeOf(f: MathNode, order = 1, variable = 'x'): MathNode | null {
+	let current = f;
+	for (let k = 0; k < order; k++) {
+		const raw = rawDerivative(current, variable);
+		if (raw === null) return null;
+		current = finalDerivative(raw, f);
+	}
+	return current;
+}
+
+function rawDerivative(node: MathNode, variable: string): MathNode | null {
+	try {
+		const result = generatePedagogicalDifferentiationSteps(node, {
+			variable,
+			schoolLevel: 'lycee',
+			verbosity: 'detailed'
+		});
+		if (result.steps.length > 0) return result.derivative;
+	} catch {
+		// Refus des étapes (valeur absolue…) : le moteur de dérivation prend le relais
+	}
+	try {
+		return differentiate(node, { variable });
+	} catch {
+		return null;
+	}
+}
+
 function finalForm(node: MathNode, f: MathNode, options: TidyOptions): MathNode {
 	if (node.type === 'division') {
-		const numerator = reduce(node.numerator, options);
+		const raw = tidy(node.numerator, { ...options, order: 'kept' });
 		const denominator = tidy(node.denominator, { ...options, order: 'kept' });
-		const divided = divideByCommonFactor(numerator, denominator, f, options);
-		const top = withCommonExponential(divided.numerator, options);
-		return isOne(divided.denominator) ? top : divide(top, divided.denominator, node.displayStyle);
+		const divided = divideByCommonFactor(raw, denominator, f, options);
+		const top = withCommonExponential(reduce(divided.numerator, options), options);
+		if (isOne(divided.denominator)) return top;
+		// Le signe de la barre suit `tidy` (« Le signe d'une fraction », tidy-spec §A,
+		// David 2026-10-23) : `−7/(x−3)²`, `(1 − x)/eˣ`, `−(2x² + 18)/(x² − 9)²`
+		return tidy(
+			simplifiedQuotient(divide(top, divided.denominator, node.displayStyle), options),
+			options
+		);
 	}
 	return withCommonExponential(reduce(node, options), options);
+}
+
+/**
+ * Le quotient entier passé par `auto`, s'il raccourcit : une fraction de
+ * polynômes (`(x² + 2x + 1)/(x + 1)² → 1`, ses facteurs communs sont ceux du
+ * dénominateur de f, donc non nuls sur son domaine) ou des nombres
+ * (`−2/(4x²) → −1/(2x²)`).
+ */
+function simplifiedQuotient(quotient: MathNode, options: TidyOptions): MathNode {
+	const whole = reduce(quotient, options);
+	const shorter = lengthWithoutSigns(whole) - lengthWithoutSigns(quotient);
+	// À longueur égale, des nombres plus petits : `−2/(4x²)` → `−1/(2x²)`
+	if (shorter > 0 || (shorter === 0 && numbersTotal(whole) >= numbersTotal(quotient))) {
+		return quotient;
+	}
+	return whole;
+}
+
+/** La somme des nombres écrits (`−2/(4x²)` : 6). */
+function numbersTotal(node: MathNode): number {
+	return findNodes(node, isNumber).reduce((total, n) => total + Math.abs(Number(n.value)), 0);
+}
+
+/** La longueur d'une écriture, sans compter où se place le signe −. */
+function lengthWithoutSigns(node: MathNode): number {
+	return nodeCount(node) - findNodes(node, isOpposite).length;
 }
 
 /**
@@ -210,9 +301,15 @@ function withoutFactor(term: MathNode, key: string): MathNode {
 	return unflattenProduct(rest) ?? number('1');
 }
 
-/** `eᵘ` (lettre `e` ou `\exponentialE`, invariant 4), sous ses parenthèses. */
+/**
+ * `eᵘ` (lettre `e` ou `\exponentialE`, invariant 4) ou `\exp(u)`, sous ses
+ * parenthèses.
+ */
 function isExponential(node: MathNode): boolean {
 	const inner = unwrap(node);
+	if (isFunction(inner)) {
+		return inner.name === 'exp' && inner.args.length === 1 && inner.power === undefined;
+	}
 	return isSuperscript(inner) && isEulerConstant(unwrap(inner.base));
 }
 
@@ -220,6 +317,12 @@ function unwrap(node: MathNode): MathNode {
 	let current = node;
 	while (isDelimiter(current)) current = current.content;
 	return current;
+}
+
+/** Un quotient, sous un éventuel − : `a/b`, `−a/b`. */
+function isQuotient(node: MathNode): boolean {
+	const inner = isOpposite(node) ? node.operand : node;
+	return inner.type === 'division';
 }
 
 function isOne(node: MathNode): boolean {
