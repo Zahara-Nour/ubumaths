@@ -338,6 +338,7 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
         "--   from (values",
     ]
     reecrits = [m for m in lot if not m.get('tag_seul')]
+    assert reecrits, 'lot de tags seuls : le rollback rendrait un `values` vide'
     rb += [f"--   ('{m['id']}'::uuid, {contenu(m['avant'])})" + (',' if i < len(reecrits) - 1 else '')
            for i, m in enumerate(reecrits)]
     rb += ["--   ) as r(id, c)", "--  where q.id = r.id;"]
