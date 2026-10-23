@@ -212,6 +212,10 @@ l'un ni pour l'autre. Code : `Accumulator.decimal` / `.fraction` et
 | `2,5x/5`     | `x/2`     |                                                   |
 | `(0,5x+1)/3` | `(x+2)/6` | table A.1                                         |
 
+Un facteur au dénominateur impose la fraction : `0,5·x⁻¹ → 1/(2x)` (le
+terme s'écrit sous une barre, que le passage suivant lirait comme telle).
+Un radical décimal suit la règle : `√0,5 → 0,5√2` (question ouverte à David).
+
 Limite connue : un exposant décimal devient une fraction (`x^{0,5} → x^{1/2}`),
 l'exposant d'un facteur ne porte pas de registre.
 

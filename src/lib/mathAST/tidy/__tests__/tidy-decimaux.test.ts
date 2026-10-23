@@ -112,7 +112,15 @@ describe('tidy — invariants sur les décimaux', () => {
 		'0.3x+1/2',
 		'0.5x^2+1.5x-2',
 		'1/3+0.5',
-		'(0.5x+1)/3'
+		'(0.5x+1)/3',
+		// Revue : une puissance négative s'écrit sous une barre, le décimal ne survit pas
+		'0.5*x^(-1)',
+		'0.5*(x+1)^(-1)',
+		'1.5*x^(-1)',
+		'0.5x^(-2)',
+		'(x+1)^(-1)*(x-1)*0.5',
+		'0.25x^(-1)+0.25x^(-1)',
+		'0.5x^(-1)*x^2'
 	];
 
 	it.each(cases)('idempotent : %s', (input) => {

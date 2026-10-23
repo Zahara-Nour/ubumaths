@@ -1057,7 +1057,7 @@ function toTerm(
 		unit,
 		verbatim: false,
 		quantity,
-		decimal: acc.decimal && !acc.fraction && decimalString(absRational(coefficient)) !== null,
+		decimal: acc.decimal && !acc.fraction && writesDecimal(coefficient, factors),
 		written:
 			settings.unitChoice === 'written' && unit !== null && quantity !== null
 				? writtenUnitOf(acc.unitSymbols, unit)
@@ -1241,6 +1241,17 @@ type TermGroup = {
 	fraction: boolean;
 };
 
+/**
+ * Le coefficient peut-il s'écrire en décimal (S1) ? Il faut une écriture finie,
+ * et aucun facteur au dénominateur : `0,5·x⁻¹` s'écrit sous une barre, que le
+ * passage suivant lirait comme une fraction (Q3) — `1/(2x)`, sinon `tidy`
+ * n'est plus idempotent (revue du lot 4b).
+ */
+function writesDecimal(coefficient: Rational, factors: readonly TidyFactor[]): boolean {
+	if (factors.some((factor) => factor.exponent.n < 0n)) return false;
+	return decimalString(absRational(coefficient)) !== null;
+}
+
 /** Un coefficient écrit en fraction : non entier, hors du registre décimal (S1). */
 function isFractionTerm(term: TidyTerm): boolean {
 	return !term.decimal && term.coefficient.d !== 1n;
@@ -1330,8 +1341,11 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 		if (isZeroRational(coefficient) && !dividesByZero(term)) continue;
 		// S1 : décimal si un décimal est lu, aucune fraction, et l'écriture finie
 		// (`0,5x + 0,25x → 0,75x`, `0,5x + x/3 → 5x/6`)
-		const finite = decimalString(absRational(coefficient)) !== null;
-		result.push({ ...term, coefficient, decimal: decimal && !fraction && finite });
+		result.push({
+			...term,
+			coefficient,
+			decimal: decimal && !fraction && writesDecimal(coefficient, term.factors)
+		});
 	}
 	return result;
 }

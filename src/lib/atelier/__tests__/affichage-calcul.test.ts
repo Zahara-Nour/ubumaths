@@ -83,6 +83,11 @@ describe('le mode décimal à l’écran', () => {
 		expect(latexOf(decimal('\\sqrt{2}/2'))).toBe('\\approx 0{,}7071');
 	});
 
+	// Revue du lot 4b (simplify-carte) : `tidy` garde le décimal mais retirait le zéro final
+	it('une valeur arrondie garde ses 4 décimales, zéro final compris', () => {
+		expect(latexOf(decimal('\\sqrt{26}'))).toBe('\\approx 5{,}0990');
+	});
+
 	// Revue : `\\approx \\dfrac{1}{10000000}`, `\\approx 1099511627776`
 	it('hors de l’échelle : jamais ≈ devant une écriture exacte', () => {
 		expect(latexOf(decimal('2^{40}'))).toBe('1099511627776');
