@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 5 lancé (phase 0 validée)._
+_Mis à jour le 2026-10-23, après #1621._
 
-- **État** : lot 5 = parallèle par double perpendiculaire, au compas (`@euclide`) ET à l'équerre (`@equerre`). Phase 0 validée par David (section « Lot 5 » plus bas). Code des lots 1 à 4 (#1615, #1616, #1618, #1619) part au prochain `deploy:prod`.
-- **Prochaine action** : tests rouges → chorégraphies → verts → PR (revue `code-reviewer` opus : géométrie).
-- **En attente de David** : rien. Après le lot 5 restent : formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne après une erreur d'exécution (cosmétique).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` ; `db:migrate` depuis le dépôt principal seulement. `perpendiculaire @euclide @rayon_libre` dégénère quand `P ∈ (AB)` (Q = P) : ne pas la réutiliser pour la 2e perpendiculaire.
-- **Worktree / branche** : `../ubumaths-wt-constructions` · `feat/constructions-parallele`.
+- **État** : lot 5 **livré** — #1621 mergée : `parallele @euclide @double_perpendiculaire` (16 sous-étapes) et `@equerre @double_perpendiculaire` (10), `P ∈ (AB)` → erreur à la ligne. Code des lots 1 à 5 (#1615, #1616, #1618, #1619, #1621) part au prochain `deploy:prod`. Vérification à l'œil notée dans `verifications-manuelles.md`.
+- **Prochaine action** : choisir le lot 6 avec David.
+- **En attente de David** : le lot 6. Restent : formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique) · (revue #1621, mineur) tests de la double perpendiculaire sur d'autres décors ((AB) verticale, P dessous).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` ; `db:migrate` depuis le dépôt principal seulement. Test qui déplace un point : `movePoint` ne fait que marquer sale → appeler `figure.recompute()`.
+- **Worktree / branche** : `../ubumaths-wt-constructions` gardé le temps de la vérification de David (serveur 5177), puis supprimé. Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
 
 ---
 
@@ -98,3 +98,9 @@ Revue : `code-reviewer` (Sonnet).
 - Consignes de sous-étape en français (lot 2). `e` = **charnière** (visible `@squelette`/`@complet`, masquée `@epure`) ; arcs et points auxiliaires comme les autres voies. Défauts inchangés (`parallelogramme`, `pose_equerre`).
 - Limite : `P` loin → rayon viewport-safe. `P ∈ (AB)` → erreur d'exécution claire, pas d'animation fausse (cas non élève, pas creusé).
 - Tests d'abord : nombre et suite des sous-étapes, `e ⟂ (AB)`, droite finale ∥ `(AB)` passant par `P`, visibilité des 3 modes, rendu dans le lecteur ; le test du stub est remplacé.
+
+### Réalisé (2026-10-23)
+
+- `parallele.ts` : les deux voies (sous-perpendiculaires `rayon_libre` / `pose_equerre` par `ctx.sub`, méthodes passées explicitement) ; rayons fixes 1,5 et 2,5 pour la perpendiculaire en P ; charnières `[e, R]` (`@euclide`), `[e]` (`@equerre`), deux marqueurs d'angle droit. `ChoreographyError` (`types.ts`) → `DslRuntimeError` à la ligne (`executor.ts`).
+- Tests : 17 d'intégration rouges sans le code + 3 de rendu du lecteur ; 208 ✓ / 21 ignorés. Revue `code-reviewer` opus : aucun bloquant ; mineurs 1-2 corrigés (direction de la parallèle à l'équerre tirée de `u`, juste quand P glisse sur (AB) — test rouge sans, vert avec) ; mineur 3 (autres décors) non fait.
+- `check:incremental` 0 erreur · `types:cliquet` tenu · `lint:fast` propre · `docs:check-a-jour` sans alerte · CI verte, mergée (#1621).
