@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1642._
+_Mis à jour le 2026-10-23, pendant le lot 4d PR 2 (PR pas encore ouverte)._
 
-- **État** : lots mergés jusqu'à **#1642 (lot 4d, PR 1 : espaces de groupement)** (§ 43) : règle du BIPM partout (juge, affichage, Atelier, tableur, graphiques, import `\np`) + réglage de modèle « Espaces dès 4 chiffres » (`options.constraints.spacesFromFourDigits`) ; 53 fichiers du corpus marqués. Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **État** : lots mergés jusqu'à #1642 (lot 4d PR 1, espaces de groupement). **PR 2 en cours** sur `chore/simplify-carte-marquage-espaces` (§ 44) : script `pnpm corrections:marquage-espaces`, simulation sur la prod 55/55 verte (51 marqués + 4 brouillons de 1re spé corrigés au BIPM). Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d PR 1~~ → **4d PR 2 (script de marquage prod)** → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : PR 2, branche `chore/simplify-carte-marquage-espaces` : script `scripts/corrections/` qui (a) marque les **51** modèles de prod dont une spec attend la règle de l'école, (b) corrige les specs des **4 brouillons 1re spé** (`245b4eb1`, `ef807ee9`, `e7cfe442`, `27d77564` : retirer `spaces`, BIPM) ; simulation par défaut, `checkTemplate` vert sur la ligne courante, sauvegarde, garde `updated_at`, relecture (modèle : `scripts/corrections/retouches.ts`, colonnes `options` et `test_specs` en plus). Mergée AVANT `deploy:prod` ; `--publier` juste APRÈS, sur le feu vert de David.
-- **En attente de David** : rien (option C, liste et découpage validés le 2026-10-23).
-- **Pièges en cours** : ⚠️ **ne pas déployer #1642 sans enchaîner le script** (sinon la numération accepte `7900` sans remarque) ; marquer AVANT le deploy est impossible (schéma strict de l'éditeur en prod). `marquage-sonde.mts`, **non suivi**, dans `../ubumaths-wt-simplify-carte` : base du script (worktree gardé pour lui, branche locale `feat/simplify-carte-espaces` mergée). Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte` (sur `feat/simplify-carte-espaces`, mergée) ; y créer la branche de la PR 2 depuis `origin/main`.
+- **Prochaine action** : revue `code-reviewer`, PR, CI, merge. Puis, après le `deploy:prod` de David et sur son feu vert : `pnpm corrections:marquage-espaces --publier` depuis le dépôt principal.
+- **En attente de David** : `deploy:prod`, puis le feu vert du `--publier`.
+- **Pièges en cours** : ⚠️ **ne pas déployer #1642 sans enchaîner le script** (sinon la numération accepte `7900` sans remarque) ; marquer AVANT le deploy est impossible (schéma strict de l'éditeur en prod). Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `chore/simplify-carte-marquage-espaces`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -646,3 +646,13 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 **Prod (lecture seule, 2026-10-23)** : 66 modèles ont une spec `spaces` (62 publiés) ; **55 ont besoin du marquage**, dont 51 de primaire/collège (publiés) et **4 brouillons de 1re spé** (`245b4eb1` Décroissance exponentielle, `ef807ee9` Somme des premiers entiers, `e7cfe442` Somme des puissances de q, `27d77564` Placement) : **David : ne pas les marquer, corriger leurs specs** (BIPM au lycée). Le mécanisme des retouches ne convient pas (il rejoue les anciennes retouches, refus du lot entier) : script dédié en PR 2.
 
 **Mergé : #1642** (2026-10-23, CI verte). Revue `code-reviewer` (opus) : rien de bloquant ; traités dans le dernier commit — test de rendu `CorrectionCard-espaces.svelte.test.ts` (rouge sans le fournisseur, vérifié), graphiques de simulation (`simulation-scene.ts`, `stat-chart-scene.ts`, message de `stat-chart-parser.ts`) et `\np` à l'import LaTeX (`importers/latex/converters/`) passés à la règle, codes couleur ignorés par le juge (défaut antérieur), seuil 5 explicite pour une carte non réglée (pas d'héritage du seuil de l'école), commentaire de `display-options.ts`. Suite serveur 60 161 verte, client (questions, markdown, question-inputs) 525 verts.
+
+## 44. Lot 4d, PR 2 : script de marquage (branche `chore/simplify-carte-marquage-espaces`)
+
+**Fait** : `pnpm corrections:marquage-espaces` (`scripts/corrections/marquage-espaces.ts`, lib `lib/marquage-espaces.ts`, 12 tests). Sélection par la règle : une spec attend `spaces` sur une réponse remarquée à 4 chiffres et pas à 5. Listes **figées** (51 modèles à marquer, 4 brouillons de lycée), que la règle doit retrouver exactement sur la prod courante, sinon refus. Marquage : seule la colonne `options` (`constraints.spacesFromFourDigits: true`, refus si déjà marqué). Lycée : seule `test_specs` ; la remarque `spaces` disparaît, la spec devient `correct` (une autre remarque attendue serait gardée ; une réponse encore remarquée au BIPM fait refuser). Garde-fous repris de `retouches.ts` : simulation par défaut, `checkTemplate` sur la ligne modifiée, refus du lot entier, sauvegarde, garde `updated_at`, relecture de la colonne écrite.
+
+**Simulation sur la prod (lecture, 2026-10-23)** : 66 modèles avec une spec `spaces`, 55 à traiter, sélection conforme aux listes, **55/55 `checkTemplate` verts** (51 marqués, 4 brouillons : 6 specs passées à `correct`). Doc : `docs/pratiques/corrections-redaction.md`.
+
+**Revue `code-reviewer`** : rien de bloquant ; traités — relance après une écriture interrompue (un modèle déjà marqué ou un brouillon déjà corrigé est sauté au lieu de bloquer le lot ; les modèles des listes sont relus par identifiant), description générée limitée aux réponses concernées, preuve rouge/verte sur un modèle réel du corpus (`grandeurs/426.json` : `checkTemplate` rouge sans le réglage, vert avec). 15 tests ; simulation prod relancée : 55/55 verts, 0 déjà traité. `marquage-sonde.mts` supprimé (accord de David).
+
+**Ordre de livraison** : merge de cette PR → `deploy:prod` (David) → `pnpm corrections:marquage-espaces --publier` depuis le dépôt principal, sur le feu vert de David, aussitôt après.
