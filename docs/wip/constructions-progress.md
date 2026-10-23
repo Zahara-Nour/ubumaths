@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 8 lancé (phase 0 validée)._
+_Mis à jour le 2026-10-23, après #1629._
 
-- **État** : lot 8 = consignes avec les vrais noms du script (section « Lot 8 » plus bas). Phase 0 validée par David. Lots 1 à 7 partent au prochain `deploy:prod`.
-- **Prochaine action** : tests rouges → correctif → verts → PR (revue `code-reviewer` Sonnet : textes seulement).
-- **En attente de David** : vérifications de #1621 (5177) et #1626 (5178) → puis suppression de `../ubumaths-wt-constructions` et `../ubumaths-wt-constructions-droite`. Après le lot 8 : points auxiliaires nommés dans les consignes sans étiquette sur la figure (lot à part, choix d'affichage) ; `@mesure` ; côté du carré d'angle droit.
-- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script d'exemple. 3 constructions en prod avec des `@cacher` sans effet (choix de David). Base locale : `migration up` bute sur `20261022200000`.
-- **Worktree / branche** : `../ubumaths-wt-constructions-consignes` · `feat/constructions-consignes-noms`.
+- **État** : lot 8 **livré** — #1629 mergée : consignes des six chorégraphies avec les vrais noms du script (`names.ts`), tournure neutre pour un argument caché/sans nom ; angle nommé seulement si son nom s'affiche (règle validée par David). Lots 1 à 8 partent au prochain `deploy:prod`. Vérifications #1626 (5178) et #1629 (5179) notées.
+- **Prochaine action** : choisir la suite avec David.
+- **En attente de David** : (1) vérifications de #1621 (5177), #1626 (5178), #1629 (5179) → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes` ; (2) suite possible : points auxiliaires (Q, R, C*, A′…) nommés dans les consignes mais sans étiquette sur la figure (afficher ou retirer ?) ; `@mesure` (chantier à part) ; côté du carré d'angle droit (double perpendiculaire à l'équerre).
+- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Étiquettes écrites brutes dans les consignes (`A_1` tel quel). Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` (vitest) → relancer le job. 3 constructions en prod avec des `@cacher` sans effet (choix de David).
+- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
 
 ---
 
@@ -145,3 +145,9 @@ Revue : `code-reviewer` (Sonnet).
 - **Point d'argument caché ou sans nom** (ex. point caché de d) → tournure neutre (« Compas sur le point choisi… »).
 - **Inchangé** : points auxiliaires (Q, R, C*, D*, A′, B′, A*, B*, O…) et droite intermédiaire `e`, sans étiquette sur la figure → lot à part. Scripts aux noms identiques aux lettres d'aujourd'hui → textes identiques.
 - Tests d'abord : autres noms, forme `(P, d)`, point caché, non-régression des textes actuels.
+
+### Réalisé (2026-10-23)
+
+- `choreographies/names.ts` (rôles `en`, `de`, `mesure`, `droite`, `lineFormRoles`…) ; `args.lineName` rempli par `expandLineArgument`, transmis par `ctx.sub`. Corrigé au passage : 2e médiatrice de `cercle_circonscrit` (« Compas en A » au lieu de B).
+- Choix validé par David : un angle (α, β de `transporte`) n'est nommé que si son nom s'affiche, sinon « l'angle ».
+- Tests : 44 + 7 (tournures neutres par famille) ; 33 rouges sans le code ; 13 non-régressions (textes d'avant). `test:server constructions-v2` 321 ✓. Revue `code-reviewer` Sonnet : aucun bloquant ; tests des tournures neutres ajoutés. CI verte (shard client 1 relancé : blocage `wrapDynamicImport` sans rapport), mergée (#1629).
