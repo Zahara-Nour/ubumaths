@@ -14,7 +14,8 @@ _Mis à jour le 2026-10-24, #1657 ouverte, CI bloquée par `main`._
 - **Prochaine action** : `main` réparé → mettre la branche à jour, CI verte, merge, `db:migrate` (par David),
   relecture prod (MCP) ; puis versement (fin de chantier). Rollbacks « trop stricts » de #1651 / #1654 : classés
   sans suite (David, 2026-10-23), à noter au versement.
-- **En attente de David** : qui répare l'oracle sur `main` ; `db:migrate` après merge (refusé au mode auto).
+- **En attente** : réparation de l'oracle sur `main` par la session simplify-carte (décision de David, prévenue le
+  2026-10-24) ; `db:migrate` par David après merge (refusé au mode auto).
 - **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
   `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant
   tout `tsx` ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée.
