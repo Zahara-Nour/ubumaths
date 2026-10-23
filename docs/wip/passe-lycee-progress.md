@@ -6,12 +6,12 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, libellés tranchés (15/15)._
+_Mis à jour le 2026-10-23, libellés tranchés (15/15), questions l2-1 à l2-10 reportées._
 
 - **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`), 61 questions. Page à
   cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (`bornes/page/gen.py` → `page.html`, puis
   `pnpm format` ; collections `reponses`, `libelles`). **Libellés : 15/15 reportés** (champ `decision_libelle`) ;
-  **questions : 10/61 répondues (l2-1 à l2-10), pas encore reportées**.
+  **questions : 10/61 reportées (l2-1 à l2-10, 2de)**.
 - **Prochaine action** : quand David a rempli les questions, les reporter (`decision`, `decide_le`, force
   `décision`), puis étape c.
 - **En attente de David** : les 51 questions restantes.
@@ -92,3 +92,6 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   sommet en lien avec la symétrie ») ; (2) TSPE-444 : exponentielle → point en Tle ou renvoi en 1re, à trancher.
 - **2026-10-23 — TSPE-444 : option A (David).** Point neuf « Utiliser l'équation fonctionnelle de l'exponentielle
   pour transformer une écriture » en Tle spé et en Tle compl. (à côté de TCOMP-236), créé à l'étape e.
+- **2026-10-23 — Questions l2-1 à l2-10 reportées.** Toutes = la reco. `decision`/`decide_le` dans
+  `questions-2de-1gen.json` ; dans `2de.json`/`.md` : 7 bornes générales et 6 bornes de point (2-246, 302, 306, 394,
+  400, 431) en force `décision`, renvois « question l2-N » des remarques devenus « décision l2-N ».

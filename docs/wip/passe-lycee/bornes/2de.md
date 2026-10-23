@@ -18,52 +18,61 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 
 ## Ce qui est le plus utile pour la vérification « seulement »
 
-- **Fonctions de référence** : affines, valeur absolue, carré, inverse (définition, courbe) ; racine carrée et cube **seulement** pour résoudre f(x) = k, f(x) < k (question l2-2). Ni dérivée, ni second degré général, ni exponentielle.
-- **Valeur absolue** : distance et intervalles de centre donné ; « toute autre utilisation est hors programme », mais la fonction valeur absolue est au programme (question l2-1).
-- **Équations et inéquations** : « se ramenant au premier degré » — ax + b = cx + d, ax ⩾ b…, produit nul A(x)B(x) = 0 (facteurs du premier degré), quotient A(x)/B(x) = k, x² = a, f(x) = k ; f(x) = g(x) graphiquement ou à l'outil seulement ; aucun système général (seulement l'intersection de deux droites données par leur équation réduite). Sens des inégalités : question l2-3.
+- **Fonctions de référence** : affines, valeur absolue, carré, inverse (définition, courbe) ; racine carrée et cube **seulement** pour résoudre f(x) = k, f(x) < k (décision l2-2). Ni dérivée, ni second degré général, ni exponentielle.
+- **Valeur absolue** : distance et intervalles de centre donné ; « toute autre utilisation est hors programme », mais la fonction valeur absolue est au programme (décision l2-1 : |x| = k, |x| < k, pas |2x − 1| < 3).
+- **Équations et inéquations** : « se ramenant au premier degré » — ax + b = cx + d, ax ⩾ b…, produit nul A(x)B(x) = 0 (facteurs du premier degré), quotient A(x)/B(x) = k, x² = a, f(x) = k ; f(x) = g(x) graphiquement ou à l'outil seulement ; aucun système général (seulement l'intersection de deux droites données par leur équation réduite). Sens des inégalités : les quatre, sauf |x − a| ⩽ r (décision l2-3).
 - **Tableaux de signes** : produits et quotients de facteurs affines ou de fonctions de référence ; pas de trinôme non factorisé.
-- **Racines carrées et puissances** : règles de calcul au programme, √ab = √a √b, √a² = |a| (portée : l2-6, l2-7).
+- **Racines carrées et puissances** : règles de calcul au programme, √ab = √a √b, √a² = |a| (décisions l2-6, l2-7 : toutes les règles des puissances ; racines : quotient et a√b, pas de dénominateur rationnel).
 - **Vecteurs et droites** : plan seulement ; norme, distance, déterminant en base orthonormée ; équation réduite ou cartésienne.
 - **Statistiques** : écart type (pas de variance), histogramme et polygone des fréquences cumulées pour des classes de même amplitude, moyenne et médiane de séries regroupées.
-- **Probabilités** : P_A(B), arbres et tableaux croisés ; **pas de probabilités totales** (question l2-4 : P(B) sur un arbre).
+- **Probabilités** : P_A(B), arbres et tableaux croisés ; **pas de probabilités totales** (décision l2-4 : sur un arbre, probabilité d'un chemin seulement).
 - **Logique** : en situation, ∀ et ∃ hors programme. **Algorithmique** : Python, aucune connaissance sur les listes.
 
 ## Libellés qui ne collent plus au BO (signalés, rien corrigé)
 
 - **2-273** : le BO écrit « par exemple U = RI, … » ; le libellé a perdu « par exemple » et se lit comme une liste fermée.
-- **2-394** : le BO dit « un arbre pondéré ou un tableau », le libellé « tableau croisé d'effectifs » (question l2-10).
+- **2-394** : le BO dit « un arbre pondéré ou un tableau », le libellé « tableau croisé d'effectifs » (décision l2-10 : tableau croisé d'effectifs seulement).
 - **2-395**, **2-488** : la liste de notations (P(A), Ā, P(A ∩ B), P_A(B)) n'est pas dans la puce du BO (« Passer du registre de la langue naturelle au registre symbolique et inversement ») ; chaque notation est au BO ailleurs.
-- **2-431** : libellé « ax ⩾ b » là où le BO imprime « a ⩾ b » (coquille du BO, question l2-5).
+- **2-431** : libellé « ax ⩾ b » là où le BO imprime « a ⩾ b » (coquille du BO, décision l2-5).
 
-## Questions ouvertes (`questions-2de-1gen.json`)
+## Questions (`questions-2de-1gen.json`)
 
-- **l2-1** — Valeur absolue : « toute autre utilisation est hors programme » contre la fonction valeur absolue.
-- **l2-2** — Racine carrée et cube : fonctions de référence de 2de ?
-- **l2-3** — Sens des inégalités dans les « types » d'inéquations.
-- **l2-4** — Arbres : la probabilité d'un évènement par la somme des chemins (probabilités totales).
-- **l2-5** — Coquille « a ⩾ b » dans la liste des inéquations.
-- **l2-6** — Puissances : quelles « règles de calcul » ((aᵐ)ⁿ) ?
-- **l2-7** — Racines carrées : quotient, a√b, dénominateur rationnel ?
-- **l2-8** — Milieu : calcul attendu, formule en approfondissement.
-- **l2-9** — Croisement de variables : « données réelles » est-il une borne ?
-- **l2-10** — « Construire un arbre pondéré ou un tableau » : quel tableau ?
+l2-1 à l2-10 tranchées par David le 2026-10-22, chaque fois la recommandation.
+
+- **l2-1** — Valeur absolue : « toute autre utilisation est hors programme » contre la fonction valeur absolue. → **fonction** : La fonction x ↦ |x| est au programme (définition, courbe, signe, variations, |x| = k, |x| < k) ainsi que √a² = |a| ; « toute autre utilisation » exclut le reste (|2x − 1| < 3, |ab| = |a||b|, expressions avec plusieurs valeurs absolues)
+- **l2-2** — Racine carrée et cube : fonctions de référence de 2de ? → **resolution** : Racine carrée et cube seulement dans les points de résolution (2-343 à 2-472), courbe fournie par l'énoncé ; « fonction de référence » ailleurs = affines, valeur absolue, carré, inverse
+- **l2-3** — Sens des inégalités dans les « types » d'inéquations. → **quatre-sens** : Les quatre sens (<, ⩽, >, ⩾) pour tous les types, comme en 3e (c4-5) ; sauf |x − a| ⩽ r : ⩽ et < seulement (le BO lie ce type à l'intervalle [a − r ; a + r])
+- **l2-4** — Arbres : la probabilité d'un évènement par la somme des chemins (probabilités totales). → **chemin** : Hors point : sur un arbre, seulement la probabilité d'un chemin (intersection) et la lecture des probabilités conditionnelles ; P(B) par la somme des chemins relève de la 1re
+- **l2-5** — Coquille « a ⩾ b » dans la liste des inéquations. → **ax** : Coquille : on lit « ax ⩾ b », parallèle à l'équation « ax = b » de la même puce (le libellé de 2-431)
+- **l2-6** — Puissances : quelles « règles de calcul » ((aᵐ)ⁿ) ? → **toutes** : Toutes les règles usuelles : aᵐ × aⁿ, aᵐ / aⁿ, (aᵐ)ⁿ, (ab)ⁿ, (a/b)ⁿ, a⁻ⁿ = 1/aⁿ
+- **l2-7** — Racines carrées : quotient, a√b, dénominateur rationnel ? → **produit-quotient** : Produit et quotient (√(a/b) = √a / √b), simplifications de la forme a√b (√20 = 2√5) ; pas d'exigence de dénominateur sans racine
+- **l2-8** — Milieu : calcul attendu, formule en approfondissement. → **calcul** : Dans 2-302 : le point vise le calcul, quelle que soit la méthode ; la correction peut appliquer la formule ; 2-306 ne garde que l'établissement de la formule
+- **l2-9** — Croisement de variables : « données réelles » est-il une borne ? → **methode** : Pas une borne : une consigne de mise en œuvre ; les effectifs tirés au hasard sont admis
+- **l2-10** — « Construire un arbre pondéré ou un tableau » : quel tableau ? → **libelle** : Le libellé : tableau croisé d'effectifs seulement ; le tableau de probabilités n'a pas de point en 2de
 
 ## Seconde (292 points, 213 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
 
 - Nombres réels : ensembles ℕ, ℤ, 𝔻, ℚ, ℝ et intervalles de ℝ ; les irrationnels (√2, π…) s'ajoutent aux nombres du cycle 4. — _BO 2de p.6-7_ (BO)
-- Les règles de calcul sur les racines carrées entrent au programme (√ab = √a √b pour a, b positifs ; √a² = |a|) : la borne de 3e « aucune propriété algébrique des racines carrées » ne vaut plus (portée : question l2-7). — _BO 2de p.7-8_ (BO)
-- Valeur absolue : notation |a| pour la distance de a à 0, distance entre deux réels, intervalles de centre donné (|x − a| ⩽ r) ; « Toute autre utilisation est hors programme » (contradiction avec la fonction valeur absolue : question l2-1). — _BO 2de p.7_ (BO)
+- Les règles de calcul sur les racines carrées entrent au programme (√ab = √a √b pour a, b positifs ; √a² = |a|) : la borne de 3e « aucune propriété algébrique des racines carrées » ne vaut plus. — _BO 2de p.7-8_ (BO)
+- Valeur absolue : notation |a| pour la distance de a à 0, distance entre deux réels, intervalles de centre donné (|x − a| ⩽ r) ; « Toute autre utilisation est hors programme ». — _BO 2de p.7_ (BO)
 - Fonctions à valeurs réelles définies sur un intervalle ou une réunion finie d'intervalles de ℝ, données par une courbe, une expression algébrique, un programme de calcul ou un tableau de valeurs ; fonctions définies sur ℕ possibles pour un phénomène discret, avec la notation u(n). — _BO 2de p.10_ (BO)
-- Fonctions de référence nommées : affines (dont linéaires), valeur absolue, carré, inverse (définition, courbe) ; racine carrée et cube n'apparaissent que pour résoudre f(x) = k, f(x) < k (statut : question l2-2). Pas de polynôme du second degré général, de dérivée ni d'exponentielle : absents du BO de 2de. — _BO 2de p.10-11_ (BO)
+- Fonctions de référence nommées : affines (dont linéaires), valeur absolue, carré, inverse (définition, courbe) ; racine carrée et cube n'apparaissent que pour résoudre f(x) = k, f(x) < k. Pas de polynôme du second degré général, de dérivée ni d'exponentielle : absents du BO de 2de. — _BO 2de p.10-11_ (BO)
 - Équations et inéquations « se ramenant au premier degré » : premier degré, produit nul, quotient, x² = a, f(x) = k pour les fonctions de référence ; pas de méthode générale du second degré (ni forme canonique ni discriminant). — _BO 2de p.6, 8_ (BO)
 - Géométrie plane seulement ; vecteurs manipulés dans un repère orthogonal ; norme, distance et déterminant dans une base (un repère) orthonormée. — _BO 2de p.8-9_ (BO)
 - L'histogramme entre au programme (classes de même amplitude) ; rotation, homothétie et triangles semblables restent absents. — _BO 2de p.8-12_ (BO)
 - Notations ensemblistes Ø, ∈, ⊂, ∩, ∪, {…}, Ā ou E \ A, Card(A) ; les symboles ∀ et ∃ sont hors programme. — _BO 2de p.4_ (BO)
 - Algorithmique en Python (passage langage naturel ↔ Python) ; « Aucune connaissance sur les listes n'est exigée ». — _BO 2de p.4-5_ (BO)
-- Probabilités : le calcul de la probabilité d'un évènement à partir de ses probabilités conditionnelles relatives à une partition de l'univers (probabilités totales) « n'est pas un attendu du programme » (portée sur les arbres : question l2-4). — _BO 2de p.13_ (BO)
+- Probabilités : le calcul de la probabilité d'un évènement à partir de ses probabilités conditionnelles relatives à une partition de l'univers (probabilités totales) « n'est pas un attendu du programme ». — _BO 2de p.13_ (BO)
 - Les approfondissements possibles ne sont « en aucun cas obligatoires ». — _BO 2de p.4_ (BO)
+- Valeur absolue : la fonction x ↦ |x| est au programme (définition, courbe, signe, variations, |x| = k, |x| < k), ainsi que √a² = |a| ; « toute autre utilisation » exclut le reste : ni |2x − 1| < 3, ni |ab| = |a||b|, ni expression à plusieurs valeurs absolues. — _Décision de David, 2026-10-22 (question l2-1) ; d'après BO 2de p.7 ; p.10-11_ (décision)
+- Racine carrée et cube : seulement dans les points de résolution de f(x) = k, f(x) < k (2-343 à 2-472), courbe fournie par l'énoncé ; ailleurs, « fonction de référence » = affines, valeur absolue, carré, inverse (ni comparaison de √2,1 et √2,3, ni ensemble de définition de √(x − 2) : 1re spé). — _Décision de David, 2026-10-22 (question l2-2) ; d'après BO 2de p.10-11_ (décision)
+- Inéquations : les quatre sens (<, ⩽, >, ⩾) pour tous les types, comme en 3e ; sauf |x − a| ⩽ r : ⩽ et < seulement. — _Décision de David, 2026-10-22 (question l2-3) ; d'après BO 2de p.7-8 ; p.10-11_ (décision)
+- Arbres : seulement la probabilité d'un chemin (intersection) et la lecture des probabilités conditionnelles ; P(B) par la somme des chemins relève de la 1re, et l'inversion P_B(A) sur un arbre aussi (elle reste possible sur un tableau croisé). — _Décision de David, 2026-10-22 (question l2-4) ; d'après BO 2de p.13_ (décision)
+- Puissances : toutes les règles usuelles — aᵐ × aⁿ, aᵐ / aⁿ, (aᵐ)ⁿ, (ab)ⁿ, (a/b)ⁿ, a⁻ⁿ = 1/aⁿ. — _Décision de David, 2026-10-22 (question l2-6) ; d'après BO 2de p.5 ; p.7-8_ (décision)
+- Racines carrées : produit et quotient (√(a/b) = √a / √b), simplification sous la forme a√b (√20 = 2√5) ; pas d'exigence de dénominateur sans racine. — _Décision de David, 2026-10-22 (question l2-7) ; d'après BO 2de p.7-8_ (décision)
+- Croisement de variables : « données réelles » est une consigne de mise en œuvre, pas une borne ; les effectifs tirés au hasard sont admis. — _Décision de David, 2026-10-22 (question l2-9) ; d'après BO 2de p.12_ (décision)
 
 ### Algorithmique et programmation > Notion de fonction
 
@@ -139,14 +148,14 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Ensemble de définition : un intervalle ou une réunion finie d'intervalles de ℝ. — _BO 2de p.10_ (BO)
 - **2-326** — Recherche de domaine d'étude (ensemble de définition)
   - Ensemble de définition d'une expression, en lien avec l'équation quotient (dénominateur non nul). — _BO 2de p.8, 10_ (BO)
-  - ⚠ Domaine d'une expression avec racine carrée (√(x − 2)) : dépend du statut de la fonction racine carrée (question l2-2).
+  - ⚠ Domaine d'une expression avec racine carrée (√(x − 2)) : hors 2de (décision l2-2).
 - **2-327** — Courbe représentative : la courbe d'équation $y = f(x)$ est l'ensemble des points du plan dont les coordonnées $(x\,;\,y)$ vérifient $y = f(x)$
   - Courbe d'équation y = f(x) : points dont les coordonnées (x, y) vérifient y = f(x). — _BO 2de p.10_ (BO)
 - **2-328** — Signe d'une fonction affine
   - Fonctions affines x ↦ mx + p ; signe relié au sens de variation et à la droite. — _BO 2de p.10-11_ (BO)
 - **2-329** — Signe des fonctions de référence
   - Fonctions de référence du programme ; la valeur absolue et le carré sont nommés pour le signe. — _BO 2de p.10-11_ (BO)
-  - ⚠ La liste des fonctions de référence (racine carrée, cube ?) : question l2-2.
+  - ⚠ Racine carrée et cube ne sont pas des fonctions de référence de 2de (décision l2-2).
 - **2-330** — Tableau de signes pour une fonction produit
   - Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé). — _BO 2de p.8, 10_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ».
@@ -163,7 +172,7 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - ⚠ Point-compétence (modéliser) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait écrire l'expression d'une fonction à partir d'une situation, sous les bornes générales.
 - **2-333** — Fonction valeur absolue : définition et courbe représentative
   - x ↦ |x| : définition et courbe. — _BO 2de p.10_ (BO)
-  - ⚠ Statut de la fonction valeur absolue face à « Toute autre utilisation est hors programme » (BO p.7) : question l2-1.
+  - ⚠ Statut de la fonction valeur absolue face à « Toute autre utilisation est hors programme » (BO p.7) : décision l2-1.
 - **2-334** — Fonction carré : définition et courbe représentative
   - x ↦ x² : définition et courbe. — _BO 2de p.10_ (BO)
 - **2-335** — Fonction inverse : définition et courbe représentative
@@ -173,7 +182,7 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - ⚠ Lecture déduite (texte implicite) : f est quelconque (courbe, expression, tableau), mais une résolution algébrique n'est attendue que pour les types que le BO liste ailleurs (premier degré, produit nul, quotient, x² = a, fonctions de référence).
 - **2-448** — Résoudre une inéquation du type $f(x) < k$, en choisissant une méthode adaptée : graphique, algébrique, logicielle
   - Méthode au choix (graphique, algébrique, logicielle) ; la résolution algébrique ne porte que sur les types d'équations et d'inéquations du programme. — _BO 2de p.10_ (déduite)
-  - ⚠ Lecture déduite (texte implicite) : f est quelconque (courbe, expression, tableau), mais une résolution algébrique n'est attendue que pour les types que le BO liste ailleurs (premier degré, produit nul, quotient, x² = a, fonctions de référence). Sens de l'inégalité : question l2-3.
+  - ⚠ Lecture déduite (texte implicite) : f est quelconque (courbe, expression, tableau), mais une résolution algébrique n'est attendue que pour les types que le BO liste ailleurs (premier degré, produit nul, quotient, x² = a, fonctions de référence). Sens de l'inégalité : décision l2-3.
 - **2-337** — Résoudre une équation de la forme $f(x) = 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit
   - Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé). — _BO 2de p.8, 10_ (déduite)
   - f produit ; équation f(x) = 0 à l'aide d'un tableau de signes. — _BO 2de p.10_ (BO)
@@ -185,43 +194,43 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-450** — Résoudre une inéquation de la forme $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un produit
   - Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé). — _BO 2de p.8, 10_ (déduite)
   - f produit ; inéquation f(x) > 0 à l'aide d'un tableau de signes. — _BO 2de p.10_ (BO)
-  - ⚠ Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ». Sens de l'inégalité : question l2-3.
+  - ⚠ Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ». Sens de l'inégalité : décision l2-3.
 - **2-451** — Résoudre une inéquation de la forme $f(x) > 0$ à l'aide d'un tableau de signes, lorsque $f$ est un quotient
   - Facteurs dont le signe est au programme : expressions affines et fonctions de référence (pas de trinôme non factorisé). — _BO 2de p.8, 10_ (déduite)
   - f quotient ; inéquation f(x) > 0 à l'aide d'un tableau de signes. — _BO 2de p.10_ (BO)
-  - ⚠ Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ». Sens de l'inégalité : question l2-3.
+  - ⚠ Lecture déduite (texte implicite) : le BO relie l'étude du signe de A(x)B(x) et A(x)/B(x) à la section « Fonctions », qui ne donne que le signe d'une fonction affine et des fonctions de référence ; les objectifs parlent d'équations et d'inéquations « se ramenant au premier degré ». Sens de l'inégalité : décision l2-3.
 - **2-338** — Résoudre graphiquement une équation du type $f(x) = g(x)$
   - Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point. — _BO 2de p.11_ (BO)
 - **2-452** — Résoudre à l'aide d'un outil numérique une équation du type $f(x) = g(x)$
   - Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point. — _BO 2de p.11_ (BO)
 - **2-453** — Résoudre graphiquement une inéquation du type $f(x) < g(x)$
   - Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point. — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-454** — Résoudre à l'aide d'un outil numérique une inéquation du type $f(x) < g(x)$
   - Graphiquement ou à l'aide d'un outil numérique seulement : aucune résolution algébrique de f(x) = g(x) n'est demandée par ce point. — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-339** — Fonction affine : résoudre graphiquement une équation du type $f(x) = k$
   - f affine, x ↦ mx + p. — _BO 2de p.11_ (BO)
 - **2-455** — Fonction affine : résoudre algébriquement une équation du type $f(x) = k$
   - f affine, x ↦ mx + p. — _BO 2de p.11_ (BO)
 - **2-456** — Fonction affine : résoudre graphiquement une inéquation du type $f(x) < k$
   - f affine, x ↦ mx + p. — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-457** — Fonction affine : résoudre algébriquement une inéquation du type $f(x) < k$
   - f affine, x ↦ mx + p. — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-340** — Fonction valeur absolue : résoudre graphiquement une équation du type $f(x) = k$
   - f(x) = |x|. — _BO 2de p.11_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-458** — Fonction valeur absolue : résoudre algébriquement une équation du type $f(x) = k$
   - f(x) = |x|. — _BO 2de p.11_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-459** — Fonction valeur absolue : résoudre graphiquement une inéquation du type $f(x) < k$
   - f(x) = |x|. — _BO 2de p.11_ (BO)
-  - ⚠ Questions l2-1 et l2-3.
+  - ⚠ Décisions l2-1 et l2-3.
 - **2-460** — Fonction valeur absolue : résoudre algébriquement une inéquation du type $f(x) < k$
   - f(x) = |x|. — _BO 2de p.11_ (BO)
-  - ⚠ Questions l2-1 et l2-3.
+  - ⚠ Décisions l2-1 et l2-3.
 - **2-341** — Fonction carré : résoudre graphiquement une équation du type $f(x) = k$
   - f(x) = x². — _BO 2de p.11_ (BO)
 - **2-461** — Fonction carré : résoudre algébriquement une équation du type $f(x) = k$
@@ -229,10 +238,10 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - x² = a : ensemble des solutions (deux, une ou aucune solution) ; solutions exactes en √a. — _BO 2de p.5, 8_ (BO)
 - **2-462** — Fonction carré : résoudre graphiquement une inéquation du type $f(x) < k$
   - f(x) = x². — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-463** — Fonction carré : résoudre algébriquement une inéquation du type $f(x) < k$
   - f(x) = x². — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-342** — Fonction inverse : résoudre graphiquement une équation du type $f(x) = k$
   - f(x) = 1/x. — _BO 2de p.11_ (BO)
 - **2-464** — Fonction inverse : résoudre algébriquement une équation du type $f(x) = k$
@@ -240,34 +249,34 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Forme a/x = b admise (automatisme). — _BO 2de p.5_ (BO)
 - **2-465** — Fonction inverse : résoudre graphiquement une inéquation du type $f(x) < k$
   - f(x) = 1/x. — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-466** — Fonction inverse : résoudre algébriquement une inéquation du type $f(x) < k$
   - f(x) = 1/x. — _BO 2de p.11_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-343** — Fonction racine carrée : résoudre graphiquement une équation du type $f(x) = k$
   - f(x) = √x. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2.
+  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : décision l2-2.
 - **2-467** — Fonction racine carrée : résoudre algébriquement une équation du type $f(x) = k$
   - f(x) = √x. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2.
+  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : décision l2-2.
 - **2-468** — Fonction racine carrée : résoudre graphiquement une inéquation du type $f(x) < k$
   - f(x) = √x. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2. Sens de l'inégalité : question l2-3.
+  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : décision l2-2. Sens de l'inégalité : décision l2-3.
 - **2-469** — Fonction racine carrée : résoudre algébriquement une inéquation du type $f(x) < k$
   - f(x) = √x. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : question l2-2. Sens de l'inégalité : question l2-3.
+  - ⚠ La fonction racine carrée n'a ni définition ni courbe au BO de 2de (seulement cette puce et un approfondissement) : décision l2-2. Sens de l'inégalité : décision l2-3.
 - **2-344** — Fonction cube : résoudre graphiquement une équation du type $f(x) = k$
   - f(x) = x³. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2.
+  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : décision l2-2.
 - **2-470** — Fonction cube : résoudre algébriquement une équation du type $f(x) = k$
   - f(x) = x³. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2.
+  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : décision l2-2.
 - **2-471** — Fonction cube : résoudre graphiquement une inéquation du type $f(x) < k$
   - f(x) = x³. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2. Sens de l'inégalité : question l2-3.
+  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : décision l2-2. Sens de l'inégalité : décision l2-3.
 - **2-472** — Fonction cube : résoudre algébriquement une inéquation du type $f(x) < k$
   - f(x) = x³. — _BO 2de p.11_ (BO)
-  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : question l2-2. Sens de l'inégalité : question l2-3.
+  - ⚠ La fonction cube n'a ni définition ni courbe au BO de 2de (seulement cette puce) : décision l2-2. Sens de l'inégalité : décision l2-3.
 
 ### Fonctions > Variations et extrémums d'une fonction
 
@@ -293,10 +302,10 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - ⚠ Point-compétence (résoudre un problème) : pas de grain questionnable propre ; un modèle s'y rattache seulement s'il fait chercher un extremum dans une situation (graphiquement, à l'outil numérique ou par les variations connues ; pas de dérivée en 2de), sous les bornes générales.
 - **2-475** — Fonction valeur absolue : signe
   - f(x) = |x|. — _BO 2de p.11_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-354** — Fonction valeur absolue : variations
   - f(x) = |x|. — _BO 2de p.11_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-476** — Fonction carré : signe
   - f(x) = x². — _BO 2de p.11_ (BO)
 - **2-355** — Fonction carré : variations
@@ -304,11 +313,11 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-356** — Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ numériquement
   - f fonction de référence du programme. — _BO 2de p.11_ (BO)
   - Comparaison numérique. — _BO 2de p.11_ (BO)
-  - ⚠ Liste des fonctions de référence (racine carrée, cube ?) : question l2-2.
+  - ⚠ Racine carrée et cube ne sont pas des fonctions de référence de 2de (décision l2-2).
 - **2-477** — Pour deux nombres $a$ et $b$ donnés et une fonction de référence $f$, comparer $f(a)$ et $f(b)$ graphiquement
   - f fonction de référence du programme. — _BO 2de p.11_ (BO)
   - Comparaison graphique. — _BO 2de p.11_ (BO)
-  - ⚠ Liste des fonctions de référence (racine carrée, cube ?) : question l2-2.
+  - ⚠ Racine carrée et cube ne sont pas des fonctions de référence de 2de (décision l2-2).
 - **2-357** — Variations des fonctions affines — _hérite des bornes générales_
   - ⚠ Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins).
 - **2-358** — Position relative des courbes d'équation $y = x$ et $y = x^2$, pour $x \geqslant 0$ — _hérite des bornes générales_
@@ -398,7 +407,7 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-435** — Déterminant de deux vecteurs, critère de colinéarité ; application à l'alignement, au parallélisme
   - Critère de colinéarité ; application à l'alignement et au parallélisme. — _BO 2de p.9_ (BO)
 - **2-296** — Caractérisation vectorielle du milieu d'un segment — _hérite des bornes générales_
-  - ⚠ Formule des coordonnées du milieu : approfondissement (2-306) ; question l2-8.
+  - ⚠ Formule des coordonnées du milieu : approfondissement (2-306) ; décision l2-8.
 - **2-297** — Représenter la somme de deux vecteurs à partir de représentants de même origine
   - À partir de représentants de même origine. — _BO 2de p.9_ (BO)
 - **2-298** — Représenter un vecteur dont on connait les coordonnées — _hérite des bornes générales_
@@ -409,8 +418,9 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-301** — Calculer la distance entre deux points
   - Repère orthonormé. — _BO 2de p.9_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : l'expression de la norme est donnée « dans une base orthonormée » (BO p.9) ; la distance AB est la norme de AB⃗.
-- **2-302** — Calculer les coordonnées du milieu d'un segment — _hérite des bornes générales_
-  - ⚠ La formule des coordonnées du milieu est un approfondissement (2-306) alors que ce calcul est attendu : question l2-8.
+- **2-302** — Calculer les coordonnées du milieu d'un segment
+  - Calcul attendu quelle que soit la méthode ; la correction peut appliquer la formule des coordonnées du milieu. — _Décision de David, 2026-10-22 (question l2-8) ; d'après BO 2de p.9_ (décision)
+  - ⚠ La formule des coordonnées du milieu est un approfondissement (2-306) alors que ce calcul est attendu : décision l2-8.
 - **2-303** — Caractériser l'alignement par la colinéarité de vecteurs
   - Par la colinéarité de vecteurs (déterminant nul ou proportionnalité des coordonnées). — _BO 2de p.9_ (BO)
 - **2-437** — Caractériser le parallélisme par la colinéarité de vecteurs
@@ -426,8 +436,9 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-305** — Barycentre de deux ou trois points
   - Deux ou trois points. — _BO 2de p.9_ (BO)
   - ⚠ Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
-- **2-306** — Formule permettant le calcul des coordonnées du milieu d'un segment — _hérite des bornes générales_
-  - ⚠ Question l2-8. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
+- **2-306** — Formule permettant le calcul des coordonnées du milieu d'un segment
+  - Ne garde que l'établissement de la formule ; son application relève de 2-302. — _Décision de David, 2026-10-22 (question l2-8) ; d'après BO 2de p.9_ (décision)
+  - ⚠ Décision l2-8. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
 - **2-307** — Démontrer que les hauteurs d'un triangle sont concourantes — _hérite des bornes générales_
   - ⚠ Point-démonstration : pas de grain questionnable propre ; un modèle ne s'y rattache que s'il fait reconstituer ou compléter cette démonstration (le résultat lui-même relève des points de connaissance voisins). Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
 - **2-308** — Expression de l'aire d'un triangle : $\tfrac{1}{2}ab\sin C$
@@ -443,13 +454,13 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 
 - **2-260** — Règles de calcul sur les puissances entières relatives
   - Exposants entiers relatifs. — _BO 2de p.7_ (BO)
-  - ⚠ Portée des « règles de calcul » ((aᵐ)ⁿ, (a/b)ⁿ) : question l2-6.
+  - ⚠ Portée des « règles de calcul » ((aᵐ)ⁿ, (a/b)ⁿ) : décision l2-6.
 - **2-261** — Règles de calcul sur les racines carrées
   - Règles de calcul sur les racines carrées ; √ab = √a √b (a, b positifs) est démontré. — _BO 2de p.7-8_ (BO)
-  - ⚠ Quelles règles au-delà du produit (quotient, a√b, dénominateur rationnel) : question l2-7.
+  - ⚠ Règles au-delà du produit : décision l2-7.
 - **2-423** — Relation $\sqrt{a^2} = |a|$
   - √a² = |a|, a réel. — _BO 2de p.7_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-262** — Calculer sur des expressions algébriques simples, en particulier sur des expressions fractionnaires
   - Exemples simples de calcul, en particulier sur des expressions fractionnaires. — _BO 2de p.7_ (BO)
 - **2-263** — Somme d'inégalités — _hérite des bornes générales_
@@ -463,7 +474,7 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Type ax + b = 0 ; ensemble des solutions. — _BO 2de p.8_ (BO)
 - **2-266** — Ensemble des solutions des inéquations de la forme $ax + b > 0$
   - Forme ax + b > 0 ; ensemble des solutions (intervalle). — _BO 2de p.7-8_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-267** — Équation de la forme $A(x)B(x) = 0$ (équation produit nul)
   - A(x) et B(x) du premier degré. — _BO 2de p.6, 8_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : les objectifs visent des équations et inéquations « se ramenant au premier degré » (BO p.6).
@@ -480,10 +491,10 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - ⚠ Lecture déduite (texte implicite) : les objectifs visent des équations et inéquations « se ramenant au premier degré » (BO p.6).
 - **2-270** — Effectuer des calculs numériques ou littéraux mettant en jeu des puissances
   - Puissances entières relatives ; calculs numériques ou littéraux. — _BO 2de p.7-8_ (BO)
-  - ⚠ Question l2-6.
+  - ⚠ Décision l2-6.
 - **2-271** — Effectuer des calculs numériques ou littéraux mettant en jeu des racines carrées
   - Racines carrées ; calculs numériques ou littéraux. — _BO 2de p.8_ (BO)
-  - ⚠ Question l2-7.
+  - ⚠ Décision l2-7.
 - **2-272** — Effectuer des calculs numériques ou littéraux mettant en jeu des écritures fractionnaires
   - Écritures fractionnaires numériques et littérales ; égalités de l'automatisme (a/b ÷ c/d = ad/bc…). — _BO 2de p.5, 8_ (BO)
 - **2-273** — Sur des cas simples de relations entre variables ($U = RI$, $d = vt$, $S = \pi r^2$, $V = abc$, $V = \pi r^2 h$), exprimer une variable en fonction des autres
@@ -513,13 +524,14 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Type a + x = b ; ensemble des solutions. — _BO 2de p.8_ (BO)
 - **2-280** — Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax + b \geqslant cx + d$
   - Type ax + b ⩾ cx + d ; ensemble des solutions (intervalle). — _BO 2de p.5, 7-8_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-431** — Donner l'ensemble des solutions d'une inéquation du premier degré du type $ax \geqslant b$
   - Type ax ⩾ b ; ensemble des solutions (intervalle). — _BO 2de p.8_ (BO)
-  - ⚠ Le BO imprime « a ⩾ b » (coquille vérifiée sur le rendu image de la page 8) : question l2-5. Sens de l'inégalité : question l2-3.
+  - On lit « ax ⩾ b » : le « a ⩾ b » du BO est une coquille (parallèle à l'équation ax = b de la même puce). — _Décision de David, 2026-10-22 (question l2-5) ; d'après BO 2de p.8_ (décision)
+  - ⚠ Le BO imprime « a ⩾ b » (coquille vérifiée sur le rendu image de la page 8) : décision l2-5. Sens de l'inégalité : décision l2-3.
 - **2-432** — Donner l'ensemble des solutions d'une inéquation du premier degré du type $a + x \geqslant b$
   - Type a + x ⩾ b ; ensemble des solutions (intervalle). — _BO 2de p.8_ (BO)
-  - ⚠ Sens de l'inégalité : question l2-3.
+  - ⚠ Sens de l'inégalité : décision l2-3.
 - **2-281** — Donner l'ensemble des solutions d'une équation du type $x^2 = a$
   - Type x² = a ; ensemble des solutions (deux, une ou aucune solution), solutions exactes en √a. — _BO 2de p.5, 8_ (BO)
 - **2-282** — Quels que soient les réels positifs $a$ et $b$, on a $\sqrt{ab} = \sqrt{a}\,\sqrt{b}$ — _hérite des bornes générales_
@@ -566,13 +578,14 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Notations du type [a ; +∞[, ]−∞ ; a], [a ; b], etc. ; représentation graphique (le BO écrit la virgule : [a, b]). — _BO 2de p.7_ (BO)
 - **2-245** — Notation en valeur absolue $|a|$ pour la distance de $a$ à $0$
   - |a| = distance de a à 0. — _BO 2de p.7_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-420** — Distance entre deux nombres réels
   - Distance entre deux réels a et b, exprimée par |a − b|. — _BO 2de p.7_ (BO)
-  - ⚠ Question l2-1.
+  - ⚠ Décision l2-1.
 - **2-246** — Inéquation du type $|x - a| \leqslant r$ ; représentation graphique des solutions, intervalle $[a - r\,;\,a + r]$
   - Inéquation |x − a| ⩽ r ; solutions représentées graphiquement, intervalle [a − r ; a + r]. — _BO 2de p.7_ (BO)
-  - ⚠ Questions l2-1 et l2-3.
+  - Sens ⩽ et < seulement (le BO lie ce type à l'intervalle [a − r ; a + r]). — _Décision de David, 2026-10-22 (question l2-3) ; d'après BO 2de p.7_ (décision)
+  - ⚠ Décisions l2-1 et l2-3.
 - **2-247** — Ensemble $\mathbb{D}$ des nombres décimaux — _hérite des bornes générales_
 - **2-421** — Encadrement décimal d'un nombre réel à $10^{-n}$ près
   - Encadrement décimal à 10⁻ⁿ près. — _BO 2de p.7_ (BO)
@@ -607,26 +620,26 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 
 - **2-383** — Tableau croisé d'effectifs
   - Deux variables qualitatives (nominales ou ordinales). — _BO 2de p.12_ (BO)
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-384** — Fréquence conditionnelle — _hérite des bornes générales_
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-485** — Fréquence marginale — _hérite des bornes générales_
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-385** — Calculer des fréquences conditionnelles — _hérite des bornes générales_
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-486** — Calculer des fréquences marginales — _hérite des bornes générales_
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-386** — Compléter un tableau croisé par des raisonnements sur les effectifs
   - Par des raisonnements sur les effectifs. — _BO 2de p.12_ (BO)
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-487** — Compléter un tableau croisé en utilisant des fréquences conditionnelles
   - En utilisant des fréquences conditionnelles. — _BO 2de p.12_ (BO)
-  - ⚠ « Données réelles » : question l2-9.
+  - ⚠ « Données réelles » : décision l2-9.
 - **2-387** — À partir de deux listes représentant deux caractères d'individus, déterminer un sous-ensemble d'individus répondant à un critère (filtre, utilisation de ET, OU, NON)
   - Deux listes représentant deux caractères ; filtre avec ET, OU, NON. — _BO 2de p.12_ (BO)
   - ⚠ Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
 - **2-388** — Dresser le tableau croisé de deux variables qualitatives à partir du fichier des individus et calculer des fréquences conditionnelles ou marginales — _hérite des bornes générales_
-  - ⚠ « Données réelles » : question l2-9. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
+  - ⚠ « Données réelles » : décision l2-9. Approfondissement possible, « en aucun cas obligatoire » (BO 2de p.4).
 
 ### Statistiques et probabilités > Information chiffrée et statistique descriptive
 
@@ -680,14 +693,15 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Notation P_A(B), A de probabilité non nulle. — _BO 2de p.13_ (BO)
 - **2-391** — Arbres de probabilité, application au calcul de probabilités
   - Pas de calcul par les probabilités totales (partition de l'univers). — _BO 2de p.13_ (BO)
-  - ⚠ Question l2-4.
+  - ⚠ Décision l2-4.
 - **2-392** — Observer, à l'aide d'une simulation sur Python ou tableur, que lorsque $n$ est grand la fréquence observée est proche de la probabilité (loi des grands nombres)
   - Simulation sur Python ou tableur. — _BO 2de p.13_ (BO)
 - **2-393** — Construire un arbre pondéré en lien avec une situation donnée
   - En lien avec une situation donnée. — _BO 2de p.13_ (BO)
 - **2-394** — Construire un tableau croisé d'effectifs en lien avec une situation donnée
   - En lien avec une situation donnée. — _BO 2de p.13_ (BO)
-  - ⚠ ⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10.
+  - Tableau croisé d'effectifs seulement ; le tableau de probabilités n'a pas de point en 2de. — _Décision de David, 2026-10-22 (question l2-10) ; d'après BO 2de p.13_ (décision)
+  - ⚠ ⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; décision l2-10.
   - → David (2026-10-22) : **laisser**
 - **2-395** — Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\bar{A}$, $P(A \cap B)$, $P_A(B)$)
   - Notations du programme : P(A), Ā, P(A ∩ B), P_A(B). — _BO 2de p.4, 13_ (BO)
@@ -701,14 +715,15 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
   - Tableau croisé d'effectifs ; tirage au sort avec équiprobabilité d'un individu dans une population : P_B(A) = Card(A ∩ B) / Card(B). — _BO 2de p.13_ (BO)
 - **2-397** — Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité
   - Arbre de probabilité ; pas de calcul par les probabilités totales. — _BO 2de p.13_ (BO)
-  - ⚠ Question l2-4.
+  - ⚠ Décision l2-4.
 - **2-398** — Interpréter les pondérations de chaque branche d'un arbre en termes de probabilités, et notamment de probabilités conditionnelles — _hérite des bornes générales_
 - **2-399** — Faire le lien entre la définition des probabilités conditionnelles et la multiplication des probabilités des branches du chemin correspondant
   - Probabilité d'un chemin = produit des probabilités de ses branches. — _BO 2de p.13_ (BO)
-  - ⚠ Somme de chemins : question l2-4.
+  - ⚠ Somme de chemins : décision l2-4.
 - **2-400** — Distinguer en situation $P_A(B)$ et $P_B(A)$, par exemple dans des situations de type « faux positifs »
   - Situations de type « faux positifs » ; vocabulaire des tests : faux positifs, faux négatifs, spécificité, sensibilité. — _BO 2de p.13_ (BO)
-  - ⚠ Inversion du conditionnement sur un arbre : passe par P(B), donc par la question l2-4.
+  - Inversion P_B(A) sur un tableau croisé seulement, pas sur un arbre (elle passe par P(B)). — _Décision de David, 2026-10-22 (question l2-4) ; d'après BO 2de p.13_ (décision)
+  - ⚠ Inversion du conditionnement sur un arbre : refusée, elle passe par P(B) (décision l2-4).
 
 ### Vocabulaire ensembliste et logique
 
