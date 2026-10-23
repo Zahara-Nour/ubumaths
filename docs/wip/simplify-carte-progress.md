@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1625 (lot 4b-bis)._
+_Mis à jour le 2026-10-23, après #1628 (équivalence des racines de fractions)._
 
-- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b décimaux (#1624), **4b-bis Q8/Q9 (#1625, § 39)** : `√0,5 → √2/2`, décimaux gardés sous un dénominateur à variable. Rien en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1625. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : PR du correctif d'équivalence (§ 40) ; après merge, lot 4c (relire S2 § 6 et D3 § 19).
-- **En attente de David** : rien (correctif d'équivalence demandé le 2026-10-23 : « corrige le »).
-- **Pièges en cours** : `0,5/x·x/2 → 0,25x/x` laissé (§ 39) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : chemins bouton/commande/latex-péda en `x−3/2` (lot 5) ; banc des 1 008 modèles : `modeles.json` + `tirages.mts` dans le scratchpad de la session du 4b (`/private/tmp/claude-501/…/6cd97bf0…/scratchpad`), à réexporter s'il a disparu ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `fix/simplify-carte-equivalence-racines`.
+- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b décimaux (#1624), 4b-bis Q8/Q9 (#1625, § 39), **équivalence `√(1/3) ≡ √3/3` (#1628, § 40)**. Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1628. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
+- **En attente de David** : rien ; vérifications manuelles de #1625 et #1628 notées. (Signalé : `{{eval:(2/3)^(1/2)}}` s'écrit désormais `√6/3`, pas d'objection reçue.)
+- **Pièges en cours** : `0,5/x·x/2 → 0,25x/x` et `√(x/2)` opaque laissés ; `x^{0,5} → x^{1/2}` (§ 37) ; dérivées : chemins bouton/commande/latex-péda en `x−3/2` (lot 5) ; banc des 1 008 modèles : `modeles.json` + `tirages.mts` dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/166c8611-b712-467a-a614-8e0962d560fa/scratchpad` (lancer `pnpm exec tsx` depuis le dépôt à comparer ; réexporter si disparu) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun ; nouveau worktree au 4c.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
