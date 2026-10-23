@@ -9,6 +9,7 @@
  */
 
 import type { ConstraintId } from './types';
+import { bySuperfluRule } from '$lib/mathAST/superflu/rules';
 
 /**
  * Feedback messages for each constraint type
@@ -18,52 +19,11 @@ import type { ConstraintId } from './types';
  * - multiple: Message for multiple answer questions
  */
 export const CONSTRAINT_FEEDBACK: Record<ConstraintId, { single: string; multiple: string }> = {
-	// Existing validators (text/regex based)
-	spaces: {
-		single: 'Les chiffres sont mal espacés.',
-		multiple: 'Les chiffres sont mal espacés.'
-	},
-	products: {
-		single: 'Tu peux simplifier certains symboles de multiplication.',
-		multiple: 'Tu peux simplifier certains symboles de multiplication.'
-	},
-	brackets: {
-		single: 'Il y a des parenthèses inutiles.',
-		multiple: 'Il y a des parenthèses inutiles.'
-	},
-	zeros: {
-		single: 'Il y a un ou des zéros inutiles.',
-		multiple: 'Il y a un ou des zéros inutiles.'
-	},
+	// Règles de superflu : message tiré de leur fiche (`mathAST/superflu/rules.ts`)
+	...bySuperfluRule((rule) => rule.feedback),
 	form: {
 		single: "Ta réponse n'est pas écrite sous la forme demandée.",
 		multiple: "Ta réponse n'est pas écrite sous la forme demandée."
-	},
-	// Contraintes jugées par motifs mathAST (`cosmetic-transforms.ts`)
-	nullTerms: {
-		single: 'Il y a des termes nuls (comme +0) qui peuvent être supprimés.',
-		multiple: 'Il y a des termes nuls (comme +0) qui peuvent être supprimés.'
-	},
-	factorOne: {
-		single: 'Il y a des facteurs 1 (comme ×1) qui peuvent être simplifiés.',
-		multiple: 'Il y a des facteurs 1 (comme ×1) qui peuvent être simplifiés.'
-	},
-	factorZero: {
-		single: 'Une multiplication par 0 peut être simplifiée en 0.',
-		multiple: 'Une multiplication par 0 peut être simplifiée en 0.'
-	},
-	signs: {
-		single: 'Il y a des signes superflus (comme ++, --, ou +x).',
-		multiple: 'Il y a des signes superflus (comme ++, --, ou +x).'
-	},
-	reducedFractions: {
-		single: 'La fraction peut être simplifiée.',
-		multiple: 'Une ou plusieurs fractions peuvent être simplifiées.'
-	},
-	// Racine carrée à facteur carré (√12 pour 2√3), décision du 2026-10-04
-	reducedRadicals: {
-		single: 'La racine peut être simplifiée.',
-		multiple: 'Une ou plusieurs racines peuvent être simplifiées.'
 	},
 	// Pourcentage attendu, réponse de même valeur sans le symbole
 	percent: {
