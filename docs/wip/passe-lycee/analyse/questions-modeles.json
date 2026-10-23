@@ -21,6 +21,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Le modèle n'utilise que la définition de |a|, sans propriété ni équation : aucune « autre utilisation » au sens du BO. Si tu lis « toute autre utilisation » strictement, l'option hors.",
 		"consequence": "tag : 1 modèle tagué 2-245 (valeur absolue, distance à 0), inchangé. variation : 1 modèle à scinder en deux (4 variations chacun), puis 2-245 et 2-420 (distance entre deux réels). hors : 1 modèle sans point en 2de.",
 		"modeles": ["d6a810f4-aa45-46b3-853a-c276a22870e7"],
@@ -55,6 +57,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Un seul point par modèle, sans rien retirer ; le raisonnement attendu (règles des inégalités) reste celui que le BO lie au sens de variation d'une fonction affine.",
 		"consequence": "tag : 2 modèles tagués 2-328 (signe d'une fonction affine), au lieu de 2-263 (somme d'inégalités). variation : 2 modèles scindés en 4. modifier : 2 modèles amputés de V1-V2, tagués 2-263.",
 		"modeles": ["4cc21ccd-03d9-4e62-b669-f5ca03a1cc9a", "c7cdca01-326b-487f-8400-ba25d382de74"],
@@ -85,6 +89,8 @@
 			["hors", "Hors programme en 2de : seule l'inéquation |x − a| ⩽ r est au BO"]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La lecture « distance de x à a » est exactement celle que le BO donne à |x − a|, et la résolution n'utilise rien d'autre.",
 		"consequence": "tag : 1 modèle tagué 2-420 (distance entre deux réels), au lieu de 2-340 (|x| = k, graphiquement). hors : 1 modèle sans point en 2de.",
 		"modeles": ["939153b6-9aa8-4a59-809e-071a7d3b8b77"],
@@ -125,6 +131,8 @@
 			]
 		],
 		"reco": "mixte",
+		"decision": "mixte",
+		"decide_le": "2026-10-23",
 		"pourquoi": "2-390 (probabilité conditionnelle) est la notion même : le « parmi les… » qui fixe l'univers est la définition, quelle que soit la présentation. Pour le modèle « tableau croisé », rester cohérent avec l2-10 (pas de tableau de probabilités). Si tu préfères une seule règle pour les deux, strict.",
 		"consequence": "large : 2 modèles tagués tels quels (2-390 (probabilité conditionnelle), 2-396 (tableau croisé d'effectifs)). strict : 2 modèles à modifier (3 variations retirées), 2-396. pourcentages : 1 variation retirée, 2-396 pour les deux. mixte : 1 variation retirée (2-396), l'autre modèle sur 2-390.",
 		"modeles": ["77d6fedc-1643-4451-a685-2451dc1616cb", "f3e68e4b-9855-4e91-bc0d-7363b7650b86"],
@@ -163,6 +171,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Le registre graphique n'est pas restreint par le BO, la récurrence u(n+1) = f(u(n)) est au programme, et les fonctions tracées sont affines à coefficients simples (0,5, 2, −0,5).",
 		"consequence": "tag ou partiel : 2 modèles tagués (1SPE-221 (passer d'un registre à l'autre), 1SPE-231 (conjecturer une limite)). hors : 2 modèles sans point, ni en 1re ni en Tle.",
 		"modeles": ["146a7c79-ad5c-443c-85a1-c8d0014c2ad8", "baefb288-6fb4-4fad-8e71-114145799ab6"],
@@ -197,6 +207,8 @@
 			["hors", "lts-3 stricte partout : retirer V1-V5, le modèle n'a plus de point"]
 		],
 		"reco": "modifier",
+		"decision": "modifier",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La décision lts-3 a été prise pour fixer les valeurs de a ; cos x = cos(8π/9) en sort à la lettre. Le cas |a| > 1 ne demande aucune valeur et reste dans le sens de la borne.",
 		"consequence": "tag : 1 modèle tagué TSPE-457 (cos(x) = a) en Tle spé. modifier : 3 variations retirées, puis TSPE-457. hors : le modèle reste sans point (1re et Tle).",
 		"modeles": ["99c772c0-3a0c-4f63-b01e-a7da4de812c4"],
@@ -234,6 +246,8 @@
 			]
 		],
 		"reco": "scinder",
+		"decision": "scinder",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Une question à réponse « géométrique » n'est pas dans 1SPE-213 (suites arithmétiques, définition) : le jumelage contredit l'inclusion stricte. Scinder garde ces modèles dans le parcours de 1re spé, chaque moitié dans un seul point, la réponse « ni l'un ni l'autre » restant possible. Si tu ne tiens pas à ces modèles en 1re spé, hors.",
 		"consequence": "jumelage : 5 modèles tagués tels quels. hors : 5 modèles sans point de 1re spé (2 gardent un point de 1re techno). scinder : 5 modèles à dédoubler (10 modèles), chacun sur un point.",
 		"modeles": [
@@ -273,6 +287,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La remarque de la borne vise l'ordre 2 (Fibonacci), pas la présence de n ; la capacité « par récurrence » est générale, et l'élève calcule pas à pas sans connaissance nouvelle.",
 		"consequence": "tag : 2 modèles tagués 1SPE-377 (termes d'une suite récurrente). strict : 1 modèle amputé de 2 variations (1SPE-377), 1 modèle sans point en 1re spé.",
 		"modeles": ["0495289a-abb1-4fed-b058-5e924a5f05ed", "1239554b-d442-4be6-8867-d9dc38311999"],
@@ -306,6 +322,8 @@
 			["hors", "Pas de point en 1re spé (le seuil par le calcul n'est pas un contenu de 1re)"]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "1SPE-237 (calcul de seuil) décrit le résultat cherché (le rang de seuil) ; sa borne n'exclut que la résolution par logarithme. 1SPE-224 (terme général arithmétique) tague un savoir dont la question ne demande pas le résultat.",
 		"consequence": "tag : 1 modèle tagué 1SPE-237 (calcul de seuil), inchangé. terme : 1 modèle sur 1SPE-224 (terme général arithmétique). hors : sans point en 1re spé (garde 1GEN-021 (seuil, croissance linéaire) en 1re ES).",
 		"modeles": ["eb9517ed-85ed-4702-b8d0-e155f5a5d474"],
@@ -340,6 +358,8 @@
 			["hors", "Pas de point (inclusion stricte), le modèle reste sur son nœud"]
 		],
 		"reco": "scinder",
+		"decision": "scinder",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Les deux expressions sont deux points de l'arbre ; une question qui les demande ensemble sort de chacun. Si tu préfères garder le modèle tel quel, tag est le moindre mal (même phrase du BO).",
 		"consequence": "tag : 1 modèle tagué 1SPE-245 (somme des racines), inchangé. scinder : 1 modèle en 2, sur 1SPE-245 et 1SPE-383 (produit des racines). hors : 1 modèle sans point.",
 		"modeles": ["0dee4515-8030-441c-bd7c-f1b7418e664b"],
@@ -377,6 +397,8 @@
 			]
 		],
 		"reco": "modifier",
+		"decision": "modifier",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La question porte sur l'axe (1SPE-384 (axe de symétrie)), pas sur le sommet ; la borne déduite de 1SPE-384 et la décision l1s-2 fixent la voie (forme canonique en cas simple). Garder 1SPE-247 (sommet d'une parabole) tague un point voisin.",
 		"consequence": "voisin : 1 modèle sur 1SPE-247 (sommet d'une parabole), inchangé. modifier : V2 restreinte, V3 retirée, puis 1SPE-384 (axe de symétrie). tag : 1 modèle sur 1SPE-384, inchangé.",
 		"modeles": ["9f00da01-a030-4697-8d69-20c380fa0b78"],
@@ -414,6 +436,8 @@
 			]
 		],
 		"reco": "hors",
+		"decision": "hors",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Inclusion stricte : un mot que l'élève de 2de n'a pas appris suffit à sortir la question des bornes. Jumeaux seulement si le repérage montre un manque de modèles de produit nul en 2de.",
 		"consequence": "hors : 3 modèles sans point de 2de (ils gardent leur point de 1re spé). tag : 3 modèles reçoivent aussi un point de 2de. jumeaux : idem hors, plus des modèles à écrire.",
 		"modeles": [
@@ -449,6 +473,8 @@
 			["scinder", "Scinder les deux cases (m, p) si l'on veut un point de 2de"]
 		],
 		"reco": "hors",
+		"decision": "hors",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Même raison que m-1spe-a-2de-1 : vocabulaire de 1re dans l'énoncé, tâche déjà couverte en 2de.",
 		"consequence": "hors : 1 modèle sans point de 2de (il garde son point de 1re spé). tag : 1 modèle reçoit aussi 2-315 (pente lue sur un graphique). scinder : 1 modèle en 2.",
 		"modeles": ["ed8444bb-dfa3-4b6c-8414-27afb3066d2b"],
@@ -482,6 +508,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La borne générale les déclare dans le programme, et 1SPE-405 (variation de exp) est la propriété qu'on applique.",
 		"consequence": "tag : 4 modèles tagués 1SPE-405 (variation de exp), et la V1 du cinquième rejoint 1SPE-405 (à scinder). hors : 4 modèles sans point de 1re spé, V1 du cinquième à retirer.",
 		"modeles": [
@@ -520,6 +548,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Si la relation est une conséquence immédiate de la définition (comme les conséquences de l'exponentielle en l1s-5), tag ; sinon hors. L'agent n'avait pas de préférence forte.",
 		"consequence": "tag : 1 modèle tagué 1SPE-305 (cos et sin d'un réel). hors : 1 modèle sans point de 1re spé.",
 		"modeles": ["ee4e2ac6-c683-47ec-91bd-524409ef241e"],
@@ -556,6 +586,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Cohérent avec le modèle du cas k ≠ 0 et avec la règle des points-démonstration.",
 		"consequence": "Dans tous les cas 1 modèle tagué ; seul le point change (1SPE-323 (MA·MB = 0, démonstration), 1SPE-317 (transformer MA·MB) ou 1SPE-436 (produit scalaire, problème géométrique)).",
 		"modeles": ["044a3ae3-c54a-4521-9265-3997fcc6b0d2"],
@@ -590,6 +622,8 @@
 			["strict", "Strict : {X = a} et {X ⩽ a} seulement"]
 		],
 		"reco": "large",
+		"decision": "large",
+		"decide_le": "2026-10-23",
 		"pourquoi": "En spé, {a ⩽ X ⩽ b} n'est qu'une réunion de {X = xₖ} lue sur le tableau, les intervalles sont connus depuis la 2de, et rien dans le BO de spé n'exclut cette écriture. Techno si tu préfères aligner les deux voies.",
 		"consequence": "large : 1 modèle tagué 1SPE-353 (notations {X = a}, {X ⩽ a}) tel quel ; l'autre (arbre pondéré, TAG 1SPE-355 (loi d'une variable aléatoire)) inchangé. techno : 1 variation retirée (a ⩽ X ⩽ b). strict : le premier modèle amputé de la plupart de ses variations, et la V2 du second (P(X ⩾ 1)) à revoir.",
 		"modeles": ["570f91d5-75e6-4af8-b22b-67fae6c4bde1", "d683e906-b1ca-44f0-bed5-8df2a9740b11"],
@@ -627,6 +661,8 @@
 			]
 		],
 		"reco": "mixte",
+		"decision": "mixte",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Pour les intervalles, la tâche est d'écrire le résultat en notation d'intervalle ; pour les ensembles finis, les trois opérations sont des points distincts du BO.",
 		"consequence": "scinder : 2 modèles à éclater (jusqu'à 6 modèles). symboles : 2 modèles tagués 2-203 (symboles ∩, ∪…) tels quels. mixte : 1 modèle tagué 2-244 (intervalles), 1 modèle éclaté en 3.",
 		"modeles": ["9724dc3d-8df6-4c45-b936-439b18ed4c39", "8c31675a-44af-48df-bb3e-cde85a8d3f35"],
@@ -664,6 +700,8 @@
 			]
 		],
 		"reco": "mixte",
+		"decision": "mixte",
+		"decide_le": "2026-10-23",
 		"pourquoi": "L'ensemble de définition n'est pas une étude de variations : la première carte n'a pas de point ; la seconde, sans les limites, décrit bien 1SPE-283 (variations d'une fonction).",
 		"consequence": "tag : 2 cartes taguées, 1 corrigée. mixte : 1 carte corrigée et taguée, 1 sans point. hors : 2 cartes sans point de 1re spé.",
 		"modeles": ["318ea542-65cb-4040-9b46-1d5803d9dee5", "bb554c62-ed89-4c2f-817b-c5aed549a469"],
@@ -697,6 +735,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La borne de 2-205 (couple, produit cartésien) est déduite, pas une décision ; une notion « rencontrée » sans aucun nom ne serait pas questionnable ; et la borne générale de 1re spé dit l'inverse. Trancher aligne les deux bornes.",
 		"consequence": "tag : 1 modèle tagué 2-205 (couple, produit cartésien), la V4 de l'autre aussi (scission 2-207 (Card(A)) / 2-205 toujours à faire) ; borne de 2-205 réécrite. modifier : 2 modèles à réécrire sans le symbole ×, puis 2-205 ; borne générale de 1re spé corrigée.",
 		"modeles": ["db8b5dc8-2d2d-41ed-9af5-a4f5551c6aaa", "0a1ff14f-ac73-4b9e-ab4c-a4d465c78e76"],
@@ -730,6 +770,8 @@
 			["hors", "Pas de point : le modèle reste dans l'arbre comme prérequis"]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La notion est exigée de fait par TSPE-384 (croissante majorée converge), dont le libellé la nomme : c'est le point le plus proche de ce que le modèle fait travailler.",
 		"consequence": "tag ou large : 1 modèle tagué. hors : 1 modèle sans point (comme aujourd'hui).",
 		"modeles": ["b59fe450-e57a-4dfc-8aa7-29337b3fa28f"],
@@ -764,6 +806,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "« Du type » désigne une famille d'équations résolues de la même façon (même lecture que lts-1), et cos(2x) = a est l'exemple le plus courant au baccalauréat. La période de cos(ax) n'est qu'un changement d'échelle. Si tu veux t'en tenir au texte, hors.",
 		"consequence": "tag : 3 modèles tagués. hors : 3 modèles sans point. equation : 1 modèle tagué TSPE-457 (cos(x) = a), 2 sans point.",
 		"modeles": [
@@ -802,6 +846,8 @@
 			["hors", "Refuser V2-V5 : sans cadre, pas de point"]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La borne vise le cadre dans lequel on rencontre l'indépendance et interdit de la faire justifier ; une donnée « X et Y indépendantes » n'est pas une justification, et l'habillage ne changerait pas le calcul. Si tu lis « toujours envisagées dans le cadre » comme une obligation d'énoncé, modifier.",
 		"consequence": "tag : 1 modèle à scinder (V1 sur TSPE-526 (espérance, linéarité), V2-V5 sur TSPE-527 (variance d'une somme)). modifier : 4 énoncés réécrits, plus la même scission. hors : 4 variations retirées, V1 seule sur TSPE-526.",
 		"modeles": ["71cb8ab7-664a-45f6-83b0-6b0739ebb5a1"],
@@ -839,6 +885,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "C'est l'usage des sujets de Tle spé, et la borne de TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue) est respectée (f continue d'un intervalle dans lui-même).",
 		"consequence": "tag : 2 modèles tagués TSPE-432 (suite uₙ₊₁ = f(uₙ), f continue) en plus de leur point de Tle compl. hors : seulement Tle compl. partiel : 1 modèle scindé, 1 sans point de Tle spé.",
 		"modeles": ["81ff485d-b40a-4778-bb95-43c3c17818f2", "9f14d672-e460-4161-a9bf-da2b06f734f3"],
@@ -876,6 +924,8 @@
 			]
 		],
 		"reco": "jumeau",
+		"decision": "jumeau",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Si le corrigé passe par ln (à vérifier dans le modèle), un jumeau en log évite de montrer ln en techno ; sinon, tag.",
 		"consequence": "tag : 1 modèle reçoit en plus TTECHNO-085 (logarithme décimal, aⁿ < b). jumeau : 1 modèle à écrire (Tle techno). corrige : 1 corrigé à réécrire, puis TTECHNO-085.",
 		"modeles": ["f1963ef2-4618-4ae7-9491-9955dacd0258"],
@@ -910,6 +960,8 @@
 			["mixte", "Garder les valeurs négatives (V1, V2), retirer V3 (bornes inversées)"]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La « présentation » du signe quelconque rend ces calculs naturels, et la Tle compl. calcule F(b) − F(a) sans condition de signe. Si tu préfères la lettre du BO : mixte.",
 		"consequence": "tag : 3 modèles tagués tels quels (TCOMP-267 (relation de Chasles) ; les deux autres gardent leur verdict). modifier : 3 modèles restreints, 1 variation retirée. mixte : 1 variation retirée.",
 		"modeles": [
@@ -947,6 +999,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "La décision répond à « quelles valeurs exactes de cos et sin connaître » ; ajouter π/3 et −π/4 ne demande aucune trigonométrie.",
 		"consequence": "tag : 1 modèle tagué TEXP-239 (calculs sur les complexes), l'autre inchangé. modifier : 2 modèles à restreindre (3 variations et 1 variation).",
 		"modeles": ["bbd211a5-536a-4d7a-bc3e-4d578d9caf68", "2bf66851-c1e0-4531-b2eb-153803a573bf"],
@@ -983,6 +1037,8 @@
 			]
 		],
 		"reco": "rappel",
+		"decision": "rappel",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Garde les variations utiles sans exiger un résultat que le BO ne nomme pas, comme lte-7 pour ad − bc.",
 		"consequence": "tag : 2 modèles tagués TEXP-246 (au plus n racines), avec 1 correction de V1. hors : 2 modèles amputés (1 et 2 variations). rappel : 3 énoncés à compléter d'un rappel (ou V4 retirée), V1 corrigée, puis TEXP-246.",
 		"modeles": ["293f8225-0268-48bc-8487-52c6bf5b01e3", "6ff00846-f06d-49f3-b6cb-336821ea8649"],
@@ -1016,6 +1072,8 @@
 			]
 		],
 		"reco": "tag",
+		"decision": "tag",
+		"decide_le": "2026-10-23",
 		"pourquoi": "Les modèles sont construits autour de la traduction d'une situation, et l'option savoir disperse chacun sur deux ou trois points. La note de la borne s'écrivait sans modèle en vue.",
 		"consequence": "tag : 3 modèles tagués TEXP-335 (modéliser par un graphe) ou TEXP-336 (modéliser par une matrice). savoir : 2 modèles à scinder (2 à 3 points chacun), 1 tagué TEXP-314 (degré).",
 		"modeles": [

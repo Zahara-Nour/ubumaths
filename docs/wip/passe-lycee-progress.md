@@ -6,16 +6,14 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, recos de la page validées en bloc, report dans les CSV en cours._
+_Mis à jour le 2026-10-23, recos de la page validées et reportées dans les CSV._
 
-- **État** : étapes a-d faites ; page à cocher validée en bloc par David (toutes les recos). Un agent reportait les
-  recos dans les 7 CSV (`analyse/<lot>.csv` : A_TRANCHER → verdict final, préfixe « Décision de David (2026-10-23,
-  reco m-…) » ; `decision`/`decide_le` dans `questions-modeles.json`). **Vérifier qu'il a fini** : `git status`
-  (CSV modifiés non commités), plus aucune ligne A_TRANCHER, TAG/MODIFIER à code unique du bon programme ; sinon
-  refaire le report. Puis commiter.
+- **État** : étapes a-d faites ; page à cocher validée en bloc par David, recos reportées (`decision`/`decide_le`
+  dans `questions-modeles.json` ; 7 CSV finaux : 478 TAG, 60 MODIFIER, 81 TAG_PAR_VARIATION, 31 HORS_PROGRAMME).
 - **Prochaine action** : `python3 compat-noeuds.py liste` (dans `analyse/`, état prod `etat-prod-2026-10-23/`) :
-  avant report, 460/502 tags passent le trigger ; 20 = point sur une sous-notion sœur → R2 (déplacer le modèle) ;
-  22 = autre notion → liste à faire trancher par David ; 10 modèles ont des points sur des notions différentes.
+  538 tags (TAG + MODIFIER) : 484 passent le trigger ; 26 = point sur une sous-notion sœur → R2 (déplacer le
+  modèle) ; 28 = autre notion → liste à faire trancher par David ; 12 modèles ont des points sur des notions
+  différentes (multi-programmes).
   Ensuite : générateur de migration (modèle : `arbre-notions/analyse/lot-2bis-migration.py`), worktree, PR.
 - **En attente de David** : rien (décisions de migration prises, cf. journal du 2026-10-23).
 - **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031) et 2 points neufs
@@ -129,3 +127,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   MODIFIER, tagués seulement après modification) ; (2) **tags non confirmés retirés** (≈ 197 des 473, ≈ 92 modèles
   sans tag ; prod : 0 état, 0 journal, 0 exercice sur un point du lycée) ; (3) **question d'accès : personne ne gagne
   d'accès** (aucune règle ne change).
+- **2026-10-23 — Recos reportées dans les CSV** (agent Sonnet, contrôlé) : 55 lignes changées, plus aucune
+  A_TRANCHER ; 650 lignes = 478 TAG, 60 MODIFIER, 81 TAG_PAR_VARIATION, 31 HORS_PROGRAMME. Choix d'application notés
+  dans son rapport : m-1spe-a-3 en TAG_PAR_VARIATION sans répartition par variation ; d683e906 laissé sur 1SPE-355.
+  Contrôle des nœuds (`compat-noeuds.py`) : 54 tags sur 538 refusés par le trigger en l'état.
