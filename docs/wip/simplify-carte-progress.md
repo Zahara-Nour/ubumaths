@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1624 (lot 4b)._
+_Mis à jour le 2026-10-23, après #1624 (lot 4b) et les réponses Q8, Q9 (§ 38)._
 
-- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), **4b un décimal reste décimal (#1624, § 37)** : registre suivi terme par terme dans `tidy`, gardes des appelants retirées ; 1 008 modèles de prod sans différence. Rien en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1620, **pas encore après #1624**. Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
-- **Ordre des lots** (§ 29, § 35) : ~~4a~~ → ~~4b~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
-- **En attente de David** : Q8 `√0,5 → 0,5√2` (lettre de S1) ou `√2/2` ? Q9 `(0,5x+0,5)/(x+1)` reste tel quel, alors que `(0,5x+1)/(x+1) → (x+2)/(2(x+1))` : aligner ? (§ 37) ; vérification manuelle de #1624 notée.
+- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b un décimal reste décimal (#1624, § 37). Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — **à jour après #1624 et Q8/Q9**. La tenir à jour **à chaque merge, avant le `/clear`**. Pour la modifier : `Artifact read`, éditer une copie du fichier rendu, republier sur la même `url`.
+- **Ordre des lots** (§ 29, § 35, § 38) : ~~4a~~ → ~~4b~~ → **4b-bis Q8/Q9** → 4c `order: 'kept'` (S2) → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : lot 4b-bis (§ 38), nouveau worktree, tests rouges d'abord ; puis 4c (relire S2 § 6 et D3 § 19).
+- **En attente de David** : rien ; vérification manuelle de #1624 notée.
 - **Pièges en cours** : mineurs connus du 4a (§ 36) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : les chemins bouton/commande/latex-péda écrivent encore `x−3/2` (lot 5) ; suite client locale coupée par `rpc is closed`, la CI tranche ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (celui du 4b est supprimé) ; nouveau worktree au 4c.
+- **Worktree / branche** : aucun ; nouveau worktree au 4b-bis.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -569,3 +569,9 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - Gardes retirées : `readable` (atelier), `readableExact` ×2 (REPL web, `.eval`), `writeLimitValue`, `keepLogDecimals` (solve-latex, mort : les tests des seuils `\ln(0{,}8)` passent sans lui). **Gardées**, elles protègent d'autre chose que `tidy` : flottants des limites (`evaluate.ts`, `containsFloatArtifact`), développement par `normalize` (`expand-explained`, `reduce-steps`), `evaluate-steps`, `evaluate-with-modifiers`, l'affichage décimal de `.eval`.
 - Mesures : suite serveur complète verte (un test d'énoncé adapté : `(−0,5)ⁿ` au lieu de `(−1/2)ⁿ`) ; oracle des dérivées : `poly-11` et `exp-22` @ carte rejoignent la forme de classe (`x−1,5`, `e^{0,5x}`), les trois autres chemins restent au lot 5 ; **1 008 modèles de prod × 8 tirages : 0 différence** (énoncé, choix, réponse, corrigé ; témoin fabriqué vu changer). Limites sondées : inchangées.
 - **Revue `code-reviewer` opus** : corrigés, test rouge d'abord — (B1, bloquant) `tidy` non idempotent si une puissance négative porte un coefficient décimal (`0,5·x⁻¹ → 0,5/x → 1/(2x)`) : `writesDecimal` exige aucun facteur au dénominateur ; (A1) l'atelier en mode décimal perdait le zéro final (`√26 → ≈ 5,099` au lieu de `5,0990`) : la garde retirée de `readable` protégeait aussi les 4 décimales — un nombre seul n'y passe plus par `tidy`. **Questions ouvertes pour David** : (Q8) `√0,5 → 0,5√2` (lettre de S1) ou `√2/2` ? (Q9) `(0,5x+0,5)/(x+1)` reste tel quel alors que `(0,5x+1)/(x+1) → (x+2)/(2(x+1))` — la barre de Q3 ne chasse pas les décimaux quand rien ne se simplifie ; aligner ?
+
+## 38. Q8 et Q9 tranchées (David, 2026-10-23 : « je valide »)
+
+- **Q8** : `√0,5 → √2/2`, pas `0,5√2`. Le résultat est irrationnel, sans écriture décimale finie : exception de S1, donc fraction. `√0,25 → 0,5` inchangé.
+- **Q9** : Q3 (« une barre compte comme opérande fraction ») ne vaut que pour un dénominateur **numérique**. Dénominateur avec variable → décimaux gardés : `(0,5x+1)/(x+1)` et `(0,5x+0,5)/(x+1)` inchangés. Restent : `0,5/2 → 1/4`, `2,5x/5 → x/2`, `(0,5x+1)/3 → (x+2)/6`. Raison : `(x+2)/(2(x+1))` transforme (piste A) ; l'autre alignement `(x+1)/(2(x+1))` montre une simplification interdite par S3.
+- Livrées en **lot 4b-bis**, avant le 4c, tests rouges d'abord.
