@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, lot 4 en PR._
+_Mis à jour le 2026-10-24, après #1619._
 
-- **État** : lot 4 en cours, branche `fix/constructions-demo-boutons`. `/construction-demo` masque le nom, « Sauvegarder » et « Supprimer » à qui n'est ni prof ni admin (`canAuthor` calculé au chargement par `canAuthorConstructions`), et ne demande plus la liste des scripts sauvegardés dans ce cas. Les lots 1, 2 et 3 (#1615, #1616, #1618) partent au prochain `deploy:prod`.
-- **Prochaine action** : CI verte → merge, puis choisir le lot 5 avec David.
+- **État** : lot 4 **livré** — #1619 mergée : `/construction-demo` masque le nom, « Sauvegarder » et « Supprimer » à qui n'est ni prof ni admin. Le code des lots 1 à 4 (#1615, #1616, #1618, #1619) part au prochain `deploy:prod`. Vérification à l'œil notée dans `verifications-manuelles.md`.
+- **Prochaine action** : choisir le lot 5 avec David.
 - **En attente de David** : le lot 5. Restent : parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique).
 - **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` (policy posée hors historique) ; `db:migrate` ne marche pas depuis un worktree (projet non lié) → depuis le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-constructions` · `fix/constructions-demo-boutons`.
+- **Worktree / branche** : `../ubumaths-wt-constructions` gardé le temps de la vérification de David (serveur 5177), puis supprimé. Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
 
 ---
 
