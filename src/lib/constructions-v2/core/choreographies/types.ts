@@ -161,6 +161,19 @@ export interface ChoreographyProduced {
 	readonly hiddenSupport?: readonly string[];
 }
 
+/**
+ * Erreur levée par une chorégraphie qui ne peut pas animer la figure
+ * (cas dégénéré : P sur la droite, etc.). L'exécuteur la convertit en
+ * `DslRuntimeError` à la ligne de l'instruction : le lecteur l'affiche
+ * comme une erreur d'exécution, sans jouer d'animation fausse.
+ */
+export class ChoreographyError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = 'ChoreographyError';
+	}
+}
+
 /** Output of a `ChoreographyFn`. */
 export interface ChoreographyResult {
 	readonly subSteps: readonly SubStep[];

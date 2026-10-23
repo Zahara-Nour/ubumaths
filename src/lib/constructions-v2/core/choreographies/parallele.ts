@@ -9,12 +9,36 @@
  *   a parallelogram, so (PQ) ∥ (AB)) ; ruler traces the parallel through
  *   P and Q.
  *
- * - `double_perpendiculaire` : perpendicular through P to (AB) → line e ;
- *   then perpendicular through P to e → parallel to (AB). Not implemented
- *   yet (stub) ; `ctx.sub` now exists to compose the two perpendiculars.
+ * - `double_perpendiculaire` : perpendicular through P to (AB) → line e
+ *   (sub-choreography `perpendiculaire @euclide @rayon_libre`) ; then
+ *   perpendicular to e AT P → parallel to (AB). P lies on e, so
+ *   `rayon_libre` would degenerate : two small arcs at P cut e in C*, D* ;
+ *   a wider opening gives two arcs at C*, D* crossing at R ; ruler (PR).
+ *
+ * Voies under `@equerre` :
+ *
+ * - `pose_equerre` (default) : équerre slid along a ruler (see below).
+ * - `double_perpendiculaire` : sub-choreography `perpendiculaire @equerre`
+ *   traces e ; then the équerre is laid on e, right angle at P, and the
+ *   pencil traces the parallel ; the ruler extends it.
+ *
+ * Both `double_perpendiculaire` voies refuse `P ∈ (AB)` with a
+ * `ChoreographyError` (the parallel is (AB) itself, nothing to animate).
  */
 
-import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
+import type { Figure } from '$lib/geometry-core/graph/figure';
+import { exact, numeric } from '$lib/geometry-core/types/geo-value';
+import { numericNode } from '$lib/mathAST/common/numeric';
+import { ChoreographyError } from './types';
+import type {
+	Voie,
+	ChoreographyFn,
+	ChoreographyCtx,
+	ChoreographyProduced,
+	ChoreographyResult,
+	SubStep,
+	TraceTag
+} from './types';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total (small arcs near Q)
@@ -30,6 +54,17 @@ const RULER_OVERLAP_MATH_UNITS = 2;
 // Ruler body thickness in math units. The Ruler component scales with
 // `pixelsPerUnit` so its math width = 57/40 ≈ 1.425 at any zoom.
 const RULER_WIDTH_MATH_UNITS = 57 / 40;
+// Double perpendiculaire @euclide : ouverture des deux petits arcs en P
+// (qui coupent e en C*, D*), puis ouverture plus grande pour les arcs en
+// C* et D*. Constantes : P est sur e, aucune distance de la figure ne
+// s'impose, et des rayons fixes restent lisibles quel que soit le décor.
+const DP_INNER_RADIUS = 1.5;
+const DP_OUTER_RADIUS = 2.5;
+// Double perpendiculaire @equerre : longueur tracée le long du bord
+// vertical de l'équerre (HAUTEUR ≈ 5.575 unités, cf. perpendiculaire.ts).
+const EQUERRE_VERTICAL_MATH_UNITS = 5;
+// En deçà de cette distance de P à (AB), P est tenu pour être sur (AB).
+const P_ON_LINE_EPSILON = 1e-9;
 
 /**
  * `parallele @euclide @parallelogramme` choreography (Euclid I.31).
@@ -778,10 +813,556 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 const parallelogrammeChoreography: ChoreographyFn = (ctx) => buildParallelogramme(ctx);
 const equerreChoreography: ChoreographyFn = (ctx) => buildEquerre(ctx);
 
-const NOT_YET_IMPLEMENTED: ChoreographyFn = (ctx) => ({
-	subSteps: [],
-	produced: { principal: ctx.principalId, charnieres: [], traces: [] }
-});
+// ─── Double perpendiculaire (@euclide et @equerre) ─────────────────────────
+
+type Vals = ReadonlyMap<string, number>;
+
+function val(vals: Vals, id: string): number {
+	return vals.get(id) ?? 0;
+}
+
+/**
+ * Petite fabrique réactive : chaque scalaire créé est noté dans `support`
+ * (rangé ensuite en `hiddenSupport`), chaque point calculé naît masqué.
+ */
+function reactiveKit(figure: Figure) {
+	const support: string[] = [];
+	const expr = (compute: (vals: Vals) => number, deps: string[]): string => {
+		const id = figure.createScalarExpression(compute, deps);
+		support.push(id);
+		return id;
+	};
+	const point = (
+		fx: (vals: Vals) => number,
+		fy: (vals: Vals) => number,
+		deps: string[]
+	): string => {
+		const id = figure.createComputedPoint(
+			{ scalarRef: expr(fx, deps) },
+			{ scalarRef: expr(fy, deps) }
+		);
+		figure.hideElement(id);
+		return id;
+	};
+	/** Petit arc de centre `centerId`, ±15° autour de la direction `angle`. */
+	const smallArc = (
+		centerId: string,
+		radius: number,
+		angle: (vals: Vals) => number,
+		deps: string[]
+	): string => {
+		const halfSweep = SMALL_ARC_SWEEP_RAD / 2;
+		const start = expr((vals) => angle(vals) - halfSweep, deps);
+		const end = expr((vals) => angle(vals) + halfSweep, deps);
+		const id = figure.createArcByAngles(
+			centerId,
+			numeric(radius),
+			{ scalarRef: start },
+			{ scalarRef: end }
+		);
+		figure.hideElement(id);
+		return id;
+	};
+	return { support, expr, point, smallArc };
+}
+
+/**
+ * Repère réactif commun : coordonnées de P, A, B et vecteur unitaire
+ * `u` de (AB).
+ */
+function reactiveFrame(
+	kit: ReturnType<typeof reactiveKit>,
+	figure: Figure,
+	ids: readonly string[]
+) {
+	const [Pid, Aid, Bid] = ids;
+	const Px = figure.createScalarCoordinate(Pid, 'x');
+	const Py = figure.createScalarCoordinate(Pid, 'y');
+	const Ax = figure.createScalarCoordinate(Aid, 'x');
+	const Ay = figure.createScalarCoordinate(Aid, 'y');
+	const Bx = figure.createScalarCoordinate(Bid, 'x');
+	const By = figure.createScalarCoordinate(Bid, 'y');
+	const dAB = figure.createScalarDistance(Aid, Bid);
+	kit.support.push(Px, Py, Ax, Ay, Bx, By, dAB);
+	const ux = kit.expr(
+		(v) => (val(v, Bx) - val(v, Ax)) / Math.max(val(v, dAB), 1e-12),
+		[Ax, Bx, dAB]
+	);
+	const uy = kit.expr(
+		(v) => (val(v, By) - val(v, Ay)) / Math.max(val(v, dAB), 1e-12),
+		[Ay, By, dAB]
+	);
+	return { Px, Py, Ax, Ay, ux, uy };
+}
+
+/** Vecteur unitaire de (AB), valeurs initiales. */
+function unitAB(A: { x: number; y: number }, B: { x: number; y: number }) {
+	const len = Math.hypot(B.x - A.x, B.y - A.y);
+	return { x: (B.x - A.x) / len, y: (B.y - A.y) / len };
+}
+
+/**
+ * Cas limite `P ∈ (AB)` : la parallèle est (AB) elle-même et la première
+ * perpendiculaire n'a plus de sens (pas d'animation fausse).
+ */
+function assertPOffLine(
+	P: { x: number; y: number },
+	A: { x: number; y: number },
+	B: { x: number; y: number }
+): void {
+	const u = unitAB(A, B);
+	const dist = Math.abs(u.x * (P.y - A.y) - u.y * (P.x - A.x));
+	if (!(dist > P_ON_LINE_EPSILON)) {
+		throw new ChoreographyError(
+			'`parallele(P, A, B) @double_perpendiculaire` : P est sur la droite (AB) : la parallèle est (AB) elle-même, il n’y a rien à construire.'
+		);
+	}
+}
+
+/**
+ * Droite auxiliaire `e` = perpendiculaire à (AB) par P, bâtie comme dans
+ * le builtin `perpendiculaire` : T = P + (B − A), puis rotation de T
+ * autour de P d'un quart de tour. Créée masquée ; la sous-chorégraphie
+ * l'anime, puis elle apparaît (line-fade-in).
+ */
+function createLineE(figure: Figure, ids: readonly string[]): { e: string; helpers: string[] } {
+	const [Pid, Aid, Bid] = ids;
+	const T = figure.createTranslatedPoint(Pid, Aid, Bid);
+	figure.hideElement(T);
+	const E2 = figure.createRotatedPoint(T, Pid, exact(numericNode(Math.PI / 2)));
+	figure.hideElement(E2);
+	const e = figure.createLine(Pid, E2);
+	figure.hideElement(e);
+	return { e, helpers: [T, E2] };
+}
+
+/**
+ * Reclasse le produit de la sous-perpendiculaire : ses traces gardent leur
+ * étiquette, sa charnière (Q ou le pied F) devient un point auxiliaire de
+ * la parallèle, son support reste masqué.
+ */
+function absorbSub(
+	subProduced: ChoreographyProduced,
+	traces: string[],
+	tags: Map<string, TraceTag>,
+	hidden: string[]
+): void {
+	traces.push(...subProduced.traces, ...subProduced.charnieres);
+	if (subProduced.traceTags) {
+		for (const [id, tag] of subProduced.traceTags) tags.set(id, tag);
+	}
+	for (const id of subProduced.charnieres) tags.set(id, 'auxiliary-point');
+	hidden.push(...(subProduced.hiddenSupport ?? []));
+}
+
+const LINE_E_INSTRUCTION = 'La perpendiculaire e à (AB) passant par P apparaît';
+
+/**
+ * `parallele @euclide @double_perpendiculaire`.
+ *
+ *   SS1..SS7 — sous-chorégraphie `perpendiculaire(P, A, B) @euclide
+ *              @rayon_libre` : elle trace e.
+ *   SS8      — line-fade-in e.
+ *   SS9      — petit arc en P (rayon `DP_INNER_RADIUS`) qui coupe e en C*.
+ *   SS10     — même ouverture, petit arc qui coupe e en D*.
+ *   SS11     — C*, D* apparaissent.
+ *   SS12     — le compas s'ouvre davantage (`DP_OUTER_RADIUS`), en C*.
+ *   SS13     — arc en C* vers R.
+ *   SS14     — même ouverture, arc en D* : il croise le précédent en R.
+ *   SS15     — R apparaît.
+ *   SS16     — règle (PR) : la parallèle.
+ *
+ * Justification : R est équidistant de C* et D*, symétriques par rapport
+ * à P sur e, donc R est sur la médiatrice de [C*D*], c'est-à-dire la
+ * perpendiculaire à e en P ; perpendiculaire à e, elle est parallèle à (AB).
+ * Avec u unitaire de (AB) et v = u tourné d'un quart de tour (direction
+ * de e) : C* = P + r₁v, D* = P − r₁v, R = P + √(r₂² − r₁²)·u.
+ */
+function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyResult {
+	const { figure, args, principalId, visibilite, sub } = ctx;
+	const [Pid, Aid, Bid] = args.ids;
+	const [P, A, B] = args.coords;
+	assertPOffLine(P, A, B);
+
+	figure.hideElement(principalId);
+
+	// ─── 1re perpendiculaire : e ───
+	const { e, helpers } = createLineE(figure, args.ids);
+	const perp = sub('perpendiculaire', { ids: [Pid, Aid, Bid], coords: [P, A, B] }, e, {
+		contrainte: 'euclide',
+		methode: 'rayon_libre',
+		visibilite
+	});
+
+	// ─── Valeurs initiales (position des instruments) ───
+	const r1 = DP_INNER_RADIUS;
+	const r2 = DP_OUTER_RADIUS;
+	const h = Math.sqrt(r2 * r2 - r1 * r1);
+	const u0 = unitAB(A, B);
+	const v0 = { x: -u0.y, y: u0.x };
+	const Cs0 = { x: P.x + r1 * v0.x, y: P.y + r1 * v0.y };
+	const Ds0 = { x: P.x - r1 * v0.x, y: P.y - r1 * v0.y };
+	const halfSweep = SMALL_ARC_SWEEP_RAD / 2;
+	const toDeg = (rad: number) => (rad * 180) / Math.PI;
+	const angPC0 = Math.atan2(v0.y, v0.x);
+	const angPD0 = Math.atan2(-v0.y, -v0.x);
+	// R − C* = h·u − r₁·v ; R − D* = h·u + r₁·v.
+	const angCR0 = Math.atan2(h * u0.y - r1 * v0.y, h * u0.x - r1 * v0.x);
+	const angDR0 = Math.atan2(h * u0.y + r1 * v0.y, h * u0.x + r1 * v0.x);
+	const halfTrace = SEGMENT_TRACE_LENGTH_DEFAULT / 2;
+	const Iext1X0 = P.x - u0.x * halfTrace;
+	const Iext1Y0 = P.y - u0.y * halfTrace;
+
+	// ─── Éléments réactifs ───
+	const kit = reactiveKit(figure);
+	const { Px, Py, ux, uy } = reactiveFrame(kit, figure, args.ids);
+	const deps = [Px, Py, ux, uy];
+	// v = (−uy, ux).
+	const Cstar = kit.point(
+		(v) => val(v, Px) - val(v, uy) * r1,
+		(v) => val(v, Py) + val(v, ux) * r1,
+		deps
+	);
+	const Dstar = kit.point(
+		(v) => val(v, Px) + val(v, uy) * r1,
+		(v) => val(v, Py) - val(v, ux) * r1,
+		deps
+	);
+	const R = kit.point(
+		(v) => val(v, Px) + val(v, ux) * h,
+		(v) => val(v, Py) + val(v, uy) * h,
+		deps
+	);
+	const arcPC = kit.smallArc(Pid, r1, (v) => Math.atan2(val(v, ux), -val(v, uy)), [ux, uy]);
+	const arcPD = kit.smallArc(Pid, r1, (v) => Math.atan2(-val(v, ux), val(v, uy)), [ux, uy]);
+	const arcC = kit.smallArc(
+		Cstar,
+		r2,
+		(v) => Math.atan2(h * val(v, uy) - r1 * val(v, ux), h * val(v, ux) + r1 * val(v, uy)),
+		[ux, uy]
+	);
+	const arcD = kit.smallArc(
+		Dstar,
+		r2,
+		(v) => Math.atan2(h * val(v, uy) + r1 * val(v, ux), h * val(v, ux) - r1 * val(v, uy)),
+		[ux, uy]
+	);
+	// Tracé de la règle : centré sur P, porté par u.
+	const Iext1 = kit.point(
+		(v) => val(v, Px) - val(v, ux) * halfTrace,
+		(v) => val(v, Py) - val(v, uy) * halfTrace,
+		deps
+	);
+	const Iext2 = kit.point(
+		(v) => val(v, Px) + val(v, ux) * halfTrace,
+		(v) => val(v, Py) + val(v, uy) * halfTrace,
+		deps
+	);
+	const segmentTrace = figure.createSegment(Iext1, Iext2);
+	figure.hideElement(segmentTrace);
+
+	const arcSmall1 = r1 * SMALL_ARC_SWEEP_RAD;
+	const arcSmall2 = r2 * SMALL_ARC_SWEEP_RAD;
+	const ownSubSteps: SubStep[] = [
+		{
+			kind: 'line-fade-in',
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [e],
+			instruction: LINE_E_INSTRUCTION
+		},
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: P.x, y: P.y, rotation: toDeg(angPC0 - halfSweep) },
+			compassRadius: r1,
+			geometricDistance: arcSmall1,
+			animateDrawableIds: [arcPC],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Compas en P, petite ouverture : un petit arc coupe e en C*'
+		},
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: P.x, y: P.y, rotation: toDeg(angPD0 - halfSweep) },
+			compassRadius: r1,
+			geometricDistance: arcSmall1,
+			animateDrawableIds: [arcPD],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Même ouverture, de l’autre côté de P : un petit arc coupe e en D*'
+		},
+		{
+			kind: 'point-fade-in',
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [Cstar, Dstar],
+			animateLineIds: [],
+			instruction: 'C* et D* apparaissent sur e, à égale distance de P'
+		},
+		{
+			kind: 'compass-measure',
+			instrument: 'compass',
+			instrumentTarget: { x: Cs0.x, y: Cs0.y, rotation: toDeg(angCR0) },
+			compassRadius: r2,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Compas en C*, on l’ouvre davantage (plus grand que PC*)'
+		},
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: Cs0.x, y: Cs0.y, rotation: toDeg(angCR0 - halfSweep) },
+			compassRadius: r2,
+			geometricDistance: arcSmall2,
+			animateDrawableIds: [arcC],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'On trace un arc de centre C*'
+		},
+		{
+			kind: 'compass-draw',
+			instrument: 'compass',
+			instrumentTarget: { x: Ds0.x, y: Ds0.y, rotation: toDeg(angDR0 - halfSweep) },
+			compassRadius: r2,
+			geometricDistance: arcSmall2,
+			animateDrawableIds: [arcD],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Même ouverture en D* : l’arc croise le précédent'
+		},
+		{
+			kind: 'point-fade-in',
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [R],
+			animateLineIds: [],
+			instruction: 'Les arcs se croisent en R'
+		},
+		{
+			kind: 'ruler-trace',
+			instrument: 'ruler',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: Iext1X0, y: Iext1Y0, rotation: toDeg(Math.atan2(u0.y, u0.x)) },
+			geometricDistance: 2 * halfTrace,
+			animateDrawableIds: [segmentTrace],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'Règle par P et R : on trace la parallèle à (AB)'
+		}
+	];
+
+	// ─── Classement ───
+	const traces: string[] = [];
+	const traceTags = new Map<string, TraceTag>();
+	const hiddenSupport: string[] = [];
+	absorbSub(perp.produced, traces, traceTags, hiddenSupport);
+	traces.push(arcPC, arcPD, arcC, arcD, Cstar, Dstar);
+	for (const id of [arcPC, arcPD, arcC, arcD]) traceTags.set(id, 'arc');
+	for (const id of [Cstar, Dstar]) traceTags.set(id, 'auxiliary-point');
+	hiddenSupport.push(...helpers, ...kit.support, segmentTrace, Iext1, Iext2);
+
+	return {
+		subSteps: [...perp.subSteps, ...ownSubSteps],
+		produced: {
+			principal: principalId,
+			// e (droite auxiliaire) et R (2e point de la parallèle).
+			charnieres: [e, R],
+			traces,
+			traceTags,
+			hiddenSupport
+		}
+	};
+}
+
+/**
+ * `parallele @equerre @double_perpendiculaire`.
+ *
+ *   SS1..SS5 — sous-chorégraphie `perpendiculaire(P, A, B) @equerre` :
+ *              équerre sur (AB), angle droit au pied F, tracé de e.
+ *   SS6      — line-fade-in e.
+ *   SS7      — équerre posée avec un bord sur e, l'angle droit en P
+ *              (bord horizontal orienté de F vers P, pour ne pas
+ *              chevaucher (AB)).
+ *   SS8      — le crayon trace une portion de la parallèle le long du
+ *              bord vertical (direction w = (F→P) tournée d'un quart de
+ *              tour, parallèle à (AB)).
+ *   SS9      — on retire l'équerre, on pose la règle sur la portion tracée.
+ *   SS10     — le crayon prolonge la parallèle de l'autre côté de P.
+ *
+ * Deux marqueurs d'angle droit (en F et en P) montrent la double
+ * perpendicularité en `@complet`.
+ */
+function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyResult {
+	const { figure, args, principalId, visibilite, sub } = ctx;
+	const [Pid, Aid, Bid] = args.ids;
+	const [P, A, B] = args.coords;
+	assertPOffLine(P, A, B);
+
+	figure.hideElement(principalId);
+
+	// ─── 1re perpendiculaire : e ───
+	const { e, helpers } = createLineE(figure, args.ids);
+	const perp = sub('perpendiculaire', { ids: [Pid, Aid, Bid], coords: [P, A, B] }, e, {
+		contrainte: 'equerre',
+		methode: 'pose_equerre',
+		visibilite
+	});
+
+	// ─── Valeurs initiales ───
+	const u0 = unitAB(A, B);
+	const proj0 = (P.x - A.x) * u0.x + (P.y - A.y) * u0.y;
+	const F0 = { x: A.x + proj0 * u0.x, y: A.y + proj0 * u0.y };
+	const PFlen0 = Math.hypot(P.x - F0.x, P.y - F0.y);
+	const dirFP0 = { x: (P.x - F0.x) / PFlen0, y: (P.y - F0.y) / PFlen0 };
+	// Bord vertical de l'équerre = bord horizontal tourné de +90°.
+	const w0 = { x: -dirFP0.y, y: dirFP0.x };
+	const toDeg = (rad: number) => (rad * 180) / Math.PI;
+	const setSquareRotation = toDeg(Math.atan2(dirFP0.y, dirFP0.x));
+	const halfTrace = SEGMENT_TRACE_LENGTH_DEFAULT / 2;
+	const rulerOrigin0 = {
+		x: P.x + w0.x * RULER_OVERLAP_MATH_UNITS,
+		y: P.y + w0.y * RULER_OVERLAP_MATH_UNITS
+	};
+	const rulerRotation = toDeg(Math.atan2(-w0.y, -w0.x));
+
+	// ─── Éléments réactifs ───
+	const kit = reactiveKit(figure);
+	const { Px, Py, Ax, Ay, ux, uy } = reactiveFrame(kit, figure, args.ids);
+	// F = A + ((P − A)·u)·u.
+	const proj = kit.expr(
+		(v) => (val(v, Px) - val(v, Ax)) * val(v, ux) + (val(v, Py) - val(v, Ay)) * val(v, uy),
+		[Px, Py, Ax, Ay, ux, uy]
+	);
+	const Fx = kit.expr((v) => val(v, Ax) + val(v, proj) * val(v, ux), [Ax, proj, ux]);
+	const Fy = kit.expr((v) => val(v, Ay) + val(v, proj) * val(v, uy), [Ay, proj, uy]);
+	const F = figure.createComputedPoint({ scalarRef: Fx }, { scalarRef: Fy });
+	figure.hideElement(F);
+	// w = (F→P) unitaire tourné de +90° = −side·u, où side = côté de P par
+	// rapport à (AB). Tiré de u plutôt que de F→P : exact même quand P frôle
+	// (AB), et jamais nul si P est glissé sur (AB) après coup (side = 1).
+	const side = kit.expr(
+		(v) =>
+			(val(v, Px) - val(v, Ax)) * -val(v, uy) + (val(v, Py) - val(v, Ay)) * val(v, ux) >= 0
+				? 1
+				: -1,
+		[Px, Py, Ax, Ay, ux, uy]
+	);
+	const wx = kit.expr((v) => -val(v, side) * val(v, ux), [side, ux]);
+	const wy = kit.expr((v) => -val(v, side) * val(v, uy), [side, uy]);
+	const along = [Px, Py, wx, wy];
+	const trace1End = kit.point(
+		(v) => val(v, Px) + val(v, wx) * EQUERRE_VERTICAL_MATH_UNITS,
+		(v) => val(v, Py) + val(v, wy) * EQUERRE_VERTICAL_MATH_UNITS,
+		along
+	);
+	const trace2End = kit.point(
+		(v) => val(v, Px) - val(v, wx) * halfTrace,
+		(v) => val(v, Py) - val(v, wy) * halfTrace,
+		along
+	);
+	const segmentTrace1 = figure.createSegment(Pid, trace1End);
+	figure.hideElement(segmentTrace1);
+	const segmentTrace2 = figure.createSegment(Pid, trace2End);
+	figure.hideElement(segmentTrace2);
+	// Marqueurs d'angle droit : en F entre (AB) et e, en P entre e et la parallèle.
+	const FonAB = kit.point(
+		(v) => val(v, Fx) + val(v, ux),
+		(v) => val(v, Fy) + val(v, uy),
+		[Fx, Fy, ux, uy]
+	);
+	const rightAngleAtF = figure.createAngle(FonAB, F, Pid, { marque: 'carre' });
+	figure.hideElement(rightAngleAtF);
+	const rightAngleAtP = figure.createAngle(trace1End, Pid, F, { marque: 'carre' });
+	figure.hideElement(rightAngleAtP);
+
+	const ownSubSteps: SubStep[] = [
+		{
+			kind: 'line-fade-in',
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [e],
+			instruction: LINE_E_INSTRUCTION
+		},
+		{
+			kind: 'compass-measure',
+			instrument: 'setSquare',
+			instrumentTarget: { x: P.x, y: P.y, rotation: setSquareRotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On pose l'équerre avec un bord sur e, l'angle droit en P"
+		},
+		{
+			kind: 'ruler-trace',
+			instrument: 'setSquare',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: P.x, y: P.y, rotation: setSquareRotation },
+			geometricDistance: EQUERRE_VERTICAL_MATH_UNITS,
+			animateDrawableIds: [segmentTrace1],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "Le long de l'autre bord de l'équerre, on trace une portion de la parallèle"
+		},
+		{
+			kind: 'compass-measure',
+			instrument: 'ruler',
+			instrumentTarget: { x: rulerOrigin0.x, y: rulerOrigin0.y, rotation: rulerRotation },
+			compassRadius: 0,
+			geometricDistance: 0,
+			animateDrawableIds: [],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: "On retire l'équerre et on pose la règle le long de la portion tracée"
+		},
+		{
+			kind: 'ruler-trace',
+			instrument: 'ruler',
+			secondaryInstrument: 'pencil',
+			instrumentTarget: { x: rulerOrigin0.x, y: rulerOrigin0.y, rotation: rulerRotation },
+			geometricDistance: halfTrace,
+			animateDrawableIds: [segmentTrace2],
+			animatePointIds: [],
+			animateLineIds: [],
+			instruction: 'On prolonge le tracé le long de la règle : c’est la parallèle à (AB)'
+		}
+	];
+
+	// ─── Classement ───
+	const traces: string[] = [];
+	const traceTags = new Map<string, TraceTag>();
+	const hiddenSupport: string[] = [];
+	absorbSub(perp.produced, traces, traceTags, hiddenSupport);
+	traces.push(segmentTrace1, segmentTrace2, rightAngleAtF, rightAngleAtP);
+	traceTags.set(segmentTrace1, 'segment-trace');
+	traceTags.set(segmentTrace2, 'segment-trace');
+	traceTags.set(rightAngleAtF, 'marker');
+	traceTags.set(rightAngleAtP, 'marker');
+	hiddenSupport.push(...helpers, ...kit.support, F, FonAB, trace1End, trace2End);
+
+	return {
+		subSteps: [...perp.subSteps, ...ownSubSteps],
+		produced: {
+			principal: principalId,
+			charnieres: [e],
+			traces,
+			traceTags,
+			hiddenSupport
+		}
+	};
+}
+
+const doublePerpendiculaireEuclide: ChoreographyFn = (ctx) =>
+	buildDoublePerpendiculaireEuclide(ctx);
+const doublePerpendiculaireEquerre: ChoreographyFn = (ctx) =>
+	buildDoublePerpendiculaireEquerre(ctx);
 
 export const VOIES_PARALLELE_EQUERRE: readonly Voie[] = [
 	{
@@ -792,6 +1373,15 @@ export const VOIES_PARALLELE_EQUERRE: readonly Voie[] = [
 			"On pose l'équerre avec son bord horizontal sur `(AB)`, le coin sur `A`. On la fait glisser perpendiculairement à `(AB)` jusqu'à ce que le bord horizontal passe par `P`. Le crayon trace une portion de la parallèle ; on remplace ensuite l'équerre par la règle pour prolonger.",
 		defaut: true,
 		choreography: equerreChoreography
+	},
+	{
+		id: 'double_perpendiculaire',
+		nom_humain: 'Double perpendiculaire',
+		source: 'Construction classique',
+		description:
+			"On pose l'équerre sur `(AB)`, l'angle droit au pied de la perpendiculaire issue de `P`, et on trace la perpendiculaire `e` à `(AB)` passant par `P`. On pose ensuite l'équerre avec un bord sur `e`, l'angle droit en `P`, et on trace la perpendiculaire à `e` en `P` : c'est la parallèle à `(AB)`. La règle prolonge le tracé.",
+		defaut: false,
+		choreography: doublePerpendiculaireEquerre
 	}
 ];
 
@@ -810,8 +1400,8 @@ export const VOIES_PARALLELE_EUCLIDE: readonly Voie[] = [
 		nom_humain: 'Double perpendiculaire',
 		source: 'Variante moderne',
 		description:
-			'Tracer la perpendiculaire à `(AB)` par `P` (droite auxiliaire `e`), puis la perpendiculaire à `e` par `P` : c’est la parallèle à `(AB)`. Pas encore implémentée.',
+			'Au compas, on trace la perpendiculaire à `(AB)` passant par `P` (droite auxiliaire `e`, voie `rayon_libre`). Puis la perpendiculaire à `e` en `P` : deux petits arcs de centre `P` coupent `e` en `C*` et `D*` ; avec une ouverture plus grande, deux arcs de centres `C*` et `D*` se croisent en `R`. La droite `(PR)` est la parallèle à `(AB)`.',
 		defaut: false,
-		choreography: NOT_YET_IMPLEMENTED
+		choreography: doublePerpendiculaireEuclide
 	}
 ];

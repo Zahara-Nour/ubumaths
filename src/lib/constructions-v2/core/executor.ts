@@ -36,6 +36,7 @@ import type {
 	ChoreographyProduced,
 	SubStep
 } from './choreographies/types';
+import { ChoreographyError } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
 import { applyFinalVisibility } from './choreographies/visibility';
 
@@ -450,7 +451,16 @@ export class ConstructionExecutor {
 			visibilite: triple.visibilite,
 			sub: this.buildSubChoreographyFn(stepper.figure)
 		};
-		return voie.choreography(ctx);
+		try {
+			return voie.choreography(ctx);
+		} catch (e) {
+			// Cas dégénéré signalé par la chorégraphie : erreur d'exécution
+			// rattachée à la ligne de l'instruction.
+			if (e instanceof ChoreographyError) {
+				throw new DslRuntimeError({ summary: e.message }, stmt.line);
+			}
+			throw e;
+		}
 	}
 
 	/**

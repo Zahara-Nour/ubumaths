@@ -12,6 +12,9 @@
 
 import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
+import type { SubStep } from '../choreographies/types';
+import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { numeric } from '$lib/geometry-core/types/geo-value';
 
 describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	it('no decorators → currentDecoratorTriple is null after step', () => {
@@ -823,20 +826,336 @@ describe('ConstructionExecutor — parallele @euclide @parallelogramme (6 sub-st
 		expect(exec.currentSubStep?.instrument).toBe('ruler');
 		expect(exec.currentSubStep?.secondaryInstrument).toBe('pencil');
 	});
+});
 
-	it('double_perpendiculaire voie remains NOT_YET_IMPLEMENTED (fallback legacy)', () => {
+// =============================================================================
+// Lot 5 — parallèle par double perpendiculaire (@euclide et @equerre)
+// =============================================================================
+//
+// Spécification : docs/wip/constructions-progress.md, section « Lot 5 ».
+// Décor volontairement oblique ((AB) ni horizontale ni verticale) pour que
+// les vérifications de géométrie portent sur de vraies coordonnées.
+
+type Pt = { x: number; y: number };
+
+const DP_POINTS = ['A = point(0, 0)', 'B = point(4, 1)', 'P = point(1, 3)'];
+const DP_A: Pt = { x: 0, y: 0 };
+const DP_B: Pt = { x: 4, y: 1 };
+const DP_P: Pt = { x: 1, y: 3 };
+const DP_U: Pt = { x: DP_B.x - DP_A.x, y: DP_B.y - DP_A.y };
+
+function dpScript(decorators: string): string {
+	return [...DP_POINTS, `d = parallele(P, A, B) ${decorators}`].join('\n');
+}
+
+function posOf(exec: ConstructionExecutor, id: string): Pt {
+	const p = exec.figure.getPosition(id);
+	if (!p) throw new Error(`position introuvable : ${id}`);
+	return { x: geoToNumber(p.x), y: geoToNumber(p.y) };
+}
+
+/** Les deux points qui portent une droite ou un segment. */
+function carriers(exec: ConstructionExecutor, id: string): [Pt, Pt] {
+	const el = exec.figure.getElementById(id);
+	if (el?.type === 'line') return [posOf(exec, el.point1Id), posOf(exec, el.point2Id)];
+	if (el?.type === 'segment') return [posOf(exec, el.startId), posOf(exec, el.endId)];
+	throw new Error(`ni droite ni segment : ${id}`);
+}
+
+function cross(u: Pt, v: Pt): number {
+	return u.x * v.y - u.y * v.x;
+}
+
+function dot(u: Pt, v: Pt): number {
+	return u.x * v.x + u.y * v.y;
+}
+
+function minus(p: Pt, q: Pt): Pt {
+	return { x: p.x - q.x, y: p.y - q.y };
+}
+
+/** Joue les 3 points puis les sous-étapes ; rend la liste des sous-étapes vues. */
+function playSubSteps(exec: ConstructionExecutor): SubStep[] {
+	for (let i = 0; i < DP_POINTS.length; i++) exec.step();
+	const seen: SubStep[] = [];
+	while (exec.step()) {
+		const ss = exec.currentSubStep;
+		if (ss) seen.push(ss);
+	}
+	return seen;
+}
+
+/** Droite `e` : celle que révèle l'unique sous-étape `line-fade-in`. */
+function lineE(steps: readonly SubStep[]): string {
+	const fades = steps.filter((s) => s.kind === 'line-fade-in');
+	expect(fades).toHaveLength(1);
+	expect(fades[0].animateLineIds).toHaveLength(1);
+	return fades[0].animateLineIds[0];
+}
+
+function expectPerpendicularToAB(exec: ConstructionExecutor, id: string): void {
+	const [p1, p2] = carriers(exec, id);
+	const dir = minus(p2, p1);
+	expect(Math.hypot(dir.x, dir.y)).toBeGreaterThan(1e-6);
+	expect(dot(dir, DP_U)).toBeCloseTo(0, 9);
+}
+
+/** Le segment tracé est porté par la parallèle à (AB) passant par P. */
+function expectOnParallelThroughP(exec: ConstructionExecutor, id: string): void {
+	const [p1, p2] = carriers(exec, id);
+	const dir = minus(p2, p1);
+	expect(Math.hypot(dir.x, dir.y)).toBeGreaterThan(1e-6);
+	expect(cross(dir, DP_U)).toBeCloseTo(0, 9);
+	expect(cross(minus(DP_P, p1), dir)).toBeCloseTo(0, 9);
+}
+
+describe('ConstructionExecutor — parallele @euclide @double_perpendiculaire (16 sous-étapes)', () => {
+	it('16 sous-étapes : perpendiculaire rayon_libre (7), e, puis perpendiculaire à e en P (8)', () => {
 		const exec = new ConstructionExecutor();
-		exec.load(
-			[
-				'P = point(0, 3)',
-				'A = point(0, 0)',
-				'B = point(4, 0)',
-				'd = parallele(P, A, B) @euclide @double_perpendiculaire'
-			].join('\n')
-		);
-		// Stub returns subSteps:[] → falls through to legacy timing (1 entry).
-		// 3 points + 1 legacy entry = 4 total.
-		expect(exec.totalSteps).toBe(4);
+		exec.load(dpScript('@euclide @double_perpendiculaire'));
+		expect(exec.loadError).toBeNull();
+		expect(exec.totalSteps).toBe(3 + 16);
+		const steps = playSubSteps(exec);
+		expect(steps.map((s) => s.kind)).toEqual([
+			// perpendiculaire(P, A, B) @euclide @rayon_libre, par ctx.sub
+			'compass-draw',
+			'compass-draw',
+			'point-fade-in',
+			'compass-draw',
+			'compass-draw',
+			'point-fade-in',
+			'ruler-trace',
+			// la droite auxiliaire e apparaît
+			'line-fade-in',
+			// perpendiculaire à e au point P
+			'compass-draw', // petit arc en P → C*
+			'compass-draw', // petit arc en P → D*
+			'point-fade-in', // C*, D*
+			'compass-measure', // ouverture plus grande
+			'compass-draw', // arc en C*
+			'compass-draw', // arc en D*
+			'point-fade-in', // R
+			'ruler-trace' // règle (PR)
+		]);
+	});
+
+	it('chaque sous-étape porte une consigne en français', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@euclide @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		for (const s of steps) expect(s.instruction?.length ?? 0).toBeGreaterThan(0);
+		expect(steps[7].instruction).toMatch(/\be\b/);
+	});
+
+	it('e est perpendiculaire à (AB) et passe par P', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@euclide @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		const e = lineE(steps);
+		expectPerpendicularToAB(exec, e);
+		const [p1, p2] = carriers(exec, e);
+		expect(cross(minus(DP_P, p1), minus(p2, p1))).toBeCloseTo(0, 9);
+	});
+
+	it('C*, D* sur e de part et d’autre de P ; R à égale distance de C* et D* ; (PR) ∥ (AB)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@euclide @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		expect(steps[10].animatePointIds).toHaveLength(2);
+		const [Cs, Ds] = steps[10].animatePointIds.map((id) => posOf(exec, id));
+		// C* et D* : sur e (direction ⟂ (AB)), symétriques par rapport à P.
+		expect(dot(minus(Cs, DP_P), DP_U)).toBeCloseTo(0, 9);
+		expect(Cs.x + Ds.x).toBeCloseTo(2 * DP_P.x, 9);
+		expect(Cs.y + Ds.y).toBeCloseTo(2 * DP_P.y, 9);
+		const rPC = Math.hypot(Cs.x - DP_P.x, Cs.y - DP_P.y);
+		expect(rPC).toBeGreaterThan(0.1);
+		// Ouverture plus grande que |PC*| pour les arcs en C* et D*.
+		const measure = steps[11];
+		expect(measure.instrument).toBe('compass');
+		expect(measure.compassRadius ?? 0).toBeGreaterThan(rPC);
+		expect(steps[12].instrumentTarget?.x).toBeCloseTo(Cs.x, 9);
+		expect(steps[12].instrumentTarget?.y).toBeCloseTo(Cs.y, 9);
+		expect(steps[13].instrumentTarget?.x).toBeCloseTo(Ds.x, 9);
+		expect(steps[13].instrumentTarget?.y).toBeCloseTo(Ds.y, 9);
+		// R : intersection des deux arcs, sur la parallèle à (AB) par P.
+		expect(steps[14].animatePointIds).toHaveLength(1);
+		const R = posOf(exec, steps[14].animatePointIds[0]);
+		const r2 = measure.compassRadius ?? 0;
+		expect(Math.hypot(R.x - Cs.x, R.y - Cs.y)).toBeCloseTo(r2, 9);
+		expect(Math.hypot(R.x - Ds.x, R.y - Ds.y)).toBeCloseTo(r2, 9);
+		expect(Math.hypot(R.x - DP_P.x, R.y - DP_P.y)).toBeGreaterThan(0.1);
+		expect(cross(minus(R, DP_P), DP_U)).toBeCloseTo(0, 9);
+	});
+
+	it('la règle trace la parallèle à (AB) passant par P', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@euclide @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		const last = steps[steps.length - 1];
+		expect(last.instrument).toBe('ruler');
+		expect(last.secondaryInstrument).toBe('pencil');
+		expect(last.animateDrawableIds).toHaveLength(1);
+		expectOnParallelThroughP(exec, last.animateDrawableIds[0]);
+		// La droite finale (principale) aussi.
+		const result = exec.lastChoreographyResult;
+		expectOnParallelThroughP(exec, result!.produced.principal);
+	});
+});
+
+describe('ConstructionExecutor — parallele @equerre @double_perpendiculaire (10 sous-étapes)', () => {
+	it('10 sous-étapes : perpendiculaire à l’équerre (5), e, puis équerre sur e en P (4)', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@equerre @double_perpendiculaire'));
+		expect(exec.loadError).toBeNull();
+		expect(exec.totalSteps).toBe(3 + 10);
+		const steps = playSubSteps(exec);
+		expect(steps.map((s) => s.kind)).toEqual([
+			// perpendiculaire(P, A, B) @equerre, par ctx.sub
+			'compass-measure', // équerre posée sur (AB)
+			'compass-measure', // glissement jusqu'au pied
+			'ruler-trace', // tracé de e le long de l'équerre
+			'compass-measure', // règle
+			'ruler-trace', // prolongement de e
+			// la droite auxiliaire e apparaît
+			'line-fade-in',
+			// équerre posée sur e, angle droit en P
+			'compass-measure',
+			'ruler-trace', // tracé d'une portion de la parallèle
+			'compass-measure', // règle
+			'ruler-trace' // prolongement
+		]);
+		expect(steps.map((s) => s.instrument ?? null)).toEqual([
+			'setSquare',
+			'setSquare',
+			'setSquare',
+			'ruler',
+			'ruler',
+			null,
+			'setSquare',
+			'setSquare',
+			'ruler',
+			'ruler'
+		]);
+	});
+
+	it('chaque sous-étape porte une consigne en français', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@equerre @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		for (const s of steps) expect(s.instruction?.length ?? 0).toBeGreaterThan(0);
+		expect(steps[6].instruction).toMatch(/\be\b/);
+	});
+
+	it('e ⟂ (AB) ; l’angle droit de l’équerre est en P ; les deux tracés finaux sont sur la parallèle', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@equerre @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		expectPerpendicularToAB(exec, lineE(steps));
+		// L'équerre est posée l'angle droit en P (sous-étapes 7 et 8).
+		for (const s of [steps[6], steps[7]]) {
+			expect(s.instrumentTarget?.x).toBeCloseTo(DP_P.x, 9);
+			expect(s.instrumentTarget?.y).toBeCloseTo(DP_P.y, 9);
+		}
+		// Son bord horizontal est sur e : rotation ⟂ (AB).
+		const rot = ((steps[6].instrumentTarget?.rotation ?? 0) * Math.PI) / 180;
+		expect(dot({ x: Math.cos(rot), y: Math.sin(rot) }, DP_U)).toBeCloseTo(0, 9);
+		for (const s of [steps[7], steps[9]]) {
+			expect(s.animateDrawableIds).toHaveLength(1);
+			expectOnParallelThroughP(exec, s.animateDrawableIds[0]);
+		}
+		expect(steps[9].secondaryInstrument).toBe('pencil');
+	});
+
+	it('P glissé sur (AB) après coup : les tracés restent de vraie longueur, ∥ (AB), par P', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@equerre @double_perpendiculaire @complet'));
+		const steps = playSubSteps(exec);
+		const Pid = exec.figure.getAllElements()[2].id;
+		const onAB: Pt = { x: 8, y: 2 };
+		exec.figure.movePoint(Pid, numeric(onAB.x), numeric(onAB.y));
+		exec.figure.recompute();
+		for (const s of [steps[7], steps[9]]) {
+			const [p1, p2] = carriers(exec, s.animateDrawableIds[0]);
+			const dir = minus(p2, p1);
+			expect(Math.hypot(dir.x, dir.y)).toBeGreaterThan(1);
+			expect(cross(dir, DP_U)).toBeCloseTo(0, 9);
+			expect(cross(minus(p1, onAB), DP_U)).toBeCloseTo(0, 9);
+		}
+	});
+});
+
+describe('parallele @double_perpendiculaire — visibilité finale dans les 3 modes', () => {
+	const VOIES = ['@euclide @double_perpendiculaire', '@equerre @double_perpendiculaire'];
+	const MODES = ['@epure', '@squelette', '@complet'] as const;
+
+	for (const voie of VOIES) {
+		for (const mode of MODES) {
+			it(`${voie} ${mode}`, () => {
+				const exec = new ConstructionExecutor();
+				exec.load(dpScript(`${voie} ${mode}`));
+				const steps = playSubSteps(exec);
+				exec.step(); // applique la visibilité finale
+				const e = lineE(steps);
+				const produced = exec.lastChoreographyResult!.produced;
+				const visible = (id: string) => exec.figure.getElementById(id)?.visible;
+				// La parallèle est toujours visible.
+				expect(visible(produced.principal)).toBe(true);
+				// e est une charnière : visible en @squelette et @complet, masquée en @epure.
+				expect(produced.charnieres).toContain(e);
+				expect(visible(e)).toBe(mode !== '@epure');
+				// Arcs, tracés, marqueurs, points auxiliaires : seulement en @complet.
+				expect(produced.traces.length).toBeGreaterThan(0);
+				for (const id of produced.traces) expect(visible(id)).toBe(mode === '@complet');
+				for (const id of produced.traces) expect(produced.traceTags?.get(id)).toBeDefined();
+				for (const id of produced.hiddenSupport ?? []) expect(visible(id)).toBe(false);
+			});
+		}
+	}
+
+	it('@euclide : les arcs des deux perpendiculaires sont des traces étiquetées « arc »', () => {
+		const exec = new ConstructionExecutor();
+		exec.load(dpScript('@euclide @double_perpendiculaire'));
+		const steps = playSubSteps(exec);
+		const produced = exec.lastChoreographyResult!.produced;
+		const arcs = steps
+			.filter((s) => s.kind === 'compass-draw')
+			.flatMap((s) => s.animateDrawableIds);
+		expect(arcs).toHaveLength(8);
+		for (const id of arcs) expect(produced.traceTags?.get(id)).toBe('arc');
+	});
+});
+
+describe('parallele @double_perpendiculaire — P sur (AB)', () => {
+	for (const voie of ['@euclide @double_perpendiculaire', '@equerre @double_perpendiculaire']) {
+		it(`${voie} : erreur claire, aucune sous-étape jouée`, () => {
+			const exec = new ConstructionExecutor();
+			exec.load(
+				[
+					'A = point(0, 0)',
+					'B = point(4, 1)',
+					'P = point(8, 2)',
+					`d = parallele(P, A, B) ${voie}`
+				].join('\n')
+			);
+			expect(exec.loadError).not.toBeNull();
+			expect(exec.loadError!.message).toMatch(/P est sur la droite \(AB\)/);
+			expect(exec.loadError!.line).toBe(4);
+			expect(exec.loadError!.stepIndex).toBe(3);
+			// Seuls les 3 points restent dans la frise.
+			expect(exec.totalSteps).toBe(3);
+		});
+	}
+
+	it('les voies par défaut ne changent pas (parallelogramme, pose_equerre)', () => {
+		for (const [deco, id] of [
+			['@euclide', 'parallelogramme'],
+			['@equerre', 'pose_equerre']
+		]) {
+			const exec = new ConstructionExecutor();
+			exec.load(dpScript(deco));
+			for (let i = 0; i < 4; i++) exec.step();
+			expect(exec.currentVoie?.id).toBe(id);
+		}
 	});
 });
 

@@ -307,14 +307,14 @@ d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
   l'emporte). Validation stricte : `resolveDecorators` lève `DecoratorResolveError` avec indice.
 - **Registre** (`core/choreographies/registry.ts`) :
 
-| Builtin              | `@euclide`                                  | `@equerre`     |
-| -------------------- | ------------------------------------------- | -------------- |
-| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —              |
-| `bissectrice`        | `arcs_egaux`, `arc_milieu`                  | —              |
-| `perpendiculaire`    | `rayon_libre`, `arcs_egaux`                 | `pose_equerre` |
-| `parallele`          | `parallelogramme`, `double_perpendiculaire` | `pose_equerre` |
-| `cercle_circonscrit` | `mediatrices`                               | —              |
-| `transporte`         | `compas_report`                             | —              |
+| Builtin              | `@euclide`                                  | `@equerre`                               |
+| -------------------- | ------------------------------------------- | ---------------------------------------- |
+| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —                                        |
+| `bissectrice`        | `arcs_egaux`, `arc_milieu`                  | —                                        |
+| `perpendiculaire`    | `rayon_libre`, `arcs_egaux`                 | `pose_equerre`                           |
+| `parallele`          | `parallelogramme`, `double_perpendiculaire` | `pose_equerre`, `double_perpendiculaire` |
+| `cercle_circonscrit` | `mediatrices`                               | —                                        |
+| `transporte`         | `compas_report`                             | —                                        |
 
 - **Erreurs** : `ConstructionExecutor.load()` ne lève que les erreurs de syntaxe ; une erreur
   d'exécution est rangée dans `executor.loadError` (le lecteur garde la figure partielle et affiche

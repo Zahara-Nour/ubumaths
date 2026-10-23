@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, après #1619._
+_Mis à jour le 2026-10-23, lot 5 lancé (phase 0 validée)._
 
-- **État** : lot 4 **livré** — #1619 mergée : `/construction-demo` masque le nom, « Sauvegarder » et « Supprimer » à qui n'est ni prof ni admin. Le code des lots 1 à 4 (#1615, #1616, #1618, #1619) part au prochain `deploy:prod`. Vérification à l'œil notée dans `verifications-manuelles.md`.
-- **Prochaine action** : choisir le lot 5 avec David.
-- **En attente de David** : le lot 5. Restent : parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` (policy posée hors historique) ; `db:migrate` ne marche pas depuis un worktree (projet non lié) → depuis le dépôt principal.
-- **Worktree / branche** : `../ubumaths-wt-constructions` gardé le temps de la vérification de David (serveur 5177), puis supprimé. Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
+- **État** : lot 5 = parallèle par double perpendiculaire, au compas (`@euclide`) ET à l'équerre (`@equerre`). Phase 0 validée par David (section « Lot 5 » plus bas). Code des lots 1 à 4 (#1615, #1616, #1618, #1619) part au prochain `deploy:prod`.
+- **Prochaine action** : tests rouges → chorégraphies → verts → PR (revue `code-reviewer` opus : géométrie).
+- **En attente de David** : rien. Après le lot 5 restent : formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne après une erreur d'exécution (cosmétique).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` ; `db:migrate` depuis le dépôt principal seulement. `perpendiculaire @euclide @rayon_libre` dégénère quand `P ∈ (AB)` (Q = P) : ne pas la réutiliser pour la 2e perpendiculaire.
+- **Worktree / branche** : `../ubumaths-wt-constructions` · `feat/constructions-parallele`.
 
 ---
 
@@ -86,3 +86,15 @@ Revue : `code-reviewer` (Sonnet).
 - `constructions.md` : tables, API, dette réglée retirée.
 - Non fait (hors lot) : la page `/construction-demo` montre toujours « Sauvegarder » à un élève, qui reçoit un toast d'erreur 403.
 - Revues : `code-reviewer` et `security-auditor` sans finding bloquant ; ajout des tests « `author_id` usurpé » et « visiteur non connecté » (7/7). CI verte, mergée (#1618), `db:migrate` joué en prod le 2026-10-23 (policy vérifiée : une seule, `authenticated`).
+
+## Lot 5 — Parallèle par double perpendiculaire (2026-10-23)
+
+**Phase 0 validée par David** (2026-10-23), deux voies `double_perpendiculaire` :
+
+- **`@euclide`** (le stub `NOT_YET_IMPLEMENTED` de `parallele.ts`) :
+  1. Perpendiculaire à `(AB)` par `P`, animée comme `perpendiculaire @euclide` (`rayon_libre`, 7 sous-étapes, via `ctx.sub`) → la droite auxiliaire `e` apparaît.
+  2. Perpendiculaire à `e` **au point `P`** (P ∈ e : `rayon_libre` dégénère) : deux petits arcs en `P` coupent `e` en `C*`, `D*` (fade-in) ; ouverture **plus grande**, arcs en `C*` puis `D*` qui se croisent en `R` (fade-in) ; règle `(PR)` = la parallèle.
+- **`@equerre`** (nouvelle) : équerre posée sur `(AB)`, angle droit au pied, tracé de `e` ; puis équerre posée sur `e`, angle droit en `P`, tracé de la parallèle ; règle pour prolonger.
+- Consignes de sous-étape en français (lot 2). `e` = **charnière** (visible `@squelette`/`@complet`, masquée `@epure`) ; arcs et points auxiliaires comme les autres voies. Défauts inchangés (`parallelogramme`, `pose_equerre`).
+- Limite : `P` loin → rayon viewport-safe. `P ∈ (AB)` → erreur d'exécution claire, pas d'animation fausse (cas non élève, pas creusé).
+- Tests d'abord : nombre et suite des sous-étapes, `e ⟂ (AB)`, droite finale ∥ `(AB)` passant par `P`, visibilité des 3 modes, rendu dans le lecteur ; le test du stub est remplacé.
