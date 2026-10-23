@@ -43,6 +43,12 @@ export const COMPASS_RAISE_MS = 400;
 export const COMPASS_LOWER_MS = 400;
 
 /**
+ * Écartement du compas qu'on vient de prendre (première utilisation), en unités math :
+ * il s'ouvre de là jusqu'à l'écartement voulu pendant son déplacement.
+ */
+export const COMPASS_CLOSED_OPENING = 0.5;
+
+/**
  * Rayon extérieur du rapporteur, en unités math (156 px à 40 px/u) : dessin
  * de `Protractor.svelte` et repère de `bissectrice @mesure`.
  */

@@ -20,7 +20,8 @@
 		compassDrawAngle,
 		visibleInstruments as visibleInstrumentsFor,
 		instrumentEndPose,
-		fadeInProgress
+		fadeInProgress,
+		compassOpening
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import {
@@ -297,10 +298,12 @@
 		if (!animation || !animation.autoInstruments.has('compass')) {
 			return (animation?.compassCurRadius ?? 0) * pixelsPerUnit;
 		}
-		const curPx = animation.compassCurRadius * pixelsPerUnit;
-		const prevPx = animation.compassPrevRadius * pixelsPerUnit;
-		if (prevPx === 0 || instrumentMoveProgress >= 1) return curPx;
-		return prevPx + (curPx - prevPx) * instrumentMoveProgress;
+		const opening = compassOpening(
+			animation.compassPrevRadius,
+			animation.compassCurRadius,
+			instrumentMoveProgress
+		);
+		return opening * pixelsPerUnit;
 	});
 
 	// Recompute when figureVersion changes (Map reference is stable, $derived needs a hint)
