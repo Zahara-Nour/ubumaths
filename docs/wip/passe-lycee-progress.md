@@ -6,20 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1651._
+_Mis à jour le 2026-10-23, PR 3 (H) en cours._
 
-- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 réécritures (#1651) en prod (`db:migrate` fait, vérifié
-  par le MCP). Reste PR 3 (H : 10 modèles dans leur vrai programme), dernière PR des scissions.
-- **Prochaine action** : PR 3 dans un worktree neuf (`git worktree add -b feat/passe-lycee-h ../ubumaths-wt-passe-lycee
-origin/main`) ; plan H dans `docs/wip/passe-lycee/analyse/scissions-notes.md`.
-- **En attente de David** : la question d'accès de la PR 3, à reposer avant d'écrire le SQL.
+- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 (#1651) en prod. PR 3 (H, 10 modèles dans leur vrai
+  programme) en écriture ; plan H = `analyse/lot-modifier.md` § 4 + verdicts de `1spe-a.csv` / `1spe-b.csv`.
+- **Prochaine action** : `analyse/lot-h.py` (outil étendu : `grades_apres`, modèle MODIFIER sans neuf), specs,
+  tirages, intégration, revues, PR.
+- **En attente de David** : rien (accès et niveau tranchés le 2026-10-23).
 - **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
   (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
   niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par `toQuestionTemplate`
   (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant tout `tsx` ;
   `REECRIRE_MIGRATION=1` pour une migration jamais jouée ; `db:migrate` refusé par le mode auto → David le lance.
-- **Worktree / branche** : aucun (PR 3 à créer).
+- **Worktree / branche** : `../ubumaths-wt-passe-lycee`, `feat/passe-lycee-h`.
 
 ## Les 5 étapes
 
@@ -280,3 +280,12 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   et `code-reviewer` sans bloquant (réponses vérifiées sur toutes les valeurs tirables). Laissé : voir « Reprendre
   ici ». CI : `vercel-maintenance.test.ts` en code 141 (SIGPIPE, instable), vert à la relance. Prod (MCP) : 10 neufs
   brouillons, 12 tags sur les neufs, 8 sur les origines ; c90fa022 et d2067413 intacts (`updated_at` du 2026-10-01).
+- **2026-10-23 — PR 3 (H) : décisions (worktree `passe-lycee`, branche `feat/passe-lycee-h`).** Question d'accès
+  tranchée par David : personne ne gagne d'accès (10 brouillons, 0 tag, 0 donnée d'élève, relu par le MCP ;
+  empreintes md5 des 10 = relevé). Niveau tranché par David : `grades` passe au vrai programme ([T_SPE] pour les 4
+  de trigonométrie, [2] pour les 6 d'ensembles, de logique et de lecture graphique) ; les neufs naissent au même
+  niveau. Plan : 463f483e, fccd570b (TSPE-458, sur [−π ; π]) et 99c772c0 (TSPE-457, V1-V2 gardées) modifiés sans
+  neuf ; 7eec7032 V1-V8 TSPE-597 / V9 TSPE-598 ; 68db64b0 V1-V2 2-491 / V3-V4 2-350 (« sur [−π ; 2π] ») ;
+  9724dc3d par case : réunion 2-404 (origine), intersection 2-405, complémentaire 2-406 ; 0a1ff14f V1-V3 2-207 /
+  V4 2-205 ; 219c9470 « et » 2-210 (V1, V3 k = 0) / « ou » 2-408 (V2, V3 k = 1) ; 6c3ee9e6 V1, V3 2-210 / V2, V4
+  2-408 ; 5426cead V2-V3 2-214 (origine) / V1 2-410 / V4 2-411.
