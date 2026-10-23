@@ -147,6 +147,22 @@ function expandLineArgument(
 }
 
 /**
+ * Forme `milieu(s)` (s segment) : ramenée à `milieu(A, B)` avec les
+ * extrémités de s, pour que la chorégraphie `@mesure` lise les deux points.
+ * Toute autre forme est rendue inchangée.
+ */
+function expandSegmentArgument(
+	callExpr: DslFunctionCallExpr,
+	callArgs: CallArg[],
+	stepper: DslStepper
+): CallArg[] {
+	if (callExpr.name !== 'milieu' || callExpr.args.length !== 1) return callArgs;
+	const segmentId = symbolFigureId(callExpr.args[0], stepper);
+	const el = segmentId ? stepper.figure.getElementById(segmentId) : undefined;
+	return el && isSegment(el) ? [el.startId, el.endId] : callArgs;
+}
+
+/**
  * Noms déclarés par le script (affectations, y compris dans les boucles et
  * les `si`) : une lettre de point auxiliaire ne doit pas les reprendre,
  * même quand la déclaration vient après la construction.
@@ -529,7 +545,10 @@ export class ConstructionExecutor {
 		const callExpr = stmt.value;
 		if (callExpr.kind !== 'call') return null;
 		const { callArgs, lineName } = expandLineArgument(callExpr, stepper);
-		const resolved = this.resolveCallArgsOn(callArgs, stepper);
+		const resolved = this.resolveCallArgsOn(
+			expandSegmentArgument(callExpr, callArgs, stepper),
+			stepper
+		);
 		if (!resolved) return null;
 		const args = lineName ? { ...resolved, lineName } : resolved;
 		const auxLabel = createAuxLabeler(

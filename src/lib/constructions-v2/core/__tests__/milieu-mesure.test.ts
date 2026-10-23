@@ -51,6 +51,7 @@ describe('milieu @mesure — déroulé', () => {
 
 	it('I apparaît à la dernière sous-étape', () => {
 		const { exec, steps } = subSteps(script);
+		exec.executeAll();
 		const I = exec.symbols.get('I')?.figureId;
 		expect(I).toBeDefined();
 		expect(steps[2].animatePointIds).toEqual([I]);
