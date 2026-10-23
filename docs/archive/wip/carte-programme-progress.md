@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, avant la PR._
+_Mis à jour le 2026-10-23, après #1641._
 
-- **État** : vue « Carte » de la page Programme codée et testée (module pur, lecture serveur, composant, bascule Liste / Carte).
-- **Prochaine action** : revue `code-reviewer`, PR, CI, merge.
-- **En attente de David** : essai sur le serveur de la branche.
-- **Pièges en cours** : 99 des 292 libellés de 2de portent du LaTeX, d'où les boîtes en HTML (InlineMarkdown) et seules les courbes en SVG.
-- **Worktree / branche** : `../ubumaths-wt-carte-programme` · `feat/carte-programme`.
+- **État** : chantier CLOS. Vue « Carte » mergée (#1641), essayée par David sur le serveur de la branche (« ça marche nickel »). Pas encore en prod : elle partira au prochain `deploy:prod`.
+- **Prochaine action** : aucune. Doc durable : `docs/systeme/cours-et-chapitres.md` (§ Programme, couverture, progression).
+- **En attente de David** : rien. Question restée ouverte : afficher le `kind` du point (connaissance, savoir-faire…) ? Proposé « non » pour commencer.
+- **Pièges en cours** : aucun.
+- **Worktree / branche** : supprimés.
 
 ## Demande
 
