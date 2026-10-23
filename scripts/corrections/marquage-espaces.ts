@@ -16,6 +16,8 @@
  * 2. chaque modèle traité passe `checkTemplate` (schéma strict, toutes les specs
  *    vertes, 50 tirages par variation) ;
  * 3. un seul modèle en échec fait refuser le lot ENTIER (rien n'est écrit).
+ * Relance après une écriture interrompue (garde `updated_at` au 20e modèle…) :
+ * les modèles déjà traités sont sautés, le reste est écrit.
  * Écriture : sauvegarde JSON des lignes d'origine (dossier ignoré par git), puis la
  * seule colonne modifiée, sous condition `updated_at` inchangé depuis la lecture ;
  * la ligne rendue est relue (la RLS échoue en silence : 0 ligne).
@@ -30,12 +32,14 @@ import { checkTemplate } from '../../src/lib/migration/review/check-template';
 import { createScriptClient, hasFlag } from '../relecture/common';
 import { parseRows } from './lib/files';
 import {
+	alreadyDone,
 	bipmTestSpecs,
 	LYCEE_DRAFT_IDS,
 	markSchoolRule,
 	needsSchoolRule,
 	SCHOOL_RULE_IDS,
-	selectionGap
+	selectionGap,
+	type Treatment
 } from './lib/marquage-espaces';
 import { publishRefusal } from './lib/publish-gate';
 import { canonical } from './lib/retouches';
@@ -83,28 +87,53 @@ async function main(): Promise<number> {
 	const { supabase, target } = createScriptClient(publish);
 	console.log(`${publish ? 'ÉCRITURE' : 'SIMULATION'} — base : ${target}\n`);
 
-	// Modèles dont au moins une spec attend la contrainte `spaces`
+	const planned: { id: string; kind: Treatment }[] = [
+		...SCHOOL_RULE_IDS.map((id) => ({ id, kind: 'marquage' as const })),
+		...LYCEE_DRAFT_IDS.map((id) => ({ id, kind: 'specs' as const }))
+	];
+
+	// Modèles dont au moins une spec attend la contrainte `spaces`, plus ceux des
+	// listes (un brouillon de lycée déjà corrigé n'a plus de spec `spaces`)
 	const { data, error } = await supabase
 		.from('question_templates')
 		.select('*')
 		.contains('test_specs', JSON.stringify([{ expected: { constraintViolations: ['spaces'] } }]));
 	if (error) throw new Error(`lecture des modèles : ${error.message}`);
 	if ((data?.length ?? 0) >= MAX_ROWS) throw new Error(`${MAX_ROWS} lignes lues : paginer`);
-	const liveRows = parseRows(data, 'question_templates');
+	const { data: listed, error: listedError } = await supabase
+		.from('question_templates')
+		.select('*')
+		.in(
+			'id',
+			planned.map((p) => p.id)
+		);
+	if (listedError) throw new Error(`lecture des modèles listés : ${listedError.message}`);
+	const spacesRows = parseRows(data, 'question_templates');
+	const liveRows = [
+		...spacesRows,
+		...parseRows(listed, 'question_templates').filter(
+			(row) => !spacesRows.some((r) => r.id === row.id)
+		)
+	];
 	const templates = liveRows.map(toQuestionTemplate);
 
 	const selected = templates.filter(needsSchoolRule).map((t) => t.id);
-	console.log(`${liveRows.length} modèles avec une spec « spaces », ${selected.length} à traiter.`);
+	const done = planned
+		.filter(({ id, kind }) => {
+			const template = templates.find((t) => t.id === id);
+			return template !== undefined && alreadyDone(template, kind);
+		})
+		.map((p) => p.id);
+	console.log(
+		`${spacesRows.length} modèles avec une spec « spaces », ${selected.length} sélectionnés, ${done.length} déjà traités.`
+	);
 	const toMark = selected.filter((id) => !LYCEE_DRAFT_IDS.includes(id));
-	const toFix = selected.filter((id) => LYCEE_DRAFT_IDS.includes(id));
+	// Un brouillon déjà corrigé n'est plus sélectionné : il compte comme trouvé
+	const toFix = [...new Set([...selected, ...done])].filter((id) => LYCEE_DRAFT_IDS.includes(id));
 	const agreed =
 		printGap('marquage', SCHOOL_RULE_IDS, toMark) && printGap('lycée', LYCEE_DRAFT_IDS, toFix);
 	console.log(agreed ? '  ✓ sélection conforme aux listes figées\n' : '');
 
-	const planned = [
-		...SCHOOL_RULE_IDS.map((id) => ({ id, kind: 'marquage' as const })),
-		...LYCEE_DRAFT_IDS.map((id) => ({ id, kind: 'specs' as const }))
-	];
 	const ready: Ready[] = [];
 	for (const { id, kind } of planned) {
 		const row = liveRows.find((r) => r.id === id);
@@ -115,6 +144,10 @@ async function main(): Promise<number> {
 		}
 		const before = toQuestionTemplate(row);
 		console.log(`${label} « ${before.title} » (${row.status}, ${row.grades.join(' ')})`);
+		if (done.includes(id)) {
+			console.log('  = déjà traité, sauté\n');
+			continue;
+		}
 		let after: QuestionTemplate;
 		try {
 			after = kind === 'marquage' ? markSchoolRule(before) : bipmTestSpecs(before);
@@ -153,10 +186,16 @@ async function main(): Promise<number> {
 		);
 	}
 
-	console.log(`${ready.length}/${planned.length} modèle(s) prêt(s).`);
+	console.log(
+		`${ready.length}/${planned.length} modèle(s) prêt(s), ${done.length} déjà traité(s).`
+	);
 	const refusal = agreed
-		? publishRefusal(ready.length, planned.length)
+		? publishRefusal(ready.length + done.length, planned.length)
 		: 'sélection différente des listes figées';
+	if (!refusal && ready.length === 0) {
+		console.log('Tout est déjà traité : rien à écrire.');
+		return 0;
+	}
 	if (!publish) {
 		console.log('Simulation : rien n’a été écrit. Ajouter --publier après feu vert.');
 		return refusal ? 1 : 0;

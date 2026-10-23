@@ -25,6 +25,13 @@ import { checkSpacesViolation } from '../../../src/lib/mathAST/cosmetic-transfor
 import type { QuestionTemplate, TestSpec } from '../../../src/lib/questions/types';
 
 // ============================================================================
+// TYPES
+// ============================================================================
+
+/** `marquage` : colonne `options` ; `specs` : colonne `test_specs` (lycée) */
+export type Treatment = 'marquage' | 'specs';
+
+// ============================================================================
 // CONSTANTS
 // ============================================================================
 
@@ -132,6 +139,17 @@ export function selectionGap(
 // FUNCTIONS — TRAITEMENTS
 // ============================================================================
 
+/**
+ * Traitement déjà fait (relance après une écriture interrompue) : le modèle est
+ * sauté, sans compter comme un échec. Marquage : le réglage est posé ; specs :
+ * plus aucune spec n'attend la règle de l'école.
+ */
+export function alreadyDone(template: QuestionTemplate, treatment: Treatment): boolean {
+	return treatment === 'marquage'
+		? template.options?.constraints?.spacesFromFourDigits === true
+		: !needsSchoolRule(template);
+}
+
 /** Marque le modèle « Espaces dès 4 chiffres » (seule la colonne `options` change) */
 export function markSchoolRule(template: QuestionTemplate): QuestionTemplate {
 	if (template.options?.constraints?.spacesFromFourDigits === true) {
@@ -162,7 +180,10 @@ function bipmSpec(spec: TestSpec): TestSpec {
 	const { constraintViolations: _cv, ...expected } = spec.expected;
 	return {
 		...spec,
-		description: `${answers.map((a) => a.replace(/\{,\}/g, ',')).join(' ; ')} sans espace : accepté (espace exigée dès 5 chiffres)`,
+		description: `${answers
+			.filter(schoolRuleOnly)
+			.map((a) => a.replace(/\{,\}/g, ','))
+			.join(' ; ')} sans espace : accepté (espace exigée dès 5 chiffres)`,
 		expected:
 			violations.length > 0
 				? { ...expected, constraintViolations: violations }
