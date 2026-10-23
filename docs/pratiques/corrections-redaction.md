@@ -105,7 +105,7 @@ réponse`, et la valeur trouvée vérifie l'égalité posée ; plusieurs cases :
 - Retouches ponctuelles hors lots : `pnpm corrections:retouches` (`lib/retouches.ts`) ; marquage
   « Espaces dès 4 chiffres » des modèles qui gardent la règle de l'école :
   `pnpm corrections:marquage-espaces` (`lib/marquage-espaces.ts` : 51 modèles marqués, specs de
-  4 brouillons de 1re spé corrigées au BIPM ; listes figées, que la règle doit retrouver sur la
+  5 brouillons de 1re spé corrigées au BIPM ; listes figées, que la règle doit retrouver sur la
   prod courante). Les deux : simulation par défaut, `checkTemplate` vert, sauvegarde, garde
   `updated_at`, relecture, refus du lot entier au premier échec.
 

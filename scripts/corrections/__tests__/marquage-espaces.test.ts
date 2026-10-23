@@ -69,9 +69,9 @@ describe('sélection : specs que seule la règle de l’école rend vraies', () 
 		expect(selectionGap(['a'], ['a'])).toEqual({ missing: [], unexpected: [] });
 	});
 
-	it('listes figées : 51 modèles à marquer, 4 brouillons de lycée, sans doublon ni recouvrement', () => {
+	it('listes figées : 51 modèles à marquer, 5 brouillons de lycée, sans doublon ni recouvrement', () => {
 		expect(SCHOOL_RULE_IDS).toHaveLength(51);
-		expect(LYCEE_DRAFT_IDS).toHaveLength(4);
+		expect(LYCEE_DRAFT_IDS).toHaveLength(5);
 		const all = [...SCHOOL_RULE_IDS, ...LYCEE_DRAFT_IDS];
 		expect(new Set(all).size).toBe(all.length);
 	});
