@@ -6,21 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, migration des tags écrite (PR 1/2 de l'étape e)._
+_Mis à jour le 2026-10-23, après #1632._
 
-- **État** : PR 1 = migration `20261023180000_tags_lycee.sql` (générateur `passe-lycee/generer-migration-tags.py`,
-  test `tests/integration/tags-lycee.test.ts`, 9 verts, rouge vérifié sans la migration) : 221 modèles, 185 tags
-  retirés, 175 posés, 32 déplacés ; après : 463 tags du lycée, 80 modèles sans tag.
-- **Prochaine action** : revues (`code-reviewer` + `security-auditor`, Opus), PR, CI, merge ; puis ⛔ **stop avant
-  `db:migrate`** (retrait de 185 tags = DELETE : à expliquer à David). Ensuite PR 2 : 4 libellés (2-273,
+- **État** : #1632 mergée (migration `20261023180000_tags_lycee.sql` : 221 modèles, 185 tags retirés, 175 posés,
+  32 déplacés). **Pas encore jouée en prod.** Worktree supprimé.
+- **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal (sur `main`) dès le go de David, puis
+  empreinte prod (463 tags du lycée). Ensuite PR 2 (nouveau worktree `passe-lycee`) : 4 libellés (2-273,
   1GEN-029/030/031) + 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236), seeds compris.
-- **En attente de David** : le go de `db:migrate` après merge.
-- **Pièges en cours** : la garde exige l'état relevé (empreintes md5 prod = instantané le 2026-10-23 : nœuds, points,
-  modèles, tags) — un tag saisi d'ici là la fera échouer. Automatisme 1re spé BO l. 274 sans point. 85 points techno
-  sans borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `undoLaterMigrations` à compléter (cette migration ne
-  touche rien en local, inutile ici). Modèle `9a6087c5` : 2 % d'échecs. Lot à part : MODIFIER + scissions des
-  TAG_PAR_VARIATION.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-tags`.
+- **En attente de David** : le go de `db:migrate` (destructive : 185 tags retirés, expliqué le 2026-10-23).
+- **Pièges en cours** : la garde exige l'état relevé — un tag saisi sur un de ces modèles d'ici là la fait échouer
+  (rien n'est écrit) : regénérer depuis un instantané neuf. Base locale : `20261022200000` (autre session) refusée
+  par `db push --local` (policy absente en local). Automatisme 1re spé BO l. 274 sans point ; 85 points techno sans
+  borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `9a6087c5` 2 % d'échecs. Lot à part : MODIFIER + scissions
+  des TAG_PAR_VARIATION.
+- **Worktree / branche** : aucun (à recréer pour la PR 2).
 
 ## Les 5 étapes
 
@@ -144,3 +143,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   tags finaux, 288 actuels gardés, 185 retirés, 175 posés ; 221 modèles touchés, 32 déplacés ; 80 modèles sans tag.
   Ordre : retraits → déplacements → poses, gardes des tags actives. Points (libellés, 2 neufs) : PR 2, à part (elle
   touche aussi les seeds).
+- **2026-10-23 — #1632 mergée.** Revues Opus : `security-auditor` sans bloquant (0 donnée d'élève sur ces modèles
+  et points, mesuré en prod) ; `code-reviewer` : **bloquant corrigé** — `lock table` refusé par `db push` hors bloc
+  de transaction (le test, sous `begin`, ne le voyait pas) → verrous consultatifs des triggers + `for update` ;
+  garde étendue à tous les niveaux (prod : 0 tag hors lycée sur ces modèles), garde « + » testée, repose du rollback
+  comptée. Preuve hors transaction : `psql -f` (ancienne version 25P01, nouvelle passe). 11 tests, CI verte.
