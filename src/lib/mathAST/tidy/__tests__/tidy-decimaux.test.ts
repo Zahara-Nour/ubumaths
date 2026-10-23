@@ -165,6 +165,11 @@ describe('tidy — invariants sur les décimaux', () => {
 		'(x+1)^(-1)*(x-1)*0.5',
 		'0.25x^(-1)+0.25x^(-1)',
 		'0.5x^(-1)*x^2',
+		// Q8
+		'sqrt(0.5)',
+		'sqrt(0.5)*x',
+		'sqrt(1.5)+0.5',
+		'sqrt(0.5)*sqrt(0.5)',
 		// Q9
 		'(0.5x+1)/(x+1)',
 		'x/(0.5x+1)',
@@ -180,12 +185,5 @@ describe('tidy — invariants sur les décimaux', () => {
 	it.each(cases)('valeur conservée : %s', (input) => {
 		const node = parseCustom(input);
 		expect(areEquivalent(tidy(node), node)).toBe(true);
-	});
-
-	// Q8 : idempotence seulement. `areEquivalent` ne reconnaît pas encore
-	// `√(1/2)` égal à `√2/2` (bug d'équivalence relevé au lot 4b-bis, hors lot)
-	it.each(['sqrt(0.5)', 'sqrt(0.5)*x', 'sqrt(1.5)+0.5'])('idempotent : %s', (input) => {
-		const once = tidy(parseCustom(input));
-		expect(toCustom(tidy(once))).toBe(toCustom(once));
 	});
 });

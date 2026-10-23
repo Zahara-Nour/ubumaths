@@ -172,6 +172,17 @@ jour ; 23 en prod dont 6 sur 4 modèles PUBLIÉS : « Réduire une racine carré
 racine carrée », « Trouver un nombre positif de carré donné », « Réduire une expression avec des
 racines carrées »), 18 synthétiques. Aucune attendue réelle ne change de verdict.
 
+## Racine d'une fraction numérique : même valeur que sa forme rationalisée
+
+Depuis le 2026-10-23 (chantier simplify-carte, § 40) : `√(1/3) ≡ √3/3`, `√(3/2) ≡ √6/2`,
+`√0,5 ≡ √2/2`, `√(1/2) ≡ 1/√2`. Avant, `normalize` (branche B4 de `sqrt`) ne développait
+`√(n/d)` que si un carré sortait (`√(1/8) = √2/4` passait) ; sinon la racine restait opaque et
+n'était égale qu'à elle-même. Verdict du juge, mesuré : `√(1/3)` pour `√3/3` passe de
+`incorrect` à `bad_form` (« pas écrite sous la forme demandée »), comme `1/√3` ; `√3` pour `√3/3`
+reste `incorrect`. Effet d'écriture : une valeur exacte calculée s'affiche rationalisée,
+`{{eval:(2/3)^(1/2)}}` → `√6/3` (au lieu de `√(2/3)`). 1 008 modèles de prod × 8 tirages : aucune
+différence. Reste opaque : une racine de monôme à coefficient fractionnaire (`√(x/2)`).
+
 ## Décimal attendu, fraction légitime : attendue EXACTE + `acceptDecimal`
 
 Pas de règle générale « fraction exacte juste pour un décimal attendu » (abandonnée le

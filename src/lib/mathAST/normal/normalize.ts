@@ -4334,8 +4334,17 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 					const hasExtractedCoeff =
 						numSimplified.coefficient !== 1n || denSimplified.coefficient !== 1n;
 					const hasExtractedMonomial = extractedFactors.length > 0;
+					// Une fraction numérique dont aucun carré ne sort se rationalise
+					// aussi : `√(1/3) = √3/3`. Restée opaque, elle n'était égale à
+					// rien d'autre qu'elle-même (simplify-carte, § 40). Bornée : rationaliser
+					// factorise n·d par divisions successives (revue, `√(100000007/99999989)`
+					// prenait 0,2 s, au-delà les secondes)
+					const isNumericFraction =
+						ratValue.d !== 1n &&
+						monomial.length === 0 &&
+						ratValue.n * ratValue.d <= MAX_RATIONALIZED_RADICAND;
 
-					if (hasExtractedCoeff || hasExtractedMonomial) {
+					if (hasExtractedCoeff || hasExtractedMonomial || isNumericFraction) {
 						// Build the extracted coefficient: numCoeff / denCoeff
 						const extractedCoeff = algebraicFromRational(
 							rational(numSimplified.coefficient, denSimplified.coefficient)
@@ -5175,6 +5184,9 @@ function normalizeFunction(
 	// 12. Other functions - opaque with normalized args
 	return normalizeOpaqueNode(canonicalNode);
 }
+
+/** Au-delà, la racine d'une fraction numérique reste opaque (coût de la factorisation). */
+const MAX_RATIONALIZED_RADICAND = 10n ** 12n;
 
 /**
  * Normalizes a node with a symbolic (non-integer) power.

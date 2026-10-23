@@ -7,10 +7,10 @@ _Mis à jour le 2026-10-23, après #1625 (lot 4b-bis)._
 - **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b décimaux (#1624), **4b-bis Q8/Q9 (#1625, § 39)** : `√0,5 → √2/2`, décimaux gardés sous un dénominateur à variable. Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1625. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
 - **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
-- **En attente de David** : bug d'équivalence `√(1/3) ≢ √3/3`, `√(3/2) ≢ √6/2` (§ 39, touche le juge) : lot à part avant le 4c, ou après ? Vérification manuelle de #1625 notée.
+- **Prochaine action** : PR du correctif d'équivalence (§ 40) ; après merge, lot 4c (relire S2 § 6 et D3 § 19).
+- **En attente de David** : rien (correctif d'équivalence demandé le 2026-10-23 : « corrige le »).
 - **Pièges en cours** : `0,5/x·x/2 → 0,25x/x` laissé (§ 39) ; `x^{0,5} → x^{1/2}` laissé (§ 37) ; dérivées : chemins bouton/commande/latex-péda en `x−3/2` (lot 5) ; banc des 1 008 modèles : `modeles.json` + `tirages.mts` dans le scratchpad de la session du 4b (`/private/tmp/claude-501/…/6cd97bf0…/scratchpad`), à réexporter s'il a disparu ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun ; nouveau worktree au 4c.
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `fix/simplify-carte-equivalence-racines`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -583,3 +583,12 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Bug trouvé en chemin, hors lot** : `areEquivalent` dit faux `√(1/2) ≡ √2/2`, `√(1/3) ≡ √3/3`, `√(3/2) ≡ √6/2`, `√(1/2) ≡ 1/√2` (vrais : `√(1/8) ≡ √2/4`, `√(3/4) ≡ √3/2`, `1/√2 ≡ √2/2`). Touche le juge : un élève qui tape `√(1/3)` pour `√3/3` est refusé. D'où l'invariant « valeur conservée » non testé sur les cas Q8 (idempotence seulement).
 - **Revue `code-reviewer` opus** : corrigés, test rouge d'abord — (1) `√0,5·√0,5` donnait `1/2` : le registre d'une racine se décide sur le terme fini (`Accumulator.decimalRoot`, `hasRootFactor`), plus racine par racine ; (2) `(x/3+0,5)/x` gardait `x/3` sous la barre : une somme qui contient aussi une division se chasse. **Laissé** (mineur, sans cas réel) : `0,5/x·x/2 → 0,25x/x` (les bases `x` gardées des deux côtés, S3, comptent comme dénominateur à variable).
 - Mesures : suite serveur complète verte (59 701 après revue) ; `check:incremental` 0 ; cliquet tenu ; **1 008 modèles de prod × 8 tirages (banc du 4b) : 0 différence**. Témoin non construit : `{{eval}}` d'un décimal sous racine rend une valeur approchée et les variables sont évaluées, donc Q8/Q9 n'atteignent pas les modèles par ces chemins.
+
+## 40. Équivalence des racines de fractions (David, 2026-10-23 : « corrige le » ; branche `fix/simplify-carte-equivalence-racines`)
+
+- Cause : `normalize.ts`, branche B4 de `sqrt` — `√(n/d)` n'était développé que si un carré sortait du numérateur ou du dénominateur ; sinon, nœud opaque. Correctif : une fraction numérique (`ratValue.d ≠ 1`, sans monôme) passe aussi par l'extraction, et `√n · 1/√d` se rationalise par le coefficient algébrique.
+- Tests rouges (12 sur 20, `equivalence-racine-de-fraction.test.ts`) puis verts ; l'invariant « valeur conservée » des cas Q8 rétabli dans `tidy-decimaux.test.ts`.
+- **Effet d'écriture** (normalize calcule les valeurs exactes, § 9) : `{{eval:(2/3)^(1/2)}}` → `√6/3` au lieu de `√(2/3)` ; test de non-régression du 2026-10-04 mis à jour (il enregistrait l'écriture, pas une décision). Cohérent avec Q8 et `1/√2 → √2/2`.
+- **Verdicts du juge, mesurés (main → branche)** : `√(1/3)` pour `√3/3`, `√(1/2)` et `√0,5` pour `√2/2`, `√(3/2)` pour `√6/2` : `incorrect` → `bad_form` (comme `1/√3` déjà) ; `√3/3` pour `√(1/3)` : `incorrect` → `bad_form` ; `√3` pour `√3/3` : `incorrect` inchangé.
+- Mesures : suite serveur complète verte ; `check:incremental` 0 ; 1 008 modèles × 8 tirages : 0 différence (témoin `{{eval:(2/3)^(1/2)}}` vu changer). Reste opaque : `√(x/2)` (monôme à coefficient fractionnaire), sans cas réel connu.
+- **Revue `code-reviewer` opus** : aucun faux positif, plantage ni valeur fausse (36 paires, 15 valeurs exactes). Mineur corrigé : rationaliser factorise `n·d` par divisions (`√(100000007/99999989)` : 0,45 s pour le juge) → borne `MAX_RATIONALIZED_RADICAND` = 10¹², au-delà la racine reste opaque comme avant.
