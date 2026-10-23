@@ -1657,3 +1657,289 @@ describe('A1 — transporte @euclide chorégraphie', () => {
 		);
 	});
 });
+
+// -----------------------------------------------------------------------------
+// Formes (P, d) — `parallele(P, d)` et `perpendiculaire(P, d)` avec d une
+// droite, un segment ou une demi-droite : même chorégraphie que la forme
+// (P, A, B) écrite avec les deux points qui portent d. Quand l'instrument se
+// pose sur un point de d resté caché, ce point apparaît d'abord en fondu.
+// -----------------------------------------------------------------------------
+
+describe('formes (P, d)', () => {
+	const POINTS = ['A = point(0, 0)', 'B = point(4, 1)', 'P = point(1, 3)'];
+	const U: Pt = { x: 4, y: 1 };
+	const P0: Pt = { x: 1, y: 3 };
+	const LINE_KINDS = ['droite', 'segment', 'demidroite'] as const;
+	const VOIES: readonly { builtin: 'parallele' | 'perpendiculaire'; deco: string }[] = [
+		{ builtin: 'parallele', deco: '@euclide' },
+		{ builtin: 'parallele', deco: '@euclide @parallelogramme' },
+		{ builtin: 'parallele', deco: '@euclide @double_perpendiculaire' },
+		{ builtin: 'parallele', deco: '@equerre' },
+		{ builtin: 'parallele', deco: '@equerre @pose_equerre' },
+		{ builtin: 'parallele', deco: '@equerre @double_perpendiculaire' },
+		{ builtin: 'perpendiculaire', deco: '@euclide' },
+		{ builtin: 'perpendiculaire', deco: '@euclide @rayon_libre' },
+		{ builtin: 'perpendiculaire', deco: '@euclide @arcs_egaux' },
+		{ builtin: 'perpendiculaire', deco: '@equerre' }
+	];
+
+	/** Joue tout le script ; rend les sous-étapes vues (la visibilité finale est appliquée). */
+	function playAll(script: string): { exec: ConstructionExecutor; steps: SubStep[] } {
+		const exec = new ConstructionExecutor();
+		exec.load(script);
+		expect(exec.loadError).toBeNull();
+		const steps: SubStep[] = [];
+		while (exec.step()) {
+			const ss = exec.currentSubStep;
+			if (ss) steps.push(ss);
+		}
+		return { exec, steps };
+	}
+
+	/** Ce que voit l'élève d'une sous-étape, sans les ids (qui dépendent du script). */
+	function shape(ss: SubStep) {
+		return {
+			kind: ss.kind,
+			instrument: ss.instrument,
+			secondaryInstrument: ss.secondaryInstrument,
+			instruction: ss.instruction,
+			drawables: ss.animateDrawableIds.length,
+			points: ss.animatePointIds.length,
+			lines: ss.animateLineIds.length,
+			x: ss.instrumentTarget?.x.toFixed(9),
+			y: ss.instrumentTarget?.y.toFixed(9),
+			rotation: ss.instrumentTarget?.rotation.toFixed(9),
+			compassRadius: ss.compassRadius?.toFixed(9),
+			geometricDistance: ss.geometricDistance.toFixed(9)
+		};
+	}
+
+	function principalOf(exec: ConstructionExecutor, name: string): string {
+		const id = exec.symbols.get(name)?.figureId;
+		if (!id) throw new Error(`symbole introuvable : ${name}`);
+		return id;
+	}
+
+	function expectFinalLine(exec: ConstructionExecutor, builtin: string): void {
+		const [p1, p2] = carriers(exec, principalOf(exec, 'm'));
+		const dir = minus(p2, p1);
+		expect(Math.hypot(dir.x, dir.y)).toBeGreaterThan(1e-6);
+		if (builtin === 'parallele') expect(cross(dir, U)).toBeCloseTo(0, 9);
+		else expect(dot(dir, U)).toBeCloseTo(0, 9);
+		// La droite passe par P.
+		expect(cross(minus(P0, p1), dir)).toBeCloseTo(0, 9);
+	}
+
+	for (const { builtin, deco } of VOIES) {
+		for (const kind of LINE_KINDS) {
+			it(`${builtin}(P, d) ${deco}, d = ${kind}(A, B) : même animation que (P, A, B)`, () => {
+				const ref = playAll([...POINTS, `m = ${builtin}(P, A, B) ${deco}`].join('\n'));
+				const viaLine = playAll(
+					[...POINTS, `d = ${kind}(A, B)`, `m = ${builtin}(P, d) ${deco}`].join('\n')
+				);
+				expect(ref.steps.length).toBeGreaterThan(0);
+				expect(viaLine.steps.map(shape)).toEqual(ref.steps.map(shape));
+				expectFinalLine(viaLine.exec, builtin);
+			});
+		}
+	}
+
+	const MODES = ['@epure', '@squelette', '@complet'] as const;
+	for (const deco of ['parallele @euclide', 'perpendiculaire @equerre']) {
+		const [builtin, contrainte] = deco.split(' ');
+		for (const mode of MODES) {
+			it(`${deco} ${mode} : visibilité finale identique à (P, A, B)`, () => {
+				const visibility = (script: string) => {
+					const { exec } = playAll(script);
+					const produced = exec.lastChoreographyResult!.produced;
+					const visible = (id: string) => exec.figure.getElementById(id)?.visible !== false;
+					return {
+						principal: visible(produced.principal),
+						charnieres: produced.charnieres.map(visible),
+						traces: produced.traces.map(visible),
+						hidden: (produced.hiddenSupport ?? []).map(visible)
+					};
+				};
+				const ref = visibility(
+					[...POINTS, `m = ${builtin}(P, A, B) ${contrainte} ${mode}`].join('\n')
+				);
+				const viaLine = visibility(
+					[...POINTS, 'd = droite(A, B)', `m = ${builtin}(P, d) ${contrainte} ${mode}`].join('\n')
+				);
+				expect(viaLine).toEqual(ref);
+				expect(viaLine.principal).toBe(true);
+			});
+		}
+	}
+
+	// ─── Point caché de d ───
+
+	/**
+	 * d1 = perpendiculaire(C, A, B) : porté par C (visible) et par un point
+	 * caché R. d2 = mediatrice(A, B) : ses deux points sont cachés.
+	 */
+	const HIDDEN_DECOR = [
+		'A = point(0, 0)',
+		'B = point(4, 1)',
+		'C = point(2, -1)',
+		'P = point(5, 3)'
+	];
+
+	function carrierIds(exec: ConstructionExecutor, name: string): [string, string] {
+		const el = exec.figure.getElementById(principalOf(exec, name));
+		if (el?.type !== 'line') throw new Error(`pas une droite : ${name}`);
+		return [el.point1Id, el.point2Id];
+	}
+
+	function playHidden(
+		dDef: string,
+		call: string
+	): { exec: ConstructionExecutor; steps: SubStep[]; visibleDuring: Map<string, boolean[]> } {
+		const exec = new ConstructionExecutor();
+		exec.load([...HIDDEN_DECOR, `d = ${dDef}`, `m = ${call}`].join('\n'));
+		expect(exec.loadError).toBeNull();
+		for (let i = 0; i < HIDDEN_DECOR.length + 1; i++) exec.step();
+		const [p1, p2] = carrierIds(exec, 'd');
+		const visibleDuring = new Map<string, boolean[]>([
+			[p1, []],
+			[p2, []]
+		]);
+		const steps: SubStep[] = [];
+		while (exec.step()) {
+			const ss = exec.currentSubStep;
+			if (!ss) continue;
+			steps.push(ss);
+			for (const [id, seen] of visibleDuring) {
+				seen.push(exec.figure.getElementById(id)?.visible !== false);
+			}
+		}
+		return { exec, steps, visibleDuring };
+	}
+
+	/** Nombre de sous-étapes de la même voie avec une droite aux deux points visibles. */
+	function visibleCount(call: string): number {
+		return playAll([...HIDDEN_DECOR, 'd = droite(A, B)', `m = ${call}`].join('\n')).steps.length;
+	}
+
+	it('parallele(P, d) @euclide @parallelogramme : le point caché R apparaît avant le compas', () => {
+		const call = 'parallele(P, d) @euclide @parallelogramme';
+		const { exec, steps, visibleDuring } = playHidden('perpendiculaire(C, A, B)', call);
+		const [Cid, Rid] = carrierIds(exec, 'd');
+		expect(steps).toHaveLength(visibleCount(call) + 1);
+		expect(steps[0].kind).toBe('point-fade-in');
+		expect(steps[0].animatePointIds).toEqual([Rid]);
+		expect(steps[0].instruction).toBe('On choisit un point de la droite');
+		expect(steps[1].instruction).toBe('Compas en A, on prend la mesure |AB|');
+		// R reste visible pendant toute l'animation ; C n'a rien à faire.
+		expect(visibleDuring.get(Rid)).toEqual(steps.map(() => true));
+		expect(exec.figure.getElementById(Cid)?.visible).not.toBe(false);
+		// Classé comme les autres points auxiliaires de la voie.
+		const produced = exec.lastChoreographyResult!.produced;
+		expect(produced.traces).toContain(Rid);
+		expect(produced.traceTags?.get(Rid)).toBe('auxiliary-point');
+		expectFinalLineThrough(exec, 'parallele');
+	});
+
+	it('parallele(P, d) @euclide @parallelogramme : deux points cachés → un seul fondu', () => {
+		const call = 'parallele(P, d) @euclide @parallelogramme';
+		const { exec, steps, visibleDuring } = playHidden('mediatrice(A, B)', call);
+		const [M, H] = carrierIds(exec, 'd');
+		expect(steps).toHaveLength(visibleCount(call) + 1);
+		expect(steps[0].kind).toBe('point-fade-in');
+		expect(steps[0].animatePointIds).toEqual([M, H]);
+		expect(steps[0].instruction).toBe('On choisit deux points de la droite');
+		expect(visibleDuring.get(M)).toEqual(steps.map(() => true));
+		expect(visibleDuring.get(H)).toEqual(steps.map(() => true));
+	});
+
+	for (const call of [
+		'perpendiculaire(P, d) @euclide @arcs_egaux',
+		'perpendiculaire(P, d) @equerre @pose_equerre',
+		'parallele(P, d) @equerre @double_perpendiculaire'
+	]) {
+		it(`${call} : seul le premier point de d (celui qu'on utilise) apparaît`, () => {
+			const { exec, steps, visibleDuring } = playHidden('mediatrice(A, B)', call);
+			const [M, H] = carrierIds(exec, 'd');
+			expect(steps).toHaveLength(visibleCount(call) + 1);
+			expect(steps[0].kind).toBe('point-fade-in');
+			expect(steps[0].animatePointIds).toEqual([M]);
+			expect(steps[0].instruction).toBe('On choisit un point de la droite');
+			expect(visibleDuring.get(M)).toEqual(steps.map(() => true));
+			expect(visibleDuring.get(H)).toEqual(steps.map(() => false));
+			const produced = exec.lastChoreographyResult!.produced;
+			expect(produced.traceTags?.get(M)).toBe('auxiliary-point');
+		});
+
+		it(`${call} : C visible et utilisé → aucun fondu en plus`, () => {
+			const { steps } = playHidden('perpendiculaire(C, A, B)', call);
+			expect(steps).toHaveLength(visibleCount(call));
+			expect(steps.filter((s) => s.instruction?.startsWith('On choisit'))).toEqual([]);
+		});
+	}
+
+	for (const call of [
+		'parallele(P, d) @euclide @double_perpendiculaire',
+		'parallele(P, d) @equerre @pose_equerre',
+		'perpendiculaire(P, d) @euclide @rayon_libre'
+	]) {
+		it(`${call} : la voie n'utilise que la direction de d → aucun fondu`, () => {
+			const { steps } = playHidden('mediatrice(A, B)', call);
+			expect(steps).toHaveLength(visibleCount(call));
+			expect(steps.filter((s) => s.instruction?.startsWith('On choisit'))).toEqual([]);
+		});
+	}
+
+	for (const mode of MODES) {
+		it(`point caché révélé ${mode} : masqué sauf en @complet`, () => {
+			const { exec } = playHidden(
+				'perpendiculaire(C, A, B)',
+				`parallele(P, d) @euclide @parallelogramme ${mode}`
+			);
+			const [, Rid] = carrierIds(exec, 'd');
+			expect(exec.figure.getElementById(Rid)?.visible !== false).toBe(mode === '@complet');
+		});
+	}
+
+	function expectFinalLineThrough(exec: ConstructionExecutor, builtin: string): void {
+		const [p1, p2] = carriers(exec, principalOf(exec, 'm'));
+		const [d1, d2] = carriers(exec, principalOf(exec, 'd'));
+		const dir = minus(p2, p1);
+		const dirD = minus(d2, d1);
+		if (builtin === 'parallele') expect(cross(dir, dirD)).toBeCloseTo(0, 9);
+		else expect(dot(dir, dirD)).toBeCloseTo(0, 9);
+		expect(cross(minus({ x: 5, y: 3 }, p1), dir)).toBeCloseTo(0, 9);
+	}
+
+	// ─── Erreurs ───
+
+	it('premier argument non-point : erreur du langage inchangée', () => {
+		const exec = new ConstructionExecutor();
+		exec.load([...POINTS, 'd = droite(A, B)', 'm = parallele(d, d) @euclide'].join('\n'));
+		expect(exec.loadError?.message).toMatch(/le premier argument doit être un point/);
+	});
+
+	it('second argument non-droite : erreur du langage inchangée', () => {
+		const exec = new ConstructionExecutor();
+		exec.load([...POINTS, 'm = perpendiculaire(P, A) @euclide'].join('\n'));
+		expect(exec.loadError?.message).toMatch(/le second argument doit être une droite/);
+	});
+
+	for (const voie of ['@euclide @double_perpendiculaire', '@equerre @double_perpendiculaire']) {
+		it(`P sur d, ${voie} : même erreur qu'avec (P, A, B)`, () => {
+			const exec = new ConstructionExecutor();
+			exec.load(
+				[
+					'A = point(0, 0)',
+					'B = point(4, 1)',
+					'P = point(8, 2)',
+					'd = droite(A, B)',
+					`m = parallele(P, d) ${voie}`
+				].join('\n')
+			);
+			expect(exec.loadError).not.toBeNull();
+			expect(exec.loadError!.message).toMatch(/P est sur la droite \(AB\)/);
+			expect(exec.loadError!.line).toBe(5);
+			expect(exec.totalSteps).toBe(4);
+		});
+	}
+});
