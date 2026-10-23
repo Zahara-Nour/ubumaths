@@ -93,7 +93,7 @@ export interface DisplayOptions {
 	/**
 	 * Remove French digit grouping spaces from numbers
 	 *
-	 * By default, numbers with 4+ digits get French formatting via toFrenchDecimal()
+	 * By default, numbers with 5+ digits (BIPM) get French formatting via toFrenchDecimal()
 	 * in generators (e.g. 12345 → 12\,345). When true, this formatting is prevented
 	 * by inserting empty LaTeX groups {} between consecutive digits in the displayValue,
 	 * so the generator's toFrenchDecimal regex sees only single-digit sequences.

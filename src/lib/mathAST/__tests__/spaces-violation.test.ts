@@ -149,3 +149,15 @@ describe('checkSpacesViolation — espaces dès 4 chiffres', () => {
 		expect(checkSpacesViolation(latex, 4)).toBe(violation);
 	});
 });
+
+// Revue du lot 4d : un code couleur n'est pas un nombre (défaut antérieur)
+describe('checkSpacesViolation — codes couleur', () => {
+	it.each([
+		['\\textcolor{#123456}{7}', 5, false],
+		['\\textcolor{#1234ab}{7}', 4, false],
+		['\\textcolor{#123456}{30000}', 5, true],
+		['\\textcolor{#FF5722}{7\\,900}', 4, false]
+	])('%s (seuil %i) → faute : %s', (latex, minDigits, violation) => {
+		expect(checkSpacesViolation(latex, minDigits)).toBe(violation);
+	});
+});

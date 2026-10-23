@@ -16,18 +16,25 @@
  */
 
 import { getContext, hasContext, setContext } from 'svelte';
-import { SCHOOL_MIN_DIGITS_FOR_GROUPING } from '$lib/mathAST/digit-grouping';
+import {
+	MIN_DIGITS_FOR_GROUPING,
+	SCHOOL_MIN_DIGITS_FOR_GROUPING
+} from '$lib/mathAST/digit-grouping';
 import type { QuestionInstance } from '$lib/questions/types';
 
 const DIGIT_GROUPING_KEY = Symbol('markdown-digit-grouping');
 
 type DigitGroupingGetter = () => number | undefined;
 
-/** Le seuil d'une instance : 4 si son modèle est réglé « Espaces dès 4 chiffres ». */
-export function digitGroupingOf(instance: Pick<QuestionInstance, 'options'>): number | undefined {
+/**
+ * Le seuil d'une instance : 4 si son modèle est réglé « Espaces dès 4 chiffres », sinon 5
+ * (BIPM) — explicite, pour qu'une carte non réglée posée dans une carte réglée n'hérite
+ * pas du seuil de l'école.
+ */
+export function digitGroupingOf(instance: Pick<QuestionInstance, 'options'>): number {
 	return instance.options?.constraints?.spacesFromFourDigits === true
 		? SCHOOL_MIN_DIGITS_FOR_GROUPING
-		: undefined;
+		: MIN_DIGITS_FOR_GROUPING;
 }
 
 /**

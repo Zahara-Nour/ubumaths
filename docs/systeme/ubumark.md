@@ -418,7 +418,9 @@ Points à retenir :
     (`content-locale.ts`) comme au PDF (option `language` de `generateTypst`, `toLocaleDecimal`).
     Espaces fines de groupement dès 5 chiffres, chaque côté de la virgule à part (`1024`,
     `30\,000`, `0{,}123\,45` ; règle du BIPM, `mathAST/digit-grouping.ts`) ; dès 4 pour une
-    question réglée « Espaces dès 4 chiffres » (`content-digit-grouping.ts`).
+    question réglée « Espaces dès 4 chiffres » (`content-digit-grouping.ts`). Même règle pour les nombres
+    des légendes et résumés de simulation (`simulation-scene.ts`, `stat-chart-scene.ts`) et pour
+    `\np` à l'import LaTeX (`importers/latex/converters/`).
 11. **`builders/` ne calcule rien** : le tableau affiché vient de la grille de `mathAST` qui écrit
     aussi la conclusion ; recalculer les ferait diverger.
 

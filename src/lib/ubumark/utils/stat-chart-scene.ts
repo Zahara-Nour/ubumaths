@@ -34,6 +34,7 @@ import type {
 import { STAT_CHART_LIMITS } from '../types/stat-chart';
 import type { CourbeColor } from '../types/courbe';
 import type { ContentLocale } from '$lib/types/locale';
+import { groupNumberText } from '$lib/mathAST/digit-grouping';
 import { computeGridStep } from '$lib/geometry-core/viewport/grid';
 import { categoryFrequencies, describeList, summarizeTable } from '$lib/statistics/describe';
 import {
@@ -2575,10 +2576,11 @@ const SIMULATION_TEXT: Record<
 	}
 };
 
-/** 10000 → « 10 000 » (espace insécable) ou « 10,000 » */
+/** 10000 → « 10 000 » (espace insécable, dès 5 chiffres : BIPM) ou « 10,000 » */
 function groupedCount(value: number, locale: ContentLocale): string {
-	const separator = locale === 'en' ? ',' : '\u00a0';
-	return String(value).replace(/\B(?=(\d{3})+(?!\d))/g, separator);
+	return locale === 'en'
+		? String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+		: groupNumberText(String(value), '\u00a0');
 }
 
 /** Un réel au millième, écrit selon la langue (moyennes, σ, marge) */

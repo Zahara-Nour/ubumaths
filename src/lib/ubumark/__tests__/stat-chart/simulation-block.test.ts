@@ -151,12 +151,13 @@ describe('simulation — scène', () => {
 		expect(sceneOf(source, 'en').rows[0].frequency).toBe('0.000');
 	});
 
-	it('10 000 tirages : groupés dans la légende et les effectifs, et ils font 10 000', () => {
+	it('10 000 tirages : groupés dans la légende, effectifs de 4 chiffres sans espace, ils font 10 000', () => {
 		const scene = sceneOf(`${GAME}\ntirages: 10 000`);
 
 		expect(scene.caption).toBe('Simulation de 10\u00a0000 tirages (graine 1)');
 		expect(countsOf(`${GAME}\ntirages: 10 000`).reduce((a, b) => a + b, 0)).toBe(10000);
-		expect(scene.rows.some((row) => /^\d\u00a0\d{3}$/.test(row.count))).toBe(true);
+		// Effectifs de 4 chiffres sans espace (BIPM, E2) : `1667`, pas `1 667`
+		expect(scene.rows.some((row) => /^\d{4}$/.test(row.count))).toBe(true);
 		expect(sceneOf(`${GAME}\ntirages: 10 000`, 'en').caption).toBe(
 			'Simulation of 10,000 draws (seed 1)'
 		);

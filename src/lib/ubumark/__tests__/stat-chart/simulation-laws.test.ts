@@ -280,7 +280,7 @@ describe('simulation d’une loi à densité, mode tirages : histogramme en dens
 		const shown = (Math.round(mean * 1000) / 1000).toString().replace('.', ',');
 		const beyond = draws.filter((x) => x > 10).length;
 		expect(scene.indicators).toEqual([
-			`1\u00a0000 tirages ; moyenne observée ≈ ${shown} (E(X) = 2)`,
+			`1000 tirages ; moyenne observée ≈ ${shown} (E(X) = 2)`,
 			`la dernière classe compte aussi les tirages au-delà de 10 (ici ${beyond})`,
 			'graine 4'
 		]);
@@ -370,7 +370,7 @@ describe('simulation de N(μ ; σ²), mode tirages : histogramme sur μ ± 3σ',
 		const below = draws.filter((x) => x < 4).length;
 		const beyond = draws.filter((x) => x > 16).length;
 		expect(scene.indicators[0]).toMatch(
-			/^1\u00a0000 tirages ; moyenne observée ≈ \d+,\d+ \(E\(Y\) = 10\)$/
+			/^1000 tirages ; moyenne observée ≈ \d+,\d+ \(E\(Y\) = 10\)$/
 		);
 		expect(scene.indicators[1]).toBe(
 			`la première classe compte aussi les tirages en deçà de 4 (ici ${below}), la dernière ceux au-delà de 16 (ici ${beyond})`

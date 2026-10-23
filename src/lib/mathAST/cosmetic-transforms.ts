@@ -233,8 +233,9 @@ export function checkSpacesViolation(
 	latex: string,
 	minDigits: number = MIN_DIGITS_FOR_GROUPING
 ): boolean {
-	// Normalize LaTeX thin space (\,) to regular space
-	let normalized = latex.replace(/\\,/g, ' ');
+	// Un code couleur (`\textcolor{#123456}{…}`) n'est pas un nombre (même garde que
+	// `toLocaleDecimal`) ; puis l'espace fine LaTeX (\,) devient une espace
+	let normalized = latex.replace(/#[0-9A-Fa-f]{3,8}(?![0-9A-Za-z])/g, '#').replace(/\\,/g, ' ');
 	// Replace {,} (French decimal comma) with a period
 	normalized = normalized.replace(/\{,\}/g, '.');
 	// Handle simple comma as decimal separator

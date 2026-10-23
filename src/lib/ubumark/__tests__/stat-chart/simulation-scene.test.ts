@@ -120,7 +120,7 @@ describe('Q81 — moyenne des tirages selon n', () => {
 		expect(scene.kind).toBe('moyenne-selon-n');
 		expect(scene.accessibleTitle).toBe('Moyenne des tirages selon leur nombre');
 		expect(scene.description).toBe(
-			'Moyenne des 5 000 premiers tirages : elle passe de 0,9 à 0,5, pour une espérance de 1/2.'
+			'Moyenne des 5000 premiers tirages : elle passe de 0,9 à 0,5, pour une espérance de 1/2.'
 		);
 	});
 });

@@ -12,6 +12,7 @@
  */
 
 import { parseLatexSafe, DEFAULT_GENERIC_FUNCTION_NAMES } from '$lib/mathAST/parser';
+import { groupDecimalDigits, groupIntegerDigits } from '$lib/mathAST/digit-grouping';
 import { toCustom, SUPPORTED_GREEK, SUPPORTED_SYMBOLS } from '$lib/mathAST/custom-generator';
 import { findNodes } from '$lib/mathAST/transforms';
 import type { MathNode, GreekLetterNode, SymbolNode } from '$lib/mathAST/types';
@@ -157,6 +158,7 @@ function toCustomSafe(ast: MathNode): { output: string; unsupported: Unsupported
  * mathAST tokenizer can consume it as an intra-number separator (see
  * tokenizer.ts scanNumber), keeping `\np{...}` numbers parseable.
  *
+ * Dès 5 chiffres de chaque côté de la virgule (BIPM, `mathAST/digit-grouping.ts`) :
  * - Integer part: spaces from right to left (1234567 -> 1\,234\,567)
  * - Decimal part: spaces from left to right (89012345 -> 890\,123\,45)
  */
@@ -168,14 +170,14 @@ function formatFrenchNumber(numStr: string): string {
 	const [, intPart, separator, decPart] = decimalMatch;
 
 	// Add thin-space separators to integer part (from right to left)
-	const formattedInt = intPart.replace(/\B(?=(\d{3})+(?!\d))/g, '\\,');
+	const formattedInt = groupIntegerDigits(intPart, '\\,');
 
 	if (!separator) {
 		return formattedInt;
 	}
 
 	// Add thin-space separators to decimal part (from left to right, every 3 digits)
-	const formattedDec = decPart.replace(/(\d{3})(?=\d)/g, '$1\\,');
+	const formattedDec = groupDecimalDigits(decPart, '\\,');
 
 	return `${formattedInt}${separator}${formattedDec}`;
 }

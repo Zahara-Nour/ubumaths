@@ -374,7 +374,7 @@ describe('preprocessing', () => {
 
 			// Decimal comma is not valid math syntax, so conversion fails
 			// But preprocessing should still replace \np (with \, separators)
-			expect(result.output).toBe('x = 9,000\\,1');
+			expect(result.output).toBe('x = 9,0001'); // 4 décimales : pas d'espace (BIPM)
 			expect(result.output).not.toContain('\\np');
 		});
 
@@ -383,7 +383,7 @@ describe('preprocessing', () => {
 			const result = convertMathToCustomSyntax('S_{40} = \\np{9,0001}', ctx);
 
 			// Decimal comma causes parse failure but \np should be replaced (with \, separators)
-			expect(result.output).toBe('S_{40} = 9,000\\,1');
+			expect(result.output).toBe('S_{40} = 9,0001');
 			expect(result.output).not.toContain('\\np');
 		});
 
