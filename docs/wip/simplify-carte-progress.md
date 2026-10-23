@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1652 (lot 4e mergé, pas en prod)._
+_Mis à jour le 2026-10-23, après #1655 (Q19 mergé, pas en prod)._
 
-- **État** : lot 4e mergé (#1652, § 46-47 ; pas encore en prod, aucun effet élève) : registre `mathAST/superflu/` (10 fiches), lu par le juge, l'éditeur, les messages, Zod et `buildConstraintSeverities` ; garde par règle dans `tidy-passe-le-juge.test.ts` ; racines par `extractPerfectPower` (identique à l'ancien calcul de 4 à 200 000, sondé). Comportement élève inchangé ; l'ordre des réglages de l'éditeur suit le registre.
+- **État** : lot 5 lancé. Phase 0 validée (§ 49-50 : Q18 oui, Q19 à part, Q20 reportée, ordre Q19 → 5a → 5b → 5c → 5d → 5e → 5f). Q19 mergé (#1655, § 51-52) : la dérivée garde le décimal tapé (`x − 1,5`), `tidyTerms` suit Q3 sous une barre (`2x/1,5 → 4x/3`).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d~~ → ~~4e~~ → **5 formes par contexte** → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 5 (forme cible par contexte d'affichage, D1-D4, § 17-20), phase 0 : comportements à valider, worktree neuf depuis `origin/main`.
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → **5a D1** → 5b D2 → 5c valeur exacte → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5a (D1 + Q18), worktree neuf depuis `origin/main`. Dernière étape « On réduit » de f′ (`withTidyStep`) : numérateur `auto`, dénominateur gardé, division par le facteur commun si le domaine de f le permet ; seule l'exponentielle commune en facteur ; ordre canonique sans − en tête ; bug `(eˣ)²` / `e^{2x}` non regroupés par `auto` (quot-04), test rouge d'abord. Mesure : l'oracle (`KNOWN_FORM_DIFF`).
 - **En attente de David** : la vérification manuelle des espaces (#1642) sur chiph.re.
-- **Pièges en cours** : un modèle neuf de numération avec une spec `7900` attendra le réglage « Espaces dès 4 chiffres » coché à la main. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Pièges en cours** : `(x^{0,5})′` écrit `0,5/x^{1/2}` (mixte, juste, laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
 - **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
@@ -697,3 +697,56 @@ Plan : `mathAST/superflu/` contient `transforms.ts` (les 8 transformations, reti
 ## 48. Lot 4e mergé (#1652, 2026-10-23)
 
 Revue `code-reviewer` (opus) : aucun finding bloquant ; seul le nouvel ordre des réglages dans l'éditeur, annoncé dans la PR. CI verte (16/16).
+
+## 49. Lot 5, phase 0 : sonde (2026-10-23, à valider par David ; worktree `ubumaths-wt-simplify-carte`, branche `fix/simplify-carte-derivee-decimaux`)
+
+Sondé sur `main` (4 sondes jetables, retirées). Mesure de référence : l'oracle des dérivées (`differentiation/__tests__/oracle/`), dont le corpus porte la forme écrite en classe (`expected`) ; 73 fonctions y sont en `KNOWN_FORM_DIFF`.
+
+**D1 — réponse finale de f′ (corrections et Atelier).** Aujourd'hui `withTidyStep` (`tidyTerms`) ne réduit pas le numérateur d'un quotient (`(2(x−3) − (2x+1))/(x−3)²`) et laisse `eˣ + xeˣ`. Candidat mesuré sur 33 cas : `auto` sur le numérateur, et pour une exponentielle commune « développer puis factoriser ». `auto` donne la forme de classe pour tous les quotients rationnels (`−7/(x−3)²`, `(x²+2x)/(x+1)²`, `17/(2x+5)²`, `4x/(x²+1)²`, `(−2x²−18)/(x²−9)²`, `(x²−1)/x²`, `(x²−2x−3)/(x−1)²`) et pour `4x(x−3) → 8x−12`. Mais `factoriser` va trop loin : `x(2−x)e^{−x}`, `3(1−2x)e^{−2x}`, `2(x²+x+1)e^{2x}`, `x²(x+3)eˣ`. Il faut donc mettre en facteur **la seule exponentielle**, comme le prévoit D1. Ordre « canonique + pas de − en tête (Q11) » : il rend toutes les formes du corpus (`(2x−x²)e^{−x}`, `(3−6x)e^{−2x}`, `(1−t)e^{−t}`, `(2−x)/x³`).
+
+Trouvés en chemin :
+
+- **Bug** : `auto` ne regroupe pas `(eˣ)²` et `e^{2x}` (quot-04 : `((eˣ)² − e^{2x} + eˣ)/(eˣ+1)²`, pire qu'aujourd'hui).
+- **Écart S1 dans le moteur de dérivation** : `0,5x² − 1,5x → x − 3/2`, `−4,9t² + 20t → 20 − 49t/5`.
+- La forme de classe simplifie le quotient par un facteur commun (quot-02 `(1−x)/eˣ`, quot-05 `(1−2 ln x)/x³`, quot-10 `(2−x)/x³`). D1 dit « dénominateur gardé ».
+- quot-07 (`sin² + cos²`) demande une identité : relève de S4, hors lot 5.
+- Les ~40 autres écarts (`x^{−2/3}/3`, `ln 2 × 2ˣ`, `√x³`…) sont des conventions d'écriture, hors lot 5.
+
+**D2 — f′ du tableau de variations.** `factoriser` (lycée) sur le numérateur donne `x(x+2)/(x+1)²`, `(x+1)(x−3)/(x−1)²`, `−2(x²+9)/(x²−9)²`, `x(2−x)e^{−x}`, `x²(x+3)eˣ`, `(x−1)eˣ/x²`, `(x+1)eˣ` ; `x(1−2 ln x)/x⁴` pose la même question de simplification que D1.
+
+**Valeur exacte (§ 13, A).** Le tableau de variations (`tidyExactValue`) et le grapheur (`simplify`) donnent la même valeur sur 11 cas sur 12. Le 12e diffère : `cos x + x/2` en π/6 donne `π/12 + cos(π/6)` dans le tableau et `π/12 + √3/2` dans le grapheur. Atelier : `0,1+0,2 → 3/10` et `2,50 → 5/2` (écarts à S1) ; `3·10^20` est écrit en entier.
+
+**D3 — expression littérale de l'Atelier.** Aujourd'hui tout est rendu tel que tapé. `tidy({ order: 'kept' })` est prêt : `3+2*x → 3 + 2x`, `2x+3x → 5x`, `x*2 → 2x`, `x+0 → x`, `1+2x+3x → 1 + 5x`, `2(1+x)+3(x+1) → 5(1+x)`. Restent inchangés : `x/x`, `0,5x + 1`, `3 − 2x + x²`, `ln(eˣ)`, `(x²−1)/(x+1)` et `x − 1 − (x+1)`.
+
+**D4.** Le schéma a `intent` pour les questions de simplification seulement (`template-schema.ts:220, 493`).
+
+**Découpage proposé (une PR chacun)** :
+
+- **5a — D1** : dernière étape « On réduit » de f′ (`withTidyStep`, partagée par les corrections, `.dériver`, le bouton et la carte). Pour un quotient : numérateur `auto`, dénominateur gardé. Exponentielle commune : elle seule en facteur, le reste développé réduit. Sinon `auto` : `5(x+1)⁴` reste. Ordre canonique sans − en tête. Bug quot-04 corrigé (test rouge d'abord). L'oracle mesure le résultat : ≈ 25 fonctions sortent de `KNOWN_FORM_DIFF`.
+- **5b — D2** : `reducedDerivative` passe par `factoriser` (lycée) sur le numérateur, avec l'étape « On factorise pour étudier le signe » (`.variations` et carte).
+- **5c — valeur exacte à afficher (§ 13 A)** : une seule fonction pour `readable`, `tidyKeepingValue` (`{{eval}}`), `tidyExactValue` (tableau), `simplifyExact` (grapheur), limites et solutions. Elle donne `0,1+0,2 → 0,3`, `2,50 → 2,5` et `cos(π/6)` calculé partout ; les gardes de `readable` deviennent son comportement. `evaluate` est inchangé pour les calculs internes.
+- **5d — D3** : expression littérale de l'Atelier → `tidy({ order: 'kept' })` ; la garde « variable » de `readable` saute.
+- **5e — D4** : réglage facultatif « forme de la réponse finale » sur les modèles de dérivée et de primitive (Zod, éditeur `MySelect`, `correction-generator`), avec garde E1 si un `requiredForm` est présent.
+- **5f — restes** : primitive (`simplify` de `atelier/calcul.ts:2709` → `tidy`) ; étapes de limite (`tidy` ordre gardé, test d'abord) ; bug `u′v − (uv′)` sans nœud de parenthèse (§ 41).
+
+**Questions** :
+
+- **Q18** — diviser numérateur et dénominateur de f′ par leur facteur commun quand le domaine de f le permet : `(2x − x²)/x⁴ → (2 − x)/x³` (f = `(x−1)/x²`), `(x − 2x ln x)/x⁴ → (1 − 2 ln x)/x³` (f = `ln x/x²`), `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ` (f = `x/eˣ`) ? Reco : oui, en 5a et en 5b. La règle du quotient laisse ce facteur ; x ≠ 0 est déjà dans le domaine de f et eˣ ne s’annule pas (S3) ; D1 disait « dénominateur gardé » sans avoir vu ces cas. (Première version : les exemples donnaient le résultat au lieu de l’écriture à simplifier, relevé par David.)
+- **Q19** — le décimal perdu par le moteur de dérivation (`x − 3/2` pour `0,5x² − 1,5x`) ? Reco : PR à part avant 5a (test rouge, `mathast-expert`), pour que l'oracle de 5a mesure D1 seul.
+- **Q20** — la variante `{ result, conditions }` de `tidy` (Q2 du lot 4a, « écrite au lot 5 avec son premier appelant ») : aucun appelant trouvé, les conditions de Q4 viennent du moteur pédagogique, pas de `tidy`. Reco : la reporter jusqu'à un vrai appelant.
+- **Q21** — l'ordre : Q19 → 5a → 5b → 5c → 5d → 5e → 5f ? Reco : oui. D1 et D2 sont vus par les élèves dans les corrections ; 5c est le plus large (6 appelants) ; 5e dépend de 5a (forme par défaut).
+
+## 50. Q18-Q21 tranchées (David, 2026-10-23 : « je suis tes recos »)
+
+- **Q18 : oui.** f′ est divisée par le facteur commun quand le domaine de f le permet (5a et 5b).
+- **Q19 : oui.** PR à part avant 5a (branche `fix/simplify-carte-derivee-decimaux`) : le moteur de dérivation garde le décimal (S1).
+- **Q20 : reportée.** Pas de variante `{ result, conditions }` sans appelant.
+- **Q21 : ordre** Q19 → 5a → 5b → 5c → 5d → 5e → 5f.
+
+## 51. Q19 codé (branche `fix/simplify-carte-derivee-decimaux`, 2026-10-23)
+
+Cause : `foldNumericSubtrees` (`pedagogical-differentiation/pipeline.ts`) repliait les sous-arbres numériques de la dérivée brute par `evaluate` exact, nombre seul compris (`0.5 → 1/2`). Correctif : repli par `tidy` (S1). Test `decimaux-gardes.test.ts` : 6 rouges sur 8 avant. Oracle : poly-11, t-02, exp-22 rejoignent la forme de classe (8 entrées retirées) ; 3 faux résidus `lit-16/17/22 @ bouton` (`0{,}1 \cos` lu « coefficient 1 ») : la règle de l'oracle ignore désormais le `1` final d'un décimal à virgule. Doc : `mathast/README.md`.
+
+## 52. Q19 mergé (#1655, 2026-10-23)
+
+Revue `code-reviewer` (opus) : aucune valeur fausse. Corrigés avant le merge : `tidyTerms` gardait `2x/1,5` (même nombre de nœuds que `4x/3`) — un décimal sous la barre suit maintenant Q3 ; `4^{1/2}x²` donnait `2x × 4^{1/2}` — si `tidy` laisse une puissance numérique, l'ancien repli par `evaluate` reprend. Laissé : `(x^{0,5})′ = 0,5/x^{1/2}`. Au passage : `template-fact-sheet.test.ts`, rouge sur `main` (croisement #1650 / #1652), mis à l'ordre du registre. CI verte (16/16).

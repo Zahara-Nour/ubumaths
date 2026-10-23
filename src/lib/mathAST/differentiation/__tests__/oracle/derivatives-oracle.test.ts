@@ -118,7 +118,11 @@ const RESIDUES: readonly { readonly name: string; readonly pattern: RegExp }[] =
 	{ name: '\\euler brut', pattern: /\\euler/ },
 	{ name: '1·', pattern: /(?<![\d.])1\s*\\(?:cdot|times)/ },
 	{ name: '·1', pattern: /\\(?:cdot|times)\s*1(?![\d.])/ },
-	{ name: 'coefficient 1', pattern: /(?<![\d.{^_\w])1\s+(?=[a-zA-Z(]|\\(?!right|end|\\))/ },
+	// `(?<!\{,\})` : le 1 final d'un décimal à virgule (`0{,}1 \cos`) n'est pas un coefficient
+	{
+		name: 'coefficient 1',
+		pattern: /(?<![\d.{^_\w])(?<!\{,\})1\s+(?=[a-zA-Z(]|\\(?!right|end|\\))/
+	},
 	{ name: '+ -', pattern: /\+\s*-/ },
 	{ name: '- -', pattern: /-\s*-/ },
 	{ name: 'nombres juxtaposés', pattern: /(?<![\d.\\a-zA-Z^_{])\d+(?:\.\d+)?\s+\d/ },

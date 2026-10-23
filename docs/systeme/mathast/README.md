@@ -1100,7 +1100,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
   résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
   `tidyTerms` (`tidy/terms.ts`, l'ordre de la règle gardé : `tidy({ order: 'kept' })`). Dérivées : `withTidyStep`
-  (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant. Primitives :
+  (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant ; avant lui, la dérivée brute
+  replie ses sous-arbres numériques par `tidy` (`foldNumericSubtrees`), donc un décimal tapé reste
+  décimal (`(0,5x² − 1,5x)′ = x − 1,5`, simplify-carte Q19). Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
   `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la
   primitive est un seul terme « coefficient en chiffres × une seule fonction » sous un `-`
