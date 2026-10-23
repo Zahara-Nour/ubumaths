@@ -72,4 +72,24 @@ describe('ConstructionPlayer — points auxiliaires nommés', () => {
 		await expect.poll(() => labels(container)).toContain('Q′');
 		expect(labels(container).filter((l) => l === 'Q')).toHaveLength(1);
 	});
+
+	it('double perpendiculaire @squelette : e (droite) et R écrits sur la figure', async () => {
+		const { container } = await render(ConstructionPlayer, {
+			script: [
+				'A = point(0, 0)',
+				'B = point(4, 1)',
+				'P = point(1, 3)',
+				'd = parallele(P, A, B) @euclide @double_perpendiculaire @squelette'
+			].join('\n'),
+			width: 400,
+			height: 300
+		});
+		// A, B, P, puis les 16 sous-étapes
+		await next(container, 3 + 16);
+		await expect
+			.poll(() => subStepInstruction(container))
+			.toBe('Règle par P et R : on trace la parallèle à (AB)');
+		await expect.poll(() => labels(container)).toContain('e');
+		expect(labels(container)).toContain('R');
+	});
 });

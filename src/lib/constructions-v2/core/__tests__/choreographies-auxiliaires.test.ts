@@ -281,3 +281,52 @@ describe('points auxiliaires : lettre déjà prise → prime', () => {
 		expect(texts).toContain('Compas en M, petite ouverture : un petit arc coupe e en C*');
 	});
 });
+
+describe('points auxiliaires : le nom donné par le script l’emporte', () => {
+	const CERCLE = ['A = point(0, 0)', 'B = point(4, 1)', 'C = point(1, 3)'];
+
+	it('O = centre(c) après le cercle : la consigne dit O, un seul O sur la figure', () => {
+		const { exec, texts } = run([
+			...CERCLE,
+			'c = cercle_circonscrit(A, B, C) @euclide',
+			'O = centre(c)'
+		]);
+		expect(texts).toContain('Les médiatrices se croisent en O, centre du cercle');
+		expect(texts).toContain('Compas en O, on prend la mesure |OA|');
+		expect(labelled(exec, 'O')).toHaveLength(1);
+		expect(labelled(exec, 'O′')).toHaveLength(0);
+	});
+
+	it('K = centre(c) : la consigne dit K, aucun O sur la figure', () => {
+		const { exec, texts } = run([
+			...CERCLE,
+			'c = cercle_circonscrit(A, B, C) @euclide',
+			'K = centre(c)'
+		]);
+		expect(texts).toContain('Les médiatrices se croisent en K, centre du cercle');
+		expect(labelled(exec, 'K')).toHaveLength(1);
+		expect(labelled(exec, 'O')).toHaveLength(0);
+	});
+
+	it('D = cote(be, 2) après transporte : B″ s’appelle D', () => {
+		const { exec, texts } = run([
+			...TRANSPORTE,
+			'be = transporte(al, Vp, P) @euclide',
+			'D = cote(be, 2)',
+			's = segment(Vp, D)'
+		]);
+		expect(texts).toContain('Les deux arcs se coupent en D');
+		expect(labelled(exec, 'D')).toHaveLength(1);
+		expect(labelled(exec, 'B″')).toHaveLength(0);
+	});
+
+	it('Q[i] dans une boucle ne réserve pas la lettre Q', () => {
+		const { texts } = run([
+			...LIGNE,
+			'm = perpendiculaire(P, A, B) @euclide @rayon_libre',
+			'pour i de 1 a 2:',
+			'    Q[i] = point(i, 7)'
+		]);
+		expect(texts.some((t) => t.startsWith('Les arcs se croisent en Q ('))).toBe(true);
+	});
+});

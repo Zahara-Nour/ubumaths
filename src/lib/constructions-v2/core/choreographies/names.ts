@@ -7,8 +7,9 @@
  * (`etiquette="aucune"`) n'a pas de nom lisible : la consigne prend une
  * tournure neutre (« sur le point choisi », « la droite »).
  *
- * Les points auxiliaires créés par la chorégraphie (Q, R, A′, C*…) gardent
- * leurs lettres écrites en dur dans les gabarits.
+ * Les points auxiliaires (Q, R, A′, C*…) et la droite `e` reçoivent leur
+ * lettre comme étiquette provisoire (`ctx.auxLabel`, `createAuxLabeler`) :
+ * la consigne écrit la lettre que l'élève lit sur la figure.
  */
 
 import type { Figure } from '$lib/geometry-core/graph/figure';
@@ -67,35 +68,48 @@ function splitPrimes(base: string): { stem: string; count: number } {
 }
 
 /**
- * Fabrique `ctx.auxName` pour une instruction : un nom est pris s'il est
- * l'étiquette d'un élément de la figure, un nom du script (`reserved`) ou
- * déjà rendu par ce générateur. Un nom pris reçoit un prime de plus.
+ * Fabrique `ctx.auxLabel` pour une instruction. Nom rendu pour l'élément
+ * `id`, dans l'ordre :
+ * 1. son étiquette s'il en a déjà une définitive ;
+ * 2. le nom que le script lui donne plus loin (`scriptNamed`, relevé par
+ *    une première pré-passe : `O = centre(c)`) ;
+ * 3. `base`, ou `base` suivi d'un prime de plus tant que le nom est pris :
+ *    étiquette de la figure, nom du script (`reserved`) ou nom déjà rendu
+ *    par ce générateur.
+ * Le nom est posé comme étiquette provisoire et noté dans `given`.
  */
-export function createAuxNamer(
+export function createAuxLabeler(
 	figure: Figure,
-	reserved: ReadonlySet<string>
-): (base: string) => string {
-	const given = new Set<string>();
-	return (base) => {
-		const taken = new Set([...reserved, ...given]);
-		for (const el of figure.getAllElements()) if (el.label) taken.add(el.label);
-		const { stem, count } = splitPrimes(base);
-		let k = count;
-		while (taken.has(withPrimes(stem, k))) k++;
-		const name = withPrimes(stem, k);
-		given.add(name);
+	reserved: ReadonlySet<string>,
+	scriptNamed: ReadonlyMap<string, string>,
+	given: Map<string, string>
+): (id: string, base: string) => string {
+	const rendered = new Set<string>();
+	return (id, base) => {
+		const label = figure.getElementById(id)?.label;
+		if (label && !figure.hasProvisionalLabel(id)) return label;
+		let name = scriptNamed.get(id);
+		if (!name) {
+			const taken = new Set([...reserved, ...rendered]);
+			for (const el of figure.getAllElements()) if (el.label) taken.add(el.label);
+			const { stem, count } = splitPrimes(base);
+			let k = count;
+			while (taken.has(withPrimes(stem, k))) k++;
+			name = withPrimes(stem, k);
+		}
+		rendered.add(name);
+		given.set(id, name);
+		figure.setProvisionalLabel(id, name);
 		return name;
 	};
 }
 
 /**
- * Nomme l'élément auxiliaire `id` (`ctx.auxName(base)`) et pose ce nom sur
- * la figure : la consigne et l'étiquette disent la même lettre.
+ * Nomme l'élément auxiliaire `id` et pose ce nom sur la figure
+ * (`ctx.auxLabel`) : la consigne et l'étiquette disent la même lettre.
  */
 export function labelAux(ctx: ChoreographyCtx, id: string, base: string): string {
-	const name = ctx.auxName(base);
-	ctx.figure.setLabel(id, name);
-	return name;
+	return ctx.auxLabel(id, base);
 }
 
 /** « A » ou « le point choisi ». */

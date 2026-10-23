@@ -977,11 +977,15 @@ class Interpreter {
 		}
 	}
 
-	/** Apply label to an element if it doesn't already have one (e.g. returned from macro). */
+	/**
+	 * Apply label to an element if it doesn't already have one (e.g. returned
+	 * from macro), or if its label is provisional (auxiliary point of a
+	 * construction, `setProvisionalLabel`).
+	 */
 	private labelElement(value: ResolvedValue, name: string): void {
 		if (value.type === 'element' && value.figureId) {
 			const el = this.figure.getElementById(value.figureId);
-			if (el && !el.label) {
+			if (el && (!el.label || this.figure.hasProvisionalLabel(value.figureId))) {
 				this.figure.updateLabel(value.figureId, name);
 			}
 		}

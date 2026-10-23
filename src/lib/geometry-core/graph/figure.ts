@@ -4634,13 +4634,21 @@ export class Figure {
 		this.elements.set(id, updated);
 	}
 
-	/** Nom affiché d'un élément créé sans étiquette (points auxiliaires des constructions). */
-	setLabel(id: string, label: string): void {
-		const el = this.elements.get(id);
-		if (!el) throw new Error(`setLabel: "${id}" does not exist`);
-		const updated = { ...el, label } as GeoElement;
-		this.undo_manager.recordUpdate(id, el, updated);
-		this.elements.set(id, updated);
+	/** Ids dont l'étiquette est provisoire (`setProvisionalLabel`). */
+	private provisionalLabels = new Set<string>();
+
+	/**
+	 * Étiquette provisoire (point auxiliaire d'une construction) : le nom
+	 * que le script donne ensuite à l'élément la remplace (`labelElement`
+	 * de l'interpréteur), ce que ne fait pas une étiquette ordinaire.
+	 */
+	setProvisionalLabel(id: string, label: string): void {
+		this.updateLabel(id, label);
+		this.provisionalLabels.add(id);
+	}
+
+	hasProvisionalLabel(id: string): boolean {
+		return this.provisionalLabels.has(id);
 	}
 
 	/** Masque (ou réaffiche) le nom seul, l'élément restant dessiné (DSL `etiquette="aucune"`). */
@@ -4696,6 +4704,7 @@ export class Figure {
 		const updated = { ...el, label } as GeoElement;
 		this.undo_manager.recordUpdate(id, el, updated);
 		this.elements.set(id, updated);
+		this.provisionalLabels.delete(id);
 	}
 
 	// ─── Access ─────────────────────────────────────────────────────

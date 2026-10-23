@@ -69,8 +69,12 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 	const m2 = figure.createLine(M_BC, H_BC);
 	figure.hideElement(m2);
 
-	// O = intersection(m1, m2) (= circumcenter). Created hidden.
-	const O = figure.createIntersectionLL(m1, m2);
+	// O = centre du cercle créé par le builtin (masqué) : c'est le point que
+	// rend `centre(c)`, donc celui que le script peut nommer. Repli :
+	// intersection(m1, m2), créée masquée.
+	const circle = figure.getElementById(principalId);
+	const O =
+		circle?.type === 'circleByPoint' ? circle.centerId : figure.createIntersectionLL(m1, m2);
 	figure.hideElement(O);
 	const nO = labelAux(ctx, O, 'O');
 
