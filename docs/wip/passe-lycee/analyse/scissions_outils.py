@@ -352,12 +352,15 @@ create temporary table {tmp}_modeles (
 	id uuid primary key,
 	branche text not null, notion text not null, sous_notion text,
 	grades text[] not null,
+	-- Statut relevé : les neufs en héritent (un brouillon publié depuis publierait ses neufs).
+	statut text not null,
 	avant jsonb not null, apres jsonb not null,
 	-- Nœud d'arrivée (R2 : les points du modèle vivent ailleurs) ; null : il ne bouge pas.
 	branche_apres text, notion_apres text, sous_notion_apres text
 );''']
     for m in modeles:
-        o.append(f"insert into {tmp}_modeles values ('{m['id']}', {ch(m['noeud'])}, {tableau(m['grades'])},\n"
+        o.append(f"insert into {tmp}_modeles values ('{m['id']}', {ch(m['noeud'])}, {tableau(m['grades'])}, "
+                 f"'{m['categorie']['status']}',\n"
                  f"  {contenu(m['avant'])},\n  {contenu(m['apres'])},\n  {ch(m.get('noeud_apres'))});")
     o.append(f'''
 -- Tags des origines : ceux qu'elles portent déjà (relevé, exigés à l'identique et laissés) et ceux
@@ -471,7 +474,8 @@ begin
 	select count(*) into v_ranges from {tmp}_modeles r
 	  join {tmp}_resolus x on x.id = r.id
 	  join public.question_templates q on q.id = r.id
-	 where q.classification_node_id is distinct from x.noeud or q.grades is distinct from r.grades;
+	 where q.classification_node_id is distinct from x.noeud or q.grades is distinct from r.grades
+	    or q.status is distinct from r.statut;
 	if v_ranges <> 0 then
 		raise exception 'modèles déplacés ou reclassés depuis le relevé : %', v_ranges;
 	end if;

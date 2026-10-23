@@ -148,6 +148,8 @@ export interface LotModifier {
 	tagsSeuls?: number;
 	/** Nombre d'origines qui changent de nœud (R2, `noeud_apres` dans la fixture). */
 	deplaces?: number;
+	/** La garde refuse aussi une origine dont le statut a changé (ses neufs en héritent). */
+	gardeStatut?: boolean;
 }
 
 // ============================================================================
@@ -537,6 +539,20 @@ export function decrireLotModifier(lot: LotModifier): void {
 			);
 		});
 
+		it.runIf(lot.gardeStatut)(
+			'une origine publiée depuis le relevé fait échouer la migration (ses neufs naîtraient publiés)',
+			async () => {
+				const m = modeles.find((x) => x.categorie?.status === 'draft')!;
+				await echoue(
+					() =>
+						pg.query(`update public.question_templates set status = 'published' where id = $1`, [
+							m.id
+						]),
+					/modèles déplacés ou reclassés depuis le relevé : 1/
+				);
+			}
+		);
+
 		it('un tag déjà posé sur un modèle du lot fait échouer la migration', async () => {
 			// Un modèle qui ne bouge pas : son tag est accepté par le trigger sur le nœud d'avant.
 			const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres)!;
@@ -650,6 +666,24 @@ export function decrireLotModifier(lot: LotModifier): void {
 						),
 					/rollback : 1 donnée\(s\) d'élève tiennent aux modèles neufs/
 				);
+			}
+		);
+
+		it.runIf(avecNeufs)(
+			'le rollback refuse si une carte SRS tient à un modèle neuf (suppression en cascade, pas de refus de clé étrangère)',
+			async () => {
+				await apresMigration(async () => {
+					const deck = await pg.query<{ id: string }>(
+						`insert into public.srs_decks (owner_id, name, deck_type)
+						 values ($1, 'paquet de test', 'personal') returning id`,
+						[eleve]
+					);
+					await pg.query(
+						`insert into public.srs_cards (deck_id, card_type, template_id)
+						 values ($1, 'template', $2)`,
+						[deck.rows[0].id, neufs[0].id]
+					);
+				}, /rollback : 1 donnée\(s\) d'élève tiennent aux modèles neufs/);
 			}
 		);
 

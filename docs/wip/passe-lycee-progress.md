@@ -250,3 +250,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   son neuf `103cf8d9`, « nombre sans espace » attendu perfectible) l'étaient déjà dans le modèle d'avant (18/20).
   Tirages 100 % réussis. Audit du rendu : 11 modèles à défauts, tous identiques à ceux des modèles d'avant
   (termes nuls, `1/(6-0)`… ; 119b9148 : 17 = 9 + 8), laissés hors du lot.
+- **2026-10-23 — Revues Opus de #1646.** `security-auditor` et `code-reviewer` : aucun bloquant. Corrigé : garde du
+  statut des origines (les neufs en héritent ; publiée depuis le relevé → refus), test ; test « carte SRS sur un
+  neuf » (seule table en cascade réellement éprouvée ; `skill_attempts` refuse déjà d'elle-même). Laissé : les neufs
+  et origines en retrait forcé gardent `grades` [T_SPE, T_COMP] de l'origine (comme en #1632) ; tables sans clé
+  étrangère vers les modèles (favoris, stats, chapitres : 0 ligne en prod sur les 50) ; pas de garde dédiée à une
+  origine déplacée puis retaguée (le trigger fait échouer tout le rollback).

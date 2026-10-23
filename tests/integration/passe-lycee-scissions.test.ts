@@ -22,5 +22,6 @@ decrireLotModifier({
 	taille: 50,
 	neufs: 72,
 	deplaces: 6,
+	gardeStatut: true,
 	gardeRangementNeufs: true
 });
