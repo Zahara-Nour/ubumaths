@@ -13,7 +13,7 @@ couvre:
 # L'atelier (et `/grapheur`)
 
 > Synthèse des journaux archivés `docs/archive/wip/atelier-*`. Syntaxe des commandes de Calcul :
-> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22).
+> [atelier-syntaxe.md](atelier-syntaxe.md) (cité par le code). Vérifié contre le code le 2026-10-19 (outils de construction de la géométrie, lot 3, PR 3 ; relecture des virgules rangées, 2026-10-21 ; test d'égalité `a = b`, 2026-10-22 ; cartes de la figure, point de couleur, défilement de la console et noms en couleur du texte, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -182,7 +182,7 @@ Ceux du code et de l'interface :
 | `ToolButton.svelte`         | Un bouton de la barre : icône seule, nom en `aria-label` et en infobulle, indisponible mais focalisable ; compteur (A3)                                        |
 | `ObjectPanel.svelte`        | « Mes objets » : création, liste des cartes ; replié par défaut sur téléphone                                                                                  |
 | `ObjectCard.svelte`         | L'aiguillage : confie chaque objet à la carte de son type                                                                                                      |
-| `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; nature, construction en gris, menu                                         |
+| `FigureCard.svelte`         | La carte d'un point ou d'une courbe, sur une ligne : `A = [champ]`, `d : [champ]` ; constat C6, menu                                                           |
 | `FigureStylePopover.svelte` | Le point de couleur d'un point (couleur, taille) ou d'une courbe de la figure (couleur, trait) : `setFigureDisplay`                                            |
 | `ValueCard.svelte`          | La carte d'une valeur, sur une ligne : `a = [champ]`, menu ; curseur sous la ligne d'un paramètre ; fenêtre des bornes                                         |
 | `SequenceCard.svelte`       | La carte d'une suite, sur une ligne : point, `u(n) = [champ]`, œil, menu ; premier terme et marches sous la ligne                                              |
@@ -303,14 +303,15 @@ l'atelier calcule, jamais la `Figure`. Règles :
   « Garder » (D5) crée l'objet avec la définition tapée (`CalcResult.construction`). Nommé, `I`
   répond `I(1/2 ; 2)`, `d` son équation.
 - **Carte** (L7, contenu seulement) : la construction telle qu'écrite (régénérée par
-  `constructionLatex`, jamais le texte saisi), sa nature (« point », « droite », « segment »,
-  « demi-droite », « cercle »), et une ligne `.valeur` : coordonnées exactes, longueur, équation
-  (`constructionSummaryOf`). Le champ de la carte relit le LaTeX de MathLive
+  `constructionLatex`, jamais le texte saisi). Sa nature (« point », « droite », « segment »,
+  « demi-droite », « cercle » : `figureNatureOf`) et ce qu'elle vaut — coordonnées exactes,
+  longueur, équation (`constructionSummaryOf`) — ne sont plus montrées sur la carte depuis le
+  2026-10-23 (#1627) : elles iront dans les Propriétés de l'objet. Le champ de la carte relit le LaTeX de MathLive
   (`\operatorname{milieu}\left(A,B\right)`, `\left(AB\right)`) ; préfixe `d =`.
 - **Vue Géométrie** : `syncFigure` reçoit les arbres calculés (curseurs gardés en lettres) et pose
   des éléments existants (droite, segment, demi-droite, cercle par rayon) ; un curseur cité suit
-  par `moveSlider`, sans reconstruire. Le nom d'un cercle est un texte de la figure, de sa
-  couleur, accroché à un point caché du cercle (aucune surface de `geometry-core` n'écrit le nom
+  par `moveSlider`, sans reconstruire. Le nom d'un cercle est un texte de la figure (de sa
+  couleur ; la vue Géométrie l'écrit en couleur du texte, `neutralLabels`), accroché à un point caché du cercle (aucune surface de `geometry-core` n'écrit le nom
   d'un cercle) : rien n'est désigné au survol, rien de plus à l'export.
 
 **Mesures** (géométrie, lot 2, PR 2 — L4) : des **valeurs** calculées par l'atelier, exactes
@@ -1452,6 +1453,8 @@ dépliées survivent à la fermeture), `inert` quand elle est fermée.
   boutons d'une ligne n'apparaissent qu'au survol ou au focus (toujours au toucher :
   `any-hover: none` ou `any-pointer: coarse`, pour un portable tactile à souris). Couleur
   d'accent `#a65800` en clair (5,0:1 sur le fond `#fafafa` de la console), `#ffc400` en sombre.
+- **Défilement** : une nouvelle entrée (tapée, ou écrite par une action de carte) fait descendre
+  l'historique tout en bas (`CalculView`, effet sur `desk.entries.length`, 2026-10-23).
 - **Menu de la console** : « Copier l'historique pour une fiche » et « Télécharger l'historique
   (ubumark) ». L'atelier s'enregistre par la barre d'icônes.
 
@@ -1562,10 +1565,11 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   (construction : « = », L2). Le champ (`DefinitionField`, `commit="validate"`) est rangé à
   Entrée ou à la sortie du champ — il l'était 0,3 s après la frappe. Le champ d'un point montre
   ses coordonnées en LaTeX (`\left(\sqrt{2};1\right)`, `fieldLatexOf`), relisibles.
-- **La nature** en gris SOUS la ligne, en tête de la ligne grise (« point », « droite »,
-  « segment », « cercle »… : `figureNatureOf`, `card-state.ts`) ; le constat d'une courbe vide
-  (C6) sous la ligne. Elle était au bout de la ligne : dans le panneau à sa largeur par défaut,
-  le champ d'une construction ne montrait plus que « cer » pour `cercle(O ; 3)` (2026-10-19).
+- **Ni nature ni mesure sous la ligne** (demande de David du 2026-10-23, #1627) : plus de
+  « POINT », « SEGMENT », ni de longueur, de coordonnées ou d'équation d'une construction.
+  `figureNatureOf` et `constructionSummaryOf` (`card-state.ts`) les calculent toujours, pour les
+  Propriétés de l'objet (PR 2 du chantier, `docs/wip/atelier-proprietes-progress.md`). Restent sous
+  la ligne les avertissements : le constat d'une courbe vide (C6), l'état, le message d'erreur.
 - **Une définition trop longue pour la ligne passe dessous, en entier** (`.corps` en
   `flex-wrap`, champ en `flex: 1 0 auto`, jamais plus étroit que son contenu) — même règle pour
   les cartes de fonction, de valeur et de suite (`carte-champ-largeur.svelte.test.ts`).
@@ -1575,17 +1579,17 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   largeur. L'état (« à compléter », « en attente ») passe sous la ligne. Avant (#1508), ⋮
   descendait avec le champ et se retrouvait seul dessous, à gauche (2026-10-19). Toutes les
   cartes ; celle d'une liste, dont l'aperçu est tronqué, en grille à deux colonnes.
-- **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : ce qu'elle vaut en gris après sa
-  nature (« cercle · … »), non éditable — coordonnées exactes, équation réduite, longueur
-  (`constructionSummaryOf`, L7) ; c'est la construction qu'on modifie. Un point par coordonnées
-  n'a que sa nature sous la ligne.
-  Un point approché s'y lit `E ≈ (1,5811 ; 1,2247)` (lot 2, PR 3). Un `point_sur` à position
+- **Une construction** (`I = [milieu(A, B)]`, `s = [[AB]]`) : on modifie la construction, pas
+  ce qu'elle vaut (un point approché vaut `E ≈ (1,5811 ; 1,2247)`, lot 2, PR 3). Un `point_sur` à position
   écrite a, sous la ligne, le **curseur de position** (`ValueSlider`, celui des valeurs : « Position
   de M », `position de M = 0,3`).
   L'icône de lien dit ce qu'elle suit (« I se construit à partir de A et B, et suit leurs
   changements », `followsOf`). En attente : « en attente » et sa raison.
 - **Le point de couleur** (`FigureStylePopover`) : couleur et taille d'un point, couleur,
-  épaisseur et style d'une courbe (`setFigureDisplay`). Il montre la couleur PEINTE : sans
+  épaisseur et style d'une courbe (`setFigureDisplay`). Un point de 10 px au centre d'une cible
+  de 24 px : la couleur passe par `--peinte`, lue par le seul `::after` (posée sur le bouton,
+  elle remplissait toute la cible, corrigé le 2026-10-23 ; de même `CurveStylePopover`). Il
+  montre la couleur PEINTE : sans
   couleur réglée, celle de la figure (`figureDefaultColor`), aucune pastille cochée. **Menu** : Affichage → Étiquette (point seulement), puis Renommer
   et Supprimer.
 - **Le modèle** : `PointDisplay { color?, size: 'small' | 'medium' | 'large', showLabel }` et
@@ -1601,8 +1605,10 @@ les deux, `FigureCard.svelte`, avec la grammaire des autres :
   moyen 5 px — le dessin d'avant —, grand 7 px : `POINT_RADII`) et son nom masqué
   (`Figure.setLabelHidden` ; `GeometryCanvas`, exports SVG et TikZ lisent `labelHidden` pour les
   points, Typst le lisait déjà) ; une courbe — équation ou construction, y compris chaque sorte
-  d'une conique à curseur — sa couleur, son trait et son épaisseur (`dashdot` → tirets). Le nom
-  d'un cercle construit suit sa couleur et reste écrit (une courbe n'a pas de `showLabel`). Un
+  d'une conique à curseur — sa couleur, son trait et son épaisseur (`dashdot` → tirets). Les noms
+  (étiquette d'un point ou d'une courbe, nom d'un cercle construit) restent en couleur du texte,
+  comme au cahier : `GeometryCanvas` reçoit `neutralLabels` (décision de David du 2026-10-23). Le
+  nom d'un cercle reste écrit (une courbe n'a pas de `showLabel`). Un
   réglage repeint sans reconstruire (`restyled`, `Figure.updateStyle`) ; sans réglage, le
   dessin reste celui d'avant ; un réglage qui disparaît refait la figure (`updateStyle`
   fusionne et ne sait pas rendre le défaut).

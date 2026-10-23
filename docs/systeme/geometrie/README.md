@@ -25,7 +25,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19 ; domaine `sur` : 2026-10-21). Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19 ; domaine `sur` : 2026-10-21 ; `neutralLabels` : 2026-10-23). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -365,7 +365,9 @@ geste ; `holds` dit quel élément porte la classe `dragging` ; la prop `canvasT
 (`components/geometry/canvas-tool.ts`, barre d'outils de l'atelier) passe avant tout : un appui
 relâché sans bouger de 4 px est un clic transmis avec le point visé — 8 px à la souris, 20 px au
 doigt —, rien ne se glisse, le survol met ce point en évidence et va à `hover` ; le calque
-`overlay`, au-dessus des objets, porte le fantôme d'une construction ; la prop `viewGestures`
+`overlay`, au-dessus des objets, porte le fantôme d'une construction ; la prop `neutralLabels`
+(vue Géométrie de l'atelier, défaut false) écrit les noms — étiquettes `.label` et textes
+`.geo-text` — en `var(--color-foreground)` au lieu de la couleur de l'objet (`labelFill`) ; la prop `viewGestures`
 (vue Géométrie de l'atelier, défaut false) ajoute les gestes de la vue : deux doigts la déplacent
 (leur milieu) et la zooment (leur écart), quel que soit l'outil — un appui d'outil en cours ne
 clique plus, un glisser délégué en cours ignore le second doigt ; sans outil, un glisser sur le

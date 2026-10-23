@@ -19,7 +19,7 @@ Demande : point de couleur trop gros ; plus de type (« POINT », « SEGMENT »)
 3. **Le point de couleur reste un raccourci** vers le style ; tous les réglages sont aussi dans Propriétés.
 4. **Deux PR** : PR 1 les corrections, PR 2 Propriétés + Renommer.
 
-Ajout du même jour : la console ne descendait pas sur une nouvelle entrée (PR 1).
+Ajouts du même jour (PR 1) : la console ne descendait pas sur une nouvelle entrée ; les noms dans la vue Géométrie (étiquettes, nom d'un cercle) passent en couleur du texte, comme au cahier — prop `neutralLabels` de `GeometryCanvas`, les autres toiles du site gardent leurs noms en couleur.
 
 ## Propriétés par objet (proposé, validé)
 

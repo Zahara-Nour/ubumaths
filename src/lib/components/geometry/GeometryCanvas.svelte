@@ -139,6 +139,13 @@
 		 */
 		viewGestures?: boolean;
 		/**
+		 * Les noms (étiquettes, textes) écrits en couleur du texte, et non de la
+		 * couleur de l'objet, comme au cahier (vue Géométrie de l'atelier,
+		 * décision de David du 2026-10-23). Défaut false : les autres toiles
+		 * gardent leurs noms en couleur.
+		 */
+		neutralLabels?: boolean;
+		/**
 		 * Calque dessiné SOUS les objets (repère d'une figure stockée), recalculé à
 		 * chaque déplacement ou zoom de la vue. Son contenu doit être du SVG
 		 * (composant en `<svelte:options namespace="svg" />`).
@@ -167,6 +174,7 @@
 		pointDrag,
 		canvasTool,
 		viewGestures = false,
+		neutralLabels = false,
 		underlay,
 		overlay
 	}: Props = $props();
@@ -325,6 +333,11 @@
 
 	// ─── Rough.js rendering ─────────────────────────────────────────
 	let rc = $derived(svgRef ? rough.svg(svgRef) : null);
+
+	/** La couleur d'un nom : celle de son objet, ou du texte (`neutralLabels`). */
+	function labelFill(color: string): string {
+		return neutralLabels ? 'var(--color-foreground)' : color;
+	}
 
 	function getRoughOpts(elId: string, sty: ReturnType<typeof resolveStyle>) {
 		return styleToRoughOptions(sty, seedFromId(elId, sty.roughSeed), sty.roughness);
@@ -1316,7 +1329,7 @@
 								x={lx}
 								y={ly}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1370,7 +1383,7 @@
 								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
 								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1415,7 +1428,7 @@
 								x={lx}
 								y={ly}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1480,7 +1493,7 @@
 								x={lx}
 								y={ly}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1645,7 +1658,7 @@
 								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
 								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1699,7 +1712,7 @@
 								x={mx + (el.labelOffset?.dx ?? sign * nx * offset)}
 								y={my + (el.labelOffset?.dy ?? sign * ny * offset)}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -1750,7 +1763,7 @@
 									x={(sx + ex) / 2 + (el.labelOffset?.dx ?? 6)}
 									y={(sy + ey) / 2 + (el.labelOffset?.dy ?? -8)}
 									class="label"
-									style:fill={sty.color}
+									style:fill={labelFill(sty.color)}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1887,7 +1900,7 @@
 									x={svgPt.x + (el.labelOffset?.dx ?? sign * nx * offset)}
 									y={svgPt.y + (el.labelOffset?.dy ?? sign * ny * offset)}
 									class="label"
-									style:fill={sty.color}
+									style:fill={labelFill(sty.color)}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1941,7 +1954,7 @@
 									x={labelPos.x + (el.labelOffset?.dx ?? 10)}
 									y={labelPos.y + (el.labelOffset?.dy ?? -10)}
 									class="label"
-									style:fill={sty.color}
+									style:fill={labelFill(sty.color)}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1950,7 +1963,7 @@
 									x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
 									y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
 									class="label"
-									style:fill={sty.color}
+									style:fill={labelFill(sty.color)}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -1990,7 +2003,7 @@
 									x={svgPt.x + (el.labelOffset?.dx ?? 10)}
 									y={svgPt.y + (el.labelOffset?.dy ?? -10)}
 									class="label"
-									style:fill={sty.color}
+									style:fill={labelFill(sty.color)}
 									stroke-width="3"
 									paint-order="stroke">{el.label}</text
 								>
@@ -2027,7 +2040,7 @@
 								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
 								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -2053,7 +2066,7 @@
 								x={dims.width / 2 + (el.labelOffset?.dx ?? 10)}
 								y={dims.height / 2 + (el.labelOffset?.dy ?? -10)}
 								class="label"
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke">{el.label}</text
 							>
@@ -2255,7 +2268,7 @@
 								y={ly}
 								class="label"
 								class:label-dragging={draggingLabelId === el.id}
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								stroke-width="3"
 								paint-order="stroke"
 								onpointerdown={(e) => onLabelPointerDown(e, el.id)}>{el.label}</text
@@ -2354,7 +2367,7 @@
 							<text
 								x={svg.x}
 								y={svg.y}
-								style:fill={sty.color}
+								style:fill={labelFill(sty.color)}
 								opacity={sty.opacity}
 								class="geo-text">{svg.text}</text
 							>
