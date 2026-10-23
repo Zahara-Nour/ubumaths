@@ -6,22 +6,25 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, étape d faite, page à cocher de l'étape e publiée._
+_Mis à jour le 2026-10-23, recos de la page validées en bloc, report dans les CSV en cours._
 
-- **État** : étapes a-d faites. Verdicts : `passe-lycee/analyse/<lot>.csv` (7 CSV, 650 lignes modèle × programme,
-  contrôlés : couverture, codes, programme) ; 31 questions dans `analyse/questions-modeles.json`. Page à cocher :
-  https://claude.ai/artifact/7b9nk1aKzy8xMwNPpr5a3A (générateur `analyse/page/gen.mjs`, collections `questions`,
-  `niveaux` = programmes, `modeles` = `<template_id>__<programme>`).
-- **Prochaine action** : lire les réponses de David (ArtifactData `list` des 3 collections), les reporter dans les CSV,
-  puis lister les modifications de modèles et préparer la migration des tags (étape e).
-- **En attente de David** : la page à cocher.
+- **État** : étapes a-d faites ; page à cocher validée en bloc par David (toutes les recos). Un agent reportait les
+  recos dans les 7 CSV (`analyse/<lot>.csv` : A_TRANCHER → verdict final, préfixe « Décision de David (2026-10-23,
+  reco m-…) » ; `decision`/`decide_le` dans `questions-modeles.json`). **Vérifier qu'il a fini** : `git status`
+  (CSV modifiés non commités), plus aucune ligne A_TRANCHER, TAG/MODIFIER à code unique du bon programme ; sinon
+  refaire le report. Puis commiter.
+- **Prochaine action** : `python3 compat-noeuds.py liste` (dans `analyse/`, état prod `etat-prod-2026-10-23/`) :
+  avant report, 460/502 tags passent le trigger ; 20 = point sur une sous-notion sœur → R2 (déplacer le modèle) ;
+  22 = autre notion → liste à faire trancher par David ; 10 modèles ont des points sur des notions différentes.
+  Ensuite : générateur de migration (modèle : `arbre-notions/analyse/lot-2bis-migration.py`), worktree, PR.
+- **En attente de David** : rien (décisions de migration prises, cf. journal du 2026-10-23).
 - **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031) et 2 points neufs
   (exponentielle, à côté de TSPE-444 et TCOMP-236). Automatisme 1re spé BO l. 274 sans point. 85 points techno sans
-  borne ; 1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Modèle `9a6087c5` : 2 % d'échecs. Instantané des
-  modèles : MCP seulement (clé de service refusée par le classifieur). Points de raisonnement absents en 1re spé
-  (question m-transversal-1).
+  borne ; 1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Modèle `9a6087c5` : 2 % d'échecs. Instantanés de
+  prod : MCP seulement (clé de service refusée). Lot à part après la migration : MODIFIER + scissions des
+  TAG_PAR_VARIATION.
 - **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
-  retard sur `main` : les commits partent sur `main`).
+  retard sur `main` : à avancer sur `origin/main` pour la PR de migration).
 
 ## Les 5 étapes
 
@@ -120,3 +123,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   parallèle dans un même dossier temporaire, un a écrasé la liste d'un autre (repris, vérifié).
 - **2026-10-23 — Étape e : page à cocher publiée.** Questions mises en forme par un agent Opus (31 dont 2 pour
   information, aucune A_TRANCHER orpheline) ; générateur du collège adapté (une ligne par modèle et programme).
+- **2026-10-23 — Page à cocher : recos validées en bloc (David).** « je ne peux pas vérifier à la main c'est trop
+  long. je valide tes recos » : les 29 questions = la reco, les 650 verdicts tels quels. Puis, pour la migration :
+  (1) **TAG_PAR_VARIATION → pas de tag**, scission des modèles dans un lot à part, après la migration (comme les
+  MODIFIER, tagués seulement après modification) ; (2) **tags non confirmés retirés** (≈ 197 des 473, ≈ 92 modèles
+  sans tag ; prod : 0 état, 0 journal, 0 exercice sur un point du lycée) ; (3) **question d'accès : personne ne gagne
+  d'accès** (aucune règle ne change).
