@@ -23,6 +23,7 @@
 		defaultOpenIds,
 		hideEmptyNodes,
 		isEmptyNode,
+		kindLabel,
 		linkPath,
 		pointHolderIds,
 		type MapBranch,
@@ -132,7 +133,9 @@
 		data-exigence={point.exigence}
 	>
 		<div class="font-mono text-[11px] text-muted-foreground tabular-nums">
-			{point.code}{#if approf}<span class="ml-2 font-sans">· approfondissement</span>{/if}
+			{point.code}<span class="ml-2 font-sans">· {kindLabel(point.kind)}</span>{#if approf}<span
+					class="ml-1 font-sans">· approfondissement</span
+				>{/if}
 		</div>
 		<div class:text-muted-foreground={approf}><InlineMarkdown content={point.name} /></div>
 	</div>

@@ -16,7 +16,11 @@
  */
 
 import type { Tables } from '$lib/types/database';
-import type { ClassificationNode, CurriculumExigence } from '$lib/types/database-helpers';
+import type {
+	ClassificationNode,
+	CurriculumExigence,
+	CurriculumPointKind
+} from '$lib/types/database-helpers';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -25,7 +29,15 @@ import type { ClassificationNode, CurriculumExigence } from '$lib/types/database
 /** Ligne de point telle que la base la rend. */
 export type MapPointRow = Pick<
 	Tables<'curriculum_points'>,
-	'id' | 'code' | 'name' | 'display_order' | 'archived_at' | 'node_id' | 'grade' | 'exigence'
+	| 'id'
+	| 'code'
+	| 'name'
+	| 'display_order'
+	| 'archived_at'
+	| 'node_id'
+	| 'grade'
+	| 'exigence'
+	| 'kind'
 >;
 
 export interface MapPoint {
@@ -33,6 +45,7 @@ export interface MapPoint {
 	code: string;
 	name: string;
 	exigence: CurriculumExigence;
+	kind: CurriculumPointKind;
 }
 
 export interface MapCounts {
@@ -104,6 +117,14 @@ export const BRANCH_COLORS: readonly (readonly [string, string])[] = [
 
 const EXIGENCES: readonly CurriculumExigence[] = ['attendu', 'approfondissement'];
 
+/** Type d'un point, tel qu'on le nomme à l'écran. */
+const KIND_LABELS: Record<CurriculumPointKind, string> = {
+	connaissance: 'connaissance',
+	savoir_faire: 'savoir-faire',
+	demonstration: 'démonstration',
+	algorithme: 'algorithme'
+};
+
 // ---------------------------------------------------------------------------
 // Fonctions
 // ---------------------------------------------------------------------------
@@ -118,6 +139,15 @@ function byBoOrder(a: MapPointRow, b: MapPointRow) {
 
 function isExigence(value: string): value is CurriculumExigence {
 	return (EXIGENCES as readonly string[]).includes(value);
+}
+
+function isKind(value: string): value is CurriculumPointKind {
+	return Object.hasOwn(KIND_LABELS, value);
+}
+
+/** Le type d'un point en français : « savoir-faire », « démonstration »… */
+export function kindLabel(kind: CurriculumPointKind): string {
+	return KIND_LABELS[kind];
 }
 
 function countPoints(points: MapPoint[]): MapCounts {
@@ -170,8 +200,15 @@ export function buildProgrammeMap(points: MapPointRow[], nodes: ClassificationNo
 		if (!isExigence(row.exigence)) {
 			throw new Error(`Point ${row.code} : exigence inconnue « ${row.exigence} »`);
 		}
+		if (!isKind(row.kind)) throw new Error(`Point ${row.code} : type inconnu « ${row.kind} »`);
 		const list = pointsByNode.get(target.id) ?? [];
-		list.push({ id: row.id, code: row.code, name: row.name, exigence: row.exigence });
+		list.push({
+			id: row.id,
+			code: row.code,
+			name: row.name,
+			exigence: row.exigence,
+			kind: row.kind
+		});
 		pointsByNode.set(target.id, list);
 	}
 

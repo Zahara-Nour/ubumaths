@@ -128,7 +128,7 @@ export async function getProgrammeMap(
 	const [pointsResult, active] = await Promise.all([
 		supabase
 			.from('curriculum_points')
-			.select('id, code, name, display_order, archived_at, node_id, grade, exigence')
+			.select('id, code, name, display_order, archived_at, node_id, grade, exigence, kind')
 			.eq('grade', grade)
 			.is('archived_at', null)
 			.order('display_order', { ascending: true })
