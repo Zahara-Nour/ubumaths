@@ -26,12 +26,17 @@ const SCRIPT_EN_ERREUR = [
 	'd = parallele(P, A, B) @euclide @double_perpendiculaire'
 ].join('\n');
 
+// La consigne finale marque le dernier pas de la frise.
 const SCRIPT_SANS_ERREUR = [
 	'A = point(0, 0)',
 	'B = point(4, 0)',
 	'P = point(1, 3)',
-	'd = parallele(P, A, B)'
+	'd = parallele(P, A, B)',
+	'@instruction("Fin")'
 ].join('\n');
+
+// La première instruction échoue : la frise n'a aucun pas.
+const SCRIPT_EN_ERREUR_DES_LE_DEBUT = 'd = droite(X, Y)';
 
 function stopLine(container: HTMLElement): string | null {
 	return container.querySelector('[data-testid="arret-execution"]')?.textContent?.trim() ?? null;
@@ -105,9 +110,31 @@ describe('ConstructionPlayer — arrêt d’exécution signalé', () => {
 			width: 400,
 			height: 300
 		});
+		await next(container, 5);
+		await expect.poll(() => authorInstruction(container)).toBe('Fin');
+		expect(stopLine(container)).toBeNull();
+	});
+
+	it('première instruction en erreur : la ligne s’affiche dès le chargement', async () => {
+		const { container } = await render(ConstructionPlayer, {
+			script: SCRIPT_EN_ERREUR_DES_LE_DEBUT,
+			width: 400,
+			height: 300
+		});
+		await expect.poll(() => stopLine(container)).toMatch(/^⚠ Arrêt à la ligne 1 : /);
+	});
+
+	it('script corrigé : la ligne disparaît', async () => {
+		const { container, rerender } = await render(ConstructionPlayer, {
+			script: SCRIPT_EN_ERREUR,
+			width: 400,
+			height: 300
+		});
 		await next(container, 4);
-		// Laisse le temps au lecteur de rendre le dernier pas
-		await expect.poll(() => container.querySelector('canvas, svg')).not.toBeNull();
+		await expect.poll(() => stopLine(container)).not.toBeNull();
+		await rerender({ script: SCRIPT_SANS_ERREUR });
+		await next(container, 5);
+		await expect.poll(() => authorInstruction(container)).toBe('Fin');
 		expect(stopLine(container)).toBeNull();
 	});
 });
