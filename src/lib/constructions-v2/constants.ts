@@ -23,6 +23,12 @@ export const MAX_STEP_DURATION = 5000;
 /** Automatic pause after drawing, in ms. */
 export const AUTO_PAUSE_BETWEEN_STEPS = 500;
 
+/** Pause de lecture par caractère de consigne (≈ 15 caractères lus par seconde), en ms. */
+export const READING_MS_PER_CHAR = 60;
+
+/** Pause de lecture maximale après une sous-étape, en ms. */
+export const MAX_READING_PAUSE = 4000;
+
 /** Fixed duration of ease-in / ease-out ramp for instrument movement, in ms. */
 export const INSTRUMENT_RAMP_MS = 300;
 

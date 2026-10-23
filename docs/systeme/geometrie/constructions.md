@@ -58,16 +58,16 @@ Une entrée se découpe en **déplacement → levée du compas → tracé → po
 bornes sont des fractions de la durée (`movePhaseEnd`, `drawPhaseStart`, `drawPhaseEnd`,
 `pausePhaseStart`). Constantes : `constants.ts`.
 
-| Quantité                        | Règle (code : `executor.ts:1188-1305` et `:1312-1495`)                                                                                                              |
-| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Échelle des durées              | `PPU = 40` px par unité, codé en dur (`executor.ts:1203`, `:1322`), indépendant du zoom                                                                             |
-| Tracé                           | longueur (unités) × 40 × `MS_PER_PIXEL` (8) ÷ vitesse, borné à [`MIN_STEP_DURATION` 1000, `MAX_STEP_DURATION` 5000] ms ; 0 pour `compass-measure`                   |
-| Déplacement d'instrument        | max(600, croisière (+ `INSTRUMENT_RAMP_MS` 300 si > 300)) ; croisière = max(distance, rotation × `MS_PER_DEGREE` 20) ÷ (vitesse × `INSTRUMENT_MOVE_SPEED_FACTOR` 3) |
-| Compas                          | + `COMPASS_RAISE_MS` 400 avant le tracé, + `COMPASS_LOWER_MS` 400 après                                                                                             |
-| Pause automatique               | + `AUTO_PAUSE_BETWEEN_STEPS` 500 ms après tout tracé ou fondu                                                                                                       |
-| Fondu (points, droites)         | `DEFAULT_STEP_DURATION` 500 ÷ vitesse, borné à [100, 5000], + 500                                                                                                   |
-| Directive                       | 0 ms, sauf `@pause(ms)` (défaut `DEFAULT_PAUSE_DURATION` 300)                                                                                                       |
-| Position de départ d'instrument | coin (−8, 6) en unités math (`executor.ts:757-760`, `:1030-1033`)                                                                                                   |
+| Quantité                        | Règle (code : `executor.ts:1188-1305` et `:1312-1495`)                                                                                                                                                                                                     |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Échelle des durées              | `PPU = 40` px par unité, codé en dur (`executor.ts:1203`, `:1322`), indépendant du zoom                                                                                                                                                                    |
+| Tracé                           | longueur (unités) × 40 × `MS_PER_PIXEL` (8) ÷ vitesse, borné à [`MIN_STEP_DURATION` 1000, `MAX_STEP_DURATION` 5000] ms ; 0 pour `compass-measure`                                                                                                          |
+| Déplacement d'instrument        | max(600, croisière (+ `INSTRUMENT_RAMP_MS` 300 si > 300)) ; croisière = max(distance, rotation × `MS_PER_DEGREE` 20) ÷ (vitesse × `INSTRUMENT_MOVE_SPEED_FACTOR` 3)                                                                                        |
+| Compas                          | + `COMPASS_RAISE_MS` 400 avant le tracé, + `COMPASS_LOWER_MS` 400 après                                                                                                                                                                                    |
+| Pause automatique               | + `AUTO_PAUSE_BETWEEN_STEPS` 500 ms après tout tracé ou fondu ; sous-étape chorégraphiée : **pause de lecture** `readingPauseMs` = consigne × `READING_MS_PER_CHAR` 60 ms, bornée à [500, `MAX_READING_PAUSE` 4000], non divisée par la vitesse `@vitesse` |
+| Fondu (points, droites)         | `DEFAULT_STEP_DURATION` 500 ÷ vitesse, borné à [100, 5000], + la pause ci-dessus ; en sous-étape, le fondu finit à `drawPhaseEnd` et l'élément reste immobile pendant la pause (`fadeInProgress`, `render-helpers.ts`)                                     |
+| Directive                       | 0 ms, sauf `@pause(ms)` (défaut `DEFAULT_PAUSE_DURATION` 300)                                                                                                                                                                                              |
+| Position de départ d'instrument | coin (−8, 6) en unités math (`executor.ts:757-760`, `:1030-1033`)                                                                                                                                                                                          |
 
 ## 2. Directives `@…` (une ligne à elles seules)
 
@@ -202,7 +202,7 @@ la graduation 3,2 », « On marque I à 3,2 cm de A ». Lecture arrondie au mill
 sur la valeur lue (6,3 ÷ 2 = 3,15), virgule décimale, pas de « ,0 » ; I est le milieu exact. Le 0 se
 pose sur l'extrémité la plus à gauche (la plus basse si vertical). Lecture nulle → « A et B sont
 confondus » ; lecture > 15 cm (longueur de la règle) → erreur. Codage AI = IB : deux `segmentMark`
-étiquetés `marker`.
+étiquetés `marker`. Le codage n'est posé que si un segment visible joint A et B (`segment(A, B)` ou `segment(B, A)` tracé, ou `milieu(s)`) : sans segment, on ne code rien.
 
 Aucune voie `@mesure` pour un autre builtin, ni de voie pour un builtin hors des sept ci-dessus.
 Le repli « hérité » s'applique aussi quand une chorégraphie rend 0 sous-étape

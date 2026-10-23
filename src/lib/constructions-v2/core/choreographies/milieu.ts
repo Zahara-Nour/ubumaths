@@ -12,9 +12,10 @@
  * vertical) : les chiffres de la règle se lisent à l'endroit. Le calcul de
  * la consigne part de la valeur lue ; le point, lui, est le milieu exact.
  *
- * Le codage AI = IB (deux marques égales) est rangé avec les marqueurs
- * d'angle droit des voies `@equerre` : visible en `@complet`, retiré par
- * `-marqueurs`.
+ * Le codage AI = IB (deux marques égales) porte sur le segment [AB] : il
+ * n'est posé que si le script trace ce segment (visible). Il est rangé avec
+ * les marqueurs d'angle droit des voies `@equerre` : visible en `@complet`,
+ * retiré par `-marqueurs`.
  */
 
 import {
@@ -25,6 +26,8 @@ import {
 	type Voie
 } from './types';
 import { capitalize, de, nom, role, type Role } from './names';
+import type { Figure } from '$lib/geometry-core/graph/figure';
+import { isSegment } from '$lib/geometry-core/types/elements';
 
 /** Longueur de la règle (`Ruler.svelte`, `length = 15`), en unités = cm. */
 const RULER_LENGTH = 15;
@@ -43,6 +46,18 @@ function formatCm(value: number): string {
 /** « AB » si les deux extrémités sont nommées, sinon null. */
 function segmentName(a: Role, b: Role): string | null {
 	return a.name && b.name ? `${a.name}${b.name}` : null;
+}
+
+/** Un segment visible de la figure joint-il A et B (dans un sens ou l'autre) ? */
+function hasVisibleSegment(figure: Figure, Aid: string, Bid: string): boolean {
+	return figure
+		.getAllElements()
+		.some(
+			(el) =>
+				isSegment(el) &&
+				el.visible !== false &&
+				((el.startId === Aid && el.endId === Bid) || (el.startId === Bid && el.endId === Aid))
+		);
 }
 
 const regleGradueeChoreography: ChoreographyFn = (ctx) => {
@@ -85,11 +100,19 @@ const regleGradueeChoreography: ChoreographyFn = (ctx) => {
 	// Le builtin crée le milieu visible : il n'apparaît qu'en SS3.
 	figure.hideElement(principalId);
 
-	// Codage AI = IB, créé caché ; la visibilité finale le range en marqueur.
-	const markAI = figure.createSegmentMark(Aid, principalId, { markCount: 2 });
-	figure.hideElement(markAI);
-	const markIB = figure.createSegmentMark(principalId, Bid, { markCount: 2 });
-	figure.hideElement(markIB);
+	// Codage AI = IB, seulement sur un segment [AB] tracé ; créé caché, la
+	// visibilité finale le range en marqueur.
+	const marks: string[] = [];
+	if (hasVisibleSegment(figure, Aid, Bid)) {
+		for (const [from, to] of [
+			[Aid, principalId],
+			[principalId, Bid]
+		]) {
+			const mark = figure.createSegmentMark(from, to, { markCount: 2 });
+			figure.hideElement(mark);
+			marks.push(mark);
+		}
+	}
 
 	const reading = ab ? `${ab} = ${formatCm(read)} cm` : `la longueur : ${formatCm(read)} cm`;
 	const subSteps: SubStep[] = [
@@ -131,11 +154,8 @@ const regleGradueeChoreography: ChoreographyFn = (ctx) => {
 		produced: {
 			principal: principalId,
 			charnieres: [],
-			traces: [markAI, markIB],
-			traceTags: new Map<string, TraceTag>([
-				[markAI, 'marker'],
-				[markIB, 'marker']
-			])
+			traces: marks,
+			traceTags: new Map<string, TraceTag>(marks.map((id) => [id, 'marker']))
 		}
 	};
 };
@@ -146,7 +166,7 @@ export const VOIES_MILIEU_MESURE: readonly Voie[] = [
 		nom_humain: 'À la règle graduée',
 		source: 'Construction de 6e',
 		description:
-			'On pose le 0 de la règle sur une extrémité de `[AB]`, on lit la longueur au millimètre, on la divise par 2 et on marque le milieu à cette graduation. Le codage `AI = IB` apparaît en `@complet`.',
+			'On pose le 0 de la règle sur une extrémité de `[AB]`, on lit la longueur au millimètre, on la divise par 2 et on marque le milieu à cette graduation. Le codage `AI = IB` apparaît en `@complet` si le segment `[AB]` est tracé.',
 		defaut: true,
 		choreography: regleGradueeChoreography
 	}

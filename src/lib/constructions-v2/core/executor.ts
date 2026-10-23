@@ -74,6 +74,8 @@ import {
 	MS_PER_PIXEL,
 	MS_PER_DEGREE,
 	AUTO_PAUSE_BETWEEN_STEPS,
+	READING_MS_PER_CHAR,
+	MAX_READING_PAUSE,
 	INSTRUMENT_RAMP_MS,
 	INSTRUMENT_MOVE_SPEED_FACTOR,
 	COMPASS_RAISE_MS,
@@ -160,6 +162,16 @@ function expandSegmentArgument(
 	const segmentId = symbolFigureId(callExpr.args[0], stepper);
 	const el = segmentId ? stepper.figure.getElementById(segmentId) : undefined;
 	return el && isSegment(el) ? [el.startId, el.endId] : callArgs;
+}
+
+/**
+ * Pause après une sous-étape chorégraphiée : le temps de lire sa consigne
+ * (`READING_MS_PER_CHAR` par caractère), entre la pause par défaut et
+ * `MAX_READING_PAUSE`. Sans consigne : la pause par défaut.
+ */
+export function readingPauseMs(instruction: string | undefined): number {
+	const reading = (instruction?.length ?? 0) * READING_MS_PER_CHAR;
+	return Math.min(MAX_READING_PAUSE, Math.max(AUTO_PAUSE_BETWEEN_STEPS, reading));
 }
 
 /**
@@ -1333,20 +1345,20 @@ export class ConstructionExecutor {
 	} {
 		const PPU = 40;
 
-		// Fade-in sub-steps (no instrument, no progressive trace) use the
-		// short default duration + auto-pause to let the user notice the
-		// elements settle into place.
+		// Fade-in sub-steps (no instrument, no progressive trace) : short fade,
+		// then the reading pause. The fade ends at `drawPhaseEnd` ; the canvas
+		// holds the elements still during the pause (`fadeInProgress`).
 		if (subStep.kind === 'point-fade-in' || subStep.kind === 'line-fade-in') {
 			const adjusted = Math.round(DEFAULT_STEP_DURATION / speedFactor);
-			const stepDur =
-				Math.max(100, Math.min(MAX_STEP_DURATION, adjusted)) + AUTO_PAUSE_BETWEEN_STEPS;
+			const fade = Math.max(100, Math.min(MAX_STEP_DURATION, adjusted));
+			const stepDur = fade + readingPauseMs(subStep.instruction);
 			return {
 				totalDuration: stepDur,
 				phases: {
 					movePhaseEnd: 0,
 					drawPhaseStart: 0,
-					drawPhaseEnd: 1,
-					pausePhaseStart: 1,
+					drawPhaseEnd: fade / stepDur,
+					pausePhaseStart: fade / stepDur,
 					moveDurationMs: 0
 				},
 				newInstrumentPos: null
@@ -1415,7 +1427,11 @@ export class ConstructionExecutor {
 		const lowerDuration = isCompassDraw ? COMPASS_LOWER_MS : 0;
 
 		const totalDuration =
-			moveDuration + raiseDuration + drawDuration + lowerDuration + AUTO_PAUSE_BETWEEN_STEPS;
+			moveDuration +
+			raiseDuration +
+			drawDuration +
+			lowerDuration +
+			readingPauseMs(subStep.instruction);
 		const moveEnd = moveDuration / totalDuration;
 		const drawStart = (moveDuration + raiseDuration) / totalDuration;
 		const drawEnd = (moveDuration + raiseDuration + drawDuration) / totalDuration;
