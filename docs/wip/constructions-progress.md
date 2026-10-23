@@ -2,11 +2,12 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1653 (lot 12, finitions)._
+_Mis à jour le 2026-10-23, après #1653 (lot 12, finitions) et le ménage des worktrees._
 
-- **État** : lots 1 à 12 mergés ; #1653 (bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre, trait visible le long de la règle) mergée, pas encore en prod. Worktree `-finitions` supprimé, vérifications notées dans `docs/wip/verifications-manuelles.md`.
-- **Prochaine action** : aucune en cours ; attendre que David tranche les points ci-dessous.
-- **En attente de David** : (1) `@arc_milieu` sur un angle plat : refus recommandé (le milieu de [A′B′] est V ; message vers `@arcs_egaux`/`@mesure`), pas encore tranché. (2) Vérifications #1621 → #1653 (serveurs 5183-5186 pour les worktrees encore là, sinon `main` sur 5175), puis suppression des worktrees mergés (`-auxiliaires`, `-bissectrice-mesure`, `-consignes`, `-droite`, `-mediatrice-mesure`, `-mesure`, `-pause`, `-rythme`, `ubumaths-wt-constructions`). (3) Suites : consignes automatiques (reco : phase 0) ; marqueurs d'angle droit seulement en `@complet`.
+- **État** : lots 1 à 12 mergés, pas encore en prod. Les 10 worktrees `constructions*` et leurs serveurs sont supprimés ; les vérifications #1621 → #1653 se font sur `main` (5175), lignes corrigées dans `docs/wip/verifications-manuelles.md` (carré en P, E\*/F\*).
+- **Tranché (David suit la reco, 2026-10-23)** : `@arc_milieu` sur un angle plat → refus avec renvoi vers `@arcs_egaux`/`@mesure` (déjà le comportement du code). Marqueurs d'angle droit : déjà visibles seulement en `@complet` ou `+marqueurs` (`visibility.ts`) ; c'était une vérification, pas une suite, rien à coder.
+- **Prochaine action** : phase 0 des consignes automatiques (compter d'abord les constructions concernées), à présenter à David avant tout code.
+- **En attente de David** : ses vérifications #1621 → #1653 ; le go pour la phase 0 des consignes automatiques.
 - **Pièges en cours** : `e` = constante d'Euler. Commits et PR : aucune mention Claude.
 - **Worktree / branche** : aucun (prochain lot : nouveau worktree depuis `origin/main`).
 
