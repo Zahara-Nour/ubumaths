@@ -349,7 +349,15 @@ function piTimes(factor: MathNode): MathNode {
 	const withRoot = factor.type === 'multiplication' && isSqrt(factor.right);
 	const coefficient = withRoot ? factor.left : factor;
 	const fraction = rationalOf(coefficient);
-	if (fraction !== null && fraction.d !== 1n && fraction.n > 0n) {
+	// Au-delà de 2^53, `Number()` fausserait les chiffres : on garde `(n/d)π`
+	const safe = (k: bigint) => k <= BigInt(Number.MAX_SAFE_INTEGER);
+	if (
+		fraction !== null &&
+		fraction.d !== 1n &&
+		fraction.n > 0n &&
+		safe(fraction.n) &&
+		safe(fraction.d)
+	) {
 		const piPart =
 			fraction.n === 1n ? pi : multiply(numericNode(Number(fraction.n)), pi, 'implicit');
 		const top = withRoot ? multiply(piPart, factor.right, 'implicit') : piPart;

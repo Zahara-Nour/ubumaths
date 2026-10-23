@@ -267,6 +267,13 @@ describe('figurePropertiesOf : un cercle', () => {
 		expect(row(s, 'c', 'Aire')?.text).toBe('20π/9');
 	});
 
+	it('rayon 1,234567 : l’aire garde ses chiffres exacts (au-delà de 2^53)', () => {
+		const s = plane('c = cercle(O ; 1.234567)');
+		const area = row(s, 'c', 'Aire')?.text ?? '';
+		expect(area).toContain('90846757739126688');
+		expect(area).toContain('59604644775390625');
+	});
+
 	it('rayon 1/2 : périmètre π et aire π/4', () => {
 		const s = plane('c : 4x^2+4y^2=1');
 		expect(row(s, 'c', 'Périmètre')?.text).toBe('π');
