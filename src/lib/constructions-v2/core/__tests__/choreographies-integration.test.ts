@@ -15,6 +15,10 @@ import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { numeric } from '$lib/geometry-core/types/geo-value';
+import {
+	computeAngleGeometry,
+	projectAngleEndpoints
+} from '$lib/geometry-core/rendering/angle-geometry-shared';
 
 describe('ConstructionExecutor — decorator wiring (Phase 3)', () => {
 	it('no decorators → currentDecoratorTriple is null after step', () => {
@@ -1157,6 +1161,278 @@ describe('parallele @double_perpendiculaire — P sur (AB)', () => {
 			expect(exec.currentVoie?.id).toBe(id);
 		}
 	});
+});
+
+// -----------------------------------------------------------------------------
+// Lot 5 — double perpendiculaire sur d'autres décors : (AB) verticale (P à
+// gauche, P à droite) et (AB) oblique avec P en dessous. On asserte ce que
+// voit l'élève : droites finales, poses de l'équerre (coin et branches),
+// marqueurs d'angle droit, point R du compas.
+// -----------------------------------------------------------------------------
+
+interface DpDecor {
+	name: string;
+	A: Pt;
+	B: Pt;
+	P: Pt;
+}
+
+const DP_DECORS: readonly DpDecor[] = [
+	{ name: '(AB) verticale, P à gauche', A: { x: 0, y: 0 }, B: { x: 0, y: 4 }, P: { x: -3, y: 1 } },
+	{ name: '(AB) verticale, P à droite', A: { x: 0, y: 0 }, B: { x: 0, y: 4 }, P: { x: 3, y: 1 } },
+	{ name: '(AB) oblique, P en dessous', A: { x: 0, y: 0 }, B: { x: 4, y: 3 }, P: { x: 4, y: -1 } }
+];
+
+// Longueur de la branche verticale de l'équerre (SetSquare : HAUTEUR_MATH).
+const SET_SQUARE_VERTICAL_LEG = 223 / 40;
+
+function decorScript(decor: DpDecor, decorators: string): string {
+	const fmt = (v: number) => String(Number(v.toFixed(9)));
+	return [
+		`A = point(${fmt(decor.A.x)}, ${fmt(decor.A.y)})`,
+		`B = point(${fmt(decor.B.x)}, ${fmt(decor.B.y)})`,
+		`P = point(${fmt(decor.P.x)}, ${fmt(decor.P.y)})`,
+		`d = parallele(P, A, B) ${decorators}`
+	].join('\n');
+}
+
+function unit(v: Pt): Pt {
+	const len = Math.hypot(v.x, v.y);
+	return { x: v.x / len, y: v.y / len };
+}
+
+/** Pied F de la perpendiculaire à (AB) issue de P. */
+function footOn(A: Pt, B: Pt, P: Pt): Pt {
+	const u = unit(minus(B, A));
+	const t = dot(minus(P, A), u);
+	return { x: A.x + t * u.x, y: A.y + t * u.y };
+}
+
+/** Symétrique de P par rapport à (AB) : P passe de l'autre côté. */
+function mirrorAcross(A: Pt, B: Pt, P: Pt): Pt {
+	const F = footOn(A, B, P);
+	return { x: 2 * F.x - P.x, y: 2 * F.y - P.y };
+}
+
+/** Côté de Q par rapport à (AB) : signe du produit vectoriel AB ∧ AQ. */
+function sideOf(A: Pt, B: Pt, Q: Pt): number {
+	return Math.sign(cross(minus(B, A), minus(Q, A)));
+}
+
+/** Distance de Q à la droite portée par (p1, p2). */
+function distToLine(p1: Pt, p2: Pt, Q: Pt): number {
+	const dir = minus(p2, p1);
+	return Math.abs(cross(dir, minus(Q, p1))) / Math.hypot(dir.x, dir.y);
+}
+
+/**
+ * Branches de l'équerre posée : rotation θ (degrés, repère mathématique),
+ * coin = angle droit ; branche horizontale selon (cos θ, sin θ), branche
+ * verticale tournée de +90° (SetSquare.svelte : verticale vers −y écran,
+ * le canvas applique rotate(−θ) et retourne l'axe des y).
+ */
+function setSquareLegs(s: SubStep): { corner: Pt; h: Pt; v: Pt } {
+	const t = s.instrumentTarget;
+	if (!t) throw new Error('sous-étape sans pose d’instrument');
+	const rot = ((t.rotation ?? 0) * Math.PI) / 180;
+	return {
+		corner: { x: t.x, y: t.y },
+		h: { x: Math.cos(rot), y: Math.sin(rot) },
+		v: { x: -Math.sin(rot), y: Math.cos(rot) }
+	};
+}
+
+/** Marqueurs d'angle droit (carré) : sommet et coin du petit carré, tels que rendus. */
+function rightAngleMarkers(
+	exec: ConstructionExecutor
+): { vertex: Pt; corner: Pt; interior: number }[] {
+	const produced = exec.lastChoreographyResult!.produced;
+	const markers: { vertex: Pt; corner: Pt; interior: number }[] = [];
+	for (const id of produced.traces) {
+		if (produced.traceTags?.get(id) !== 'marker') continue;
+		const el = exec.figure.getElementById(id);
+		if (el?.type !== 'angle' || el.marque !== 'carre') continue;
+		const coords = projectAngleEndpoints(el, exec.figure, (x, y) => ({ x, y }));
+		if (!coords) throw new Error(`marqueur dégénéré : ${id}`);
+		const g = computeAngleGeometry(el, coords, {
+			arcRadius: 0.5,
+			arcSpacing: 0.1,
+			rightAngleSize: 0.3,
+			labelOffset: 0.2
+		});
+		if (!g?.rightAngle) throw new Error(`marqueur sans carré : ${id}`);
+		markers.push({
+			vertex: { x: g.vertexX, y: g.vertexY },
+			corner: { x: g.rightAngle.cornerX, y: g.rightAngle.cornerY },
+			interior: g.interiorRad
+		});
+	}
+	return markers;
+}
+
+function expectNear(p: Pt, q: Pt): void {
+	expect(p.x).toBeCloseTo(q.x, 9);
+	expect(p.y).toBeCloseTo(q.y, 9);
+}
+
+/** La droite (ou le segment) `id` est parallèle à (AB) et passe par P. */
+function expectParallelThrough(exec: ConstructionExecutor, id: string, d: DpDecor): void {
+	const [p1, p2] = carriers(exec, id);
+	const dir = unit(minus(p2, p1));
+	const u = unit(minus(d.B, d.A));
+	expect(cross(dir, u)).toBeCloseTo(0, 9);
+	expect(distToLine(p1, p2, d.P)).toBeCloseTo(0, 9);
+}
+
+/** La droite `id` est perpendiculaire à (AB) et passe par P. */
+function expectPerpendicularThrough(exec: ConstructionExecutor, id: string, d: DpDecor): void {
+	const [p1, p2] = carriers(exec, id);
+	const dir = unit(minus(p2, p1));
+	const u = unit(minus(d.B, d.A));
+	expect(dot(dir, u)).toBeCloseTo(0, 9);
+	expect(distToLine(p1, p2, d.P)).toBeCloseTo(0, 9);
+}
+
+/** Poses de l'équerre et marqueurs d'angle droit, pour un décor donné. */
+function expectEquerreSeenByStudent(
+	exec: ConstructionExecutor,
+	steps: readonly SubStep[],
+	d: DpDecor
+): void {
+	const u = unit(minus(d.B, d.A));
+	const F = footOn(d.A, d.B, d.P);
+	const towardP = unit(minus(d.P, F));
+	// 1re pose (perpendiculaire à (AB)) : coin sur (AB), branche horizontale
+	// le long de (AB), branche verticale tournée vers P.
+	for (const i of [0, 1, 2]) {
+		expect(steps[i].instrument).toBe('setSquare');
+		const { corner, h, v } = setSquareLegs(steps[i]);
+		expect(distToLine(d.A, d.B, corner)).toBeCloseTo(0, 9);
+		expect(cross(h, u)).toBeCloseTo(0, 9);
+		expect(dot(v, towardP)).toBeCloseTo(1, 9);
+	}
+	// Le glissement amène le coin au pied F.
+	expectNear(setSquareLegs(steps[1]).corner, F);
+	expectNear(setSquareLegs(steps[2]).corner, F);
+	// 2e pose : coin en P, branche horizontale sur e, du côté opposé à (AB)
+	// (elle ne chevauche pas (AB)) ; branche verticale parallèle à (AB).
+	for (const i of [6, 7]) {
+		expect(steps[i].instrument).toBe('setSquare');
+		const { corner, h, v } = setSquareLegs(steps[i]);
+		expectNear(corner, d.P);
+		expect(dot(h, towardP)).toBeCloseTo(1, 9);
+		expect(cross(v, u)).toBeCloseTo(0, 9);
+	}
+	// Le crayon trace le long de la branche verticale, sans en sortir.
+	const { v } = setSquareLegs(steps[7]);
+	const [start, end] = carriers(exec, steps[7].animateDrawableIds[0]);
+	expectNear(start, d.P);
+	const along = minus(end, start);
+	expect(cross(along, v)).toBeCloseTo(0, 9);
+	expect(dot(along, v)).toBeGreaterThan(1);
+	expect(dot(along, v)).toBeLessThanOrEqual(SET_SQUARE_VERTICAL_LEG);
+	// Marqueurs : un en F (carré du côté de P par rapport à (AB)), un en P
+	// (carré entre P et (AB), du côté du tracé fait à l'équerre).
+	const markers = rightAngleMarkers(exec);
+	expect(markers).toHaveLength(2);
+	for (const m of markers) expect(m.interior).toBeCloseTo(Math.PI / 2, 9);
+	const atF = markers.filter((m) => Math.hypot(m.vertex.x - F.x, m.vertex.y - F.y) < 1e-9);
+	const atP = markers.filter((m) => Math.hypot(m.vertex.x - d.P.x, m.vertex.y - d.P.y) < 1e-9);
+	expect(atF).toHaveLength(1);
+	expect(atP).toHaveLength(1);
+	expect(sideOf(d.A, d.B, atF[0].corner)).toBe(sideOf(d.A, d.B, d.P));
+	expect(dot(minus(atF[0].corner, F), towardP)).toBeGreaterThan(0);
+	expect(dot(minus(atP[0].corner, d.P), towardP)).toBeLessThan(0);
+	expect(dot(minus(atP[0].corner, d.P), v)).toBeGreaterThan(0);
+}
+
+/** R (compas) : distinct de P, hors de e ; (PR) ∥ (AB). */
+function expectCompassR(exec: ConstructionExecutor, steps: readonly SubStep[], d: DpDecor): void {
+	expect(steps[14].kind).toBe('point-fade-in');
+	expect(steps[14].animatePointIds).toHaveLength(1);
+	const R = posOf(exec, steps[14].animatePointIds[0]);
+	const [e1, e2] = carriers(exec, lineE(steps));
+	expect(Math.hypot(R.x - d.P.x, R.y - d.P.y)).toBeGreaterThan(0.1);
+	expect(distToLine(e1, e2, R)).toBeGreaterThan(0.1);
+	expect(cross(unit(minus(R, d.P)), unit(minus(d.B, d.A)))).toBeCloseTo(0, 9);
+}
+
+describe('parallele @double_perpendiculaire — autres décors', () => {
+	for (const d of DP_DECORS) {
+		describe(d.name, () => {
+			it('@euclide : parallèle par P, e ⟂ (AB) par P, R hors de e', () => {
+				const exec = new ConstructionExecutor();
+				exec.load(decorScript(d, '@euclide @double_perpendiculaire'));
+				expect(exec.loadError).toBeNull();
+				const steps = playSubSteps(exec);
+				expect(steps).toHaveLength(16);
+				expectParallelThrough(exec, exec.lastChoreographyResult!.produced.principal, d);
+				expectParallelThrough(exec, steps[15].animateDrawableIds[0], d);
+				expectPerpendicularThrough(exec, lineE(steps), d);
+				expectCompassR(exec, steps, d);
+			});
+
+			it('@equerre : parallèle par P, e ⟂ (AB) par P, équerre et marqueurs du côté de P', () => {
+				const exec = new ConstructionExecutor();
+				exec.load(decorScript(d, '@equerre @double_perpendiculaire @complet'));
+				expect(exec.loadError).toBeNull();
+				const steps = playSubSteps(exec);
+				expect(steps).toHaveLength(10);
+				expectParallelThrough(exec, exec.lastChoreographyResult!.produced.principal, d);
+				for (const i of [7, 9]) expectParallelThrough(exec, steps[i].animateDrawableIds[0], d);
+				expectPerpendicularThrough(exec, lineE(steps), d);
+				expectEquerreSeenByStudent(exec, steps, d);
+			});
+
+			const moved: DpDecor = { ...d, P: mirrorAcross(d.A, d.B, d.P) };
+
+			it('@euclide : P passé de l’autre côté de (AB) → parallèle par P, R hors de e', () => {
+				const exec = new ConstructionExecutor();
+				exec.load(decorScript(d, '@euclide @double_perpendiculaire @complet'));
+				const steps = playSubSteps(exec);
+				const Pid = exec.symbols.get('P')?.figureId;
+				if (!Pid) throw new Error('P introuvable');
+				exec.figure.movePoint(Pid, numeric(moved.P.x), numeric(moved.P.y));
+				exec.figure.recompute();
+				expectNear(posOf(exec, Pid), moved.P);
+				expectParallelThrough(exec, exec.lastChoreographyResult!.produced.principal, moved);
+				expectParallelThrough(exec, steps[15].animateDrawableIds[0], moved);
+				expectPerpendicularThrough(exec, lineE(steps), moved);
+				expectCompassR(exec, steps, moved);
+			});
+
+			it('@equerre : P passé de l’autre côté de (AB) → parallèle par P, marqueurs suivent, équerre retournée au rejeu', () => {
+				const exec = new ConstructionExecutor();
+				exec.load(decorScript(d, '@equerre @double_perpendiculaire @complet'));
+				const before = playSubSteps(exec);
+				const Pid = exec.symbols.get('P')?.figureId;
+				if (!Pid) throw new Error('P introuvable');
+				exec.figure.movePoint(Pid, numeric(moved.P.x), numeric(moved.P.y));
+				exec.figure.recompute();
+				expectNear(posOf(exec, Pid), moved.P);
+				// Ce que la figure montre après le déplacement.
+				expectParallelThrough(exec, exec.lastChoreographyResult!.produced.principal, moved);
+				for (const i of [7, 9]) expectParallelThrough(exec, before[i].animateDrawableIds[0], moved);
+				expectPerpendicularThrough(exec, lineE(before), moved);
+				const F = footOn(moved.A, moved.B, moved.P);
+				const markers = rightAngleMarkers(exec);
+				const atF = markers.find((m) => Math.hypot(m.vertex.x - F.x, m.vertex.y - F.y) < 1e-9);
+				expect(atF).toBeDefined();
+				expect(sideOf(moved.A, moved.B, atF!.corner)).toBe(sideOf(moved.A, moved.B, moved.P));
+				// Rejeu depuis P déplacé : l'équerre se retourne.
+				const replay = new ConstructionExecutor();
+				replay.load(decorScript(moved, '@equerre @double_perpendiculaire @complet'));
+				expect(replay.loadError).toBeNull();
+				const after = playSubSteps(replay);
+				for (const i of [0, 1, 2, 6, 7]) {
+					const hBefore = setSquareLegs(before[i]).h;
+					const hAfter = setSquareLegs(after[i]).h;
+					expect(dot(hBefore, hAfter)).toBeCloseTo(-1, 9);
+				}
+				expectEquerreSeenByStudent(replay, after, moved);
+			});
+		});
+	}
 });
 
 // =============================================================================
