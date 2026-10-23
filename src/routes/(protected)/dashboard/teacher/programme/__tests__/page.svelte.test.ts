@@ -7,6 +7,8 @@
  *   4. archivés masqués, « Afficher les N points archivés » les montre ;
  *   7. niveau sans point : « Aucun point pour ce programme » ;
  *   11. plus aucun geste d'édition de l'arbre (créer, supprimer, déplacer).
+ * Vue « Carte » (2026-10-23) : bascule Liste / Carte, le niveau suit ; la
+ * carte remplace la liste (comportements de la carte : ProgrammeMap).
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { render } from 'vitest-browser-svelte';
@@ -30,6 +32,7 @@ vi.mock('$lib/stores/toaster.svelte', () => ({ toaster }));
 
 import Page from '../+page.svelte';
 import type { ProgrammeBranch, ProgrammePointView } from '$lib/utils/programme-tree';
+import type { MapBranch } from '$lib/utils/programme-map';
 
 const POINT_ID = '11111111-1111-4111-8111-111111111111';
 
@@ -88,15 +91,28 @@ const TREE: ProgrammeBranch[] = [
 	}
 ];
 
-async function renderPage(tree: ProgrammeBranch[]) {
+async function renderPage(
+	tree: ProgrammeBranch[],
+	{ view = 'liste', map = [] }: { view?: 'liste' | 'carte'; map?: MapBranch[] } = {}
+) {
 	const main = document.body.appendChild(document.createElement('main'));
 	return await render(Page, {
 		target: main,
 		props: {
-			data: { grade: '5', gradeOptions: [{ value: '5', label: '5e' }], tree }
+			data: { grade: '5', view, gradeOptions: [{ value: '5', label: '5e' }], tree, map }
 		} as never
 	});
 }
+
+const MAP: MapBranch[] = [
+	{
+		id: 'b-geo',
+		name: 'Géométrie',
+		archived: false,
+		counts: { attendus: 0, approfondissements: 0 },
+		notions: []
+	}
+];
 
 /** Déplie branches puis notions (repliées par défaut). */
 async function expandAll(container: HTMLElement) {
@@ -274,5 +290,26 @@ describe('Page Programme', () => {
 		const { container } = await renderPage(tree);
 		await expandAll(container);
 		expect(container.querySelectorAll('[data-node-archived]')).toHaveLength(3);
+	});
+
+	it('bascule Liste / Carte : deux liens vers la même page, la vue courante marquée', async () => {
+		const { container } = await renderPage(TREE);
+		const links = Array.from(
+			container.querySelectorAll<HTMLAnchorElement>('nav[aria-label="Vue"] a')
+		);
+
+		expect(links.map((a) => a.textContent?.trim())).toEqual(['Liste', 'Carte']);
+		expect(new URL(links[1].href).searchParams.get('vue')).toBe('carte');
+		expect(links[0].getAttribute('aria-current')).toBe('page');
+		expect(links[1].getAttribute('aria-current')).toBeNull();
+	});
+
+	it('vue Carte : la carte remplace la liste', async () => {
+		const { container } = await renderPage([], { view: 'carte', map: MAP });
+
+		expect(container.querySelector('[data-box="b-geo"]')).not.toBeNull();
+		expect(container.querySelector('button[data-tree-toggle]')).toBeNull();
+		const links = Array.from(container.querySelectorAll('nav[aria-label="Vue"] a'));
+		expect(links[1].getAttribute('aria-current')).toBe('page');
 	});
 });
