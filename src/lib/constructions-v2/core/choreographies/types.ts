@@ -209,6 +209,12 @@ export interface ChoreographyCtx {
 		readonly ids: readonly string[];
 		readonly coords: readonly { readonly x: number; readonly y: number }[];
 		readonly named?: ReadonlyMap<string, unknown>;
+		/**
+		 * Forme `parallele(P, d)` / `perpendiculaire(P, d)` : nom affiché de d,
+		 * que les consignes écrivent à la place de « (AB) ». Absent sinon, ou
+		 * si d est cachée ou sans nom lisible.
+		 */
+		readonly lineName?: string;
 	};
 	readonly principalId: string;
 	readonly visibilite: Visibilite;

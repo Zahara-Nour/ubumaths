@@ -67,6 +67,7 @@ import type {
 	TraceTag
 } from './types';
 import { revealHiddenUsedPoints } from './reveal-points';
+import { de, en, lineFormRoles, mesure, nom } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const SMALL_ARC_SWEEP_RAD = Math.PI / 6; // 30° total
@@ -88,6 +89,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
+	const N = lineFormRoles(ctx, false);
 
 	// Hide the perpendicular line — revealed by SS7 line-fade-in.
 	figure.hideElement(principalId);
@@ -355,7 +357,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en P, on prend la mesure |PA|'
+			instruction: `Compas ${en(N.P)}, on prend ${mesure(N.P, N.A)}`
 		},
 		// SS2 : petit arc en P (même ouverture) qui coupe (AB) en B'.
 		{
@@ -367,7 +369,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtP],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "On trace un petit arc qui coupe (AB) en B'"
+			instruction: `On trace un petit arc qui coupe ${nom(N.d)} en B'`
 		},
 		// SS3 : B' fade-in.
 		{
@@ -376,7 +378,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Bprime],
 			animateLineIds: [],
-			instruction: "B' apparaît : un autre point de (AB), équidistant de P comme A"
+			instruction: `B' apparaît : un autre point ${de(N.d)}, équidistant ${de(N.P)} comme ${nom(N.A)}`
 		},
 		// SS4 : compass à A, petit arc orienté vers Q (même ouverture |PA|).
 		{
@@ -388,7 +390,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtA],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On reporte cette ouverture en A et on trace un petit arc'
+			instruction: `On reporte cette ouverture ${en(N.A)} et on trace un petit arc`
 		},
 		// SS5 : compass à B', petit arc orienté vers Q (même ouverture |PA|).
 		{
@@ -409,7 +411,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Q],
 			animateLineIds: [],
-			instruction: 'Les arcs se croisent en Q (symétrique de P par rapport à (AB))'
+			instruction: `Les arcs se croisent en Q (symétrique ${de(N.P)} par rapport à ${nom(N.d)})`
 		},
 		// SS7 : ruler trace de la perpendiculaire (P, Q).
 		{
@@ -421,7 +423,7 @@ function buildArcsEgaux(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Règle par P et Q : on trace la perpendiculaire'
+			instruction: `Règle par ${nom(N.P)} et Q : on trace la perpendiculaire`
 		}
 	];
 
@@ -492,6 +494,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
+	const N = lineFormRoles(ctx, false);
 
 	// Hide the perpendicular line — revealed by SS7 ruler-trace.
 	figure.hideElement(principalId);
@@ -808,7 +811,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtPtoAstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en P, on trace un petit arc qui coupe (AB) en A*'
+			instruction: `Compas ${en(N.P)}, on trace un petit arc qui coupe ${nom(N.d)} en A*`
 		},
 		// SS2 : petit arc en P côté B*.
 		{
@@ -820,7 +823,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcAtPtoBstar],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Même ouverture, second petit arc qui coupe (AB) en B*'
+			instruction: `Même ouverture, second petit arc qui coupe ${nom(N.d)} en B*`
 		},
 		// SS3 : A* et B* apparaissent.
 		{
@@ -829,7 +832,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Astar, Bstar],
 			animateLineIds: [],
-			instruction: 'A* et B* apparaissent (équidistants de P)'
+			instruction: `A* et B* apparaissent (équidistants ${de(N.P)})`
 		},
 		// SS4 : petit arc en A* (même ouverture) vers Q.
 		{
@@ -862,7 +865,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Q],
 			animateLineIds: [],
-			instruction: 'Les arcs se croisent en Q (symétrique de P par rapport à (AB))'
+			instruction: `Les arcs se croisent en Q (symétrique ${de(N.P)} par rapport à ${nom(N.d)})`
 		},
 		// SS7 : règle P→Q.
 		{
@@ -874,7 +877,7 @@ function buildRayonLibre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Règle par P et Q : on trace la perpendiculaire'
+			instruction: `Règle par ${nom(N.P)} et Q : on trace la perpendiculaire`
 		}
 	];
 
@@ -975,6 +978,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
+	const N = lineFormRoles(ctx, false);
 
 	figure.hideElement(principalId);
 
@@ -1139,7 +1143,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "On pose l'équerre avec son bord sur (AB), le coin sur A"
+			instruction: `On pose l'équerre avec son bord sur ${nom(N.d)}, le coin sur ${nom(N.A)}`
 		},
 		// SS2 : glissement de l'équerre le long de (AB) jusqu'à F, pour
 		// que le bord vertical passe par P. La rotation reste inchangée.
@@ -1152,8 +1156,7 @@ function buildEquerre(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction:
-				"On fait glisser l'équerre le long de (AB) jusqu'à ce que le bord vertical passe par P"
+			instruction: `On fait glisser l'équerre le long ${de(N.d)} jusqu'à ce que le bord vertical passe par ${nom(N.P)}`
 		},
 		// SS3 : crayon trace la portion DANS l'équerre (longueur = bord
 		// vertical, ne déborde pas).

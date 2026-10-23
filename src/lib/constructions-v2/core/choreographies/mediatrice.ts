@@ -23,6 +23,7 @@
  */
 
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
+import { en, role } from './names';
 
 /**
  * Length of the segment-trace (math units). Matches the default `Ruler`
@@ -53,6 +54,8 @@ function buildArcsEgaux(
 	const { figure, args, principalId } = ctx;
 	const [Aid, Bid] = args.ids;
 	const [A, B] = args.coords;
+	const nameA = role(figure, Aid, 'le premier point');
+	const nameB = role(figure, Bid, 'le second point');
 
 	// Hide the principal line immediately — the builtin creates it visible,
 	// but we want it to fade in only during SS4 (after the arcs and
@@ -343,7 +346,7 @@ function buildArcsEgaux(
 			animateDrawableIds: [arcAtoI1],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en A, petit arc d'un côté"
+			instruction: `Compas ${en(nameA)}, petit arc d'un côté`
 		},
 		// SS2 : compass stays at A (same opening), small arc toward I2.
 		{
@@ -375,7 +378,7 @@ function buildArcsEgaux(
 			animateDrawableIds: [arcBtoI1],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en B, petit arc d'un côté"
+			instruction: `Compas ${en(nameB)}, petit arc d'un côté`
 		},
 		// SS4 : compass stays at B, small arc toward I2.
 		{

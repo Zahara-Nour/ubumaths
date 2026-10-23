@@ -149,9 +149,10 @@ describe('ConstructionPlayer — parallèle à une droite d', () => {
 		await next(container, 6);
 		await expect.poll(() => subStepInstruction(container)).toBe('On choisit un point de la droite');
 		await next(container);
+		// d est portée par C et par un point caché, sans nom (lot 8).
 		await expect
 			.poll(() => subStepInstruction(container))
-			.toBe('Compas en A, on prend la mesure |AB|');
+			.toBe("Compas en C, on prend l'écart jusqu'au point choisi");
 		await next(container, 5);
 		await expect
 			.poll(() => subStepInstruction(container))
