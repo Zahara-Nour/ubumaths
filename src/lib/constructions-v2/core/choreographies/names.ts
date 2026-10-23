@@ -105,6 +105,17 @@ export function createAuxLabeler(
 }
 
 /**
+ * Fabrique `ctx.nameTaken` : `name` est une étiquette de la figure ou un
+ * nom déclaré par le script (même plus loin).
+ */
+export function createNameTaken(
+	figure: Figure,
+	reserved: ReadonlySet<string>
+): (name: string) => boolean {
+	return (name) => reserved.has(name) || figure.getAllElements().some((el) => el.label === name);
+}
+
+/**
  * Nomme l'élément auxiliaire `id` et pose ce nom sur la figure
  * (`ctx.auxLabel`) : la consigne et l'étiquette disent la même lettre.
  */

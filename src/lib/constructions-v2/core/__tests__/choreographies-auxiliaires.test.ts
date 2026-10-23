@@ -271,14 +271,35 @@ describe('points auxiliaires : lettre déjà prise → prime', () => {
 		expect(texts).toContain('Les deux arcs se coupent en B‴');
 	});
 
-	it('C dans le script ne fait pas renommer C* (lettre différente)', () => {
-		const { texts } = run([
+	it('C et D dans le script : la paire C*, D* devient E*, F* (consignes et figure)', () => {
+		const { exec, texts } = run([
 			'C = point(0, 0)',
 			'D = point(4, 1)',
 			'M = point(1, 3)',
 			'm = parallele(M, C, D) @euclide @double_perpendiculaire'
 		]);
-		expect(texts).toContain('Compas en M, petite ouverture : un petit arc coupe e en C*');
+		expect(texts).toContain('Compas en M, petite ouverture : un petit arc coupe e en E*');
+		expect(texts.some((t) => mentions(t, 'C*') || mentions(t, 'D*'))).toBe(false);
+		expect(labelled(exec, 'E*')).toHaveLength(1);
+		expect(labelled(exec, 'F*')).toHaveLength(1);
+		expect(labelled(exec, 'C*')).toHaveLength(0);
+	});
+
+	it('C seul dans le script (même déclaré plus loin) : la paire devient D*, E*', () => {
+		const { exec } = run([
+			...LIGNE,
+			'm = parallele(P, A, B) @euclide @double_perpendiculaire',
+			'C = point(6, 5)'
+		]);
+		expect(labelled(exec, 'D*')).toHaveLength(1);
+		expect(labelled(exec, 'E*')).toHaveLength(1);
+		expect(labelled(exec, 'C*')).toHaveLength(0);
+	});
+
+	it('A et B dans le script : A*, B* de la perpendiculaire restent (règle limitée à C*, D*)', () => {
+		const { exec } = run([...LIGNE, 'm = perpendiculaire(P, A, B) @euclide @rayon_libre']);
+		expect(labelled(exec, 'A*')).toHaveLength(1);
+		expect(labelled(exec, 'B*')).toHaveLength(1);
 	});
 });
 

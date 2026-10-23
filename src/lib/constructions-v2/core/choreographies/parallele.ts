@@ -914,13 +914,14 @@ function assertPOffLine(
 	P: { x: number; y: number },
 	A: { x: number; y: number },
 	B: { x: number; y: number },
-	N: { P: Role; A: Role; B: Role; d: Role }
+	N: { P: Role; A: Role; B: Role; d: Role },
+	methode: '@euclide' | '@equerre'
 ): void {
 	const u = unitAB(A, B);
 	const dist = Math.abs(u.x * (P.y - A.y) - u.y * (P.x - A.x));
 	if (!(dist > P_ON_LINE_EPSILON)) {
 		throw new ChoreographyError(
-			`\`${callText(N)} @double_perpendiculaire\` : ${capitalize(nom(N.P))} est sur ${laDroite(N.d)} : la parallèle est ${nom(N.d)} elle-même, il n’y a rien à construire.`
+			`\`${callText(N)} ${methode} @double_perpendiculaire\` : ${capitalize(nom(N.P))} est sur ${laDroite(N.d)} : la parallèle est ${nom(N.d)} elle-même, il n’y a rien à construire.`
 		);
 	}
 }
@@ -972,6 +973,21 @@ function callText(N: { P: Role; A: Role; B: Role; d: Role }): string {
 	return `parallele(${P.name}, ${d.name})`;
 }
 
+/**
+ * Lettres de la paire C*, D* : « C*, D* » se lirait comme le point C du
+ * script (« Compas en C… plus grand que MC* »). Si C ou D est un nom pris,
+ * la paire passe aux deux premières lettres consécutives libres (E*, F*…),
+ * à partir de C. Aucune paire libre : C, D (les primes départagent).
+ */
+function starPairStems(ctx: ChoreographyCtx): [string, string] {
+	for (let code = 'C'.charCodeAt(0); code < 'Z'.charCodeAt(0); code++) {
+		const x = String.fromCharCode(code);
+		const y = String.fromCharCode(code + 1);
+		if (!ctx.nameTaken(x) && !ctx.nameTaken(y)) return [x, y];
+	}
+	return ['C', 'D'];
+}
+
 /** « la droite (AB) », « la droite d » ou « la droite ». */
 function laDroite(d: Role): string {
 	return d.name ? `la droite ${d.name}` : d.neutral;
@@ -1008,7 +1024,7 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
 	const N = lineFormRoles(ctx, false);
-	assertPOffLine(P, A, B, N);
+	assertPOffLine(P, A, B, N, '@euclide');
 
 	figure.hideElement(principalId);
 
@@ -1064,8 +1080,9 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 		(v) => val(v, Py) + val(v, uy) * h,
 		deps
 	);
-	const nC = labelAux(ctx, Cstar, 'C*');
-	const nD = labelAux(ctx, Dstar, 'D*');
+	const [stemC, stemD] = starPairStems(ctx);
+	const nC = labelAux(ctx, Cstar, `${stemC}*`);
+	const nD = labelAux(ctx, Dstar, `${stemD}*`);
 	const nR = labelAux(ctx, R, 'R');
 	const arcPC = kit.smallArc(Pid, r1, (v) => Math.atan2(val(v, ux), -val(v, uy)), [ux, uy]);
 	const arcPD = kit.smallArc(Pid, r1, (v) => Math.atan2(-val(v, ux), val(v, uy)), [ux, uy]);
@@ -1238,7 +1255,7 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
 	const N = lineFormRoles(ctx, false);
-	assertPOffLine(P, A, B, N);
+	assertPOffLine(P, A, B, N, '@equerre');
 
 	figure.hideElement(principalId);
 
@@ -1311,7 +1328,9 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 	figure.hideElement(segmentTrace1);
 	const segmentTrace2 = figure.createSegment(Pid, trace2End);
 	figure.hideElement(segmentTrace2);
-	// Marqueurs d'angle droit : en F entre (AB) et e, en P entre e et la parallèle.
+	// Marqueurs d'angle droit : en F entre (AB) et e, en P entre e et la
+	// parallèle, dans le coin de l'équerre : du côté opposé à (AB), le long
+	// de w tourné de −90° (= F→P unitaire, jamais nul).
 	const FonAB = kit.point(
 		(v) => val(v, Fx) + val(v, ux),
 		(v) => val(v, Fy) + val(v, uy),
@@ -1319,7 +1338,12 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 	);
 	const rightAngleAtF = figure.createAngle(FonAB, F, Pid, { marque: 'carre' });
 	figure.hideElement(rightAngleAtF);
-	const rightAngleAtP = figure.createAngle(trace1End, Pid, F, { marque: 'carre' });
+	const awayFromAB = kit.point(
+		(v) => val(v, Px) + val(v, wy),
+		(v) => val(v, Py) - val(v, wx),
+		along
+	);
+	const rightAngleAtP = figure.createAngle(awayFromAB, Pid, trace1End, { marque: 'carre' });
 	figure.hideElement(rightAngleAtP);
 
 	const ownSubSteps: SubStep[] = [
