@@ -25,7 +25,7 @@ import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
 import type { TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
 import { flattenProductShallow, flattenSumShallow } from '../flatten';
-import { getChildren } from '../transforms';
+import { findNodes, getChildren } from '../transforms';
 import { extractRational } from '../common/numeric';
 import { hashMathNode, hashUnit, nodesEqual } from '../normal/hash';
 import { extractPerfectPower } from '../normal/radical';
@@ -67,7 +67,7 @@ import { exactConversion, dimensionKey } from '../units/exact';
 import { isMultipliedTemperature, recognizeDerivedUnit } from '../units/conversion';
 import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
-import { decimalString } from './decimal';
+import { decimalString, hasDecimalLiteral } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
 import { cannotVanish, nonZeroBases } from './sign';
 import {
@@ -142,6 +142,10 @@ type Accumulator = {
 	 * passage suivant aplatirait le `+(x + 1)` obtenu — `tidy` non idempotent.
 	 */
 	keepSumSign: boolean;
+	/** Un nombre décimal non entier a été lu (`0,5`) : le registre décimal (S1). */
+	decimal: boolean;
+	/** Une barre de fraction a été lue (Q3) : le résultat s'écrit en fraction (S1). */
+	fraction: boolean;
 };
 
 /**
@@ -693,6 +697,7 @@ function absorbFactor(
 			return;
 
 		case 'division':
+			acc.fraction = true;
 			absorbFactor(node.numerator, exponent, acc, alreadyTidied);
 			absorbFactor(node.denominator, negRational(exponent), acc, alreadyTidied);
 			return;
@@ -711,7 +716,10 @@ function absorbFactor(
 
 		case 'number': {
 			const value = extractRational(node);
-			if (value !== null && absorbRational(value, exponent, acc)) return;
+			if (value !== null && absorbRational(value, exponent, acc)) {
+				if (value.d !== 1n) acc.decimal = true;
+				return;
+			}
 			break;
 		}
 
@@ -722,7 +730,14 @@ function absorbFactor(
 		case 'function': {
 			if (absorbFunctionPower(node, exponent, acc)) return;
 			const radicand = squareRootRadicand(node);
-			if (radicand !== null && absorbSquareRoot(radicand, exponent, acc)) return;
+			if (radicand !== null && absorbSquareRoot(radicand, exponent, acc)) {
+				// `√0,25 → 0,5`, mais `√(1/4) → 1/2` : le registre du radicande
+				if (hasDecimalLiteral(node.args[0])) acc.decimal = true;
+				if (findNodes(node.args[0], (n) => n.type === 'division').length > 0) {
+					acc.fraction = true;
+				}
+				return;
+			}
 			break;
 		}
 
@@ -841,6 +856,17 @@ function sumContentOf(factor: TidyFactor, index: number, settings: Settings): Su
 	return { index, content, primitive: scaleTerms(terms, divRational(ONE, content)) };
 }
 
+/**
+ * Le terme s'écrit-il avec une barre de fraction ? Un coefficient décimal n'en
+ * a pas (S1) : `0,5(x+1)` ne devient ni `(x+1)/2` ni, négatif, `0,5(1−x)`.
+ */
+function hasFractionBar(term: TidyTerm): boolean {
+	return (
+		(term.coefficient.d !== 1n && !term.decimal) ||
+		term.factors.some((factor) => factor.exponent.n < 0n)
+	);
+}
+
 /** Divise les nombres par `divisor`, ceux des sommes d'abord. */
 function divideParts(parts: readonly NumberPart[], divisor: bigint): void {
 	let rest = divisor;
@@ -884,8 +910,7 @@ function productOf(parts: readonly NumberPart[]): bigint {
  */
 function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyWatch): TidyTerm {
 	if (term.unit !== null || term.verbatim || dividesByZero(term)) return term;
-	const hasDenominator =
-		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
+	const hasDenominator = hasFractionBar(term);
 
 	const sums: SumContent[] = [];
 	term.factors.forEach((factor, index) => {
@@ -1000,7 +1025,9 @@ function toTerm(
 		// jamais `absorbFactor`. Sans lui, `−(−x)` ne comptait qu'UN signe et
 		// passait sous le filet alors que deux signes s'y annulent.
 		signCount: carriedSigns,
-		keepSumSign
+		keepSumSign,
+		decimal: false,
+		fraction: false
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
@@ -1030,7 +1057,7 @@ function toTerm(
 		unit,
 		verbatim: false,
 		quantity,
-		decimal: false,
+		decimal: acc.decimal && !acc.fraction && decimalString(absRational(coefficient)) !== null,
 		written:
 			settings.unitChoice === 'written' && unit !== null && quantity !== null
 				? writtenUnitOf(acc.unitSymbols, unit)
@@ -1129,9 +1156,7 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, settings: Settings): Tid
  */
 function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
 	if (term.verbatim || term.unit !== null) return null;
-	const hasDenominator =
-		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
-	if (!hasDenominator) return null;
+	if (!hasFractionBar(term)) return null;
 	const numerators = term.factors.filter(
 		(factor) => isSumNode(factor.base) && factor.exponent.n > 0n
 	);
@@ -1211,7 +1236,15 @@ type TermGroup = {
 	coefficient: Rational;
 	term: TidyTerm;
 	inBase: boolean;
+	/** Le registre des termes réunis (S1) : un décimal lu, une fraction lue. */
+	decimal: boolean;
+	fraction: boolean;
 };
+
+/** Un coefficient écrit en fraction : non entier, hors du registre décimal (S1). */
+function isFractionTerm(term: TidyTerm): boolean {
+	return !term.decimal && term.coefficient.d !== 1n;
+}
 
 /** La valeur d'un terme en unités de base. */
 function baseValue(coefficient: Rational, quantity: TidyQuantity): Rational {
@@ -1255,9 +1288,17 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 
 		const existing = groups.get(key);
 		if (existing === undefined) {
-			groups.set(key, { coefficient: term.coefficient, term, inBase: false });
+			groups.set(key, {
+				coefficient: term.coefficient,
+				term,
+				inBase: false,
+				decimal: term.decimal,
+				fraction: isFractionTerm(term)
+			});
 			return;
 		}
+		existing.decimal ||= term.decimal;
+		existing.fraction ||= isFractionTerm(term);
 
 		const quantity = term.quantity;
 		const existingQuantity = existing.term.quantity;
@@ -1283,11 +1324,14 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 	});
 
 	const result: TidyTerm[] = [];
-	for (const { coefficient, term } of groups.values()) {
+	for (const { coefficient, term, decimal, fraction } of groups.values()) {
 		// Un coefficient nul efface le terme — sauf s'il divise par zéro : `0/0`
 		// n'est pas `0` (finding C2).
 		if (isZeroRational(coefficient) && !dividesByZero(term)) continue;
-		result.push({ ...term, coefficient });
+		// S1 : décimal si un décimal est lu, aucune fraction, et l'écriture finie
+		// (`0,5x + 0,25x → 0,75x`, `0,5x + x/3 → 5x/6`)
+		const finite = decimalString(absRational(coefficient)) !== null;
+		result.push({ ...term, coefficient, decimal: decimal && !fraction && finite });
 	}
 	return result;
 }
@@ -1614,7 +1658,7 @@ function isBareNumber(term: TidyTerm): boolean {
  */
 function mergesFractions(terms: readonly TidyTerm[], collected: readonly TidyTerm[]): boolean {
 	const bare = terms.filter(isBareNumber);
-	if (bare.length < 2 || !bare.some((term) => term.coefficient.d !== 1n)) return false;
+	if (bare.length < 2 || !bare.some(isFractionTerm)) return false;
 
 	const others = (list: readonly TidyTerm[]) => list.filter((term) => !isBareNumber(term)).length;
 	return others(collected) === others(terms);

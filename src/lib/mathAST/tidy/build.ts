@@ -129,10 +129,12 @@ export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode
 		.filter((f) => isNegativeRational(f.exponent))
 		.map((f) => ({ ...f, exponent: negRational(f.exponent) }));
 
-	const numeratorValue = absBigInt(term.coefficient.n);
-	const denominatorValue = term.coefficient.d;
+	// S1 — un coefficient du registre décimal s'écrit en décimal : `0,5x`, `0,5(x+1)`
+	const decimalText = term.decimal ? decimalString(absRational(term.coefficient)) : null;
+	const numeratorText = decimalText ?? absBigInt(term.coefficient.n).toString();
+	const denominatorValue = decimalText === null ? term.coefficient.d : 1n;
 
-	const needsNumeratorNumber = numeratorValue !== 1n || numeratorFactors.length === 0;
+	const needsNumeratorNumber = numeratorText !== '1' || numeratorFactors.length === 0;
 	const numeratorAtomCount = (needsNumeratorNumber ? 1 : 0) + numeratorFactors.length;
 	const denominatorAtomCount = (denominatorValue !== 1n ? 1 : 0) + denominatorFactors.length;
 
@@ -146,7 +148,7 @@ export function buildTermMagnitude(term: TidyTerm, allowBare: boolean): MathNode
 		term.unit === null;
 
 	const numeratorAtoms: MathNode[] = [];
-	if (needsNumeratorNumber) numeratorAtoms.push(number(numeratorValue.toString()));
+	if (needsNumeratorNumber) numeratorAtoms.push(number(numeratorText));
 	for (const factor of numeratorFactors) numeratorAtoms.push(buildFactor(factor, bare));
 
 	let result = buildProduct(numeratorAtoms);

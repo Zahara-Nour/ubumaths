@@ -417,23 +417,18 @@ export function resultToNode(result: ExtendedNormalizeResult): MathNode | null {
  * numérateur — `-\\dfrac{\\sqrt{2}}{2}` et non `\\dfrac{-\\sqrt{2}}{2}` (forme
  * de `denormalize`), `\\dfrac{\\sqrt{3}}{2}` et non `\\dfrac{1}{2}\\sqrt{3}`.
  *
- * Exception : une valeur qui CONTIENT un nombre décimal ressort telle quelle,
- * car `tidy` le réécrirait en fraction (`0.5` → `\\dfrac{1}{2}`). Ce décimal y
- * est posé par `writeLikeInput` d'`evaluate.ts` (énoncé décimal ET limite
+ * Un décimal y reste décimal : `tidy` garde son registre (S1). Ce décimal est
+ * posé par `writeLikeInput` d'`evaluate.ts` (énoncé décimal ET limite
  * rationnelle d'écriture décimale finie : `\\frac{0.5x+1}{x}` → `0.5`), ou par
  * un calcul en flottants (défaut V33 : `\\sqrt{\\frac{x^2+1}{4x^2}}` en −∞ rend
- * `0.5`). Le critère est la valeur, pas l'énoncé : une limite irrationnelle
- * d'un énoncé décimal est exacte, donc réécrite (`x + 0.5\\sqrt{2}` en 0 →
- * `\\dfrac{\\sqrt{2}}{2}`).
+ * `0.5`).
  *
  * Réservée aux valeurs rendues : les calculs intermédiaires gardent la forme
  * de `resultToNode`.
  */
 export function writeLimitValue(value: MathNode): MathNode {
 	if (isInfinity(value)) return value;
-	const written = withEulerConstant(value);
-	if (hasDecimalLiteral(written)) return written;
-	return tidy(written);
+	return tidy(withEulerConstant(value));
 }
 
 /**
