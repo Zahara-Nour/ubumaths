@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1656 (5a mergé, pas en prod)._
+_Mis à jour le 2026-10-24, après #1660 (5b mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~ (#1655) et ~~5a D1 + Q18~~ (#1656, § 53-54) mergés : f′ finit par `finalDerivative` (`pedagogical-differentiation/final-form.ts`) sur les corrections, `.dériver`, le bouton et la carte.
+- **État** : lot 5. ~~Q19~~ (#1655), ~~5a D1 + Q18~~ (#1656) et ~~5b D2~~ (#1658 + #1660, § 55-56) mergés. f′ finit par `finalDerivative` (`final-form.ts`) ; dans l'étude des variations, `displayedDerivatives` (`variations/display.ts`) ajoute l'étape « On factorise pour étudier le signe » (`factoriser` lycée, garde-fous : exposants, décimaux, nombre seul devant une somme, racine + fraction).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → **5b D2** → 5c valeur exacte → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5b (D2), worktree neuf depuis `origin/main`. `reducedDerivative` (variations) : numérateur par `factoriser` (lycée), étape « On factorise pour étudier le signe », Q18 aussi (§ 49-50). Repartir de `finalDerivative` (même division par le facteur commun, même signe que `tidy`).
-- **En attente de David** : vérifications manuelles des espaces (#1642) et de f′ (#1656) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
-- **Pièges en cours** : ne plus sonder avec `pnpm math` (`.diff` garde `tidyTerms`, David) ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5b-d2` (5b en cours, § 55).
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → ~~5b D2~~ → **5c valeur exacte** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5c (§ 13 A, § 49) : une seule fonction « valeur exacte à afficher » pour `readable`, `tidyKeepingValue` (`{{eval}}`), `tidyExactValue` (tableau), `simplifyExact` (grapheur), limites et solutions ; `0,1+0,2 → 0,3`, `2,50 → 2,5`, `cos(π/6)` calculé partout. Phase 0 d'abord (comportements, à valider).
+- **En attente de David** : vérifications manuelles des espaces (#1642), de f′ (#1656) et des variations (#1658/#1660) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
+- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -771,6 +771,6 @@ Revue `code-reviewer` (opus, 82 fonctions comparées numériquement) : aucune fo
 
 Laissés, à montrer à David : `x e^{−x²}` → `−2(x − √2/2)(x + √2/2)e^{−x²}` (juste, lourd ; `(1 − 2x²)e^{−x²}` se lit mieux) ; `(x² − 3x + 2)/(x² + 1)` → `3(x − 1/3 − √10/3)(x − 1/3 + √10/3)/(x²+1)²`. Pas factorisés (forme de 5a) : `x − 1/x`, `2e^{2x} − 3eˣ`, bicarrés à racines irrationnelles.
 
-## 56. Lot 5b mergé (#1658, 2026-10-24) ; racines avec fraction (David : « je te suis »)
+## 56. Lot 5b mergé (#1658, #1660, 2026-10-24) ; racines avec fraction (David : « je te suis »)
 
 CI verte. Suite (branche `fix/simplify-carte-5b-racines`) : un facteur qui mêle racine et fraction n'est pas affiché, la forme de 5a reste — `x e^{−x²}` → `(1 − 2x²)e^{−x²}`, `(x² − 3x + 2)/(x² + 1)` → `(3x² − 2x − 3)/(x² + 1)²` ; `(x − √2)(x + √2)`, `x²(x − 2√3)(x + 2√3)` gardées. 2 tests rouges avant.
