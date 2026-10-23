@@ -6,18 +6,19 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, scissions en cours (PR 1 : scissions mécaniques)._
+_Mis à jour le 2026-10-23, après #1646 (scissions PR 1, `db:migrate` fait)._
 
-- **État** : lots A, B, C en prod ; PR 1 des scissions écrite sur `feat/passe-lycee-scissions` (50 modèles → 72
-  neufs, 6 origines déplacées R2, 7 conflits de nœud en retrait forcé) ; restent PR 2 (S6, S11, E3) puis PR 3 (H).
-- **Prochaine action** : tests d'intégration locaux, specs et tirages des neufs, revues, PR.
-- **En attente de David** : rien (question d'accès tranchée : personne ne gagne ; conflits : recos suivies).
-- **Pièges en cours** : générateur `analyse/scissions_outils.py` (plusieurs neufs, plusieurs tags, R2), helper de
-  test `lot-2bis-migration.ts` généralisé (deux formes de fixture) ; trigger des tags : point sur le nœud du modèle
-  ou sa notion, jamais une sous-notion sœur ; `question:specs --file` : passer par `toQuestionTemplate` et
-  `svelte-kit sync` ; `REECRIRE_MIGRATION=1` pour réécrire une migration jamais jouée ; shard client de la CI
-  parfois annulé à 15 min (relancer `--failed`).
-- **Worktree / branche** : `ubumaths-wt-passe-lycee` · `feat/passe-lycee-scissions`.
+- **État** : lots A, B, C et scissions PR 1 en prod (50 modèles scindés → 72 neufs, 145 tags, 6 origines déplacées
+  R2, 7 conflits en retrait forcé ; efb12f4b non scindé). Restent PR 2 (S6 `0dee4515`, S11 `30b597c3`, E3 : 5
+  modèles à dédoubler et réécrire) puis PR 3 (H : 10 modèles dans leur vrai programme).
+- **Prochaine action** : worktree neuf `passe-lycee`, PR 2 (réécritures) avec `analyse/scissions_outils.py` ;
+  reprendre le relevé de ces 7 modèles en prod (empreintes) ; contrôler les nœuds des points AVANT d'écrire.
+- **En attente de David** : rien. À reposer pour chaque PR : la question d'accès.
+- **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion (sous-notion sœur refusée) →
+  R2 ou retrait forcé ; neufs : niveau au-dessus du plus haut pris dans la catégorie (brouillons compris) ;
+  `question:specs --file` : convertir par `toQuestionTemplate` ; la fixture est reformatée par prettier au commit
+  (relancer `prettier --write` après régénération) ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée.
+- **Worktree / branche** : aucun.
 
 ## Les 5 étapes
 
@@ -256,3 +257,6 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   et origines en retrait forcé gardent `grades` [T_SPE, T_COMP] de l'origine (comme en #1632) ; tables sans clé
   étrangère vers les modèles (favoris, stats, chapitres : 0 ligne en prod sur les 50) ; pas de garde dédiée à une
   origine déplacée puis retaguée (le trigger fait échouer tout le rollback).
+- **2026-10-23 — #1646 mergée, `db:migrate` fait.** CI verte (dont intégration Supabase). Seule migration en attente
+  (`--dry-run`) ; vérifiée par le MCP : 72 neufs (1 publié, `ff36ebdf` √x), 91 tags sur les neufs, V2 de 95ee8348 en
+  1/(4 + c). Vérification manuelle notée (carte publiée a86442c1 et son neuf).
