@@ -1997,7 +1997,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé)."
+				"remarque": "⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé).",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"TSPE-445": {
 				"libelle": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation",

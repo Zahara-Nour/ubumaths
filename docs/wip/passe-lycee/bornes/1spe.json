@@ -538,7 +538,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO (p.6) dit « registre graphique » sans préciser « nuage de points » ; la précision du libellé est naturelle (une suite se représente par des points isolés) mais ne figure pas au texte."
+				"remarque": "⚠ libellé : le BO (p.6) dit « registre graphique » sans préciser « nuage de points » ; la précision du libellé est naturelle (une suite se représente par des points isolés) mais ne figure pas au texte.",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-375": {
 				"libelle": "Passer d'un registre à l'autre pour une suite : de l'énoncé en langage naturel à l'expression algébrique",
@@ -916,7 +920,11 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "⚠ libellé : les contenus du BO (p.6) ne mentionnent pas « forme développée ; coefficients » ; seule la capacité « choisir une forme adaptée (développée réduite, canonique, factorisée) » nomme la forme développée. Lecture déduite (texte implicite) : forme ax² + bx + c, a ≠ 0."
+				"remarque": "⚠ libellé : les contenus du BO (p.6) ne mentionnent pas « forme développée ; coefficients » ; seule la capacité « choisir une forme adaptée (développée réduite, canonique, factorisée) » nomme la forme développée. Lecture déduite (texte implicite) : forme ax² + bx + c, a ≠ 0.",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-244": {
 				"libelle": "Fonction polynôme du second degré donnée sous forme factorisée ; racines",
@@ -990,7 +998,11 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite."
+				"remarque": "⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite.",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-384": {
 				"libelle": "Axe de symétrie d'une parabole",
@@ -1003,7 +1015,11 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "⚠ libellé : « axe de symétrie d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : il se lit sur la forme canonique, en lien avec la position du graphe de x ↦ f(x − m) (p.5)."
+				"remarque": "⚠ libellé : « axe de symétrie d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : il se lit sur la forme canonique, en lien avec la position du graphe de x ↦ f(x − m) (p.5).",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-248": {
 				"libelle": "Discriminant d'une fonction polynôme du second degré",
@@ -1066,7 +1082,11 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "⚠ libellé : la « résolution d'une inéquation du second degré » n'est pas un contenu du BO (p.6), qui dit « Signe » ; l'inéquation n'apparaît que dans la capacité « choisir une forme adaptée … (équation, inéquation, optimisation, variations) ». Lecture déduite (texte implicite) : inéquation se ramenant au signe d'un trinôme."
+				"remarque": "⚠ libellé : la « résolution d'une inéquation du second degré » n'est pas un contenu du BO (p.6), qui dit « Signe » ; l'inéquation n'apparaît que dans la capacité « choisir une forme adaptée … (équation, inéquation, optimisation, variations) ». Lecture déduite (texte implicite) : inéquation se ramenant au signe d'un trinôme.",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-251": {
 				"libelle": "Étudier le signe d'une fonction polynôme du second degré donnée sous forme factorisée",
@@ -2961,7 +2981,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO (p.11) dit « Modéliser une situation à l'aide d'une variable aléatoire » ; « définir … et donner ses valeurs possibles » est une reformulation qui n'est pas au texte."
+				"remarque": "⚠ libellé : le BO (p.11) dit « Modéliser une situation à l'aide d'une variable aléatoire » ; « définir … et donner ses valeurs possibles » est une reformulation qui n'est pas au texte.",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-355": {
 				"libelle": "Déterminer la loi de probabilité d'une variable aléatoire",
@@ -3101,7 +3125,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO (p.11) dit « Étudier sur des exemples la distance … », le libellé dit « calculer l'écart »."
+				"remarque": "⚠ libellé : le BO (p.11) dit « Étudier sur des exemples la distance … », le libellé dit « calculer l'écart ».",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-23"
+				}
 			},
 			"1SPE-365": {
 				"libelle": "Simuler, avec Python ou un tableur, $N$ échantillons de taille $n$ d'une variable aléatoire d'espérance $\\mu$ et d'écart type $\\sigma$ ; si $m$ désigne la moyenne d'un échantillon, calculer la proportion des cas où l'écart entre $m$ et $\\mu$ est inférieur ou égal à $\\tfrac{2\\sigma}{\\sqrt{n}}$",

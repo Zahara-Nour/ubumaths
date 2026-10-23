@@ -100,6 +100,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-221** — Passer d'un registre à l'autre pour une suite : de l'expression algébrique à la représentation graphique (nuage de points) et inversement
   - Registres langue naturelle, algébrique, graphique pour une suite, et passage de l'un à l'autre. — _BO 1re spé p.6_ (BO)
   - ⚠ libellé : le BO (p.6) dit « registre graphique » sans préciser « nuage de points » ; la précision du libellé est naturelle (une suite se représente par des points isolés) mais ne figure pas au texte.
+  - → David (2026-10-23) : **laisser**
 - **1SPE-222** — Déterminer une relation explicite pour une suite définie par un motif géométrique, par une question de dénombrement
   - Relation explicite pour une suite définie par un motif géométrique ou une question de dénombrement. — _BO 1re spé p.6_ (BO)
 - **1SPE-223** — Calculer des termes d'une suite définie explicitement
@@ -192,6 +193,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-243** — Forme développée d'une fonction polynôme du second degré ; coefficients
   - Forme développée réduite ax² + bx + c (a ≠ 0), nommée parmi les formes à choisir. — _BO 1re spé p.6_ (déduite)
   - ⚠ libellé : les contenus du BO (p.6) ne mentionnent pas « forme développée ; coefficients » ; seule la capacité « choisir une forme adaptée (développée réduite, canonique, factorisée) » nomme la forme développée. Lecture déduite (texte implicite) : forme ax² + bx + c, a ≠ 0.
+  - → David (2026-10-23) : **laisser**
 - **1SPE-244** — Fonction polynôme du second degré donnée sous forme factorisée ; racines
   - Forme factorisée a(x − x₁)(x − x₂) ; racines lues sur la forme factorisée. — _BO 1re spé p.6_ (BO)
 - **1SPE-245** — Expression de la somme des racines
@@ -202,6 +204,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-247** — Calcul des coordonnées du sommet d'une parabole
   - Sommet de la parabole lu sur la forme canonique (α ; β), ou obtenu par l'extrémum en lien avec la dérivation. — _BO 1re spé p.5-8_ (déduite)
   - ⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite.
+  - → David (2026-10-23) : **laisser**
 - **1SPE-248** — Discriminant d'une fonction polynôme du second degré
   - Discriminant Δ = b² − 4ac. — _BO 1re spé p.6_ (BO)
 - **1SPE-249** — Signe d'une fonction polynôme du second degré
@@ -209,6 +212,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-250** — Résolution d'une inéquation du second degré
   - Inéquation du second degré ramenée au signe d'un polynôme du second degré. — _BO 1re spé p.6_ (déduite)
   - ⚠ libellé : la « résolution d'une inéquation du second degré » n'est pas un contenu du BO (p.6), qui dit « Signe » ; l'inéquation n'apparaît que dans la capacité « choisir une forme adaptée … (équation, inéquation, optimisation, variations) ». Lecture déduite (texte implicite) : inéquation se ramenant au signe d'un trinôme.
+  - → David (2026-10-23) : **laisser**
 - **1SPE-251** — Étudier le signe d'une fonction polynôme du second degré donnée sous forme factorisée
   - Polynôme donné sous forme factorisée a(x − x₁)(x − x₂) seulement ; signe par tableau de signes. — _BO 1re spé p.5-6_ (BO)
 - **1SPE-252** — Déterminer les fonctions polynômes du second degré s'annulant en deux nombres réels distincts
@@ -235,6 +239,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-384** — Axe de symétrie d'une parabole
   - Axe de symétrie x = α, lu sur la forme canonique. — _BO 1re spé p.5_ (déduite)
   - ⚠ libellé : « axe de symétrie d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : il se lit sur la forme canonique, en lien avec la position du graphe de x ↦ f(x − m) (p.5).
+  - → David (2026-10-23) : **laisser**
 - **1SPE-385** — Factorisation éventuelle
   - Factorisation a(x − x₁)(x − x₂) quand Δ ⩾ 0 ; pas de factorisation quand Δ < 0. — _BO 1re spé p.6_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : « factorisation éventuelle » (p.6) signifie que la factorisation dépend du signe de Δ ; aucun nombre complexe en 1re.
@@ -536,6 +541,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-364** — Sur des exemples, calculer l'écart entre la moyenne d'un échantillon simulé de taille $n$ d'une variable aléatoire et l'espérance de cette variable aléatoire
   - Sur des exemples, distance entre la moyenne d'un échantillon simulé de taille n et l'espérance. — _BO 1re spé p.11_ (BO)
   - ⚠ libellé : le BO (p.11) dit « Étudier sur des exemples la distance … », le libellé dit « calculer l'écart ».
+  - → David (2026-10-23) : **laisser**
 - **1SPE-365** — Simuler, avec Python ou un tableur, $N$ échantillons de taille $n$ d'une variable aléatoire d'espérance $\mu$ et d'écart type $\sigma$ ; si $m$ désigne la moyenne d'un échantillon, calculer la proportion des cas où l'écart entre $m$ et $\mu$ est inférieur ou égal à $\tfrac{2\sigma}{\sqrt{n}}$
   - N échantillons de taille n simulés (Python ou tableur) ; proportion des cas où |m − μ| ⩽ 2σ/√n. — _BO 1re spé p.11_ (BO)
 
@@ -605,6 +611,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-354** — Définir une variable aléatoire modélisant une situation et donner ses valeurs possibles
   - Modélisation d'une situation par une variable aléatoire réelle (univers fini). — _BO 1re spé p.11_ (BO)
   - ⚠ libellé : le BO (p.11) dit « Modéliser une situation à l'aide d'une variable aléatoire » ; « définir … et donner ses valeurs possibles » est une reformulation qui n'est pas au texte.
+  - → David (2026-10-23) : **laisser**
 - **1SPE-355** — Déterminer la loi de probabilité d'une variable aléatoire
   - Loi de probabilité d'une variable aléatoire à valeurs en nombre fini. — _BO 1re spé p.11_ (BO)
 - **1SPE-356** — Calculer une espérance

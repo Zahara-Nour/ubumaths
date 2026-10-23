@@ -479,6 +479,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 - **TSPE-444** — Utiliser l'équation fonctionnelle du logarithme pour transformer une écriture
   - Transformer une écriture avec ln par l'équation fonctionnelle. — _BO Tle spé p.10_ (BO)
   - ⚠ libellé : le BO dit « Utiliser l'équation fonctionnelle de l'exponentielle ou du logarithme pour transformer une écriture » ; le libellé ne garde que le logarithme et aucun point de Tle spé ne porte la partie exponentielle (elle existe en 1re spé).
+  - → David (2026-10-23) : **laisser**
 - **TSPE-445** — Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation
   - Résoudre une équation par l'équation fonctionnelle de l'exponentielle. — _BO Tle spé p.10_ (BO)
   - Équations, inéquations et écritures où intervient exp ou ln, traitées par l'équation fonctionnelle. — _BO Tle spé p.10_ (BO)

@@ -1982,7 +1982,12 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO écrit « (par exemple U = RI, … ) » ; le libellé a perdu « par exemple » et se lit comme une liste fermée."
+				"remarque": "⚠ libellé : le BO écrit « (par exemple U = RI, … ) » ; le libellé a perdu « par exemple » et se lit comme une liste fermée.",
+				"decision_libelle": {
+					"choix": "corriger",
+					"decide_le": "2026-10-22",
+					"libelle_corrige": "Sur des cas simples de relations entre variables (par exemple $U = RI$, $d = vt$, $S = \\pi r^2$, $V = abc$, $V = \\pi r^2 h$), exprimer une variable en fonction des autres"
+				}
 			},
 			"2-274": {
 				"libelle": "Exprimer une variable en fonction de l'autre dans une relation du premier degré $ax + by = c$",
@@ -2884,7 +2889,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10."
+				"remarque": "⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10.",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-22"
+				}
 			},
 			"2-395": {
 				"libelle": "Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$)",
@@ -2897,7 +2906,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13)."
+				"remarque": "⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-22"
+				}
 			},
 			"2-488": {
 				"libelle": "Passer du registre symbolique ($P(A)$, $\\bar{A}$, $P(A \\cap B)$, $P_A(B)$) au registre de la langue naturelle",
@@ -2910,7 +2923,11 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13)."
+				"remarque": "⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).",
+				"decision_libelle": {
+					"choix": "laisser",
+					"decide_le": "2026-10-22"
+				}
 			},
 			"2-396": {
 				"libelle": "Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs",

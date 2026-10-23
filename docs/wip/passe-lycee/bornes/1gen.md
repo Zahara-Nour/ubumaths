@@ -127,12 +127,15 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 - **1GEN-029** — Suites géométriques : explicitation du terme de rang $n$
   - Suites géométriques à termes strictement positifs (raison positive). — _BO 1re ES p.6_ (BO)
   - ⚠ ⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique).
+  - → David (2026-10-23) : **corriger** — nouveau libellé : Suites géométriques à termes strictement positifs : explicitation du terme de rang $n$
 - **1GEN-030** — Suites géométriques : sens de variation
   - Suites géométriques à termes strictement positifs (raison positive). — _BO 1re ES p.6_ (BO)
   - ⚠ ⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique).
+  - → David (2026-10-23) : **corriger** — nouveau libellé : Suites géométriques à termes strictement positifs : sens de variation
 - **1GEN-031** — Suites géométriques : représentation graphique
   - Suites géométriques à termes strictement positifs (raison positive). — _BO 1re ES p.6_ (BO)
   - ⚠ ⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique).
+  - → David (2026-10-23) : **corriger** — nouveau libellé : Suites géométriques à termes strictement positifs : représentation graphique
 - **1GEN-032** — Fonction $x \mapsto a^x$ ($a > 0$, $x \geqslant 0$)
   - x ↦ aˣ, a > 0, x ⩾ 0. — _BO 1re ES p.7_ (BO)
 - **1GEN-033** — Fonctions $x \mapsto a^x$ : propriétés algébriques (admises, par extension des propriétés des puissances entières)

@@ -489,6 +489,7 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-273** — Sur des cas simples de relations entre variables ($U = RI$, $d = vt$, $S = \pi r^2$, $V = abc$, $V = \pi r^2 h$), exprimer une variable en fonction des autres
   - Cas simples de relations entre variables ; U = RI, d = vt, S = πr², V = abc, V = πr²h sont donnés « par exemple » (liste non limitative), y compris des formules d'autres disciplines. — _BO 2de p.5, 8_ (BO)
   - ⚠ ⚠ libellé : le BO écrit « (par exemple U = RI, … ) » ; le libellé a perdu « par exemple » et se lit comme une liste fermée.
+  - → David (2026-10-22) : **corriger** — nouveau libellé : Sur des cas simples de relations entre variables (par exemple $U = RI$, $d = vt$, $S = \pi r^2$, $V = abc$, $V = \pi r^2 h$), exprimer une variable en fonction des autres
 - **2-274** — Exprimer une variable en fonction de l'autre dans une relation du premier degré $ax + by = c$
   - Relation du premier degré ax + by = c. — _BO 2de p.8_ (BO)
 - **2-275** — Choisir la forme la plus adaptée (factorisée, développée réduite) d'une expression en vue de la résolution d'un problème
@@ -687,12 +688,15 @@ Les points-compétences et les points-démonstrations (raisonner, modéliser, r�
 - **2-394** — Construire un tableau croisé d'effectifs en lien avec une situation donnée
   - En lien avec une situation donnée. — _BO 2de p.13_ (BO)
   - ⚠ ⚠ libellé : le BO dit « Construire un arbre pondéré ou un tableau », sans « croisé d'effectifs » ; question l2-10.
+  - → David (2026-10-22) : **laisser**
 - **2-395** — Traduire un énoncé en langage naturel à l'aide des notations des probabilités ($P(A)$, $\bar{A}$, $P(A \cap B)$, $P_A(B)$)
   - Notations du programme : P(A), Ā, P(A ∩ B), P_A(B). — _BO 2de p.4, 13_ (BO)
   - ⚠ ⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).
+  - → David (2026-10-22) : **laisser**
 - **2-488** — Passer du registre symbolique ($P(A)$, $\bar{A}$, $P(A \cap B)$, $P_A(B)$) au registre de la langue naturelle
   - Notations du programme : P(A), Ā, P(A ∩ B), P_A(B). — _BO 2de p.4, 13_ (BO)
   - ⚠ ⚠ libellé : la puce du BO dit seulement « Passer du registre de la langue naturelle au registre symbolique et inversement » ; la liste de notations est ajoutée (chaque notation est bien au BO, p.4 et p.13).
+  - → David (2026-10-22) : **laisser**
 - **2-396** — Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme de tableau croisé d'effectifs
   - Tableau croisé d'effectifs ; tirage au sort avec équiprobabilité d'un individu dans une population : P_B(A) = Card(A ∩ B) / Card(B). — _BO 2de p.13_ (BO)
 - **2-397** — Calculer des probabilités conditionnelles lorsque les évènements sont présentés sous forme d'arbre de probabilité

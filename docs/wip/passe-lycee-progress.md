@@ -6,19 +6,21 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-22, page à cocher corrigée (2de et 1re ES visibles, 3 faux signalements retirés)._
+_Mis à jour le 2026-10-23, libellés tranchés (15/15)._
 
-- **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`), 61 questions,
-  15 libellés signalés. Page à cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (`bornes/page/gen.py`
-  → `page.html`, puis `pnpm format` ; collections `reponses`, `libelles`). David y répond (4 libellés faits).
-- **Prochaine action** : lire les réponses (ArtifactData `list` des 2 collections), les reporter dans les questions
-  (`decision`, `decide_le`) et les bornes (force `décision`), puis étape c.
-- **En attente de David** : la page à cocher. Sources : BO seul, définitif.
-- **Pièges en cours** : un « ⚠ libellé » qui dit « partie de puce manquante » peut être une scission déjà faite
-  (2-349, 2-316 via `refs_automatismes`) : vérifier avant de signaler. TSPE-444 fondé, réponse valable aussi pour
-  TCOMP-236 (même coupe). Générateurs `bornes/generateurs/*/build*.py` non relançables (chemins de scratchpad
-  périmés) : corriger les JSON à la main. 85 points techno sans borne ; 1SPE-243/247/384 absents du BO ;
-  1SPE-244 à re-ranger à l'étape c ; `undoLaterMigrations` à compléter pour toute migration de données.
+- **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`), 61 questions. Page à
+  cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (`bornes/page/gen.py` → `page.html`, puis
+  `pnpm format` ; collections `reponses`, `libelles`). **Libellés : 15/15 reportés** (champ `decision_libelle`) ;
+  **questions : 10/61 répondues (l2-1 à l2-10), pas encore reportées**.
+- **Prochaine action** : quand David a rempli les questions, les reporter (`decision`, `decide_le`, force
+  `décision`), puis étape c.
+- **En attente de David** : les 51 questions restantes ; TSPE-444 (+ TCOMP-236, même coupe) : point « équation fonctionnelle
+  de l'exponentielle pour transformer une écriture » en Tle, ou renvoi à 1SPE-294 (reco : point en Tle).
+- **Pièges en cours** : 4 libellés à corriger en base (2-273, 1GEN-029/030/031, nouveau texte dans
+  `libelle_corrige`) → migration de l'étape e. Automatisme 1re spé « déterminer graphiquement … son tableau de
+  variations » (BO l. 274) sans point (seul 1SPE-432 « signe » existe). 85 points techno sans borne ; 1SPE-244 à
+  re-ranger à l'étape c ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables :
+  JSON corrigés à la main (puis `pnpm format`, les JSON sont en tabulations).
 - **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
   retard sur `main` : les commits partent sur `main`).
 
@@ -84,3 +86,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   probabilités conditionnelles, espérance, automatismes en italique) ; PPCM absent de tous les BO du lycée.
 - **2026-10-22 — Pas de document d'accompagnement (David).** « il n'y a pas de document d'accompagnement approprié
   pour les bornes sur eduscol » : les bornes du lycée reposent sur le BO seul, pas de passe complémentaire.
+- **2026-10-23 — Libellés tranchés (page à cocher, 15/15).** Corriger : 2-273 (« par exemple » rétabli),
+  1GEN-029/030/031 (« à termes strictement positifs »). Laisser : les 11 autres, dont 1SPE-243/247/384 absents du
+  nouveau BO (gardés). Questions de David : (1) lecture graphique du sommet — aucun point de 1re spé ; en 2de,
+  2-350 « déterminer graphiquement les extrémums » ; en 1re ES/techno, 1GEN-053 et 1TECHNO-124 (« coordonnées du
+  sommet en lien avec la symétrie ») ; (2) TSPE-444 : exponentielle → point en Tle ou renvoi en 1re, à trancher.

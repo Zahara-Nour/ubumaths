@@ -440,7 +440,12 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique).",
+				"decision_libelle": {
+					"choix": "corriger",
+					"decide_le": "2026-10-23",
+					"libelle_corrige": "Suites géométriques à termes strictement positifs : explicitation du terme de rang $n$"
+				}
 			},
 			"1GEN-030": {
 				"libelle": "Suites géométriques : sens de variation",
@@ -453,7 +458,12 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique).",
+				"decision_libelle": {
+					"choix": "corriger",
+					"decide_le": "2026-10-23",
+					"libelle_corrige": "Suites géométriques à termes strictement positifs : sens de variation"
+				}
 			},
 			"1GEN-031": {
 				"libelle": "Suites géométriques : représentation graphique",
@@ -466,7 +476,12 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique)."
+				"remarque": "⚠ libellé : le BO place ce contenu sous « Suites géométriques à termes strictement positifs » ; le libellé ne le redit pas (la borne s'applique).",
+				"decision_libelle": {
+					"choix": "corriger",
+					"decide_le": "2026-10-23",
+					"libelle_corrige": "Suites géométriques à termes strictement positifs : représentation graphique"
+				}
 			},
 			"1GEN-032": {
 				"libelle": "Fonction $x \\mapsto a^x$ ($a > 0$, $x \\geqslant 0$)",
