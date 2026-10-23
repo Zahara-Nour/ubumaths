@@ -40,6 +40,9 @@ describe('carte f′ = bouton « Dériver », au rendu', () => {
 		[['g(x) = 1/x', 'f(x) = g(2x)'], '-\\dfrac{1}{2 x^2}'],
 		[['f(x) = x^2/(x-1)^2'], '-\\dfrac{2 x}{\\left( x - 1 \\right)^3}'],
 		[['f(x) = (x^2-1)/(x+1)'], '1'],
+		// `2x/(x^2-9)` se lit 2·(x/(x²−9)) : le coefficient entre au numérateur (rat-18)
+		[['f(x) = 2x/(x^2-9)'], '-\\dfrac{2 x^2 + 18}{\\left( x^2 - 9 \\right)^2}'],
+		[['f(x) = 3x/(x+1)'], '\\dfrac{3}{\\left( x + 1 \\right)^2}'],
 		[['f(x) = x*e^x'], '\\left( x + 1 \\right) \\exponentialE^x'],
 		[['f(x) = x*exp(x)'], '\\left( x + 1 \\right) \\exp\\left( x \\right)']
 	])('%j', (lines, expected) => {

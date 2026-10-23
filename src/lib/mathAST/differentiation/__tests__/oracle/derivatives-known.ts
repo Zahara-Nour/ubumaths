@@ -30,9 +30,6 @@ export const KNOWN_RESIDUE: Readonly<Record<string, string>> = {};
  * La valeur est la forme rendue ; la forme attendue est `expected` du corpus.
  */
 export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
-	'rat-18 @ commande': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
-	'rat-18 @ bouton': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
-	'rat-18 @ carte': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
 	'rac-06 @ latex-péda': '\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}',
 	'rac-06 @ commande': '\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}',
 	'rac-06 @ bouton': '\\sqrt{x} + \\dfrac{x}{2 \\sqrt{x}}',

@@ -131,7 +131,8 @@ function rawDerivative(node: MathNode, variable: string): MathNode | null {
 	}
 }
 
-function finalForm(node: MathNode, f: MathNode, options: TidyOptions): MathNode {
+function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNode {
+	const node = withCoefficientInNumerator(written);
 	if (node.type === 'division') {
 		const raw = tidy(node.numerator, { ...options, order: 'kept' });
 		const denominator = tidy(node.denominator, { ...options, order: 'kept' });
@@ -146,6 +147,36 @@ function finalForm(node: MathNode, f: MathNode, options: TidyOptions): MathNode 
 		);
 	}
 	return withCommonExponential(reduce(node, options), options);
+}
+
+/**
+ * `c·(u/v)′` → `(c·u′v − c·uv′)/v²` : le coefficient numérique entre dans
+ * CHAQUE terme du numérateur, comme si f était écrite `cu/v`. `2x/(x²−9)` tapé
+ * se lit `2·(x/(x²−9))` : sa dérivée brute `2·(…)/(x²−9)²` n'était pas un
+ * quotient, et `auto` gardait `2(−x² − 9)` (distribuer n'est pas plus court),
+ * là où la forme écrite donne `−(2x² + 18)/(x² − 9)²` (rat-18, lot 5a).
+ */
+function withCoefficientInNumerator(node: MathNode): MathNode {
+	if (node.type !== 'multiplication') return node;
+	const left = unwrap(node.left);
+	const right = unwrap(node.right);
+	const [coefficient, quotient] = isNumericCoefficient(node.left)
+		? [node.left, right]
+		: isNumericCoefficient(node.right)
+			? [node.right, left]
+			: [null, null];
+	if (coefficient === null || quotient === null || quotient.type !== 'division') return node;
+	const terms: SignedTerm[] = flattenSumShallow(unwrap(quotient.numerator)).map(
+		({ sign, term }) => ({ sign, term: multiply(coefficient, term, 'implicit') })
+	);
+	const numerator = unflattenSum(terms);
+	return numerator === null ? node : divide(numerator, quotient.denominator, quotient.displayStyle);
+}
+
+/** Un nombre, sous un éventuel − ou des parenthèses : `2`, `−3`. */
+function isNumericCoefficient(node: MathNode): boolean {
+	const inner = unwrap(node);
+	return isNumber(inner) || (isOpposite(inner) && isNumber(unwrap(inner.operand)));
 }
 
 /**
