@@ -2,9 +2,12 @@
  * Étape 8 du contrat : l'ordre canonique — **le même partout**, sommes
  * imbriquées comprises (finding K1 de la revue).
  *
- * - **Facteurs** : nombre (porté par le coefficient), puis variables, puis
- *   fonctions, puis le reste (sommes et puissances de sommes) ; à catégorie
- *   égale, ordre alphabétique de l'écriture de la base.
+ * - **Facteurs** (Q13, David, 2026-10-23) : nombre (porté par le coefficient),
+ *   constantes, lettres et leurs puissances, parenthèses (sommes et leurs
+ *   puissances), fonctions, exponentielles, puis le reste — `(x + 1)eˣ`,
+ *   `x(x + 1)eˣ`, `(2x + 1)cos x`, `ln(2)·2ˣ`. À catégorie égale, ordre
+ *   alphabétique de l'écriture de la base, sauf entre deux parenthèses : l'ordre
+ *   écrit reste (`(x − 1)(x + 2)`).
  * - **Termes** : degré décroissant (la constante finit donc dernière), puis,
  *   à degré égal, comparaison facteur par facteur de leur **écriture** —
  *   c'est elle qui met `4hx` avant `2h^2` et `(h+x)^2` avant `x^2`.
@@ -87,8 +90,10 @@ type TermOrderKey = {
  */
 const CATEGORY_CONSTANT = 0;
 const CATEGORY_SYMBOL = 1;
-const CATEGORY_FUNCTION = 2;
-const CATEGORY_OTHER = 3;
+const CATEGORY_SUM = 2;
+const CATEGORY_FUNCTION = 3;
+const CATEGORY_EXPONENTIAL = 4;
+const CATEGORY_OTHER = 5;
 
 /** La constante d'Euler dans une clé d'ordre (voir `writtenForm`). */
 const EULER_ORDER_KEY: MathNode = variable('\\euler');
@@ -126,9 +131,17 @@ function writtenForm(node: MathNode): string {
 	}
 }
 
+/**
+ * Rang de la catégorie d'une base. Une puissance d'exposant non rationnel prend
+ * celle de sa base pour une lettre ou une somme (`xⁿ`, `(x + 1)ⁿ`) ; de base
+ * sans inconnue, c'est une exponentielle (`eˣ`, `2ˣ`, `(1/2)ˣ`, `(−2)ˣ`) ; le reste
+ * (`(ln x)ˣ`…) passe en dernier.
+ */
 function categoryOf(base: MathNode): number {
 	if (isImaginaryUnit(base)) return CATEGORY_CONSTANT;
-	switch (base.type) {
+	let inner = base;
+	while (isDelimiter(inner)) inner = inner.content;
+	switch (inner.type) {
 		case 'constant':
 			return CATEGORY_CONSTANT;
 		case 'variable':
@@ -137,32 +150,60 @@ function categoryOf(base: MathNode): number {
 		case 'hole':
 		case 'subscript':
 			return CATEGORY_SYMBOL;
+		case 'addition':
+		case 'subtraction':
+			return CATEGORY_SUM;
 		case 'function':
 			return CATEGORY_FUNCTION;
+		case 'superscript':
+			return powerCategory(inner.base);
 		default:
 			return CATEGORY_OTHER;
 	}
+}
+
+/** La catégorie d'une puissance d'exposant non rationnel, d'après sa base. */
+function powerCategory(base: MathNode): number {
+	if (!containsUnknown(base)) return CATEGORY_EXPONENTIAL;
+	const category = categoryOf(base);
+	if (category === CATEGORY_SYMBOL || category === CATEGORY_SUM) return category;
+	return CATEGORY_OTHER;
 }
 
 // =============================================================================
 // Ordre des facteurs
 // =============================================================================
 
-function compareFactors(a: TidyFactor, b: TidyFactor): number {
-	const categoryA = categoryOf(a.base);
-	const categoryB = categoryOf(b.base);
-	if (categoryA !== categoryB) return categoryA - categoryB;
+/** Un facteur décoré pour le tri : sa catégorie, son écriture, son rang écrit. */
+type FactorOrderKey = {
+	readonly factor: TidyFactor;
+	readonly category: number;
+	readonly text: string;
+	/** Rang de la première apparition de sa base dans le produit. */
+	readonly written: number;
+};
 
-	const textA = writtenForm(a.base);
-	const textB = writtenForm(b.base);
-	if (textA !== textB) return textA < textB ? -1 : 1;
-
-	return compareRational(a.exponent, b.exponent);
+function compareFactors(a: FactorOrderKey, b: FactorOrderKey): number {
+	if (a.category !== b.category) return a.category - b.category;
+	// Deux parenthèses : l'ordre écrit reste — le rang de la première apparition
+	// de la base, qui garde le tri transitif quand une base revient (`(x + 1)`
+	// des deux côtés de la barre). Le regroupement des termes semblables n'en
+	// dépend pas : sa clé est triée (`factorsKey`).
+	if (a.category === CATEGORY_SUM && a.written !== b.written) return a.written - b.written;
+	if (a.text !== b.text) return a.text < b.text ? -1 : 1;
+	return compareRational(a.factor.exponent, b.factor.exponent);
 }
 
 /** Trie les facteurs d'un terme selon l'ordre canonique. */
 export function sortFactors(factors: readonly TidyFactor[]): TidyFactor[] {
-	return [...factors].sort(compareFactors);
+	const firstSeen = new Map<string, number>();
+	const keys = factors.map((factor, index): FactorOrderKey => {
+		const text = writtenForm(factor.base);
+		const written = firstSeen.get(text) ?? index;
+		firstSeen.set(text, written);
+		return { factor, category: categoryOf(factor.base), text, written };
+	});
+	return keys.sort(compareFactors).map((key) => key.factor);
 }
 
 // =============================================================================

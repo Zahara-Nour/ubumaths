@@ -1969,6 +1969,10 @@ export function juxtaposesQuantities(node: MultiplicationNode): boolean {
  * Même règle après un APPEL de fonction : `\ln\left( 2 \right) 2^x` (dérivée
  * de `2^x` sur la carte f′ et le bouton « Dériver ») ne se relit pas — l'oracle
  * des dérivées l'a relevé. `\ln(2) × 2^x` se lit sans ambiguïté.
+ *
+ * Et devant une PUISSANCE DE BASE NUMÉRIQUE, quel que soit le facteur de gauche
+ * (Q15 du chantier simplify-carte, 2026-10-23) : `x 3^x` est refusé à la
+ * relecture (« nombre écrit après un facteur ») → `x × 3^x`, `(x + 1) × 2^x`.
  */
 export function juxtaposesDigits(node: MultiplicationNode): boolean {
 	if (needsParenthesesUnderSign(node.left) || needsParenthesesAsRightFactor(node.right)) {
@@ -1977,9 +1981,21 @@ export function juxtaposesDigits(node: MultiplicationNode): boolean {
 	// Limite parenthésée devant un nombre : `\left(\lim x\right) 3` ne se relit pas
 	const limitWrapped = binaryOperandWraps(node)?.left ?? false;
 	return (
-		(endsWithNumber(node.left) || endsWithFunctionCall(node.left) || limitWrapped) &&
-		startsWithNumber(node.right)
+		((endsWithNumber(node.left) || endsWithFunctionCall(node.left) || limitWrapped) &&
+			startsWithNumber(node.right)) ||
+		startsWithNumericPower(node.right)
 	);
+}
+
+/** L'écriture de ce nœud commence-t-elle par une puissance de base numérique (`3^x`) ? */
+function startsWithNumericPower(node: MathNode): boolean {
+	if (node.type === 'superscript') {
+		return !needsParenthesesAsPowerBase(node.base) && isNumber(node.base);
+	}
+	if (isMultiplication(node)) {
+		return !needsParenthesesUnderSign(node.left) && startsWithNumericPower(node.left);
+	}
+	return false;
 }
 
 /** L'écriture de ce nœud finit-elle par un appel de fonction (`\ln\left( 2 \right)`) ? */

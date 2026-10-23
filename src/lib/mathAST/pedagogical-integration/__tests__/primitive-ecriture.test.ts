@@ -533,7 +533,8 @@ describe('parenthèse d’IPP sans exponentielle commune à tous les termes', ()
 		// parenthèse venue de u, pas de l'IPP : gardée
 		[
 			'(2x+1)\\sin(x)',
-			'2 \\sin\\left( x \\right) - \\cos\\left( x \\right) \\left( 2 x + 1 \\right)'
+			// la parenthèse avant la fonction (Q13, lot 4c-bis, 2026-10-23)
+			'2 \\sin\\left( x \\right) - \\left( 2 x + 1 \\right) \\cos\\left( x \\right)'
 		]
 	])('∫ %s dx s’écrit %s', (integrand, expected) => {
 		for (const level of LEVELS) {

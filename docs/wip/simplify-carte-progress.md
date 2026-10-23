@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1631._
+_Mis à jour le 2026-10-23, lot 4c-bis en cours (avant PR)._
 
 - **État** : lots mergés jusqu'à #1631. **4c mergé (#1631)** (§ 41) : `tidy({ order: 'kept' })` + `tidyTerms` reconstruit dessus ; revue opus : une régression corrigée (clé de regroupement triée). Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1631. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
 - **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → ~~4c `order: 'kept'`~~ → **4c-bis ordre des facteurs (Q13, ordre et découpage validés le 2026-10-23)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c-bis (Q13, ordre des facteurs validé, § 41) : phase 0 (comportements, cas « entre deux parenthèses » à vérifier) puis tests rouges ; nouveau worktree `../ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-ordre-facteurs`.
+- **Prochaine action** : lot 4c-bis codé, revu (opus, findings corrigés, § 42) : lire la suite serveur complète (`suite-final.txt` du scratchpad, ou la relancer), puis PR, CI, merge ; montrer à David les 26 tirages factorisés (ordre x₁, x₂) et le bug `factoriser` `(a+b)·1/(a+b)` (hors lot).
 - **En attente de David** : rien.
 - **Pièges en cours** : bug de `tidy` (somme sans nœud de parenthèse après un −, distribuée) contourné dans `tidyTerms` seulement (§ 41) ; `rat-04 @ carte` quitte la forme de classe (lot 5) ; banc des 1 008 modèles AVEUGLE à `tidyTerms` (témoin) ; banc copié dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/effec7c4-4847-44a7-8ea8-a18dcc986d3e/scratchpad` (`tirages.mts`, `modeles.json`, `banc-main.txt`) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (retiré après #1631) ; à recréer pour 4c-bis.
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `feat/simplify-carte-ordre-facteurs`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -612,3 +612,19 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Banc des 1 008 modèles × 8 tirages : 0 différence, mais aveugle** : le témoin (`tidyTerms` remplacé par `tidy` rangé) ne change rien non plus, les modèles ne passent pas par `tidyTerms`.
 - **Suite serveur complète** (59 882 tests) : 1 rouge, `∫(1/x + 1/(x+1) + 1/x)` → `2 ln|x| + ln|x+1|` (regroupé à la place du premier, ordre de l'énoncé) au lieu de `ln|x+1| + 2 ln|x|` : attendu mis à jour, **différence à montrer à David (Q12)**. Docs : `tidy-spec.md` (§A.2 écart connu, §G.1 `order` et `tidyTerms`, §H) et `mathast/README.md` mis à jour ; garde `docs:check-a-jour` verte.
 - **Revue `code-reviewer` (opus)** : aucune valeur fausse (signe, coefficient, idempotence). **Régression corrigée** : en `kept`, `eˣ(1+x) − eˣ(x+1)` restait tel quel (défaut : `0`) — `compareFactors` départage `(1+x)` et `eˣ` (même catégorie) sur l'écriture gardée, et la clé de regroupement enchaînait les facteurs dans l'ordre trié. Clé désormais **triée** (`factorsKey`, partagée par `collectLikeTerms` et `collectWithSigns`) ; `flipNumerator` et `withoutDoubleSign` passent par `factorKey`. 4 tests ajoutés (rouges avant), suite serveur verte (59 870). Laissé en l'état (mineur) : la branche « négatif en tête » de `tidyTerms` (`terms.ts`) n'applique pas `withImpliedParentheses` — valeur juste, ira avec le bug de `tidy` (lot 4e/5). `(1+x)eˣ` en `kept` ≠ `eˣ(x+1)` du défaut : réglé par 4c-bis (Q13).
+
+## 42. Lot 4c-bis : ordre des facteurs (Q13, David, 2026-10-23 : « je valide Q14 et Q15 » ; branche `feat/simplify-carte-ordre-facteurs`)
+
+**Sonde (prototype jetable, suite serveur complète)** : 9 rouges sur 59 980. Idempotence vérifiée sur 42 cas dans les deux modes, l'ordre écrit gardé entre deux parenthèses compris.
+
+**Comportements validés** :
+
+- Catégories, dans cet ordre : constantes (`e`, `i`, `π`) ; lettres et leurs puissances (`x`, `x²`, `xⁿ`, `x^x`) ; parenthèses (sommes, `(x+1)²`, `(x+1)ⁿ`) ; fonctions (`ln x`, `sin x`, `√x`, `|x|`, `ln 2`) ; exponentielles (`eˣ`, `e^{2x}`, `2ˣ`) ; le reste. `(x+1)eˣ`, `x(x+1)eˣ`, `(x+1)ln x`, `(2x+1)cos x`, `(x+1)√x`.
+- **Entre deux parenthèses : l'ordre écrit** (idempotent, regroupement par clé triée) : `(x−1)(x+2)` reste, `(1−i)(−2+i)` reste, `2(x−1)(x+1)+3(x+1)(x−1) → 5(x−1)(x+1)`. Ordre de `factoriser` (Q3) inchangé.
+- **Q14** : dans le groupe « fonctions et exponentielles », les fonctions d'abord (ordre alphabétique), les exponentielles ensuite : `ln(2)·2ˣ`, `2cos(x)e^{sin x}`, `ln(x)eˣ`.
+- **Q15** : bug du générateur LaTeX (déjà sur `main`) : `x·3ˣ` s'écrivait `x 3^x`, illisible à la relecture. Corrigé dans ce lot : `\times` devant une puissance de base numérique.
+- **Fait (branche)** : `order.ts` — catégories `CATEGORY_SUM` et `CATEGORY_EXPONENTIAL`, `powerCategory` (puissance d'exposant non rationnel : lettre ou somme → sa catégorie, base numérique ou constante → exponentielle) ; deux sommes → `compareFactors` rend 0 (tri stable, ordre écrit). `latex-generator.ts` — `startsWithNumericPower` dans `juxtaposesDigits` (Q15). Tests : `tidy-ordre-facteurs.test.ts` (34 rouges sur 86 avant correctif).
+- **Suite serveur complète** (60 066 tests) : 2 rouges attendus, mis à jour — `(1−i)(−2+i)` garde l'ordre écrit (`tidy-sum-lead`), `∫(2x+1)sin x` → `2 sin x − (2x+1)cos x` (`primitive-ecriture`). **Oracle des dérivées** : inchangé (valeurs et formes, Q14 garde `ln(2)·2ˣ`, `2cos(x)e^{sin x}`, `2x ln(2)·2^{x²}`).
+- **Banc des 1 008 modèles × 8 tirages** (relancé avec `tsx`, sonde dans le scratchpad de la session) : **26 tirages sur 25 392 changent**, tous la forme factorisée `a(x−x₁)(x−x₂)` de 6 modèles (racines, forme d'un trinôme, développer, sommet, factoriser avec les racines, axe de symétrie). L'ordre des parenthèses suit désormais l'écriture du modèle, donc **le x₁, x₂ de la correction** (« x₁ = −5 et x₂ = −1, donc P(x) = −2(x+5)(x+1) » ; sur `main` : `−2(x+1)(x+5)`, à l'inverse du texte). À montrer à David.
+- **Revue `code-reviewer` (opus)** : idempotence et regroupement vérifiés sur environ 65 entrées, aucune valeur fausse ; le `\times` répare aussi `x 0.5^x`, `2 x 3^x`, refusés sur `main`. **Important, corrigé** : `limits/one-sided.ts` (`sameValue`) comparait `tidy(a)` et `tidy(b)` par leur écriture et comptait sur le tri alphabétique entre deux sommes : une limite `(a−1)(a+1)` et une valeur au point `(a+1)(a−1)` donnaient « discontinuité par trou ». Il compare désormais aussi la différence mise au propre à 0 (test rouge sans le correctif). Même famille signalée dans `reduce-steps.ts` (`sameFactor`) : sondé, sans effet observable (même sortie avec ou sans garde, et identique à `main`), donc non modifié. **Mineurs, corrigés** : tri transitif (rang de première apparition de la base au lieu de « rendre 0 ») ; `(1/2)ˣ`, `(−2)ˣ` rangés en exponentielles (base sans inconnue).
+- **Bug trouvé en chemin, déjà sur `main`, hors lot** : `factoriser` sur `(a+b)(a−b)/((a−b)(a+b))` rend `(a+b)·1/(a+b)`. À montrer à David. Hors lot aussi : `toCustom` écrit `(1/2)^xe^x`, illisible en syntaxe maison (exposant `xe`).

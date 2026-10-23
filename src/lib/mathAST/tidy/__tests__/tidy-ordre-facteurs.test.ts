@@ -1,0 +1,110 @@
+/**
+ * L'ordre canonique des FACTEURS d'un produit (Q13, lot 4c-bis du chantier
+ * simplify-carte, comportements validés par David le 2026-10-23, journal § 42).
+ *
+ * Catégories, dans cet ordre : constantes (`e`, `i`, `π`) ; lettres et leurs
+ * puissances ; parenthèses (sommes) ; fonctions ; exponentielles ; le reste.
+ * Entre deux parenthèses, l'ordre écrit reste. Dans le groupe des fonctions,
+ * l'ordre alphabétique (Q14). Les deux modes d'ordre des termes (`canonical`,
+ * `kept`) partagent cet ordre.
+ */
+
+import { describe, it, expect } from 'vitest';
+import { tidy } from '../index';
+import { parseCustom } from '../../parser/custom';
+import { parseLatex } from '../../parser';
+import { toCustom } from '../../custom-generator';
+import { toLatex } from '../../latex-generator';
+
+const canonical = (s: string) => toCustom(tidy(parseCustom(s)));
+const kept = (s: string) => toCustom(tidy(parseCustom(s), { order: 'kept' }));
+
+const CASES: readonly (readonly [string, string])[] = [
+	// La parenthèse avant la fonction ou l'exponentielle
+	['(x+1)e^x', '(x+1)e^x'],
+	['e^x(x+1)', '(x+1)e^x'],
+	['e^{2x}(2x-1)', '(2x-1)e^{2x}'],
+	['e^{-x}(x+1)', '(x+1)e^{-x}'],
+	['ln(x)(x+1)', '(x+1)ln(x)'],
+	['sqrt(x)(x+1)', '(x+1)sqrt(x)'],
+	['|x|(x+1)', '(x+1)|x|'],
+	['2^x(x+1)', '(x+1)*2^x'],
+	['x(x+1)e^x', 'x(x+1)e^x'],
+	['(x-1)(x+2)e^x', '(x-1)(x+2)e^x'],
+	['(x+1)(2x-1)e^{2x}', '(x+1)(2x-1)e^{2x}'],
+	['3(x+1)e^x-2e^x(x+1)', '(x+1)e^x'],
+	// Les lettres et leurs puissances avant la parenthèse
+	['(x+1)x', 'x(x+1)'],
+	['(x+1)x^2', 'x^2(x+1)'],
+	['(x+1)x^n', 'x^n(x+1)'],
+	['(x+1)π x', '\\pi x(x+1)'],
+	['sqrt(x) x', 'xsqrt(x)'],
+	// Entre deux parenthèses : l'ordre écrit
+	['(x-1)(x+2)', '(x-1)(x+2)'],
+	['(x+2)(x-1)', '(x+2)(x-1)'],
+	['(x-1)(x+1)^2', '(x-1)(x+1)^2'],
+	['(x-1)(x+1)^n', '(x-1)(x+1)^n'],
+	['(x+1)(x-1)(x+1)', '(x+1)^2(x-1)'],
+	// Fonctions d'abord, exponentielles ensuite (Q14)
+	['e^x ln(x)', 'ln(x)e^x'],
+	['e^x sin(x)', 'sin(x)e^x'],
+	['2^x*ln(2)', 'ln(2)*2^x'],
+	['(1/2)^x(x+1)', '(x+1)(1/2)^x'],
+	['(1/2)^x*ln(x)*x', 'xln(x)(1/2)^x'],
+	['sin(x)cos(x)', 'cos(x)sin(x)']
+];
+
+describe('ordre des facteurs (Q13) — défaut', () => {
+	it.each(CASES)('%s → %s', (input, expected) => {
+		expect(canonical(input)).toBe(expected);
+	});
+});
+
+describe("ordre des facteurs (Q13) — order: 'kept'", () => {
+	it.each(CASES)('%s → %s', (input, expected) => {
+		expect(kept(input)).toBe(expected);
+	});
+});
+
+describe('ordre des facteurs (Q13) — idempotent', () => {
+	it.each(CASES)('%s', (input) => {
+		const once = canonical(input);
+		expect(canonical(once)).toBe(once);
+		const onceKept = kept(input);
+		expect(kept(onceKept)).toBe(onceKept);
+	});
+});
+
+describe('ordre des facteurs (Q13) — une base des deux côtés de la barre (S3)', () => {
+	it.each([
+		['(x+1)(x-1)(2x+2)/(4(x+1))', '{(x+1)^2(x-1)}/{2(x+1)}'],
+		['(x-1)(x+1)(2x+2)/(4(x+1))', '{(x-1)(x+1)^2}/{2(x+1)}']
+	])('%s → %s, idempotent', (input, expected) => {
+		expect(canonical(input)).toBe(expected);
+		expect(canonical(expected)).toBe(expected);
+	});
+});
+
+describe('ordre des facteurs (Q13) — les termes semblables se regroupent', () => {
+	it.each([
+		['(x+1)(x-1)+(x-1)(x+1)', '2(x+1)(x-1)'],
+		['(x+1)(x-1)-(x-1)(x+1)', '0'],
+		['2(x-1)(x+1)+3(x+1)(x-1)', '5(x-1)(x+1)'],
+		['(x+1)e^x+e^x(x+1)', '2(x+1)e^x'],
+		['e^x(1+x)-e^x(x+1)', '0']
+	])('%s → %s', (input, expected) => {
+		expect(canonical(input)).toBe(expected);
+	});
+});
+
+describe('ordre des facteurs (Q15) — le LaTeX se relit', () => {
+	it.each([
+		['2x*ln(2)*2^(x^2)', '2 x \\ln\\left( 2 \\right) \\times 2^{x^2}'],
+		['x*3^x', 'x \\times 3^x'],
+		['(x+1)*2^x', '\\left( x + 1 \\right) \\times 2^x']
+	])('%s s’écrit %s', (input, expected) => {
+		const latex = toLatex(tidy(parseCustom(input)));
+		expect(latex).toBe(expected);
+		expect(() => parseLatex(latex)).not.toThrow();
+	});
+});
