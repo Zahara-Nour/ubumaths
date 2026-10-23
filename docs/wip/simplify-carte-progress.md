@@ -731,7 +731,7 @@ Trouvés en chemin :
 
 **Questions** :
 
-- **Q18** — simplifier f′ par un facteur commun quand le domaine de f le permet (`(2−x)/x³`, `(1−2 ln x)/x³`, `(1−x)/eˣ`) ? Reco : oui, en 5a et en 5b. C'est la forme de classe, le domaine est acquis (S3), et D1 disait « dénominateur gardé » sans avoir vu ces cas.
+- **Q18** — diviser numérateur et dénominateur de f′ par leur facteur commun quand le domaine de f le permet : `(2x − x²)/x⁴ → (2 − x)/x³` (f = `(x−1)/x²`), `(x − 2x ln x)/x⁴ → (1 − 2 ln x)/x³` (f = `ln x/x²`), `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ` (f = `x/eˣ`) ? Reco : oui, en 5a et en 5b. La règle du quotient laisse ce facteur ; x ≠ 0 est déjà dans le domaine de f et eˣ ne s’annule pas (S3) ; D1 disait « dénominateur gardé » sans avoir vu ces cas. (Première version : les exemples donnaient le résultat au lieu de l’écriture à simplifier, relevé par David.)
 - **Q19** — le décimal perdu par le moteur de dérivation (`x − 3/2` pour `0,5x² − 1,5x`) ? Reco : PR à part avant 5a (test rouge, `mathast-expert`), pour que l'oracle de 5a mesure D1 seul.
 - **Q20** — la variante `{ result, conditions }` de `tidy` (Q2 du lot 4a, « écrite au lot 5 avec son premier appelant ») : aucun appelant trouvé, les conditions de Q4 viennent du moteur pédagogique, pas de `tidy`. Reco : la reporter jusqu'à un vrai appelant.
 - **Q21** — l'ordre : Q19 → 5a → 5b → 5c → 5d → 5e → 5f ? Reco : oui. D1 et D2 sont vus par les élèves dans les corrections ; 5c est le plus large (6 appelants) ; 5e dépend de 5a (forme par défaut).
