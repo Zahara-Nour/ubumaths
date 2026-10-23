@@ -228,6 +228,12 @@ export interface ChoreographyCtx {
 	 * cette instruction. Partagé avec les sous-chorégraphies.
 	 */
 	readonly auxLabel: (id: string, base: string) => string;
+	/**
+	 * Vrai si `name` est déjà une étiquette de la figure ou un nom déclaré
+	 * par le script (même plus loin). Sert à écarter une lettre auxiliaire
+	 * qui se lirait comme un point du script (C* à côté d'un vrai C).
+	 */
+	readonly nameTaken: (name: string) => boolean;
 	readonly sub: (
 		builtin: string,
 		args: ChoreographyCtx['args'],

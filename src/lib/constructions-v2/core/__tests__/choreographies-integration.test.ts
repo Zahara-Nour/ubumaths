@@ -1143,6 +1143,8 @@ describe('parallele @double_perpendiculaire — P sur (AB)', () => {
 			);
 			expect(exec.loadError).not.toBeNull();
 			expect(exec.loadError!.message).toMatch(/P est sur la droite \(AB\)/);
+			// Le message cite la méthode entière, @euclide ou @equerre compris.
+			expect(exec.loadError!.message).toContain(`parallele(P, A, B) ${voie}\``);
 			expect(exec.loadError!.line).toBe(4);
 			expect(exec.loadError!.stepIndex).toBe(3);
 			// Seuls les 3 points restent dans la frise.
@@ -1332,7 +1334,8 @@ function expectEquerreSeenByStudent(
 	expect(dot(along, v)).toBeGreaterThan(1);
 	expect(dot(along, v)).toBeLessThanOrEqual(SET_SQUARE_VERTICAL_LEG);
 	// Marqueurs : un en F (carré du côté de P par rapport à (AB)), un en P
-	// (carré entre P et (AB), du côté du tracé fait à l'équerre).
+	// (carré dans le coin de l'équerre : du côté opposé à (AB), du côté du
+	// tracé fait à l'équerre).
 	const markers = rightAngleMarkers(exec);
 	expect(markers).toHaveLength(2);
 	for (const m of markers) expect(m.interior).toBeCloseTo(Math.PI / 2, 9);
@@ -1342,7 +1345,7 @@ function expectEquerreSeenByStudent(
 	expect(atP).toHaveLength(1);
 	expect(sideOf(d.A, d.B, atF[0].corner)).toBe(sideOf(d.A, d.B, d.P));
 	expect(dot(minus(atF[0].corner, F), towardP)).toBeGreaterThan(0);
-	expect(dot(minus(atP[0].corner, d.P), towardP)).toBeLessThan(0);
+	expect(dot(minus(atP[0].corner, d.P), towardP)).toBeGreaterThan(0);
 	expect(dot(minus(atP[0].corner, d.P), v)).toBeGreaterThan(0);
 }
 
@@ -1419,6 +1422,11 @@ describe('parallele @double_perpendiculaire — autres décors', () => {
 				const atF = markers.find((m) => Math.hypot(m.vertex.x - F.x, m.vertex.y - F.y) < 1e-9);
 				expect(atF).toBeDefined();
 				expect(sideOf(moved.A, moved.B, atF!.corner)).toBe(sideOf(moved.A, moved.B, moved.P));
+				const atP = markers.find(
+					(m) => Math.hypot(m.vertex.x - moved.P.x, m.vertex.y - moved.P.y) < 1e-9
+				);
+				expect(atP).toBeDefined();
+				expect(dot(minus(atP!.corner, moved.P), minus(moved.P, F))).toBeGreaterThan(0);
 				// Rejeu depuis P déplacé : l'équerre se retourne.
 				const replay = new ConstructionExecutor();
 				replay.load(decorScript(moved, '@equerre @double_perpendiculaire @complet'));
@@ -1992,6 +2000,7 @@ describe('formes (P, d)', () => {
 			expect(exec.loadError).not.toBeNull();
 			// Lot 8 : la forme (P, d) nomme d au lieu de (AB).
 			expect(exec.loadError!.message).toMatch(/P est sur la droite d :/);
+			expect(exec.loadError!.message).toContain(`parallele(P, d) ${voie}\``);
 			expect(exec.loadError!.line).toBe(5);
 			expect(exec.totalSteps).toBe(4);
 		});
@@ -2636,7 +2645,7 @@ describe('consignes : vrais noms', () => {
 				].join('\n')
 			);
 			expect(exec.loadError!.message).toBe(
-				'Ligne 4 : `parallele(M, C, D) @double_perpendiculaire` : M est sur la droite (CD) : la parallèle est (CD) elle-même, il n’y a rien à construire.'
+				`Ligne 4 : \`parallele(M, C, D) ${voie}\` : M est sur la droite (CD) : la parallèle est (CD) elle-même, il n’y a rien à construire.`
 			);
 		});
 
@@ -2652,7 +2661,7 @@ describe('consignes : vrais noms', () => {
 				].join('\n')
 			);
 			expect(exec.loadError!.message).toBe(
-				'Ligne 5 : `parallele(M, d) @double_perpendiculaire` : M est sur la droite d : la parallèle est d elle-même, il n’y a rien à construire.'
+				`Ligne 5 : \`parallele(M, d) ${voie}\` : M est sur la droite d : la parallèle est d elle-même, il n’y a rien à construire.`
 			);
 		});
 	}

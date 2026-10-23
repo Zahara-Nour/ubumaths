@@ -110,7 +110,7 @@ existant, rien n'est créé), **—** (effet seul).
 | `parallele`       | `parallele(P, A, B)` : par `P`, ∥ `(AB)` · `parallele(P, d)` : ∥ `d` (droite, segment, demi-droite ; `P` doit être un point)             | ligne    |
 | `mediane`         | `mediane(A, B, C)` : issue de `A`                                                                                                        | ligne    |
 | `hauteur`         | `hauteur(A, B, C)` : issue de `A`                                                                                                        | ligne    |
-| `bissectrice`     | `bissectrice(A, V, B)` · `bissectrice(α)`                                                                                                | ligne    |
+| `bissectrice`     | `bissectrice(A, V, B)` · `bissectrice(α)` ; angle plat : ⟂ `(AB)` en `V` ; erreur si `A` ou `B` = `V`                                    | ligne    |
 | `droite_euler`    | `droite_euler(A, B, C)` (erreur si équilatéral)                                                                                          | ligne    |
 | `corde`           | `corde(c, d)` : segment entre les 2 intersections                                                                                        | ligne    |
 | `tangente`        | `tangente(f, x0)` · `tangente(f, P)` · `tangente(courbe_param, t0)` (+ vecteur tangent)                                                  | ligne    |

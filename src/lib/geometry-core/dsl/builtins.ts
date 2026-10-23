@@ -5701,12 +5701,22 @@ HANDLERS.set('mediane', handleMediane);
 
 // ─── 5. bissectrice(A, V, B) → droite ───────────────────────────────
 //
-// Compass construction (dynamic) :
-//   B' = dilation of B around V by ratio |VA|/|VB|  →  on the half-line (V,B), |VB'| = |VA|
-//   M  = midpoint(A, B')                            →  M is on the angular bisector
-//   bisector = line(V, M)
+// Construction dynamique par rotation :
+//   θ = angle orienté de [VA) vers [VB), ramené dans [0°, 360°[
+//   M = image de A par la rotation de centre V et d'angle θ/2
+//   bissectrice = droite (V, M)
 //
-// All intermediates use factory methods, so a drag of A, V, or B propagates correctly.
+// M reste à la distance |VA| de V : la droite est définie dans tous les
+// régimes, angle plat compris (θ = 180° → A tourné d'un quart de tour dans
+// le sens trigonométrique → perpendiculaire à (AB) en V), y compris quand
+// l'angle devient plat en déplaçant un point après coup. Pour θ > 180°, M
+// est sur la demi-droite opposée à la bissectrice intérieure : même droite.
+// Le saut de θ/2 au passage par 0° / 360° (M passe de A à son symétrique
+// par V) ne change pas non plus la droite. Seul A ou B confondu avec V la
+// rend indéfinie (angle polaire indéfini).
+//
+// Les intermédiaires sont des éléments de la figure : un déplacement de A,
+// V ou B se propage.
 
 const BISSECTRICE_FORMS = [
 	{
@@ -5720,8 +5730,8 @@ const BISSECTRICE_FORMS = [
 ];
 
 /**
- * Build the bisector line for points (Aid, Vid, Bid). Throws structured errors
- * if any pair is coincident or the three points form a flat opposed configuration.
+ * Build the bisector line for points (Aid, Vid, Bid). Throws a structured
+ * error if A or B coincides with V. Angle plat : perpendiculaire à (AB) en V.
  */
 function buildBisectorLine(
 	ctx: BuiltinCtx,
@@ -5733,12 +5743,8 @@ function buildBisectorLine(
 	B: { x: number; y: number }
 ): string {
 	const { figure, line, label } = ctx;
-	const uX = A.x - V.x;
-	const uY = A.y - V.y;
-	const wX = B.x - V.x;
-	const wY = B.y - V.y;
-	const uLen = Math.hypot(uX, uY);
-	const wLen = Math.hypot(wX, wY);
+	const uLen = Math.hypot(A.x - V.x, A.y - V.y);
+	const wLen = Math.hypot(B.x - V.x, B.y - V.y);
 	if (uLen < 1e-15 || wLen < 1e-15)
 		throw new DslRuntimeError(
 			{
@@ -5747,31 +5753,21 @@ function buildBisectorLine(
 			},
 			line
 		);
-	const uHatX = uX / uLen;
-	const uHatY = uY / uLen;
-	const wHatX = wX / wLen;
-	const wHatY = wY / wLen;
-	if ((uHatX + wHatX) ** 2 + (uHatY + wHatY) ** 2 < 1e-15)
-		throw new DslRuntimeError(
-			{
-				summary:
-					'`bissectrice(A, V, B)` : `A`, `V`, `B` sont alignés et opposés depuis `V` — bissectrice indéterminée (deux directions possibles).'
-			},
-			line
-		);
-	const dVA = figure.createScalarDistance(Vid, Aid);
-	const dVB = figure.createScalarDistance(Vid, Bid);
-	const ratio = figure.createScalarExpression(
+	// Angles polaires (degrés) de [VA) et [VB) ; indéfinis si A ou B = V.
+	const polarA = figure.createScalarPolarAngle(Vid, Aid);
+	const polarB = figure.createScalarPolarAngle(Vid, Bid);
+	// Demi-angle orienté de [VA) vers [VB), en radians (θ ∈ [0°, 360°[).
+	const halfAngle = figure.createScalarExpression(
 		(scalars) => {
-			const a = scalars.get(dVA);
-			const b = scalars.get(dVB);
-			if (a == null || b == null || b === 0) return 1;
-			return a / b;
+			const a = scalars.get(polarA);
+			const b = scalars.get(polarB);
+			if (a == null || b == null || !Number.isFinite(a) || !Number.isFinite(b)) return NaN;
+			const theta = (((b - a) % 360) + 360) % 360;
+			return (theta * Math.PI) / 360;
 		},
-		[dVA, dVB]
+		[polarA, polarB]
 	);
-	const Bprime = figure.createDilatedPoint(Bid, Vid, { scalarRef: ratio }, { visible: false });
-	const M = createHiddenMidpoint(figure, Aid, Bprime);
+	const M = createHiddenRotatedPoint(figure, Aid, Vid, { scalarRef: halfAngle });
 	return figure.createLine(Vid, M, { label });
 }
 

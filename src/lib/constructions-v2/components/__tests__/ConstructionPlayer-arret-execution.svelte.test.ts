@@ -76,7 +76,7 @@ describe('ConstructionPlayer — arrêt d’exécution signalé', () => {
 		await expect
 			.poll(() => stopLine(container))
 			.toBe(
-				'⚠ Arrêt à la ligne 5 : `parallele(P, A, B) @double_perpendiculaire` : P est sur la droite (AB) : la parallèle est (AB) elle-même, il n’y a rien à construire.'
+				'⚠ Arrêt à la ligne 5 : `parallele(P, A, B) @euclide @double_perpendiculaire` : P est sur la droite (AB) : la parallèle est (AB) elle-même, il n’y a rien à construire.'
 			);
 		expect(authorInstruction(container)).toBe('Trace la parallèle à (AB) par P');
 	});

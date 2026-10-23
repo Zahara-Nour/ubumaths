@@ -95,6 +95,27 @@ function bissectriceRoles(ctx: ChoreographyCtx) {
 }
 
 /**
+ * Direction unitaire de la bissectrice de l'angle formé par les vecteurs
+ * VA = (ax, ay) et VB = (bx, by) : (VA/|VA| + VB/|VB|) normalisé. Angle
+ * plat (somme nulle) : VA tourné d'un quart de tour dans le sens
+ * trigonométrique — les arcs se croisent, le repère se marque, de ce côté.
+ */
+function bisectorDirection(
+	ax: number,
+	ay: number,
+	bx: number,
+	by: number
+): { x: number; y: number } {
+	const la = Math.max(Math.hypot(ax, ay), 1e-12);
+	const lb = Math.max(Math.hypot(bx, by), 1e-12);
+	const rx = ax / la + bx / lb;
+	const ry = ay / la + by / lb;
+	const len = Math.hypot(rx, ry);
+	if (len > 1e-9) return { x: rx / len, y: ry / len };
+	return { x: -ay / la, y: ax / la };
+}
+
+/**
  * Half-sweep of the small arcs at V (clamped to a fraction of the angle
  * AVB so the arcs near VA and VB never overlap with the bisector
  * direction).
@@ -131,16 +152,9 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 	const BpX0 = V.x + (r1_0 / dVB0) * VBx;
 	const BpY0 = V.y + (r1_0 / dVB0) * VBy;
 
-	// Bisector direction (unit vector) : (VA/|VA| + VB/|VB|) normalized.
-	const uHatX = VAx / dVA0;
-	const uHatY = VAy / dVA0;
-	const wHatX = VBx / dVB0;
-	const wHatY = VBy / dVB0;
-	const bisRawX0 = uHatX + wHatX;
-	const bisRawY0 = uHatY + wHatY;
-	const bisLen0 = Math.hypot(bisRawX0, bisRawY0);
-	const bisDirX0 = bisLen0 > 0 ? bisRawX0 / bisLen0 : 0;
-	const bisDirY0 = bisLen0 > 0 ? bisRawY0 / bisLen0 : 0;
+	// Bisector direction (unit vector) : (VA/|VA| + VB/|VB|) normalized ;
+	// angle plat : (VA) tourné d'un quart de tour (sens trigonométrique).
+	const { x: bisDirX0, y: bisDirY0 } = bisectorDirection(VAx, VAy, VBx, VBy);
 
 	// ─── Reactive scalars derived from V, A, B ───
 	const Vx = figure.createScalarCoordinate(Vid, 'x');
@@ -207,47 +221,20 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 	const nAprime = labelAux(ctx, Aprime, 'A′');
 	const nBprime = labelAux(ctx, Bprime, 'B′');
 
-	// Bisector direction (reactive unit vector).
-	const bisDirRawXScalar = figure.createScalarExpression(
-		(vals) => {
-			const dva = vals.get(dVAScalar) ?? 1;
-			const dvb = vals.get(dVBScalar) ?? 1;
-			const ax = vals.get(Axs) ?? 0;
-			const bx = vals.get(Bxs) ?? 0;
-			const vx = vals.get(Vx) ?? 0;
-			return (ax - vx) / Math.max(dva, 1e-12) + (bx - vx) / Math.max(dvb, 1e-12);
-		},
-		[Vx, Axs, Bxs, dVAScalar, dVBScalar]
-	);
-	const bisDirRawYScalar = figure.createScalarExpression(
-		(vals) => {
-			const dva = vals.get(dVAScalar) ?? 1;
-			const dvb = vals.get(dVBScalar) ?? 1;
-			const ay = vals.get(Ays) ?? 0;
-			const by = vals.get(Bys) ?? 0;
-			const vy = vals.get(Vy) ?? 0;
-			return (ay - vy) / Math.max(dva, 1e-12) + (by - vy) / Math.max(dvb, 1e-12);
-		},
-		[Vy, Ays, Bys, dVAScalar, dVBScalar]
-	);
-	const bisDirLenScalar = figure.createScalarExpression(
-		(vals) => Math.hypot(vals.get(bisDirRawXScalar) ?? 0, vals.get(bisDirRawYScalar) ?? 0),
-		[bisDirRawXScalar, bisDirRawYScalar]
-	);
-	const bisDirXScalar = figure.createScalarExpression(
-		(vals) => {
-			const len = vals.get(bisDirLenScalar) ?? 0;
-			return len > 1e-12 ? (vals.get(bisDirRawXScalar) ?? 0) / len : 0;
-		},
-		[bisDirRawXScalar, bisDirLenScalar]
-	);
-	const bisDirYScalar = figure.createScalarExpression(
-		(vals) => {
-			const len = vals.get(bisDirLenScalar) ?? 0;
-			return len > 1e-12 ? (vals.get(bisDirRawYScalar) ?? 0) / len : 0;
-		},
-		[bisDirRawYScalar, bisDirLenScalar]
-	);
+	// Bisector direction (reactive unit vector), angle plat compris.
+	const reactiveBisDir = (vals: ReadonlyMap<string, number>) => {
+		const vx = vals.get(Vx) ?? 0;
+		const vy = vals.get(Vy) ?? 0;
+		return bisectorDirection(
+			(vals.get(Axs) ?? 0) - vx,
+			(vals.get(Ays) ?? 0) - vy,
+			(vals.get(Bxs) ?? 0) - vx,
+			(vals.get(Bys) ?? 0) - vy
+		);
+	};
+	const bisDirDeps = [Vx, Vy, Axs, Ays, Bxs, Bys];
+	const bisDirXScalar = figure.createScalarExpression((vals) => reactiveBisDir(vals).x, bisDirDeps);
+	const bisDirYScalar = figure.createScalarExpression((vals) => reactiveBisDir(vals).y, bisDirDeps);
 
 	// Two small arcs at V, each crossing one side of the angle. The "near
 	// VA" arc is centered on the direction (V → A), small sweep on each
@@ -336,9 +323,6 @@ function setupCommonGeometry(ctx: Parameters<ChoreographyFn>[0]) {
 		ApyScalar,
 		BpxScalar,
 		BpyScalar,
-		bisDirRawXScalar,
-		bisDirRawYScalar,
-		bisDirLenScalar,
 		bisDirXScalar,
 		bisDirYScalar,
 		angleVAScalar,
@@ -790,6 +774,22 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
  */
 function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, principalId } = ctx;
+	// Angle plat : A′ et B′ sont diamétralement opposés, le milieu de
+	// [A′B′] est le sommet lui-même — il ne donne pas la direction.
+	{
+		const [A, V, B] = ctx.args.coords;
+		const ax = A.x - V.x;
+		const ay = A.y - V.y;
+		const bx = B.x - V.x;
+		const by = B.y - V.y;
+		const la = Math.hypot(ax, ay);
+		const lb = Math.hypot(bx, by);
+		if (la > 0 && lb > 0 && Math.hypot(ax / la + bx / lb, ay / la + by / lb) < 1e-9) {
+			throw new ChoreographyError(
+				'Angle plat : le milieu de [A′B′] est le sommet, il ne donne pas la bissectrice. Utiliser `@arcs_egaux` (arcs croisés) ou `@mesure` (rapporteur).'
+			);
+		}
+	}
 	const N = bissectriceRoles(ctx);
 	const common = setupCommonGeometry(ctx);
 	const { nAprime, nBprime } = common;
@@ -983,8 +983,9 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 	figure.hideElement(principalId);
 
 	// ─── Direction de la bissectrice (réactive) ───
-	// (VA/|VA| + VB/|VB|) normalisé. L'angle plat est refusé par le
-	// builtin ; s'il survient en déplaçant un point, VA tourné d'un quart de tour.
+	// (VA/|VA| + VB/|VB|) normalisé ; angle plat (lu 180°) : VA tourné d'un
+	// quart de tour dans le sens trigonométrique, du côté du corps du
+	// rapporteur (non retourné : B n'est pas dans le sens horaire de A).
 	const Vx = figure.createScalarCoordinate(Vid, 'x');
 	const Vy = figure.createScalarCoordinate(Vid, 'y');
 	const Axs = figure.createScalarCoordinate(Aid, 'x');
@@ -994,17 +995,12 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 	const bisDir = (vals: ReadonlyMap<string, number>): { x: number; y: number } => {
 		const vx = vals.get(Vx) ?? 0;
 		const vy = vals.get(Vy) ?? 0;
-		const ax = (vals.get(Axs) ?? 0) - vx;
-		const ay = (vals.get(Ays) ?? 0) - vy;
-		const bx = (vals.get(Bxs) ?? 0) - vx;
-		const by = (vals.get(Bys) ?? 0) - vy;
-		const la = Math.max(Math.hypot(ax, ay), 1e-12);
-		const lb = Math.max(Math.hypot(bx, by), 1e-12);
-		const rx = ax / la + bx / lb;
-		const ry = ay / la + by / lb;
-		const len = Math.hypot(rx, ry);
-		if (len > 1e-9) return { x: rx / len, y: ry / len };
-		return { x: -ay / la, y: ax / la };
+		return bisectorDirection(
+			(vals.get(Axs) ?? 0) - vx,
+			(vals.get(Ays) ?? 0) - vy,
+			(vals.get(Bxs) ?? 0) - vx,
+			(vals.get(Bys) ?? 0) - vy
+		);
 	};
 	const deps = [Vx, Vy, Axs, Ays, Bxs, Bys];
 	const bisDirXScalar = figure.createScalarExpression((vals) => bisDir(vals).x, deps);
@@ -1025,12 +1021,7 @@ function buildRapporteur(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult
 	const VPScalar = figure.createScalarExpression(() => REPERE_DISTANCE, []);
 
 	// Valeurs initiales (positions des instruments).
-	const la0 = Math.hypot(VAx, VAy);
-	const lb0 = Math.hypot(VBx, VBy);
-	const raw0 = { x: VAx / la0 + VBx / lb0, y: VAy / la0 + VBy / lb0 };
-	const rawLen0 = Math.hypot(raw0.x, raw0.y);
-	const bisDirX0 = rawLen0 > 1e-9 ? raw0.x / rawLen0 : -VAy / la0;
-	const bisDirY0 = rawLen0 > 1e-9 ? raw0.y / rawLen0 : VAx / la0;
+	const { x: bisDirX0, y: bisDirY0 } = bisectorDirection(VAx, VAy, VBx, VBy);
 
 	// Codage des deux angles égaux, seulement si les deux côtés sont tracés ;
 	// créé caché, la visibilité finale le range en marqueur.

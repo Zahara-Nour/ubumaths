@@ -43,7 +43,7 @@ import type {
 import { ChoreographyError } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
 import { applyFinalVisibility } from './choreographies/visibility';
-import { createAuxLabeler, shownName } from './choreographies/names';
+import { createAuxLabeler, createNameTaken, shownName } from './choreographies/names';
 
 /**
  * A single entry in the timeline plan.
@@ -603,13 +603,15 @@ export class ConstructionExecutor {
 			this._auxScriptNamed,
 			this._auxGiven
 		);
+		const nameTaken = createNameTaken(stepper.figure, this._scriptNames);
 		const ctx: ChoreographyCtx = {
 			figure: stepper.figure,
 			args,
 			principalId: principalEntry.figureId,
 			visibilite: triple.visibilite,
 			auxLabel,
-			sub: this.buildSubChoreographyFn(stepper.figure, auxLabel)
+			nameTaken,
+			sub: this.buildSubChoreographyFn(stepper.figure, auxLabel, nameTaken)
 		};
 		try {
 			return voie.choreography(ctx);
@@ -643,7 +645,8 @@ export class ConstructionExecutor {
 	 */
 	private buildSubChoreographyFn(
 		figure: Figure,
-		auxLabel: ChoreographyCtx['auxLabel']
+		auxLabel: ChoreographyCtx['auxLabel'],
+		nameTaken: ChoreographyCtx['nameTaken']
 	): ChoreographyCtx['sub'] {
 		const sub: ChoreographyCtx['sub'] = (subBuiltin, subArgs, subPrincipalId, subDecorators) => {
 			const subVoie = lookupVoie(subDecorators, subBuiltin);
@@ -659,6 +662,7 @@ export class ConstructionExecutor {
 				principalId: subPrincipalId,
 				visibilite: subDecorators.visibilite,
 				auxLabel,
+				nameTaken,
 				sub
 			};
 			return subVoie.choreography(subCtx);
