@@ -9,7 +9,12 @@ niveaux et l'absence de tag ; nouveau contenu ; tag du point ; rollback à empre
 Une SCISSION (lot D) garde le modèle d'origine, qui reçoit une partie du contenu et le premier point de
 sa ligne (« 5-026,5-123 »), et crée un modèle neuf (UUID fixé par le script) qui reçoit l'autre partie
 et le second point. Le modèle neuf copie toutes les autres colonnes de l'origine (type, nœud, niveaux,
-statut, auteur…).
+statut, auteur…), sauf le nœud quand son point vit sur une sous-notion voisine : il prend alors celui
+du point (passe lycée).
+
+Passe lycée (`docs/wip/passe-lycee/analyse/`) : l'instantané (`etat`) et la liste (`liste`) sont passés
+en paramètres ; un modèle peut déjà porter des tags (`tags.json` de l'instantané), que la migration
+exige à l'identique et laisse en place.
 """
 
 import copy
@@ -89,7 +94,8 @@ def lire_liste(section: str) -> dict[str, tuple[str, str]]:
 
 
 def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture: str, prefixe: str,
-            entete: str, options: bool = False, scissions: dict | None = None) -> None:
+            entete: str, options: bool = False, scissions: dict | None = None, etat: str = ETAT,
+            liste: dict[str, tuple[str, str]] | None = None) -> None:
     """Écrit la fixture et la migration du lot. `modeles` : fichier du relevé dans ETAT ;
     `prefixe` : nom court des tables temporaires et des chaînes dollar (`l2n` → `_l2n_modeles`) ;
     `entete` : commentaire de tête de la migration (`{n}` = nombre de modèles) ; `options` : le lot
@@ -100,12 +106,23 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
     (thème, domaine, sous-domaine, niveau), et le modèle neuf copie les trois premiers.
 
     Argument optionnel du script : un dossier qui reçoit un <id>.json par modèle modifié (pour
-    `pnpm question:specs --file` et `scripts/audit-question-draws.ts --dir`)."""
+    `pnpm question:specs --file` et `scripts/audit-question-draws.ts --dir`).
+
+    `etat` : dossier de l'instantané (nodes.json, points.json, le relevé, et tags.json s'il y en a :
+    `template_id`, `point_id`) ; `liste` : modèle → (niveau, point ou « point,point »), à la place de
+    la liste du collège (`section` est alors ignoré)."""
     sortie_modeles = sys.argv[1] if len(sys.argv) > 1 else None
-    noeuds = {n['id']: n for n in json.load(open(ETAT + 'nodes.json'))}
-    points = {(p['grade'], p['code']): p for p in json.load(open(ETAT + 'points.json')) if p['archived_at'] is None}
-    releves = {t['id'][:8]: t for t in json.load(open(ETAT + modeles))}
-    liste = lire_liste(section)
+    noeuds = {n['id']: n for n in json.load(open(etat + 'nodes.json'))}
+    tous_points = json.load(open(etat + 'points.json'))
+    points = {(p['grade'], p['code']): p for p in tous_points if p['archived_at'] is None}
+    releves = {t['id'][:8]: t for t in json.load(open(etat + modeles))}
+    liste = liste if liste is not None else lire_liste(section)
+    par_id = {p['id']: p for p in tous_points}
+    tags_releves: dict[str, list[dict]] = {}
+    if os.path.exists(etat + 'tags.json'):
+        for x in json.load(open(etat + 'tags.json')):
+            p = par_id[x['point_id']]
+            tags_releves.setdefault(x['template_id'], []).append({'grade': p['grade'], 'code': p['code']})
     assert set(liste) == set(modifs) == set(releves), (set(liste) ^ set(modifs), set(releves) ^ set(modifs))
 
     def chemin(i: str) -> list[str]:
@@ -122,9 +139,8 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
     scissions = scissions or {}
     assert set(scissions) <= set(modifs), set(scissions) - set(modifs)
 
-    def point_du_noeud(t: dict, grade: str, code: str) -> None:
-        p = points[(grade, code)]
-        assert p['node_id'] in (t['classification_node_id'], notion_de(t['classification_node_id'])), (t['id'], code)
+    def sur_le_noeud(noeud: str, grade: str, code: str) -> bool:
+        return points[(grade, code)]['node_id'] in (noeud, notion_de(noeud))
 
     lot = []
     for court in sorted(modifs, key=lambda c: releves[c]['id']):
@@ -133,8 +149,8 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
         codes = codes.split(',')
         assert len(codes) == (2 if court in scissions else 1), (court, codes)
         assert grade in t['grades'], (court, grade, t['grades'])
-        for code in codes:
-            point_du_noeud(t, grade, code)
+        assert {'grade': grade, 'code': codes[0]} not in tags_releves.get(t['id'], []), (court, codes[0])
+        assert sur_le_noeud(t['classification_node_id'], grade, codes[0]), (court, codes[0])
         avant = {k: t[k] for k in CHAMPS + (('options',) if options else ())}
         neuf = copy.deepcopy(avant)
         modifs[court](neuf)
@@ -144,6 +160,7 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
             'noeud': chemin(t['classification_node_id']),
             'grades': t['grades'],
             'tag': {'grade': grade, 'code': codes[0]},
+            'tags_avant': sorted(tags_releves.get(t['id'], []), key=lambda x: (x['grade'], x['code'])),
             'avant': avant,
             'apres': neuf,
             'categorie': {k: t[k] for k in ('theme', 'domain', 'subdomain', 'level', 'status')},
@@ -157,6 +174,11 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
             assert contenu not in (avant, neuf), court
             m['scission'] = {'id': id_neuf, 'niveau': niveau, 'tag': {'grade': grade, 'code': codes[1]},
                              'contenu': contenu}
+            if not sur_le_noeud(t['classification_node_id'], grade, codes[1]):
+                # Point sur une sous-notion voisine : le modèle neuf va sur le nœud du point.
+                noeud_point = points[(grade, codes[1])]['node_id']
+                assert notion_de(noeud_point) == notion_de(t['classification_node_id']), (court, codes[1])
+                m['scission']['noeud'] = chemin(noeud_point)
         lot.append(m)
         if sortie_modeles:
             os.makedirs(sortie_modeles, exist_ok=True)
@@ -302,6 +324,17 @@ create temporary table {tmp}_modeles (
     for m in lot:
         o.append(f"insert into {tmp}_modeles values ('{m['id']}', {ch(m['noeud'])}, {tableau(m['grades'])}, "
                  f"'{m['tag']['grade']}', '{m['tag']['code']}',\n  {contenu(m['avant'])},\n  {contenu(m['apres'])});")
+    avant = [(m['id'], x) for m in lot for x in m.get('tags_avant', [])]
+    o.append(f'''
+-- Tags que les modèles portent déjà (relevé) : exigés à l'identique, laissés en place.
+drop table if exists pg_temp.{tmp}_tags_avant;
+create temporary table {tmp}_tags_avant (
+	id uuid not null references {tmp}_modeles (id),
+	tag_grade text not null, tag_code text not null
+);''')
+    if avant:
+        o.append(f'insert into {tmp}_tags_avant values\n'
+                 + ',\n'.join(f"  ('{i}', '{x['grade']}', '{x['code']}')" for i, x in avant) + ';')
     if neufs:
         o.append(f'''
 -- Modèles neufs des scissions : chacun copie les autres colonnes de son origine, sauf le niveau.
@@ -311,11 +344,14 @@ create temporary table {tmp}_neufs (
 	origine uuid not null references {tmp}_modeles (id),
 	niveau integer not null,
 	tag_grade text not null, tag_code text not null,
-	contenu jsonb not null
+	contenu jsonb not null,
+	-- Nœud propre (point sur une sous-notion voisine) ; null : celui de l'origine.
+	branche text, notion text, sous_notion text
 );''')
         for x in neufs:
+            noeud = ch(x['noeud']) if 'noeud' in x else 'null, null, null'
             o.append(f"insert into {tmp}_neufs values ('{x['id']}', '{x['origine']}', {x['niveau']}, "
-                     f"'{x['tag']['grade']}', '{x['tag']['code']}',\n  {contenu(x['contenu'])});")
+                     f"'{x['tag']['grade']}', '{x['tag']['code']}',\n  {contenu(x['contenu'])},\n  {noeud});")
     o.append(f'''
 -- ---- 2. Résolution STRICTE des nœuds et des points --------------------------------------
 create temporary table {tmp}_resolus as
@@ -327,17 +363,23 @@ create temporary table {tmp}_resolus as
 	  left join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = r.notion
 	  left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = r.sous_notion
 	  left join public.curriculum_points p on p.grade = r.tag_grade and p.code = r.tag_code and p.archived_at is null;
+create temporary table {tmp}_resolus_avant as
+	select a.id, p.id as point_id
+	  from {tmp}_tags_avant a
+	  left join public.curriculum_points p on p.grade = a.tag_grade and p.code = a.tag_code and p.archived_at is null;
 do $resolution$
 begin
-	if exists (select 1 from {tmp}_resolus where noeud is null or point_id is null) then
+	if exists (select 1 from {tmp}_resolus where noeud is null or point_id is null)
+	   or exists (select 1 from {tmp}_resolus_avant where point_id is null) then
 		raise exception 'nœuds ou points introuvables : %',
-			(select count(*) from {tmp}_resolus where noeud is null or point_id is null);
+			(select count(*) from {tmp}_resolus where noeud is null or point_id is null)
+			+ (select count(*) from {tmp}_resolus_avant where point_id is null);
 	end if;
 end $resolution$;
 
--- ---- 3. Gardes : présence TOUT ou RIEN, contenu et rangement relevés, aucun tag posé -------
+-- ---- 3. Gardes : présence TOUT ou RIEN, contenu, rangement et tags relevés ---------------
 do $garde$
-declare v_presents integer; v_contenus integer; v_ranges integer; v_tags integer;
+declare v_presents integer; v_contenus integer; v_ranges integer; v_tags integer; v_manquants integer;
 begin
 	-- Verrou : aucune sauvegarde de l'éditeur ne peut s'intercaler entre la garde et la mise à jour.
 	perform 1 from public.question_templates q join {tmp}_modeles r on r.id = q.id for update of q;
@@ -359,10 +401,17 @@ begin
 	if v_ranges <> 0 then
 		raise exception 'modèles déplacés ou reclassés depuis le relevé : %', v_ranges;
 	end if;
+	-- Aucun tag hors du relevé (une saisie faite depuis serait contredite), à tout niveau.
 	select count(*) into v_tags from public.question_template_points q
 	  join {tmp}_modeles r on r.id = q.template_id
-	  join public.curriculum_points p on p.id = q.point_id
-	 where p.grade in ('CP', 'CE1', 'CE2', 'CM1', 'CM2', '6', '5', '4', '3');
+	 where not exists (select 1 from {tmp}_resolus_avant a where a.id = q.template_id and a.point_id = q.point_id);
+	select count(*) into v_manquants from {tmp}_resolus_avant a
+	  join public.question_templates q on q.id = a.id
+	 where not exists (select 1 from public.question_template_points t
+	                    where t.template_id = a.id and t.point_id = a.point_id);
+	if v_manquants <> 0 then
+		raise exception 'tags relevés absents : %', v_manquants;
+	end if;
 	if v_tags <> 0 then
 		raise exception 'tags déjà posés sur ces modèles : %', v_tags;
 	end if;
@@ -399,7 +448,9 @@ begin
 	end if;
 end $check$;
 
+drop table pg_temp.{tmp}_resolus_avant;
 drop table pg_temp.{tmp}_resolus;
+drop table pg_temp.{tmp}_tags_avant;
 drop table pg_temp.{tmp}_modeles;
 ''')
     texte = '\n'.join(o)
@@ -428,14 +479,18 @@ def ajouter_neufs(texte: str, tmp: str, k: int, empreinte: str) -> str:
 
     inserer('end $resolution$;\n', f'''
 create temporary table {tmp}_resolus_neufs as
-	select n.id, p.id as point_id
+	select n.id, p.id as point_id, n.branche is not null as noeud_propre,
+	       case when n.sous_notion is null then nn.id else s.id end as noeud
 	  from {tmp}_neufs n
-	  left join public.curriculum_points p on p.grade = n.tag_grade and p.code = n.tag_code and p.archived_at is null;
+	  left join public.curriculum_points p on p.grade = n.tag_grade and p.code = n.tag_code and p.archived_at is null
+	  left join public.classification_nodes b on b.kind = 'branch' and b.parent_id is null and b.name = n.branche
+	  left join public.classification_nodes nn on nn.kind = 'notion' and nn.parent_id = b.id and nn.name = n.notion
+	  left join public.classification_nodes s on s.kind = 'subnotion' and s.parent_id = nn.id and s.name = n.sous_notion;
 do $resolution_neufs$
 begin
-	if exists (select 1 from {tmp}_resolus_neufs where point_id is null) then
-		raise exception 'points des modèles neufs introuvables : %',
-			(select count(*) from {tmp}_resolus_neufs where point_id is null);
+	if exists (select 1 from {tmp}_resolus_neufs where point_id is null or (noeud_propre and noeud is null)) then
+		raise exception 'points ou nœuds des modèles neufs introuvables : %',
+			(select count(*) from {tmp}_resolus_neufs where point_id is null or (noeud_propre and noeud is null));
 	end if;
 end $resolution_neufs$;
 ''')
@@ -459,13 +514,15 @@ end $resolution_neufs$;
   join public.question_templates q on q.id = x.id;
 """.format(tmp=tmp), f'''
 -- Modèles neufs : toutes les colonnes de l'origine (type, nœud, niveaux scolaires, statut, auteur…),
--- puis leur propre identifiant, leur niveau dans la catégorie, leur contenu et des dates neuves. Rien
--- n'est créé si l'origine est absente.
+-- puis leur propre identifiant, leur niveau dans la catégorie, leur contenu, leur nœud s'il est propre
+-- et des dates neuves. Rien n'est créé si l'origine est absente.
 insert into public.question_templates
 select (jsonb_populate_record(null::public.question_templates,
 	to_jsonb(q) || n.contenu
-	  || jsonb_build_object('id', n.id, 'level', n.niveau, 'created_at', now(), 'updated_at', now()))).*
+	  || jsonb_build_object('id', n.id, 'level', n.niveau, 'created_at', now(), 'updated_at', now())
+	  || case when x.noeud_propre then jsonb_build_object('classification_node_id', x.noeud) else '{{}}'::jsonb end)).*
   from {tmp}_neufs n
+  join {tmp}_resolus_neufs x on x.id = n.id
   join public.question_templates q on q.id = n.origine;
 
 insert into public.question_template_points (template_id, point_id)
@@ -477,8 +534,10 @@ select x.id, x.point_id
     inserer("""		raise exception 'lot incohérent : contenus %/%, tags %/%', v_ok, v_presents, v_tags, v_presents;
 	end if;""", f'''
 	select count(*) into v_neufs from {tmp}_neufs n
+	  join {tmp}_resolus_neufs x on x.id = n.id
 	  join public.question_templates q on q.id = n.id
-	 where {empreinte} = n.contenu;
+	 where {empreinte} = n.contenu
+	   and (not x.noeud_propre or q.classification_node_id = x.noeud);
 	select count(*) into v_neufs_tags from {tmp}_resolus_neufs x
 	  join public.question_template_points q on q.template_id = x.id and q.point_id = x.point_id;
 	if v_neufs <> least(v_presents, 1) * {k} or v_neufs_tags <> v_neufs then
