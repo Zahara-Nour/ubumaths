@@ -8,6 +8,7 @@
  */
 
 import type { ClassificationNode } from '$lib/types/database-helpers';
+import { buildProgrammeMap, type MapBranch, type MapPointRow } from '$lib/utils/programme-map';
 import {
 	buildProgrammeTree,
 	hideArchivedPoints,
@@ -23,6 +24,9 @@ const NODE_COLS = 'id, kind, name, parent_id, position, archived_at, created_at,
 
 /** Profondeur de l'arbre : sous-notion → notion → branche. */
 const MAX_NODE_DEPTH = 3;
+
+/** Plafond de lignes d'une réponse PostgREST (`max_rows`) : l'arbre se lit par pages. */
+const NODE_PAGE_SIZE = 1000;
 
 /**
  * Charge les nœuds visés et leurs ancêtres, par vagues d'identifiants.
@@ -94,4 +98,59 @@ export async function getProgrammeTreeKeeping(
 ): Promise<ProgrammeBranch[]> {
 	const tree = await getProgrammeTree(supabase, grade, { includeArchived: true });
 	return hideArchivedPoints(tree, new Set(keep));
+}
+
+/** Tous les nœuds actifs de l'arbre, page par page. */
+async function loadActiveNodes(supabase: App.Locals['supabase']): Promise<ClassificationNode[]> {
+	const all: ClassificationNode[] = [];
+	for (let from = 0; ; from += NODE_PAGE_SIZE) {
+		const { data, error } = await supabase
+			.from('classification_nodes')
+			.select(NODE_COLS)
+			.is('archived_at', null)
+			.order('id', { ascending: true })
+			.range(from, from + NODE_PAGE_SIZE - 1);
+		if (error) throw new Error(`Arbre des notions illisible : ${error.message}`);
+		const page = (data ?? []) as ClassificationNode[];
+		all.push(...page);
+		if (page.length < NODE_PAGE_SIZE) return all;
+	}
+}
+
+/**
+ * La carte d'un niveau : l'arbre complet, les points actifs du niveau en
+ * feuilles. Les nœuds archivés qui portent encore un point sont lus à part.
+ */
+export async function getProgrammeMap(
+	supabase: App.Locals['supabase'],
+	grade: string
+): Promise<MapBranch[]> {
+	const [pointsResult, active] = await Promise.all([
+		supabase
+			.from('curriculum_points')
+			.select('id, code, name, display_order, archived_at, node_id, grade, exigence')
+			.eq('grade', grade)
+			.is('archived_at', null)
+			.order('display_order', { ascending: true })
+			.order('code', { ascending: true }),
+		loadActiveNodes(supabase)
+	]);
+	if (pointsResult.error) {
+		throw new Error(`Points du programme illisibles : ${pointsResult.error.message}`);
+	}
+	const points = (pointsResult.data ?? []) as MapPointRow[];
+	// Une réponse pleine peut être tronquée par le plafond PostgREST : refuser plutôt
+	// que de montrer un programme amputé (aucun niveau n'en approche : ~300 points).
+	if (points.length >= NODE_PAGE_SIZE) {
+		throw new Error(
+			`Points du programme : plus de ${NODE_PAGE_SIZE - 1} points, lecture à paginer`
+		);
+	}
+
+	const activeIds = new Set(active.map((n) => n.id));
+	const missing = points.map((p) => p.node_id).filter((id) => !activeIds.has(id));
+	const extra = missing.length > 0 ? await loadNodesWithAncestors(supabase, missing) : [];
+	const nodes = [...active, ...extra.filter((n) => !activeIds.has(n.id))];
+
+	return buildProgrammeMap(points, nodes);
 }

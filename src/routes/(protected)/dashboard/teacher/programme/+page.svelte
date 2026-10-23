@@ -9,9 +9,13 @@
 	 *
 	 * Les écritures passent par PATCH /api/teacher/curriculum/points/[pointId] ;
 	 * la page se recharge par invalidateAll().
+	 *
+	 * Vue « Carte » (?vue=carte) : l'arbre complet en carte mentale, sans
+	 * édition (ProgrammeMap).
 	 */
 	import { goto, invalidateAll } from '$app/navigation';
 	import { page } from '$app/state';
+	import { resolve } from '$app/paths';
 	import { lore } from '$lib/config/lore';
 	import { Button } from '$lib/components/ui/button';
 	import { Input } from '$lib/components/ui/input';
@@ -21,6 +25,7 @@
 	import MySelect from '$lib/components/MySelect.svelte';
 	import MyCheckbox from '$lib/components/MyCheckbox.svelte';
 	import InlineMarkdown from '$lib/components/markdown/InlineMarkdown.svelte';
+	import ProgrammeMap from '$lib/components/programme/ProgrammeMap.svelte';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import {
 		countArchivedPoints,
@@ -69,6 +74,13 @@
 		const url = new URL(page.url);
 		url.searchParams.set('grade', value);
 		goto(url, { keepFocus: true, noScroll: true });
+	}
+
+	/** Paramètres de la même page dans une autre vue (le niveau suit). */
+	function viewSearch(view: 'liste' | 'carte'): string {
+		const url = new URL(page.url);
+		url.searchParams.set('vue', view);
+		return url.search;
 	}
 
 	async function patchPoint(pointId: string, body: { name: string } | { archived: boolean }) {
@@ -126,7 +138,11 @@
 
 <svelte:head><title>Programme | Chiphre</title></svelte:head>
 
-<div class="container mx-auto max-w-4xl space-y-6 p-4">
+<div
+	class="container mx-auto space-y-6 p-4"
+	class:max-w-4xl={data.view === 'liste'}
+	class:max-w-7xl={data.view === 'carte'}
+>
 	<div class="flex flex-wrap items-center justify-between gap-3">
 		<div class="flex items-center gap-3">
 			<div class="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
@@ -139,158 +155,183 @@
 				</p>
 			</div>
 		</div>
-		<MySelect
-			type="single"
-			value={data.grade}
-			items={data.gradeOptions}
-			onValueChange={changeGrade}
-			triggerClass="w-28"
-		/>
+		<div class="flex items-center gap-3">
+			<nav class="inline-flex overflow-hidden rounded-md border text-sm" aria-label="Vue">
+				{#each [{ value: 'liste', label: 'Liste' }, { value: 'carte', label: 'Carte' }] as const as v (v.value)}
+					<a
+						href="{resolve('/(protected)/dashboard/teacher/programme')}{viewSearch(v.value)}"
+						class="px-3 py-1.5"
+						class:bg-muted={data.view === v.value}
+						class:font-semibold={data.view === v.value}
+						class:text-muted-foreground={data.view !== v.value}
+						aria-current={data.view === v.value ? 'page' : undefined}
+						data-sveltekit-noscroll
+					>
+						{v.label}
+					</a>
+				{/each}
+			</nav>
+			<MySelect
+				type="single"
+				value={data.grade}
+				items={data.gradeOptions}
+				onValueChange={changeGrade}
+				triggerClass="w-28"
+			/>
+		</div>
 	</div>
 
-	{#if archivedCount > 0}
-		<MyCheckbox
-			bind:checked={showArchived}
-			label={archivedCount === 1
-				? 'Afficher le point archivé'
-				: `Afficher les ${archivedCount} points archivés`}
-		/>
-	{/if}
-
-	{#if branches.length === 0}
-		<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
-			<!-- Tout archivé et case décochée : le programme existe, rien n'y est actif. -->
-			{archivedCount > 0 ? 'Aucun point actif pour ce programme' : 'Aucun point pour ce programme'}
-		</div>
+	{#if data.view === 'carte'}
+		{#key data.grade}
+			<ProgrammeMap map={data.map} />
+		{/key}
 	{:else}
-		<div class="space-y-2">
-			{#each branches as branch (branch.id)}
-				<div class="rounded-lg border bg-card">
-					<button
-						class="flex w-full items-center gap-2 p-2 text-left"
-						data-tree-toggle
-						aria-expanded={openBranches[branch.id] ?? false}
-						onclick={() => (openBranches[branch.id] = !openBranches[branch.id])}
-					>
+		{#if archivedCount > 0}
+			<MyCheckbox
+				bind:checked={showArchived}
+				label={archivedCount === 1
+					? 'Afficher le point archivé'
+					: `Afficher les ${archivedCount} points archivés`}
+			/>
+		{/if}
+
+		{#if branches.length === 0}
+			<div class="rounded-lg border border-dashed p-10 text-center text-muted-foreground">
+				<!-- Tout archivé et case décochée : le programme existe, rien n'y est actif. -->
+				{archivedCount > 0
+					? 'Aucun point actif pour ce programme'
+					: 'Aucun point pour ce programme'}
+			</div>
+		{:else}
+			<div class="space-y-2">
+				{#each branches as branch (branch.id)}
+					<div class="rounded-lg border bg-card">
+						<button
+							class="flex w-full items-center gap-2 p-2 text-left"
+							data-tree-toggle
+							aria-expanded={openBranches[branch.id] ?? false}
+							onclick={() => (openBranches[branch.id] = !openBranches[branch.id])}
+						>
+							{#if openBranches[branch.id]}
+								<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+							{:else}
+								<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+							{/if}
+							<span class="font-semibold">{branch.name}</span>
+							{#if branch.archived}
+								<Badge variant="outline" class="ml-1 align-middle text-[10px]" data-node-archived>
+									archivée
+								</Badge>
+							{/if}
+							<span class="text-xs text-muted-foreground">
+								{plural(branch.notions.length, 'notion')} · {plural(pointCount(branch), 'point')}
+							</span>
+						</button>
+
 						{#if openBranches[branch.id]}
-							<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-						{:else}
-							<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-						{/if}
-						<span class="font-semibold">{branch.name}</span>
-						{#if branch.archived}
-							<Badge variant="outline" class="ml-1 align-middle text-[10px]" data-node-archived>
-								archivée
-							</Badge>
-						{/if}
-						<span class="text-xs text-muted-foreground">
-							{plural(branch.notions.length, 'notion')} · {plural(pointCount(branch), 'point')}
-						</span>
-					</button>
-
-					{#if openBranches[branch.id]}
-						<div class="space-y-1 border-t bg-muted/30 p-2 pl-6">
-							{#each branch.notions as notion (notion.id)}
-								<div class="rounded-md border bg-card">
-									<button
-										class="flex w-full items-center gap-2 p-2 text-left"
-										data-tree-toggle
-										aria-expanded={openNotions[notion.id] ?? false}
-										onclick={() => (openNotions[notion.id] = !openNotions[notion.id])}
-									>
-										{#if openNotions[notion.id]}
-											<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
-										{:else}
-											<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
-										{/if}
-										<span class="font-medium">{notion.name}</span>
-										{#if notion.archived}
-											<Badge
-												variant="outline"
-												class="ml-1 align-middle text-[10px]"
-												data-node-archived
-											>
-												archivée
-											</Badge>
-										{/if}
-										<span class="text-xs text-muted-foreground">
-											{plural(notion.points.length, 'point')}
-										</span>
-									</button>
-
-									{#if openNotions[notion.id]}
-										<ul class="space-y-1 border-t p-2 pl-6">
-											{#each notion.points as point (point.id)}
-												<li
-													class="flex items-start gap-2 rounded px-1 py-1 hover:bg-muted/50"
-													class:opacity-60={point.archived_at}
+							<div class="space-y-1 border-t bg-muted/30 p-2 pl-6">
+								{#each branch.notions as notion (notion.id)}
+									<div class="rounded-md border bg-card">
+										<button
+											class="flex w-full items-center gap-2 p-2 text-left"
+											data-tree-toggle
+											aria-expanded={openNotions[notion.id] ?? false}
+											onclick={() => (openNotions[notion.id] = !openNotions[notion.id])}
+										>
+											{#if openNotions[notion.id]}
+												<ChevronDown class="h-4 w-4 shrink-0 text-muted-foreground" />
+											{:else}
+												<ChevronRight class="h-4 w-4 shrink-0 text-muted-foreground" />
+											{/if}
+											<span class="font-medium">{notion.name}</span>
+											{#if notion.archived}
+												<Badge
+													variant="outline"
+													class="ml-1 align-middle text-[10px]"
+													data-node-archived
 												>
-													<code
-														class="mt-1 shrink-0 font-mono text-[11px] text-muted-foreground tabular-nums"
+													archivée
+												</Badge>
+											{/if}
+											<span class="text-xs text-muted-foreground">
+												{plural(notion.points.length, 'point')}
+											</span>
+										</button>
+
+										{#if openNotions[notion.id]}
+											<ul class="space-y-1 border-t p-2 pl-6">
+												{#each notion.points as point (point.id)}
+													<li
+														class="flex items-start gap-2 rounded px-1 py-1 hover:bg-muted/50"
+														class:opacity-60={point.archived_at}
 													>
-														{point.code}
-													</code>
-													<span class="flex-1 text-sm" class:line-through={point.archived_at}>
-														<InlineMarkdown content={point.name} />
-														{#if point.subnotionName}
-															<Badge variant="secondary" class="ml-2 align-middle text-[10px]">
-																{point.subnotionName}
-															</Badge>
-															{#if point.subnotionArchived}
-																<Badge
-																	variant="outline"
-																	class="ml-1 align-middle text-[10px]"
-																	data-node-archived
-																>
-																	archivée
+														<code
+															class="mt-1 shrink-0 font-mono text-[11px] text-muted-foreground tabular-nums"
+														>
+															{point.code}
+														</code>
+														<span class="flex-1 text-sm" class:line-through={point.archived_at}>
+															<InlineMarkdown content={point.name} />
+															{#if point.subnotionName}
+																<Badge variant="secondary" class="ml-2 align-middle text-[10px]">
+																	{point.subnotionName}
+																</Badge>
+																{#if point.subnotionArchived}
+																	<Badge
+																		variant="outline"
+																		class="ml-1 align-middle text-[10px]"
+																		data-node-archived
+																	>
+																		archivée
+																	</Badge>
+																{/if}
+															{/if}
+															{#if point.archived_at}
+																<Badge variant="outline" class="ml-1 align-middle text-[10px]">
+																	archivé
 																</Badge>
 															{/if}
-														{/if}
-														{#if point.archived_at}
-															<Badge variant="outline" class="ml-1 align-middle text-[10px]">
-																archivé
-															</Badge>
-														{/if}
-													</span>
-													<div class="flex items-center gap-1">
-														<Button
-															variant="ghost"
-															size="sm"
-															title="Renommer"
-															aria-label="Renommer « {point.name} »"
-															disabled={busy}
-															onclick={() => openRename(point)}
-														>
-															<Pencil class="h-4 w-4" />
-														</Button>
-														<Button
-															variant="ghost"
-															size="sm"
-															title={point.archived_at ? 'Restaurer' : 'Archiver'}
-															aria-label="{point.archived_at
-																? 'Restaurer'
-																: 'Archiver'} « {point.name} »"
-															disabled={busy}
-															onclick={() => toggleArchive(point)}
-														>
-															{#if point.archived_at}
-																<ArchiveRestore class="h-4 w-4" />
-															{:else}
-																<Archive class="h-4 w-4" />
-															{/if}
-														</Button>
-													</div>
-												</li>
-											{/each}
-										</ul>
-									{/if}
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
-			{/each}
-		</div>
+														</span>
+														<div class="flex items-center gap-1">
+															<Button
+																variant="ghost"
+																size="sm"
+																title="Renommer"
+																aria-label="Renommer « {point.name} »"
+																disabled={busy}
+																onclick={() => openRename(point)}
+															>
+																<Pencil class="h-4 w-4" />
+															</Button>
+															<Button
+																variant="ghost"
+																size="sm"
+																title={point.archived_at ? 'Restaurer' : 'Archiver'}
+																aria-label="{point.archived_at
+																	? 'Restaurer'
+																	: 'Archiver'} « {point.name} »"
+																disabled={busy}
+																onclick={() => toggleArchive(point)}
+															>
+																{#if point.archived_at}
+																	<ArchiveRestore class="h-4 w-4" />
+																{:else}
+																	<Archive class="h-4 w-4" />
+																{/if}
+															</Button>
+														</div>
+													</li>
+												{/each}
+											</ul>
+										{/if}
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				{/each}
+			</div>
+		{/if}
 	{/if}
 </div>
 
