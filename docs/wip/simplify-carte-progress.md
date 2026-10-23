@@ -7,10 +7,10 @@ _Mis à jour le 2026-10-23, après #1652 (lot 4e mergé, pas en prod)._
 - **État** : lot 4e mergé (#1652, § 46-47 ; pas encore en prod, aucun effet élève) : registre `mathAST/superflu/` (10 fiches), lu par le juge, l'éditeur, les messages, Zod et `buildConstraintSeverities` ; garde par règle dans `tidy-passe-le-juge.test.ts` ; racines par `extractPerfectPower` (identique à l'ancien calcul de 4 à 200 000, sondé). Comportement élève inchangé ; l'ordre des réglages de l'éditeur suit le registre.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
 - **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d~~ → ~~4e~~ → **5 formes par contexte** → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 5, phase 0 présentée (§ 49) : attendre la validation de David (découpage 5a-5f, Q18-Q21) avant de coder.
+- **Prochaine action** : Q19 codé et commité sur la branche (`foldNumericSubtrees` replie par `tidy` ; test `decimaux-gardes.test.ts` ; oracle : poly-11, t-02, exp-22 sortent de `KNOWN_FORM_DIFF` ; règle « coefficient 1 » de l’oracle corrigée pour `0{,}1`). Reste : relire la suite serveur complète (lancée), `check:incremental`, `lint:fast`, push, PR, CI, merge ; puis 5a (D1).
 - **En attente de David** : la vérification manuelle des espaces (#1642) sur chiph.re.
 - **Pièges en cours** : un modèle neuf de numération avec une spec `7900` attendra le réglage « Espaces dès 4 chiffres » coché à la main. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `feat/simplify-carte-formes`.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `fix/simplify-carte-derivee-decimaux`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -698,7 +698,7 @@ Plan : `mathAST/superflu/` contient `transforms.ts` (les 8 transformations, reti
 
 Revue `code-reviewer` (opus) : aucun finding bloquant ; seul le nouvel ordre des réglages dans l'éditeur, annoncé dans la PR. CI verte (16/16).
 
-## 49. Lot 5, phase 0 : sonde (2026-10-23, à valider par David ; worktree `ubumaths-wt-simplify-carte`, branche `feat/simplify-carte-formes`)
+## 49. Lot 5, phase 0 : sonde (2026-10-23, à valider par David ; worktree `ubumaths-wt-simplify-carte`, branche `fix/simplify-carte-derivee-decimaux`)
 
 Sondé sur `main` (4 sondes jetables, retirées). Mesure de référence : l'oracle des dérivées (`differentiation/__tests__/oracle/`), dont le corpus porte la forme écrite en classe (`expected`) ; 73 fonctions y sont en `KNOWN_FORM_DIFF`.
 
@@ -735,3 +735,14 @@ Trouvés en chemin :
 - **Q19** — le décimal perdu par le moteur de dérivation (`x − 3/2` pour `0,5x² − 1,5x`) ? Reco : PR à part avant 5a (test rouge, `mathast-expert`), pour que l'oracle de 5a mesure D1 seul.
 - **Q20** — la variante `{ result, conditions }` de `tidy` (Q2 du lot 4a, « écrite au lot 5 avec son premier appelant ») : aucun appelant trouvé, les conditions de Q4 viennent du moteur pédagogique, pas de `tidy`. Reco : la reporter jusqu'à un vrai appelant.
 - **Q21** — l'ordre : Q19 → 5a → 5b → 5c → 5d → 5e → 5f ? Reco : oui. D1 et D2 sont vus par les élèves dans les corrections ; 5c est le plus large (6 appelants) ; 5e dépend de 5a (forme par défaut).
+
+## 50. Q18-Q21 tranchées (David, 2026-10-23 : « je suis tes recos »)
+
+- **Q18 : oui.** f′ est divisée par le facteur commun quand le domaine de f le permet (5a et 5b).
+- **Q19 : oui.** PR à part avant 5a (branche `fix/simplify-carte-derivee-decimaux`) : le moteur de dérivation garde le décimal (S1).
+- **Q20 : reportée.** Pas de variante `{ result, conditions }` sans appelant.
+- **Q21 : ordre** Q19 → 5a → 5b → 5c → 5d → 5e → 5f.
+
+## 51. Q19 codé (branche `fix/simplify-carte-derivee-decimaux`, 2026-10-23)
+
+Cause : `foldNumericSubtrees` (`pedagogical-differentiation/pipeline.ts`) repliait les sous-arbres numériques de la dérivée brute par `evaluate` exact, nombre seul compris (`0.5 → 1/2`). Correctif : repli par `tidy` (S1). Test `decimaux-gardes.test.ts` : 6 rouges sur 8 avant. Oracle : poly-11, t-02, exp-22 rejoignent la forme de classe (8 entrées retirées) ; 3 faux résidus `lit-16/17/22 @ bouton` (`0{,}1 \cos` lu « coefficient 1 ») : la règle de l'oracle ignore désormais le `1` final d'un décimal à virgule. Doc : `mathast/README.md`.

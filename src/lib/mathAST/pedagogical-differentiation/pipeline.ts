@@ -50,8 +50,7 @@ import type {
 	SuperscriptNode
 } from '../types';
 import { containsVariable } from '../common/contains-variable';
-import { evaluate } from '../eval/evaluate';
-import { isEvalValue } from '../eval/types';
+import { tidy } from '../tidy';
 import { isOne, isZero } from '../guards';
 import { mapNodeTopDown } from '../transforms';
 import {
@@ -224,8 +223,8 @@ function inlineDifferentiateTrivial(node: MathNode, variable: string): MathNode 
 /**
  * True iff `node` is composed entirely of numeric leaves and arithmetic
  * structure (no variable, greek letter, or function call). Such a sub-tree
- * is safe to fold via `evaluate({mode:'exact'})` because the result will
- * always be a pure rational/integer (no symbolic dependency on the
+ * is safe to fold via `tidy` because the result will always be a pure
+ * number — integer, decimal or fraction (no symbolic dependency on the
  * differentiation variable).
  *
  * Function calls are excluded even when their arguments are constants — we
@@ -255,7 +254,7 @@ function isFullyNumeric(node: MathNode): boolean {
 }
 
 /**
- * Conservative gate on the result of `evaluate(node, {mode:'exact'})`: only
+ * Conservative gate on the result of `tidy(node)`: only
  * accept a fold whose output is a single number, the opposite of a number,
  * or a fraction `±a/±b` of numbers. Anything more complex is rejected, so we
  * never replace a clean sub-expression with a less-readable one.
@@ -278,6 +277,10 @@ function isAcceptableFoldResult(node: MathNode): boolean {
 /**
  * Walk `node` top-down, folding every fully-numeric sub-tree into its
  * exact value (`add(2,3)` → `5`, `mul(2,3)` → `6`, `div(6,4)` → `3/2`).
+ *
+ * Replié par `tidy`, pas par `evaluate` exact : un décimal tapé reste décimal
+ * (S1, chantier simplify-carte Q19). `evaluate` réécrivait un nombre seul,
+ * `0.5` → `1/2`, et la correction de `0,5x²−1,5x` finissait sur `x − 3/2`.
  * Sub-trees containing the variable are left untouched — only the
  * arithmetic-only branches collapse.
  *
@@ -289,10 +292,13 @@ function isAcceptableFoldResult(node: MathNode): boolean {
 export function foldNumericSubtrees(node: MathNode): MathNode {
 	return mapNodeTopDown(node, (n) => {
 		if (!isFullyNumeric(n)) return n;
-		const result = evaluate(n, { mode: 'exact' });
-		if (!isEvalValue(result)) return n;
-		if (!isAcceptableFoldResult(result.node)) return n;
-		return result.node;
+		let folded: MathNode;
+		try {
+			folded = tidy(n);
+		} catch {
+			return n;
+		}
+		return isAcceptableFoldResult(folded) ? folded : n;
 	});
 }
 
