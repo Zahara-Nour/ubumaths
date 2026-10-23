@@ -243,3 +243,10 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   seul, neuf V1 TCOMP-288 seul ; 13e2d419 neuf V5 TCOMP-301 seul. Bilan : 50 modèles, 72 neufs, 145 tags posés.
   Outils : `analyse/scissions_outils.py` (nouveau, l'outil du collège reste tel quel) + `analyse/lot-scissions.py` ;
   niveaux des neufs = au-dessus du plus haut pris dans la catégorie, brouillons compris (relevé en prod).
+- **2026-10-23 — Scissions PR 1 : preuves.** 23 tests d'intégration verts (1 sauté : `options`, non touchées),
+  rouges sans la migration (étapes 4 retirées : la suite nominale tombe dès sa mise en place) ; les suites
+  lot-ab, lot-c, lot-2bis-scissions, lot-2bis-nombres restent vertes avec le helper généralisé.
+  `check:incremental` 0 erreur, cliquet des types tenu. Specs : 120/122 importables ; les 2 rouges (`27d77564` et
+  son neuf `103cf8d9`, « nombre sans espace » attendu perfectible) l'étaient déjà dans le modèle d'avant (18/20).
+  Tirages 100 % réussis. Audit du rendu : 11 modèles à défauts, tous identiques à ceux des modèles d'avant
+  (termes nuls, `1/(6-0)`… ; 119b9148 : 17 = 9 + 8), laissés hors du lot.
