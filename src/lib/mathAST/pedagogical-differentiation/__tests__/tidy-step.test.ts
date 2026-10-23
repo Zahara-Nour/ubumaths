@@ -15,6 +15,8 @@ import {
 	withTidyStep
 } from '../index';
 import { parseLatex } from '../../parser';
+import { toLatex } from '../../latex-generator';
+import { finalDerivative } from '../final-form';
 import type { MathNode } from '../../types';
 
 function derive(latex: string) {
@@ -110,7 +112,10 @@ describe('withTidyStep : la forme finale de f′', () => {
 			verbosity: 'detailed'
 		});
 
-		expect(withTidyStep([], result.derivative, f).derivativeLatex).toBe(derivative);
+		const { derivative: final, derivativeLatex } = withTidyStep([], result.derivative, f);
+		expect(derivativeLatex).toBe(derivative);
+		// Appliquée deux fois, la forme finale ne change rien (carte f′ de l'Atelier)
+		expect(toLatex(finalDerivative(final, f))).toBe(derivative);
 	});
 
 	it('la valeur ne change pas avec x < 0 : (x·∛x)′ n’a pas de valeur absolue', () => {

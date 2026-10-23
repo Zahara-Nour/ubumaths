@@ -29,7 +29,6 @@ import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
 import { finalDerivative } from '$lib/mathAST/pedagogical-differentiation/final-form';
-import { tidyTerms } from './tidy-terms';
 import { radiansInTrigonometry } from './angle-radians';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
@@ -724,10 +723,13 @@ function substitutedTree(
  * aller-retour texte rouvrait un défaut (`sin` relu `s i n`, `\\pi x` collé,
  * `x^{-2/3}/3` en barre oblique). Ici, l'arbre va droit à `toLatex`.
  *
- * `tidyTerms` APRÈS la substitution : la dérivée est rangée avant, mais les
- * paramètres (a = 3) et les fonctions citées (`g(2x)`) n'arrivent qu'ensuite —
- * sans cette passe, `2 × 2 × 2x` restait tel quel. Même mise au propre que
- * `.dériver` dans Calcul.
+ * La forme finale de f′ (`finalDerivative`, D1 et Q18) APRÈS la substitution :
+ * la dérivée est mise en forme avant, mais les paramètres (a = 3) et les
+ * fonctions citées (`g(h(x))`) n'arrivent qu'ensuite — sans cette passe,
+ * `2 × 2 × 2x` restait tel quel et `g(h(x))′` gardait `6(3x + 1)`. Même forme
+ * finale que `.dériver` dans Calcul. Le domaine acquis (S3) est celui de f
+ * substituée ; à défaut, celui de la dérivée elle-même, qui porte les
+ * dénominateurs de f (v² pour u/v). Appliquée deux fois, elle ne change rien.
  */
 export function derivativeAstOf(
 	atelier: Atelier,
@@ -735,7 +737,11 @@ export function derivativeAstOf(
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
 	const result = substitutedAstOf(atelier, name);
-	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
+	if (!result.ok) return result;
+	const base = derivativeOf(name)?.base;
+	const f = base === undefined ? null : substitutedAstOf(atelier, base, { forDerivation: true });
+	const domain = f !== null && f.ok ? f.ast : result.ast;
+	return { ok: true, ast: finalDerivative(result.ast, domain) };
 }
 
 export function expressionOf(

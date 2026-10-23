@@ -30,24 +30,6 @@ export const KNOWN_RESIDUE: Readonly<Record<string, string>> = {};
  * La valeur est la forme rendue ; la forme attendue est `expected` du corpus.
  */
 export const KNOWN_FORM_DIFF: Readonly<Record<string, string>> = {
-	// Lot 5a (D1, simplify-carte) : la politique `auto` développe un terme seul
-	// quand c'est plus court (`4(2x + 1)` → `8x + 4`) ; la classe garde `4(2x + 1)`
-	'poly-13 @ latex-péda': '8 x + 4',
-	'poly-13 @ commande': '8 x + 4',
-	'poly-13 @ bouton': '8 x + 4',
-	'poly-13 @ carte': '8 x + 4',
-	'obj-06 @ commande': '18 x + 6',
-	'obj-06 @ bouton': '18 x + 6',
-	// Lot 5a : `auto` applique l'imparité du sinus (`sin(−x)` → `−sin x`)
-	'trig-24 @ latex-péda': '-\\sin\\left( x \\right)',
-	'trig-24 @ commande': '-\\sin\\left( x \\right)',
-	'trig-24 @ bouton': '-\\sin\\left( x \\right)',
-	'trig-24 @ carte': '-\\sin\\left( x \\right)',
-	// Lot 5a : `auto` combine eᵃ·eᵇ en e^{a+b} (`eˣe^{eˣ}` → `e^{eˣ + x}`)
-	'comp-07 @ latex-péda': 'e^{e^x + x}',
-	'comp-07 @ commande': '\\exponentialE^{\\exponentialE^x + x}',
-	'comp-07 @ bouton': '\\exponentialE^{\\exponentialE^x + x}',
-	'comp-07 @ carte': '\\exponentialE^{\\exponentialE^x + x}',
 	'rat-18 @ commande': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
 	'rat-18 @ bouton': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
 	'rat-18 @ carte': '\\dfrac{2 \\left( -x^2 - 9 \\right)}{\\left( x^2 - 9 \\right)^2}',
