@@ -215,8 +215,12 @@ bissectrice exacte, à `REPERE_DISTANCE` de V (rayon du rapporteur + 0,3). Le co
 (`Protractor.svelte`) est du côté trigonométrique de sa base : si B est dans le sens horaire de A, la
 base est retournée de 180° et le 0 de l’échelle intérieure tombe sur [VA). Même droite tracée qu’en
 `@euclide` (`buildRulerTraceSubStep`). Codage : deux `angle` `arcs2` (AVP, PVB) étiquetés `marker`, posés seulement si les deux côtés sont tracés (`hasVisibleSide` : segment [VA] dans un sens ou l’autre, demi-droite d’origine V par A, ou droite (VA), visibles).
-Lecture 0° → « Les deux côtés sont confondus » ; A ou B confondu avec V et angle plat sont refusés
-par le builtin avant la chorégraphie.
+Lecture 0° → « Les deux côtés sont confondus » ; A ou B confondu avec V est refusé par le builtin
+avant la chorégraphie. Angle plat : on lit 180°, « 180 ÷ 2 = 90 », le repère P est du côté de (VA)
+tourné d’un quart de tour dans le sens trigonométrique (côté du corps du rapporteur, non retourné) ;
+codage selon la même règle. Au compas (`@arcs_egaux`), les arcs se croisent du même côté
+(`bisectorDirection`) ; `@arc_milieu` refuse l’angle plat (le milieu de [A′B′] est le sommet) et
+renvoie vers `@arcs_egaux` ou `@mesure` (`bissectrice-angle-plat.test.ts`).
 
 **`mediatrice @mesure`** (`choreographies/mediatrice.ts`, `buildRegleEquerre`) : `mediatrice(A, B)`.
 Mesure de [AB] partagée avec `milieu @mesure` (`measureSegment`, `milieu.ts` : mêmes consignes, mêmes

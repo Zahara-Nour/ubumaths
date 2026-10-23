@@ -336,8 +336,8 @@ describe('bissectrice @mesure — erreurs', () => {
 		).toMatch(/Les deux côtés sont confondus : il n'y a pas d'angle à mesurer/);
 	});
 
-	it('angle plat : refusé par le builtin (bissectrice indéterminée)', () => {
-		expect(loadError(angleScript(180))).toMatch(/alignés et opposés/);
+	it('angle plat : accepté, on lit 180° (détail : bissectrice-angle-plat.test.ts)', () => {
+		expect(loadError(angleScript(180))).toBeUndefined();
 	});
 
 	it('@equerre sur bissectrice : contrainte non disponible', () => {

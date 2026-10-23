@@ -568,18 +568,146 @@ describe('Cas dégénérés DSL', () => {
 		).toThrow();
 	});
 
-	it('angle plat 180deg + bissectrice(ang) throws DslRuntimeError', () => {
+	it('angle plat 180deg + bissectrice(ang) : perpendiculaire à (AB) en V', () => {
+		const r = run(
+			[
+				'A = point(1, 0)',
+				'V = point(0, 0)',
+				'B = point(-1, 0)',
+				'ang = angle(A, V, B)',
+				'b = bissectrice(ang)'
+			].join('\n')
+		);
+		expectPerpendicularThrough(r, 'b', 'A', 'B', 'V');
+	});
+});
+
+// =============================================================================
+// bissectrice — angle plat : perpendiculaire à (AB) passant par V
+// =============================================================================
+
+/** Coordonnées numériques d'une position de la figure. */
+function xy(r: ReturnType<typeof run>, id: string): { x: number; y: number } {
+	const p = r.figure.getPosition(id);
+	expect(p).toBeDefined();
+	return { x: geoToNumber(p!.x), y: geoToNumber(p!.y) };
+}
+
+/** Points de définition de la droite `name` (positions numériques). */
+function linePoints(r: ReturnType<typeof run>, name: string) {
+	const el = r.figure.getElementById(sym(r, name)!.figureId!);
+	expect(el?.type).toBe('line');
+	const line = el as { point1Id: string; point2Id: string };
+	return [xy(r, line.point1Id), xy(r, line.point2Id)];
+}
+
+/** La droite `d` passe par `V` et est perpendiculaire à `(AB)`. */
+function expectPerpendicularThrough(
+	r: ReturnType<typeof run>,
+	d: string,
+	A: string,
+	B: string,
+	V: string
+) {
+	const [p1, p2] = linePoints(r, d);
+	const a = xy(r, sym(r, A)!.figureId!);
+	const b = xy(r, sym(r, B)!.figureId!);
+	const v = xy(r, sym(r, V)!.figureId!);
+	const dx = p2.x - p1.x;
+	const dy = p2.y - p1.y;
+	const len = Math.hypot(dx, dy);
+	expect(Number.isFinite(len)).toBe(true);
+	expect(len).toBeGreaterThan(1e-6);
+	// V sur la droite.
+	expect(((v.x - p1.x) * dy - (v.y - p1.y) * dx) / len).toBeCloseTo(0, 9);
+	// Direction ⟂ (AB).
+	const abLen = Math.hypot(b.x - a.x, b.y - a.y);
+	expect((dx * (b.x - a.x) + dy * (b.y - a.y)) / (len * abLen)).toBeCloseTo(0, 9);
+}
+
+/** Direction unitaire de la droite `d`, orientée de son premier vers son second point. */
+function direction(r: ReturnType<typeof run>, d: string) {
+	const [p1, p2] = linePoints(r, d);
+	const len = Math.hypot(p2.x - p1.x, p2.y - p1.y);
+	return { x: (p2.x - p1.x) / len, y: (p2.y - p1.y) / len };
+}
+
+describe('bissectrice — angle plat', () => {
+	it('bissectrice(A, V, B), A et B opposés depuis V : perpendiculaire à (AB) en V', () => {
+		const r = run(
+			['A = point(3, 1)', 'V = point(1, 2)', 'B = point(-3, 4)', 'd = bissectrice(A, V, B)'].join(
+				'\n'
+			)
+		);
+		expect(sym(r, 'd')!.type).toBe('droite');
+		expectPerpendicularThrough(r, 'd', 'A', 'B', 'V');
+	});
+
+	it('angle rendu plat après coup (point déplacé) : la droite reste définie, ⟂ (AB) en V', () => {
+		const r = run(
+			['A = point(4, 0)', 'V = point(0, 0)', 'B = point(0, 3)', 'd = bissectrice(A, V, B)'].join(
+				'\n'
+			)
+		);
+		r.figure.movePoint(sym(r, 'B')!.figureId!, numeric(-2), numeric(0));
+		r.figure.recompute();
+		expectPerpendicularThrough(r, 'd', 'A', 'B', 'V');
+	});
+
+	it('angle rendu plat puis ré-ouvert : la droite redevient la bissectrice', () => {
+		const r = run(
+			['A = point(4, 0)', 'V = point(0, 0)', 'B = point(-2, 0)', 'd = bissectrice(A, V, B)'].join(
+				'\n'
+			)
+		);
+		r.figure.movePoint(sym(r, 'B')!.figureId!, numeric(0), numeric(-3));
+		r.figure.recompute();
+		const u = direction(r, 'd');
+		// Bissectrice de (1, 0) et (0, −1) : direction (1, −1)/√2, au signe près.
+		expect(Math.abs(u.x * Math.SQRT1_2 - u.y * Math.SQRT1_2)).toBeCloseTo(1, 9);
+	});
+
+	it('angle non plat : la droite reste la bissectrice (angle orienté dans les deux sens)', () => {
+		for (const [bx, by] of [
+			[0, 3],
+			[0, -3],
+			[-3, 0.5],
+			[-3, -0.5]
+		]) {
+			const r = run(
+				[
+					'A = point(4, 0)',
+					'V = point(0, 0)',
+					`B = point(${bx}, ${by})`,
+					'd = bissectrice(A, V, B)'
+				].join('\n')
+			);
+			const u = direction(r, 'd');
+			const wl = Math.hypot(bx, by);
+			const bis = { x: 1 + bx / wl, y: by / wl };
+			const bl = Math.hypot(bis.x, bis.y);
+			expect(Math.abs((u.x * bis.x + u.y * bis.y) / bl)).toBeCloseTo(1, 9);
+		}
+	});
+
+	it('A confondu avec V : refus inchangé', () => {
 		expect(() =>
 			run(
-				[
-					'A = point(1, 0)',
-					'V = point(0, 0)',
-					'B = point(-1, 0)',
-					'ang = angle(A, V, B)',
-					'b = bissectrice(ang)'
-				].join('\n')
+				['A = point(0, 0)', 'V = point(0, 0)', 'B = point(1, 0)', 'd = bissectrice(A, V, B)'].join(
+					'\n'
+				)
 			)
-		).toThrow(DslRuntimeError);
+		).toThrow(/confondu avec `V`/);
+	});
+
+	it('A rendu confondu avec V après coup : droite indéfinie, pas de plantage', () => {
+		const r = run(
+			['A = point(4, 0)', 'V = point(0, 0)', 'B = point(0, 3)', 'd = bissectrice(A, V, B)'].join(
+				'\n'
+			)
+		);
+		r.figure.movePoint(sym(r, 'A')!.figureId!, numeric(0), numeric(0));
+		expect(() => r.figure.recompute()).not.toThrow();
 	});
 });
 
