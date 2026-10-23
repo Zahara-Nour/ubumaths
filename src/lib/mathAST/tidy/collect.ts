@@ -1226,16 +1226,23 @@ function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
 
 	const base = buildSum(sortTerms(terms.map(negateTerm)));
 	const factors = term.factors.map((factor) =>
-		factor === numerator ? { base, exponent: ONE, key: hashMathNode(base) } : factor
+		factor === numerator ? { base, exponent: ONE, key: factorKey(base, settings) } : factor
 	);
 	const merged = mergeFactors(factors, splitKeys(term.factors));
 	if (merged === null) return null;
 	return { ...term, coefficient: negRational(term.coefficient), factors: merged };
 }
 
-/** La clé des facteurs d'un terme, coefficient exclu. */
+/**
+ * La clé des facteurs d'un terme, coefficient exclu. Triée : elle ne dépend pas
+ * de l'ordre des facteurs, que l'ordre écrit (S2) peut laisser différer entre
+ * deux termes semblables (`e^x(1+x)` et `(x+1)e^x`, revue du lot 4c).
+ */
 function factorsKey(term: TidyTerm): string {
-	return term.factors.map((factor) => factor.key).join('|');
+	return term.factors
+		.map((factor) => `${factor.key}^${factor.exponent.n}/${factor.exponent.d}`)
+		.sort()
+		.join('*');
 }
 
 /**
@@ -1272,7 +1279,7 @@ function withoutDoubleSign(term: TidyTerm, settings: Settings): TidyTerm {
 		if (order === null) return factor;
 		changed = true;
 		const base = buildSum(order);
-		return { base, exponent: factor.exponent, key: hashMathNode(base) };
+		return { base, exponent: factor.exponent, key: factorKey(base, settings) };
 	});
 	return changed ? { ...term, factors: sortFactors(factors) } : term;
 }
@@ -1360,11 +1367,7 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 				: term.unit === null
 					? ''
 					: `U:${hashUnit(term.unit)}`;
-		const key = groupable
-			? term.factors.map((f) => `${f.key}^${f.exponent.n}/${f.exponent.d}`).join('*') +
-				'|' +
-				unitKey
-			: `!${index}`;
+		const key = groupable ? `${factorsKey(term)}|${unitKey}` : `!${index}`;
 
 		const existing = groups.get(key);
 		if (existing === undefined) {

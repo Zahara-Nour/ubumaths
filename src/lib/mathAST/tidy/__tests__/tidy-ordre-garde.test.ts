@@ -4,9 +4,11 @@
  * 2026-10-23, journal § 41).
  *
  * Les termes de CHAQUE somme restent dans l'ordre écrit, parenthèses comprises ;
- * les termes semblables se regroupent à la place du premier. L'ordre des
- * facteurs d'un produit reste canonique (`x·2 → 2x`). Le reste du contrat ne
- * bouge pas (décimaux S1, domaine S3).
+ * les termes semblables se regroupent à la place du premier, quel que soit
+ * l'ordre de leurs facteurs. Les facteurs d'un produit restent triés
+ * (`x·2 → 2x`), l'écriture gardée départageant deux facteurs de même
+ * catégorie (lot 4c-bis). Le reste du contrat ne bouge pas (décimaux S1,
+ * domaine S3).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -45,6 +47,19 @@ describe("tidy({ order: 'kept' }) — les termes semblables se regroupent à la 
 		['2(1+x)+3(x+1)', '5(1+x)']
 	])('%s → %s', (input, expected) => {
 		expect(kept(input)).toBe(expected);
+	});
+
+	// Revue du lot 4c : la clé d'un terme ne dépend pas de l'ordre de ses
+	// facteurs, même quand deux facteurs de la même catégorie s'écrivent
+	// différemment (`(1+x)` et `e^x`)
+	it.each([
+		['e^x(1+x)-e^x(x+1)', '0'],
+		['x(1+x)e^x-(x+1)x*e^x', '0'],
+		['e^x(1+x)+e^x(x+1)', '2(1+x)e^x'],
+		['2^x*(1+x)+(x+1)*2^x', '2(1+x)*2^x']
+	])('%s → %s (facteurs dans un autre ordre)', (input, expected) => {
+		expect(kept(input)).toBe(expected);
+		expect(toCustom(tidyTerms(parseCustom(input)))).toBe(expected);
 	});
 });
 

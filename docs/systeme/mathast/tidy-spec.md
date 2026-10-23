@@ -478,9 +478,13 @@ km/h`), 2026-09-27.
   termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises
   (`3+2x`, `3(1+x)`), les termes semblables regroupés à la place du premier
   (`1+2x+3x → 1+5x`, `2−x+3x → 2+2x`). La clé d'un facteur reste celle de sa
-  forme rangée : `2(1+x)+3(x+1) → 5(1+x)`. L'ordre des **facteurs** reste
-  canonique (`x·2 → 2x`). Aucune étape « On range » n'est racontée (S2,
-  chantier simplify-carte, lot 4c, 2026-10-23).
+  forme rangée : `2(1+x)+3(x+1) → 5(1+x)`, et la clé d'un terme ne dépend
+  pas de l'ordre de ses facteurs : `eˣ(1+x) − eˣ(x+1) → 0`. Les **facteurs**
+  restent triés par `sortFactors` (`x·2 → 2x`), mais entre deux facteurs de
+  même catégorie le tri lit l'écriture gardée : `(1+x)eˣ` reste, là où le
+  défaut écrit `eˣ(x+1)` (ordre des facteurs : lot 4c-bis). Aucune étape
+  « On range » n'est racontée (S2, chantier simplify-carte, lot 4c,
+  2026-10-23).
 - `tidyTerms` (`terms.ts`) : pour les dérivées — `tidy({ order: 'kept' })`,
   l'ordre de la règle gardé (u′v + uv′) ; un quotient garde son numérateur à
   part (signe compris : `(−sin²x − cos²x)/sin²x`), sauf si la mise au propre
