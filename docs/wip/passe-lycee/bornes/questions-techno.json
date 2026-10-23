@@ -20,7 +20,9 @@
 		"reco": "deux",
 		"pourquoi": "Les trois textes se lisent ensemble si la 1re se limite au cas le plus simple (A et son contraire) et que la Tle généralise à une partition, avec démonstration en deux ou trois évènements.",
 		"consequence": "Avec « deux », l'exemple des trois machines est refusé en 1TECHNO-092 et rattaché à TTECHNO-056 ; un modèle « P(B) = P(A)·P_A(B) + P(Ā)·P_Ā(B) » reste en 1re.",
-		"info": false
+		"info": false,
+		"decision": "deux",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-2",
@@ -40,7 +42,9 @@
 		"reco": "evidentes",
 		"pourquoi": "Le BO privilégie les racines évidentes et ne cite le solveur qu'« en cas de besoin » ; un modèle généré peut toujours choisir des racines entières pour la dérivée, ou les donner.",
 		"consequence": "Avec « evidentes », le modèle cité est refusé tel quel ; il devient acceptable si l'énoncé donne les racines de f′ ou si les coefficients sont tirés pour que f′ ait des racines entières (f(x) = x³ − 3x + 1, f′ = 3(x − 1)(x + 1)).",
-		"info": false
+		"info": false,
+		"decision": "evidentes",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-3",
@@ -71,7 +75,9 @@
 		"reco": "modalite",
 		"pourquoi": "« Privilégier » dit une préférence, pas une exclusion, et la phrase suivante ouvre les modalités ; la borne « seulement » doit reposer sur ce que le savoir contient.",
 		"consequence": "Avec « modalite », le modèle à coordonnées décimales est accepté en 1TECHNO-141 ; avec « mental », il est refusé et ces points n'acceptent que des valeurs entières ou simples.",
-		"info": false
+		"info": false,
+		"decision": "modalite",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-4",
@@ -102,7 +108,9 @@
 		"reco": "simples",
 		"pourquoi": "La phrase de Tle porte sur les automatismes (activité mentale) et vise surtout les paramètres ; en 1re, une racine comme 1/2 de 2x − 1 reste « évidente » et la forme factorisée la donne directement.",
 		"consequence": "Avec « simples », (2x − 1)(3x + 4) est accepté et (x − k)(x + 2) avec k littéral refusé ; avec « entiers », tout modèle à racine fractionnaire est refusé en 1re.",
-		"info": false
+		"info": false,
+		"decision": "simples",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-5",
@@ -122,7 +130,9 @@
 		"reco": "produit-admis",
 		"pourquoi": "Avec P(A ∩ B) = P(A)·P_A(B) (2de), l'égalité P_A(B) = P(B) équivaut au produit ; le modèle cité se résout aussi par la définition (P_A(B) = 0,2/0,4 = 0,5).",
 		"consequence": "Avec « produit-admis », le modèle est accepté et la correction peut utiliser le produit ; avec « definition-seule », la correction doit passer par P_A(B) et un modèle qui ne demande que de vérifier P(A ∩ B) = P(A)P(B) est refusé.",
-		"info": false
+		"info": false,
+		"decision": "produit-admis",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-6",
@@ -142,7 +152,9 @@
 		"reco": "complement",
 		"pourquoi": "L'évènement contraire est un automatisme de 2de ; sur une loi donnée par un tableau, P(X ⩾ 2) est une somme de P(X = a) au même titre que P(X ⩽ a).",
 		"consequence": "Avec « complement », P(X ⩾ 2) est accepté en 1TECHNO-137 ; avec « deux-ecritures », il est refusé et le modèle doit écrire P(X ⩽ 1).",
-		"info": false
+		"info": false,
+		"decision": "complement",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-7",
@@ -165,7 +177,9 @@
 		"reco": "algebrique",
 		"pourquoi": "Le BO de Tle parle de « réinvestir » ce calcul en Tle, ce qui suppose qu'il a été fait en 1re ; la limite reste intuitive, sans définition formelle.",
 		"consequence": "Avec « algebrique », le modèle cité est accepté (taux 6 + h, limite 6) ; avec « graphique », il est refusé et seuls les modèles de lecture ou d'estimation numérique restent.",
-		"info": false
+		"info": false,
+		"decision": "algebrique",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1t-8",
@@ -190,7 +204,9 @@
 		"reco": "strict",
 		"pourquoi": "La phrase autorise le professeur, elle ne crée pas d'attendu ; la classification est exclue en toutes lettres.",
 		"consequence": "Avec « strict », les deux modèles cités sont refusés ; un modèle d'angle au centre d'un polygone régulier (360°/n) reste accepté en 1TECHNO-111.",
-		"info": false
+		"info": false,
+		"decision": "strict",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltt-1",
@@ -214,7 +230,9 @@
 		"reco": "reel-dans-resolution",
 		"pourquoi": "La capacité de résolution n'a pas de sens sans la propriété pour x réel ; mais le BO n'énonce la propriété algébrique qu'en entier naturel, ce qui borne les exercices de transformation.",
 		"consequence": "Avec la reco, « Résoudre 1,03ˣ = 2 » est accepté en TTECHNO-043 et « log(5^{0,5}) » refusé en TTECHNO-082 ; avec « naturel-seul », même 1,03ˣ = 2 serait refusé, ce qui viderait la capacité.",
-		"info": false
+		"info": false,
+		"decision": "reel-dans-resolution",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltt-2",
@@ -235,7 +253,9 @@
 		"reco": "reunion-contraire",
 		"pourquoi": "Le contraire est un automatisme acquis ; P(X ⩾ 1) = 1 − P(X = 0) est l'usage le plus courant. Le BO ne parle jamais de calcul de probabilité cumulée à la calculatrice.",
 		"consequence": "Avec la reco, P(X ⩾ 2) est accepté et P(X ⩽ 5) pour n = 20 refusé ; avec « calculatrice », les deux sont acceptés.",
-		"info": false
+		"info": false,
+		"decision": "reunion-contraire",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltt-3",
@@ -253,7 +273,9 @@
 		"reco": "dix",
 		"pourquoi": "La capacité fixe la borne n ⩽ 10 ; le commentaire décrit le cas de l'arbre (n > 4), et le triangle de Pascal au-delà de 10 lignes n'est pas une tâche raisonnable. La calculatrice n'est pas citée.",
 		"consequence": "Avec « dix », le modèle cité est refusé sauf si l'énoncé donne (12 choose 3) = 220.",
-		"info": false
+		"info": false,
+		"decision": "dix",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltt-4",
@@ -273,7 +295,9 @@
 		"reco": "equivalente",
 		"pourquoi": "Le coût moyen, cité par le BO, s'écrit naturellement C(x)/x ; la fonction reste une combinaison linéaire, seule l'écriture change.",
 		"consequence": "Avec « equivalente », le modèle du coût moyen est accepté, f(x) = 1/(x − 2) ou (x + 1)/(x − 3) refusés ; avec « forme-somme », le modèle doit donner x + 2 + 100/x.",
-		"info": false
+		"info": false,
+		"decision": "equivalente",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltt-5",
@@ -290,7 +314,9 @@
 		"reco": "finie",
 		"pourquoi": "Le contenu dit « pour une partition de l'univers » sans limite ; la restriction est écrite pour la démonstration.",
 		"consequence": "Avec « finie », le modèle à quatre fournisseurs est accepté ; avec « deux-trois », il est refusé.",
-		"info": false
+		"info": false,
+		"decision": "finie",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltt-6",
@@ -313,6 +339,8 @@
 		"reco": "notation",
 		"pourquoi": "La notation a été introduite en 1re ; le BO borne la notion (approche intuitive), pas l'écriture. Les opérations sur les limites ne sont nulle part au programme.",
 		"consequence": "Avec « notation », les deux exemples sont acceptés, mais lim (x³ − 2x)/(x² + 1) en +∞ reste refusée ; avec « mots », seules les questions de lecture de courbe ou d'ordre de grandeur restent.",
-		"info": false
+		"info": false,
+		"decision": "notation",
+		"decide_le": "2026-10-23"
 	}
 ]

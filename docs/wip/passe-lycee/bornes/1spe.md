@@ -32,22 +32,22 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - **1SPE-243** (forme développée ; coefficients), **1SPE-247** (coordonnées du sommet), **1SPE-384** (axe de symétrie) : absents du texte de 1re spé ; **1SPE-250** (inéquation du second degré) : seulement dans la parenthèse d'une capacité.
 - **1SPE-221** (« nuage de points » ajouté), **1SPE-354** (« définir … et donner ses valeurs possibles » au lieu de « modéliser »), **1SPE-364** (« calculer l'écart » au lieu d'« étudier la distance »).
 
-## Questions ouvertes (`questions-spe.json`)
+## Questions (tranchées par David) (`questions-spe.json`)
 
-- **l1s-1** — Dérivées de composées affines (√(ax + b), (ax + b)ⁿ) en 1re.
-- **l1s-2** — Forme canonique : où s'arrêtent les « cas simples » ?
-- **l1s-3** — Trigonométrie : quelles valeurs remarquables, quels angles associés, sous quelle forme ?
-- **l1s-4** — Formule des probabilités totales « dans des cas simples » : taille de la partition.
-- **l1s-5** — Exponentielle : les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ?
-- **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ?
-- **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ?
+- **l1s-1** — Dérivées de composées affines (√(ax + b), (ax + b)ⁿ) en 1re. → **liste-bo** (2026-10-23)
+- **l1s-2** — Forme canonique : où s'arrêtent les « cas simples » ? → **entiers** (2026-10-23)
+- **l1s-3** — Trigonométrie : quelles valeurs remarquables, quels angles associés, sous quelle forme ? → **lecture** (2026-10-23)
+- **l1s-4** — Formule des probabilités totales « dans des cas simples » : taille de la partition. → **partition-finie** (2026-10-23)
+- **l1s-5** — Exponentielle : les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ? → **consequences** (2026-10-23)
+- **l1s-6** — Linéarité de l'espérance : E(aX + b) seulement, ou aussi E(X + Y) ? → **affine** (2026-10-23)
+- **l1s-7** — Automatismes « privilégiant l'activité mentale » : bornent-ils les valeurs numériques ? → **mental** (2026-10-23)
 
 ## Première spécialité (237 points, 232 avec une borne propre)
 
 ### Bornes générales (héritées par tous les points du niveau)
 
 - Fonctions connues : celles de seconde (affines, valeur absolue, carré, inverse, racine carrée, cube), plus les polynômes du second degré, les fonctions x ↦ xⁿ (n ∈ ℤ) et la fonction exponentielle. Pas de logarithme, pas de fonctions sinus et cosinus étudiées comme fonctions (terminale). — _BO 1re spé p.5-8_ (déduite)
-- Dérivées : fonctions carré, cube, inverse, racine carrée, x ↦ xⁿ (n ∈ ℤ), t ↦ e^{at} (a réel) ; opérations somme, produit, inverse, quotient. C'est la liste du BO ; la seule composée écrite est t ↦ e^{at} (au-delà, question l1s-1). — _BO 1re spé p.7-8_ (BO)
+- Dérivées : fonctions carré, cube, inverse, racine carrée, x ↦ xⁿ (n ∈ ℤ), t ↦ e^{at} (a réel) ; opérations somme, produit, inverse, quotient. C'est la liste du BO ; la seule composée écrite est t ↦ e^{at} (au-delà, question l1s-1). → décision l1s-1 : liste-bo. — _BO 1re spé p.7-8_ (BO)
 - Les fonctions étudiées sont toutes régulières ; le nombre dérivé est introduit par la perception intuitive de la limite du taux de variation, sans définition formelle de la limite. — _BO 1re spé p.7_ (BO)
 - Limites : aucune formalisation ; seulement une intuition sur des exemples (calculs numériques, algorithmes de seuil). Pas de calcul de limite de fonction : aucun contenu de limite de fonction n'est écrit au BO de 1re. — _BO 1re spé p.5-7_ (déduite)
 - Suites : seules les suites arithmétiques et géométriques sont formalisées ; d'autres types simples peuvent être rencontrés sans aucune connaissance spécifique à leur sujet. — _BO 1re spé p.5_ (BO)
@@ -59,6 +59,13 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
 - Notations ensemblistes : ∅, ∈, ⊂, ∩, ∪, { … }, ensembles de nombres, intervalles ; complémentaire noté Ā ou E \ A ; Card(A) ; couple, produit cartésien. Les symboles ∀ et ∃ ne sont pas exigibles. — _BO 1re spé p.3-4_ (BO)
 - Notation Δy/Δx pour un taux de variation et dy/dx pour une dérivée : peut être signalée et utilisée en liaison avec les autres disciplines, en adaptant les lettres au contexte (x = f(t), q = f(t)…). — _BO 1re spé p.7_ (BO)
 - Algorithmique : langage naturel ou Python ; affectation notée « ← » en langage naturel ; seule notion nouvelle : la liste, sans aucun autre type de collection. — _BO 1re spé p.4_ (BO)
+- Dérivée d'une composée affine en 1re spé : Liste du BO seulement : √(ax + b) et (ax + b)ⁿ hors point (sauf (ax + b)² ou 1/(ax + b), atteignables par produit ou inverse). — _Décision de David, 2026-10-23 (question l1s-1) ; d'après BO 1re spé p.7, BO 1re spé p.8, BO Tle spé p.9_ (décision)
+- Forme canonique : jusqu'où vont les « cas simples » ? : Coefficient de x² quelconque, à condition que b/(2a) soit entier ou demi-entier simple. — _Décision de David, 2026-10-23 (question l1s-2) ; d'après BO 1re spé p.5_ (décision)
+- Trigonométrie : valeurs remarquables et angles associés : Valeurs 0, π/6, π/4, π/3, π/2 et tout réel associé lisible sur le cercle (±x, π ± x, à 2kπ près : cos(5π/6), sin(−7π/4)) ; valeurs numériques seulement, pas de simplification littérale (cos(π − x) + sin(π + x)). — _Décision de David, 2026-10-23 (question l1s-3) ; d'après BO 1re spé p.8_ (décision)
+- Probabilités totales « dans des cas simples » : Toute partition finie lisible sur un arbre (deux, trois, quatre évènements…) ; « cas simples » = calcul direct, sans paramètre. — _Décision de David, 2026-10-23 (question l1s-4) ; d'après BO 1re spé p.10, BO 2de p.13_ (décision)
+- Exponentielle : propriétés non écrites (quotient, puissance) : Les conséquences directes (quotient, inverse, puissance entière n ∈ ℤ) sont dans le point. — _Décision de David, 2026-10-23 (question l1s-5) ; d'après BO 1re spé p.8_ (décision)
+- Linéarité de l'espérance en 1re : E(aX + b) = aE(X) + b seulement ; E(X + Y) et V(aX) relèvent de la terminale. — _Décision de David, 2026-10-23 (question l1s-6) ; d'après BO 1re spé p.10, BO Tle spé p.13-14_ (décision)
+- Automatismes : l'« activité mentale » borne-t-elle les valeurs ? : Valeurs choisies pour un calcul mental (entiers ou décimaux simples) ; un automatisme qui demande la calculatrice (coordonnées à deux décimales) est refusé. — _Décision de David, 2026-10-23 (question l1s-7) ; d'après BO 1re spé p.4_ (décision)
 
 ### Algorithmique et programmation > Notion de liste
 
@@ -200,7 +207,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Somme des racines : x₁ + x₂ = −b/a. — _BO 1re spé p.6_ (BO)
 - **1SPE-246** — Forme canonique d'une fonction polynôme du second degré
   - Forme canonique a(x − α)² + β ; obtenue dans des cas simples par complétion du carré x² + 2ax = (x + a)² − a² ; cas général non attendu. — _BO 1re spé p.5_ (BO)
-  - ⚠ La frontière entre « cas simples » et « cas général » n'est pas écrite : question l1s-2.
+  - ⚠ La frontière entre « cas simples » et « cas général » n'est pas écrite : question l1s-2. → décision l1s-2 : entiers.
 - **1SPE-247** — Calcul des coordonnées du sommet d'une parabole
   - Sommet de la parabole lu sur la forme canonique (α ; β), ou obtenu par l'extrémum en lien avec la dérivation. — _BO 1re spé p.5-8_ (déduite)
   - ⚠ libellé : « calcul des coordonnées du sommet d'une parabole » n'est pas écrit dans le programme de 1re spé (BO p.5-8). Lecture déduite (texte implicite) : le sommet s'obtient par la forme canonique (p.5) ou par l'étude de l'extrémum (p.8) ; la formule α = −b/(2a) n'est pas écrite.
@@ -285,7 +292,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - f(a + h) ≈ f(a) + f′(a)h. — _BO 1re spé p.7_ (BO)
 - **1SPE-274** — Dans des cas simples, calculer une fonction dérivée en utilisant les propriétés des opérations sur les fonctions dérivables
   - Cas simples ; dérivées et opérations du programme seulement (somme, produit, inverse, quotient, xⁿ pour n ∈ ℤ, √x, e^{at}). — _BO 1re spé p.7-8_ (BO)
-  - ⚠ Le BO nouveau ne contient aucune dérivée de composée hors t ↦ e^{at} : faut-il refuser √(ax + b), (ax + b)ⁿ ? Question l1s-1.
+  - ⚠ Le BO nouveau ne contient aucune dérivée de composée hors t ↦ e^{at} : faut-il refuser √(ax + b), (ax + b)ⁿ ? Question l1s-1. → décision l1s-1 : liste-bo.
 - **1SPE-275** — Équation de la tangente en un point à une courbe représentative
   - Ce qui est démontré : l'équation y = f(a) + f′(a)(x − a) de la tangente ; pas plus. — _BO 1re spé p.8_ (BO)
 - **1SPE-276** — La fonction racine carrée n'est pas dérivable en 0
@@ -334,7 +341,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Lien avec les suites géométriques (évolution discrète / continue). — _BO 1re spé p.7-8_ (BO)
 - **1SPE-294** — Transformer une expression en utilisant les propriétés algébriques de la fonction exponentielle
   - Propriétés algébriques de l'exponentielle (exp(x + y) = exp(x)exp(y), exp(x)exp(−x) = 1). — _BO 1re spé p.8_ (BO)
-  - ⚠ Le BO n'écrit que deux propriétés ; les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ? Question l1s-5.
+  - ⚠ Le BO n'écrit que deux propriétés ; les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ? Question l1s-5. → décision l1s-5 : consequences.
 - **1SPE-295** — Pour $a$ réel, dérivée de la fonction $t \mapsto e^{at}$
   - (e^{at})′ = a·e^{at}, a réel. — _BO 1re spé p.8_ (BO)
 - **1SPE-296** — Pour une valeur numérique strictement positive de $k$, représenter graphiquement la fonction $t \mapsto e^{-kt}$
@@ -376,10 +383,10 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - cos x et sin x d'un réel x ; lien avec cosinus et sinus dans le triangle rectangle. — _BO 1re spé p.8_ (BO)
 - **1SPE-306** — Placer un point sur le cercle trigonométrique
   - Point image d'un réel sur le cercle trigonométrique. — _BO 1re spé p.8_ (BO)
-  - ⚠ Les réels à placer ne sont pas bornés par le BO ; voir question l1s-3 (valeurs remarquables et angles associés).
+  - ⚠ Les réels à placer ne sont pas bornés par le BO ; voir question l1s-3 (valeurs remarquables et angles associés). → décision l1s-3 : lecture.
 - **1SPE-307** — Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de $x$, les cosinus et sinus d'angles associés à $x$
   - Lecture du cercle ; valeurs remarquables de x et angles associés à x. — _BO 1re spé p.8_ (BO)
-  - ⚠ Quels angles associés (−x, π − x, π + x, π/2 − x…) et sous quelle forme (valeurs numériques ou formules littérales) : question l1s-3.
+  - ⚠ Quels angles associés (−x, π − x, π + x, π/2 − x…) et sous quelle forme (valeurs numériques ou formules littérales) : question l1s-3. → décision l1s-3 : lecture.
 - **1SPE-308** — Calcul de $\cos\left(\tfrac{\pi}{4}\right)$, $\sin\left(\tfrac{\pi}{4}\right)$
   - Ce qui est démontré : cos(π/4) = sin(π/4) = √2/2 ; pas plus. — _BO 1re spé p.8_ (BO)
 - **1SPE-309** — Approximation de $\pi$ par la méthode d'Archimède
@@ -392,7 +399,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - ⚠ Lecture déduite (texte implicite) : la conversion degrés ↔ radians n'est pas écrite, mais le lien avec le triangle rectangle (angles en degrés au collège) la suppose.
 - **1SPE-410** — Cosinus et sinus d'un nombre réel : valeurs remarquables
   - Valeurs remarquables de cos et sin. — _BO 1re spé p.8_ (BO)
-  - ⚠ Le BO ne liste pas les valeurs remarquables ni les angles associés : question l1s-3.
+  - ⚠ Le BO ne liste pas les valeurs remarquables ni les angles associés : question l1s-3. → décision l1s-3 : lecture.
 - **1SPE-411** — Calcul de $\cos\left(\tfrac{\pi}{3}\right)$, $\sin\left(\tfrac{\pi}{3}\right)$
   - Ce qui est démontré : cos(π/3) = 1/2, sin(π/3) = √3/2 ; pas plus. — _BO 1re spé p.8_ (BO)
 
@@ -557,7 +564,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - n ⩽ 4 épreuves de Bernoulli indépendantes et identiques. — _BO 1re spé p.10_ (BO)
 - **1SPE-340** — Dans des cas simples, calculer une probabilité à l'aide de la formule des probabilités totales
   - Cas simples de la formule des probabilités totales. — _BO 1re spé p.10_ (BO)
-  - ⚠ « Cas simples » n'est pas défini (taille de la partition) : question l1s-4.
+  - ⚠ « Cas simples » n'est pas défini (taille de la partition) : question l1s-4. → décision l1s-4 : partition-finie.
 - **1SPE-341** — Savoir utiliser l'indépendance de deux évènements
   - Utiliser l'indépendance de deux évènements (pas plus de deux). — _BO 1re spé p.10_ (BO)
 - **1SPE-342** — Représenter la succession de deux épreuves indépendantes par un arbre
@@ -603,7 +610,7 @@ Les **approfondissements possibles** du BO sont « en aucun cas obligatoires » 
   - Variance V(X) = E((X − E(X))²), écart type σ(X) = √V(X). — _BO 1re spé p.10_ (BO)
 - **1SPE-351** — Linéarité de l'espérance
   - Linéarité de l'espérance. — _BO 1re spé p.10_ (BO)
-  - ⚠ Le BO dit « linéarité de l'espérance » sans préciser : E(aX + b) seulement, ou aussi E(X + Y) (sommes de variables aléatoires : terminale) ? Question l1s-6.
+  - ⚠ Le BO dit « linéarité de l'espérance » sans préciser : E(aX + b) seulement, ou aussi E(X + Y) (sommes de variables aléatoires : terminale) ? Question l1s-6. → décision l1s-6 : affine.
 - **1SPE-352** — Formule de König-Huygens
   - V(X) = E(X²) − E(X)². — _BO 1re spé p.10_ (BO)
 - **1SPE-353** — Interpréter en situation les notations $\{X = a\}$, $\{X \leqslant a\}$, $P(X = a)$, $P(X \leqslant a)$

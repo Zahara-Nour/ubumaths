@@ -21,7 +21,9 @@
 		"reco": "donnee",
 		"pourquoi": "Le BO ne met que les limites des fonctions de référence au programme ; une croissance comparée fournie par l'énoncé reste un calcul « en contexte », ce qui est la seule ouverture du texte.",
 		"consequence": "Un modèle « lim x e^{−x} en +∞ » sans indication est refusé ; le même modèle qui écrit « on admet que lim eˣ/x = +∞ » est accepté.",
-		"info": false
+		"info": false,
+		"decision": "donnee",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-2",
@@ -44,7 +46,9 @@
 		"reco": "petit_n",
 		"pourquoi": "L'expression de la loi est au programme et les coefficients s'obtiennent par le triangle de Pascal ; le BO oppose « explicitement » (géométrique) à « calculatrice » (binomiale) parce que n est souvent grand, pas pour interdire le calcul sur un petit n.",
 		"consequence": "Un modèle « ℬ(4 ; 0,3), P(X = 2) = 6 × 0,3² × 0,7² » est accepté avec « petit_n », refusé avec « calculatrice » ; un modèle ℬ(50 ; 0,3) sans valeurs fournies est refusé dans les deux cas.",
-		"info": false
+		"info": false,
+		"decision": "petit_n",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-3",
@@ -75,7 +79,9 @@
 		"reco": "limite",
 		"pourquoi": "Le programme met la loi exponentielle et son espérance au programme, et la limite d'une intégrale ∫_0^x est un calcul intuitif de limite d'exponentielle ; la primitive de x λe^{−λx} demande une intégration par parties absente, d'où la primitive fournie.",
 		"consequence": "Un modèle « ∫_0^x 2e^{−2t} dt puis limite » est accepté avec « limite », refusé avec « segment » ; un modèle qui fait trouver seul la primitive de x e^{−x} est refusé dans les deux cas.",
-		"info": false
+		"info": false,
+		"decision": "limite",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-4",
@@ -95,7 +101,9 @@
 		"reco": "lecture",
 		"pourquoi": "Seule la droite de régression a « par calcul » dans le BO ; pour r, le thème « Corrélation et causalité » insiste sur l'évaluation et la réflexion critique, pas sur le calcul.",
 		"consequence": "Un modèle qui donne r = 0,98 et demande si l'ajustement affine est pertinent est accepté ; un modèle qui fait calculer r à la main est refusé avec « lecture ».",
-		"info": false
+		"info": false,
+		"decision": "lecture",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-5",
@@ -118,7 +126,9 @@
 		"reco": "comme_quartiles",
 		"pourquoi": "Une seule convention dans tout Chiphre évite qu'un même calcul soit juste au collège et faux au lycée ; les données en classes (revenus) ne se traitent que graphiquement.",
 		"consequence": "Un modèle « série de 20 salaires, D1 ? » attend la 2e valeur avec « comme_quartiles » et accepte un intervalle de valeurs avec « tolerance ».",
-		"info": false
+		"info": false,
+		"decision": "comme_quartiles",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-6",
@@ -138,7 +148,9 @@
 		"reco": "ordre1",
 		"pourquoi": "Le BO ne mentionne comme exception que des équations non linéaires du premier ordre (logistique) ; l'ordre 2 relève de la Tle spé / maths expertes et n'apparaît nulle part dans le texte.",
 		"consequence": "Un modèle « vérifier que e^{2x} est solution de y'' = 4y » est refusé avec « ordre1 », accepté avec « tout_ordre » ; un modèle logistique y' = y(1 − y) est accepté dans les deux cas.",
-		"info": false
+		"info": false,
+		"decision": "ordre1",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-7",
@@ -158,7 +170,9 @@
 		"reco": "habillage",
 		"pourquoi": "Le BO veut que les contenus soient travaillés « au travers des thèmes » : les thèmes sont le contexte normal des questions, mais leurs problèmes ne sont pas obligatoires (six thèmes sur neuf), donc la notion doit être redonnée par l'énoncé.",
 		"consequence": "Un modèle Gini qui définit L et l'indice dans l'énoncé est accepté sous TCOMP-276 avec « habillage » ; un modèle qui suppose connue la définition de la sensibilité d'un test est refusé dans les deux cas.",
-		"info": false
+		"info": false,
+		"decision": "habillage",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-8",
@@ -178,7 +192,9 @@
 		"reco": "toute",
 		"pourquoi": "Le contenu est énoncé en général ; « illustrée par » désigne les exemples de cours, non une liste fermée. L'interdit porte sur la théorie (pas de formule de dérivée de la réciproque, etc.).",
 		"consequence": "Un modèle « courbe de la réciproque de x ↦ x³ » est accepté avec « toute », refusé avec « couples ».",
-		"info": false
+		"info": false,
+		"decision": "toute",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-9",
@@ -201,7 +217,9 @@
 		"reco": "notion",
 		"pourquoi": "Le BO ne donne qu'une notion de vocabulaire ; la règle du produit est un contenu de dénombrement (Tle spé), absent ici.",
 		"consequence": "Un modèle « lister A × B pour A = {1, 2}, B = {a, b, c} » est accepté dans les deux cas ; « Card(A × B) = ? » sans listage est refusé avec « notion ».",
-		"info": false
+		"info": false,
+		"decision": "notion",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "ltc-10",
@@ -224,6 +242,8 @@
 		"reco": "heritage",
 		"pourquoi": "Les élèves de Tle compl. ont suivi la 1re spé ; la liste courte reprend celle de 2de et ne retire rien explicitement.",
 		"consequence": "Un modèle de Tle compl. « négation de : pour tout x, f(x) > 0 » est accepté avec « heritage » (rattaché au point de 1re spé), refusé avec « liste_tcomp ».",
-		"info": false
+		"info": false,
+		"decision": "heritage",
+		"decide_le": "2026-10-23"
 	}
 ]

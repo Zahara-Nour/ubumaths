@@ -31,18 +31,18 @@ Aucun document d'accompagnement n'est disponible pour ces programmes : aucun n'e
 3. **STD2A** : « Les professeurs peuvent aborder d'autres notions si la situation étudiée le nécessite » (p.5), en tension avec l'inclusion stricte. → l1t-8.
 4. **Approche graphique du nombre dérivé** (p.8) et, en Tle (p.9), « réinvestir la définition du nombre dérivé à partir du calcul du taux de variation » : le calcul algébrique en 1re n'est pas écrit mais supposé. → l1t-7.
 
-## Questions ouvertes
+## Questions (tranchées par David)
 
 Les incertitudes sont dans `questions-techno.json` (sans décision) :
 
-- **l1t-1** — Probabilités totales : quelle partition en 1re techno ? (reco : `deux`).
-- **l1t-2** — Variations d'un polynôme de degré 3 sans discriminant (reco : `evidentes`).
-- **l1t-3** — Automatismes : « privilégiant l'activité mentale » est-il une borne ? (reco : `modalite`).
-- **l1t-4** — Racines et coefficients non entiers du second degré en 1re techno (reco : `simples`).
-- **l1t-5** — Indépendance : le critère produit est-il permis ? (reco : `produit-admis`).
-- **l1t-6** — Variable aléatoire : {X > a}, {X ⩾ a} en 1re techno ? (reco : `complement`).
-- **l1t-7** — Nombre dérivé : calcul algébrique de la limite du taux de variation ? (reco : `algebrique`).
-- **l1t-8** — STD2A : « d'autres notions si la situation le nécessite » (reco : `strict`).
+- **l1t-1** — Probabilités totales : quelle partition en 1re techno ? (reco : `deux`). → **deux** (2026-10-23)
+- **l1t-2** — Variations d'un polynôme de degré 3 sans discriminant (reco : `evidentes`). → **evidentes** (2026-10-23)
+- **l1t-3** — Automatismes : « privilégiant l'activité mentale » est-il une borne ? (reco : `modalite`). → **modalite** (2026-10-23)
+- **l1t-4** — Racines et coefficients non entiers du second degré en 1re techno (reco : `simples`). → **simples** (2026-10-23)
+- **l1t-5** — Indépendance : le critère produit est-il permis ? (reco : `produit-admis`). → **produit-admis** (2026-10-23)
+- **l1t-6** — Variable aléatoire : {X > a}, {X ⩾ a} en 1re techno ? (reco : `complement`). → **complement** (2026-10-23)
+- **l1t-7** — Nombre dérivé : calcul algébrique de la limite du taux de variation ? (reco : `algebrique`). → **algebrique** (2026-10-23)
+- **l1t-8** — STD2A : « d'autres notions si la situation le nécessite » (reco : `strict`). → **strict** (2026-10-23)
 
 ## Première technologique (143 points, 61 avec une borne propre)
 
@@ -59,6 +59,14 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - Variable aléatoire : espérance seulement, ni variance ni écart type de X (absents du programme) ; le seul écart type rencontré est celui d'une série de fréquences observées. — _BO 1re techno p.10_ (déduite)
 - Programmation : Python (ou tableur pour les situations algorithmiques) ; seule notion nouvelle, la liste, sans autre type de collection ; affectation notée ← en langage naturel. — _BO 1re techno p.4-5_ (BO)
 - « Algorithmique et programmation » : toutes les séries sauf STD2A ; « Activités géométriques » : série STD2A seulement. — _BO 1re techno p.4_ (BO)
+- Probabilités totales : quelle partition en 1re techno ? : 1re : partition {A, Ā} seulement (arbre à deux niveaux) ; trois évènements et plus en Tle. — _Décision de David, 2026-10-23 (question l1t-1) ; d'après BO 2de p.13, BO 1re techno p.10, BO Tle techno p.9_ (décision)
+- Variations d'un polynôme de degré 3 sans discriminant : Dérivée factorisable sans discriminant : forme factorisée, racine évidente, ou racines données dans l'énoncé. — _Décision de David, 2026-10-23 (question l1t-2) ; d'après BO 1re techno p.8_ (décision)
+- Automatismes : « privilégiant l'activité mentale » est-il une borne ? : Modalité d'enseignement, pas une borne : le grain du savoir fixe seul l'inclusion. — _Décision de David, 2026-10-23 (question l1t-3) ; d'après BO 1re techno p.6, BO Tle techno p.6_ (décision)
+- Racines et coefficients non entiers du second degré en 1re techno : 1re : racines entières ou fractions simples (1/2, −4/3) ; paramètres littéraux exclus. — _Décision de David, 2026-10-23 (question l1t-4) ; d'après BO Tle techno p.6, BO 1re techno p.8_ (décision)
+- Indépendance : le critère produit est-il permis ? : Critère produit admis (conséquence directe de P(A ∩ B) = P(A)·P_A(B), vu en 2de). — _Décision de David, 2026-10-23 (question l1t-5) ; d'après BO 1re techno p.9-10, BO 2de p.13_ (décision)
+- Variable aléatoire : {X > a}, {X ⩾ a} en 1re techno ? : Admis : {X > a} est le contraire de {X ⩽ a}, et {X ⩾ a}, {X < a} s'y ramènent ; seules les écritures d'intervalle {a ⩽ X ⩽ b} restent hors point. — _Décision de David, 2026-10-23 (question l1t-6) ; d'après BO 1re techno p.10, BO 2de p.6_ (décision)
+- Nombre dérivé : calcul algébrique de la limite du taux de variation ? : Admis sur des polynômes simples : taux de variation simplifié, puis h → 0 de façon intuitive. — _Décision de David, 2026-10-23 (question l1t-7) ; d'après BO 1re techno p.8, BO 1re techno p.9, BO Tle techno p.9_ (décision)
+- STD2A : « d'autres notions si la situation le nécessite » : Inclusion stricte : seules les notions listées ; une autre notion relève de son propre point (ou d'aucun). — _Décision de David, 2026-10-23 (question l1t-8) ; d'après BO 1re techno p.5_ (décision)
 
 ### Vocabulaire ensembliste et logique
 
@@ -91,67 +99,67 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 ### Activités géométriques (série STD2A) > Géométrie plane
 
 - **1TECHNO-014** — Exemples de polygones réguliers — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-015** — Exemples de frises
   - Motif élémentaire : triangle rectangle ou isocèle, parallélogramme ou rectangle ; la classification des types de frises ou de pavages n'est pas un attendu. — _BO 1re techno p.5_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-109** — Exemples de pavages
   - Motif élémentaire : triangle rectangle ou isocèle, parallélogramme ou rectangle ; la classification des types de frises ou de pavages n'est pas un attendu. — _BO 1re techno p.5_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-016** — Analyser des polygones réguliers à l'aide d'un motif élémentaire et de transformations du plan — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-110** — Construire des polygones réguliers à l'aide d'un motif élémentaire et de transformations du plan — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-017** — Calculer des distances associées aux polygones réguliers — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-111** — Calculer des angles associés aux polygones réguliers — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-112** — Calculer des aires associées aux polygones réguliers — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-113** — Calculer des périmètres associés aux polygones réguliers — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-018** — Créer une figure à partir d'un motif élémentaire par répétition d'une ou de deux transformations simples — _point-compétence, aucune borne_
-  - ⚠ Point-compétence : puce large sans grain questionnable (évaluation par compétences), aucune borne propre. Création de figure (« dialogue entre observation, analyse et création artistique », BO 1re techno p.5). Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Point-compétence : puce large sans grain questionnable (évaluation par compétences), aucune borne propre. Création de figure (« dialogue entre observation, analyse et création artistique », BO 1re techno p.5). Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-019** — Analyser une frise et en rechercher un motif élémentaire
   - Motif élémentaire : triangle rectangle ou isocèle, parallélogramme ou rectangle ; la classification des types de frises ou de pavages n'est pas un attendu. — _BO 1re techno p.5_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-114** — Analyser un pavage et en rechercher un motif élémentaire
   - Motif élémentaire : triangle rectangle ou isocèle, parallélogramme ou rectangle ; la classification des types de frises ou de pavages n'est pas un attendu. — _BO 1re techno p.5_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 
 ### Activités géométriques (série STD2A) > Géométrie dans l'espace
 
 - **1TECHNO-020** — Coordonnées d'un point dans un repère orthonormal de l'espace
   - Repère orthonormal de l'espace. — _BO 1re techno p.6_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-021** — Distance entre deux points — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-022** — Perspective cavalière : projection sur un plan parallèlement à une droite — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-023** — Propriétés conservées (milieux, contacts, rapports de longueurs) et non conservées (longueurs, angles) par une projection parallèle
   - Conservés : milieux, contacts, rapports de longueurs ; non conservés : longueurs, angles. — _BO 1re techno p.6_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-024** — Cylindres de révolution — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-025** — Sections planes d'un cube — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-026** — Sections planes d'un cylindre de révolution ; ellipses — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-027** — Utiliser la représentation en perspective cavalière d'un quadrillage ou d'un cube pour représenter d'autres objets
   - À partir de la perspective cavalière d'un quadrillage ou d'un cube. — _BO 1re techno p.6_ (BO)
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-028** — Représenter en perspective des sections planes — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-115** — Représenter en vraie grandeur des sections planes — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-029** — Construire des sections planes de cubes — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-116** — Construire des sections planes de cylindres de révolution — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-030** — Construire un parallélogramme circonscrit à une ellipse — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 - **1TECHNO-031** — Construire l'image perspective d'un cercle à partir d'un carré circonscrit au cercle — _hérite des bornes générales_
-  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »).
+  - ⚠ Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict.
 
 ### Automatismes > Fonctions et représentations
 
@@ -226,10 +234,10 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - **1TECHNO-125** — Éléments caractéristiques de la courbe d'une fonction polynôme de degré 2 : tableau de variation de la fonction — _hérite des bornes générales_
 - **1TECHNO-058** — Racines d'un polynôme de degré 2 donné sous forme factorisée (le calcul des racines à l'aide du discriminant ne figure pas au programme)
   - Polynôme de degré 2 donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant. — _BO 1re techno p.8_ (BO)
-  - ⚠ Voir l1t-4 (racines non entières).
+  - ⚠ Voir l1t-4 (racines non entières). → décision l1t-4 : simples.
 - **1TECHNO-126** — Signe d'un polynôme de degré 2 donné sous forme factorisée
   - Polynôme de degré 2 donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant. — _BO 1re techno p.8_ (BO)
-  - ⚠ Voir l1t-4 (racines non entières).
+  - ⚠ Voir l1t-4 (racines non entières). → décision l1t-4 : simples.
 - **1TECHNO-143** — Modéliser la dépendance entre deux grandeurs à l'aide d'une fonction — _point-compétence, aucune borne_
   - ⚠ Point-compétence : puce large sans grain questionnable (évaluation par compétences), aucune borne propre. Modéliser.
 - **1TECHNO-059** — Résoudre graphiquement une équation du type $f(x) = k$ — _hérite des bornes générales_
@@ -240,16 +248,16 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - **1TECHNO-062** — Déterminer des éléments caractéristiques de la fonction $x \mapsto ax^2 + bx + c$ (aucune formule n'est attendue ; l'axe de symétrie se détermine par exemple en résolvant $f(x) = c$)
   - Aucune formule attendue ; l'axe de symétrie se détermine par exemple en résolvant f(x) = c. — _BO 1re techno p.8_ (BO)
 - **1TECHNO-063** — Vérifier qu'une valeur conjecturée est racine d'un polynôme de degré 2 — _hérite des bornes générales_
-  - ⚠ Voir l1t-4 (racines non entières).
+  - ⚠ Voir l1t-4 (racines non entières). → décision l1t-4 : simples.
 - **1TECHNO-064** — Savoir factoriser, dans des cas simples, une expression du second degré connaissant au moins une de ses racines
   - Cas simples, au moins une racine connue. — _BO 1re techno p.8_ (BO)
-  - ⚠ Voir l1t-4 (racines non entières).
+  - ⚠ Voir l1t-4 (racines non entières). → décision l1t-4 : simples.
 - **1TECHNO-065** — Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines
   - Polynôme de degré 2 donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant. — _BO 1re techno p.8_ (BO)
-  - ⚠ Voir l1t-4 (racines non entières).
+  - ⚠ Voir l1t-4 (racines non entières). → décision l1t-4 : simples.
 - **1TECHNO-066** — Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe
   - Polynôme de degré 2 donné sous forme factorisée (produit de facteurs du premier degré) ; pas de discriminant. — _BO 1re techno p.8_ (BO)
-  - ⚠ Point référencé par les automatismes : voir l1t-3 (activité mentale) et l1t-4 (racines non entières).
+  - ⚠ Point référencé par les automatismes : voir l1t-3 (activité mentale) et l1t-4 (racines non entières). → décisions l1t-3 : modalite ; l1t-4 : simples.
 - **1TECHNO-067** — Calculer une valeur approchée d'une solution d'une équation par balayage
   - Langage Python ou tableur. — _BO 1re techno p.4_ (BO)
   - Valeur approchée par balayage. — _BO 1re techno p.8_ (BO)
@@ -258,12 +266,12 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 
 - **1TECHNO-068** — Sécantes à une courbe passant par un point donné — _hérite des bornes générales_
 - **1TECHNO-128** — Taux de variation en un point — _hérite des bornes générales_
-  - ⚠ Voir l1t-7 (calcul algébrique du taux de variation).
+  - ⚠ Voir l1t-7 (calcul algébrique du taux de variation). → décision l1t-7 : algebrique.
 - **1TECHNO-069** — Tangente à une courbe en un point, définie comme position limite des sécantes passant par ce point
   - Position limite des sécantes, visualisée au logiciel de géométrie dynamique ; pas de définition formelle de la limite. — _BO 1re techno p.9_ (BO)
 - **1TECHNO-070** — Nombre dérivé en un point défini comme limite du taux de variation en ce point
   - Limite : approche intuitive, sans définition formelle ; vocabulaire et notation introduits à cette occasion. — _BO 1re techno p.9_ (BO)
-  - ⚠ Voir l1t-7 (calcul algébrique du taux de variation).
+  - ⚠ Voir l1t-7 (calcul algébrique du taux de variation). → décision l1t-7 : algebrique.
 - **1TECHNO-071** — Équation réduite de la tangente en un point — _hérite des bornes générales_
 - **1TECHNO-072** — Fonction dérivée — _hérite des bornes générales_
 - **1TECHNO-073** — Fonction dérivée de $x \mapsto x^2$ — _hérite des bornes générales_
@@ -273,7 +281,7 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - **1TECHNO-131** — Dérivée d'un polynôme de degré inférieur ou égal à 3 — _hérite des bornes générales_
 - **1TECHNO-075** — Sens de variation d'une fonction, lien avec le signe de la dérivée
   - Une fonction monotone a une dérivée de signe constant (démontrable) ; la réciproque est admise. — _BO 1re techno p.9_ (BO)
-  - ⚠ Voir l1t-2 (dérivée de degré 2 sans racine évidente).
+  - ⚠ Voir l1t-2 (dérivée de degré 2 sans racine évidente). → décision l1t-2 : evidentes.
 - **1TECHNO-076** — Tableau de variations — _hérite des bornes générales_
 - **1TECHNO-132** — Extrémums — _hérite des bornes générales_
 - **1TECHNO-077** — Interpréter géométriquement le nombre dérivé comme coefficient directeur de la tangente — _hérite des bornes générales_
@@ -285,10 +293,10 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
   - Polynômes de degré ≤ 3 : dérivées de x², x³, somme et kf ; ni produit ni quotient. — _BO 1re techno p.8_ (BO)
 - **1TECHNO-081** — Déterminer le sens de variation d'une fonction polynôme de degré inférieur ou égal à 3
   - Polynômes de degré ≤ 3 seulement. — _BO 1re techno p.8_ (BO)
-  - ⚠ Voir l1t-2 (dérivée de degré 2 sans racine évidente).
+  - ⚠ Voir l1t-2 (dérivée de degré 2 sans racine évidente). → décision l1t-2 : evidentes.
 - **1TECHNO-133** — Déterminer les extrémums d'une fonction polynôme de degré inférieur ou égal à 3
   - Polynômes de degré ≤ 3 seulement. — _BO 1re techno p.8_ (BO)
-  - ⚠ Voir l1t-2 (dérivée de degré 2 sans racine évidente).
+  - ⚠ Voir l1t-2 (dérivée de degré 2 sans racine évidente). → décision l1t-2 : evidentes.
 
 ### Statistiques et probabilités > Séries statistiques à deux variables quantitatives
 
@@ -307,16 +315,16 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 
 - **1TECHNO-089** — Indépendance de deux évènements
   - Définition : pour P(A) ≠ 0, B est indépendant de A si P_A(B) = P(B) ; la symétrie est démontrée pour A et B de probabilités non nulles. — _BO 1re techno p.9-10_ (BO)
-  - ⚠ Voir l1t-5 (critère produit).
+  - ⚠ Voir l1t-5 (critère produit). → décision l1t-5 : produit-admis.
 - **1TECHNO-090** — Formule des probabilités totales — _hérite des bornes générales_
-  - ⚠ Contradiction : le BO de 2de (p.13) dit que le calcul d'une probabilité connaissant ses probabilités conditionnelles relatives à une partition « n'est pas un attendu » ; le BO de 1re techno inscrit la formule (p.10) ; le BO de Tle techno dit qu'on l'« introduit » en Tle (p.9). Voir l1t-1.
+  - ⚠ Contradiction : le BO de 2de (p.13) dit que le calcul d'une probabilité connaissant ses probabilités conditionnelles relatives à une partition « n'est pas un attendu » ; le BO de 1re techno inscrit la formule (p.10) ; le BO de Tle techno dit qu'on l'« introduit » en Tle (p.9). Voir l1t-1. → décision l1t-1 : deux.
 - **1TECHNO-091** — Savoir utiliser l'indépendance de deux évènements — _hérite des bornes générales_
-  - ⚠ Voir l1t-5 (critère produit).
+  - ⚠ Voir l1t-5 (critère produit). → décision l1t-5 : produit-admis.
 - **1TECHNO-134** — Savoir justifier l'indépendance de deux évènements — _hérite des bornes générales_
-  - ⚠ Voir l1t-5 (critère produit).
+  - ⚠ Voir l1t-5 (critère produit). → décision l1t-5 : produit-admis.
 - **1TECHNO-092** — Dans les cas simples, calculer une probabilité à l'aide de la formule des probabilités totales
   - Cas simples. — _BO 1re techno p.10_ (BO)
-  - ⚠ Voir l1t-1 (partition en deux ?).
+  - ⚠ Voir l1t-1 (partition en deux ?). → décision l1t-1 : deux.
 
 ### Statistiques et probabilités > Modèle associé à une expérience aléatoire à plusieurs épreuves indépendantes
 
@@ -337,10 +345,10 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - **1TECHNO-136** — Loi de Bernoulli (0,1) de paramètre $p$ : espérance — _hérite des bornes générales_
 - **1TECHNO-098** — Interpréter en situation les écritures $\{X = a\}$, $\{X \leqslant a\}$ où $X$ désigne une variable aléatoire
   - Écritures {X = a} et {X ⩽ a}. — _BO 1re techno p.10_ (BO)
-  - ⚠ Voir l1t-6 ({X > a}, {X ⩾ a}).
+  - ⚠ Voir l1t-6 ({X > a}, {X ⩾ a}). → décision l1t-6 : complement.
 - **1TECHNO-137** — Calculer les probabilités $P(X = a)$, $P(X \leqslant a)$
   - P(X = a) et P(X ⩽ a). — _BO 1re techno p.10_ (BO)
-  - ⚠ Voir l1t-6 ({X > a}, {X ⩾ a}).
+  - ⚠ Voir l1t-6 ({X > a}, {X ⩾ a}). → décision l1t-6 : complement.
 - **1TECHNO-099** — Calculer l'espérance d'une variable aléatoire discrète — _hérite des bornes générales_
 - **1TECHNO-138** — Interpréter en contexte l'espérance d'une variable aléatoire discrète — _hérite des bornes générales_
 - **1TECHNO-100** — Reconnaitre une situation aléatoire modélisée par une loi de Bernoulli — _hérite des bornes générales_

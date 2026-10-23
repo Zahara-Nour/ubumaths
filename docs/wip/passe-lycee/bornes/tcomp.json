@@ -84,6 +84,66 @@
 				"borne": "Algorithmes écrits en langage naturel (affectation notée ←) ou en Python ; aucune notion d'algorithmique nouvelle par rapport à la 2de et à la 1re (variable, type, affectation, instruction conditionnelle, boucle, fonction, liste).",
 				"source": "BO Tle compl. p.12",
 				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Croissances comparées absentes du BO : Admise seulement si l'énoncé donne le résultat de croissance comparée (« on admet que … »).",
+				"source": "Décision de David, 2026-10-23 (question ltc-1) ; d'après BO Tle compl. p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités binomiales à la main : Calcul à la main admis pour un petit n (coefficient lu dans le triangle de Pascal) ; pour un grand n, valeurs fournies par l'énoncé.",
+				"source": "Décision de David, 2026-10-23 (question ltc-2) ; d'après BO Tle compl. p.11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Densités sur [0, +∞[ (intégrales sur un intervalle non borné) : Admis en passant par la limite de ∫_0^x quand x → +∞, primitive donnée par l'énoncé si elle sort des formes du programme (x e^{−λx}).",
+				"source": "Décision de David, 2026-10-23 (question ltc-3) ; d'après BO Tle compl. p.10",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Coefficient de corrélation : calcul par formule ? : r fourni par l'énoncé (ou calculatrice) ; la question porte sur son interprétation (signe, proximité de ±1, corrélation ≠ causalité).",
+				"source": "Décision de David, 2026-10-23 (question ltc-4) ; d'après BO Tle compl. p.12",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Convention de calcul des déciles : Même convention que les quartiles (c4-2) : D1 (D9) = plus petite valeur dont l'effectif cumulé atteint 10 % (90 %) ; lecture graphique sur le polygone des fréquences cumulées pour des données en classes.",
+				"source": "Décision de David, 2026-10-23 (question ltc-5) ; d'après BO Tle compl. p.6, BO 2de p.6",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Vérifier une solution d'une équation différentielle d'ordre 2 : Premier ordre seulement (linéaire ou non, logistique comprise).",
+				"source": "Décision de David, 2026-10-23 (question ltc-6) ; d'après BO Tle compl. p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Notions des thèmes d'étude absentes du volet « contenus » : Admis comme habillage : la notion du thème est définie dans l'énoncé, le modèle se rattache au point de la capacité mathématique mobilisée.",
+				"source": "Décision de David, 2026-10-23 (question ltc-7) ; d'après BO Tle compl. p.3",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Fonctions réciproques : seulement les couples illustrés ? : Toute fonction continue strictement monotone du programme (lecture graphique, symétrie par rapport à y = x), sans théorie.",
+				"source": "Décision de David, 2026-10-23 (question ltc-8) ; d'après BO Tle compl. p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Produit cartésien : dénombrer ? : Notion seulement : écrire ou lister les éléments de A × B sur de petits ensembles, reconnaître un couple ; pas de Card(A × B) par la règle du produit.",
+				"source": "Décision de David, 2026-10-23 (question ltc-9) ; d'après BO Tle compl. p.3",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Logique : liste de la Tle compl. plus courte que celle de la 1re spé : L'acquis de 1re spé reste valable : contraposée et négation quantifiée admises en Tle compl.",
+				"source": "Décision de David, 2026-10-23 (question ltc-10) ; d'après BO Tle compl. p.3, BO 1re spé p.4, BO Tle compl. p.1",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -97,7 +157,7 @@
 				"libelle": "Notion de produit cartésien",
 				"rubrique": "Vocabulaire ensembliste et logique",
 				"bornes": [],
-				"remarque": "Le BO (p.3) donne la notion et la notation Card(A), mais aucune règle de dénombrement (Card(E × F) = Card E × Card F, nombre de n-uplets) : voir ltc-9."
+				"remarque": "Le BO (p.3) donne la notion et la notation Card(A), mais aucune règle de dénombrement (Card(E × F) = Card E × Card F, nombre de n-uplets) : voir ltc-9. → décision ltc-9 : notion."
 			},
 			"TCOMP-202": {
 				"libelle": "Statistique descriptive : caractéristiques de dispersion — déciles",
@@ -110,7 +170,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Point tiré des « contenus associés » d'un thème d'étude, exigence d'approfondissement. Convention des déciles : ltc-5."
+				"remarque": "Point tiré des « contenus associés » d'un thème d'étude, exigence d'approfondissement. Convention des déciles : ltc-5. → décision ltc-5 : comme_quartiles."
 			},
 			"TCOMP-331": {
 				"libelle": "Statistique descriptive : caractéristiques de dispersion — rapport interdécile",
@@ -519,7 +579,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Faut-il s'en tenir aux deux couples illustrés ? ltc-8."
+				"remarque": "Faut-il s'en tenir aux deux couples illustrés ? ltc-8. → décision ltc-8 : toute."
 			},
 			"TCOMP-340": {
 				"libelle": "Représentation graphique de la réciproque d'une fonction continue strictement monotone",
@@ -535,7 +595,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Faut-il s'en tenir aux deux couples illustrés ? ltc-8."
+				"remarque": "Faut-il s'en tenir aux deux couples illustrés ? ltc-8. → décision ltc-8 : toute."
 			},
 			"TCOMP-224": {
 				"libelle": "Fonction logarithme népérien : réciproque de la fonction exponentielle",
@@ -548,7 +608,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "La quadrature de l'hyperbole (aire sous 1/t) n'est qu'un « problème possible » d'un thème : voir ltc-7."
+				"remarque": "La quadrature de l'hyperbole (aire sous 1/t) n'est qu'un « problème possible » d'un thème : voir ltc-7. → décision ltc-7 : habillage."
 			},
 			"TCOMP-225": {
 				"libelle": "Représentation graphique de la fonction logarithme népérien",
@@ -669,7 +729,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les croissances comparées (eˣ/x, x e^{−x}, ln x / x) ne figurent pas au BO : ltc-1."
+				"remarque": "Les croissances comparées (eˣ/x, x e^{−x}, ln x / x) ne figurent pas au BO : ltc-1. → décision ltc-1 : donnee."
 			},
 			"TCOMP-231": {
 				"libelle": "Dresser un tableau de variation",
@@ -694,7 +754,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Capacité de résolution de problème ; mêmes bornes que TCOMP-230 (croissances comparées : ltc-1)."
+				"remarque": "Capacité de résolution de problème ; mêmes bornes que TCOMP-230 (croissances comparées : ltc-1). → décision ltc-1 : donnee."
 			},
 			"TCOMP-232": {
 				"libelle": "Dans le cadre de la résolution de problème, utiliser l'allure des courbes représentatives des fonctions inverse, carré, cube, racine carrée, exponentielle et logarithme",
@@ -973,7 +1033,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Lecture déduite : le BO admet qu'une équation non linéaire « peut apparaître » sans connaissance exigible ; la vérification n'en demande aucune. L'ordre (y'' admis ou non) : ltc-6."
+				"remarque": "Lecture déduite : le BO admet qu'une équation non linéaire « peut apparaître » sans connaissance exigible ; la vérification n'en demande aucune. L'ordre (y'' admis ou non) : ltc-6. → décision ltc-6 : ordre1."
 			},
 			"TCOMP-251": {
 				"libelle": "Déterminer les primitives d'une fonction, en reconnaissant la dérivée d'une fonction de référence",
@@ -1557,7 +1617,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Calcul effectif à la main ou à la calculatrice : ltc-2."
+				"remarque": "Calcul effectif à la main ou à la calculatrice : ltc-2. → décision ltc-2 : petit_n."
 			},
 			"TCOMP-291": {
 				"libelle": "Loi binomiale : espérance (admise)",
@@ -1689,7 +1749,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Calcul à la main admis ou non : ltc-2."
+				"remarque": "Calcul à la main admis ou non : ltc-2. → décision ltc-2 : petit_n."
 			},
 			"TCOMP-298": {
 				"libelle": "Calculer explicitement les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$ pour une variable aléatoire $X$ suivant une loi géométrique",
@@ -1757,7 +1817,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "La formule de Bayes est écrite dans le thème « Inférence bayésienne » (« bien comprendre cette distinction est un objectif majeur ») ; le vocabulaire des tests (sensibilité, spécificité, valeurs prédictives) n'est qu'un problème possible : ltc-7."
+				"remarque": "La formule de Bayes est écrite dans le thème « Inférence bayésienne » (« bien comprendre cette distinction est un objectif majeur ») ; le vocabulaire des tests (sensibilité, spécificité, valeurs prédictives) n'est qu'un problème possible : ltc-7. → décision ltc-7 : habillage."
 			},
 			"TCOMP-303": {
 				"libelle": "Calculer des probabilités dans des situations faisant intervenir des répétitions d'expériences aléatoires",
@@ -1865,7 +1925,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Intervalles non bornés : ltc-3."
+				"remarque": "Intervalles non bornés : ltc-3. → décision ltc-3 : limite."
 			},
 			"TCOMP-371": {
 				"libelle": "Variance d'une loi à densité, expression sous forme d'intégrale",
@@ -1878,7 +1938,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Intervalles non bornés : ltc-3."
+				"remarque": "Intervalles non bornés : ltc-3. → décision ltc-3 : limite."
 			},
 			"TCOMP-311": {
 				"libelle": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de densité",
@@ -1963,7 +2023,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Lecture déduite : le BO liste pour la loi exponentielle « espérance, propriété d'absence de mémoire », sans la variance qu'il cite pour la loi uniforme. Calcul de 1/λ : ltc-3."
+				"remarque": "Lecture déduite : le BO liste pour la loi exponentielle « espérance, propriété d'absence de mémoire », sans la variance qu'il cite pour la loi uniforme. Calcul de 1/λ : ltc-3. → décision ltc-3 : limite."
 			},
 			"TCOMP-313": {
 				"libelle": "Propriété d'absence de mémoire de la loi exponentielle",
@@ -1988,7 +2048,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Intervalles non bornés (densité sur [0, +∞[) : ltc-3."
+				"remarque": "Intervalles non bornés (densité sur [0, +∞[) : ltc-3. → décision ltc-3 : limite."
 			},
 			"TCOMP-315": {
 				"libelle": "Calculer des probabilités pour une variable aléatoire à densité",
@@ -2001,7 +2061,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Intervalles non bornés : ltc-3."
+				"remarque": "Intervalles non bornés : ltc-3. → décision ltc-3 : limite."
 			},
 			"TCOMP-316": {
 				"libelle": "Calculer l'espérance d'une variable aléatoire à densité",
@@ -2014,7 +2074,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles. Intervalles non bornés : ltc-3."
+				"remarque": "Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles. Intervalles non bornés : ltc-3. → décision ltc-3 : limite."
 			},
 			"TCOMP-317": {
 				"libelle": "Simulation d'une variable de Bernoulli ou d'un lancer de dé (ou d'une variable uniforme sur un ensemble fini) à partir d'une variable aléatoire de loi uniforme sur $[0, 1]$",
@@ -2061,7 +2121,7 @@
 				"libelle": "Coefficient de corrélation",
 				"rubrique": "Probabilités et statistique > Statistique à deux variables quantitatives",
 				"bornes": [],
-				"remarque": "Le BO (p.12) cite le coefficient de corrélation dans les contenus sans capacité de calcul : ltc-4."
+				"remarque": "Le BO (p.12) cite le coefficient de corrélation dans les contenus sans capacité de calcul : ltc-4. → décision ltc-4 : lecture."
 			},
 			"TCOMP-323": {
 				"libelle": "Ajustement se ramenant par changement de variable à un ajustement affine",

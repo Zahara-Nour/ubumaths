@@ -55,6 +55,18 @@
 				"borne": "Composante informatique (algorithmique, programmation, tableur) reposant sur « un nombre limité d'éléments de syntaxe » ; outils : calculatrice, tableur, logiciel de géométrie dynamique ou de programmation.",
 				"source": "BO 1re ES p.2-3",
 				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Indépendance : la caractérisation par le produit : Les deux : la définition P_B(A) = P(A) et la caractérisation P(A ∩ B) = P(A) × P(B), qui en découle par la multiplication sur les branches (2de).",
+				"source": "Décision de David, 2026-10-23 (question l1g-1) ; d'après BO 1re ES p.5, BO 2de p.13",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Répétition d'épreuves de Bernoulli : n ⩽ 4 vaut-il pour le contenu ? : n ⩽ 4 pour tous les points de la répétition d'épreuves, 1GEN-010 compris.",
+				"source": "Décision de David, 2026-10-23 (question l1g-2) ; d'après BO 1re ES p.5, BO 1re ES p.3",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -212,7 +224,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Caractérisation par P(A ∩ B) = P(A) × P(B) : question l1g-1."
+				"remarque": "Caractérisation par P(A ∩ B) = P(A) × P(B) : question l1g-1. → décision l1g-1 : les-deux."
 			},
 			"1GEN-010": {
 				"libelle": "Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli",
@@ -225,7 +237,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Nombre d'épreuves : les capacités disent n ⩽ 4, le contenu ne borne pas ; question l1g-2."
+				"remarque": "Nombre d'épreuves : les capacités disent n ⩽ 4, le contenu ne borne pas ; question l1g-2. → décision l1g-2 : n4."
 			},
 			"1GEN-011": {
 				"libelle": "Représenter par un arbre de probabilités la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \\leqslant 4$",
@@ -280,7 +292,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Question l1g-1."
+				"remarque": "Question l1g-1. → décision l1g-1 : les-deux."
 			},
 			"1GEN-047": {
 				"libelle": "Savoir justifier l'indépendance de deux évènements",
@@ -293,7 +305,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Question l1g-1."
+				"remarque": "Question l1g-1. → décision l1g-1 : les-deux."
 			},
 			"1GEN-022": {
 				"libelle": "Fonctions polynômes de degré 2 : éléments caractéristiques de la courbe : allure de la courbe",

@@ -79,6 +79,60 @@
 				"borne": "Algorithmique : aucune notion nouvelle par rapport à la 2de et à la 1re (langage naturel ou Python, affectation notée ←) ; on se limite aux listes, sans autre type de collection.",
 				"source": "BO Tle spé p.4",
 				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations et inéquations en sinus : « Du type » couvre aussi sin(x) = a et sin(x) ⩽ a.",
+				"source": "Décision de David, 2026-10-23 (question lts-1) ; d'après BO Tle spé p.11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Intervalle de résolution de cos(x) = a : Équation sur ℝ ou sur tout intervalle donné ; [−π, π] pour l'inéquation seulement.",
+				"source": "Décision de David, 2026-10-23 (question lts-2) ; d'après BO Tle spé p.11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Valeurs de a dans cos(x) = a : a parmi les valeurs remarquables, solutions exactes.",
+				"source": "Décision de David, 2026-10-23 (question lts-3) ; d'après BO Tle spé p.11, BO Tle spé p.10",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Sens de l'inéquation en cosinus : Les quatre sens (⩽, <, ⩾, >).",
+				"source": "Décision de David, 2026-10-23 (question lts-4) ; d'après BO Tle spé p.11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Limites faisant intervenir ln, sin, cos : Seulement celles de 1re ; les limites en ln relèvent de TSPE-441/443.",
+				"source": "Décision de David, 2026-10-23 (question lts-5) ; d'après BO Tle spé p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Taille des systèmes linéaires « dans des cas simples » : Jusqu'à trois inconnues, résolubles par substitution (une équation au moins à une ou deux inconnues).",
+				"source": "Décision de David, 2026-10-23 (question lts-6) ; d'après BO Tle spé p.7",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Intersection de deux plans : attendu ou approfondissement : Attendu : traduire et décider (plans sécants, parallèles, confondus, droite ∩ plan) ; déterminer la droite d'intersection = TSPE-374 seulement.",
+				"source": "Décision de David, 2026-10-23 (question lts-7) ; d'après BO Tle spé p.7",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Vecteur normal à un plan défini par trois points : Attendu : vérifier qu'un vecteur donné est normal à (ABC) ; le déterminer = TSPE-375.",
+				"source": "Décision de David, 2026-10-23 (question lts-8) ; d'après BO Tle spé p.7",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Primitive de x ↦ 1/x : n = −1 inclus, sur ]0 ; +∞[ seulement (primitive ln x ; u′/u avec u > 0).",
+				"source": "Décision de David, 2026-10-23 (question lts-9) ; d'après BO Tle spé p.11",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -1104,7 +1158,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "« Cas simples » non précisé : taille des systèmes en question (lts-6)."
+				"remarque": "« Cas simples » non précisé : taille des systèmes en question (lts-6). → décision lts-6 : trois-simple."
 			},
 			"TSPE-373": {
 				"libelle": "Équation cartésienne du plan normal au vecteur $\\vec{n}$ et passant par le point $A$",
@@ -1467,7 +1521,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-403": {
 				"libelle": "Déterminer dans des cas simples la limite d'une fonction en un point, en $\\pm\\infty$, en utilisant les limites usuelles",
@@ -1486,7 +1540,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-404": {
 				"libelle": "Faire le lien entre l'existence d'une asymptote parallèle à un axe et celle de la limite correspondante",
@@ -1640,7 +1694,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-416": {
 				"libelle": "Étudier les variations d'une fonction construite simplement à partir des fonctions de référence",
@@ -2172,7 +2226,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Sinus (lts-1), intervalle de résolution (lts-2) et valeurs de a (lts-3) en question."
+				"remarque": "Sinus (lts-1), intervalle de résolution (lts-2) et valeurs de a (lts-3) en question. → décisions lts-1 : cos-et-sin ; lts-2 : libre ; lts-3 : remarquables."
 			},
 			"TSPE-458": {
 				"libelle": "Résoudre une inéquation de la forme $\\cos(x) \\leqslant a$ sur $[-\\pi, \\pi]$",
@@ -2188,7 +2242,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Sinus (lts-1), valeurs de a (lts-3) et sens de l'inégalité (lts-4) en question."
+				"remarque": "Sinus (lts-1), valeurs de a (lts-3) et sens de l'inégalité (lts-4) en question. → décisions lts-1 : cos-et-sin ; lts-3 : remarquables ; lts-4 : quatre-sens."
 			},
 			"TSPE-459": {
 				"libelle": "Dans le cadre de la résolution de problème, notamment géométrique, étudier une fonction simple définie à partir de fonctions trigonométriques, pour déterminer des variations, un optimum",
@@ -2258,7 +2312,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Cas n = −1 (primitive ln) en question (lts-9)."
+				"remarque": "Cas n = −1 (primitive ln) en question (lts-9). → décision lts-9 : ln-positif."
 			},
 			"TSPE-464": {
 				"libelle": "Équation différentielle $y' = ay$, où $a$ est un nombre réel",
@@ -2307,7 +2361,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Cas n = −1 en question (lts-9)."
+				"remarque": "Cas n = −1 en question (lts-9). → décision lts-9 : ln-positif."
 			},
 			"TSPE-468": {
 				"libelle": "Calculer une primitive en utilisant les fonctions de la forme $(v' \\circ u) \\times u'$",
@@ -3580,7 +3634,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir les questions lts-7 (intersection de deux plans, approfondissement) et lts-8 (vecteur orthogonal à deux vecteurs, approfondissement)."
+				"remarque": "Voir les questions lts-7 (intersection de deux plans, approfondissement) et lts-8 (vecteur orthogonal à deux vecteurs, approfondissement). → décisions lts-7 : approf ; lts-8 : verifier."
 			},
 			"TSPE-568": {
 				"libelle": "Dans des cas simples, interpréter géométriquement les solutions du système obtenu",
@@ -3701,7 +3755,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-577": {
 				"libelle": "Déterminer dans des cas simples la limite d'une suite, en utilisant les opérations sur les limites",
@@ -3720,7 +3774,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-578": {
 				"libelle": "Déterminer dans des cas simples la limite d'une suite, en utilisant des majorations, minorations ou encadrements",
@@ -3739,7 +3793,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-579": {
 				"libelle": "Déterminer dans des cas simples la limite d'une suite, en utilisant la factorisation du terme prépondérant dans une somme",
@@ -3758,7 +3812,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-580": {
 				"libelle": "Déterminer dans des cas simples la limite d'une fonction en un point, en $\\pm\\infty$, en utilisant les croissances comparées",
@@ -3777,7 +3831,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-581": {
 				"libelle": "Déterminer dans des cas simples la limite d'une fonction en un point, en $\\pm\\infty$, en utilisant les opérations sur les limites",
@@ -3796,7 +3850,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-582": {
 				"libelle": "Déterminer dans des cas simples la limite d'une fonction en un point, en $\\pm\\infty$, en utilisant des majorations, minorations ou encadrements",
@@ -3815,7 +3869,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-583": {
 				"libelle": "Déterminer dans des cas simples la limite d'une fonction en un point, en $\\pm\\infty$, en utilisant la factorisation du terme prépondérant dans une somme",
@@ -3834,7 +3888,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5)."
+				"remarque": "Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere."
 			},
 			"TSPE-584": {
 				"libelle": "Branches infinies",

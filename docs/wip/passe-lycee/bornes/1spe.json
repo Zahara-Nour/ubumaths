@@ -27,7 +27,7 @@
 			},
 			{
 				"aspect": "fonctions",
-				"borne": "Dérivées : fonctions carré, cube, inverse, racine carrée, x ↦ xⁿ (n ∈ ℤ), t ↦ e^{at} (a réel) ; opérations somme, produit, inverse, quotient. C'est la liste du BO ; la seule composée écrite est t ↦ e^{at} (au-delà, question l1s-1).",
+				"borne": "Dérivées : fonctions carré, cube, inverse, racine carrée, x ↦ xⁿ (n ∈ ℤ), t ↦ e^{at} (a réel) ; opérations somme, produit, inverse, quotient. C'est la liste du BO ; la seule composée écrite est t ↦ e^{at} (au-delà, question l1s-1). → décision l1s-1 : liste-bo.",
 				"detail": {
 					"liste": ["x²", "x³", "1/x", "√x", "xⁿ (n ∈ ℤ)", "e^{at}", "u + v", "uv", "1/v", "u/v"]
 				},
@@ -125,6 +125,48 @@
 				},
 				"source": "BO 1re spé p.4",
 				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Dérivée d'une composée affine en 1re spé : Liste du BO seulement : √(ax + b) et (ax + b)ⁿ hors point (sauf (ax + b)² ou 1/(ax + b), atteignables par produit ou inverse).",
+				"source": "Décision de David, 2026-10-23 (question l1s-1) ; d'après BO 1re spé p.7, BO 1re spé p.8, BO Tle spé p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Forme canonique : jusqu'où vont les « cas simples » ? : Coefficient de x² quelconque, à condition que b/(2a) soit entier ou demi-entier simple.",
+				"source": "Décision de David, 2026-10-23 (question l1s-2) ; d'après BO 1re spé p.5",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Trigonométrie : valeurs remarquables et angles associés : Valeurs 0, π/6, π/4, π/3, π/2 et tout réel associé lisible sur le cercle (±x, π ± x, à 2kπ près : cos(5π/6), sin(−7π/4)) ; valeurs numériques seulement, pas de simplification littérale (cos(π − x) + sin(π + x)).",
+				"source": "Décision de David, 2026-10-23 (question l1s-3) ; d'après BO 1re spé p.8",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités totales « dans des cas simples » : Toute partition finie lisible sur un arbre (deux, trois, quatre évènements…) ; « cas simples » = calcul direct, sans paramètre.",
+				"source": "Décision de David, 2026-10-23 (question l1s-4) ; d'après BO 1re spé p.10, BO 2de p.13",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Exponentielle : propriétés non écrites (quotient, puissance) : Les conséquences directes (quotient, inverse, puissance entière n ∈ ℤ) sont dans le point.",
+				"source": "Décision de David, 2026-10-23 (question l1s-5) ; d'après BO 1re spé p.8",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Linéarité de l'espérance en 1re : E(aX + b) = aE(X) + b seulement ; E(X + Y) et V(aX) relèvent de la terminale.",
+				"source": "Décision de David, 2026-10-23 (question l1s-6) ; d'après BO 1re spé p.10, BO Tle spé p.13-14",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Automatismes : l'« activité mentale » borne-t-elle les valeurs ? : Valeurs choisies pour un calcul mental (entiers ou décimaux simples) ; un automatisme qui demande la calculatrice (coordonnées à deux décimales) est refusé.",
+				"source": "Décision de David, 2026-10-23 (question l1s-7) ; d'après BO 1re spé p.4",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -985,7 +1027,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ La frontière entre « cas simples » et « cas général » n'est pas écrite : question l1s-2."
+				"remarque": "⚠ La frontière entre « cas simples » et « cas général » n'est pas écrite : question l1s-2. → décision l1s-2 : entiers."
 			},
 			"1SPE-247": {
 				"libelle": "Calcul des coordonnées du sommet d'une parabole",
@@ -1535,7 +1577,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ Le BO nouveau ne contient aucune dérivée de composée hors t ↦ e^{at} : faut-il refuser √(ax + b), (ax + b)ⁿ ? Question l1s-1."
+				"remarque": "⚠ Le BO nouveau ne contient aucune dérivée de composée hors t ↦ e^{at} : faut-il refuser √(ax + b), (ax + b)ⁿ ? Question l1s-1. → décision l1s-1 : liste-bo."
 			},
 			"1SPE-275": {
 				"libelle": "Équation de la tangente en un point à une courbe représentative",
@@ -1883,7 +1925,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ Le BO n'écrit que deux propriétés ; les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ? Question l1s-5."
+				"remarque": "⚠ Le BO n'écrit que deux propriétés ; les conséquences eˣ⁻ʸ = eˣ/eʸ et (eˣ)ⁿ = eⁿˣ sont-elles dans le point ? Question l1s-5. → décision l1s-5 : consequences."
 			},
 			"1SPE-295": {
 				"libelle": "Pour $a$ réel, dérivée de la fonction $t \\mapsto e^{at}$",
@@ -2081,7 +2123,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ Le BO ne liste pas les valeurs remarquables ni les angles associés : question l1s-3."
+				"remarque": "⚠ Le BO ne liste pas les valeurs remarquables ni les angles associés : question l1s-3. → décision l1s-3 : lecture."
 			},
 			"1SPE-306": {
 				"libelle": "Placer un point sur le cercle trigonométrique",
@@ -2094,7 +2136,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ Les réels à placer ne sont pas bornés par le BO ; voir question l1s-3 (valeurs remarquables et angles associés)."
+				"remarque": "⚠ Les réels à placer ne sont pas bornés par le BO ; voir question l1s-3 (valeurs remarquables et angles associés). → décision l1s-3 : lecture."
 			},
 			"1SPE-307": {
 				"libelle": "Par lecture du cercle trigonométrique, déterminer, pour des valeurs remarquables de $x$, les cosinus et sinus d'angles associés à $x$",
@@ -2107,7 +2149,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ Quels angles associés (−x, π − x, π + x, π/2 − x…) et sous quelle forme (valeurs numériques ou formules littérales) : question l1s-3."
+				"remarque": "⚠ Quels angles associés (−x, π − x, π + x, π/2 − x…) et sous quelle forme (valeurs numériques ou formules littérales) : question l1s-3. → décision l1s-3 : lecture."
 			},
 			"1SPE-308": {
 				"libelle": "Calcul de $\\cos\\left(\\tfrac{\\pi}{4}\\right)$, $\\sin\\left(\\tfrac{\\pi}{4}\\right)$",
@@ -2691,7 +2733,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ « Cas simples » n'est pas défini (taille de la partition) : question l1s-4."
+				"remarque": "⚠ « Cas simples » n'est pas défini (taille de la partition) : question l1s-4. → décision l1s-4 : partition-finie."
 			},
 			"1SPE-341": {
 				"libelle": "Savoir utiliser l'indépendance de deux évènements",
@@ -2896,7 +2938,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "⚠ Le BO dit « linéarité de l'espérance » sans préciser : E(aX + b) seulement, ou aussi E(X + Y) (sommes de variables aléatoires : terminale) ? Question l1s-6."
+				"remarque": "⚠ Le BO dit « linéarité de l'espérance » sans préciser : E(aX + b) seulement, ou aussi E(X + Y) (sommes de variables aléatoires : terminale) ? Question l1s-6. → décision l1s-6 : affine."
 			},
 			"1SPE-352": {
 				"libelle": "Formule de König-Huygens",

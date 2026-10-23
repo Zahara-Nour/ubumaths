@@ -48,6 +48,60 @@
 				"borne": "Les « Problèmes possibles » (points d'approfondissement de ce programme) ne sont pas obligatoires et ne figurent pas dans les capacités attendues.",
 				"source": "BO Tle exp. p.5",
 				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations « simples » en z et z̄ : Équations du premier degré en z et z̄ (az + b z̄ = c), résolues en posant z = x + iy : système linéaire en x, y.",
+				"source": "Décision de David, 2026-10-23 (question lte-1) ; d'après BO Tle exp. p.6",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Arguments exacts : valeurs remarquables seulement ? : Argument exact attendu seulement quand cos θ et sin θ sont des valeurs remarquables (multiples de π/6 et π/4).",
+				"source": "Décision de David, 2026-10-23 (question lte-2) ; d'après BO Tle exp. p.6, BO Tle exp. p.7",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Racine « connue » : donnée ou à trouver ? : La racine est donnée par l'énoncé (ou l'énoncé demande de vérifier qu'un nombre donné est racine).",
+				"source": "Décision de David, 2026-10-23 (question lte-3) ; d'après BO Tle exp. p.7",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Équations diophantiennes « simples » : Équations ax + by = c seulement (Bézout, Gauss).",
+				"source": "Décision de David, 2026-10-23 (question lte-4) ; d'après BO Tle exp. p.8, BO Tle exp. p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Chaînes ou chemins : graphes orientés hors Markov ? : Graphes orientés admis pour la matrice d'adjacence et le nombre de chemins ; vocabulaire de base (degré, connexe) en non orienté.",
+				"source": "Décision de David, 2026-10-23 (question lte-5) ; d'après BO Tle exp. p.10, BO Tle exp. p.11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Ordre des matrices et taille des systèmes : Ordre au plus 3 pour les calculs exacts (inverse, puissance générale, systèmes) ; matrice d'adjacence de taille libre, puissance numérique à la calculatrice.",
+				"source": "Décision de David, 2026-10-23 (question lte-6) ; d'après BO Tle exp. p.10, BO Tle exp. p.11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Déterminant d'une matrice 2 × 2 : Formule ad − bc admise seulement si l'énoncé la donne ; sinon inverse par vérification AB = I ou par un système.",
+				"source": "Décision de David, 2026-10-23 (question lte-7) ; d'après BO Tle exp. p.10-11",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Quelles transformations du plan en matrices ? : Seulement les transformations connues des programmes en vigueur (symétries axiales par une droite passant par O, symétrie centrale de centre O), plus celles définies dans l'énoncé.",
+				"source": "Décision de David, 2026-10-23 (question lte-8) ; d'après BO Tle exp. p.10",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Transformations z ↦ az + b : Admis si la question se ramène à des longueurs et des angles (|z' − ω| = |z − ω|, arg …) sans nommer la transformation.",
+				"source": "Décision de David, 2026-10-23 (question lte-9) ; d'après BO Tle exp. p.6, BO Tle exp. p.8",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -168,7 +222,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-1 : quelles équations en z et z̄ sont « simples »."
+				"remarque": "Incertitude lte-1 : quelles équations en z et z̄ sont « simples ». → décision lte-1 : premier-degre."
 			},
 			"TEXP-209": {
 				"libelle": "Conjugué d'un produit",
@@ -356,7 +410,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Lecture déduite (texte implicite) : « à 2π près » vient du pluriel « arguments » du BO. Valeurs exactes attendues : incertitude lte-2."
+				"remarque": "Lecture déduite (texte implicite) : « à 2π près » vient du pluriel « arguments » du BO. Valeurs exactes attendues : incertitude lte-2. → décision lte-2 : remarquables."
 			},
 			"TEXP-361": {
 				"libelle": "Arguments d'un nombre complexe non nul : interprétation géométrique",
@@ -408,7 +462,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non."
+				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non. → décision lte-2 : remarquables."
 			},
 			"TEXP-222": {
 				"libelle": "Représenter un nombre complexe par un point",
@@ -487,7 +541,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5). Incertitude lte-9 : transformations z ↦ az + b."
+				"remarque": "Problème possible du BO (« en aucun cas obligatoires », p.5). Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument."
 			},
 			"TEXP-228": {
 				"libelle": "Inégalité triangulaire pour deux nombres complexes ; cas d'égalité",
@@ -632,7 +686,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non."
+				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non. → décision lte-2 : remarquables."
 			},
 			"TEXP-238": {
 				"libelle": "Passer de la forme trigonométrique ou exponentielle d'un nombre complexe à sa forme algébrique",
@@ -645,7 +699,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non."
+				"remarque": "Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non. → décision lte-2 : remarquables."
 			},
 			"TEXP-239": {
 				"libelle": "Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes",
@@ -782,7 +836,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver."
+				"remarque": "Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver. → décision lte-3 : donnee."
 			},
 			"TEXP-249": {
 				"libelle": "Factoriser un polynôme dont une racine est connue",
@@ -795,7 +849,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver."
+				"remarque": "Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver. → décision lte-3 : donnee."
 			},
 			"TEXP-250": {
 				"libelle": "Factorisation de $z^n - a^n$ par $z - a$ (démonstration)",
@@ -966,7 +1020,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-9 : transformations z ↦ az + b."
+				"remarque": "Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument."
 			},
 			"TEXP-261": {
 				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer une orthogonalité",
@@ -979,7 +1033,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-9 : transformations z ↦ az + b."
+				"remarque": "Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument."
 			},
 			"TEXP-262": {
 				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des longueurs",
@@ -1004,7 +1058,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitudes lte-2 (arguments exacts limités aux valeurs remarquables ou non) et lte-9 (transformations z ↦ az + b)."
+				"remarque": "Incertitudes lte-2 (arguments exacts limités aux valeurs remarquables ou non) et lte-9 (transformations z ↦ az + b). → décisions lte-2 : remarquables ; lte-9 : via-module-argument."
 			},
 			"TEXP-264": {
 				"libelle": "Dans le cadre de la résolution de problème, utiliser les nombres complexes pour déterminer des ensembles de points",
@@ -1017,7 +1071,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-9 : transformations z ↦ az + b."
+				"remarque": "Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument."
 			},
 			"TEXP-265": {
 				"libelle": "Utiliser les racines de l'unité dans l'étude de configurations liées aux polygones réguliers",
@@ -1383,7 +1437,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-4 : quelles équations diophantiennes sont « simples »."
+				"remarque": "Incertitude lte-4 : quelles équations diophantiennes sont « simples ». → décision lte-4 : lineaires."
 			},
 			"TEXP-293": {
 				"libelle": "Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \\in \\mathbb{Z}^2$",
@@ -1717,7 +1771,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Lecture déduite (texte implicite) : « arêtes » et « chaîne » sont le vocabulaire des graphes non orientés ; l'orientation n'apparaît au BO que pour les chaînes de Markov. Voir lte-5."
+				"remarque": "Lecture déduite (texte implicite) : « arêtes » et « chaîne » sont le vocabulaire des graphes non orientés ; l'orientation n'apparaît au BO que pour les chaînes de Markov. Voir lte-5. → décision lte-5 : oriente-chemins."
 			},
 			"TEXP-313": {
 				"libelle": "Exemple du graphe complet",
@@ -1854,7 +1908,7 @@
 						"force": "déduite"
 					}
 				],
-				"remarque": "Lecture déduite (texte implicite) : le BO écrit « Opérations » sans liste ; la transposée et le déterminant n'apparaissent nulle part au BO. Voir lte-7 pour le déterminant d'ordre 2."
+				"remarque": "Lecture déduite (texte implicite) : le BO écrit « Opérations » sans liste ; la transposée et le déterminant n'apparaissent nulle part au BO. Voir lte-7 pour le déterminant d'ordre 2. → décision lte-7 : enonce."
 			},
 			"TEXP-320": {
 				"libelle": "Inverse d'une matrice carrée",
@@ -1867,7 +1921,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2)."
+				"remarque": "Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2). → décisions lte-6 : exact-3-adjacence-libre ; lte-7 : enonce."
 			},
 			"TEXP-321": {
 				"libelle": "Puissances d'une matrice carrée",
@@ -1883,7 +1937,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-6 : ordre des matrices."
+				"remarque": "Incertitude lte-6 : ordre des matrices. → décision lte-6 : exact-3-adjacence-libre."
 			},
 			"TEXP-322": {
 				"libelle": "Représentation matricielle : matrice d'adjacence d'un graphe",
@@ -1896,7 +1950,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices)."
+				"remarque": "Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices). → décisions lte-5 : oriente-chemins ; lte-6 : exact-3-adjacence-libre."
 			},
 			"TEXP-323": {
 				"libelle": "Représentation matricielle des transformations géométriques du plan",
@@ -1909,7 +1963,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-8 : quelles transformations."
+				"remarque": "Incertitude lte-8 : quelles transformations. → décision lte-8 : connues."
 			},
 			"TEXP-324": {
 				"libelle": "Représentation matricielle des systèmes linéaires",
@@ -1922,7 +1976,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-6 : taille des systèmes."
+				"remarque": "Incertitude lte-6 : taille des systèmes. → décision lte-6 : exact-3-adjacence-libre."
 			},
 			"TEXP-325": {
 				"libelle": "Représentation matricielle des suites récurrentes",
@@ -2103,7 +2157,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2)."
+				"remarque": "Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2). → décisions lte-6 : exact-3-adjacence-libre ; lte-7 : enonce."
 			},
 			"TEXP-339": {
 				"libelle": "Calculer les puissances d'une matrice carrée",
@@ -2116,7 +2170,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-6 : ordre des matrices."
+				"remarque": "Incertitude lte-6 : ordre des matrices. → décision lte-6 : exact-3-adjacence-libre."
 			},
 			"TEXP-340": {
 				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour résoudre un système linéaire",
@@ -2129,7 +2183,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitude lte-6 : taille des systèmes."
+				"remarque": "Incertitude lte-6 : taille des systèmes. → décision lte-6 : exact-3-adjacence-libre."
 			},
 			"TEXP-341": {
 				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une suite récurrente linéaire",
@@ -2155,7 +2209,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices)."
+				"remarque": "Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices). → décisions lte-5 : oriente-chemins ; lte-6 : exact-3-adjacence-libre."
 			},
 			"TEXP-343": {
 				"libelle": "Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : calculer des probabilités",

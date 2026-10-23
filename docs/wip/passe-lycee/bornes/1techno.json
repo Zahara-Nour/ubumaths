@@ -78,6 +78,54 @@
 				"borne": "« Algorithmique et programmation » : toutes les séries sauf STD2A ; « Activités géométriques » : série STD2A seulement.",
 				"source": "BO 1re techno p.4",
 				"force": "BO"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités totales : quelle partition en 1re techno ? : 1re : partition {A, Ā} seulement (arbre à deux niveaux) ; trois évènements et plus en Tle.",
+				"source": "Décision de David, 2026-10-23 (question l1t-1) ; d'après BO 2de p.13, BO 1re techno p.10, BO Tle techno p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Variations d'un polynôme de degré 3 sans discriminant : Dérivée factorisable sans discriminant : forme factorisée, racine évidente, ou racines données dans l'énoncé.",
+				"source": "Décision de David, 2026-10-23 (question l1t-2) ; d'après BO 1re techno p.8",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Automatismes : « privilégiant l'activité mentale » est-il une borne ? : Modalité d'enseignement, pas une borne : le grain du savoir fixe seul l'inclusion.",
+				"source": "Décision de David, 2026-10-23 (question l1t-3) ; d'après BO 1re techno p.6, BO Tle techno p.6",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Racines et coefficients non entiers du second degré en 1re techno : 1re : racines entières ou fractions simples (1/2, −4/3) ; paramètres littéraux exclus.",
+				"source": "Décision de David, 2026-10-23 (question l1t-4) ; d'après BO Tle techno p.6, BO 1re techno p.8",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Indépendance : le critère produit est-il permis ? : Critère produit admis (conséquence directe de P(A ∩ B) = P(A)·P_A(B), vu en 2de).",
+				"source": "Décision de David, 2026-10-23 (question l1t-5) ; d'après BO 1re techno p.9-10, BO 2de p.13",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Variable aléatoire : {X > a}, {X ⩾ a} en 1re techno ? : Admis : {X > a} est le contraire de {X ⩽ a}, et {X ⩾ a}, {X < a} s'y ramènent ; seules les écritures d'intervalle {a ⩽ X ⩽ b} restent hors point.",
+				"source": "Décision de David, 2026-10-23 (question l1t-6) ; d'après BO 1re techno p.10, BO 2de p.6",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Nombre dérivé : calcul algébrique de la limite du taux de variation ? : Admis sur des polynômes simples : taux de variation simplifié, puis h → 0 de façon intuitive.",
+				"source": "Décision de David, 2026-10-23 (question l1t-7) ; d'après BO 1re techno p.8, BO 1re techno p.9, BO Tle techno p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "STD2A : « d'autres notions si la situation le nécessite » : Inclusion stricte : seules les notions listées ; une autre notion relève de son propre point (ou d'aucun).",
+				"source": "Décision de David, 2026-10-23 (question l1t-8) ; d'après BO 1re techno p.5",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -201,7 +249,7 @@
 				"libelle": "Exemples de polygones réguliers",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-015": {
 				"libelle": "Exemples de frises",
@@ -214,7 +262,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-109": {
 				"libelle": "Exemples de pavages",
@@ -227,49 +275,49 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-016": {
 				"libelle": "Analyser des polygones réguliers à l'aide d'un motif élémentaire et de transformations du plan",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-110": {
 				"libelle": "Construire des polygones réguliers à l'aide d'un motif élémentaire et de transformations du plan",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-017": {
 				"libelle": "Calculer des distances associées aux polygones réguliers",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-111": {
 				"libelle": "Calculer des angles associés aux polygones réguliers",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-112": {
 				"libelle": "Calculer des aires associées aux polygones réguliers",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-113": {
 				"libelle": "Calculer des périmètres associés aux polygones réguliers",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-018": {
 				"libelle": "Créer une figure à partir d'un motif élémentaire par répétition d'une ou de deux transformations simples",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie plane",
 				"bornes": [],
-				"remarque": "Point-compétence : puce large sans grain questionnable (évaluation par compétences), aucune borne propre. Création de figure (« dialogue entre observation, analyse et création artistique », BO 1re techno p.5). Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Point-compétence : puce large sans grain questionnable (évaluation par compétences), aucune borne propre. Création de figure (« dialogue entre observation, analyse et création artistique », BO 1re techno p.5). Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-019": {
 				"libelle": "Analyser une frise et en rechercher un motif élémentaire",
@@ -282,7 +330,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-114": {
 				"libelle": "Analyser un pavage et en rechercher un motif élémentaire",
@@ -295,7 +343,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-020": {
 				"libelle": "Coordonnées d'un point dans un repère orthonormal de l'espace",
@@ -308,19 +356,19 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-021": {
 				"libelle": "Distance entre deux points",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-022": {
 				"libelle": "Perspective cavalière : projection sur un plan parallèlement à une droite",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-023": {
 				"libelle": "Propriétés conservées (milieux, contacts, rapports de longueurs) et non conservées (longueurs, angles) par une projection parallèle",
@@ -337,25 +385,25 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-024": {
 				"libelle": "Cylindres de révolution",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-025": {
 				"libelle": "Sections planes d'un cube",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-026": {
 				"libelle": "Sections planes d'un cylindre de révolution ; ellipses",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-027": {
 				"libelle": "Utiliser la représentation en perspective cavalière d'un quadrillage ou d'un cube pour représenter d'autres objets",
@@ -368,43 +416,43 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-028": {
 				"libelle": "Représenter en perspective des sections planes",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-115": {
 				"libelle": "Représenter en vraie grandeur des sections planes",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-029": {
 				"libelle": "Construire des sections planes de cubes",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-116": {
 				"libelle": "Construire des sections planes de cylindres de révolution",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-030": {
 				"libelle": "Construire un parallélogramme circonscrit à une ellipse",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-031": {
 				"libelle": "Construire l'image perspective d'un cercle à partir d'un carré circonscrit au cercle",
 				"rubrique": "Activités géométriques (série STD2A) > Géométrie dans l'espace",
 				"bornes": [],
-				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »)."
+				"remarque": "Voir l1t-8 (STD2A : « d'autres notions si la situation le nécessite »). → décision l1t-8 : strict."
 			},
 			"1TECHNO-139": {
 				"libelle": "Déterminer graphiquement le signe d'une fonction",
@@ -778,7 +826,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-4 (racines non entières)."
+				"remarque": "Voir l1t-4 (racines non entières). → décision l1t-4 : simples."
 			},
 			"1TECHNO-126": {
 				"libelle": "Signe d'un polynôme de degré 2 donné sous forme factorisée",
@@ -791,7 +839,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-4 (racines non entières)."
+				"remarque": "Voir l1t-4 (racines non entières). → décision l1t-4 : simples."
 			},
 			"1TECHNO-143": {
 				"libelle": "Modéliser la dépendance entre deux grandeurs à l'aide d'une fonction",
@@ -845,7 +893,7 @@
 				"libelle": "Vérifier qu'une valeur conjecturée est racine d'un polynôme de degré 2",
 				"rubrique": "Analyse > Fonctions de la variable réelle",
 				"bornes": [],
-				"remarque": "Voir l1t-4 (racines non entières)."
+				"remarque": "Voir l1t-4 (racines non entières). → décision l1t-4 : simples."
 			},
 			"1TECHNO-064": {
 				"libelle": "Savoir factoriser, dans des cas simples, une expression du second degré connaissant au moins une de ses racines",
@@ -858,7 +906,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-4 (racines non entières)."
+				"remarque": "Voir l1t-4 (racines non entières). → décision l1t-4 : simples."
 			},
 			"1TECHNO-065": {
 				"libelle": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour trouver ses racines",
@@ -871,7 +919,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-4 (racines non entières)."
+				"remarque": "Voir l1t-4 (racines non entières). → décision l1t-4 : simples."
 			},
 			"1TECHNO-066": {
 				"libelle": "Utiliser la forme factorisée (en produit de facteurs du premier degré) d'un polynôme de degré 2 pour étudier son signe",
@@ -884,7 +932,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Point référencé par les automatismes : voir l1t-3 (activité mentale) et l1t-4 (racines non entières)."
+				"remarque": "Point référencé par les automatismes : voir l1t-3 (activité mentale) et l1t-4 (racines non entières). → décisions l1t-3 : modalite ; l1t-4 : simples."
 			},
 			"1TECHNO-067": {
 				"libelle": "Calculer une valeur approchée d'une solution d'une équation par balayage",
@@ -913,7 +961,7 @@
 				"libelle": "Taux de variation en un point",
 				"rubrique": "Analyse > Dérivation",
 				"bornes": [],
-				"remarque": "Voir l1t-7 (calcul algébrique du taux de variation)."
+				"remarque": "Voir l1t-7 (calcul algébrique du taux de variation). → décision l1t-7 : algebrique."
 			},
 			"1TECHNO-069": {
 				"libelle": "Tangente à une courbe en un point, définie comme position limite des sécantes passant par ce point",
@@ -938,7 +986,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-7 (calcul algébrique du taux de variation)."
+				"remarque": "Voir l1t-7 (calcul algébrique du taux de variation). → décision l1t-7 : algebrique."
 			},
 			"1TECHNO-071": {
 				"libelle": "Équation réduite de la tangente en un point",
@@ -986,7 +1034,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-2 (dérivée de degré 2 sans racine évidente)."
+				"remarque": "Voir l1t-2 (dérivée de degré 2 sans racine évidente). → décision l1t-2 : evidentes."
 			},
 			"1TECHNO-076": {
 				"libelle": "Tableau de variations",
@@ -1044,7 +1092,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-2 (dérivée de degré 2 sans racine évidente)."
+				"remarque": "Voir l1t-2 (dérivée de degré 2 sans racine évidente). → décision l1t-2 : evidentes."
 			},
 			"1TECHNO-133": {
 				"libelle": "Déterminer les extrémums d'une fonction polynôme de degré inférieur ou égal à 3",
@@ -1057,7 +1105,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-2 (dérivée de degré 2 sans racine évidente)."
+				"remarque": "Voir l1t-2 (dérivée de degré 2 sans racine évidente). → décision l1t-2 : evidentes."
 			},
 			"1TECHNO-082": {
 				"libelle": "Nuage de points associé à une série statistique à deux variables quantitatives",
@@ -1126,25 +1174,25 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-5 (critère produit)."
+				"remarque": "Voir l1t-5 (critère produit). → décision l1t-5 : produit-admis."
 			},
 			"1TECHNO-090": {
 				"libelle": "Formule des probabilités totales",
 				"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
 				"bornes": [],
-				"remarque": "Contradiction : le BO de 2de (p.13) dit que le calcul d'une probabilité connaissant ses probabilités conditionnelles relatives à une partition « n'est pas un attendu » ; le BO de 1re techno inscrit la formule (p.10) ; le BO de Tle techno dit qu'on l'« introduit » en Tle (p.9). Voir l1t-1."
+				"remarque": "Contradiction : le BO de 2de (p.13) dit que le calcul d'une probabilité connaissant ses probabilités conditionnelles relatives à une partition « n'est pas un attendu » ; le BO de 1re techno inscrit la formule (p.10) ; le BO de Tle techno dit qu'on l'« introduit » en Tle (p.9). Voir l1t-1. → décision l1t-1 : deux."
 			},
 			"1TECHNO-091": {
 				"libelle": "Savoir utiliser l'indépendance de deux évènements",
 				"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
 				"bornes": [],
-				"remarque": "Voir l1t-5 (critère produit)."
+				"remarque": "Voir l1t-5 (critère produit). → décision l1t-5 : produit-admis."
 			},
 			"1TECHNO-134": {
 				"libelle": "Savoir justifier l'indépendance de deux évènements",
 				"rubrique": "Statistiques et probabilités > Probabilités conditionnelles : indépendance",
 				"bornes": [],
-				"remarque": "Voir l1t-5 (critère produit)."
+				"remarque": "Voir l1t-5 (critère produit). → décision l1t-5 : produit-admis."
 			},
 			"1TECHNO-092": {
 				"libelle": "Dans les cas simples, calculer une probabilité à l'aide de la formule des probabilités totales",
@@ -1157,7 +1205,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-1 (partition en deux ?)."
+				"remarque": "Voir l1t-1 (partition en deux ?). → décision l1t-1 : deux."
 			},
 			"1TECHNO-093": {
 				"libelle": "Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli",
@@ -1240,7 +1288,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-6 ({X > a}, {X ⩾ a})."
+				"remarque": "Voir l1t-6 ({X > a}, {X ⩾ a}). → décision l1t-6 : complement."
 			},
 			"1TECHNO-137": {
 				"libelle": "Calculer les probabilités $P(X = a)$, $P(X \\leqslant a)$",
@@ -1253,7 +1301,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir l1t-6 ({X > a}, {X ⩾ a})."
+				"remarque": "Voir l1t-6 ({X > a}, {X ⩾ a}). → décision l1t-6 : complement."
 			},
 			"1TECHNO-099": {
 				"libelle": "Calculer l'espérance d'une variable aléatoire discrète",

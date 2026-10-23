@@ -20,7 +20,9 @@
 		"reco": "liste-bo",
 		"pourquoi": "Le texte nouveau écrit une seule composée, t ↦ e^{at}, ce qui montre que les composées ont été pesées ; ajouter g(ax + b) serait ajouter une formule au BO. Les cas atteignables par les opérations listées restent dans le point.",
 		"consequence": "Avec « liste-bo », un modèle « dériver √(3x + 1) » ou « (2x − 5)⁴ » est refusé en 1re spé (il relève de la terminale, « Compléments sur la dérivation ») ; « dériver 1/(2x + 1) » ou « (3x − 1)² » est accepté.",
-		"info": false
+		"info": false,
+		"decision": "liste-bo",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1s-2",
@@ -44,7 +46,9 @@
 		"reco": "unitaire",
 		"pourquoi": "L'identité donnée par le BO, x² + 2ax = (x + a)² − a², s'applique telle quelle aux trinômes unitaires ; dès que le coefficient de x² vaut autre chose, il faut d'abord factoriser, ce qui rapproche du cas général. C'est la lecture la plus littérale.",
 		"consequence": "Avec « unitaire », un modèle qui tire a ≠ 1 (« forme canonique de 2x² − 6x + 1 ») est refusé dans 1SPE-246 ; « forme canonique de x² − 6x + 1 » est accepté.",
-		"info": false
+		"info": false,
+		"decision": "entiers",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1s-3",
@@ -71,7 +75,9 @@
 		"reco": "lecture",
 		"pourquoi": "La capacité dit « par lecture du cercle » et « pour des valeurs remarquables de x » : c'est numérique, sur le cercle. Les formules littérales d'angles associés ne sont pas écrites ; les fonctions sinus et cosinus (parité, périodicité) sont de terminale.",
 		"consequence": "Avec « lecture », un modèle « cos(5π/6) = ? » ou « sin(−7π/4) = ? » est accepté ; un modèle de simplification littérale « cos(π − x) + sin(π + x) » est refusé en 1re spé ; π/6 compris même s'il n'est pas dans les démonstrations.",
-		"info": false
+		"info": false,
+		"decision": "lecture",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1s-4",
@@ -91,7 +97,9 @@
 		"reco": "partition-finie",
 		"pourquoi": "Le contenu parle de « systèmes complets d'évènements » au pluriel, sans limite de taille ; « cas simples » vise plutôt la complexité du calcul (pas d'inconnue à retrouver) que le nombre de branches.",
 		"consequence": "Avec « deux-trois », un modèle à quatre machines est refusé dans 1SPE-340 ; avec « partition-finie », il est accepté tant qu'il ne demande qu'une application directe de la formule.",
-		"info": false
+		"info": false,
+		"decision": "partition-finie",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1s-5",
@@ -114,7 +122,9 @@
 		"reco": "consequences",
 		"pourquoi": "La capacité parle « des propriétés algébriques » au pluriel, et la notation eˣ n'a de sens qu'avec les règles des puissances (vues en 2de pour les exposants entiers) ; quotient et puissance entière découlent en une ligne des deux égalités écrites.",
 		"consequence": "Avec « consequences », un modèle « simplifier (e^{2x})³ / e^{x−1} » est accepté ; avec « deux-seulement », il est refusé et seuls les produits eᵃ·eᵇ et eˣ·e⁻ˣ restent.",
-		"info": false
+		"info": false,
+		"decision": "consequences",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1s-6",
@@ -132,7 +142,9 @@
 		"reco": "affine",
 		"pourquoi": "En 1re, une seule variable aléatoire est étudiée à la fois ; la somme X + Y suppose deux variables sur un même univers, objet du chapitre de terminale. Aucune formule de variance n'est écrite en 1re hors König-Huygens.",
 		"consequence": "Avec « affine », un modèle « E(X + Y) » ou « V(3X) » est refusé en 1re spé et rattaché à la terminale ; « E(2X + 5) » est accepté dans 1SPE-351.",
-		"info": false
+		"info": false,
+		"decision": "affine",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1s-7",
@@ -152,7 +164,9 @@
 		"reco": "mental",
 		"pourquoi": "Le BO assigne aux automatismes une finalité de rapidité et d'activité mentale ; un calcul qui exige la calculatrice change la nature de l'exercice. « Privilégiant » laisse une marge, d'où la question.",
 		"consequence": "Avec « mental », un modèle d'automatisme qui tire des coordonnées à deux décimales est refusé dans 1SPE-434 ; le même modèle avec des coordonnées entières est accepté.",
-		"info": false
+		"info": false,
+		"decision": "mental",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-1",
@@ -169,7 +183,9 @@
 		"reco": "cos-et-sin",
 		"pourquoi": "« Du type » désigne une famille d'équations résolues de la même façon sur le cercle trigonométrique, où sinus et cosinus sont lus ensemble depuis la 1re ; mais le texte ne cite que cos, d'où la question.",
 		"consequence": "Avec cos-seul, tout modèle en sin(x) = a (ou sin(x) ⩽ a) rattaché à TSPE-457/458 est refusé ; avec cos-et-sin il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "cos-et-sin",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-2",
@@ -189,7 +205,9 @@
 		"reco": "libre",
 		"pourquoi": "La virgule sépare deux compléments ; l'équation sur ℝ s'écrit par périodicité, notion du même chapitre (TSPE-598). Lecture grammaticale incertaine, d'où la question.",
 		"consequence": "Avec moins-pi-pi, un modèle « cos(x) = 1/2 dans ℝ » ou « sur [0 ; 2π] » est refusé ; avec libre il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "libre",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-3",
@@ -206,7 +224,9 @@
 		"reco": "remarquables",
 		"pourquoi": "Sans arccos, une solution exacte n'existe que pour les valeurs remarquables ; le cercle trigonométrique est l'outil désigné.",
 		"consequence": "Avec remarquables, un modèle tirant a = 0,3 et attendant x ≈ 1,266 est refusé ; avec quelconques il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "remarquables",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-4",
@@ -223,7 +243,9 @@
 		"reco": "quatre-sens",
 		"pourquoi": "Changer le sens ne change pas la méthode (lecture sur le cercle) ; c'est la lecture déjà retenue pour le cycle 4.",
 		"consequence": "Avec inferieur, un modèle « cos(x) > 1/2 sur [−π, π] » est refusé ; avec quatre-sens il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "quatre-sens",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-5",
@@ -252,7 +274,9 @@
 		"reco": "toutes",
 		"pourquoi": "Le découpage n'est pas un plan de cours et la capacité de dérivation (TSPE-415) parle des « fonctions de référence » sans restriction ; mais la liste écrite de la section est celle de 1re.",
 		"consequence": "Avec premiere, un modèle ln(x)/x ou (sin x)/x rattaché à TSPE-580/582 est refusé (il doit viser TSPE-443 ou rester sans point) ; avec toutes il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "premiere",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-6",
@@ -273,7 +297,9 @@
 		"reco": "trois-simple",
 		"pourquoi": "Décider si trois vecteurs forment une base ou décomposer un vecteur conduit naturellement à trois inconnues ; « cas simples » et l'absence d'étude générale excluent la méthode générale.",
 		"consequence": "Avec trois-simple, un modèle tirant un système 3 × 3 à coefficients tous non nuls est refusé ; un système triangulaire ou à substitution directe est accepté.",
-		"info": false
+		"info": false,
+		"decision": "trois-simple",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-7",
@@ -293,7 +319,9 @@
 		"reco": "approf",
 		"pourquoi": "Les deux passages ne se contredisent que si l'attendu inclut la détermination ; les lire ensemble laisse à l'attendu la traduction et la décision.",
 		"consequence": "Avec approf, un modèle demandant la représentation paramétrique de P ∩ P′ ne peut viser que TSPE-374 ; un modèle « P et P′ sont-ils sécants ? » ou « intersection de la droite d et du plan P » reste dans TSPE-567.",
-		"info": false
+		"info": false,
+		"decision": "approf",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-8",
@@ -313,7 +341,9 @@
 		"reco": "verifier",
 		"pourquoi": "La capacité sur l'équation de plan suppose le vecteur normal connu ; le déterminer est exactement l'approfondissement nommé.",
 		"consequence": "Avec verifier, un modèle « trouver un vecteur normal à (ABC) » ne peut viser que TSPE-375 ; « montrer que n(1 ; 2 ; −1) est normal à (ABC) » reste attendu.",
-		"info": false
+		"info": false,
+		"decision": "verifier",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lts-9",
@@ -331,7 +361,9 @@
 		"reco": "ln-positif",
 		"pourquoi": "Le texte écrit n ∈ ℤ sans exclure −1 et ln′ = 1/x est au programme ; ln|x| n'apparaît nulle part.",
 		"consequence": "Avec ln-positif, un modèle « primitive de 3/x sur ]0 ; +∞[ » est accepté et un modèle attendant ln|x| sur ]−∞ ; 0[ est refusé.",
-		"info": false
+		"info": false,
+		"decision": "ln-positif",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-1",
@@ -354,7 +386,9 @@
 		"reco": "premier-degre",
 		"pourquoi": "Le mot « simple », à côté de « équation linéaire az = b » juste au-dessus, appelle le premier degré ; les équations du second degré en z sont rangées ailleurs (coefficients réels seulement, p.7).",
 		"consequence": "Avec premier-degre, un modèle « 2z + i z̄ = 3 − i » est accepté et un modèle « z² + z̄ = 0 » refusé ; avec systeme-simple, les deux sont acceptés.",
-		"info": false
+		"info": false,
+		"decision": "premier-degre",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-2",
@@ -377,7 +411,9 @@
 		"reco": "remarquables",
 		"pourquoi": "Sans fonction réciproque au programme, la seule façon d'écrire un argument exact est de reconnaître une valeur remarquable ; une valeur approchée suppose un outil que le BO ne nomme pas.",
 		"consequence": "Avec remarquables, un modèle qui tire z = a + ib au hasard et demande un argument est refusé ; il doit tirer |z| et un angle multiple de π/6 ou π/4. Avec approche, il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "remarquables",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-3",
@@ -400,7 +436,9 @@
 		"reco": "donnee",
 		"pourquoi": "« Connue » dit que la racine est disponible au départ ; la recherche de racine évidente est écrite pour le second degré, pas ici.",
 		"consequence": "Avec donnee, un modèle qui ne donne pas la racine est refusé ; avec evidente, il est accepté si la racine est un petit entier.",
-		"info": false
+		"info": false,
+		"decision": "donnee",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-4",
@@ -420,7 +458,9 @@
 		"reco": "lineaires",
 		"pourquoi": "Les outils du chapitre (Bézout, Gauss) visent ax + by = c ; les équations non linéaires nommées par le BO (triplets pythagoriciens, Pell-Fermat) sont des problèmes possibles, pas des attendus.",
 		"consequence": "Avec lineaires, un modèle « x² − y² = 15 » est refusé dans TEXP-292 ; avec factorisables, il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "lineaires",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-5",
@@ -444,7 +484,9 @@
 		"reco": "oriente-chemins",
 		"pourquoi": "Les deux textes sont le BO ; « chemin » et la démonstration sur la matrice d'adjacence valent pour un graphe orienté comme non orienté, alors que le vocabulaire des contenus est non orienté.",
 		"consequence": "Avec oriente-chemins, un modèle de comptage de chemins sur un graphe orienté est accepté, un modèle « degré entrant d'un sommet » refusé ; avec non-oriente, les deux sont refusés.",
-		"info": false
+		"info": false,
+		"decision": "oriente-chemins",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-6",
@@ -477,7 +519,9 @@
 		"reco": "exact-3-adjacence-libre",
 		"pourquoi": "Le seul ordre écrit (2 ou 3) porte sur des calculs ; un graphe à 3 sommets rendrait le comptage de chemins sans intérêt, et le BO parle d'utiliser des logiciels de calcul (p.3).",
 		"consequence": "Avec la recommandation, un modèle « inverser une matrice 4 × 4 » est refusé et un modèle « chemins dans un graphe à 5 sommets, calculatrice » accepté ; avec ordre-3, les deux sont refusés.",
-		"info": false
+		"info": false,
+		"decision": "exact-3-adjacence-libre",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-7",
@@ -497,7 +541,9 @@
 		"reco": "enonce",
 		"pourquoi": "Exiger une formule que le BO ne nomme pas serait une borne inventée ; la donner dans l'énoncé reste dans le point.",
 		"consequence": "Avec enonce, un modèle dont la correction s'appuie sur ad − bc sans le rappeler est refusé ; il doit donner la formule ou faire vérifier un produit égal à I.",
-		"info": false
+		"info": false,
+		"decision": "enonce",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-8",
@@ -520,7 +566,9 @@
 		"reco": "connues",
 		"pourquoi": "Nommer une rotation sans la définir suppose un savoir que les programmes en vigueur ne donnent plus ; la définir dans l'énoncé reste possible.",
 		"consequence": "Avec connues, un modèle « matrice de la rotation d'angle π/2 » est refusé sauf si l'énoncé donne x' = −y, y' = x ; avec lineaires, il est accepté.",
-		"info": false
+		"info": false,
+		"decision": "connues",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "lte-9",
@@ -540,6 +588,8 @@
 		"reco": "via-module-argument",
 		"pourquoi": "La mention historique n'est pas un contenu ; mais une question sur le module et l'argument de (z' − ω)/(z − ω) reste dans « calculer des longueurs, des angles ».",
 		"consequence": "Avec via-module-argument, un modèle « montrer que OM' = OM et (OM, OM') = π/2 si z' = iz » est accepté, un modèle « reconnaître une rotation » refusé ; avec refus, les deux sont refusés.",
-		"info": false
+		"info": false,
+		"decision": "via-module-argument",
+		"decide_le": "2026-10-23"
 	}
 ]

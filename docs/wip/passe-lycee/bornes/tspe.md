@@ -33,7 +33,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 3. **Fonctions de référence des limites** (p.9) : la section « Limites » cite les seules fonctions de 1re, alors que ln, sin et cos sont étudiés dans la même année et que le découpage n'est « pas un plan de cours ». → lts-5.
 4. **x ↦ xⁿ pour n ∈ ℤ** (p.11) : la liste des primitives inclut n = −1, dont la primitive est ln, sans parler de ln|x|. → lts-9.
 
-## Questions ouvertes
+## Questions (tranchées par David)
 
 `questions-spe.json` : lts-1 (sinus), lts-2 (intervalle de cos(x) = a), lts-3 (valeurs de a), lts-4 (sens de l'inéquation), lts-5 (limites avec ln, sin, cos), lts-6 (taille des systèmes), lts-7 (intersection de deux plans), lts-8 (vecteur normal à (ABC)), lts-9 (primitive de 1/x).
 
@@ -57,6 +57,15 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 - Probabilités : univers finis, variables aléatoires finies. — _BO Tle spé p.12_ (BO)
 - Variables aléatoires indépendantes : toujours envisagées dans le cadre de la succession d'épreuves indépendantes (indépendance mutuelle) ; toute question visant à justifier l'indépendance de variables données a priori est hors programme. La relation E(XY) = E(X)E(Y) n'est pas un attendu. — _BO Tle spé p.12-13_ (BO)
 - Algorithmique : aucune notion nouvelle par rapport à la 2de et à la 1re (langage naturel ou Python, affectation notée ←) ; on se limite aux listes, sans autre type de collection. — _BO Tle spé p.4_ (BO)
+- Équations et inéquations en sinus : « Du type » couvre aussi sin(x) = a et sin(x) ⩽ a. — _Décision de David, 2026-10-23 (question lts-1) ; d'après BO Tle spé p.11_ (décision)
+- Intervalle de résolution de cos(x) = a : Équation sur ℝ ou sur tout intervalle donné ; [−π, π] pour l'inéquation seulement. — _Décision de David, 2026-10-23 (question lts-2) ; d'après BO Tle spé p.11_ (décision)
+- Valeurs de a dans cos(x) = a : a parmi les valeurs remarquables, solutions exactes. — _Décision de David, 2026-10-23 (question lts-3) ; d'après BO Tle spé p.11, BO Tle spé p.10_ (décision)
+- Sens de l'inéquation en cosinus : Les quatre sens (⩽, <, ⩾, >). — _Décision de David, 2026-10-23 (question lts-4) ; d'après BO Tle spé p.11_ (décision)
+- Limites faisant intervenir ln, sin, cos : Seulement celles de 1re ; les limites en ln relèvent de TSPE-441/443. — _Décision de David, 2026-10-23 (question lts-5) ; d'après BO Tle spé p.9_ (décision)
+- Taille des systèmes linéaires « dans des cas simples » : Jusqu'à trois inconnues, résolubles par substitution (une équation au moins à une ou deux inconnues). — _Décision de David, 2026-10-23 (question lts-6) ; d'après BO Tle spé p.7_ (décision)
+- Intersection de deux plans : attendu ou approfondissement : Attendu : traduire et décider (plans sécants, parallèles, confondus, droite ∩ plan) ; déterminer la droite d'intersection = TSPE-374 seulement. — _Décision de David, 2026-10-23 (question lts-7) ; d'après BO Tle spé p.7_ (décision)
+- Vecteur normal à un plan défini par trois points : Attendu : vérifier qu'un vecteur donné est normal à (ABC) ; le déterminer = TSPE-375. — _Décision de David, 2026-10-23 (question lts-8) ; d'après BO Tle spé p.7_ (décision)
+- Primitive de x ↦ 1/x : n = −1 inclus, sur ]0 ; +∞[ seulement (primitive ln x ; u′/u avec u > 0). — _Décision de David, 2026-10-23 (question lts-9) ; d'après BO Tle spé p.11_ (décision)
 
 ### Algèbre et géométrie > Combinatoire et dénombrement
 
@@ -283,7 +292,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 - **TSPE-372** — Dans des cas simples, résoudre le système obtenu
   - Résolution dans des cas simples seulement. — _BO Tle spé p.7_ (BO)
   - Exemples de systèmes linéaires dans le seul contexte géométrique ; étude générale des systèmes hors programme. — _BO Tle spé p.5_ (BO)
-  - ⚠ « Cas simples » non précisé : taille des systèmes en question (lts-6).
+  - ⚠ « Cas simples » non précisé : taille des systèmes en question (lts-6). → décision lts-6 : trois-simple.
 - **TSPE-373** — Équation cartésienne du plan normal au vecteur $\vec{n}$ et passant par le point $A$
   - Démontrer l'équation cartésienne du plan normal à n passant par A. — _BO Tle spé p.7_ (BO)
 - **TSPE-374** — Déterminer l'intersection de deux plans
@@ -305,7 +314,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - Traduire par un système : alignement, colinéarité, parallélisme, coplanarité, intersection et orthogonalité de droites ou de plans. — _BO Tle spé p.7_ (BO)
   - Exemples de systèmes linéaires dans le seul contexte géométrique ; étude générale des systèmes hors programme. — _BO Tle spé p.5_ (BO)
   - Repère de l'espace supposé orthonormé. — _BO Tle spé p.7_ (BO)
-  - ⚠ Voir les questions lts-7 (intersection de deux plans, approfondissement) et lts-8 (vecteur orthogonal à deux vecteurs, approfondissement).
+  - ⚠ Voir les questions lts-7 (intersection de deux plans, approfondissement) et lts-8 (vecteur orthogonal à deux vecteurs, approfondissement). → décisions lts-7 : approf ; lts-8 : verifier.
 - **TSPE-568** — Dans des cas simples, interpréter géométriquement les solutions du système obtenu
   - Interprétation géométrique des solutions (point, droite, plan, aucun). — _BO Tle spé p.7_ (BO)
   - Exemples de systèmes linéaires dans le seul contexte géométrique ; étude générale des systèmes hors programme. — _BO Tle spé p.5_ (BO)
@@ -394,7 +403,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - Fonctions construites simplement à partir des fonctions de référence (opérations algébriques et composition). — _BO Tle spé p.9_ (BO)
 - **TSPE-415** — Déterminer les limites d'une fonction construite simplement à partir des fonctions de référence
   - Fonctions construites simplement à partir des fonctions de référence (opérations algébriques et composition). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-416** — Étudier les variations d'une fonction construite simplement à partir des fonctions de référence
   - Fonctions construites simplement à partir des fonctions de référence (opérations algébriques et composition). — _BO Tle spé p.9_ (BO)
 - **TSPE-417** — Démontrer des inégalités en utilisant la convexité d'une fonction
@@ -522,10 +531,10 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - Traduction graphique de la parité. — _BO Tle spé p.11_ (BO)
 - **TSPE-457** — Résoudre une équation du type $\cos(x) = a$
   - Équation du type cos(x) = a. — _BO Tle spé p.11_ (BO)
-  - ⚠ Sinus (lts-1), intervalle de résolution (lts-2) et valeurs de a (lts-3) en question.
+  - ⚠ Sinus (lts-1), intervalle de résolution (lts-2) et valeurs de a (lts-3) en question. → décisions lts-1 : cos-et-sin ; lts-2 : libre ; lts-3 : remarquables.
 - **TSPE-458** — Résoudre une inéquation de la forme $\cos(x) \leqslant a$ sur $[-\pi, \pi]$
   - Inéquation de la forme cos(x) ⩽ a, sur [−π, π]. — _BO Tle spé p.11_ (BO)
-  - ⚠ Sinus (lts-1), valeurs de a (lts-3) et sens de l'inégalité (lts-4) en question.
+  - ⚠ Sinus (lts-1), valeurs de a (lts-3) et sens de l'inégalité (lts-4) en question. → décisions lts-1 : cos-et-sin ; lts-3 : remarquables ; lts-4 : quatre-sens.
 - **TSPE-459** — Dans le cadre de la résolution de problème, notamment géométrique, étudier une fonction simple définie à partir de fonctions trigonométriques, pour déterminer des variations, un optimum
   - Fonction simple définie à partir des fonctions trigonométriques ; but : variations, optimum. — _BO Tle spé p.11_ (BO)
 - **TSPE-460** — Fonction tangente
@@ -556,11 +565,11 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 - **TSPE-402** — Déterminer dans des cas simples la limite d'une suite, en utilisant les limites usuelles
   - Limite d'une suite, cas simples, par les limites usuelles. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-403** — Déterminer dans des cas simples la limite d'une fonction en un point, en $\pm\infty$, en utilisant les limites usuelles
   - Limite d'une fonction en un point ou en ±∞, cas simples, par les limites usuelles. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-404** — Faire le lien entre l'existence d'une asymptote parallèle à un axe et celle de la limite correspondante
   - Asymptotes parallèles à un axe seulement (horizontale ↔ limite finie en ±∞ ; verticale ↔ limite infinie en un point). — _BO Tle spé p.9_ (BO)
 - **TSPE-405** — Croissance comparée de $x \mapsto x^n$ et $\exp$ en $+\infty$
@@ -578,35 +587,35 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
 - **TSPE-576** — Déterminer dans des cas simples la limite d'une suite, en utilisant les croissances comparées
   - Limite d'une suite, cas simples, par les croissances comparées. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-577** — Déterminer dans des cas simples la limite d'une suite, en utilisant les opérations sur les limites
   - Limite d'une suite, cas simples, par les opérations sur les limites. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-578** — Déterminer dans des cas simples la limite d'une suite, en utilisant des majorations, minorations ou encadrements
   - Limite d'une suite, cas simples, par majoration, minoration ou encadrement. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-579** — Déterminer dans des cas simples la limite d'une suite, en utilisant la factorisation du terme prépondérant dans une somme
   - Limite d'une suite, cas simples, par factorisation du terme prépondérant d'une somme. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-580** — Déterminer dans des cas simples la limite d'une fonction en un point, en $\pm\infty$, en utilisant les croissances comparées
   - Limite d'une fonction, cas simples, par les croissances comparées. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-581** — Déterminer dans des cas simples la limite d'une fonction en un point, en $\pm\infty$, en utilisant les opérations sur les limites
   - Limite d'une fonction, cas simples, par les opérations sur les limites (composition en contexte). — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-582** — Déterminer dans des cas simples la limite d'une fonction en un point, en $\pm\infty$, en utilisant des majorations, minorations ou encadrements
   - Limite d'une fonction, cas simples, par majoration, minoration ou encadrement. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-583** — Déterminer dans des cas simples la limite d'une fonction en un point, en $\pm\infty$, en utilisant la factorisation du terme prépondérant dans une somme
   - Limite d'une fonction, cas simples, par factorisation du terme prépondérant d'une somme. — _BO Tle spé p.9_ (BO)
   - Cas simples ; limites usuelles des fonctions de référence de 1re (puissances entières, racine carrée, exponentielle). — _BO Tle spé p.9_ (BO)
-  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5).
+  - ⚠ Les fonctions admises au-delà de celles de 1re (ln, sin, cos) sont en question (lts-5). → décision lts-5 : premiere.
 - **TSPE-584** — Branches infinies
   - Branches infinies (approfondissement possible). — _BO Tle spé p.9_ (BO)
 
@@ -619,7 +628,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - Primitive d'une fonction continue sur un intervalle (existence admise ici, démontrée en calcul intégral) ; pour certaines fonctions, pas de primitive explicite. — _BO Tle spé p.11_ (BO)
 - **TSPE-463** — Primitives des fonctions de référence : $x \mapsto x^n$ pour $n \in \mathbb{Z}$
   - Primitives de x ↦ xⁿ, n ∈ ℤ. — _BO Tle spé p.11_ (BO)
-  - ⚠ Cas n = −1 (primitive ln) en question (lts-9).
+  - ⚠ Cas n = −1 (primitive ln) en question (lts-9). → décision lts-9 : ln-positif.
 - **TSPE-464** — Équation différentielle $y' = ay$, où $a$ est un nombre réel
   - y′ = ay avec a réel. — _BO Tle spé p.11_ (BO)
 - **TSPE-465** — Allure des courbes des solutions de l'équation différentielle $y' = ay$
@@ -628,7 +637,7 @@ Les points « approfondissement » du BO (« en aucun cas obligatoires », p.3) 
   - y′ = ay + b, a et b réels (a ≠ 0 pour la résolution). — _BO Tle spé p.11_ (BO)
 - **TSPE-467** — Calculer une primitive en utilisant les primitives de référence
   - Primitives de référence : xⁿ (n ∈ ℤ), 1/√x, exp, sin, cos. — _BO Tle spé p.11_ (BO)
-  - ⚠ Cas n = −1 en question (lts-9).
+  - ⚠ Cas n = −1 en question (lts-9). → décision lts-9 : ln-positif.
 - **TSPE-468** — Calculer une primitive en utilisant les fonctions de la forme $(v' \circ u) \times u'$
   - Fonctions de la forme (v′ ∘ u) × u′, v primitive de référence. — _BO Tle spé p.11_ (BO)
   - Primitives de référence : xⁿ (n ∈ ℤ), 1/√x, exp, sin, cos. — _BO Tle spé p.11_ (BO)

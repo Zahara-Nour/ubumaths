@@ -311,7 +311,9 @@
 		"reco": "les-deux",
 		"pourquoi": "La caractérisation par le produit s'obtient en une ligne depuis la définition et P(A ∩ B) = P(B) × P_B(A), déjà au programme de 2de ; « justifier » laisse le choix de la méthode.",
 		"consequence": "Avec « les-deux » : le modèle cité est accepté (justification par 0,4 × 0,5 = 0,2). Avec « definition » : il doit être reformulé pour faire calculer P_B(A).",
-		"info": false
+		"info": false,
+		"decision": "les-deux",
+		"decide_le": "2026-10-23"
 	},
 	{
 		"id": "l1g-2",
@@ -328,6 +330,8 @@
 		"reco": "n4",
 		"pourquoi": "Le BO dit que les contenus ne sont exigibles que « mobilisés dans les capacités attendues » ; la seule capacité qui mobilise ce contenu borne n à 4.",
 		"consequence": "Avec « n4 » : le modèle à 6 lancers est refusé en 1re ES (la 1re spécialité borne aussi n ⩽ 4 ; il relève de la terminale). Avec « libre » : il est accepté dans 1GEN-010.",
-		"info": false
+		"info": false,
+		"decision": "n4",
+		"decide_le": "2026-10-23"
 	}
 ]

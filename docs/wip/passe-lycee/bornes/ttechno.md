@@ -33,18 +33,18 @@ Aucun document d'accompagnement n'est disponible pour ces programmes : aucun n'e
 4. **Probabilités totales** : la Tle dit les « introduire » (p.9) alors que la 1re techno les a déjà (p.10). → l1t-1.
 5. **Suites géométriques** : « à termes strictement positifs » en 1re (p.7), « à termes positifs » en Tle (p.7). Sans effet pratique.
 
-## Questions ouvertes
+## Questions (tranchées par David)
 
 Les incertitudes sont dans `questions-techno.json` (sans décision) :
 
-- **l1t-1** — Probabilités totales : quelle partition en 1re techno ? (reco : `deux`).
-- **l1t-3** — Automatismes : « privilégiant l'activité mentale » est-il une borne ? (reco : `modalite`).
-- **ltt-1** — log(aˣ) = x·log(a) pour x réel ? (reco : `reel-dans-resolution`).
-- **ltt-2** — Loi binomiale : contraire et P(X ⩽ k) quelconque (reco : `reunion-contraire`).
-- **ltt-3** — Coefficients binomiaux au-delà de n = 10 (reco : `dix`).
-- **ltt-4** — Combinaisons linéaires avec l'inverse : forme quotient admise ? (reco : `equivalente`).
-- **ltt-5** — Probabilités totales en Tle : partition en plus de trois évènements ? (reco : `finie`).
-- **ltt-6** — Fonction inverse aux bornes : notation lim ? (reco : `notation`).
+- **l1t-1** — Probabilités totales : quelle partition en 1re techno ? (reco : `deux`). → **deux** (2026-10-23)
+- **l1t-3** — Automatismes : « privilégiant l'activité mentale » est-il une borne ? (reco : `modalite`). → **modalite** (2026-10-23)
+- **ltt-1** — log(aˣ) = x·log(a) pour x réel ? (reco : `reel-dans-resolution`). → **reel-dans-resolution** (2026-10-23)
+- **ltt-2** — Loi binomiale : contraire et P(X ⩽ k) quelconque (reco : `reunion-contraire`). → **reunion-contraire** (2026-10-23)
+- **ltt-3** — Coefficients binomiaux au-delà de n = 10 (reco : `dix`). → **dix** (2026-10-23)
+- **ltt-4** — Combinaisons linéaires avec l'inverse : forme quotient admise ? (reco : `equivalente`). → **equivalente** (2026-10-23)
+- **ltt-5** — Probabilités totales en Tle : partition en plus de trois évènements ? (reco : `finie`). → **finie** (2026-10-23)
+- **ltt-6** — Fonction inverse aux bornes : notation lim ? (reco : `notation`). → **notation** (2026-10-23)
 
 ## Terminale technologique (92 points, 59 avec une borne propre)
 
@@ -57,6 +57,14 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - Programmation : Python ou tableur. — _BO Tle techno p.5_ (BO)
 - Automatismes de Tle : nature des nombres plus complexe (entiers, fractions ou paramètres : x² − 9, x² − 4/9, 4x² − k²), enchaînement de plusieurs automatismes, changements de registre (signe de −2(x − 1)(x − 3) par l'image mentale de la courbe). — _BO Tle techno p.6_ (BO)
 - Variables aléatoires discrètes finies : espérance seulement, ni variance ni écart type (absents du programme). — _BO Tle techno p.10_ (déduite)
+- Probabilités totales : quelle partition en 1re techno ? : 1re : partition {A, Ā} seulement (arbre à deux niveaux) ; trois évènements et plus en Tle. — _Décision de David, 2026-10-23 (question l1t-1) ; d'après BO 2de p.13, BO 1re techno p.10, BO Tle techno p.9_ (décision)
+- Automatismes : « privilégiant l'activité mentale » est-il une borne ? : Modalité d'enseignement, pas une borne : le grain du savoir fixe seul l'inclusion. — _Décision de David, 2026-10-23 (question l1t-3) ; d'après BO 1re techno p.6, BO Tle techno p.6_ (décision)
+- log(aˣ) = x·log(a) pour x réel ? : x réel admis dans les résolutions (aˣ = b, aˣ < b, xᵃ = b) ; les transformations pures (TTECHNO-082, 044) restent à n entier naturel. — _Décision de David, 2026-10-23 (question ltt-1) ; d'après BO Tle techno p.8, BO Tle techno p.9_ (décision)
+- Loi binomiale : contraire et P(X ⩽ k) quelconque : Réunions de ces évènements et leurs contraires (P(X ⩾ 2), P(X ⩽ n − 2)) ; pas de P(X ⩽ k) général à la calculatrice. — _Décision de David, 2026-10-23 (question ltt-2) ; d'après BO Tle techno p.10, BO 2de p.6_ (décision)
+- Coefficients binomiaux au-delà de n = 10 : L'élève calcule un coefficient seulement si n ⩽ 10 ; au-delà, l'énoncé le donne. — _Décision de David, 2026-10-23 (question ltt-3) ; d'après BO Tle techno p.10_ (décision)
+- Combinaisons linéaires avec l'inverse : forme quotient admise ? : Toute expression égale à P(x) + k/x (deg P ⩽ 3), y compris (P(x))/x ; pas de 1/(x − a) ni de quotient général. — _Décision de David, 2026-10-23 (question ltt-4) ; d'après BO Tle techno p.9_ (décision)
+- Probabilités totales en Tle : partition en plus de trois évènements ? : Toute partition finie (la limite à deux ou trois porte sur la démonstration). — _Décision de David, 2026-10-23 (question ltt-5) ; d'après BO Tle techno p.10_ (décision)
+- Fonction inverse aux bornes : notation lim ? : Notation lim admise pour 1/x et ses combinaisons simples (k/x, a + k/x), sans opérations générales sur les limites. — _Décision de David, 2026-10-23 (question ltt-6) ; d'après BO Tle techno p.9, BO 1re techno p.9_ (décision)
 
 ### Activités géométriques (série STD2A) > Géométrie plane
 
@@ -169,39 +177,39 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - **TTECHNO-042** — Propriétés algébriques : $\log(ab) = \log(a) + \log(b)$, pour $a$ et $b$ réels strictement positifs — _hérite des bornes générales_
 - **TTECHNO-082** — Propriétés algébriques : $\log(a^n) = n\log(a)$, pour $n$ entier naturel, $a$ réel strictement positif
   - n entier naturel (le BO montre aussi la propriété « pour de petites valeurs de n » à partir du logarithme d'un produit). — _BO Tle techno p.8-9_ (BO)
-  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel).
+  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution.
 - **TTECHNO-083** — Propriétés algébriques : $\log\left(\frac{a}{b}\right) = \log(a) - \log(b)$, pour $a$ et $b$ réels strictement positifs — _hérite des bornes générales_
 - **TTECHNO-043** — Utiliser le logarithme décimal pour résoudre une équation du type $a^x = b$ ou $x^a = b$ d'inconnue $x$ réelle
   - Équations du type aˣ = b ou xᵃ = b, d'inconnue x réelle. — _BO Tle techno p.8_ (BO)
-  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel).
+  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution.
 - **TTECHNO-084** — Utiliser le logarithme décimal pour résoudre une inéquation du type $a^x < b$ ou $x^a < b$ d'inconnue $x$ réelle
   - Inéquations du type aˣ < b ou xᵃ < b, d'inconnue x réelle. — _BO Tle techno p.8_ (BO)
-  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel).
+  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution.
 - **TTECHNO-085** — Utiliser le logarithme décimal pour résoudre une inéquation du type $a^n < b$ d'inconnue $n$ entier naturel
   - Inconnue n entière naturelle (ex. nombre d'annuités). — _BO Tle techno p.8-9_ (BO)
-  - ⚠ Voir ltt-1.
+  - ⚠ Voir ltt-1. → décision ltt-1 : reel-dans-resolution.
 - **TTECHNO-044** — Utiliser les propriétés algébriques de la fonction logarithme décimal pour transformer des expressions numériques ou littérales — _hérite des bornes générales_
-  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel).
+  - ⚠ Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution.
 
 ### Analyse > Fonction inverse
 
 - **TTECHNO-045** — Comportement de la fonction inverse aux bornes de son ensemble de définition
   - Approche intuitive, en lien avec l'ordre de grandeur des inverses de petits ou de grands nombres et l'allure de la courbe. — _BO Tle techno p.9_ (BO)
-  - ⚠ Voir ltt-6 (notation lim).
+  - ⚠ Voir ltt-6 (notation lim). → décision ltt-6 : notation.
 - **TTECHNO-046** — Dérivée de la fonction inverse
   - Dérivée de x ↦ 1/x obtenue en réinvestissant la définition du nombre dérivé (taux de variation). — _BO Tle techno p.9_ (BO)
 - **TTECHNO-047** — Sens de variation de la fonction inverse — _hérite des bornes générales_
 - **TTECHNO-048** — Courbe représentative de la fonction inverse — _hérite des bornes générales_
 - **TTECHNO-086** — Asymptotes de la courbe représentative de la fonction inverse
   - Aucune définition de l'asymptote : approche intuitive. — _BO Tle techno p.9_ (BO)
-  - ⚠ Voir ltt-6 (notation lim).
+  - ⚠ Voir ltt-6 (notation lim). → décision ltt-6 : notation.
 - **TTECHNO-049** — Étudier des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3
   - Combinaisons linéaires de x ↦ 1/x et de polynômes de degré ≤ 3 seulement. — _BO Tle techno p.9_ (BO)
   - Contextes : prix unitaire, coût moyen. — _BO Tle techno p.9_ (BO)
-  - ⚠ Voir ltt-4 (forme quotient, ex. coût moyen (x² + 2x + 100)/x).
+  - ⚠ Voir ltt-4 (forme quotient, ex. coût moyen (x² + 2x + 100)/x). → décision ltt-4 : equivalente.
 - **TTECHNO-087** — Représenter des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3
   - Combinaisons linéaires de x ↦ 1/x et de polynômes de degré ≤ 3 seulement. — _BO Tle techno p.9_ (BO)
-  - ⚠ Voir ltt-4 (forme quotient).
+  - ⚠ Voir ltt-4 (forme quotient). → décision ltt-4 : equivalente.
 
 ### Statistique et probabilités > Séries statistiques à deux variables quantitatives
 
@@ -222,10 +230,10 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 
 - **TTECHNO-055** — Formule des probabilités totales pour une partition de l'univers
   - Partition de l'univers présentée sans formalisme ; formule mise en relation avec l'arbre. — _BO Tle techno p.10_ (BO)
-  - ⚠ Voir ltt-5 (partition en plus de trois évènements) et l1t-1.
+  - ⚠ Voir ltt-5 (partition en plus de trois évènements) et l1t-1. → décisions ltt-5 : finie ; l1t-1 : deux.
 - **TTECHNO-056** — Calculer la probabilité d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers
   - Partition de l'univers présentée sans formalisme ; formule mise en relation avec l'arbre. — _BO Tle techno p.10_ (BO)
-  - ⚠ Voir ltt-5 (partition en plus de trois évènements) et l1t-1.
+  - ⚠ Voir ltt-5 (partition en plus de trois évènements) et l1t-1. → décisions ltt-5 : finie ; l1t-1 : deux.
 
 ### Statistique et probabilités > Variables aléatoires discrètes finies
 
@@ -239,17 +247,17 @@ Les incertitudes sont dans `questions-techno.json` (sans décision) :
 - **TTECHNO-060** — Triangle de Pascal — _hérite des bornes générales_
 - **TTECHNO-061** — Calculer des coefficients binomiaux $\binom{n}{k}$ à l'aide du triangle de Pascal pour $n \leqslant 10$
   - n ⩽ 10. — _BO Tle techno p.10_ (BO)
-  - ⚠ Voir ltt-3 (n > 10).
+  - ⚠ Voir ltt-3 (n > 10). → décision ltt-3 : dix.
 - **TTECHNO-062** — Reconnaitre une situation relevant de la loi binomiale — _hérite des bornes générales_
 - **TTECHNO-089** — Identifier le couple de paramètres d'une situation relevant de la loi binomiale — _hérite des bornes générales_
 - **TTECHNO-063** — Lorsque la variable aléatoire $X$ suit une loi binomiale : interpréter l'évènement $\{X = k\}$ sur un arbre de probabilité
   - Arbre dessiné pour n ⩽ 4 ; au-delà, l'arbre sert d'image mentale. — _BO Tle techno p.10_ (BO)
 - **TTECHNO-064** — Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer les probabilités des évènements $\{X = 0\}$, $\{X = 1\}$, $\{X = n\}$, $\{X = n - 1\}$ et de ceux qui s'en déduisent par réunion
   - Évènements {X = 0}, {X = 1}, {X = n}, {X = n − 1} et ceux qui s'en déduisent par réunion. — _BO Tle techno p.10_ (BO)
-  - ⚠ Voir ltt-2 (évènement contraire, P(X ⩽ k) quelconque).
+  - ⚠ Voir ltt-2 (évènement contraire, P(X ⩽ k) quelconque). → décision ltt-2 : reunion-contraire.
 - **TTECHNO-065** — Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer la probabilité de l'évènement $\{X = k\}$ à l'aide des coefficients binomiaux
   - Nombre de chemins donné ou déterminé au triangle de Pascal. — _BO Tle techno p.10_ (BO)
-  - ⚠ Voir ltt-3 (n > 10).
+  - ⚠ Voir ltt-3 (n > 10). → décision ltt-3 : dix.
 - **TTECHNO-066** — Générer un triangle de Pascal de taille $n$ donnée
   - Langage Python ou tableur. — _BO Tle techno p.5_ (BO)
 - **TTECHNO-067** — Représenter par un diagramme en bâtons la loi de probabilité d'une loi binomiale $\mathcal{B}(n, p)$

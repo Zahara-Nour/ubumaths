@@ -6,20 +6,19 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, libellés tranchés (15/15), questions l2-1 à l2-10 reportées._
+_Mis à jour le 2026-10-23, étape b close : page à cocher entièrement reportée._
 
-- **État** : bornes des 1 507 points écrites (`passe-lycee/bornes/<programme>.{md,json}`), 61 questions. Page à
-  cocher : https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy (`bornes/page/gen.py` → `page.html`, puis
-  `pnpm format` ; collections `reponses`, `libelles`). **Libellés : 15/15 reportés** (champ `decision_libelle`) ;
-  **questions : 10/61 reportées (l2-1 à l2-10, 2de)**.
-- **Prochaine action** : quand David a rempli les questions, les reporter (`decision`, `decide_le`, force
-  `décision`), puis étape c.
-- **En attente de David** : les 51 questions restantes.
-- **Pièges en cours** : à la migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031, champ
-  `libelle_corrige`) et 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236, champ `point_neuf`). Automatisme 1re spé « déterminer graphiquement … son tableau de
-  variations » (BO l. 274) sans point (seul 1SPE-432 « signe » existe). 85 points techno sans borne ; 1SPE-244 à
-  re-ranger à l'étape c ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables :
-  JSON corrigés à la main (puis `pnpm format`, les JSON sont en tabulations).
+- **État** : étape b finie. Bornes des 1 507 points (`passe-lycee/bornes/<programme>.{md,json}`) ; 61/61 questions
+  tranchées (`decision`, `decide_le`) et traduites en bornes générales force `décision` (+ 6 bornes de point en
+  2de) ; 15/15 libellés tranchés (`decision_libelle`). Page à cocher (archive) :
+  https://claude.ai/artifact/NqFNoysc54WHsSjopUcSDy.
+- **Prochaine action** : étape c, relevé des modèles (cf. « Les 5 étapes »).
+- **En attente de David** : rien.
+- **Pièges en cours** : migration de l'étape e : 4 libellés à corriger (2-273, 1GEN-029/030/031, `libelle_corrige`)
+  et 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236, `point_neuf`). Automatisme 1re spé
+  « déterminer graphiquement … son tableau de variations » (BO l. 274) sans point. 85 points techno sans borne ;
+  1SPE-244 à re-ranger ; `undoLaterMigrations` à compléter. Générateurs `bornes/generateurs/` non relançables :
+  JSON corrigés à la main, puis `pnpm format` (tabulations).
 - **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-bornes` (sans commit propre, en
   retard sur `main` : les commits partent sur `main`).
 
@@ -95,3 +94,9 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
 - **2026-10-23 — Questions l2-1 à l2-10 reportées.** Toutes = la reco. `decision`/`decide_le` dans
   `questions-2de-1gen.json` ; dans `2de.json`/`.md` : 7 bornes générales et 6 bornes de point (2-246, 302, 306, 394,
   400, 431) en force `décision`, renvois « question l2-N » des remarques devenus « décision l2-N ».
+- **2026-10-23 — 51 questions restantes reportées (étape b close).** 59/61 = la reco ; écarts : **l1s-2 = entiers**
+  (forme canonique : coefficient de x² quelconque si b/(2a) entier ou demi-entier simple) et **lts-5 = première**
+  (limites : seulement celles de 1re ; ln relève de TSPE-441/443). Une borne générale `décision` par question et par
+  programme (l1t-1, l1t-3 : 1re et Tle techno), titre + option choisie (l1s-3, l1s-6, l1s-7 reformulées pour se lire
+  seules) ; remarques qui citent une question suffixées « → décision X : choix ». Script :
+  scratchpad de session (non gardé), reproductible depuis la collection `reponses`.

@@ -48,6 +48,54 @@
 				"borne": "Variables aléatoires discrètes finies : espérance seulement, ni variance ni écart type (absents du programme).",
 				"source": "BO Tle techno p.10",
 				"force": "déduite"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités totales : quelle partition en 1re techno ? : 1re : partition {A, Ā} seulement (arbre à deux niveaux) ; trois évènements et plus en Tle.",
+				"source": "Décision de David, 2026-10-23 (question l1t-1) ; d'après BO 2de p.13, BO 1re techno p.10, BO Tle techno p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Automatismes : « privilégiant l'activité mentale » est-il une borne ? : Modalité d'enseignement, pas une borne : le grain du savoir fixe seul l'inclusion.",
+				"source": "Décision de David, 2026-10-23 (question l1t-3) ; d'après BO 1re techno p.6, BO Tle techno p.6",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "log(aˣ) = x·log(a) pour x réel ? : x réel admis dans les résolutions (aˣ = b, aˣ < b, xᵃ = b) ; les transformations pures (TTECHNO-082, 044) restent à n entier naturel.",
+				"source": "Décision de David, 2026-10-23 (question ltt-1) ; d'après BO Tle techno p.8, BO Tle techno p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Loi binomiale : contraire et P(X ⩽ k) quelconque : Réunions de ces évènements et leurs contraires (P(X ⩾ 2), P(X ⩽ n − 2)) ; pas de P(X ⩽ k) général à la calculatrice.",
+				"source": "Décision de David, 2026-10-23 (question ltt-2) ; d'après BO Tle techno p.10, BO 2de p.6",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Coefficients binomiaux au-delà de n = 10 : L'élève calcule un coefficient seulement si n ⩽ 10 ; au-delà, l'énoncé le donne.",
+				"source": "Décision de David, 2026-10-23 (question ltt-3) ; d'après BO Tle techno p.10",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Combinaisons linéaires avec l'inverse : forme quotient admise ? : Toute expression égale à P(x) + k/x (deg P ⩽ 3), y compris (P(x))/x ; pas de 1/(x − a) ni de quotient général.",
+				"source": "Décision de David, 2026-10-23 (question ltt-4) ; d'après BO Tle techno p.9",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Probabilités totales en Tle : partition en plus de trois évènements ? : Toute partition finie (la limite à deux ou trois porte sur la démonstration).",
+				"source": "Décision de David, 2026-10-23 (question ltt-5) ; d'après BO Tle techno p.10",
+				"force": "décision"
+			},
+			{
+				"aspect": "autre",
+				"borne": "Fonction inverse aux bornes : notation lim ? : Notation lim admise pour 1/x et ses combinaisons simples (k/x, a + k/x), sans opérations générales sur les limites.",
+				"source": "Décision de David, 2026-10-23 (question ltt-6) ; d'après BO Tle techno p.9, BO 1re techno p.9",
+				"force": "décision"
 			}
 		],
 		"points": {
@@ -579,7 +627,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution."
 			},
 			"TTECHNO-083": {
 				"libelle": "Propriétés algébriques : $\\log\\left(\\frac{a}{b}\\right) = \\log(a) - \\log(b)$, pour $a$ et $b$ réels strictement positifs",
@@ -597,7 +645,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution."
 			},
 			"TTECHNO-084": {
 				"libelle": "Utiliser le logarithme décimal pour résoudre une inéquation du type $a^x < b$ ou $x^a < b$ d'inconnue $x$ réelle",
@@ -610,7 +658,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution."
 			},
 			"TTECHNO-085": {
 				"libelle": "Utiliser le logarithme décimal pour résoudre une inéquation du type $a^n < b$ d'inconnue $n$ entier naturel",
@@ -623,13 +671,13 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-1."
+				"remarque": "Voir ltt-1. → décision ltt-1 : reel-dans-resolution."
 			},
 			"TTECHNO-044": {
 				"libelle": "Utiliser les propriétés algébriques de la fonction logarithme décimal pour transformer des expressions numériques ou littérales",
 				"rubrique": "Analyse > Fonction logarithme décimal",
 				"bornes": [],
-				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel)."
+				"remarque": "Voir ltt-1 (log(aˣ) = x·log(a) pour x réel). → décision ltt-1 : reel-dans-resolution."
 			},
 			"TTECHNO-045": {
 				"libelle": "Comportement de la fonction inverse aux bornes de son ensemble de définition",
@@ -642,7 +690,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-6 (notation lim)."
+				"remarque": "Voir ltt-6 (notation lim). → décision ltt-6 : notation."
 			},
 			"TTECHNO-046": {
 				"libelle": "Dérivée de la fonction inverse",
@@ -677,7 +725,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-6 (notation lim)."
+				"remarque": "Voir ltt-6 (notation lim). → décision ltt-6 : notation."
 			},
 			"TTECHNO-049": {
 				"libelle": "Étudier des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3",
@@ -696,7 +744,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-4 (forme quotient, ex. coût moyen (x² + 2x + 100)/x)."
+				"remarque": "Voir ltt-4 (forme quotient, ex. coût moyen (x² + 2x + 100)/x). → décision ltt-4 : equivalente."
 			},
 			"TTECHNO-087": {
 				"libelle": "Représenter des fonctions obtenues par combinaisons linéaires de la fonction inverse et de fonctions polynomiales de degré au maximum 3",
@@ -709,7 +757,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-4 (forme quotient)."
+				"remarque": "Voir ltt-4 (forme quotient). → décision ltt-4 : equivalente."
 			},
 			"TTECHNO-050": {
 				"libelle": "Changement de variable dans l'étude graphique d'une série statistique à deux variables quantitatives",
@@ -787,7 +835,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-5 (partition en plus de trois évènements) et l1t-1."
+				"remarque": "Voir ltt-5 (partition en plus de trois évènements) et l1t-1. → décisions ltt-5 : finie ; l1t-1 : deux."
 			},
 			"TTECHNO-056": {
 				"libelle": "Calculer la probabilité d'un évènement connaissant ses probabilités conditionnelles relatives à une partition de l'univers",
@@ -800,7 +848,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-5 (partition en plus de trois évènements) et l1t-1."
+				"remarque": "Voir ltt-5 (partition en plus de trois évènements) et l1t-1. → décisions ltt-5 : finie ; l1t-1 : deux."
 			},
 			"TTECHNO-057": {
 				"libelle": "Loi binomiale $\\mathcal{B}(n, p)$",
@@ -857,7 +905,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-3 (n > 10)."
+				"remarque": "Voir ltt-3 (n > 10). → décision ltt-3 : dix."
 			},
 			"TTECHNO-062": {
 				"libelle": "Reconnaitre une situation relevant de la loi binomiale",
@@ -895,7 +943,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-2 (évènement contraire, P(X ⩽ k) quelconque)."
+				"remarque": "Voir ltt-2 (évènement contraire, P(X ⩽ k) quelconque). → décision ltt-2 : reunion-contraire."
 			},
 			"TTECHNO-065": {
 				"libelle": "Lorsque la variable aléatoire $X$ suit une loi binomiale : calculer la probabilité de l'évènement $\\{X = k\\}$ à l'aide des coefficients binomiaux",
@@ -908,7 +956,7 @@
 						"force": "BO"
 					}
 				],
-				"remarque": "Voir ltt-3 (n > 10)."
+				"remarque": "Voir ltt-3 (n > 10). → décision ltt-3 : dix."
 			},
 			"TTECHNO-066": {
 				"libelle": "Générer un triangle de Pascal de taille $n$ donnée",

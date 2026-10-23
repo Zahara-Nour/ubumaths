@@ -29,10 +29,10 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 
 - **1GEN-029**, **1GEN-030**, **1GEN-031** : le BO range ces contenus sous « Suites géométriques à termes strictement positifs » ; seul 1GEN-028 le redit (la borne s'applique à tous les points de suites géométriques).
 
-## Questions ouvertes (`questions-2de-1gen.json`)
+## Questions (tranchées par David) (`questions-2de-1gen.json`)
 
-- **l1g-1** — Indépendance : la caractérisation par le produit P(A ∩ B) = P(A) × P(B).
-- **l1g-2** — Répétition d'épreuves de Bernoulli : n ⩽ 4 vaut-il pour le contenu ?
+- **l1g-1** — Indépendance : la caractérisation par le produit P(A ∩ B) = P(A) × P(B). → **les-deux** (2026-10-23)
+- **l1g-2** — Répétition d'épreuves de Bernoulli : n ⩽ 4 vaut-il pour le contenu ? → **n4** (2026-10-23)
 
 ## Première, enseignement scientifique (64 points, 51 avec une borne propre)
 
@@ -46,6 +46,8 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 - Pas de dérivée ni de logarithme : absents du BO du module. — _BO 1re ES p.3-7_ (BO)
 - Suites : notation fonctionnelle u(n) d'abord, puis notation indicielle uₙ. — _BO 1re ES p.5_ (BO)
 - Composante informatique (algorithmique, programmation, tableur) reposant sur « un nombre limité d'éléments de syntaxe » ; outils : calculatrice, tableur, logiciel de géométrie dynamique ou de programmation. — _BO 1re ES p.2-3_ (BO)
+- Indépendance : la caractérisation par le produit : Les deux : la définition P_B(A) = P(A) et la caractérisation P(A ∩ B) = P(A) × P(B), qui en découle par la multiplication sur les branches (2de). — _Décision de David, 2026-10-23 (question l1g-1) ; d'après BO 1re ES p.5, BO 2de p.13_ (décision)
+- Répétition d'épreuves de Bernoulli : n ⩽ 4 vaut-il pour le contenu ? : n ⩽ 4 pour tous les points de la répétition d'épreuves, 1GEN-010 compris. — _Décision de David, 2026-10-23 (question l1g-2) ; d'après BO 1re ES p.5, BO 1re ES p.3_ (décision)
 
 ### Analyse de l'information chiffrée
 
@@ -80,10 +82,10 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
 
 - **1GEN-009** — Indépendance de deux évènements
   - Définition : A et B indépendants si P_B(A) = P(A), avec P(B) ≠ 0. — _BO 1re ES p.5_ (BO)
-  - ⚠ Caractérisation par P(A ∩ B) = P(A) × P(B) : question l1g-1.
+  - ⚠ Caractérisation par P(A ∩ B) = P(A) × P(B) : question l1g-1. → décision l1g-1 : les-deux.
 - **1GEN-010** — Probabilité associée à la répétition d'épreuves aléatoires identiques et indépendantes de Bernoulli
   - Épreuves de Bernoulli identiques et indépendantes ; pas de loi binomiale ni de coefficient binomial (absents du BO). — _BO 1re ES p.5_ (BO)
-  - ⚠ Nombre d'épreuves : les capacités disent n ⩽ 4, le contenu ne borne pas ; question l1g-2.
+  - ⚠ Nombre d'épreuves : les capacités disent n ⩽ 4, le contenu ne borne pas ; question l1g-2. → décision l1g-2 : n4.
 - **1GEN-011** — Représenter par un arbre de probabilités la répétition de $n$ épreuves aléatoires identiques et indépendantes de Bernoulli avec $n \leqslant 4$
   - n ⩽ 4 épreuves. — _BO 1re ES p.5_ (BO)
   - Arbre de probabilités. — _BO 1re ES p.5_ (BO)
@@ -92,10 +94,10 @@ Le BO est en deux colonnes : « Seuls sont exigibles des élèves les contenus m
   - Calcul à l'aide de l'arbre. — _BO 1re ES p.5_ (BO)
 - **1GEN-012** — Savoir utiliser l'indépendance de deux évènements
   - Définition : A et B indépendants si P_B(A) = P(A), avec P(B) ≠ 0. — _BO 1re ES p.5_ (BO)
-  - ⚠ Question l1g-1.
+  - ⚠ Question l1g-1. → décision l1g-1 : les-deux.
 - **1GEN-047** — Savoir justifier l'indépendance de deux évènements
   - Définition : A et B indépendants si P_B(A) = P(A), avec P(B) ≠ 0. — _BO 1re ES p.5_ (BO)
-  - ⚠ Question l1g-1.
+  - ⚠ Question l1g-1. → décision l1g-1 : les-deux.
 
 ### Phénomènes d'évolution, modélisation par des fonctions > Modélisation quadratique
 

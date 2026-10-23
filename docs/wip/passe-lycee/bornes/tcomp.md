@@ -37,16 +37,16 @@ Le programme a deux volets : neuf **thèmes d'étude** (au moins six traités, p
 
 ## Questions en attente
 
-- **ltc-1** — Croissances comparées absentes du BO (TCOMP-230, TCOMP-378, TCOMP-231) : recommandation « donnee ».
-- **ltc-2** — Probabilités binomiales à la main (TCOMP-290, TCOMP-297, TCOMP-303) : recommandation « petit_n ».
-- **ltc-3** — Densités sur [0, +∞[ (intégrales sur un intervalle non borné) (TCOMP-310, TCOMP-312, TCOMP-314, TCOMP-315, TCOMP-316, TCOMP-371, TCOMP-376) : recommandation « limite ».
-- **ltc-4** — Coefficient de corrélation : calcul par formule ? (TCOMP-322, TCOMP-327) : recommandation « lecture ».
-- **ltc-5** — Convention de calcul des déciles (TCOMP-202, TCOMP-331) : recommandation « comme_quartiles ».
-- **ltc-6** — Vérifier une solution d'une équation différentielle d'ordre 2 (TCOMP-250, TCOMP-245) : recommandation « ordre1 ».
-- **ltc-7** — Notions des thèmes d'étude absentes du volet « contenus » (TCOMP-302, TCOMP-224, TCOMP-280, TCOMP-281, TCOMP-324, thèmes d'étude) : recommandation « habillage ».
-- **ltc-8** — Fonctions réciproques : seulement les couples illustrés ? (TCOMP-223, TCOMP-340) : recommandation « toute ».
-- **ltc-9** — Produit cartésien : dénombrer ? (TCOMP-330, TCOMP-201) : recommandation « notion ».
-- **ltc-10** — Logique : liste de la Tle compl. plus courte que celle de la 1re spé (bornes générales de T_COMP) : recommandation « heritage ».
+- **ltc-1** — Croissances comparées absentes du BO (TCOMP-230, TCOMP-378, TCOMP-231) : recommandation « donnee ». → **donnee** (2026-10-23)
+- **ltc-2** — Probabilités binomiales à la main (TCOMP-290, TCOMP-297, TCOMP-303) : recommandation « petit_n ». → **petit_n** (2026-10-23)
+- **ltc-3** — Densités sur [0, +∞[ (intégrales sur un intervalle non borné) (TCOMP-310, TCOMP-312, TCOMP-314, TCOMP-315, TCOMP-316, TCOMP-371, TCOMP-376) : recommandation « limite ». → **limite** (2026-10-23)
+- **ltc-4** — Coefficient de corrélation : calcul par formule ? (TCOMP-322, TCOMP-327) : recommandation « lecture ». → **lecture** (2026-10-23)
+- **ltc-5** — Convention de calcul des déciles (TCOMP-202, TCOMP-331) : recommandation « comme_quartiles ». → **comme_quartiles** (2026-10-23)
+- **ltc-6** — Vérifier une solution d'une équation différentielle d'ordre 2 (TCOMP-250, TCOMP-245) : recommandation « ordre1 ». → **ordre1** (2026-10-23)
+- **ltc-7** — Notions des thèmes d'étude absentes du volet « contenus » (TCOMP-302, TCOMP-224, TCOMP-280, TCOMP-281, TCOMP-324, thèmes d'étude) : recommandation « habillage ». → **habillage** (2026-10-23)
+- **ltc-8** — Fonctions réciproques : seulement les couples illustrés ? (TCOMP-223, TCOMP-340) : recommandation « toute ». → **toute** (2026-10-23)
+- **ltc-9** — Produit cartésien : dénombrer ? (TCOMP-330, TCOMP-201) : recommandation « notion ». → **notion** (2026-10-23)
+- **ltc-10** — Logique : liste de la Tle compl. plus courte que celle de la 1re spé (bornes générales de T_COMP) : recommandation « heritage ». → **heritage** (2026-10-23)
 
 ## Terminale, mathématiques complémentaires (178 points, 131 avec une borne propre)
 
@@ -65,19 +65,29 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
 - Le symbole Σ sert à écrire concisément ; son emploi comme outil de calcul n'est pas un objectif. — _BO Tle compl. p.3_ (BO)
 - Symboles ∀ et ∃ non exigibles ; complémentaire noté Ā ou E \ A ; cardinal noté Card(A). — _BO Tle compl. p.3_ (BO)
 - Algorithmes écrits en langage naturel (affectation notée ←) ou en Python ; aucune notion d'algorithmique nouvelle par rapport à la 2de et à la 1re (variable, type, affectation, instruction conditionnelle, boucle, fonction, liste). — _BO Tle compl. p.12_ (BO)
+- Croissances comparées absentes du BO : Admise seulement si l'énoncé donne le résultat de croissance comparée (« on admet que … »). — _Décision de David, 2026-10-23 (question ltc-1) ; d'après BO Tle compl. p.9_ (décision)
+- Probabilités binomiales à la main : Calcul à la main admis pour un petit n (coefficient lu dans le triangle de Pascal) ; pour un grand n, valeurs fournies par l'énoncé. — _Décision de David, 2026-10-23 (question ltc-2) ; d'après BO Tle compl. p.11_ (décision)
+- Densités sur [0, +∞[ (intégrales sur un intervalle non borné) : Admis en passant par la limite de ∫_0^x quand x → +∞, primitive donnée par l'énoncé si elle sort des formes du programme (x e^{−λx}). — _Décision de David, 2026-10-23 (question ltc-3) ; d'après BO Tle compl. p.10_ (décision)
+- Coefficient de corrélation : calcul par formule ? : r fourni par l'énoncé (ou calculatrice) ; la question porte sur son interprétation (signe, proximité de ±1, corrélation ≠ causalité). — _Décision de David, 2026-10-23 (question ltc-4) ; d'après BO Tle compl. p.12_ (décision)
+- Convention de calcul des déciles : Même convention que les quartiles (c4-2) : D1 (D9) = plus petite valeur dont l'effectif cumulé atteint 10 % (90 %) ; lecture graphique sur le polygone des fréquences cumulées pour des données en classes. — _Décision de David, 2026-10-23 (question ltc-5) ; d'après BO Tle compl. p.6, BO 2de p.6_ (décision)
+- Vérifier une solution d'une équation différentielle d'ordre 2 : Premier ordre seulement (linéaire ou non, logistique comprise). — _Décision de David, 2026-10-23 (question ltc-6) ; d'après BO Tle compl. p.9_ (décision)
+- Notions des thèmes d'étude absentes du volet « contenus » : Admis comme habillage : la notion du thème est définie dans l'énoncé, le modèle se rattache au point de la capacité mathématique mobilisée. — _Décision de David, 2026-10-23 (question ltc-7) ; d'après BO Tle compl. p.3_ (décision)
+- Fonctions réciproques : seulement les couples illustrés ? : Toute fonction continue strictement monotone du programme (lecture graphique, symétrie par rapport à y = x), sans théorie. — _Décision de David, 2026-10-23 (question ltc-8) ; d'après BO Tle compl. p.9_ (décision)
+- Produit cartésien : dénombrer ? : Notion seulement : écrire ou lister les éléments de A × B sur de petits ensembles, reconnaître un couple ; pas de Card(A × B) par la règle du produit. — _Décision de David, 2026-10-23 (question ltc-9) ; d'après BO Tle compl. p.3_ (décision)
+- Logique : liste de la Tle compl. plus courte que celle de la 1re spé : L'acquis de 1re spé reste valable : contraposée et négation quantifiée admises en Tle compl. — _Décision de David, 2026-10-23 (question ltc-10) ; d'après BO Tle compl. p.3, BO 1re spé p.4, BO Tle compl. p.1_ (décision)
 
 ### Vocabulaire ensembliste et logique
 
 - **TCOMP-201** — Notion de couple, de triplet et plus généralement de $n$-uplet. — _hérite des bornes générales_
   - ⚠ Vocabulaire transversal : le BO (p.3) ne dit rien au-delà de la notion ; hérite des bornes générales.
 - **TCOMP-330** — Notion de produit cartésien. — _hérite des bornes générales_
-  - ⚠ Le BO (p.3) donne la notion et la notation Card(A), mais aucune règle de dénombrement (Card(E × F) = Card E × Card F, nombre de n-uplets) : voir ltc-9.
+  - ⚠ Le BO (p.3) donne la notion et la notation Card(A), mais aucune règle de dénombrement (Card(E × F) = Card E × Card F, nombre de n-uplets) : voir ltc-9. → décision ltc-9 : notion.
 
 ### Thèmes d'étude > Répartition des richesses, inégalités
 
 - **TCOMP-202** — Statistique descriptive : caractéristiques de dispersion — déciles.
   - Déciles d'une série statistique (répartition de richesses, de salaires), en prolongement de la médiane et des quartiles de 2de ; convention de calcul non fixée par le BO (ltc-5). — _BO Tle compl. p.5-6_ (BO)
-  - ⚠ Point tiré des « contenus associés » d'un thème d'étude, exigence d'approfondissement. Convention des déciles : ltc-5.
+  - ⚠ Point tiré des « contenus associés » d'un thème d'étude, exigence d'approfondissement. Convention des déciles : ltc-5. → décision ltc-5 : comme_quartiles.
 - **TCOMP-331** — Statistique descriptive : caractéristiques de dispersion — rapport interdécile.
   - Rapport interdécile = D9 / D1 (quotient, à ne pas confondre avec l'écart interdécile D9 − D1). — _BO Tle compl. p.6_ (déduite)
   - ⚠ Lecture déduite : le BO nomme le rapport interdécile sans le définir ; le sens usuel (INSEE) est le quotient D9/D1. Point tiré d'un thème d'étude, exigence d'approfondissement.
@@ -155,13 +165,13 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - Fonction continue strictement monotone sur un intervalle : existence et unicité de la solution de f(x) = k. — _BO Tle compl. p.9_ (BO)
 - **TCOMP-223** — Réciproque d'une fonction continue strictement monotone sur un intervalle.
   - Pas de développement théorique ; notion illustrée par les couples carré / racine carrée et exponentielle / logarithme. — _BO Tle compl. p.9_ (BO)
-  - ⚠ Faut-il s'en tenir aux deux couples illustrés ? ltc-8.
+  - ⚠ Faut-il s'en tenir aux deux couples illustrés ? ltc-8. → décision ltc-8 : toute.
 - **TCOMP-340** — Représentation graphique de la réciproque d'une fonction continue strictement monotone.
   - Pas de développement théorique ; notion illustrée par les couples carré / racine carrée et exponentielle / logarithme. — _BO Tle compl. p.9_ (BO)
-  - ⚠ Faut-il s'en tenir aux deux couples illustrés ? ltc-8.
+  - ⚠ Faut-il s'en tenir aux deux couples illustrés ? ltc-8. → décision ltc-8 : toute.
 - **TCOMP-224** — Fonction logarithme népérien : réciproque de la fonction exponentielle.
   - Logarithme défini comme réciproque de l'exponentielle, donc sur ]0, +∞[ ; le thème historique le relie aussi à l'équation fonctionnelle et à la quadrature de l'hyperbole, sans en faire une définition. — _BO Tle compl. p.5 ; 9_ (BO)
-  - ⚠ La quadrature de l'hyperbole (aire sous 1/t) n'est qu'un « problème possible » d'un thème : voir ltc-7.
+  - ⚠ La quadrature de l'hyperbole (aire sous 1/t) n'est qu'un « problème possible » d'un thème : voir ltc-7. → décision ltc-7 : habillage.
 - **TCOMP-225** — Représentation graphique de la fonction logarithme népérien. — _hérite des bornes générales_
 - **TCOMP-226** — Équation fonctionnelle du logarithme népérien.
   - Propriétés : ln(ab) = ln a + ln b, ln(1/a) = −ln a, ln(qⁿ) = n ln q (a, b, q > 0). — _BO Tle compl. p.9_ (BO)
@@ -181,12 +191,12 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - Fonctions construites sur les fonctions de référence par somme, produit, inverse, quotient (1re spé) et par les seules compositions f(ax + b), e^{u}, ln u, u². — _BO Tle compl. p.9 ; BO 1re spé p.7_ (BO)
 - **TCOMP-230** — Calculer des limites.
   - Limites des fonctions de référence et opérations sur les limites (admises) ; composition et comparaison seulement en contexte. — _BO Tle compl. p.9_ (BO)
-  - ⚠ Les croissances comparées (eˣ/x, x e^{−x}, ln x / x) ne figurent pas au BO : ltc-1.
+  - ⚠ Les croissances comparées (eˣ/x, x e^{−x}, ln x / x) ne figurent pas au BO : ltc-1. → décision ltc-1 : donnee.
 - **TCOMP-231** — Dresser un tableau de variation.
   - Études sur des intervalles quelconques, avec une notion intuitive de limite aux bornes. — _BO Tle compl. p.9_ (BO)
 - **TCOMP-378** — Dans le cadre de la résolution de problème, utiliser le calcul des limites.
   - Limites des fonctions de référence et opérations sur les limites (admises) ; composition et comparaison seulement en contexte. — _BO Tle compl. p.9_ (BO)
-  - ⚠ Capacité de résolution de problème ; mêmes bornes que TCOMP-230 (croissances comparées : ltc-1).
+  - ⚠ Capacité de résolution de problème ; mêmes bornes que TCOMP-230 (croissances comparées : ltc-1). → décision ltc-1 : donnee.
 - **TCOMP-232** — Dans le cadre de la résolution de problème, utiliser l'allure des courbes représentatives des fonctions inverse, carré, cube, racine carrée, exponentielle et logarithme.
   - Allure des courbes des seules fonctions inverse, carré, cube, racine carrée, exponentielle, logarithme. — _BO Tle compl. p.9_ (BO)
 - **TCOMP-233** — Exploiter le tableau de variation pour déterminer le nombre de solutions d'une équation du type $f(x) = k$.
@@ -246,7 +256,7 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
 - **TCOMP-249** — Allure des courbes des solutions de l'équation différentielle $y' = ay + b$. — _hérite des bornes générales_
 - **TCOMP-250** — Vérifier qu'une fonction donnée est solution d'une équation différentielle.
   - Équation donnée, linéaire ou non (par exemple logistique y' = ay(b − y)) : seule la vérification par le calcul de la dérivée est demandée. — _BO Tle compl. p.4 ; 9_ (déduite)
-  - ⚠ Lecture déduite : le BO admet qu'une équation non linéaire « peut apparaître » sans connaissance exigible ; la vérification n'en demande aucune. L'ordre (y'' admis ou non) : ltc-6.
+  - ⚠ Lecture déduite : le BO admet qu'une équation non linéaire « peut apparaître » sans connaissance exigible ; la vérification n'en demande aucune. L'ordre (y'' admis ou non) : ltc-6. → décision ltc-6 : ordre1.
 - **TCOMP-251** — Déterminer les primitives d'une fonction, en reconnaissant la dérivée d'une fonction de référence.
   - Primitives lues sur les dérivées connues : xⁿ (n ∈ ℤ, n ≠ −1), 1/x (→ ln x sur ]0, +∞[), 1/√x, eˣ, e^{ax}, et f(ax + b) ; plus les formes 2uu', e^{u}u', u'/u. — _BO Tle compl. p.9 ; BO 1re spé p.7-8_ (déduite)
   - ⚠ Lecture déduite : le BO dit « en reconnaissant la dérivée d'une fonction de référence » ; la liste est celle des dérivées connues en 1re spé et en Tle compl.
@@ -372,7 +382,7 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - Notation ℬ(n, p) ; X = nombre de succès du schéma de Bernoulli. — _BO Tle compl. p.11_ (BO)
 - **TCOMP-290** — Loi binomiale : expression.
   - P(X = k) = (n k) pᵏ (1 − p)ⁿ⁻ᵏ. — _BO Tle compl. p.11_ (BO)
-  - ⚠ Calcul effectif à la main ou à la calculatrice : ltc-2.
+  - ⚠ Calcul effectif à la main ou à la calculatrice : ltc-2. → décision ltc-2 : petit_n.
 - **TCOMP-291** — Loi binomiale : espérance (admise).
   - E(X) = np, admise. — _BO Tle compl. p.11_ (BO)
 - **TCOMP-363** — Loi binomiale : écart type (admis).
@@ -396,7 +406,7 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - ⚠ Lecture déduite : le BO définit les coefficients binomiaux par le schéma de Bernoulli et ne donne comme outil que le triangle de Pascal ; la factorielle n'apparaît qu'en exemple d'algorithme de 1re spé.
 - **TCOMP-297** — Dans le cas où $X$ suit une loi binomiale, calculer à l'aide d'une calculatrice ou d'un logiciel les probabilités des événements de type $P(X = k)$ ou $P(X \leqslant k)$, etc.
   - Calcul à la calculatrice ou au logiciel ; événements P(X = k), P(X ⩽ k) et apparentés. — _BO Tle compl. p.11_ (BO)
-  - ⚠ Calcul à la main admis ou non : ltc-2.
+  - ⚠ Calcul à la main admis ou non : ltc-2. → décision ltc-2 : petit_n.
 - **TCOMP-298** — Calculer explicitement les probabilités des événements de type $P(X = k)$ ou $P(X \leqslant k)$ pour une variable aléatoire $X$ suivant une loi géométrique.
   - P(X = k) = (1 − p)ᵏ⁻¹ p pour k ⩾ 1 (rang du premier succès). — _BO Tle compl. p.7 ; 11_ (BO)
   - P(X ⩽ k) = 1 − (1 − p)ᵏ, P(X > k) = (1 − p)ᵏ. — _BO Tle compl. p.11_ (déduite)
@@ -409,7 +419,7 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - Absence de mémoire : P_{X > m}(X > m + n) = P(X > n). — _BO Tle compl. p.7 ; 11_ (BO)
 - **TCOMP-302** — Calculer des probabilités dans des situations faisant intervenir des probabilités conditionnelles.
   - Inversion du conditionnement par la formule de Bayes P_B(A) = P_A(B)P(A)/P(B), en plus des outils de 1re spé (arbres pondérés, tableaux croisés, probabilités totales). — _BO Tle compl. p.6 ; BO 1re spé p.5 ; 10_ (BO)
-  - ⚠ La formule de Bayes est écrite dans le thème « Inférence bayésienne » (« bien comprendre cette distinction est un objectif majeur ») ; le vocabulaire des tests (sensibilité, spécificité, valeurs prédictives) n'est qu'un problème possible : ltc-7.
+  - ⚠ La formule de Bayes est écrite dans le thème « Inférence bayésienne » (« bien comprendre cette distinction est un objectif majeur ») ; le vocabulaire des tests (sensibilité, spécificité, valeurs prédictives) n'est qu'un problème possible : ltc-7. → décision ltc-7 : habillage.
 - **TCOMP-303** — Calculer des probabilités dans des situations faisant intervenir des répétitions d'expériences aléatoires.
   - Répétition d'expériences aléatoires indépendantes. — _BO Tle compl. p.11_ (BO)
   - Taille n quelconque (la 1re spé se limitait à n ⩽ 4). — _BO Tle compl. p.11 ; BO 1re spé p.10_ (déduite)
@@ -436,10 +446,10 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - F(x) = P(X ⩽ x). — _BO Tle compl. p.11_ (BO)
 - **TCOMP-310** — Espérance d'une loi à densité, expression sous forme d'intégrale.
   - Espérance écrite sous forme d'intégrale (∫ x f(x) dx). — _BO Tle compl. p.11_ (BO)
-  - ⚠ Intervalles non bornés : ltc-3.
+  - ⚠ Intervalles non bornés : ltc-3. → décision ltc-3 : limite.
 - **TCOMP-371** — Variance d'une loi à densité, expression sous forme d'intégrale.
   - Variance écrite sous forme d'intégrale. — _BO Tle compl. p.11_ (BO)
-  - ⚠ Intervalles non bornés : ltc-3.
+  - ⚠ Intervalles non bornés : ltc-3. → décision ltc-3 : limite.
 - **TCOMP-311** — Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de densité.
   - Densité 1 sur [0, 1], puis 1/(b − a) sur [a, b]. — _BO Tle compl. p.11_ (BO)
 - **TCOMP-372** — Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de répartition.
@@ -454,18 +464,18 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - F(x) = 1 − e^{−λx} pour x ⩾ 0. — _BO Tle compl. p.11_ (BO)
 - **TCOMP-376** — Loi exponentielle : espérance.
   - E(X) = 1/λ ; pas de variance de la loi exponentielle au programme. — _BO Tle compl. p.11_ (déduite)
-  - ⚠ Lecture déduite : le BO liste pour la loi exponentielle « espérance, propriété d'absence de mémoire », sans la variance qu'il cite pour la loi uniforme. Calcul de 1/λ : ltc-3.
+  - ⚠ Lecture déduite : le BO liste pour la loi exponentielle « espérance, propriété d'absence de mémoire », sans la variance qu'il cite pour la loi uniforme. Calcul de 1/λ : ltc-3. → décision ltc-3 : limite.
 - **TCOMP-313** — Propriété d'absence de mémoire de la loi exponentielle.
   - P_{X > t}(X > t + h) = P(X > h). — _BO Tle compl. p.7 ; 11_ (BO)
 - **TCOMP-314** — Déterminer si une fonction est une densité de probabilité.
   - Fonction continue, positive, d'intégrale égale à 1 sur l'intervalle considéré. — _BO Tle compl. p.11_ (BO)
-  - ⚠ Intervalles non bornés (densité sur [0, +∞[) : ltc-3.
+  - ⚠ Intervalles non bornés (densité sur [0, +∞[) : ltc-3. → décision ltc-3 : limite.
 - **TCOMP-315** — Calculer des probabilités pour une variable aléatoire à densité.
   - Lois à densité du programme (uniforme, exponentielle) ou densités données par l'énoncé ; probabilité = intégrale de la densité. — _BO Tle compl. p.11_ (BO)
-  - ⚠ Intervalles non bornés : ltc-3.
+  - ⚠ Intervalles non bornés : ltc-3. → décision ltc-3 : limite.
 - **TCOMP-316** — Calculer l'espérance d'une variable aléatoire à densité.
   - Primitives limitées à celles du programme (dérivées des fonctions de référence, f(ax + b), 2uu', e^{u}u', u'/u). — _BO Tle compl. p.9-10_ (déduite)
-  - ⚠ Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles. Intervalles non bornés : ltc-3.
+  - ⚠ Lecture déduite : le calcul d'intégrale passe par F(b) − F(a) ; seules les primitives que le programme sait déterminer sont disponibles. Intervalles non bornés : ltc-3. → décision ltc-3 : limite.
 - **TCOMP-317** — Simulation d'une variable de Bernoulli ou d'un lancer de dé (ou d'une variable uniforme sur un ensemble fini) à partir d'une variable aléatoire de loi uniforme sur $[0, 1]$.
   - À partir d'une variable de loi uniforme sur [0, 1]. — _BO Tle compl. p.11_ (BO)
   - ⚠ Exemple d'algorithme du BO : hérite de la borne générale d'algorithmique (langage naturel avec ← ou Python, aucune notion nouvelle).
@@ -479,7 +489,7 @@ Ce qui vient de la 2de et de la 1re spécialité n'est pas recopié, sauf lorsqu
   - Point moyen G(x̄ ; ȳ). — _BO Tle compl. p.12_ (BO)
 - **TCOMP-321** — Ajustement affine. Droite des moindres carrés. — _hérite des bornes générales_
 - **TCOMP-322** — Coefficient de corrélation. — _hérite des bornes générales_
-  - ⚠ Le BO (p.12) cite le coefficient de corrélation dans les contenus sans capacité de calcul : ltc-4.
+  - ⚠ Le BO (p.12) cite le coefficient de corrélation dans les contenus sans capacité de calcul : ltc-4. → décision ltc-4 : lecture.
 - **TCOMP-323** — Ajustement se ramenant par changement de variable à un ajustement affine.
   - Changement de variable ramenant à un ajustement affine, par exemple une relation exponentielle (z = ln y). — _BO Tle compl. p.11-12_ (BO)
 - **TCOMP-324** — Application des ajustements à des interpolations ou extrapolations.

@@ -31,17 +31,17 @@ Les points issus des « Problèmes possibles » du BO (exigence `approfondisseme
 2. **Texte de 2019 sur des prérequis de 2026** : « transformations géométriques du plan » (p.10) supposait l'ancien collège, où figuraient rotation et homothétie ; elles sont absentes du cycle 4 en vigueur et des programmes de lycée (lte-8). Même décalage pour les « similitudes directes », citées seulement dans l'histoire (lte-9).
 3. **Ordre des matrices** : 2 ou 3 écrit pour les exemples de puissances et pour Markov, rien pour l'inverse, les systèmes, la matrice d'adjacence (lte-6).
 
-## Questions ouvertes (`questions-spe.json`)
+## Questions (tranchées par David) (`questions-spe.json`)
 
-- **lte-1** — équations « simples » en z et z̄ (TEXP-208).
-- **lte-2** — arguments exacts : valeurs remarquables seulement ? (TEXP-218, -221, -237, -238, -263).
-- **lte-3** — racine « connue » : donnée ou à trouver ? (TEXP-248, -249).
-- **lte-4** — équations diophantiennes « simples » (TEXP-292).
-- **lte-5** — graphes orientés hors chaînes de Markov (TEXP-312, -315, -322, -342, -345).
-- **lte-6** — ordre des matrices et taille des systèmes (TEXP-320, -321, -322, -324, -338, -339, -340, -342).
-- **lte-7** — déterminant d'une matrice 2 × 2 (TEXP-319, -320, -338).
-- **lte-8** — quelles transformations du plan en matrices (TEXP-323).
-- **lte-9** — transformations z ↦ az + b (TEXP-227, -260, -261, -263, -264).
+- **lte-1** — équations « simples » en z et z̄ (TEXP-208). → **premier-degre** (2026-10-23)
+- **lte-2** — arguments exacts : valeurs remarquables seulement ? (TEXP-218, -221, -237, -238, -263). → **remarquables** (2026-10-23)
+- **lte-3** — racine « connue » : donnée ou à trouver ? (TEXP-248, -249). → **donnee** (2026-10-23)
+- **lte-4** — équations diophantiennes « simples » (TEXP-292). → **lineaires** (2026-10-23)
+- **lte-5** — graphes orientés hors chaînes de Markov (TEXP-312, -315, -322, -342, -345). → **oriente-chemins** (2026-10-23)
+- **lte-6** — ordre des matrices et taille des systèmes (TEXP-320, -321, -322, -324, -338, -339, -340, -342). → **exact-3-adjacence-libre** (2026-10-23)
+- **lte-7** — déterminant d'une matrice 2 × 2 (TEXP-319, -320, -338). → **enonce** (2026-10-23)
+- **lte-8** — quelles transformations du plan en matrices (TEXP-323). → **connues** (2026-10-23)
+- **lte-9** — transformations z ↦ az + b (TEXP-227, -260, -261, -263, -264). → **via-module-argument** (2026-10-23)
 
 Libellés signalés : aucun ; les 176 libellés recopient le BO.
 
@@ -55,6 +55,15 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
 - Arithmétique : entiers relatifs (ℤ) ; division euclidienne d'un élément de ℤ par un élément de ℕ*. — _BO Tle exp. p.9_ (BO)
 - Chaînes de Markov à deux ou trois états seulement (marche aléatoire, Ehrenfest, PageRank : problèmes possibles). — _BO Tle exp. p.10-11_ (BO)
 - Les « Problèmes possibles » (points d'approfondissement de ce programme) ne sont pas obligatoires et ne figurent pas dans les capacités attendues. — _BO Tle exp. p.5_ (BO)
+- Équations « simples » en z et z̄ : Équations du premier degré en z et z̄ (az + b z̄ = c), résolues en posant z = x + iy : système linéaire en x, y. — _Décision de David, 2026-10-23 (question lte-1) ; d'après BO Tle exp. p.6_ (décision)
+- Arguments exacts : valeurs remarquables seulement ? : Argument exact attendu seulement quand cos θ et sin θ sont des valeurs remarquables (multiples de π/6 et π/4). — _Décision de David, 2026-10-23 (question lte-2) ; d'après BO Tle exp. p.6, BO Tle exp. p.7_ (décision)
+- Racine « connue » : donnée ou à trouver ? : La racine est donnée par l'énoncé (ou l'énoncé demande de vérifier qu'un nombre donné est racine). — _Décision de David, 2026-10-23 (question lte-3) ; d'après BO Tle exp. p.7_ (décision)
+- Équations diophantiennes « simples » : Équations ax + by = c seulement (Bézout, Gauss). — _Décision de David, 2026-10-23 (question lte-4) ; d'après BO Tle exp. p.8, BO Tle exp. p.9_ (décision)
+- Chaînes ou chemins : graphes orientés hors Markov ? : Graphes orientés admis pour la matrice d'adjacence et le nombre de chemins ; vocabulaire de base (degré, connexe) en non orienté. — _Décision de David, 2026-10-23 (question lte-5) ; d'après BO Tle exp. p.10, BO Tle exp. p.11_ (décision)
+- Ordre des matrices et taille des systèmes : Ordre au plus 3 pour les calculs exacts (inverse, puissance générale, systèmes) ; matrice d'adjacence de taille libre, puissance numérique à la calculatrice. — _Décision de David, 2026-10-23 (question lte-6) ; d'après BO Tle exp. p.10, BO Tle exp. p.11_ (décision)
+- Déterminant d'une matrice 2 × 2 : Formule ad − bc admise seulement si l'énoncé la donne ; sinon inverse par vérification AB = I ou par un système. — _Décision de David, 2026-10-23 (question lte-7) ; d'après BO Tle exp. p.10-11_ (décision)
+- Quelles transformations du plan en matrices ? : Seulement les transformations connues des programmes en vigueur (symétries axiales par une droite passant par O, symétrie centrale de centre O), plus celles définies dans l'énoncé. — _Décision de David, 2026-10-23 (question lte-8) ; d'après BO Tle exp. p.10_ (décision)
+- Transformations z ↦ az + b : Admis si la question se ramène à des longueurs et des angles (|z' − ω| = |z − ω|, arg …) sans nommer la transformation. — _Décision de David, 2026-10-23 (question lte-9) ; d'après BO Tle exp. p.6, BO Tle exp. p.8_ (décision)
 
 ### Arithmétique
 
@@ -109,7 +118,7 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Aucun chiffrement imposé pour l'attendu ; affine, Vigenère, Hill, RSA sont des problèmes possibles (TEXP-305, TEXP-370, TEXP-371, TEXP-308). — _BO Tle exp. p.9_ (BO)
 - **TEXP-292** — Résoudre des équations diophantiennes simples
   - Équations diophantiennes « simples » ; le BO ne dit pas lesquelles. — _BO Tle exp. p.8-9_ (BO)
-  - ⚠ Incertitude lte-4 : quelles équations diophantiennes sont « simples ».
+  - ⚠ Incertitude lte-4 : quelles équations diophantiennes sont « simples ». → décision lte-4 : lineaires.
 - **TEXP-293** — Écriture du PGCD de $a$ et $b$ sous la forme $ax + by$, $(x, y) \in \mathbb{Z}^2$
   - Démontrer que le PGCD de a et b s'écrit ax + by, (x, y) ∈ ℤ². — _BO Tle exp. p.9_ (BO)
   - ⚠ Point « démonstration » : la borne est ce qui est démontré (écriture ax + by du PGCD), rien de plus.
@@ -186,7 +195,7 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
 
 - **TEXP-312** — Graphe, sommets, arêtes
   - Graphe, sommets, arêtes (vocabulaire du BO, graphe non orienté). — _BO Tle exp. p.10_ (déduite)
-  - ⚠ Lecture déduite (texte implicite) : « arêtes » et « chaîne » sont le vocabulaire des graphes non orientés ; l'orientation n'apparaît au BO que pour les chaînes de Markov. Voir lte-5.
+  - ⚠ Lecture déduite (texte implicite) : « arêtes » et « chaîne » sont le vocabulaire des graphes non orientés ; l'orientation n'apparaît au BO que pour les chaînes de Markov. Voir lte-5. → décision lte-5 : oriente-chemins.
 - **TEXP-313** — Exemple du graphe complet
   - Graphe complet, comme exemple. — _BO Tle exp. p.10_ (BO)
 - **TEXP-314** — Degré
@@ -202,22 +211,22 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Matrice carrée, colonne, ligne (vocabulaire du BO). — _BO Tle exp. p.10_ (BO)
 - **TEXP-319** — Opérations sur les matrices
   - Opérations : somme, produit par un réel, produit de matrices ; ni transposée ni déterminant. — _BO Tle exp. p.10_ (déduite)
-  - ⚠ Lecture déduite (texte implicite) : le BO écrit « Opérations » sans liste ; la transposée et le déterminant n'apparaissent nulle part au BO. Voir lte-7 pour le déterminant d'ordre 2.
+  - ⚠ Lecture déduite (texte implicite) : le BO écrit « Opérations » sans liste ; la transposée et le déterminant n'apparaissent nulle part au BO. Voir lte-7 pour le déterminant d'ordre 2. → décision lte-7 : enonce.
 - **TEXP-320** — Inverse d'une matrice carrée
   - Inverse d'une matrice carrée. — _BO Tle exp. p.10_ (BO)
-  - ⚠ Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2).
+  - ⚠ Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2). → décisions lte-6 : exact-3-adjacence-libre ; lte-7 : enonce.
 - **TEXP-321** — Puissances d'une matrice carrée
   - Puissances d'une matrice carrée ; calculs donnés en exemple pour les ordres 2 et 3. — _BO Tle exp. p.10_ (BO)
-  - ⚠ Incertitude lte-6 : ordre des matrices.
+  - ⚠ Incertitude lte-6 : ordre des matrices. → décision lte-6 : exact-3-adjacence-libre.
 - **TEXP-322** — Représentation matricielle : matrice d'adjacence d'un graphe
   - Matrice d'adjacence d'un graphe. — _BO Tle exp. p.10_ (BO)
-  - ⚠ Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices).
+  - ⚠ Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices). → décisions lte-5 : oriente-chemins ; lte-6 : exact-3-adjacence-libre.
 - **TEXP-323** — Représentation matricielle des transformations géométriques du plan
   - Transformations géométriques du plan représentées par une matrice ; le BO ne les liste pas. — _BO Tle exp. p.10_ (BO)
-  - ⚠ Incertitude lte-8 : quelles transformations.
+  - ⚠ Incertitude lte-8 : quelles transformations. → décision lte-8 : connues.
 - **TEXP-324** — Représentation matricielle des systèmes linéaires
   - Écriture matricielle d'un système linéaire. — _BO Tle exp. p.10_ (BO)
-  - ⚠ Incertitude lte-6 : taille des systèmes.
+  - ⚠ Incertitude lte-6 : taille des systèmes. → décision lte-6 : exact-3-adjacence-libre.
 - **TEXP-325** — Représentation matricielle des suites récurrentes
   - Écriture matricielle d'une suite récurrente. — _BO Tle exp. p.10_ (BO)
 - **TEXP-326** — Exemples de calcul de puissances de matrices carrées d'ordre $2$ ou $3$
@@ -246,19 +255,19 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Chaîne de Markov à deux ou trois états. — _BO Tle exp. p.11_ (BO)
 - **TEXP-338** — Calculer l'inverse d'une matrice carrée
   - Inverse d'une matrice carrée. — _BO Tle exp. p.11_ (BO)
-  - ⚠ Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2).
+  - ⚠ Incertitudes lte-6 (ordre des matrices) et lte-7 (formule du déterminant d'ordre 2). → décisions lte-6 : exact-3-adjacence-libre ; lte-7 : enonce.
 - **TEXP-339** — Calculer les puissances d'une matrice carrée
   - Puissances d'une matrice carrée. — _BO Tle exp. p.11_ (BO)
-  - ⚠ Incertitude lte-6 : ordre des matrices.
+  - ⚠ Incertitude lte-6 : ordre des matrices. → décision lte-6 : exact-3-adjacence-libre.
 - **TEXP-340** — Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour résoudre un système linéaire
   - Système linéaire résolu par le calcul matriciel, notamment l'inverse. — _BO Tle exp. p.11_ (BO)
-  - ⚠ Incertitude lte-6 : taille des systèmes.
+  - ⚠ Incertitude lte-6 : taille des systèmes. → décision lte-6 : exact-3-adjacence-libre.
 - **TEXP-341** — Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une suite récurrente linéaire
   - Suite récurrente linéaire, étudiée par le calcul matriciel (type U_{n+1} = AU_n + C des contenus). — _BO Tle exp. p.10-11_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : la capacité ne nomme pas le type de suite ; le seul type des contenus (p.10) est U_{n+1} = AU_n + C.
 - **TEXP-342** — Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour calculer le nombre de chemins de longueur donnée entre deux sommets d'un graphe
   - Nombre de chemins de longueur donnée entre deux sommets, par les puissances de la matrice d'adjacence. — _BO Tle exp. p.11_ (BO)
-  - ⚠ Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices).
+  - ⚠ Incertitudes lte-5 (graphes orientés) et lte-6 (ordre des matrices). → décisions lte-5 : oriente-chemins ; lte-6 : exact-3-adjacence-libre.
 - **TEXP-343** — Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : calculer des probabilités
   - Chaîne de Markov à deux ou trois états : calcul de probabilités. — _BO Tle exp. p.11_ (BO)
 - **TEXP-344** — Dans le cadre de la résolution de problèmes, utiliser le calcul matriciel pour étudier une chaîne de Markov à deux ou trois états : déterminer une probabilité invariante
@@ -317,7 +326,7 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Équation du seul type az = b (inconnue complexe z). — _BO Tle exp. p.6_ (BO)
 - **TEXP-208** — Résoudre une équation simple faisant intervenir $z$ et $\bar{z}$
   - Équation « simple » faisant intervenir z et z̄ ; le BO ne dit pas ce qu'est « simple ». — _BO Tle exp. p.6_ (BO)
-  - ⚠ Incertitude lte-1 : quelles équations en z et z̄ sont « simples ».
+  - ⚠ Incertitude lte-1 : quelles équations en z et z̄ sont « simples ». → décision lte-1 : premier-degre.
 - **TEXP-209** — Conjugué d'un produit
   - Démontrer que le conjugué d'un produit est le produit des conjugués. — _BO Tle exp. p.6_ (BO)
   - ⚠ Point « démonstration » : la borne est ce qui est démontré (conjugué d'un produit), rien de plus.
@@ -352,7 +361,7 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Stabilité de 𝕌 par produit et passage à l'inverse seulement. — _BO Tle exp. p.6_ (BO)
 - **TEXP-218** — Arguments d'un nombre complexe non nul
   - Arguments d'un complexe non nul (pluriel : définis à 2π près). — _BO Tle exp. p.6_ (déduite)
-  - ⚠ Lecture déduite (texte implicite) : « à 2π près » vient du pluriel « arguments » du BO. Valeurs exactes attendues : incertitude lte-2.
+  - ⚠ Lecture déduite (texte implicite) : « à 2π près » vient du pluriel « arguments » du BO. Valeurs exactes attendues : incertitude lte-2. → décision lte-2 : remarquables.
 - **TEXP-219** — Forme trigonométrique d'un nombre complexe
   - Forme trigonométrique r(cos θ + i sin θ), r = |z| > 0, θ un argument. — _BO Tle exp. p.6_ (déduite)
   - ⚠ Lecture déduite (texte implicite) : le BO nomme la forme trigonométrique sans l'écrire ; la formule de Moivre (p.7) fixe l'écriture cos θ + i sin θ.
@@ -361,7 +370,7 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - ⚠ Lecture déduite (texte implicite) : le BO dit « déterminer le module » ; les seules propriétés au programme sont module d'un produit, d'un inverse, d'une puissance.
 - **TEXP-221** — Déterminer les arguments d'un nombre complexe
   - Complexe non nul. — _BO Tle exp. p.6_ (BO)
-  - ⚠ Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non.
+  - ⚠ Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non. → décision lte-2 : remarquables.
 - **TEXP-222** — Représenter un nombre complexe par un point
   - Placer l'image d'un complexe dans le plan complexe. — _BO Tle exp. p.6_ (BO)
 - **TEXP-223** — Déterminer l'affixe d'un point
@@ -377,7 +386,7 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - ⚠ Point « démonstration » : la borne est ce qui est démontré (module d'une puissance), rien de plus.
 - **TEXP-227** — Suite de nombres complexes définie par $z_{n+1} = az_n + b$
   - Suites complexes du seul type z_{n+1} = a z_n + b. — _BO Tle exp. p.6_ (BO)
-  - ⚠ Problème possible du BO (« en aucun cas obligatoires », p.5). Incertitude lte-9 : transformations z ↦ az + b.
+  - ⚠ Problème possible du BO (« en aucun cas obligatoires », p.5). Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument.
 - **TEXP-228** — Inégalité triangulaire pour deux nombres complexes ; cas d'égalité
   - Inégalité triangulaire pour deux complexes et son cas d'égalité. — _BO Tle exp. p.6_ (BO)
   - ⚠ Problème possible du BO (« en aucun cas obligatoires », p.5).
@@ -420,10 +429,10 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - cos(nθ) + i sin(nθ) = (cos θ + i sin θ)ⁿ. — _BO Tle exp. p.7_ (BO)
 - **TEXP-237** — Passer de la forme algébrique d'un nombre complexe à sa forme trigonométrique ou exponentielle
   - Passage de la forme algébrique à la forme trigonométrique ou exponentielle. — _BO Tle exp. p.7_ (BO)
-  - ⚠ Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non.
+  - ⚠ Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non. → décision lte-2 : remarquables.
 - **TEXP-238** — Passer de la forme trigonométrique ou exponentielle d'un nombre complexe à sa forme algébrique
   - Passage de la forme trigonométrique ou exponentielle à la forme algébrique. — _BO Tle exp. p.7_ (BO)
-  - ⚠ Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non.
+  - ⚠ Incertitude lte-2 : arguments exacts limités aux valeurs remarquables ou non. → décision lte-2 : remarquables.
 - **TEXP-239** — Effectuer des calculs sur des nombres complexes en choisissant une forme adaptée, en particulier dans le cadre de la résolution de problèmes
   - Choix entre forme algébrique, trigonométrique, exponentielle. — _BO Tle exp. p.7_ (BO)
 - **TEXP-240** — Utiliser les formules d'Euler pour transformer des expressions trigonométriques, dans des contextes divers (intégration, suites, etc.)
@@ -453,18 +462,18 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Cas n = 2, 3, 4 seulement. — _BO Tle exp. p.8_ (BO)
 - **TEXP-260** — Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer un alignement
   - Démontrer un alignement dans une configuration du plan, par les complexes. — _BO Tle exp. p.8_ (BO)
-  - ⚠ Incertitude lte-9 : transformations z ↦ az + b.
+  - ⚠ Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument.
 - **TEXP-261** — Dans le cadre de la résolution de problème, utiliser les nombres complexes pour démontrer une orthogonalité
   - Démontrer une orthogonalité dans une configuration du plan, par les complexes. — _BO Tle exp. p.8_ (BO)
-  - ⚠ Incertitude lte-9 : transformations z ↦ az + b.
+  - ⚠ Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument.
 - **TEXP-262** — Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des longueurs
   - Calculer des longueurs dans une configuration du plan, par les complexes. — _BO Tle exp. p.8_ (BO)
 - **TEXP-263** — Dans le cadre de la résolution de problème, utiliser les nombres complexes pour calculer des angles
   - Calculer des angles dans une configuration du plan, par les complexes. — _BO Tle exp. p.8_ (BO)
-  - ⚠ Incertitudes lte-2 (arguments exacts limités aux valeurs remarquables ou non) et lte-9 (transformations z ↦ az + b).
+  - ⚠ Incertitudes lte-2 (arguments exacts limités aux valeurs remarquables ou non) et lte-9 (transformations z ↦ az + b). → décisions lte-2 : remarquables ; lte-9 : via-module-argument.
 - **TEXP-264** — Dans le cadre de la résolution de problème, utiliser les nombres complexes pour déterminer des ensembles de points
   - Déterminer des ensembles de points du plan par les complexes (le BO ne liste pas les ensembles). — _BO Tle exp. p.8_ (BO)
-  - ⚠ Incertitude lte-9 : transformations z ↦ az + b.
+  - ⚠ Incertitude lte-9 : transformations z ↦ az + b. → décision lte-9 : via-module-argument.
 - **TEXP-265** — Utiliser les racines de l'unité dans l'étude de configurations liées aux polygones réguliers
   - Configurations liées aux polygones réguliers. — _BO Tle exp. p.8_ (BO)
 - **TEXP-266** — Détermination de l'ensemble $\mathbb{U}_n$
@@ -503,10 +512,10 @@ Libellés signalés : aucun ; les 176 libellés recopient le BO.
   - Degré 2 à coefficients réels seulement (coefficients complexes : TEXP-364). — _BO Tle exp. p.7_ (BO)
 - **TEXP-248** — Résoudre une équation de degré $3$ à coefficients réels dont une racine est connue
   - Degré 3 à coefficients réels, une racine connue. — _BO Tle exp. p.7_ (BO)
-  - ⚠ Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver.
+  - ⚠ Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver. → décision lte-3 : donnee.
 - **TEXP-249** — Factoriser un polynôme dont une racine est connue
   - Polynôme (coefficients réels) dont une racine est connue ; factorisation par z − a. — _BO Tle exp. p.7_ (BO)
-  - ⚠ Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver.
+  - ⚠ Incertitude lte-3 : racine « connue » = donnée par l'énoncé, ou à trouver. → décision lte-3 : donnee.
 - **TEXP-250** — Factorisation de $z^n - a^n$ par $z - a$ (démonstration)
   - Démontrer la factorisation de zⁿ − aⁿ par z − a. — _BO Tle exp. p.7_ (BO)
   - ⚠ Point « démonstration » : la borne est ce qui est démontré (factorisation de zⁿ − aⁿ), rien de plus.
