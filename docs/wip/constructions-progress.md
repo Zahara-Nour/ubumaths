@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 9 en cours (PR à ouvrir)._
+_Mis à jour le 2026-10-23, après #1633._
 
-- **État** : lot 9 (points auxiliaires nommés, phase 0 validée : afficher + prime) codé et vert sur `feat/constructions-auxiliaires`. Lots 1 à 8 partent au prochain `deploy:prod`.
-- **Prochaine action** : PR, revue `code-reviewer` opus (géométrie), CI, merge.
-- **En attente de David** : vérifications #1621/#1626/#1629 faites en Playwright (section « Lot 9 ») — reste les marqueurs d'angle droit en `@complet` ; puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`. Suites possibles : `@mesure` ; côté du carré d'angle droit ; C\* proche d'un vrai C.
-- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet (choix de David).
-- **Worktree / branche** : `../ubumaths-wt-constructions-auxiliaires` · `feat/constructions-auxiliaires`.
+- **État** : lot 9 **livré** — #1633 mergée : points auxiliaires nommés sur la figure (étiquette provisoire), prime si la lettre est prise, nom donné par le script l'emporte (`centre(c)`, `cote(be, 2)`). Lots 1 à 9 partent au prochain `deploy:prod`.
+- **Prochaine action** : choisir la suite avec David.
+- **En attente de David** : (1) vérification #1633 (serveur 5182, worktree `-auxiliaires`) ; #1621/#1626/#1629 faites en Playwright (section « Lot 9 ») sauf les marqueurs d'angle droit en `@complet` → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`. (2) Suites possibles : `@mesure` ; côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
+- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Étiquette auxiliaire = provisoire (`setProvisionalLabel`) : `updateLabel` la rend définitive. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet.
+- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
 
 ---
 
