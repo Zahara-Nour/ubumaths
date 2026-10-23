@@ -51,6 +51,7 @@ function point(
 		node_id,
 		grade: '2',
 		exigence: 'attendu',
+		kind: 'connaissance',
 		...extra
 	};
 }
@@ -66,7 +67,11 @@ const NODES = [
 
 const POINTS = [
 	point('1', 's-carre', 1, { name: 'Courbe de la fonction carré' }),
-	point('2', 's-carre', 2, { name: 'Démontrer la parité', exigence: 'approfondissement' }),
+	point('2', 's-carre', 2, {
+		name: 'Démontrer la parité',
+		exigence: 'approfondissement',
+		kind: 'demonstration'
+	}),
 	point('3', 'n-ref', 3, { name: 'Point posé sur la notion' })
 ];
 
@@ -120,6 +125,11 @@ describe('ProgrammeMap', () => {
 		expect(container.querySelector('[data-map-point="2-1"]')?.textContent).not.toContain(
 			'approfondissement'
 		);
+		// Le type du point est nommé dans la feuille.
+		expect(container.querySelector('[data-map-point="2-1"]')?.textContent).toContain(
+			'connaissance'
+		);
+		expect(approf?.textContent).toContain('démonstration');
 	});
 
 	it('« 1 point sur la notion » montre les points posés sur la notion', async () => {

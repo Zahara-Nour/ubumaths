@@ -539,10 +539,10 @@ export type {
 // textbook_ref) vers leurs unions/formes réelles.
 
 /**
- * Nature of a curriculum point — mirrors the three BO rubrics
- * (Contenus / Capacités attendues / Démonstrations).
+ * Nature of a curriculum point — mirrors the BO rubrics
+ * (Contenus / Capacités attendues / Démonstrations / Algorithmique).
  */
-export type CurriculumPointKind = 'connaissance' | 'savoir_faire' | 'demonstration';
+export type CurriculumPointKind = 'connaissance' | 'savoir_faire' | 'demonstration' | 'algorithme';
 
 /** Whether a point is part of the expected programme or goes beyond it. */
 export type CurriculumExigence = 'attendu' | 'approfondissement';

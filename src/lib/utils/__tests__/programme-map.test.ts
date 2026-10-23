@@ -14,7 +14,9 @@
  *      encore un point du niveau ;
  *   5. « Masquer les nœuds vides » retire les nœuds sans point ;
  *   6. nœud visé introuvable ou point posé sur une branche → erreur, jamais
- *      d'arbre amputé en silence.
+ *      d'arbre amputé en silence ;
+ *   7. le type du point (connaissance, savoir-faire, démonstration,
+ *      algorithme) est porté jusqu'à la feuille (2026-10-23).
  */
 
 import { describe, it, expect } from 'vitest';
@@ -27,6 +29,7 @@ import {
 	pointHolderIds,
 	hideEmptyNodes,
 	isEmptyNode,
+	kindLabel,
 	linkPath,
 	type MapPointRow
 } from '../programme-map';
@@ -60,6 +63,7 @@ function point(
 		node_id,
 		grade: '2',
 		exigence: 'attendu',
+		kind: 'savoir_faire',
 		...extra
 	};
 }
@@ -114,16 +118,17 @@ describe('buildProgrammeMap — arbre complet', () => {
 		expect(ref.subnotions[1].points).toEqual([]);
 	});
 
-	it('garde l’exigence de chaque point', () => {
+	it('garde l’exigence et le type de chaque point', () => {
 		const map = buildProgrammeMap(
-			[point('1', 's-carre', 1, { exigence: 'approfondissement' })],
+			[point('1', 's-carre', 1, { exigence: 'approfondissement', kind: 'algorithme' })],
 			NODES
 		);
 		expect(map[1].notions[0].subnotions[0].points[0]).toMatchObject({
 			id: '1',
 			code: '2-1',
 			name: 'Point 1',
-			exigence: 'approfondissement'
+			exigence: 'approfondissement',
+			kind: 'algorithme'
 		});
 	});
 });
@@ -208,6 +213,12 @@ describe('buildProgrammeMap — erreurs', () => {
 		).toThrow(/exigence/);
 	});
 
+	it('lève une erreur si un type de point est inconnu', () => {
+		expect(() =>
+			buildProgrammeMap([point('1', 's-carre', 1, { kind: 'exercice' })], NODES)
+		).toThrow(/type/);
+	});
+
 	it('ignore un point sans niveau', () => {
 		const map = buildProgrammeMap([point('1', 's-carre', 1, { grade: null })], NODES);
 		expect(map[1].counts.attendus).toBe(0);
@@ -263,5 +274,14 @@ describe('dépliage', () => {
 
 	it('« Tout déplier » ouvre les points de chaque nœud qui en porte', () => {
 		expect(new Set(pointHolderIds(map))).toEqual(new Set(['n-ref', 's-carre']));
+	});
+});
+
+describe('kindLabel', () => {
+	it('nomme chaque type en français', () => {
+		expect(kindLabel('connaissance')).toBe('connaissance');
+		expect(kindLabel('savoir_faire')).toBe('savoir-faire');
+		expect(kindLabel('demonstration')).toBe('démonstration');
+		expect(kindLabel('algorithme')).toBe('algorithme');
 	});
 });

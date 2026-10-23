@@ -39,7 +39,8 @@ function pointRow(id: string, node_id: string): Row {
 		archived_at: null,
 		node_id,
 		grade: '2',
-		exigence: 'attendu'
+		exigence: 'attendu',
+		kind: 'savoir_faire'
 	};
 }
 
