@@ -8,7 +8,7 @@
 	import * as Card from '$lib/components/ui/card';
 	import { toaster } from '$lib/stores/toaster.svelte';
 	import { goto } from '$app/navigation';
-	import { Edit, Trash2, Globe, Lock, User, Calendar } from '@lucide/svelte';
+	import { Edit, Trash2, Globe, Lock, Calendar } from '@lucide/svelte';
 
 	let { data }: { data: PageData } = $props();
 
@@ -53,15 +53,6 @@
 		}
 	}
 
-	function formatAuthor(): string {
-		if (!data.construction.profiles) return 'Auteur inconnu';
-		const { firstname, lastname } = data.construction.profiles;
-		if (firstname && lastname) return `${firstname} ${lastname}`;
-		if (firstname) return firstname;
-		if (lastname) return lastname;
-		return 'Auteur inconnu';
-	}
-
 	function formatDate(dateStr: string): string {
 		return new Date(dateStr).toLocaleDateString('fr-FR', {
 			day: 'numeric',
@@ -83,10 +74,6 @@
 			<div>
 				<h1 class="text-2xl font-bold sm:text-3xl">{data.construction.title}</h1>
 				<div class="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground">
-					<div class="flex items-center gap-1">
-						<User class="h-4 w-4" />
-						<span>{formatAuthor()}</span>
-					</div>
 					<div class="flex items-center gap-1">
 						<Calendar class="h-4 w-4" />
 						<span>{formatDate(data.construction.created_at)}</span>

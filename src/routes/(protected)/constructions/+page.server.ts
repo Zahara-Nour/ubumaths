@@ -14,9 +14,8 @@ const logger = createServerLogger('(protected)/constructions/+page.server');
  * Une ligne de la liste des constructions.
  *
  * Les nullabilités reflètent le schéma : `is_public` et les horodatages ont
- * une valeur par défaut en base mais restent nullables, et un embed PostgREST
- * sur une clé étrangère unique renvoie un objet — ou `null` si l'auteur a été
- * supprimé — jamais un tableau. La page gère déjà les deux formes.
+ * une valeur par défaut en base mais restent nullables. Le nom de l'auteur
+ * n'est pas lu : la page ne l'affiche pas (décision de David, 2026-10-24).
  */
 export interface ConstructionListItem {
 	id: string;
@@ -27,10 +26,6 @@ export interface ConstructionListItem {
 	created_at: string | null;
 	updated_at: string | null;
 	author_id: string | null;
-	profiles: {
-		firstname: string | null;
-		lastname: string | null;
-	} | null;
 }
 
 export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => {
@@ -48,11 +43,7 @@ export const load: PageServerLoad = async ({ parent, locals: { supabase } }) => 
 			is_public,
 			created_at,
 			updated_at,
-			author_id,
-			profiles!constructions_author_id_fkey (
-				firstname,
-				lastname
-			)
+			author_id
 		`
 		)
 		.or(`author_id.eq.${user.id},is_public.eq.true`)
