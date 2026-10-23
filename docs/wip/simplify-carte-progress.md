@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1652 (lot 4e mergé, pas en prod)._
+_Mis à jour le 2026-10-23, après #1655 (Q19 mergé, pas en prod)._
 
-- **État** : lot 4e mergé (#1652, § 46-47 ; pas encore en prod, aucun effet élève) : registre `mathAST/superflu/` (10 fiches), lu par le juge, l'éditeur, les messages, Zod et `buildConstraintSeverities` ; garde par règle dans `tidy-passe-le-juge.test.ts` ; racines par `extractPerfectPower` (identique à l'ancien calcul de 4 à 200 000, sondé). Comportement élève inchangé ; l'ordre des réglages de l'éditeur suit le registre.
+- **État** : lot 5 lancé. Phase 0 validée (§ 49-50 : Q18 oui, Q19 à part, Q20 reportée, ordre Q19 → 5a → 5b → 5c → 5d → 5e → 5f). Q19 mergé (#1655, § 51-52) : la dérivée garde le décimal tapé (`x − 1,5`), `tidyTerms` suit Q3 sous une barre (`2x/1,5 → 4x/3`).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~racines~~ → ~~4c~~ → ~~4c-bis~~ → ~~4d~~ → ~~4e~~ → **5 formes par contexte** → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : Q19 codé et commité sur la branche (`foldNumericSubtrees` replie par `tidy` ; test `decimaux-gardes.test.ts` ; oracle : poly-11, t-02, exp-22 sortent de `KNOWN_FORM_DIFF` ; règle « coefficient 1 » de l’oracle corrigée pour `0{,}1`). Reste : relire la suite serveur complète (lancée), `check:incremental`, `lint:fast`, push, PR, CI, merge ; puis 5a (D1).
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → **5a D1** → 5b D2 → 5c valeur exacte → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5a (D1 + Q18), worktree neuf depuis `origin/main`. Dernière étape « On réduit » de f′ (`withTidyStep`) : numérateur `auto`, dénominateur gardé, division par le facteur commun si le domaine de f le permet ; seule l'exponentielle commune en facteur ; ordre canonique sans − en tête ; bug `(eˣ)²` / `e^{2x}` non regroupés par `auto` (quot-04), test rouge d'abord. Mesure : l'oracle (`KNOWN_FORM_DIFF`).
 - **En attente de David** : la vérification manuelle des espaces (#1642) sur chiph.re.
-- **Pièges en cours** : un modèle neuf de numération avec une spec `7900` attendra le réglage « Espaces dès 4 chiffres » coché à la main. Bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41) ; `rat-04 @ carte` (lot 5) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : `ubumaths-wt-simplify-carte` · `fix/simplify-carte-derivee-decimaux`.
+- **Pièges en cours** : `(x^{0,5})′` écrit `0,5/x^{1/2}` (mixte, juste, laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -746,3 +746,7 @@ Trouvés en chemin :
 ## 51. Q19 codé (branche `fix/simplify-carte-derivee-decimaux`, 2026-10-23)
 
 Cause : `foldNumericSubtrees` (`pedagogical-differentiation/pipeline.ts`) repliait les sous-arbres numériques de la dérivée brute par `evaluate` exact, nombre seul compris (`0.5 → 1/2`). Correctif : repli par `tidy` (S1). Test `decimaux-gardes.test.ts` : 6 rouges sur 8 avant. Oracle : poly-11, t-02, exp-22 rejoignent la forme de classe (8 entrées retirées) ; 3 faux résidus `lit-16/17/22 @ bouton` (`0{,}1 \cos` lu « coefficient 1 ») : la règle de l'oracle ignore désormais le `1` final d'un décimal à virgule. Doc : `mathast/README.md`.
+
+## 52. Q19 mergé (#1655, 2026-10-23)
+
+Revue `code-reviewer` (opus) : aucune valeur fausse. Corrigés avant le merge : `tidyTerms` gardait `2x/1,5` (même nombre de nœuds que `4x/3`) — un décimal sous la barre suit maintenant Q3 ; `4^{1/2}x²` donnait `2x × 4^{1/2}` — si `tidy` laisse une puissance numérique, l'ancien repli par `evaluate` reprend. Laissé : `(x^{0,5})′ = 0,5/x^{1/2}`. Au passage : `template-fact-sheet.test.ts`, rouge sur `main` (croisement #1650 / #1652), mis à l'ordre du registre. CI verte (16/16).
