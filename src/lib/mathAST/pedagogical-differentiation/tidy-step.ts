@@ -3,9 +3,10 @@
  *
  * Les règles de dérivation laissent la dérivée brute : `3 \cdot 2x`,
  * `e^{3x} \cdot 3`, `\cos x + (-\sin x)`. La dernière ligne affichée doit être
- * la dérivée RANGÉE (`tidyTerms` : `tidy` terme à terme, l'ordre de la règle
- * gardé), dans l'atelier comme dans les corrections de questions — d'où cette
- * étape, ajoutée par les deux appelants après le rendu.
+ * la dérivée sous sa forme finale (`finalDerivative`, `final-form.ts` : numérateur
+ * réduit, facteur commun simplifié, exponentielle commune en facteur — D1 et
+ * Q18, lot 5a de simplify-carte), dans l'atelier comme dans les corrections de
+ * questions — d'où cette étape, ajoutée par les deux appelants après le rendu.
  *
  * Née dans l'atelier (`atelier/derive-steps.ts`, retours de David
  * 2026-10-04) ; partagée ici depuis le 2026-10-06.
@@ -16,13 +17,13 @@
 import type { MathNode } from '../types';
 import type { RenderedStep } from '../common/step-renderer-base';
 import { toLatex } from '../latex-generator';
-import { tidyTerms } from '../tidy/terms';
+import { finalDerivative } from './final-form';
 import { transformAST } from '../visitor';
 
 /** Les étapes complétées, et la dérivée rangée qu'elles démontrent. */
 export interface TidiedDerivation {
 	readonly steps: readonly RenderedStep[];
-	/** La dérivée rangée (`tidyTerms`) — la dernière ligne des étapes. */
+	/** La dérivée sous sa forme finale (`finalDerivative`) — la dernière ligne des étapes. */
 	readonly derivative: MathNode;
 	readonly derivativeLatex: string;
 }
@@ -56,7 +57,7 @@ export function withTidyStep(
 	derivative: MathNode,
 	f: MathNode
 ): TidiedDerivation {
-	const tidied = tidyTerms(derivative, { domain: [f] });
+	const tidied = finalDerivative(derivative, f);
 	const derivativeLatex = toLatex(tidied);
 	if (derivativeLatex === toLatex(derivative)) {
 		return { steps, derivative: tidied, derivativeLatex };

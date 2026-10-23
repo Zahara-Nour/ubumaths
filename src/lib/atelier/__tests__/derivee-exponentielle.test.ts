@@ -42,7 +42,8 @@ describe('.dériver (étapes)', () => {
 		['e^(3x)', "f'(x) = 3 \\exponentialE^{3 x}"],
 		['2e^(-x)', "f'(x) = -2 \\exponentialE^{-x}"],
 		['e^(x^2)', "f'(x) = 2 x \\exponentialE^{x^2}"],
-		['x*e^x', "f'(x) = \\exponentialE^x + x \\exponentialE^x"],
+		// L'exponentielle commune en facteur (D1, lot 5a de simplify-carte)
+		['x*e^x', "f'(x) = \\left( x + 1 \\right) \\exponentialE^x"],
 		['2^x', "f'(x) = \\ln\\left( 2 \\right) \\times 2^x"]
 	])('%s', (input, expected) => {
 		expect(answer(input)).toBe(expected);
@@ -71,7 +72,7 @@ describe("g = f' (dérivée calculée par l'atelier)", () => {
 		['e^(3x)', '3e^{3x}'],
 		['2e^(-x)', '-2e^{-x}'],
 		['e^(x^2)', '2xe^{x^2}'],
-		['x*e^x', 'e^x+xe^x'],
+		['x*e^x', '(x+1)e^x'],
 		['2^x', 'ln(2)*2^x']
 	])('%s', (definition, expected) => {
 		expect(derivativeOf(definition)?.replace(/\s/g, '')).toBe(expected);

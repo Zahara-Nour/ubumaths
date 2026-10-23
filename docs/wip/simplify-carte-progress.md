@@ -10,7 +10,7 @@ _Mis à jour le 2026-10-23, après #1655 (Q19 mergé, pas en prod)._
 - **Prochaine action** : 5a (D1 + Q18), worktree neuf depuis `origin/main`. Dernière étape « On réduit » de f′ (`withTidyStep`) : numérateur `auto`, dénominateur gardé, division par le facteur commun si le domaine de f le permet ; seule l'exponentielle commune en facteur ; ordre canonique sans − en tête ; bug `(eˣ)²` / `e^{2x}` non regroupés par `auto` (quot-04), test rouge d'abord. Mesure : l'oracle (`KNOWN_FORM_DIFF`).
 - **En attente de David** : la vérification manuelle des espaces (#1642) sur chiph.re.
 - **Pièges en cours** : `(x^{0,5})′` écrit `0,5/x^{1/2}` (mixte, juste, laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-simplify-carte`, `feat/simplify-carte-5a-d1` (5a en cours).
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -750,3 +750,7 @@ Cause : `foldNumericSubtrees` (`pedagogical-differentiation/pipeline.ts`) replia
 ## 52. Q19 mergé (#1655, 2026-10-23)
 
 Revue `code-reviewer` (opus) : aucune valeur fausse. Corrigés avant le merge : `tidyTerms` gardait `2x/1,5` (même nombre de nœuds que `4x/3`) — un décimal sous la barre suit maintenant Q3 ; `4^{1/2}x²` donnait `2x × 4^{1/2}` — si `tidy` laisse une puissance numérique, l'ancien repli par `evaluate` reprend. Laissé : `(x^{0,5})′ = 0,5/x^{1/2}`. Au passage : `template-fact-sheet.test.ts`, rouge sur `main` (croisement #1650 / #1652), mis à l'ordre du registre. CI verte (16/16).
+
+## 53. Lot 5a lancé (branche `feat/simplify-carte-5a-d1`, 2026-10-23)
+
+D1 révisée (§ 17) + Q18 (§ 50) dans `withTidyStep` ; bug quot-04 d'abord en test rouge. Codé par `mathast-expert`.

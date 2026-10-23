@@ -28,7 +28,10 @@ import { substituteFunction } from '$lib/mathAST/eval/function-bindings';
 import { toCustom } from '$lib/mathAST/custom-generator';
 import { toLatex } from '$lib/mathAST/latex-generator';
 import { differentiate } from '$lib/mathAST/differentiation';
-import { tidyTerms } from './tidy-terms';
+import {
+	finalDerivative,
+	finalDerivativeOf
+} from '$lib/mathAST/pedagogical-differentiation/final-form';
 import { radiansInTrigonometry } from './angle-radians';
 import { derivativeOf } from './names';
 import { INTERNAL_LETTER } from './letter';
@@ -277,10 +280,10 @@ function expandedCopy(
 			// Dériver autant de fois que l'apostrophe le demande : `f''` existe.
 			let derived = target.expression;
 			for (let order = 0; order < (current.derivativeOrder ?? 1); order++) {
-				// Terme à terme : `differentiate` écrit a·n·xⁿ⁻¹ sans calculer le
-				// produit (`3*3x^2` sur la carte f′, retour de David) ; l'ordre des
-				// termes reste celui de la règle (voir `tidy-terms.ts`).
-				derived = tidyTerms(differentiate(derived), { domain: [target.expression] });
+				// La forme finale de f′, celle des corrections et de `.dériver`
+				// (D1, lot 5a de simplify-carte) : `differentiate` écrit a·n·xⁿ⁻¹ sans
+				// calculer le produit (`3*3x^2` sur la carte f′, retour de David).
+				derived = finalDerivative(differentiate(derived), target.expression);
 			}
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];
@@ -723,18 +726,29 @@ function substitutedTree(
  * aller-retour texte rouvrait un défaut (`sin` relu `s i n`, `\\pi x` collé,
  * `x^{-2/3}/3` en barre oblique). Ici, l'arbre va droit à `toLatex`.
  *
- * `tidyTerms` APRÈS la substitution : la dérivée est rangée avant, mais les
- * paramètres (a = 3) et les fonctions citées (`g(2x)`) n'arrivent qu'ensuite —
- * sans cette passe, `2 × 2 × 2x` restait tel quel. Même mise au propre que
- * `.dériver` dans Calcul.
+ * La forme finale de f′ (D1 et Q18) calculée sur f DÉJÀ substituée, une seule
+ * fois (`finalDerivativeOf`) : les paramètres (a = 3) et les fonctions citées
+ * (`g(2x)`) n'arrivent qu'à la substitution — dériver avant, puis remettre en
+ * forme après, appliquait la forme finale deux fois et la carte divergeait du
+ * bouton « Dériver » (`−1/(2x²)` contre `−2/(4x²)`, revue du lot 5a). Même
+ * calcul que le bouton et `.dériver` : étapes pédagogiques, puis
+ * `finalDerivative` avec le domaine de f (S3). Un nom qui n'est pas une
+ * dérivée, ou une f qui ne se substitue pas : la dérivée de `expandDerivatives`,
+ * déjà mise en forme.
  */
 export function derivativeAstOf(
 	atelier: Atelier,
 	name: string
 ):
 	{ readonly ok: true; readonly ast: MathNode } | { readonly ok: false; readonly message: string } {
+	// La carte elle-même d'abord : son état (erreur, en attente) décide de l'affichage
 	const result = substitutedAstOf(atelier, name);
-	return result.ok ? { ok: true, ast: tidyTerms(result.ast) } : result;
+	if (!result.ok) return result;
+	const derivative = derivativeOf(name);
+	if (derivative === null) return result;
+	const f = substitutedAstOf(atelier, derivative.base, { forDerivation: true });
+	const ast = f.ok ? finalDerivativeOf(f.ast, derivative.order) : null;
+	return ast === null ? result : { ok: true, ast };
 }
 
 export function expressionOf(

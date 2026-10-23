@@ -204,7 +204,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: '(2x+1)^2',
 		custom: '(2x+1)^2',
 		f: (x) => (2 * x + 1) ** 2,
-		expected: '4(2x+1)'
+		expected: '8x+4'
 	},
 	{
 		id: 'poly-14',
@@ -526,7 +526,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: R`\frac{2x}{x^2-9}`,
 		custom: '2x/(x^2-9)',
 		f: (x) => (2 * x) / (x * x - 9),
-		expected: R`\frac{-2x^2-18}{(x^2-9)^2}`
+		expected: R`-\frac{2x^2+18}{(x^2-9)^2}`
 	},
 	{
 		id: 'rat-19',
@@ -1494,7 +1494,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		latex: R`\cos(-x)`,
 		custom: 'cos(-x)',
 		f: (x) => cos(-x),
-		expected: R`\sin(-x)`
+		expected: R`-\sin x`
 	},
 	{
 		id: 'trig-25',
@@ -2006,7 +2006,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		custom: 'e^(e^x)',
 		f: (x) => exp(exp(x)),
 		points: [-2.3, -1.4, -0.65, 0.35, 0.9, 1.3],
-		expected: R`e^xe^{e^x}`
+		expected: R`e^{e^x+x}`
 	},
 	{
 		id: 'comp-08',
@@ -2315,7 +2315,7 @@ export const CORPUS: readonly DerivativeCase[] = [
 		setup: ['g(x) = x^2', 'h(x) = 3x+1'],
 		custom: 'g(h(x))',
 		f: (x) => (3 * x + 1) ** 2,
-		expected: '6(3x+1)'
+		expected: '18x+6'
 	},
 	{
 		id: 'obj-07',

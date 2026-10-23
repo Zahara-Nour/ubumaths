@@ -8,7 +8,7 @@ couvre:
 > Code : `src/lib/mathAST/` · Agent spécialisé : `mathast-expert` (`.claude/agents/mathast-expert.md`).
 > Cette page remplace la vue d'ensemble de juin 2026 et le `README.md` de `src/lib/mathAST/`
 > (janvier), écrits avant `tidy`, la réécriture de `simplify()` (#378 → #389) et l'ADR 0007.
-> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23).
+> **Vérifié contre le code le 2026-10-11** (domaine : zéros transcendants, 2026-10-15 ; unité × terme, durées juxtaposées, 2026-10-20 ; virgule et point-virgule, 2026-10-21 ; symétrie et égalité de la console, 2026-10-22 ; `tidy` `order` et ordre des facteurs, `\times` devant `3^x`, 2026-10-23 ; espaces de groupement (règle du BIPM, réglage « Espaces dès 4 chiffres »), 2026-10-23 ; registre des règles de superflu, 2026-10-23 ; forme finale de f′, `(eˣ)²` regroupé avec `e^{2x}` par `auto`, racines n-ièmes dans `sqrt-square`/`square-sqrt`/`sqrt-quotient`, 2026-10-23).
 
 ## À quoi ça sert
 
@@ -1098,9 +1098,22 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   le terme déplacé factorisé et rangé par `tidy` (`\left(4 - \pi\right)x`, `\left(\sqrt{2} - 1\right)x`),
   et l'omet s'il est nul (`5x-0=x+1` : plus d'« On ajoute 0 »). Tests : `terme-negatif-deplace.test.ts`.
 - **Dérivées et primitives finissent par « On simplifie ».** Les règles laissent le
-  résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit avec
-  `tidyTerms` (`tidy/terms.ts`, l'ordre de la règle gardé : `tidy({ order: 'kept' })`). Dérivées : `withTidyStep`
-  (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant ; avant lui, la dérivée brute
+  résultat brut (la méthode, qu'on garde visible) ; une dernière étape l'écrit au propre.
+  Primitives : `tidyTerms` (`tidy/terms.ts`, l'ordre de la règle gardé : `tidy({ order: 'kept' })`).
+  Dérivées : `withTidyStep` (`pedagogical-differentiation/tidy-step.ts`), ajouté par l'appelant
+  (corrections, `.dériver`, bouton), écrit la **forme finale** `finalDerivative` (`final-form.ts`,
+  simplify-carte lot 5a). La carte f′ (`derivativeAstOf`) la calcule UNE fois sur f déjà
+  substituée (`finalDerivativeOf` : étapes pédagogiques, repli sur `differentiate`), même rendu
+  que le bouton. Quotient → division par la puissance commune permise par le domaine de f,
+  cherchée sur le numérateur BRUT (`(2x − x²)/x⁴ → (2 − x)/x³`, `(1 − x)eˣ/(eˣ)² → (1 − x)/eˣ`,
+  `(x²/(x−1)²)′ = −2x/(x−1)³`), puis numérateur `auto`, dénominateur gardé, et le quotient entier
+  par `auto` s'il raccourcit (`((x²−1)/(x+1))′ = 1`, `−2/(4x²) → −1/(2x²)`), signe de la barre selon
+  `tidy` (« Le signe d'une fraction », [tidy-spec.md](tidy-spec.md) : `−7/(x−3)²`,
+  `−(2x² + 18)/(x² − 9)²`, David 2026-10-23) ; exponentielle commune (`eᵘ` ou `\exp(u)`) → elle seule en
+  facteur, le reste développé réduit (`xeˣ → (x + 1)eˣ`, jamais `x(2 − x)e^{−x}`) ;
+  sinon `auto` (`((2x+1)²)′ = 8x + 4`). Un simple réordonnement de `tidyTerms` garde l'ordre de la
+  règle (`sin x + x cos x`). La console `.diff` (`pnpm math`) reste sur `tidyTerms` (`/calc` à
+  supprimer, David 2026-10-23) ; avant lui, la dérivée brute
   replie ses sous-arbres numériques par `tidy` (`foldNumericSubtrees`), donc un décimal tapé reste
   décimal (`(0,5x² − 1,5x)′ = x − 1,5`, simplify-carte Q19). Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape

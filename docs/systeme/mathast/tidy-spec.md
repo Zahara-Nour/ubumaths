@@ -471,7 +471,7 @@ km/h`), 2026-09-27.
   puissance négative ou d'exposant variable y sont non nuls, et un produit non
   nul a tous ses facteurs non nuls : avec `f = ln(kx)`, `k/(kx) → 1/x` ; avec
   `f = x ln x`, `x·(1/x) → 1`. Les dérivées le passent toutes (`tidyTerms`,
-  `withTidyStep`, `reducedDerivative`, `.diff`, la carte f′ de l'Atelier).
+  `finalDerivative` de `withTidyStep` et de la carte f′ de l'Atelier, `reducedDerivative`, `.diff`).
   Limite connue : une somme n'y est pas ramenée à sa partie primitive —
   `1/(2x+2)` dit `2x+2 ≠ 0`, pas `x+1 ≠ 0`.
 - `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
@@ -499,7 +499,8 @@ km/h`), 2026-09-27.
 
 `simplify` (§B), l'Atelier (`src/lib/atelier/`), `solve`, les variations, les
 limites, la réciproque, l'intégration (forme de classe, valeur interdite), les
-dérivées des corrections (`withTidyStep`), le REPL, la lecture de la valeur
+dérivées des corrections (`withTidyStep`, par `finalDerivative` : `tidy` autour de
+la politique `auto`), le REPL, la lecture de la valeur
 d'une grandeur (`questions/units/parser.ts`).
 
 ### G.3 ⚠️ La validation des réponses n'utilise pas `tidy`

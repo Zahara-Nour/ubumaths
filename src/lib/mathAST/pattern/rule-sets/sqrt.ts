@@ -12,10 +12,11 @@
  * @module mathAST/pattern/rule-sets/sqrt
  */
 
-import { multiply } from '../../factory';
+import { divide, func, multiply } from '../../factory';
 import { hashMathNode } from '../../normal/hash';
 import type { MathNode } from '../../types';
 import { P } from '../builder';
+import { tryMatch } from '../match';
 import { createRule } from '../rule';
 import { getBindingNode } from '../types';
 import type { Rule } from '../types';
@@ -48,7 +49,7 @@ const sqrtOne = createRule(P.func('sqrt', [P.num(1)]), P.num(1), {
  * `x^{2/3}`. Même angle mort que dans `normal/rules/radicals.ts` et dans deux
  * endroits de `normal/normalize.ts`.
  */
-function isPlainSqrt(node: MathNode): boolean {
+export function isPlainSqrt(node: MathNode): boolean {
 	return (
 		node.type === 'function' &&
 		node.name === 'sqrt' &&
@@ -94,12 +95,39 @@ const sqrtProduct = createRule(
 	}
 );
 
-/** sqrt(x / y) = sqrt(x) / sqrt(y) */
+/**
+ * sqrt(x / y) = sqrt(x) / sqrt(y) — racine carrée seulement : l'indice perdu,
+ * `∛(x/2)` devenait `√x/√2` (lot 5a de simplify-carte).
+ */
 const sqrtQuotient = createRule(
-	P.func('sqrt', [P.div(P._('x'), P._('y'))]),
-	P.div(P.func('sqrt', [P._('x')]), P.func('sqrt', [P._('y')])),
-	{ name: 'sqrt-quotient' }
+	P._('root', P.custom(isPlainSqrt, 'racine carrée')),
+	(bindings) => {
+		const quotient = quotientRadicand(getBindingNode(bindings, 'root'));
+		// Inatteignable : `condition` a déjà exigé √(x/y).
+		if (quotient === null) throw new Error('sqrt-quotient: radicande quotient absent');
+		return divide(func('sqrt', [quotient.x]), func('sqrt', [quotient.y]), 'fraction');
+	},
+	{
+		name: 'sqrt-quotient',
+		condition: (bindings) => quotientRadicand(getBindingNode(bindings, 'root')) !== null
+	}
 );
+
+/** Le motif du radicande de `√(x/y)`. */
+const QUOTIENT = P.div(P._('x'), P._('y'));
+
+/** `x` et `y` quand le nœud est la racine carrée `√(x/y)`, sinon `null`. */
+function quotientRadicand(
+	root: MathNode | null
+): { readonly x: MathNode; readonly y: MathNode } | null {
+	if (root === null || !isPlainSqrt(root) || (root.type === 'function' && root.power !== undefined))
+		return null;
+	const bindings = tryMatch(QUOTIENT, plainRadicand(root));
+	if (bindings === undefined) return null;
+	const x = getBindingNode(bindings, 'x');
+	const y = getBindingNode(bindings, 'y');
+	return x === null || y === null ? null : { x, y };
+}
 
 // =============================================================================
 // Exports
