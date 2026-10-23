@@ -516,9 +516,15 @@ export function generatePedagogicalSimplifySteps(
 			// x ≠ −1. Ses deux membres sont déjà factorisés, et le reste le reste.
 			const keep = (n: MathNode) => n;
 			const fractions = simplifyPolynomialFractions(factored, keep, keep, makeStep);
-			const result = fractions.result;
+			// Une fraction facteur d'un produit laisse `3·1` : mis au propre dans la
+			// dernière étape, comme la factorisation (revue)
+			const result =
+				fractions.steps.length > 0 ? tidyWithoutReordering(fractions.result) : fractions.result;
+			const fractionSteps = fractions.steps.map((step, index) =>
+				index === fractions.steps.length - 1 ? { ...step, globalAfter: result } : step
+			);
 			// Ids renumérotés : les étapes jetées (stratégie 6) ont consommé le compteur
-			const steps = [...strategySteps, ...fractions.steps].map((step, index) => ({
+			const steps = [...strategySteps, ...fractionSteps].map((step, index) => ({
 				...step,
 				id: index + 1
 			}));

@@ -109,6 +109,11 @@ type MutableFactor = {
 	 * dénominateur à une base qui peut s'annuler (S3, `keepDomain`).
 	 */
 	denominator: Rational;
+	/**
+	 * La base s'est rencontrée de part et d'autre de la barre : c'est
+	 * `keepDomain` qui dira si elle se simplifie, donc si le geste se nomme.
+	 */
+	crossed: boolean;
 };
 
 /**
@@ -442,12 +447,17 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 
 	if (existing === undefined) {
 		if (isZeroRational(exponent)) return;
-		acc.factors.set(key, { base, exponent, key, denominator });
+		acc.factors.set(key, { base, exponent, key, denominator, crossed: false });
 		return;
 	}
 
 	// Deux facteurs de même base se rejoignent : « on regroupe les facteurs ».
-	acc.watch?.add('factors');
+	// De part et d'autre de la barre, le geste n'est nommé que s'il a lieu (S3).
+	if (isNegativeRational(existing.exponent) === isNegativeRational(exponent)) {
+		acc.watch?.add('factors');
+	} else {
+		existing.crossed = true;
+	}
 
 	// Un exposant nul n'efface pas encore le facteur : `keepDomain` décide, une
 	// fois le terme lu, si la base peut quitter le dénominateur.
@@ -462,7 +472,7 @@ function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
  * peut pas valoir 0 (`eˣ/eˣ`, `(x²+1)/(x²+1)`) ou sous hypothèse déclarée.
  * Sinon elle est écrite des deux côtés, exposants cumulés : `x³·x/x² → x⁴/x²`.
  */
-function keepDomain(factor: MutableFactor, settings: Settings): TidyFactor[] {
+function keepDomain(factor: MutableFactor, settings: Settings, watch: FamilyWatch): TidyFactor[] {
 	const { base, exponent, key, denominator } = factor;
 	const leavesDenominator = isNegativeRational(denominator) && !isNegativeRational(exponent);
 	const known = settings.nonZero.has(key) || cannotVanish(base, settings.typeCtx);
@@ -472,6 +482,7 @@ function keepDomain(factor: MutableFactor, settings: Settings): TidyFactor[] {
 			{ base, exponent: denominator, key }
 		];
 	}
+	if (factor.crossed) watch?.add('factors');
 	return isZeroRational(exponent) ? [] : [{ base, exponent, key }];
 }
 
@@ -1002,7 +1013,7 @@ function toTerm(
 	if (acc.signCount >= 2) acc.watch?.add('signs');
 
 	const factors: TidyFactor[] = [...acc.factors.values()].flatMap((factor) =>
-		keepDomain(factor, acc.settings)
+		keepDomain(factor, acc.settings, acc.watch)
 	);
 
 	const composed = composeUnit(acc.unitSymbols);
@@ -1128,6 +1139,9 @@ function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
 	if (numerators.length !== 1 || numerator.exponent.n !== 1n || numerator.exponent.d !== 1n) {
 		return null;
 	}
+	// Une base gardée des deux côtés de la barre (S3) ne se retourne pas :
+	// `(x−1)/(x−1)` deviendrait `−(1−x)/(x−1)`, que rien ne remet d'aplomb (revue)
+	if (splitKeys(term.factors).has(numerator.key)) return null;
 
 	const terms = toSumTerms(numerator.base, undefined, settings);
 	const negatives = terms.filter((inner) => isNegativeRational(inner.coefficient));
