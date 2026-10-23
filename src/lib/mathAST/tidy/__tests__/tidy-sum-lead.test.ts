@@ -377,8 +377,8 @@ describe('complexe : témoins de l’ordre des facteurs et des termes', () => {
 		['i^2-1', '\\imaginaryI^2 - 1'],
 		['\\frac{1}{i}-1', '-1 + \\dfrac{1}{\\imaginaryI}'],
 		['|1+i|-2', '\\left| 1 + \\imaginaryI \\right| - 2'],
-		// les facteurs se rangent par leur écriture : `-2 + i` passe devant `1 - i`
-		['(1-i)(-2+i)', '\\left( -2 + \\imaginaryI \\right) \\left( 1 - \\imaginaryI \\right)']
+		// entre deux parenthèses, l'ordre écrit reste (Q13, lot 4c-bis, 2026-10-23)
+		['(1-i)(-2+i)', '\\left( 1 - \\imaginaryI \\right) \\left( -2 + \\imaginaryI \\right)']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(l(input)).toBe(expected);
 	});
