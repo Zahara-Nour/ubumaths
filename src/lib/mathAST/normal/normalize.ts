@@ -4334,8 +4334,12 @@ function normalizeSqrt(node: MathNode & { type: 'function' }, ctx?: NormalizeCon
 					const hasExtractedCoeff =
 						numSimplified.coefficient !== 1n || denSimplified.coefficient !== 1n;
 					const hasExtractedMonomial = extractedFactors.length > 0;
+					// Une fraction numérique dont aucun carré ne sort se rationalise
+					// aussi : `√(1/3) = √3/3`. Restée opaque, elle n'était égale à
+					// rien d'autre qu'elle-même (simplify-carte, § 39)
+					const isNumericFraction = ratValue.d !== 1n && monomial.length === 0;
 
-					if (hasExtractedCoeff || hasExtractedMonomial) {
+					if (hasExtractedCoeff || hasExtractedMonomial || isNumericFraction) {
 						// Build the extracted coefficient: numCoeff / denCoeff
 						const extractedCoeff = algebraicFromRational(
 							rational(numSimplified.coefficient, denSimplified.coefficient)

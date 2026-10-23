@@ -75,8 +75,9 @@ describe('eval : puissance d’une fraction à exposant calculé', () => {
 		['(2/3)^3', '\\dfrac{8}{27}'],
 		['0.7^(n-1)', '0.343'],
 		['2^(n-1)', '8'],
-		['(2/3)^(1/2)', '\\sqrt{\\dfrac{2}{3}}']
-	])('non-régression : {{eval:%s}} vaut toujours %s', (expression, expected) => {
+		// Dénominateur rationalisé, comme `1/√2 → √2/2` (simplify-carte, § 40)
+		['(2/3)^(1/2)', '\\dfrac{\\sqrt{6}}{3}']
+	])('non-régression : {{eval:%s}} vaut %s', (expression, expected) => {
 		expect(attendu(expression)).toBe(expected);
 	});
 });
