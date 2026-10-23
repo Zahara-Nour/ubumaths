@@ -326,6 +326,10 @@ Aucun lien `href="/constructions"` dans `src/` hors de ces routes : on y arrive 
 | `POST /api/constructions/convert`                    | `teacher`, `admin`                     | `xml` ≤ 5 Mo ; ancien convertisseur → JSON ; 1000 étapes au plus                                                                                     |
 | `GET`/`POST`/`DELETE /api/construction-demo-scripts` | `requireRoles` prof ou admin           | `name` ≤ 100, `dsl_script` ≤ 100 000 ; `upsert` sur (`author_id`, `name`) ; `DELETE ?id=` UUID, `.select()` : zéro ligne → 404                       |
 
+**Aucun nom d'auteur** (décision de David, 2026-10-24) : ni l'API ni les pages `/constructions` et
+`/constructions/[id]` ne lisent le prénom ou le nom du profil ; seul `author_id` sert, pour les droits
+(propriétaire, édition, suppression).
+
 Qui écrit : `CONSTRUCTION_AUTHOR_ROLES` et `canAuthorConstructions` (`src/lib/server/constructions-access.ts`),
 prof et admin (décision de David du 2026-10-22), et aussi pour les scripts de démo (2026-10-23). La base tient la même règle (migrations
 `20261022200000`, `20261023150000`) : les gardes de l'API et des pages ne font que répondre 403 et masquer les boutons.
