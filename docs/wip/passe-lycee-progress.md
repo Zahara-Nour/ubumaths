@@ -6,20 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-24, #1657 ouverte, CI bloquée par `main`._
+_Mis à jour le 2026-10-24, après #1657._
 
 - **État** : scissions CLOSES (#1646, #1651, #1654 jouées, prod 19/19). #1657 (retouches de forme de 5 brouillons
-  de #1651, aucun neuf ni tag) : revues Opus sans bloquant, CI verte SAUF « Server Tests 1/4 » :
-  `derivatives-oracle.test.ts`, hook > 10 s, rouge aussi sur `main` depuis #1656 (simplify-carte), vert en local.
-- **Prochaine action** : `main` réparé → mettre la branche à jour, CI verte, merge, `db:migrate` (par David),
-  relecture prod (MCP) ; puis versement (fin de chantier). Rollbacks « trop stricts » de #1651 / #1654 : classés
-  sans suite (David, 2026-10-23), à noter au versement.
-- **En attente** : réparation de l'oracle sur `main` par la session simplify-carte (décision de David, prévenue le
-  2026-10-24) ; `db:migrate` par David après merge (refusé au mode auto).
+  de #1651) MERGÉE ; migration `20261024020000_passe_lycee_retouches` pas encore jouée.
+- **Prochaine action** : après le `db:migrate` de David, relire la prod (MCP : md5 des 5 = `apres` de la fixture,
+  1 tag chacun, brouillons) ; puis versement (fin de chantier). Rollbacks « trop stricts » de #1651 / #1654 :
+  classés sans suite (David, 2026-10-23), à noter au versement.
+- **En attente de David** : `db:migrate` depuis le dépôt principal (refusé au mode auto).
 - **Pièges en cours** : un modèle a au plus un point par programme (trigger) ; `question:specs --file` : convertir par
-  `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant
-  tout `tsx` ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `fix/passe-lycee-retouches`.
+  `toQuestionTemplate` (retirer `created_at`, `updated_at`, `created_by`) ; `REECRIRE_MIGRATION=1` pour une
+  migration jamais jouée.
+- **Worktree / branche** : aucun (worktree `passe-lycee` retiré après #1657).
 
 ## Les 5 étapes
 
@@ -328,3 +326,6 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   accès ouvert, rollback sûr). `code-reviewer` : aucun bloquant (« ≠ » vrais sur toutes les valeurs tirables,
   4 migrations régénérées à l'identique) ; corrigé : le test « tag déjà posé », d'abord sauté pour ce lot, y tourne
   avec un point de 1re générale / techno (cas réel : un tag 1GEN posé entre relevé et migration).
+- **2026-10-24 — #1657 mergée.** CI bloquée par `derivatives-oracle.test.ts` (hook > 10 s, rouge sur `main` depuis
+  #1656) ; réparé par la session simplify-carte (#1661, à la demande de David), branche mise à jour, CI verte.
+  `db:migrate` à lancer par David.
