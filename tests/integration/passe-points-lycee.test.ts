@@ -15,6 +15,8 @@
  * 2. Le rollback écrit dans la migration rend l'état d'avant (ordres, libellés, nœuds, références,
  *    aucun code neuf), puis la migration se rejoue sur cet état (ses gardes passent) — le tout dans
  *    une transaction annulée.
+ *    (Les migrations venues après elle sont d'abord défaites, dans la transaction : 1 et 2 lisent
+ *    l'état qu'ELLE laisse.)
  * 3. La structure du fichier : gardes et lock_timeout avant la première écriture, aucun contrôle de
  *    transaction.
  *
@@ -25,6 +27,7 @@ import { readFileSync } from 'node:fs';
 import type { Client } from 'pg';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { extractRollback, TRANSACTION_CONTROL } from '../helpers/database/migration-rollback';
+import { PASSE_LYCEE, undoLaterMigrations } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -79,7 +82,7 @@ interface PointRow {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261022180000_passe_points_lycee.sql';
+const MIGRATION = PASSE_LYCEE;
 const fixture: Fixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/passe-lycee.json', 'utf-8')
 );
@@ -205,9 +208,17 @@ describe('Passe lycée : l’état après les migrations (base locale)', () => {
 	let references: string[];
 
 	beforeAll(async () => {
+		// L'état que cette migration a laissé : les migrations venues après elle sont défaites
+		// dans une transaction annulée (PR 2 de l'étape e : deux points neufs, quatre libellés).
 		const pg = await getPostgresClient();
-		points = await readPoints(pg);
-		references = await readReferences(pg);
+		await pg.query('begin');
+		try {
+			await undoLaterMigrations(pg, MIGRATION);
+			points = await readPoints(pg);
+			references = await readReferences(pg);
+		} finally {
+			await pg.query('rollback');
+		}
 	});
 
 	it('l’ordre d’affichage de chaque grade est EXACTEMENT celui de la fixture (1..N)', () => {
@@ -305,6 +316,7 @@ describe('Passe lycée : rollback puis rejeu (transaction annulée)', () => {
 		const pg = await getPostgresClient();
 		await pg.query('begin');
 		try {
+			await undoLaterMigrations(pg, MIGRATION);
 			await pg.query(extractRollback(MIGRATION));
 			before = { points: await readPoints(pg), references: await readReferences(pg) };
 			await pg.query(readFileSync(MIGRATION, 'utf-8'));

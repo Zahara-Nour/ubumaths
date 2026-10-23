@@ -25,6 +25,10 @@
  * le 2026-10-22) : coupes, points ⚙ et puces rétablies → 294 points ; fixture transformée par
  * docs/wip/passe-lycee/generer-migration.py.
  *
+ * Puis la PR 2 de l'étape e (migration `20261023220000_passe_lycee_libelles_points`, décidée le
+ * 2026-10-23) : 2-273 retrouve « par exemple » ; fixture transformée par
+ * docs/wip/passe-lycee/generer-libelles-points.py.
+ *
  * @vitest-environment node
  */
 import { describe, it, expect, beforeAll } from 'vitest';

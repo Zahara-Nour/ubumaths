@@ -678,9 +678,22 @@
 			"sous_notion": "propriétés algébriques"
 		},
 		{
-			"code": "TCOMP-237",
+			"code": "TCOMP-379",
 			"grade": "T_COMP",
 			"display_order": 53,
+			"name": "Utiliser l'équation fonctionnelle de l'exponentielle pour transformer une écriture",
+			"kind": "savoir_faire",
+			"exigence": "attendu",
+			"regime_acquisition": "diversite",
+			"rubrique": "Analyse > Fonctions : continuité, dérivabilité, limites, représentation graphique",
+			"branche": "Fonctions",
+			"notion": "Fonction exponentielle",
+			"sous_notion": "propriétés algébriques"
+		},
+		{
+			"code": "TCOMP-237",
+			"grade": "T_COMP",
+			"display_order": 54,
 			"name": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une équation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -693,7 +706,7 @@
 		{
 			"code": "TCOMP-344",
 			"grade": "T_COMP",
-			"display_order": 54,
+			"display_order": 55,
 			"name": "Utiliser l'équation fonctionnelle de l'exponentielle pour résoudre une inéquation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -706,7 +719,7 @@
 		{
 			"code": "TCOMP-238",
 			"grade": "T_COMP",
-			"display_order": 55,
+			"display_order": 56,
 			"name": "Utiliser l'équation fonctionnelle du logarithme pour résoudre une équation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -719,7 +732,7 @@
 		{
 			"code": "TCOMP-345",
 			"grade": "T_COMP",
-			"display_order": 56,
+			"display_order": 57,
 			"name": "Utiliser l'équation fonctionnelle du logarithme pour résoudre une inéquation",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -732,7 +745,7 @@
 		{
 			"code": "TCOMP-239",
 			"grade": "T_COMP",
-			"display_order": 57,
+			"display_order": 58,
 			"name": "Utiliser la relation $\\ln q^n = n \\ln q$ pour déterminer un seuil",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -745,7 +758,7 @@
 		{
 			"code": "TCOMP-240",
 			"grade": "T_COMP",
-			"display_order": 58,
+			"display_order": 59,
 			"name": "Relation $\\ln(ab) = \\ln a + \\ln b$ (démonstration)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -758,7 +771,7 @@
 		{
 			"code": "TCOMP-346",
 			"grade": "T_COMP",
-			"display_order": 59,
+			"display_order": 60,
 			"name": "Relation $\\ln\\left(\\frac{1}{a}\\right) = -\\ln a$ (démonstration)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -771,7 +784,7 @@
 		{
 			"code": "TCOMP-241",
 			"grade": "T_COMP",
-			"display_order": 60,
+			"display_order": 61,
 			"name": "Calcul de la fonction dérivée du logarithme, en admettant sa dérivabilité",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -784,7 +797,7 @@
 		{
 			"code": "TCOMP-242",
 			"grade": "T_COMP",
-			"display_order": 61,
+			"display_order": 62,
 			"name": "Calcul de la fonction dérivée de $\\ln u$",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -797,7 +810,7 @@
 		{
 			"code": "TCOMP-347",
 			"grade": "T_COMP",
-			"display_order": 62,
+			"display_order": 63,
 			"name": "Calcul de la fonction dérivée de $\\exp u$",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -810,7 +823,7 @@
 		{
 			"code": "TCOMP-243",
 			"grade": "T_COMP",
-			"display_order": 63,
+			"display_order": 64,
 			"name": "Méthode de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : balayage",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -823,7 +836,7 @@
 		{
 			"code": "TCOMP-348",
 			"grade": "T_COMP",
-			"display_order": 64,
+			"display_order": 65,
 			"name": "Méthode de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : dichotomie",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -836,7 +849,7 @@
 		{
 			"code": "TCOMP-349",
 			"grade": "T_COMP",
-			"display_order": 65,
+			"display_order": 66,
 			"name": "Méthode de recherche de valeurs approchées d'une solution d'équation du type $f(x) = k$ : méthode de Newton",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -849,7 +862,7 @@
 		{
 			"code": "TCOMP-244",
 			"grade": "T_COMP",
-			"display_order": 66,
+			"display_order": 67,
 			"name": "Algorithme de Briggs pour le calcul de logarithmes",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -862,7 +875,7 @@
 		{
 			"code": "TCOMP-245",
 			"grade": "T_COMP",
-			"display_order": 67,
+			"display_order": 68,
 			"name": "Sur des exemples, notion d'une solution d'équation différentielle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -875,7 +888,7 @@
 		{
 			"code": "TCOMP-246",
 			"grade": "T_COMP",
-			"display_order": 68,
+			"display_order": 69,
 			"name": "Notion de primitive, en liaison avec l'équation différentielle $y' = f$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -888,7 +901,7 @@
 		{
 			"code": "TCOMP-247",
 			"grade": "T_COMP",
-			"display_order": 69,
+			"display_order": 70,
 			"name": "Deux primitives d'une même fonction continue sur un intervalle diffèrent d'une constante",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -901,7 +914,7 @@
 		{
 			"code": "TCOMP-248",
 			"grade": "T_COMP",
-			"display_order": 70,
+			"display_order": 71,
 			"name": "Équation différentielle $y' = ay + b$, où $a$ et $b$ sont des réels",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -914,7 +927,7 @@
 		{
 			"code": "TCOMP-249",
 			"grade": "T_COMP",
-			"display_order": 71,
+			"display_order": 72,
 			"name": "Allure des courbes des solutions de l'équation différentielle $y' = ay + b$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -927,7 +940,7 @@
 		{
 			"code": "TCOMP-250",
 			"grade": "T_COMP",
-			"display_order": 72,
+			"display_order": 73,
 			"name": "Vérifier qu'une fonction donnée est solution d'une équation différentielle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -940,7 +953,7 @@
 		{
 			"code": "TCOMP-251",
 			"grade": "T_COMP",
-			"display_order": 73,
+			"display_order": 74,
 			"name": "Déterminer les primitives d'une fonction, en reconnaissant la dérivée d'une fonction de référence",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -953,7 +966,7 @@
 		{
 			"code": "TCOMP-252",
 			"grade": "T_COMP",
-			"display_order": 74,
+			"display_order": 75,
 			"name": "Déterminer les primitives d'une fonction de la forme $2uu'$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -966,7 +979,7 @@
 		{
 			"code": "TCOMP-350",
 			"grade": "T_COMP",
-			"display_order": 75,
+			"display_order": 76,
 			"name": "Déterminer les primitives d'une fonction de la forme $e^{u}u'$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -979,7 +992,7 @@
 		{
 			"code": "TCOMP-351",
 			"grade": "T_COMP",
-			"display_order": 76,
+			"display_order": 77,
 			"name": "Déterminer les primitives d'une fonction de la forme $\\frac{u'}{u}$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -992,7 +1005,7 @@
 		{
 			"code": "TCOMP-253",
 			"grade": "T_COMP",
-			"display_order": 77,
+			"display_order": 78,
 			"name": "Résoudre une équation différentielle $y' = ay$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1005,7 +1018,7 @@
 		{
 			"code": "TCOMP-254",
 			"grade": "T_COMP",
-			"display_order": 78,
+			"display_order": 79,
 			"name": "Pour une équation différentielle $y' = ay + b$ : déterminer une solution particulière constante",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1018,7 +1031,7 @@
 		{
 			"code": "TCOMP-255",
 			"grade": "T_COMP",
-			"display_order": 79,
+			"display_order": 80,
 			"name": "Pour une équation différentielle $y' = ay + b$ : utiliser une solution particulière constante pour déterminer la solution générale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1031,7 +1044,7 @@
 		{
 			"code": "TCOMP-256",
 			"grade": "T_COMP",
-			"display_order": 80,
+			"display_order": 81,
 			"name": "Deux primitives d'une même fonction continue sur un intervalle diffèrent d'une constante (démonstration)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1044,7 +1057,7 @@
 		{
 			"code": "TCOMP-257",
 			"grade": "T_COMP",
-			"display_order": 81,
+			"display_order": 82,
 			"name": "Résolution de l'équation différentielle $y' = ay$",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1057,7 +1070,7 @@
 		{
 			"code": "TCOMP-258",
 			"grade": "T_COMP",
-			"display_order": 82,
+			"display_order": 83,
 			"name": "Sur des exemples, résolution approchée d'une équation différentielle par la méthode d'Euler",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1070,7 +1083,7 @@
 		{
 			"code": "TCOMP-259",
 			"grade": "T_COMP",
-			"display_order": 83,
+			"display_order": 84,
 			"name": "Dérivée seconde d'une fonction",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1083,7 +1096,7 @@
 		{
 			"code": "TCOMP-260",
 			"grade": "T_COMP",
-			"display_order": 84,
+			"display_order": 85,
 			"name": "Fonction convexe sur un intervalle : définition par la position relative de la courbe représentative et des sécantes",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1096,7 +1109,7 @@
 		{
 			"code": "TCOMP-261",
 			"grade": "T_COMP",
-			"display_order": 85,
+			"display_order": 86,
 			"name": "Lorsque $f$ est dérivable, équivalence admise avec la position de la courbe par rapport aux tangentes",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1109,7 +1122,7 @@
 		{
 			"code": "TCOMP-262",
 			"grade": "T_COMP",
-			"display_order": 86,
+			"display_order": 87,
 			"name": "Caractérisation admise de la convexité par la croissance de $f'$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1122,7 +1135,7 @@
 		{
 			"code": "TCOMP-352",
 			"grade": "T_COMP",
-			"display_order": 87,
+			"display_order": 88,
 			"name": "Caractérisation admise de la convexité par la positivité de $f''$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1135,7 +1148,7 @@
 		{
 			"code": "TCOMP-263",
 			"grade": "T_COMP",
-			"display_order": 88,
+			"display_order": 89,
 			"name": "Point d'inflexion",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1148,7 +1161,7 @@
 		{
 			"code": "TCOMP-264",
 			"grade": "T_COMP",
-			"display_order": 89,
+			"display_order": 90,
 			"name": "Reconnaitre sur une représentation graphique une fonction convexe, concave",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1161,7 +1174,7 @@
 		{
 			"code": "TCOMP-353",
 			"grade": "T_COMP",
-			"display_order": 90,
+			"display_order": 91,
 			"name": "Reconnaitre sur une représentation graphique un point d'inflexion",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1174,7 +1187,7 @@
 		{
 			"code": "TCOMP-265",
 			"grade": "T_COMP",
-			"display_order": 91,
+			"display_order": 92,
 			"name": "Étudier la convexité, la concavité, d'une fonction deux fois dérivable sur un intervalle",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1187,7 +1200,7 @@
 		{
 			"code": "TCOMP-266",
 			"grade": "T_COMP",
-			"display_order": 92,
+			"display_order": 93,
 			"name": "Définition de l'intégrale d'une fonction continue et positive sur $[a, b]$ comme aire sous la courbe. Notation $\\int_a^b f(x)\\,\\mathrm{d}x$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1200,7 +1213,7 @@
 		{
 			"code": "TCOMP-267",
 			"grade": "T_COMP",
-			"display_order": 93,
+			"display_order": 94,
 			"name": "Relation de Chasles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1213,7 +1226,7 @@
 		{
 			"code": "TCOMP-268",
 			"grade": "T_COMP",
-			"display_order": 94,
+			"display_order": 95,
 			"name": "Valeur moyenne d'une fonction continue sur $[a, b]$. Approche graphique et numérique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1226,7 +1239,7 @@
 		{
 			"code": "TCOMP-269",
 			"grade": "T_COMP",
-			"display_order": 95,
+			"display_order": 96,
 			"name": "La valeur moyenne est comprise entre les bornes de la fonction",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1239,7 +1252,7 @@
 		{
 			"code": "TCOMP-270",
 			"grade": "T_COMP",
-			"display_order": 96,
+			"display_order": 97,
 			"name": "Approximation d'une intégrale par la méthode des rectangles",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1252,7 +1265,7 @@
 		{
 			"code": "TCOMP-271",
 			"grade": "T_COMP",
-			"display_order": 97,
+			"display_order": 98,
 			"name": "Présentation de l'intégrale des fonctions continues de signe quelconque",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1265,7 +1278,7 @@
 		{
 			"code": "TCOMP-272",
 			"grade": "T_COMP",
-			"display_order": 98,
+			"display_order": 99,
 			"name": "Théorème : si $f$ est continue sur $[a, b]$, la fonction $F$ définie sur $[a, b]$ par $F(x) = \\int_a^x f(t)\\,\\mathrm{d}t$ est dérivable sur $[a, b]$ et a pour dérivée $f$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1278,7 +1291,7 @@
 		{
 			"code": "TCOMP-273",
 			"grade": "T_COMP",
-			"display_order": 99,
+			"display_order": 100,
 			"name": "Calcul d'intégrales à l'aide de primitives : si $F$ est une primitive de $f$, alors $\\int_a^b f(x)\\,\\mathrm{d}x = F(b) - F(a)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1291,7 +1304,7 @@
 		{
 			"code": "TCOMP-274",
 			"grade": "T_COMP",
-			"display_order": 100,
+			"display_order": 101,
 			"name": "Estimer graphiquement une intégrale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1304,7 +1317,7 @@
 		{
 			"code": "TCOMP-354",
 			"grade": "T_COMP",
-			"display_order": 101,
+			"display_order": 102,
 			"name": "Encadrer une intégrale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1317,7 +1330,7 @@
 		{
 			"code": "TCOMP-275",
 			"grade": "T_COMP",
-			"display_order": 102,
+			"display_order": 103,
 			"name": "Estimer graphiquement une valeur moyenne",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1330,7 +1343,7 @@
 		{
 			"code": "TCOMP-355",
 			"grade": "T_COMP",
-			"display_order": 103,
+			"display_order": 104,
 			"name": "Encadrer une valeur moyenne",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1343,7 +1356,7 @@
 		{
 			"code": "TCOMP-276",
 			"grade": "T_COMP",
-			"display_order": 104,
+			"display_order": 105,
 			"name": "Calculer une intégrale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1356,7 +1369,7 @@
 		{
 			"code": "TCOMP-277",
 			"grade": "T_COMP",
-			"display_order": 105,
+			"display_order": 106,
 			"name": "Calculer une valeur moyenne",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1369,7 +1382,7 @@
 		{
 			"code": "TCOMP-278",
 			"grade": "T_COMP",
-			"display_order": 106,
+			"display_order": 107,
 			"name": "Calculer l'aire sous une courbe",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1382,7 +1395,7 @@
 		{
 			"code": "TCOMP-279",
 			"grade": "T_COMP",
-			"display_order": 107,
+			"display_order": 108,
 			"name": "Calculer l'aire entre deux courbes",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1395,7 +1408,7 @@
 		{
 			"code": "TCOMP-280",
 			"grade": "T_COMP",
-			"display_order": 108,
+			"display_order": 109,
 			"name": "Interpréter une intégrale dans un contexte issu d'une autre discipline",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1408,7 +1421,7 @@
 		{
 			"code": "TCOMP-281",
 			"grade": "T_COMP",
-			"display_order": 109,
+			"display_order": 110,
 			"name": "Interpréter une valeur moyenne dans un contexte issu d'une autre discipline",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1421,7 +1434,7 @@
 		{
 			"code": "TCOMP-282",
 			"grade": "T_COMP",
-			"display_order": 110,
+			"display_order": 111,
 			"name": "Dérivée de $x \\mapsto \\int_a^x f(t)\\,\\mathrm{d}t$ lorsque $f$ est une fonction continue positive croissante",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1434,7 +1447,7 @@
 		{
 			"code": "TCOMP-283",
 			"grade": "T_COMP",
-			"display_order": 111,
+			"display_order": 112,
 			"name": "Méthode des rectangles",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1447,7 +1460,7 @@
 		{
 			"code": "TCOMP-356",
 			"grade": "T_COMP",
-			"display_order": 112,
+			"display_order": 113,
 			"name": "Méthode des trapèzes",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1460,7 +1473,7 @@
 		{
 			"code": "TCOMP-284",
 			"grade": "T_COMP",
-			"display_order": 113,
+			"display_order": 114,
 			"name": "Méthode de Monte-Carlo pour un calcul d'aire",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -1473,7 +1486,7 @@
 		{
 			"code": "TCOMP-285",
 			"grade": "T_COMP",
-			"display_order": 114,
+			"display_order": 115,
 			"name": "Loi uniforme sur $\\{1, 2, \\ldots, n\\}$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1486,7 +1499,7 @@
 		{
 			"code": "TCOMP-357",
 			"grade": "T_COMP",
-			"display_order": 115,
+			"display_order": 116,
 			"name": "Loi uniforme sur $\\{1, 2, \\ldots, n\\}$ : espérance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1499,7 +1512,7 @@
 		{
 			"code": "TCOMP-286",
 			"grade": "T_COMP",
-			"display_order": 116,
+			"display_order": 117,
 			"name": "Épreuve de Bernoulli. Loi de Bernoulli : définition",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1512,7 +1525,7 @@
 		{
 			"code": "TCOMP-358",
 			"grade": "T_COMP",
-			"display_order": 117,
+			"display_order": 118,
 			"name": "Loi de Bernoulli : espérance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1525,7 +1538,7 @@
 		{
 			"code": "TCOMP-359",
 			"grade": "T_COMP",
-			"display_order": 118,
+			"display_order": 119,
 			"name": "Loi de Bernoulli : écart type",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1538,7 +1551,7 @@
 		{
 			"code": "TCOMP-287",
 			"grade": "T_COMP",
-			"display_order": 119,
+			"display_order": 120,
 			"name": "Schéma de Bernoulli",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1551,7 +1564,7 @@
 		{
 			"code": "TCOMP-360",
 			"grade": "T_COMP",
-			"display_order": 120,
+			"display_order": 121,
 			"name": "Schéma de Bernoulli : représentation par un arbre",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1564,7 +1577,7 @@
 		{
 			"code": "TCOMP-288",
 			"grade": "T_COMP",
-			"display_order": 121,
+			"display_order": 122,
 			"name": "Coefficients binomiaux : définition (nombre de façons d'obtenir $k$ succès dans un schéma de Bernoulli de taille $n$)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1577,7 +1590,7 @@
 		{
 			"code": "TCOMP-361",
 			"grade": "T_COMP",
-			"display_order": 122,
+			"display_order": 123,
 			"name": "Coefficients binomiaux : triangle de Pascal",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1590,7 +1603,7 @@
 		{
 			"code": "TCOMP-362",
 			"grade": "T_COMP",
-			"display_order": 123,
+			"display_order": 124,
 			"name": "Coefficients binomiaux : symétrie",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1603,7 +1616,7 @@
 		{
 			"code": "TCOMP-289",
 			"grade": "T_COMP",
-			"display_order": 124,
+			"display_order": 125,
 			"name": "Variable aléatoire suivant une loi binomiale $\\mathcal{B}(n, p)$. Interprétation : nombre de succès dans le schéma de Bernoulli",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1616,7 +1629,7 @@
 		{
 			"code": "TCOMP-290",
 			"grade": "T_COMP",
-			"display_order": 125,
+			"display_order": 126,
 			"name": "Loi binomiale : expression",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1629,7 +1642,7 @@
 		{
 			"code": "TCOMP-291",
 			"grade": "T_COMP",
-			"display_order": 126,
+			"display_order": 127,
 			"name": "Loi binomiale : espérance (admise)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1642,7 +1655,7 @@
 		{
 			"code": "TCOMP-363",
 			"grade": "T_COMP",
-			"display_order": 127,
+			"display_order": 128,
 			"name": "Loi binomiale : écart type (admis)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1655,7 +1668,7 @@
 		{
 			"code": "TCOMP-292",
 			"grade": "T_COMP",
-			"display_order": 128,
+			"display_order": 129,
 			"name": "Loi binomiale : représentation graphique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1668,7 +1681,7 @@
 		{
 			"code": "TCOMP-293",
 			"grade": "T_COMP",
-			"display_order": 129,
+			"display_order": 130,
 			"name": "Loi géométrique : définition",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1681,7 +1694,7 @@
 		{
 			"code": "TCOMP-364",
 			"grade": "T_COMP",
-			"display_order": 130,
+			"display_order": 131,
 			"name": "Loi géométrique : expression",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1694,7 +1707,7 @@
 		{
 			"code": "TCOMP-365",
 			"grade": "T_COMP",
-			"display_order": 131,
+			"display_order": 132,
 			"name": "Loi géométrique : espérance (admise)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1707,7 +1720,7 @@
 		{
 			"code": "TCOMP-366",
 			"grade": "T_COMP",
-			"display_order": 132,
+			"display_order": 133,
 			"name": "Loi géométrique : représentation graphique",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1720,7 +1733,7 @@
 		{
 			"code": "TCOMP-294",
 			"grade": "T_COMP",
-			"display_order": 133,
+			"display_order": 134,
 			"name": "Loi géométrique : propriété caractéristique (loi sans mémoire)",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1733,7 +1746,7 @@
 		{
 			"code": "TCOMP-295",
 			"grade": "T_COMP",
-			"display_order": 134,
+			"display_order": 135,
 			"name": "Identifier des situations où une variable aléatoire suit une loi de Bernoulli",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1746,7 +1759,7 @@
 		{
 			"code": "TCOMP-367",
 			"grade": "T_COMP",
-			"display_order": 135,
+			"display_order": 136,
 			"name": "Identifier des situations où une variable aléatoire suit une loi binomiale",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1759,7 +1772,7 @@
 		{
 			"code": "TCOMP-368",
 			"grade": "T_COMP",
-			"display_order": 136,
+			"display_order": 137,
 			"name": "Identifier des situations où une variable aléatoire suit une loi géométrique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1772,7 +1785,7 @@
 		{
 			"code": "TCOMP-296",
 			"grade": "T_COMP",
-			"display_order": 137,
+			"display_order": 138,
 			"name": "Déterminer des coefficients binomiaux à l'aide du triangle de Pascal",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1785,7 +1798,7 @@
 		{
 			"code": "TCOMP-297",
 			"grade": "T_COMP",
-			"display_order": 138,
+			"display_order": 139,
 			"name": "Dans le cas où $X$ suit une loi binomiale, calculer à l'aide d'une calculatrice ou d'un logiciel les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$, etc.",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1798,7 +1811,7 @@
 		{
 			"code": "TCOMP-298",
 			"grade": "T_COMP",
-			"display_order": 139,
+			"display_order": 140,
 			"name": "Calculer explicitement les probabilités des événements de type $P(X = k)$ ou $P(X \\leqslant k)$ pour une variable aléatoire $X$ suivant une loi géométrique",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1811,7 +1824,7 @@
 		{
 			"code": "TCOMP-299",
 			"grade": "T_COMP",
-			"display_order": 140,
+			"display_order": 141,
 			"name": "Dans le cas où $X$ suit une loi binomiale, déterminer un intervalle $I$ pour lequel la probabilité $P(X \\in I)$ est inférieure à une valeur donnée $\\alpha$, ou supérieure à $1 - \\alpha$",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1824,7 +1837,7 @@
 		{
 			"code": "TCOMP-300",
 			"grade": "T_COMP",
-			"display_order": 141,
+			"display_order": 142,
 			"name": "Dans le cadre de la résolution de problème, utiliser l'espérance des lois précédentes (uniforme, de Bernoulli, binomiale, géométrique)",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1837,7 +1850,7 @@
 		{
 			"code": "TCOMP-301",
 			"grade": "T_COMP",
-			"display_order": 142,
+			"display_order": 143,
 			"name": "Utiliser en situation la caractérisation d'une loi géométrique par l'absence de mémoire",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1850,7 +1863,7 @@
 		{
 			"code": "TCOMP-302",
 			"grade": "T_COMP",
-			"display_order": 143,
+			"display_order": 144,
 			"name": "Calculer des probabilités dans des situations faisant intervenir des probabilités conditionnelles",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1863,7 +1876,7 @@
 		{
 			"code": "TCOMP-303",
 			"grade": "T_COMP",
-			"display_order": 144,
+			"display_order": 145,
 			"name": "Calculer des probabilités dans des situations faisant intervenir des répétitions d'expériences aléatoires",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -1876,7 +1889,7 @@
 		{
 			"code": "TCOMP-304",
 			"grade": "T_COMP",
-			"display_order": 145,
+			"display_order": 146,
 			"name": "Espérance d'une variable aléatoire suivant une loi de Bernoulli (démonstration)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1889,7 +1902,7 @@
 		{
 			"code": "TCOMP-369",
 			"grade": "T_COMP",
-			"display_order": 146,
+			"display_order": 147,
 			"name": "Écart type d'une variable aléatoire suivant une loi de Bernoulli (démonstration)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1902,7 +1915,7 @@
 		{
 			"code": "TCOMP-305",
 			"grade": "T_COMP",
-			"display_order": 147,
+			"display_order": 148,
 			"name": "Espérance d'une variable aléatoire uniforme sur $\\{1, 2, \\ldots, n\\}$",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1915,7 +1928,7 @@
 		{
 			"code": "TCOMP-306",
 			"grade": "T_COMP",
-			"display_order": 148,
+			"display_order": 149,
 			"name": "Espérance d'une variable aléatoire suivant une loi binomiale ($n \\leqslant 3$)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1928,7 +1941,7 @@
 		{
 			"code": "TCOMP-307",
 			"grade": "T_COMP",
-			"display_order": 149,
+			"display_order": 150,
 			"name": "Caractérisation d'une loi géométrique par l'absence de mémoire",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
@@ -1941,7 +1954,7 @@
 		{
 			"code": "TCOMP-308",
 			"grade": "T_COMP",
-			"display_order": 150,
+			"display_order": 151,
 			"name": "Notion de loi à densité à partir d'exemples",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1954,7 +1967,7 @@
 		{
 			"code": "TCOMP-370",
 			"grade": "T_COMP",
-			"display_order": 151,
+			"display_order": 152,
 			"name": "Représentation d'une probabilité comme une aire",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1967,7 +1980,7 @@
 		{
 			"code": "TCOMP-309",
 			"grade": "T_COMP",
-			"display_order": 152,
+			"display_order": 153,
 			"name": "Fonction de répartition $x \\mapsto P(X \\leqslant x)$",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1980,7 +1993,7 @@
 		{
 			"code": "TCOMP-310",
 			"grade": "T_COMP",
-			"display_order": 153,
+			"display_order": 154,
 			"name": "Espérance d'une loi à densité, expression sous forme d'intégrale",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -1993,7 +2006,7 @@
 		{
 			"code": "TCOMP-371",
 			"grade": "T_COMP",
-			"display_order": 154,
+			"display_order": 155,
 			"name": "Variance d'une loi à densité, expression sous forme d'intégrale",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2006,7 +2019,7 @@
 		{
 			"code": "TCOMP-311",
 			"grade": "T_COMP",
-			"display_order": 155,
+			"display_order": 156,
 			"name": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de densité",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2019,7 +2032,7 @@
 		{
 			"code": "TCOMP-372",
 			"grade": "T_COMP",
-			"display_order": 156,
+			"display_order": 157,
 			"name": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : fonction de répartition",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2032,7 +2045,7 @@
 		{
 			"code": "TCOMP-373",
 			"grade": "T_COMP",
-			"display_order": 157,
+			"display_order": 158,
 			"name": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : espérance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2045,7 +2058,7 @@
 		{
 			"code": "TCOMP-374",
 			"grade": "T_COMP",
-			"display_order": 158,
+			"display_order": 159,
 			"name": "Loi uniforme sur $[0, 1]$ puis sur $[a, b]$ : variance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2058,7 +2071,7 @@
 		{
 			"code": "TCOMP-312",
 			"grade": "T_COMP",
-			"display_order": 159,
+			"display_order": 160,
 			"name": "Loi exponentielle : fonction densité",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2071,7 +2084,7 @@
 		{
 			"code": "TCOMP-375",
 			"grade": "T_COMP",
-			"display_order": 160,
+			"display_order": 161,
 			"name": "Loi exponentielle : fonction de répartition",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2084,7 +2097,7 @@
 		{
 			"code": "TCOMP-376",
 			"grade": "T_COMP",
-			"display_order": 161,
+			"display_order": 162,
 			"name": "Loi exponentielle : espérance",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2097,7 +2110,7 @@
 		{
 			"code": "TCOMP-313",
 			"grade": "T_COMP",
-			"display_order": 162,
+			"display_order": 163,
 			"name": "Propriété d'absence de mémoire de la loi exponentielle",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2110,7 +2123,7 @@
 		{
 			"code": "TCOMP-314",
 			"grade": "T_COMP",
-			"display_order": 163,
+			"display_order": 164,
 			"name": "Déterminer si une fonction est une densité de probabilité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2123,7 +2136,7 @@
 		{
 			"code": "TCOMP-315",
 			"grade": "T_COMP",
-			"display_order": 164,
+			"display_order": 165,
 			"name": "Calculer des probabilités pour une variable aléatoire à densité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2136,7 +2149,7 @@
 		{
 			"code": "TCOMP-316",
 			"grade": "T_COMP",
-			"display_order": 165,
+			"display_order": 166,
 			"name": "Calculer l'espérance d'une variable aléatoire à densité",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2149,7 +2162,7 @@
 		{
 			"code": "TCOMP-317",
 			"grade": "T_COMP",
-			"display_order": 166,
+			"display_order": 167,
 			"name": "Simulation d'une variable de Bernoulli ou d'un lancer de dé (ou d'une variable uniforme sur un ensemble fini) à partir d'une variable aléatoire de loi uniforme sur $[0, 1]$",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -2162,7 +2175,7 @@
 		{
 			"code": "TCOMP-318",
 			"grade": "T_COMP",
-			"display_order": 167,
+			"display_order": 168,
 			"name": "Simulation du comportement de la somme de $n$ variables aléatoires indépendantes et de même loi",
 			"kind": "algorithme",
 			"exigence": "approfondissement",
@@ -2175,7 +2188,7 @@
 		{
 			"code": "TCOMP-319",
 			"grade": "T_COMP",
-			"display_order": 168,
+			"display_order": 169,
 			"name": "Nuage de points",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2188,7 +2201,7 @@
 		{
 			"code": "TCOMP-320",
 			"grade": "T_COMP",
-			"display_order": 169,
+			"display_order": 170,
 			"name": "Point moyen",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2201,7 +2214,7 @@
 		{
 			"code": "TCOMP-321",
 			"grade": "T_COMP",
-			"display_order": 170,
+			"display_order": 171,
 			"name": "Ajustement affine. Droite des moindres carrés",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2214,7 +2227,7 @@
 		{
 			"code": "TCOMP-322",
 			"grade": "T_COMP",
-			"display_order": 171,
+			"display_order": 172,
 			"name": "Coefficient de corrélation",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2227,7 +2240,7 @@
 		{
 			"code": "TCOMP-323",
 			"grade": "T_COMP",
-			"display_order": 172,
+			"display_order": 173,
 			"name": "Ajustement se ramenant par changement de variable à un ajustement affine",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2240,7 +2253,7 @@
 		{
 			"code": "TCOMP-324",
 			"grade": "T_COMP",
-			"display_order": 173,
+			"display_order": 174,
 			"name": "Application des ajustements à des interpolations ou extrapolations",
 			"kind": "connaissance",
 			"exigence": "attendu",
@@ -2253,7 +2266,7 @@
 		{
 			"code": "TCOMP-325",
 			"grade": "T_COMP",
-			"display_order": 174,
+			"display_order": 175,
 			"name": "Représenter un nuage de points",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2266,7 +2279,7 @@
 		{
 			"code": "TCOMP-326",
 			"grade": "T_COMP",
-			"display_order": 175,
+			"display_order": 176,
 			"name": "Calculer les coordonnées d'un point moyen",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2279,7 +2292,7 @@
 		{
 			"code": "TCOMP-327",
 			"grade": "T_COMP",
-			"display_order": 176,
+			"display_order": 177,
 			"name": "Déterminer une droite de régression, à l'aide de la calculatrice, d'un logiciel ou par calcul",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2292,7 +2305,7 @@
 		{
 			"code": "TCOMP-328",
 			"grade": "T_COMP",
-			"display_order": 177,
+			"display_order": 178,
 			"name": "Dans le cadre d'une résolution de problème, utiliser un ajustement pour interpoler, extrapoler",
 			"kind": "savoir_faire",
 			"exigence": "attendu",
@@ -2305,7 +2318,7 @@
 		{
 			"code": "TCOMP-329",
 			"grade": "T_COMP",
-			"display_order": 178,
+			"display_order": 179,
 			"name": "Droite des moindres carrés (démonstration)",
 			"kind": "demonstration",
 			"exigence": "approfondissement",
