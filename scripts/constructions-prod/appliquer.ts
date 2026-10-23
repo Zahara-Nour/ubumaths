@@ -14,7 +14,7 @@
  * Local (`.env.local`) : aperçu du rendu seulement, sans lire la prod. Prod (`.env`),
  * avant toute écriture :
  * 1. sauvegarde des lignes lues dans `scripts/constructions-prod/avant-2026-10-23.json`
- *    (à commiter : c'est le retour arrière ; hors de `data/`, ignoré par git) ; `--publier`
+ *    (à commiter : c'est le retour arrière ; hors de `data/`, que git ignore) ; `--publier`
  *    refuse si la sauvegarde ne contient pas l'état d'avant de chaque ligne à écrire ;
  * 2. chaque ligne doit porter son titre d'avant (sinon : déjà faite → sautée, ou modifiée
  *    entre-temps → lot refusé en entier) ;
