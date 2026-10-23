@@ -6,16 +6,15 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1632._
+_Mis à jour le 2026-10-23, après #1632 et son `db:migrate`._
 
 - **État** : #1632 mergée (migration `20261023180000_tags_lycee.sql` : 221 modèles, 185 tags retirés, 175 posés,
-  32 déplacés). **Pas encore jouée en prod.** Worktree supprimé.
-- **Prochaine action** : `pnpm db:migrate` depuis le dépôt principal (sur `main`) dès le go de David, puis
-  empreinte prod (463 tags du lycée). Ensuite PR 2 (nouveau worktree `passe-lycee`) : 4 libellés (2-273,
+  32 déplacés) **jouée en prod** (`db:migrate`, empreintes vérifiées). Worktree supprimé.
+- **Prochaine action** : PR 2 (nouveau worktree `passe-lycee`) : 4 libellés (2-273,
   1GEN-029/030/031) + 2 points neufs (exponentielle, à côté de TSPE-444 et TCOMP-236), seeds compris.
-- **En attente de David** : le go de `db:migrate` (destructive : 185 tags retirés, expliqué le 2026-10-23).
-- **Pièges en cours** : la garde exige l'état relevé — un tag saisi sur un de ces modèles d'ici là la fait échouer
-  (rien n'est écrit) : regénérer depuis un instantané neuf. Base locale : `20261022200000` (autre session) refusée
+- **En attente de David** : rien.
+- **Pièges en cours** : instantané `etat-prod-2026-10-23/` périmé (tags et nœuds changés) : en reprendre un pour la
+  PR 2. Base locale : `20261022200000` (autre session) refusée
   par `db push --local` (policy absente en local). Automatisme 1re spé BO l. 274 sans point ; 85 points techno sans
   borne ; 1SPE-244 à re-ranger (puis taguer eae2ff6a) ; `9a6087c5` 2 % d'échecs. Lot à part : MODIFIER + scissions
   des TAG_PAR_VARIATION.
@@ -148,3 +147,6 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   de transaction (le test, sous `begin`, ne le voyait pas) → verrous consultatifs des triggers + `for update` ;
   garde étendue à tous les niveaux (prod : 0 tag hors lycée sur ces modèles), garde « + » testée, repose du rollback
   comptée. Preuve hors transaction : `psql -f` (ancienne version 25P01, nouvelle passe). 11 tests, CI verte.
+- **2026-10-23 — `db:migrate` de #1632 fait (go de David).** Seule migration en attente en prod. Vérifié par le MCP :
+  463 tags du lycée, empreinte = celle calculée depuis la fixture ; nœuds des 432 modèles = empreinte attendue ;
+  0 `updated_at` modifié.
