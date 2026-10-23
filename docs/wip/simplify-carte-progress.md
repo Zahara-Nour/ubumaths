@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1617 (lot 3)._
+_Mis à jour le 2026-10-24, après #1620 (lot 4a)._
 
-- **État** : phase 0 close (12 questions tranchées, § 1-27). Lots mergés : code mort (#1610), 1b moteur (#1613), **3 `réduire`/`auto` sans `normalize`, `simplify` sans factorisation (#1617, § 33-34)**. Rien de tout ça en prod tant que David n'a pas lancé `deploy:prod`.
-- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — pas encore à jour du lot 3. Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
-- **Ordre des lots** (§ 29) : ~~1b~~ → ~~3~~ → **4 contrat de `tidy`** (S1-S4 : décimaux gardés, `order`, perte de domaine sous hypothèse ; module de règles partagé avec la validation, E1-E2) → 5 formes par contexte (D1-D4) → 6 valeurs approchées (Q6) → 7 renommages. Valeurs remarquables (`cos(π/3)`) : lot à part (Q3 du § 33).
-- **Prochaine action** : lot 4, nouveau worktree ; l'ouvrir par les tests rouges de `tidy` qui simplifie `x/x` (S3) et des décimaux (S1, vérifier le mode décimal et les tests qui assertent `0,5+0,25 → 3/4`).
-- **En attente de David** : rien (vérification manuelle de #1617 notée dans `verifications-manuelles.md`).
-- **Pièges en cours** : mineurs connus du lot 3 (§ 34 : `(x+1)²/(x+1)³` simplifié sans condition par `tidy`, facteurs opposés non reconnus, `MAX_FRACTIONS`, `|(x−1)|`) ; `spaces-violation.test.ts` asserte encore « 4 chiffres = espace exigée » (E2) ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun (celui du lot 3 est supprimé) ; nouveau worktree au lot 4.
+- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), **4a `tidy` ne perd plus le domaine (#1620, § 35-36)** : options `typeCtx` et `domain` (les dérivées passent f), `factoriser` simplifie une fraction en étape. Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — pas à jour des lots 3 et 4a. Pour la modifier : `Artifact read`, Edit du fichier rendu, republier sur la même `url`.
+- **Ordre des lots** (§ 29, § 35) : ~~4a domaine~~ → **4b décimaux (S1)** → 4c `order: 'kept'` (S2) → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, variante `{ result, conditions }`, Q2 du § 35) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : lot 4b, nouveau worktree ; comportements déjà validés (§ 35, Q3 : une barre de fraction compte comme opérande fraction). Ouvrir par les tests rouges (`0,5+0,25 → 0,75`, `x×0,5 → 0,5x`, `0,5/2 → 1/4`…), puis retirer les gardes des appelants (`hasDecimalLiteral` : `atelier/render.ts`, `web-repl-engine`, `eval.command`, limites, `solve-latex`).
+- **En attente de David** : rien (vérification manuelle de #1620 notée dans `verifications-manuelles.md`).
+- **Pièges en cours** : mineurs connus du 4a (§ 36 : `1/(1/x) → x`, `domain: [x^n]`, `reduceFractionOfSums` ignore `domain`) ; la suite client locale plante parfois (`rpc is closed`) sans test rouge, la CI tranche ; **pas de `Claude-Session:` dans les commits** (CLAUDE.md) ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : aucun (celui du 4a est supprimé) ; nouveau worktree au 4b.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
