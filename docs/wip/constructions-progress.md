@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, lot 3 en cours (PR à ouvrir)._
+_Mis à jour le 2026-10-23, après #1618._
 
-- **État** : lot 3 = API des scripts de démo, codé sur `fix/constructions-demo-scripts` : réservée au prof et à l'admin (API + RLS, migration `20261023150000`), `DELETE` vérifié (zéro ligne → 404), messages de la base gardés côté serveur. Lots 1 et 2 mergés (#1615, #1616), en prod au prochain `deploy:prod`.
-- **Prochaine action** : PR, revue `code-reviewer` + `security-auditor`, merge, puis `db:migrate` depuis la branche mergée (4 conditions : accès tranché par David le 2026-10-23, tests d'intégration rouges sans la migration, audit, additive avec rollback).
-- **En attente de David** : rien. Restent après ce lot : parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique).
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` (policy déjà posée hors historique) → migration du lot appliquée à la main par `docker exec … psql`.
-- **Worktree / branche** : `../ubumaths-wt-constructions` · `fix/constructions-demo-scripts`.
+- **État** : lot 3 **livré** — #1618 mergée (API des scripts de démo réservée au prof et à l'admin, `DELETE` vérifié, messages de la base gardés côté serveur) ; migration `20261023150000` **jouée en prod** le 2026-10-23. Le code des lots 1, 2 et 3 (#1615, #1616, #1618) part au prochain `deploy:prod`.
+- **Prochaine action** : choisir le lot 4 avec David (aucun worktree ouvert).
+- **En attente de David** : le choix du lot 4. Restent : parallèle double perpendiculaire · formes `(P, d)` décorées · `@mesure` (rapporteur, chantier à part) · consigne affichée après une erreur d'exécution = celle de la sous-étape fautive (cosmétique) · `/construction-demo` montre « Sauvegarder » / « Supprimer » à un élève (toast 403 ; à masquer par `canAuthorConstructions`).
+- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000` (policy posée hors historique) ; `db:migrate` ne marche pas depuis un worktree (projet non lié) → depuis le dépôt principal.
+- **Worktree / branche** : aucun (supprimé après #1618). Lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions origin/main`.
 
 ---
 
@@ -85,3 +85,4 @@ Revue : `code-reviewer` (Sonnet).
 - Tests : `api/construction-demo-scripts/__tests__/api.test.ts` (7 rouges sans le correctif, 9/9 verts) ; `tests/integration/construction-demo-scripts-reserves.test.ts` (2 rouges sans la migration — cas élève —, 5/5 verts avec).
 - `constructions.md` : tables, API, dette réglée retirée.
 - Non fait (hors lot) : la page `/construction-demo` montre toujours « Sauvegarder » à un élève, qui reçoit un toast d'erreur 403.
+- Revues : `code-reviewer` et `security-auditor` sans finding bloquant ; ajout des tests « `author_id` usurpé » et « visiteur non connecté » (7/7). CI verte, mergée (#1618), `db:migrate` joué en prod le 2026-10-23 (policy vérifiée : une seule, `authenticated`).
