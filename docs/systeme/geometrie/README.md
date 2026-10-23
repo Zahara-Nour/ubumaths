@@ -25,7 +25,7 @@ Vue d'ensemble du moteur de géométrie de Chiphre. Référence du langage :
 [dsl-builtins.md](dsl-builtins.md). Règles courtes pour un agent qui code dans le module :
 [`src/lib/geometry-core/CLAUDE.md`](../../../src/lib/geometry-core/CLAUDE.md).
 
-> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19 ; domaine `sur` : 2026-10-21 ; `neutralLabels` : 2026-10-23). Chaque fichier, fonction et builtin cité existe à cette
+> Vérifié contre le code le 2026-10-10 (vue Figure de l'atelier et `curve-nature.ts` : 2026-10-18 ; `intersectLQExact`, `pointDrag` et `canvasTool` : 2026-10-19 ; domaine `sur` : 2026-10-21 ; `neutralLabels` : 2026-10-23 ; registre `@mesure` : 2026-10-23). Chaque fichier, fonction et builtin cité existe à cette
 > date (`git ls-files`, `git grep -w`). Ce qui n'est pas dans cette page ni dans
 > `dsl-builtins.md` n'est pas garanti : lire le code.
 
@@ -307,14 +307,15 @@ d = mediatrice(A, B) @euclide @arcs_egaux @complet -arcs
   l'emporte). Validation stricte : `resolveDecorators` lève `DecoratorResolveError` avec indice.
 - **Registre** (`core/choreographies/registry.ts`) :
 
-| Builtin              | `@euclide`                                  | `@equerre`                               |
-| -------------------- | ------------------------------------------- | ---------------------------------------- |
-| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —                                        |
-| `bissectrice`        | `arcs_egaux`, `arc_milieu`                  | —                                        |
-| `perpendiculaire`    | `rayon_libre`, `arcs_egaux`                 | `pose_equerre`                           |
-| `parallele`          | `parallelogramme`, `double_perpendiculaire` | `pose_equerre`, `double_perpendiculaire` |
-| `cercle_circonscrit` | `mediatrices`                               | —                                        |
-| `transporte`         | `compas_report`                             | —                                        |
+| Builtin              | `@euclide`                                  | `@equerre`                               | `@mesure`       |
+| -------------------- | ------------------------------------------- | ---------------------------------------- | --------------- |
+| `mediatrice`         | `arcs_egaux`, `cercles_rayon_ab`            | —                                        | —               |
+| `bissectrice`        | `arcs_egaux`, `arc_milieu`                  | —                                        | `rapporteur`    |
+| `perpendiculaire`    | `rayon_libre`, `arcs_egaux`                 | `pose_equerre`                           | —               |
+| `parallele`          | `parallelogramme`, `double_perpendiculaire` | `pose_equerre`, `double_perpendiculaire` | —               |
+| `cercle_circonscrit` | `mediatrices`                               | —                                        | —               |
+| `transporte`         | `compas_report`                             | —                                        | —               |
+| `milieu`             | —                                           | —                                        | `regle_graduee` |
 
 - **Erreurs** : `ConstructionExecutor.load()` ne lève que les erreurs de syntaxe ; une erreur
   d'exécution est rangée dans `executor.loadError` (le lecteur garde la figure partielle et affiche

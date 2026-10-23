@@ -183,6 +183,7 @@ Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« i
 | `perpendiculaire`    | `@equerre` | `pose_equerre`\*            | 5           | pose équerre, glissement jusqu'au pied F, RT, échange → règle, RT                                                   | idem                                         | livrée (int. :667)                                               |
 | `cercle_circonscrit` | `@euclide` | `mediatrices`\*             | 17          | médiatrice(A,B) (6), LF, médiatrice(B,C) (6), LF, PF (O), CM \|OA\|, CD (cercle)                                    | reprises des médiatrices                     | **livrée, par `ctx.sub`** (int. :448)                            |
 | `transporte`         | `@euclide` | `compas_report`\* (I.23)    | 7           | CD ×2, PF (A′, B′, A″), CM \|A′B′\|, CD, PF (B″), RT                                                                | `arc`                                        | livrée, 4 modes de direction (`transporte-choreography.test.ts`) |
+| `bissectrice`        | `@mesure`  | `rapporteur`\*              | 4           | CM rapporteur (centre en V, 0 sur [VA)), CM crayon en face de la moitié (rapporteur en second), PF (P), RT          | `marker` (deux angles égaux)                 | livrée (`bissectrice-mesure.test.ts`) ; côtés confondus → erreur |
 | `milieu`             | `@mesure`  | `regle_graduee`\*           | 3           | CM règle (0 sur l'extrémité de gauche), CM crayon à la graduation (règle en second), PF (I)                         | `marker` (codage AI = IB)                    | livrée (`milieu-mesure.test.ts`) ; > 15 cm ou confondus → erreur |
 
 **`ctx.sub` est implémenté** (`executor.ts:484-503`, `buildSubChoreographyFn`) : la chorégraphie
@@ -204,7 +205,19 @@ pose sur l'extrémité la plus à gauche (la plus basse si vertical). Lecture nu
 confondus » ; lecture > 15 cm (longueur de la règle) → erreur. Codage AI = IB : deux `segmentMark`
 étiquetés `marker`. Le codage n'est posé que si un segment visible joint A et B (`segment(A, B)` ou `segment(B, A)` tracé, ou `milieu(s)`) : sans segment, on ne code rien.
 
-Aucune voie `@mesure` pour un autre builtin, ni de voie pour un builtin hors des sept ci-dessus.
+**`bissectrice @mesure`** (`choreographies/bissectrice.ts`, `buildRapporteur`) : `bissectrice(A, V, B)`
+ou `bissectrice(α)`. Consignes : « On place le centre du rapporteur sur V, le 0 sur [VA), et on lit
+l’angle AVB = 74° », « 74 ÷ 2 = 37 : on repère la graduation 37° », « On marque le repère P en face
+de 37° », « Règle de V à P : on trace la bissectrice ». Lecture arrondie au degré, moitié sur la
+valeur lue (75 ÷ 2 = 37,5) ; le repère P (point auxiliaire nommé, `labelAux`, charnière) est sur la
+bissectrice exacte, à `REPERE_DISTANCE` de V (rayon du rapporteur + 0,3). Le corps du rapporteur
+(`Protractor.svelte`) est du côté trigonométrique de sa base : si B est dans le sens horaire de A, la
+base est retournée de 180° et le 0 de l’échelle intérieure tombe sur [VA). Même droite tracée qu’en
+`@euclide` (`buildRulerTraceSubStep`). Codage : deux `angle` `arcs2` (AVP, PVB) étiquetés `marker`.
+Lecture 0° → « Les deux côtés sont confondus » ; A ou B confondu avec V et angle plat sont refusés
+par le builtin avant la chorégraphie.
+
+Aucune voie `@mesure` pour un autre builtin que `milieu` et `bissectrice`, ni de voie pour un builtin hors des sept ci-dessus.
 Le repli « hérité » s'applique aussi quand une chorégraphie rend 0 sous-étape
 (`executor.ts:1140-1157`).
 
@@ -295,8 +308,8 @@ Avertissements pour : tracé à main levée (`:324`), compas `lever/coucher/reto
 
 ## 8. Tests
 
-`pnpm test:server src/lib/constructions-v2/` le 2026-10-23 : **10 fichiers, 207 réussis,
-21 ignorés (228)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
+`pnpm test:server src/lib/constructions-v2/` le 2026-10-23 : **15 fichiers, 427 réussis,
+21 ignorés (448)**, 1,4 s. Les 21 ignorés : les trois `describe.skipIf(!hasFixtures)` de
 `converter.test.ts` (`:274`, `:330`, `:369`), faute du dossier `extern/instrumenpoche-main`.
 
 | Fichier (sous `constructions-v2`)                   | Cas (≈) | Couvre                                                                                                                                                                                                                                                            |
@@ -332,11 +345,11 @@ Faits relevés dans le code le 2026-10-22.
 
 ### Fonctions manquantes
 
-| Point                                                                                                    | Où                                          |
-| -------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
-| Contrainte `@mesure` : une seule voie (`milieu`) ; le rapporteur n'est jamais animé (bissectrice prévue) | `choreographies/types.ts:18`, `registry.ts` |
-| Sept builtins chorégraphiés seulement (`cercle`, `triangle_equilateral`… refusent les décorateurs)       | `registry.ts`                               |
-| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                       | `types.ts:83`                               |
+| Point                                                                                              | Où                                          |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| Contrainte `@mesure` : deux voies (`milieu`, `bissectrice`) ; `mediatrice @mesure` prévue          | `choreographies/types.ts:18`, `registry.ts` |
+| Sept builtins chorégraphiés seulement (`cercle`, `triangle_equilateral`… refusent les décorateurs) | `registry.ts`                               |
+| Polygones, vecteurs, courbes apparaissent d'un coup (pas de tracé ni d'instrument)                 | `types.ts:83`                               |
 
 ### Comportements connus
 
