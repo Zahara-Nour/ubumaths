@@ -160,7 +160,8 @@ describe('intégration pédagogique — éléments simples à facteurs entiers',
 			['\\frac{2}{x}+\\frac{3}{x}', `5 ${LN('x')}`],
 			['\\frac{3}{x}-\\frac{1}{x}', `2 ${LN('x')}`],
 			['\\frac{1}{2x}+\\frac{1}{2x}', LN('2 x')],
-			['\\frac{1}{x}+\\frac{1}{x+1}+\\frac{1}{x}', `${LN('x + 1')} + 2 ${LN('x')}`],
+			// regroupé à la place du premier terme, l'ordre de l'énoncé gardé (lot 4c, S2)
+			['\\frac{1}{x}+\\frac{1}{x+1}+\\frac{1}{x}', `2 ${LN('x')} + ${LN('x + 1')}`],
 			// pas de moins en tête : le terme positif d'abord, comme le moteur
 			['\\frac{-2}{x}+\\frac{1}{3x+1}', `\\dfrac{1}{3} ${LN('3 x + 1')} - 2 ${LN('x')}`],
 			['\\frac{x-2}{x^2-1}', `\\dfrac{3}{2} ${LN('x + 1')} - \\dfrac{1}{2} ${LN('x - 1')}`]
