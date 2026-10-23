@@ -7,10 +7,9 @@
 	 * Lot 4b de `docs/archive/wip/atelier-refonte-interface-phase0.md` (validé par David
 	 * le 2026-10-18, précisé avec la session de la géométrie). La grammaire de la
 	 * carte de fonction (lot 3) : la définition s'édite sur place et vaut à
-	 * Entrée ou à la sortie du champ. Sous la ligne, en gris : la nature, puis ce
-	 * que vaut une CONSTRUCTION (coordonnées exactes, équation réduite, longueur),
-	 * non éditable — c'est la construction qu'on modifie. Un point par
-	 * coordonnées n'a que sa nature : il montre déjà ce qu'il vaut.
+	 * Entrée ou à la sortie du champ. Ni nature ni mesure sous la ligne (demande
+	 * de David du 2026-10-23) : elles iront dans les Propriétés de l'objet. Seul
+	 * le constat d'une courbe dégénérée reste, c'est un avertissement.
 	 *
 	 * Une seule carte pour les deux : ils ne diffèrent que par la fenêtre du
 	 * point de couleur (taille ou trait) et l'étiquette d'un point.
@@ -20,12 +19,9 @@
 	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
 	import { useAtelier } from '$lib/atelier/context';
 	import { displayName } from '$lib/atelier/names';
-	import { forMathlive } from '$lib/atelier/mathfield';
-	import { convertLatexToMarkup } from 'mathlive';
 	import {
 		figureNatureOf,
 		figureSeparatorOf,
-		figureSummaryOf,
 		followsOf,
 		stateLabelOf
 	} from '$lib/atelier/card-state';
@@ -54,17 +50,6 @@
 	const follows = $derived(followsOf(atelier, object));
 	/** La note « suit A et B », montrée d'un toucher sur l'icône (téléphone : pas d'infobulle). */
 	let showFollows = $state(false);
-
-	/**
-	 * Ce que vaut une construction. ⚠️ LaTeX régénéré par `constructionSummaryOf`
-	 * depuis le calcul, jamais le texte rangé passé à `{@html}`.
-	 */
-	const summary = $derived.by(() => {
-		const read = figureSummaryOf(atelier, object.name);
-		if (read === null) return null;
-		const latex = forMathlive(read.latex);
-		return { markup: convertLatexToMarkup(latex, { defaultMode: 'inline-math' }), text: read.text };
-	});
 
 	const actions = $derived(actionsFor(object, atelier));
 
@@ -168,24 +153,6 @@
 		<p class="note" id="{uid}-suit">{follows}</p>
 	{/if}
 
-	<!-- La nature sous la ligne, puis ce que vaut une construction (L7) : la
-	     ligne de tête garde sa largeur pour le champ (constat du 2026-10-19,
-	     « cercle(O ; 3) » réduit à « cer » dans le panneau) -->
-	<p class="dessous">
-		<span class="type">{nature.label}</span>
-		{#if summary}
-			<!-- En gris, non éditable : c'est la construction qu'on modifie -->
-			<span class="valeur">
-				<span class="point-median" aria-hidden="true">·</span>
-				<span aria-hidden="true">
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -- LaTeX regénéré (constructionSummaryOf) -->
-					{@html summary.markup}
-				</span>
-				<span class="sr-only">{summary.text}</span>
-			</span>
-		{/if}
-	</p>
-
 	{#if nature.note}
 		<!-- C6 : on ne valide pas, on constate — la courbe reste acceptée -->
 		<p class="constat">{nature.note}</p>
@@ -269,15 +236,6 @@
 		width: var(--boutons);
 		min-width: 0;
 	}
-	/* La nature, discrète : elle se lit, elle ne se clique pas */
-	.type {
-		font-size: 0.625rem;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
-	}
-	.point-median {
-		margin: 0 0.25rem;
-	}
 	.etat {
 		flex-shrink: 0;
 		font-size: 0.6875rem;
@@ -314,7 +272,6 @@
 		outline-offset: 2px;
 	}
 	/* Sous la ligne, alignées sur le nom (après le point de couleur) */
-	.dessous,
 	.constat,
 	.note,
 	.message {

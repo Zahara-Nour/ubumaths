@@ -122,8 +122,30 @@ describe('la vue Géométrie peint les réglages des cartes', () => {
 			return button;
 		};
 
-		expect(trigger('Couleur et taille de A').style.backgroundColor).toBe(point().style.fill);
-		expect(trigger('Couleur et trait de d').style.backgroundColor).toBe(line().style.stroke);
+		expect(trigger('Couleur et taille de A').style.getPropertyValue('--peinte')).toBe(
+			point().style.fill
+		);
+		expect(trigger('Couleur et trait de d').style.getPropertyValue('--peinte')).toBe(
+			line().style.stroke
+		);
+	});
+
+	it('la couleur ne remplit que le petit point, pas toute la cible (2026-10-23)', async () => {
+		const atelier = atelierOf([['point', 'A', '(1 ; 2)']]);
+		const { container } = await render(WithAtelier, { atelier });
+		const button = container.querySelector<HTMLButtonElement>(
+			'button[aria-label="Couleur et taille de A"]'
+		);
+		if (button === null) throw new Error('pas de point de couleur');
+
+		// La cible de 24 px reste transparente ; seul le point de 10 px est peint
+		expect(getComputedStyle(button).width).toBe('24px');
+		expect(getComputedStyle(button).backgroundColor).toBe('rgba(0, 0, 0, 0)');
+		const dot = getComputedStyle(button, '::after');
+		// 7 px de marge de chaque côté : un point de 10 px (la largeur d'un ::after en `inset` se lit `auto`)
+		expect(dot.top).toBe('7px');
+		expect(dot.left).toBe('7px');
+		expect(dot.backgroundColor).not.toBe('rgba(0, 0, 0, 0)');
 	});
 
 	it('un cercle construit et son nom prennent la couleur de la carte', async () => {

@@ -96,9 +96,7 @@
 				type="button"
 				class="point"
 				class:plein={filled}
-				style={filled && display
-					? `background: ${curveColorValue(display.color)}; border-color: ${curveColorValue(display.color)}`
-					: undefined}
+				style:--peinte={filled && display ? curveColorValue(display.color) : undefined}
 				aria-label={`Couleur et trait de ${name}`}
 				title="Couleur et trait"
 			></button>
@@ -220,10 +218,11 @@
 		inset: 0.4375rem;
 		border-radius: 9999px;
 		border: 1.5px solid var(--color-muted-foreground);
-		background: inherit;
 	}
+	/* La couleur sur le seul point : peinte sur le bouton, elle remplissait toute la cible */
 	.point.plein::after {
-		border-color: inherit;
+		border-color: var(--peinte);
+		background: var(--peinte);
 	}
 	.point:focus-visible {
 		outline: 2px solid var(--color-ring, currentColor);
@@ -233,6 +232,9 @@
 		background-color: var(--color-muted);
 	}
 	.point.plein:hover {
+		background-color: transparent;
+	}
+	.point.plein:hover::after {
 		filter: brightness(0.95);
 	}
 	.reglages {
