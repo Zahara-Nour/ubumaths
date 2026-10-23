@@ -52,6 +52,8 @@ interface Modele {
 	tag: { grade: string; code: string };
 	/** Tags que le modèle porte déjà (passe lycée) : posés avant, gardés après et au rollback. */
 	tags_avant?: { grade: string; code: string }[];
+	/** Tag posé sans changer le contenu (passe lycée, lot C) : `apres` = `avant`, `updated_at` gardé. */
+	tag_seul?: true;
 	avant: Contenu;
 	apres: Contenu;
 	/**
@@ -110,13 +112,15 @@ export interface LotModifier {
 	 * la passe lycée ; les migrations du collège, déjà jouées, ne gardent que le contenu).
 	 */
 	gardeRangementNeufs?: boolean;
+	/** Nombre de modèles tagués sans changer de contenu (`tag_seul` dans la fixture). */
+	tagsSeuls?: number;
 }
 
 // ============================================================================
 // CONSTANTES
 // ============================================================================
 
-/** Date de modification fabriquée : elle doit avancer (le contenu change). */
+/** Date de modification fabriquée : elle doit avancer quand le contenu change. */
 const AVANT = '2026-01-02T03:04:05.000Z';
 
 /** Colonnes propres à chaque modèle : un modèle neuf copie toutes les AUTRES de son origine. */
@@ -342,9 +346,12 @@ export function decrireLotModifier(lot: LotModifier): void {
 			await cleanupAllTestData();
 		});
 
-		it(`la fixture est le lot validé (${n} modèles, chacun modifié et tagué)`, () => {
+		it(`la fixture est le lot validé (${n} modèles, chacun modifié — sauf les tags seuls — et tagué)`, () => {
 			expect(modeles).toHaveLength(n);
-			expect(modeles.filter((m) => canonique(m.avant) === canonique(m.apres))).toEqual([]);
+			expect(
+				modeles.filter((m) => (canonique(m.avant) === canonique(m.apres)) !== (m.tag_seul === true))
+			).toEqual([]);
+			expect(modeles.filter((m) => m.tag_seul)).toHaveLength(lot.tagsSeuls ?? 0);
 			expect(neufs).toHaveLength(lot.neufs ?? 0);
 		});
 
@@ -379,8 +386,10 @@ export function decrireLotModifier(lot: LotModifier): void {
 			expect(apres.tags).toEqual(attendus);
 		});
 
-		it('`updated_at` avance : le contenu a changé', () => {
-			expect([...apres.dates.values()].filter((d) => d === AVANT)).toEqual([]);
+		it('`updated_at` avance là où le contenu change, et seulement là', () => {
+			const seuls = new Set(modeles.filter((m) => m.tag_seul).map((m) => m.id));
+			const fausses = [...apres.dates].filter(([id, d]) => (d === AVANT) !== seuls.has(id));
+			expect(fausses).toEqual([]);
 		});
 
 		it('le rollback écrit dans la migration rend le contenu d’avant et retire les tags posés', () => {

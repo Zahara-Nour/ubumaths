@@ -95,7 +95,7 @@ def lire_liste(section: str) -> dict[str, tuple[str, str]]:
 
 def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture: str, prefixe: str,
             entete: str, options: bool = False, scissions: dict | None = None, etat: str = ETAT,
-            liste: dict[str, tuple[str, str]] | None = None) -> None:
+            liste: dict[str, tuple[str, str]] | None = None, tags_seuls: set[str] | None = None) -> None:
     """Écrit la fixture et la migration du lot. `modeles` : fichier du relevé dans ETAT ;
     `prefixe` : nom court des tables temporaires et des chaînes dollar (`l2n` → `_l2n_modeles`) ;
     `entete` : commentaire de tête de la migration (`{n}` = nombre de modèles) ; `options` : le lot
@@ -110,7 +110,9 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
 
     `etat` : dossier de l'instantané (nodes.json, points.json, le relevé, et tags.json s'il y en a :
     `template_id`, `point_id`) ; `liste` : modèle → (niveau, point ou « point,point »), à la place de
-    la liste du collège (`section` est alors ignoré)."""
+    la liste du collège (`section` est alors ignoré) ; `tags_seuls` : modèles qui reçoivent leur tag
+    sans changer de contenu (leur fonction de `modifs` ne doit rien toucher ; ni la mise à jour ni le
+    rollback ne les réécrivent, `updated_at` ne bouge pas)."""
     sortie_modeles = sys.argv[1] if len(sys.argv) > 1 else None
     noeuds = {n['id']: n for n in json.load(open(etat + 'nodes.json'))}
     tous_points = json.load(open(etat + 'points.json'))
@@ -138,6 +140,8 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
 
     scissions = scissions or {}
     assert set(scissions) <= set(modifs), set(scissions) - set(modifs)
+    tags_seuls = tags_seuls or set()
+    assert tags_seuls <= set(modifs) and not tags_seuls & set(scissions), tags_seuls
 
     def sur_le_noeud(noeud: str, grade: str, code: str) -> bool:
         return points[(grade, code)]['node_id'] in (noeud, notion_de(noeud))
@@ -154,7 +158,7 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
         avant = {k: t[k] for k in CHAMPS + (('options',) if options else ())}
         neuf = copy.deepcopy(avant)
         modifs[court](neuf)
-        assert neuf != avant, court
+        assert (neuf == avant) == (court in tags_seuls), court
         m = {
             'id': t['id'],
             'noeud': chemin(t['classification_node_id']),
@@ -165,6 +169,8 @@ def generer(modifs: dict, *, modeles: str, section: str, migration: str, fixture
             'apres': neuf,
             'categorie': {k: t[k] for k in ('theme', 'domain', 'subdomain', 'level', 'status')},
         }
+        if court in tags_seuls:
+            m['tag_seul'] = True
         if court in scissions:
             id_neuf, ecrire, niveau = scissions[court]
             assert id_neuf not in {r['id'] for r in releves.values()}, id_neuf
@@ -331,12 +337,17 @@ def ecrire_migration(lot: list[dict], migration: str, prefixe: str, entete: str,
         "--        shared = nullif(r.c->'shared', 'null'::jsonb), test_specs = nullif(r.c->'test_specs', 'null'::jsonb)",
         "--   from (values",
     ]
-    rb += [f"--   ('{m['id']}'::uuid, {contenu(m['avant'])})" + (',' if i < n - 1 else '') for i, m in enumerate(lot)]
+    reecrits = [m for m in lot if not m.get('tag_seul')]
+    assert reecrits, 'lot de tags seuls : le rollback rendrait un `values` vide'
+    rb += [f"--   ('{m['id']}'::uuid, {contenu(m['avant'])})" + (',' if i < len(reecrits) - 1 else '')
+           for i, m in enumerate(reecrits)]
     rb += ["--   ) as r(id, c)", "--  where q.id = r.id;"]
     if neufs:
         rb += [f"-- delete from public.question_templates where id in ({liste_neufs});"]
     rb += ["-- ROLLBACK:END"]
     rollback = '\n'.join(rb)
+    # Tags seuls : la mise à jour ne les touche pas (`updated_at` reste celui d'avant).
+    filtre = ' and r.apres is distinct from r.avant' if len(reecrits) < n else ''
 
     o = [entete.format(n=n) + '\n' + f'''{rollback}
 -- ============================================================================
@@ -456,7 +467,7 @@ update public.question_templates q
        shared = nullif(r.apres->'shared', 'null'::jsonb),
        test_specs = nullif(r.apres->'test_specs', 'null'::jsonb)
   from {tmp}_modeles r
- where q.id = r.id;
+ where q.id = r.id{filtre};
 
 insert into public.question_template_points (template_id, point_id)
 select x.id, x.point_id

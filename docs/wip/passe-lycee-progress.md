@@ -6,19 +6,18 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1639 (lots A + B, `db:migrate` fait)._
+_Mis à jour le 2026-10-23, lot C écrit (PR à ouvrir)._
 
-- **État** : lots A + B en prod (6 modèles modifiés et tagués, 3 neufs) ; restent lot C, scissions, E3, H.
-- **Prochaine action** : worktree neuf, lot C (10 modèles + C4 `646b4cd3`, simple tag) sur le modèle de
-  `analyse/lot-modifier-ab.py` (outil `arbre-notions/analyse/lot_2bis_outils.py`, `etat=`, `liste=`, neufs à nœud propre),
+- **État** : lots A + B en prod ; lot C écrit (10 modèles modifiés + `646b4cd3` tag seul), tests verts, revues à faire.
+- **Prochaine action** : PR du lot C (revues Opus `code-reviewer` + `security-auditor`), merge, `db:migrate` ;
   puis scissions (47 → 62 neufs + `95ee8348`, reporté du lot A), E3, H. Question d'accès à reposer pour chaque PR.
 - **En attente de David** : rien.
 - **Pièges en cours** : relevé du contenu = `releves/templates.json` (vérifier ses empreintes md5 en prod avant chaque lot ;
-  les modèles des lots A + B ont changé) ; neufs : niveau libre dans la catégorie, brouillons compris ;
-  `question:specs --file` ne lit pas les lignes de base (adaptateur `toQuestionTemplate` à recréer, sans
-  created_at/updated_at/created_by) ; un script ne réécrit une migration existante qu'avec `REECRIRE_MIGRATION=1` ;
+  les modèles des lots A, B, C ont changé) ; neufs : niveau libre dans la catégorie, brouillons compris ;
+  `question:specs --file` : passer par `toQuestionTemplate` (sans created_at/updated_at/created_by) et
+  `svelte-kit sync` dans un worktree neuf ; `REECRIRE_MIGRATION=1` pour réécrire une migration jamais jouée ;
   `test:integration --reporter=verbose` pour voir les tests sautés. S8, X1-X3 : voir phase 0.
-- **Worktree / branche** : aucun.
+- **Worktree / branche** : `ubumaths-wt-passe-lycee-c` / `feat/passe-lycee-lot-c`.
 
 ## Les 5 étapes
 
@@ -215,3 +214,16 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   l'identique). Laissé : pas de contrôle de concurrence dans l'éditeur (antérieur), tags lisibles des brouillons (déjà
   accepté en #1632). 22 tests, CI verte. Seule migration en attente ; vérifiée par le MCP : 9 empreintes de contenu =
   fixture, tags, nœuds, statuts (neufs en brouillon) et niveaux attendus.
+- **2026-10-23 — Lot C écrit (worktree `passe-lycee-c`).** Question d'accès tranchée par David : personne ne gagne
+  d'accès (8 brouillons + 2 publiés, `849aabbc` et `bb554c62`, dont seule la formulation change). Prod relue par le
+  MCP : empreintes md5 du contenu et nœuds des 11 modèles identiques à `releves/templates.json`, 0 tag, 0 donnée
+  d'élève. `lot_2bis_outils.py` étendu : `tags_seuls` (tag posé sans réécrire le contenu ; ni la mise à jour ni le
+  rollback ne touchent `646b4cd3`, `updated_at` gardé), lots A + B régénérés à l'identique. Choix d'écriture :
+  `849aabbc` « Quelle semble être la limite… », corrigé de V9 en conjecture (il citait le théorème de Tle sur qⁿ) ;
+  `227f2c9c` (C1) corrigé de V3 aussi réécrit (il énonçait (e^u)′ = u′e^u) ; `f7194c9d` titre « Ramener un réel
+  dans ]−π ; π] » ; `93539700` V2 : la matrice R donnée dans l'énoncé, corrigé sans la formule cos/sin ;
+  `cd4f9fb3` (C3) et Tle expertes : « On admet que… » dans l'énoncé. Specs 169/169, tirages 4 800/4 800 ; audit du
+  rendu : défauts seulement dans des variations NON touchées (termes nuls affichés dans le corrigé : `646b4cd3` V2-V3,
+  `93539700` V1, `f2cc01fc` V4), laissés hors du lot. Migration jouée hors transaction en local (sans effet, base
+  vide) ; 22 tests verts (11 sautés : neufs, options, tags d'avant, absents du lot), rouges sans la migration ;
+  lots A + B toujours verts avec le helper étendu.
