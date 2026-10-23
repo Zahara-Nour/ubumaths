@@ -18,6 +18,9 @@ import { validateUuidParam } from '$lib/server/validation/params';
 import { mapDbTemplateToForm } from '$lib/questions/types';
 import { requireAdmin } from '$lib/server/middleware/auth';
 import { loadTemplateProgrammeTags, type TemplateProgrammeTags } from '$lib/server/programme-tags';
+import { loadNodesWithAncestors } from '$lib/server/programme-tree';
+import { buildTemplateFactSheet, type FactSheetTemplateRow } from '$lib/server/template-fact-sheet';
+import type { TemplateFactSheet } from '$lib/questions/template-fact-sheet';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
 	// Check admin (real admin login OR step-up elevation)
@@ -40,14 +43,22 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// `question_template_points` est le pivot de l'acquisition : une tentative n'a
 	// pas de clé étrangère vers un point, elle s'y relie par le modèle tagué.
 	// Sans un tag ici, aucun point ne se validera jamais.
-	const row = template as { grades?: string[] | null; classification_node_id?: string | null };
+	// Fiche du modèle (version courte, en tête) : même lecture des tags, plus le chemin dans l'arbre.
+	const row = template as unknown as FactSheetTemplateRow;
 	let programmeTags: TemplateProgrammeTags;
+	let factSheet: TemplateFactSheet;
 	try {
-		programmeTags = await loadTemplateProgrammeTags(supabase, {
-			id,
-			grades: row.grades ?? [],
-			classification_node_id: row.classification_node_id ?? null
-		});
+		const nodeId = row.classification_node_id ?? null;
+		const [tags, nodes] = await Promise.all([
+			loadTemplateProgrammeTags(supabase, {
+				id,
+				grades: row.grades ?? [],
+				classification_node_id: nodeId
+			}),
+			nodeId === null ? Promise.resolve([]) : loadNodesWithAncestors(supabase, [nodeId])
+		]);
+		programmeTags = tags;
+		factSheet = buildTemplateFactSheet(row, nodes, tags);
 	} catch (err) {
 		throw error(500, err instanceof Error ? err.message : 'Tags du modèle illisibles');
 	}
@@ -55,6 +66,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	return {
 		template: mapDbTemplateToForm(template as unknown as Record<string, unknown>),
 		templateId: id,
-		programmeTags
+		programmeTags,
+		factSheet
 	};
 };
