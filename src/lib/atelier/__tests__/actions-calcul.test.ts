@@ -158,11 +158,11 @@ describe('ce que le panneau propose désormais', () => {
 
 	it('laisse les autres annoncer leur lot', () => {
 		const atelier = new Atelier();
-		atelier.create({ kind: 'function', name: 'f', definition: 'x^2' });
+		atelier.create({ kind: 'value', name: 'L', definition: '12[km]' });
 
-		const actions = actionsFor(atelier.get('f')!);
+		const actions = actionsFor(atelier.get('L')!);
 
-		expect(actions.find((a) => a.id === 'rename')?.disabledReason).toBeTruthy();
+		expect(actions.find((a) => a.id === 'convert')?.disabledReason).toBeTruthy();
 	});
 });
 

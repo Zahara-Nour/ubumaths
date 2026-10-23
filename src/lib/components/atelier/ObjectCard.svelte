@@ -7,15 +7,20 @@
 	 * (refonte de l'atelier) : `FunctionCard` (lot 3), `ValueCard`,
 	 * `SequenceCard`, `ListCard` (lot 4a), `FigureCard` pour les points et les
 	 * courbes (lot 4b).
+	 *
+	 * « Propriétés » et « Renommer » ne sortent pas de la carte : ils déplient
+	 * son panneau (`ObjectProperties`), dont l'état vit dans la liste — il
+	 * survit au renommage, qui change la clé de la carte.
 	 */
 	import type { AtelierObject } from '$lib/atelier/types';
-	import type { ObjectAction } from '$lib/atelier/actions';
+	import { PROPERTIES_ACTIONS, type ObjectAction } from '$lib/atelier/actions';
 	import { isFigureObject, isFunction, isList, isSequence, isValue } from '$lib/atelier/types';
 	import FunctionCard from './FunctionCard.svelte';
 	import ValueCard from './ValueCard.svelte';
 	import SequenceCard from './SequenceCard.svelte';
 	import ListCard from './ListCard.svelte';
 	import FigureCard from './FigureCard.svelte';
+	import ObjectProperties from './ObjectProperties.svelte';
 
 	interface Props {
 		object: AtelierObject;
@@ -26,9 +31,30 @@
 			name: string,
 			bounds: { from: string; to: string; step: string }
 		) => { text: string; failed: boolean };
+		/** Le panneau « Propriétés » déplié, et où va le focus ; `null` : replié. */
+		properties?: 'name' | 'panel' | null;
+		onProperties?: (focus: 'name' | 'panel' | null) => void;
+		/** Un renommage réussi depuis le panneau : la liste suit le nouveau nom. */
+		onRenamed?: (name: string) => void;
 	}
 
-	let { object, selected = false, onAction, onTabulate }: Props = $props();
+	let {
+		object,
+		selected = false,
+		onAction: forward,
+		onTabulate,
+		properties = null,
+		onProperties,
+		onRenamed
+	}: Props = $props();
+
+	function onAction(action: ObjectAction, target: AtelierObject) {
+		if (PROPERTIES_ACTIONS.has(action.id)) {
+			onProperties?.(action.id === 'rename' ? 'name' : 'panel');
+			return;
+		}
+		forward?.(action, target);
+	}
 </script>
 
 {#if isFunction(object)}
@@ -41,4 +67,13 @@
 	<ListCard {object} {selected} {onAction} />
 {:else if isFigureObject(object)}
 	<FigureCard {object} {selected} {onAction} />
+{/if}
+
+{#if properties !== null}
+	<ObjectProperties
+		{object}
+		focus={properties}
+		onclose={() => onProperties?.(null)}
+		onrenamed={(name) => onRenamed?.(name)}
+	/>
 {/if}

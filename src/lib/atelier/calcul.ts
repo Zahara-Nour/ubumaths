@@ -3613,7 +3613,16 @@ const cardSessions = new WeakMap<Atelier, CalcSession>();
 export function valueAnswerOf(
 	atelier: Atelier,
 	name: string
-): { readonly text: string; readonly latex: string } | null {
+): {
+	readonly text: string;
+	readonly latex: string;
+	/** La valeur approchée que Calcul propose à côté (`≈ 1,4142`), en texte. */
+	readonly approximate?: string;
+	/** La même valeur en décimal, quand elle l'est exactement (`17/5` → `3{,}4`), en LaTeX. */
+	readonly decimalLatex?: string;
+	/** L'arbre de la réponse, pour la dire en clair (`√2` plutôt que `sqrt(2)`). */
+	readonly ast?: MathNode;
+} | null {
 	let session = cardSessions.get(atelier);
 	if (session === undefined) {
 		session = { atelier, engine: new WebReplEngine(), seed: () => 1 };
@@ -3622,9 +3631,19 @@ export function valueAnswerOf(
 	// Le mode de la console (exact / décimal) : la carte dit ce que dit Calcul
 	session.engine.getState().mode = atelier.calcMode;
 	const result = runInput(session, name);
-	return result.kind === 'calcul'
-		? { text: result.output, latex: result.latex ?? result.output }
-		: null;
+	if (result.kind !== 'calcul') return null;
+	// « Valeur approchée » : `\approx 1{,}4142`, ou `= 3{,}4` quand le décimal est exact
+	const alternative = result.alternative?.label === 'Valeur approchée' ? result.alternative : null;
+	const shown = alternative?.latex.replace(/^\\approx\s*/, '').trim() ?? '';
+	const exactDecimal = shown.startsWith('=');
+	return {
+		text: result.output,
+		latex: result.latex ?? result.output,
+		...(result.ast !== undefined && { ast: result.ast }),
+		...(alternative !== null && exactDecimal && { decimalLatex: shown.slice(1).trim() }),
+		...(alternative !== null &&
+			!exactDecimal && { approximate: `≈ ${shown.replace(/\{,\}/g, ',')}` })
+	};
 }
 
 /** Le LaTeX de l'unité d'une grandeur approchée : `°`, `rad` comme le moteur les écrit. */

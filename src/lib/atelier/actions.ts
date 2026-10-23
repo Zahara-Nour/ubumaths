@@ -69,9 +69,22 @@ const NOT_YET_REASON = 'Cette action arrive dans un prochain lot.';
 
 /** Les gestes qui restent possibles quand plus rien d'autre ne l'est. */
 const ALWAYS: readonly ObjectAction[] = [
-	{ id: 'rename', label: 'Renommer', disabledReason: NOT_YET_REASON },
+	// Le panneau déplié sous la carte ; « Renommer » l'ouvre sur son nom (2026-10-23)
+	{ id: 'properties', label: 'Propriétés' },
+	{ id: 'rename', label: 'Renommer' },
 	{ id: 'remove', label: 'Supprimer' }
 ];
+
+/** Les actions que la carte traite elle-même : elles ouvrent son panneau « Propriétés ». */
+export const PROPERTIES_ACTIONS: ReadonlySet<string> = new Set(['properties', 'rename']);
+
+/**
+ * L'action emmène-t-elle le focus hors du menu ? Une carte supprimée le confie
+ * au panneau (WCAG 2.4.3) ; « Propriétés » et « Renommer », au panneau déplié.
+ */
+export function actionMovesFocus(id: string): boolean {
+	return id === 'remove' || PROPERTIES_ACTIONS.has(id);
+}
 
 /** Ce que chaque type sait produire, avant toute considération d'état. */
 const BY_KIND: Readonly<Record<AtelierObject['kind'], readonly ObjectAction[]>> = {
@@ -127,8 +140,7 @@ const NOT_YET: ReadonlySet<string> = new Set([
 	// 'stats', 'scatter' et 'fit' sont câblés depuis la vue Données, 'chart'
 	// depuis le lot 5 des outils statistiques, 'table' (le formulaire de la
 	// carte) depuis le lot 3 du tableur.
-	'convert',
-	'rename'
+	'convert'
 ]);
 
 /**
@@ -467,9 +479,12 @@ export function actionsFor(
 		return action;
 	});
 
-	// « Convertir » n'existe que s'il y a une unité à convertir.
+	// « Convertir » n'existe que s'il y a une unité à convertir. Ajouté après la
+	// règle ci-dessus, il échappait à `NOT_YET` : un bouton actif sans effet (2026-10-23)
 	const convert: ObjectAction[] =
-		isValue(object) && object.unit !== undefined ? [{ id: 'convert', label: 'Convertir' }] : [];
+		isValue(object) && object.unit !== undefined
+			? [{ id: 'convert', label: 'Convertir', disabledReason: NOT_YET_REASON }]
+			: [];
 
 	return [...specific, ...convert, ...ALWAYS];
 }

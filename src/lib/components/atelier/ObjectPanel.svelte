@@ -34,6 +34,13 @@
 	 * sans `matchMedia` : pas de panneau déplié puis replié au chargement.
 	 */
 	let opened = $state(false);
+	/**
+	 * Le panneau « Propriétés » déplié — un seul à la fois — et où va le focus.
+	 * Ici, et pas dans la carte : un renommage change la clé de la carte, qui
+	 * renaît, et le panneau la suit sous son nouveau nom.
+	 */
+	let openProperties = $state<{ name: string; focus: 'name' | 'panel' } | null>(null);
+
 	/** Vide, il reste déplié : ses boutons « + » sont la seule entrée. */
 	const expanded = $derived(opened || atelier.objects.length === 0);
 
@@ -93,7 +100,16 @@
 	<div class="corps" id="atelier-mes-objets-corps">
 		<div class="liste">
 			{#each atelier.objects as object (object.name)}
-				<ObjectCard {object} selected={object.name === selected} {onAction} {onTabulate} />
+				<ObjectCard
+					{object}
+					selected={object.name === selected}
+					{onAction}
+					{onTabulate}
+					properties={openProperties?.name === object.name ? openProperties.focus : null}
+					onProperties={(focus) =>
+						(openProperties = focus === null ? null : { name: object.name, focus })}
+					onRenamed={(name) => (openProperties = { name, focus: 'name' })}
+				/>
 			{:else}
 				<p class="vide">Rien encore. Crée un objet pour commencer à chercher.</p>
 			{/each}

@@ -63,6 +63,7 @@ describe('1. écrire une courbe', () => {
 		expect(s.atelier.get('d')?.plotted).not.toBe(true);
 		// Les actions communes à toute carte, et aucune autre (modifier = le champ)
 		expect(actionsFor(s.atelier.get('d')!, s.atelier).map((a) => a.id)).toEqual([
+			'properties',
 			'rename',
 			'remove'
 		]);
@@ -276,7 +277,7 @@ describe('2. écrire un point', () => {
 		expect(A?.kind).toBe('point');
 		expect(A?.definition).toBe('(1 ; 2)');
 		expect(A?.status).toBe('ok');
-		expect(actionsFor(A!, s.atelier).map((a) => a.id)).toEqual(['rename', 'remove']);
+		expect(actionsFor(A!, s.atelier).map((a) => a.id)).toEqual(['properties', 'rename', 'remove']);
 	});
 
 	it('P1 : un point n’est pas tracé dans Graphe', () => {

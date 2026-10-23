@@ -18,7 +18,7 @@
 	 */
 	import { tick } from 'svelte';
 	import type { ValueObject } from '$lib/atelier/types';
-	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
 	import { useAtelier } from '$lib/atelier/context';
 	import { constantOf } from '$lib/atelier/atelier.svelte';
 	import { displayName } from '$lib/atelier/names';
@@ -108,8 +108,8 @@
 	}
 
 	function handleSelect(action: ObjectAction) {
-		// Une carte supprimée confie le focus au panneau (WCAG 2.4.3)
-		if (action.id === 'remove') focusLeaves = true;
+		// Supprimer confie le focus à la liste, Propriétés au panneau déplié (WCAG 2.4.3)
+		if (actionMovesFocus(action.id)) focusLeaves = true;
 		onAction?.(action, object);
 	}
 

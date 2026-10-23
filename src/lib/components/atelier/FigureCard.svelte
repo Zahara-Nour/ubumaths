@@ -16,7 +16,7 @@
 	 */
 	import type { CurveObject, PointObject } from '$lib/atelier/types';
 	import { isPoint } from '$lib/atelier/types';
-	import { actionsFor, type ObjectAction } from '$lib/atelier/actions';
+	import { actionsFor, actionMovesFocus, type ObjectAction } from '$lib/atelier/actions';
 	import { useAtelier } from '$lib/atelier/context';
 	import { displayName } from '$lib/atelier/names';
 	import {
@@ -68,8 +68,8 @@
 	}
 
 	function handleSelect(action: ObjectAction) {
-		// Une carte supprimée confie le focus au panneau (WCAG 2.4.3)
-		if (action.id === 'remove') focusLeaves = true;
+		// Supprimer confie le focus à la liste, Propriétés au panneau déplié (WCAG 2.4.3)
+		if (actionMovesFocus(action.id)) focusLeaves = true;
 		onAction?.(action, object);
 	}
 </script>
@@ -112,26 +112,13 @@
 							type="button"
 							class="icone"
 							aria-label={`Options de ${name}`}
-							title={isPoint(object) ? 'Affichage et actions' : 'Actions'}
+							title="Actions"
 						>
 							<EllipsisVertical class="h-4 w-4" aria-hidden="true" />
 						</button>
 					{/snippet}
 				</DropdownMenu.Trigger>
 				<DropdownMenu.Content align="end" class="w-56" onCloseAutoFocus={handleCloseAutoFocus}>
-					{#if isPoint(object)}
-						<DropdownMenu.Group>
-							<DropdownMenu.GroupHeading>Affichage</DropdownMenu.GroupHeading>
-							<!-- Son nom écrit près de lui, dans la vue Géométrie -->
-							<DropdownMenu.CheckboxItem
-								checked={object.display?.showLabel ?? true}
-								onCheckedChange={(on) => atelier.setFigureDisplay(object.name, { showLabel: on })}
-							>
-								Étiquette
-							</DropdownMenu.CheckboxItem>
-						</DropdownMenu.Group>
-						<DropdownMenu.Separator />
-					{/if}
 					<DropdownMenu.Group>
 						<DropdownMenu.GroupHeading>Actions</DropdownMenu.GroupHeading>
 						<CardActionItems {actions} onselect={handleSelect} />
