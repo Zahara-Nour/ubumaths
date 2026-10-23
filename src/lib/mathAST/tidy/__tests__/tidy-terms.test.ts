@@ -47,3 +47,19 @@ describe('tidyTerms : témoins inchangés', () => {
 		expect(derivativeLatex(input)).toBe(expected);
 	});
 });
+
+describe('tidyTerms : un décimal sous une barre de fraction suit Q3 (S1)', () => {
+	// Revue de #1655 : `2x/1,5` gardait son décimal (même nombre de nœuds que `4x/3`) ;
+	// une barre de fraction compte comme opérande fraction, comme dans `tidy`
+	it.each([
+		['\\frac{2x}{1.5}', '\\dfrac{4 x}{3}'],
+		['\\frac{x}{1.5}', '\\dfrac{2 x}{3}'],
+		['\\frac{0.5x+1}{3}', '\\dfrac{x + 2}{6}']
+	])('%s → %s', (input, expected) => {
+		expect(toLatex(tidyTerms(parseLatex(input) as MathNode))).toBe(expected);
+	});
+
+	it('un décimal hors fraction reste décimal', () => {
+		expect(toLatex(tidyTerms(parseLatex('x - 1.5') as MathNode))).toBe('x - 1.5');
+	});
+});

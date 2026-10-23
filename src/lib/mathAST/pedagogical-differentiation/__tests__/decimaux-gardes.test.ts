@@ -55,3 +55,10 @@ describe('dérivée : une fraction tapée reste fraction', () => {
 		expect(derivativeOf(input)).toBe(expected);
 	});
 });
+
+describe('dérivée : une puissance numérique que `tidy` laisse est repliée quand même', () => {
+	// Revue de #1655 : sans le repli par `evaluate`, `2x × 4^{1/2}`
+	it('(4^{1/2} x²)′ = 4x', () => {
+		expect(derivativeOf('4^{\\frac{1}{2}}x^2')).toBe('4 x');
+	});
+});

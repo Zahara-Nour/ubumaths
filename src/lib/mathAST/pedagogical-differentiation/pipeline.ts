@@ -50,6 +50,8 @@ import type {
 	SuperscriptNode
 } from '../types';
 import { containsVariable } from '../common/contains-variable';
+import { evaluate } from '../eval/evaluate';
+import { isEvalValue } from '../eval/types';
 import { tidy } from '../tidy';
 import { isOne, isZero } from '../guards';
 import { mapNodeTopDown } from '../transforms';
@@ -274,15 +276,25 @@ function isAcceptableFoldResult(node: MathNode): boolean {
 	return false;
 }
 
+/** `tidy`, `null` s'il lève. */
+function tidySafe(node: MathNode): MathNode | null {
+	try {
+		return tidy(node);
+	} catch {
+		return null;
+	}
+}
+
 /**
  * Walk `node` top-down, folding every fully-numeric sub-tree into its
  * exact value (`add(2,3)` → `5`, `mul(2,3)` → `6`, `div(6,4)` → `3/2`).
- *
- * Replié par `tidy`, pas par `evaluate` exact : un décimal tapé reste décimal
- * (S1, chantier simplify-carte Q19). `evaluate` réécrivait un nombre seul,
- * `0.5` → `1/2`, et la correction de `0,5x²−1,5x` finissait sur `x − 3/2`.
  * Sub-trees containing the variable are left untouched — only the
  * arithmetic-only branches collapse.
+ *
+ * Replié par `tidy` d'abord : un décimal tapé reste décimal (S1, chantier
+ * simplify-carte Q19). `evaluate` réécrivait un nombre seul, `0.5` → `1/2`, et
+ * la correction de `0,5x²−1,5x` finissait sur `x − 3/2`. `evaluate` ne sert
+ * plus qu'à ce que `tidy` laisse en puissance (`4^{1/2}`, `0^0`, revue de #1655).
  *
  * Used post-differentiation on `result.derivative` to clean up
  * non-folding `simplifiedAdd` artifacts (`(2x + 3x)' = 2 + 3 = 5`). Step
@@ -292,13 +304,10 @@ function isAcceptableFoldResult(node: MathNode): boolean {
 export function foldNumericSubtrees(node: MathNode): MathNode {
 	return mapNodeTopDown(node, (n) => {
 		if (!isFullyNumeric(n)) return n;
-		let folded: MathNode;
-		try {
-			folded = tidy(n);
-		} catch {
-			return n;
-		}
-		return isAcceptableFoldResult(folded) ? folded : n;
+		const tidied = tidySafe(n);
+		if (tidied !== null && isAcceptableFoldResult(tidied)) return tidied;
+		const result = evaluate(n, { mode: 'exact' });
+		return isEvalValue(result) && isAcceptableFoldResult(result.node) ? result.node : n;
 	});
 }
 
