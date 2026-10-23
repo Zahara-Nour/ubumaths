@@ -188,6 +188,11 @@ exposant non entier.
 | valeur absolue                           | `\|−3\|`, `\|x\|²`                               | —                                  |
 | ce qui n'a pas de valeur                 | `0⁰`, `x/0`                                      | —                                  |
 
+⚠️ **Écart connu (mesuré le 2026-10-23, lot 4c)** : le `−(x+2)` gardé suppose un
+nœud de parenthèse. Un arbre construit par le moteur, `x(2x+1) − (x²+x+1)` sans
+ce nœud, est aplati par `flattenSumShallow` et le − est distribué
+(`x(2x+1) − x² − x − 1`). `tidyTerms` le contourne (§G.1) ; `tidy` non.
+
 ### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3, Q8, Q9 le 2026-10-23)
 
 Un décimal reste décimal. Le coefficient d'un terme s'écrit en **fraction** si
@@ -469,9 +474,26 @@ km/h`), 2026-09-27.
   `withTidyStep`, `reducedDerivative`, `.diff`, la carte f′ de l'Atelier).
   Limite connue : une somme n'y est pas ramenée à sa partie primitive —
   `1/(2x+2)` dit `2x+2 ≠ 0`, pas `x+1 ≠ 0`.
-- `tidyTerms` (`terms.ts`) : pour les dérivées — chaque terme au propre,
-  l'ordre des termes gardé (u′v + uv′), sauf si la mise au propre complète
-  regroupe des termes ou évite un négatif en tête.
+- `options.order` : `'canonical'` (défaut, l'étape 8) ou `'kept'` — les
+  termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises
+  (`3+2x`, `3(1+x)`), les termes semblables regroupés à la place du premier
+  (`1+2x+3x → 1+5x`, `2−x+3x → 2+2x`). La clé d'un facteur reste celle de sa
+  forme rangée : `2(1+x)+3(x+1) → 5(1+x)`, et la clé d'un terme ne dépend
+  pas de l'ordre de ses facteurs : `eˣ(1+x) − eˣ(x+1) → 0`. Les **facteurs**
+  restent triés par `sortFactors` (`x·2 → 2x`), mais entre deux facteurs de
+  même catégorie le tri lit l'écriture gardée : `(1+x)eˣ` reste, là où le
+  défaut écrit `eˣ(x+1)` (ordre des facteurs : lot 4c-bis). Aucune étape
+  « On range » n'est racontée (S2, chantier simplify-carte, lot 4c,
+  2026-10-23).
+- `tidyTerms` (`terms.ts`) : pour les dérivées — `tidy({ order: 'kept' })`,
+  l'ordre de la règle gardé (u′v + uv′) ; un quotient garde son numérateur à
+  part (signe compris : `(−sin²x − cos²x)/sin²x`), sauf si la mise au propre
+  complète est plus courte ; un négatif en tête que l'ordre rangé évite, à
+  nombre de termes égal, laisse l'ordre rangé l'emporter (`−6x + 2 → 2 − 6x`).
+  ⚠️ Un arbre construit par le moteur porte `u′v − (uv′)` sans nœud de
+  parenthèse, et `tidy` y distribue le − (écart au contrat, §A) :
+  `tidyTerms` écrit ces parenthèses avant (`withImpliedParentheses`) et ne les
+  ouvre que si cela regroupe des termes (`x − 1 − (x + 1) → −2`).
 
 ### G.2 Qui appelle `tidy`
 
@@ -504,4 +526,5 @@ des termes notamment).
   entre aussi dans son numérateur quand elle est opérande d'une somme
   (`1−(2x−1)/3 → 1+(1−2x)/3`).
 - 2026-10-23 : S3, plus de simplification qui perd le domaine (`x/x` reste) ;
-  options `typeCtx` et `domain` (chantier simplify-carte, lot 4a).
+  options `typeCtx` et `domain` (chantier simplify-carte, lot 4a) ; option
+  `order: 'kept'` et `tidyTerms` reconstruit dessus (lot 4c).

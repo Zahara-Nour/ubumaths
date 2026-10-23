@@ -2,15 +2,15 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1628 (équivalence des racines de fractions)._
+_Mis à jour le 2026-10-23, lot 4c en PR (revue opus faite, régression corrigée)._
 
-- **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b décimaux (#1624), 4b-bis Q8/Q9 (#1625, § 39), **équivalence `√(1/3) ≡ √3/3` (#1628, § 40)**. Rien en prod tant que David n'a pas lancé `deploy:prod`.
+- **État** : lots mergés jusqu'à #1628 (§ 40). **4c en PR** (§ 41) : `tidy({ order: 'kept' })` + `tidyTerms` reconstruit dessus ; revue opus : une régression corrigée (clé de regroupement triée). Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1628. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
-- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
-- **En attente de David** : rien ; vérifications manuelles de #1625 et #1628 notées. (Signalé : `{{eval:(2/3)^(1/2)}}` s'écrit désormais `√6/3`, pas d'objection reçue.)
-- **Pièges en cours** : `0,5/x·x/2 → 0,25x/x` et `√(x/2)` opaque laissés ; `x^{0,5} → x^{1/2}` (§ 37) ; dérivées : chemins bouton/commande/latex-péda en `x−3/2` (lot 5) ; banc des 1 008 modèles : `modeles.json` + `tirages.mts` dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/166c8611-b712-467a-a614-8e0962d560fa/scratchpad` (lancer `pnpm exec tsx` depuis le dépôt à comparer ; réexporter si disparu) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun ; nouveau worktree au 4c.
+- **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → **4c `order: 'kept'`** → **4c-bis ordre des facteurs (Q13, ordre et découpage validés le 2026-10-23)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : CI verte → merge ; republier la page de synthèse (différences Q12 : `2 ln|x| + ln|x+1|`, `rat-04 @ carte`) ; puis lot 4c-bis (Q13, ordre des facteurs).
+- **En attente de David** : rien.
+- **Pièges en cours** : bug de `tidy` (somme sans nœud de parenthèse après un −, distribuée) contourné dans `tidyTerms` seulement (§ 41) ; `rat-04 @ carte` quitte la forme de classe (lot 5) ; banc des 1 008 modèles AVEUGLE à `tidyTerms` (témoin) ; banc copié dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/effec7c4-4847-44a7-8ea8-a18dcc986d3e/scratchpad` (`tirages.mts`, `modeles.json`, `banc-main.txt`) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `feat/simplify-carte-ordre-garde`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -592,3 +592,23 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Verdicts du juge, mesurés (main → branche)** : `√(1/3)` pour `√3/3`, `√(1/2)` et `√0,5` pour `√2/2`, `√(3/2)` pour `√6/2` : `incorrect` → `bad_form` (comme `1/√3` déjà) ; `√3/3` pour `√(1/3)` : `incorrect` → `bad_form` ; `√3` pour `√3/3` : `incorrect` inchangé.
 - Mesures : suite serveur complète verte ; `check:incremental` 0 ; 1 008 modèles × 8 tirages : 0 différence (témoin `{{eval:(2/3)^(1/2)}}` vu changer). Reste opaque : `√(x/2)` (monôme à coefficient fractionnaire), sans cas réel connu.
 - **Revue `code-reviewer` opus** : aucun faux positif, plantage ni valeur fausse (36 paires, 15 valeurs exactes). Mineur corrigé : rationaliser factorise `n·d` par divisions (`√(100000007/99999989)` : 0,45 s pour le juge) → borne `MAX_RATIONALIZED_RADICAND` = 10¹², au-delà la racine reste opaque comme avant.
+
+## 41. Lot 4c : `order: 'kept'` (David, 2026-10-23 : « je valide » ; branche `feat/simplify-carte-ordre-garde`)
+
+**Sonde (main)** : `tidyTerms` garde l'ordre des termes de la somme du haut seulement (`3+2x`, `3+x²−2x`), mais regrouper rend tout l'ordre canonique (`1+2x+3x → 5x+1`), un négatif en tête passe derrière (`−6x+2 → 2−6x`), les sommes en parenthèse sont rangées (`3(1+x) → 3(x+1)`). `tidyWithoutReordering` garde l'ordre des **facteurs** d'une factorisation (`(x+1)eˣ`), pas celui des termes : ce n'est pas le même axe, S2 les confondait.
+
+**Comportements validés** :
+
+- `tidy({ order: 'kept' })` : les termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises (`3+2x`, `3(1+x)`) ; les termes semblables se regroupent à la place du premier (`1+2x+3x → 1+5x`, `2−x+3x → 2+2x`, `x+1+x → 2x+1`) ; la comparaison se fait sur la forme rangée (`2(1+x)+3(x+1) → 5(1+x)`). L'ordre des facteurs reste canonique (`x·2+1 → 2x+1`, `(x+1)eˣ → eˣ(x+1)`). Défaut inchangé : `'canonical'`.
+- **Q10** : `tidyWithoutReordering` sort du lot 4c (axe des facteurs), revu au lot 7.
+- **Q11** : avec `kept`, `−6x+2` reste ; `tidyTerms` garde par-dessus la règle des dérivées du 2026-10-06 (`2−6x`).
+- **Q12** : `tidyTerms` reconstruit sur `kept` dans ce lot ; oracle des dérivées et banc des 1 008 modèles mesurés avant le merge, différences montrées à David.
+- Brancher l'Atelier (D3) reste au lot 5.
+- **Q13 — ordre canonique des facteurs (David, 2026-10-23 : « je valide l'ordre »)**. Mesuré sur `main` : catégorie (constantes `e`/`i`/`π` < lettres < fonctions < reste) puis ordre alphabétique, d'où `(x+1)eˣ → eˣ(x+1)`, `(x+1)ln x → ln(x)(x+1)`, `(x−1)(x+2)eˣ → eˣ(x+2)(x−1)`, mais `(2x−1)e^{2x}` gardé (incohérent). Ordre validé : nombre, lettres et leurs puissances (`x`, `x²`, `π`), parenthèses (sommes), fonctions et exponentielles (`eˣ`, `ln x`, `sin x`, `√x`) → `(x+1)eˣ`, `x(x+1)eˣ`, `(x+1)ln x`. Entre deux parenthèses : l'ordre écrit si l'idempotence le permet (à vérifier). Lot à part (4c-bis, après 4c) — **découpage confirmé par David le 2026-10-23** ; `tidyWithoutReordering` probablement inutile ensuite (Q10).
+- **Fait (branche)** : option `order: TermOrder` dans `TidyOptions` (`collect.ts` : `ordered()` saute `sortTerms` ; la clé d'un facteur qui contient une somme est celle de sa forme rangée, `factorKey`, d'où `2(1+x)+3(x+1) → 5(1+x)` ; en mode `kept`, pas d'étape « On range »). Tests : `tidy-ordre-garde.test.ts` (15 rouges sur 30 avant correctif).
+- **`tidyTerms` reconstruit** sur `kept` : le quotient garde son traitement à part (numérateur, signe compris, sinon `tidy` sortait le − : `−(cos²+sin²)/sin²`) ; règle « négatif en tête » (Q11) gardée.
+- **Bug de `tidy` trouvé en chemin, pas corrigé dans `tidy`** : un arbre construit par le moteur porte `u′v − (uv′)` SANS nœud de parenthèse ; `flattenSumShallow` distribue alors le −, alors que le contrat l'interdit pour `−(x+2)` écrit (`x(2x+1) − x² − x − 1`). L'ancien `tidyTerms` le masquait (terme à terme). Contourné dans `tidyTerms` (`withImpliedParentheses`), avec la règle « ouvrir seulement si ça regroupe » (`x − 1 − (x + 1) → −2`). À corriger dans `tidy` au lot 4e ou 5 (mesurer avant : change le canonique).
+- **Oracle des dérivées** : valeurs identiques (WRONG/RESIDUE inchangés). Formes : `lit-28` (commande, latex-péda) et `rat-22` (4 chemins) rejoignent la forme de classe ; `comp-12` écrit `eˣ/(1+(eˣ)²)` (ordre de la formule) ; `rat-19` garde le `1+x` de l'énoncé ; **`rat-04 @ carte` quitte la forme de classe** (`−2/(x−1)²` → `(x−1−(x+1))/(x−1)²`, comme bouton et commande sur `main` : il n'y arrivait que par le bug ci-dessus, joué deux fois) — lot 5 (D1). Atelier : `.dériver cos(3x+π/4)` → `−3 sin(3x + π/4)` (ordre tapé) au lieu de `sin(π/4 + 3x)`.
+- **Banc des 1 008 modèles × 8 tirages : 0 différence, mais aveugle** : le témoin (`tidyTerms` remplacé par `tidy` rangé) ne change rien non plus, les modèles ne passent pas par `tidyTerms`.
+- **Suite serveur complète** (59 882 tests) : 1 rouge, `∫(1/x + 1/(x+1) + 1/x)` → `2 ln|x| + ln|x+1|` (regroupé à la place du premier, ordre de l'énoncé) au lieu de `ln|x+1| + 2 ln|x|` : attendu mis à jour, **différence à montrer à David (Q12)**. Docs : `tidy-spec.md` (§A.2 écart connu, §G.1 `order` et `tidyTerms`, §H) et `mathast/README.md` mis à jour ; garde `docs:check-a-jour` verte.
+- **Revue `code-reviewer` (opus)** : aucune valeur fausse (signe, coefficient, idempotence). **Régression corrigée** : en `kept`, `eˣ(1+x) − eˣ(x+1)` restait tel quel (défaut : `0`) — `compareFactors` départage `(1+x)` et `eˣ` (même catégorie) sur l'écriture gardée, et la clé de regroupement enchaînait les facteurs dans l'ordre trié. Clé désormais **triée** (`factorsKey`, partagée par `collectLikeTerms` et `collectWithSigns`) ; `flipNumerator` et `withoutDoubleSign` passent par `factorKey`. 4 tests ajoutés (rouges avant), suite serveur verte (59 870). Laissé en l'état (mineur) : la branche « négatif en tête » de `tidyTerms` (`terms.ts`) n'applique pas `withImpliedParentheses` — valeur juste, ira avec le bug de `tidy` (lot 4e/5). `(1+x)eˣ` en `kept` ≠ `eˣ(x+1)` du défaut : réglé par 4c-bis (Q13).
