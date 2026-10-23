@@ -6,13 +6,14 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 3 (H) écrite, avant revues._
+_Mis à jour le 2026-10-23, #1654 ouverte, bloquée par `main` rouge._
 
-- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 (#1651) en prod. PR 3 (H) écrite, prouvée, commitée
-  et poussée sur `feat/passe-lycee-h` (4ef415425) ; PR pas encore ouverte.
-- **Prochaine action** : revues Opus `code-reviewer` + `security-auditor` (lancées le 2026-10-23 ; à relancer si la
-  session a été vidée), corriger, ouvrir la PR, CI, merge ; puis `db:migrate` (David, mode auto refusé).
-- **En attente de David** : rien (accès et niveau tranchés le 2026-10-23).
+- **État** : PR 3 (H) = #1654, ouverte, revues Opus sans bloquant ; CI verte SAUF « Server Tests (shard 3/4) » :
+  `src/lib/questions/__tests__/template-fact-sheet.test.ts` (« modes en mots de l'éditeur »), rouge aussi sur `main`
+  (c9235aee7, chantier fiche-modele, 5886edff7) et en local : pas dû à #1654.
+- **Prochaine action** : quand `main` est réparé, mettre la branche à jour, CI verte, merger #1654 ; puis `db:migrate`
+  (David) et vérification par le MCP.
+- **En attente de David** : qui répare `template-fact-sheet.test.ts` sur `main` (chantier fiche-modele ou cette session).
 - **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
   (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
