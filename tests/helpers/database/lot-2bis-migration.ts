@@ -576,24 +576,34 @@ export function decrireLotModifier(lot: LotModifier): void {
 			}
 		);
 
-		// Lot sans tag posé (retouches) : chaque modèle porte déjà son point de chaque programme, et le
-		// trigger refuse un second point du même programme ; un tag retiré est couvert plus bas.
-		it.runIf(modeles.some((x) => x.tags.length > 0))(
-			'un tag déjà posé sur un modèle du lot fait échouer la migration',
-			async () => {
-				// Un modèle qui ne bouge pas : son tag est accepté par le trigger sur le nœud d'avant.
-				const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres)!;
-				await echoue(
-					() =>
-						pg.query(
+		it('un tag déjà posé sur un modèle du lot fait échouer la migration', async () => {
+			// Un modèle qui ne bouge pas : son tag est accepté par le trigger sur le nœud d'avant.
+			const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres);
+			// Lot sans tag posé (retouches) : le trigger refuse un 2e point du même programme, mais
+			// accepte celui d'un AUTRE programme (1re générale, 1re techno…) sur le nœud du modèle ou sa
+			// notion.
+			const autre = modeles.find((x) => (x.tags_avant ?? []).length > 0 && !x.noeud_apres)!;
+			await echoue(async () => {
+				const r = m
+					? await pg.query(
 							`insert into public.question_template_points (template_id, point_id)
 							 select $1, id from public.curriculum_points where grade = $2 and code = $3 and archived_at is null`,
 							[m.id, m.tags[0].grade, m.tags[0].code]
-						),
-					/tags déjà posés sur ces modèles : 1/
-				);
-			}
-		);
+						)
+					: await pg.query(
+							`insert into public.question_template_points (template_id, point_id)
+							 select q.id, p.id from public.question_templates q
+							   join public.classification_nodes n on n.id = q.classification_node_id
+							   join public.curriculum_points p
+							     on p.node_id in (n.id, case when n.kind = 'subnotion' then n.parent_id end)
+							  where q.id = $1 and p.archived_at is null and p.grade <> all ($2::text[])
+							  order by p.grade, p.code
+							  limit 1`,
+							[autre.id, autre.tags_avant!.map((t) => t.grade)]
+						);
+				expect(r.rowCount).toBe(1);
+			}, /tags déjà posés sur ces modèles : 1/);
+		});
 
 		it.runIf(avant.length > 0)(
 			'un tag relevé retiré depuis le relevé fait échouer la migration',

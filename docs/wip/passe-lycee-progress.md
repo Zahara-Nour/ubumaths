@@ -317,7 +317,11 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   (70e682f9 V3, f3100c29 V3) ; « u₁² ≠ u₀ × u₂ » écrit en clair (d1010214 V1-V2, et le cas frère f3100c29 V1 et V3,
   vrai sur toutes les valeurs tirables) ; descriptions de specs de 0dee4515 / 88a4432e réduites à leur case.
   `scissions_outils.py` : lot sans neuf ni tag posé (ni bloc `$retour_neufs$`, ni `insert … values` vide) ; #1646,
-  #1651, #1654 se régénèrent à l'identique. Banc : « un tag déjà posé » sauté pour un lot sans tag posé (le trigger
-  refuse un 2e point du même programme). Specs 43/43, tirages 4 800/4 800. Intégration : 12 verts ; sans l'étape 4,
-  la suite nominale tombe à sa mise en place et le rollback rougit ; les 10 suites du banc vertes (175 tests).
-  `check:incremental` 0 erreur, cliquet tenu, `lint:fast` propre.
+  #1651, #1654 se régénèrent à l'identique. Banc : pour un lot sans tag posé, « un tag déjà posé » pose un point d'un
+  AUTRE programme (le trigger refuse un 2e point du même). Specs 43/43, tirages 4 800/4 800. Intégration : 13 verts ;
+  sans l'étape 4, la suite nominale tombe à sa mise en place et le rollback rougit ; les 10 suites du banc vertes
+  (176 tests). `check:incremental` 0 erreur, cliquet tenu, `lint:fast` propre.
+- **2026-10-23 — Revues Opus de #1657.** `security-auditor` : aucun bloquant (seules les 5 lignes touchées, aucun
+  accès ouvert, rollback sûr). `code-reviewer` : aucun bloquant (« ≠ » vrais sur toutes les valeurs tirables,
+  4 migrations régénérées à l'identique) ; corrigé : le test « tag déjà posé », d'abord sauté pour ce lot, y tourne
+  avec un point de 1re générale / techno (cas réel : un tag 1GEN posé entre relevé et migration).
