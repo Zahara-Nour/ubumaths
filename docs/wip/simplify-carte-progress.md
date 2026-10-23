@@ -7,10 +7,10 @@ _Mis à jour le 2026-10-23, après #1628 (équivalence des racines de fractions)
 - **État** : lots mergés : code mort (#1610), 1b moteur (#1613), 3 `réduire`/`auto` (#1617), 4a domaine (#1620), 4b décimaux (#1624), 4b-bis Q8/Q9 (#1625, § 39), **équivalence `√(1/3) ≡ √3/3` (#1628, § 40)**. Rien en prod tant que David n'a pas lancé `deploy:prod`.
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à jour après #1628. La republier **à chaque merge, avant le `/clear`** (`Artifact read`, éditer une copie, republier sur la même `url`).
 - **Ordre des lots** : ~~4a~~ → ~~4b~~ → ~~4b-bis~~ → ~~équivalence racines~~ → **4c `order: 'kept'` (S2)** → 4d espaces (E2) → 4e module de règles partagé → 5 formes par contexte (D1-D4, `{ result, conditions }`) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : lot 4c, nouveau worktree ; relire S2 (§ 6) et D3 (§ 19) avant les tests rouges.
+- **Prochaine action** : lot 4c en cours (§ 41) : tests rouges de `order: 'kept'`, puis `tidyTerms` reconstruit dessus, oracle des dérivées + banc mesurés avant merge.
 - **En attente de David** : rien ; vérifications manuelles de #1625 et #1628 notées. (Signalé : `{{eval:(2/3)^(1/2)}}` s'écrit désormais `√6/3`, pas d'objection reçue.)
 - **Pièges en cours** : `0,5/x·x/2 → 0,25x/x` et `√(x/2)` opaque laissés ; `x^{0,5} → x^{1/2}` (§ 37) ; dérivées : chemins bouton/commande/latex-péda en `x−3/2` (lot 5) ; banc des 1 008 modèles : `modeles.json` + `tirages.mts` dans `/private/tmp/claude-501/-Users-david-Coding-js-ubumaths/166c8611-b712-467a-a614-8e0962d560fa/scratchpad` (lancer `pnpm exec tsx` depuis le dépôt à comparer ; réexporter si disparu) ; **pas de `Claude-Session:` dans les commits** ; ne pas re-proposer ce qui est figé (§ 0).
-- **Worktree / branche** : aucun ; nouveau worktree au 4c.
+- **Worktree / branche** : `../ubumaths-wt-simplify-carte`, `feat/simplify-carte-ordre-garde`.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
 
@@ -592,3 +592,15 @@ Sondé sur `main` avant d'écrire (sorties mesurées, sonde jetable retirée). L
 - **Verdicts du juge, mesurés (main → branche)** : `√(1/3)` pour `√3/3`, `√(1/2)` et `√0,5` pour `√2/2`, `√(3/2)` pour `√6/2` : `incorrect` → `bad_form` (comme `1/√3` déjà) ; `√3/3` pour `√(1/3)` : `incorrect` → `bad_form` ; `√3` pour `√3/3` : `incorrect` inchangé.
 - Mesures : suite serveur complète verte ; `check:incremental` 0 ; 1 008 modèles × 8 tirages : 0 différence (témoin `{{eval:(2/3)^(1/2)}}` vu changer). Reste opaque : `√(x/2)` (monôme à coefficient fractionnaire), sans cas réel connu.
 - **Revue `code-reviewer` opus** : aucun faux positif, plantage ni valeur fausse (36 paires, 15 valeurs exactes). Mineur corrigé : rationaliser factorise `n·d` par divisions (`√(100000007/99999989)` : 0,45 s pour le juge) → borne `MAX_RATIONALIZED_RADICAND` = 10¹², au-delà la racine reste opaque comme avant.
+
+## 41. Lot 4c : `order: 'kept'` (David, 2026-10-23 : « je valide » ; branche `feat/simplify-carte-ordre-garde`)
+
+**Sonde (main)** : `tidyTerms` garde l'ordre des termes de la somme du haut seulement (`3+2x`, `3+x²−2x`), mais regrouper rend tout l'ordre canonique (`1+2x+3x → 5x+1`), un négatif en tête passe derrière (`−6x+2 → 2−6x`), les sommes en parenthèse sont rangées (`3(1+x) → 3(x+1)`). `tidyWithoutReordering` garde l'ordre des **facteurs** d'une factorisation (`(x+1)eˣ`), pas celui des termes : ce n'est pas le même axe, S2 les confondait.
+
+**Comportements validés** :
+
+- `tidy({ order: 'kept' })` : les termes de **chaque** somme gardent l'ordre écrit, parenthèses comprises (`3+2x`, `3(1+x)`) ; les termes semblables se regroupent à la place du premier (`1+2x+3x → 1+5x`, `2−x+3x → 2+2x`, `x+1+x → 2x+1`) ; la comparaison se fait sur la forme rangée (`2(1+x)+3(x+1) → 5(1+x)`). L'ordre des facteurs reste canonique (`x·2+1 → 2x+1`, `(x+1)eˣ → eˣ(x+1)`). Défaut inchangé : `'canonical'`.
+- **Q10** : `tidyWithoutReordering` sort du lot 4c (axe des facteurs), revu au lot 7.
+- **Q11** : avec `kept`, `−6x+2` reste ; `tidyTerms` garde par-dessus la règle des dérivées du 2026-10-06 (`2−6x`).
+- **Q12** : `tidyTerms` reconstruit sur `kept` dans ce lot ; oracle des dérivées et banc des 1 008 modèles mesurés avant le merge, différences montrées à David.
+- Brancher l'Atelier (D3) reste au lot 5.
