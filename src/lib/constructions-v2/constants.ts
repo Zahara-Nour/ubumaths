@@ -41,3 +41,9 @@ export const COMPASS_RAISE_MS = 400;
 
 /** Duration of compass lower animation (after drawing), in ms. */
 export const COMPASS_LOWER_MS = 400;
+
+/**
+ * Rayon extérieur du rapporteur, en unités math (156 px à 40 px/u) : dessin
+ * de `Protractor.svelte` et repère de `bissectrice @mesure`.
+ */
+export const PROTRACTOR_RADIUS = 156 / 40;

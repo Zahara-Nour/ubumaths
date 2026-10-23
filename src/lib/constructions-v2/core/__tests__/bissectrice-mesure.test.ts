@@ -8,9 +8,7 @@ import { describe, it, expect } from 'vitest';
 import { ConstructionExecutor } from '../executor';
 import type { SubStep } from '../choreographies/types';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
-
-/** Rayon extérieur du rapporteur (`Protractor.svelte`, 156 px à 40 px/u). */
-const PROTRACTOR_RADIUS = 156 / 40;
+import { PROTRACTOR_RADIUS } from '../../constants';
 
 /** Charge le script et rend les sous-étapes chorégraphiées, dans l'ordre. */
 function subSteps(lines: string[]): { exec: ConstructionExecutor; steps: SubStep[] } {
@@ -233,7 +231,13 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 		const { exec } = subSteps(angleScript(74, '@complet'));
 		exec.executeAll();
 		exec.step();
-		for (const id of marks(exec)) expect(exec.figure.getElementById(id)?.visible).not.toBe(false);
+		const ids = marks(exec);
+		expect(ids).toHaveLength(2);
+		for (const id of ids) {
+			const el = exec.figure.getElementById(id);
+			expect(el).toBeDefined();
+			expect(el?.visible).not.toBe(false);
+		}
 	});
 
 	it('@squelette : codage caché', () => {
@@ -249,7 +253,13 @@ describe('bissectrice @mesure — codage des angles égaux', () => {
 		const { exec } = subSteps(angleScript(74, '@complet -marqueurs'));
 		exec.executeAll();
 		exec.step();
-		for (const id of marks(exec)) expect(exec.figure.getElementById(id)?.visible).toBe(false);
+		const ids = marks(exec);
+		expect(ids).toHaveLength(2);
+		for (const id of ids) {
+			const el = exec.figure.getElementById(id);
+			expect(el).toBeDefined();
+			expect(el?.visible).toBe(false);
+		}
 	});
 });
 

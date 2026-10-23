@@ -28,10 +28,9 @@ import {
 import { isAngle } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { de, droite, en, labelAux, nom, role } from './names';
+import { PROTRACTOR_RADIUS } from '../../constants';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
-/** Rayon extérieur du rapporteur (`Protractor.svelte`, 156 px à 40 px/u). */
-const PROTRACTOR_RADIUS = 156 / 40;
 /** Distance V → repère `@mesure` : juste hors du bord du rapporteur. */
 const REPERE_DISTANCE = PROTRACTOR_RADIUS + 0.3;
 /** Tolérance des comparaisons `@mesure` (unités math, degrés). */
