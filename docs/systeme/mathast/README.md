@@ -1111,7 +1111,8 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   `tidy` (« Le signe d'une fraction », [tidy-spec.md](tidy-spec.md) : `−7/(x−3)²`,
   `−(2x² + 18)/(x² − 9)²`, David 2026-10-23) ; exponentielle commune (`eᵘ` ou `\exp(u)`) → elle seule en
   facteur, le reste développé réduit (`xeˣ → (x + 1)eˣ`, jamais `x(2 − x)e^{−x}`) ;
-  sinon `auto` (`((2x+1)²)′ = 8x + 4`). Un simple réordonnement de `tidyTerms` garde l'ordre de la
+  sinon `auto` (`((2x+1)²)′ = 8x + 4`). Un − devant le quotient entre au numérateur avant
+  tout (`(−x²/(x+2))′ = −(x² + 4x)/(x+2)²`, numérateur jusque-là non réduit, revue du lot 5b). Un simple réordonnement de `tidyTerms` garde l'ordre de la
   règle (`sin x + x cos x`). La console `.diff` (`pnpm math`) reste sur `tidyTerms` (`/calc` à
   supprimer, David 2026-10-23) ; avant lui, la dérivée brute
   replie ses sous-arbres numériques par `tidy` (`foldNumericSubtrees`), donc un décimal tapé reste
@@ -1121,7 +1122,9 @@ même rédaction que l'atelier ; repli au mode A), `__tests__/prose-maths-delimi
   factorise pour étudier le signe » et ligne de réponse) — politique `factoriser` lycée sur le
   numérateur d'un quotient (dénominateur gardé), sur l'expression entière sinon :
   `x(x + 2)/(x + 1)²`, `x(2 − x)e^{−x}`, `(x − √2)(x + √2)`, `−2(x² + 9)/(x² − 9)²`. Rien ne se
-  factorise (`x² + 1`), reste une somme, ou budget dépassé (1 s) → la forme finale. `reducedDerivative`
+  factorise (`x² + 1`), reste une somme, nombre seul devant une somme qui n'est pas un polynôme de
+  degré ≥ 2 (`2(e^{2x} − 2eˣ)`, `4(x − 2)`), exponentielle ou exposant changé (`e^{x²−1}` reste),
+  fraction là où un décimal était tapé (S1 : `x(3x − 4,8)`), ou budget dépassé (1 s) → la forme finale. `reducedDerivative`
   (CLI) rend la forme factorisée ; le signe se calcule toujours sur `result.derivative`. Primitives :
   `pushSimplifyStep` (`pedagogical-integration/pipeline.ts`) émet l'étape
   `simplify-result` avant le `+ C` (ou avant le théorème fondamental), **sauf** quand la

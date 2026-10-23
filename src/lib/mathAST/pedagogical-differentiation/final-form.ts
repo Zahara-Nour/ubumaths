@@ -33,7 +33,7 @@
  */
 
 import type { MathNode } from '../types';
-import { divide, fraction, multiply, number, parentheses, superscript } from '../factory';
+import { divide, fraction, multiply, number, opposite, parentheses, superscript } from '../factory';
 import {
 	flattenProductShallow,
 	flattenSumShallow,
@@ -132,7 +132,7 @@ function rawDerivative(node: MathNode, variable: string): MathNode | null {
 }
 
 function finalForm(written: MathNode, f: MathNode, options: TidyOptions): MathNode {
-	const node = withCoefficientInNumerator(written);
+	const node = withOppositeInNumerator(withCoefficientInNumerator(written));
 	if (node.type === 'division') {
 		const raw = tidy(node.numerator, { ...options, order: 'kept' });
 		const denominator = tidy(node.denominator, { ...options, order: 'kept' });
@@ -171,6 +171,19 @@ function withCoefficientInNumerator(node: MathNode): MathNode {
 	);
 	const numerator = unflattenSum(terms);
 	return numerator === null ? node : divide(numerator, quotient.denominator, quotient.displayStyle);
+}
+
+/**
+ * `−(u/v)′` → `(−u′)/v` : le − entre au numérateur, qui est alors réduit comme
+ * celui d'un quotient. `−x²/(x+2)` se lit `−(x²/(x+2))` : sa dérivée brute
+ * `−(2x(x+2) − x²)/(x+2)²` n'était pas un quotient, et `auto` gardait
+ * `(x² − 2x(x+2))/(x+2)²` (revue du lot 5b).
+ */
+function withOppositeInNumerator(node: MathNode): MathNode {
+	if (!isOpposite(node)) return node;
+	const quotient = unwrap(node.operand);
+	if (quotient.type !== 'division') return node;
+	return divide(opposite(quotient.numerator), quotient.denominator, quotient.displayStyle);
 }
 
 /** Un nombre, sous un éventuel − ou des parenthèses : `2`, `−3`. */
@@ -336,7 +349,7 @@ function withoutFactor(term: MathNode, key: string): MathNode {
  * `eᵘ` (lettre `e` ou `\exponentialE`, invariant 4) ou `\exp(u)`, sous ses
  * parenthèses.
  */
-function isExponential(node: MathNode): boolean {
+export function isExponential(node: MathNode): boolean {
 	const inner = unwrap(node);
 	if (isFunction(inner)) {
 		return inner.name === 'exp' && inner.args.length === 1 && inner.power === undefined;
