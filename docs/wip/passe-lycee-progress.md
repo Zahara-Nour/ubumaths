@@ -6,7 +6,7 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1635 et son `db:migrate`._
+_Mis à jour le 2026-10-23, après #1635, son `db:migrate` et l'instantané repris._
 
 - **État** : étape e close. #1632 (tags) et #1635 (4 libellés, TSPE-626 et TCOMP-379) mergées et **jouées en prod**,
   vérifiées par le MCP (libellés, places 201 et 53, grades numérotés 1..326 et 1..179). Worktree supprimé.
@@ -14,9 +14,9 @@ _Mis à jour le 2026-10-23, après #1635 et son `db:migrate`._
   1SPE-244 à re-ranger sur « racines » puis taguer eae2ff6a ; automatisme 1re spé BO l. 274 sans point ; 85
   points techno sans borne ; `9a6087c5` 2 % d'échecs.
 - **En attente de David** : ce choix ; vérification #1635 notée dans `verifications-manuelles.md`.
-- **Pièges en cours** : instantané `analyse/etat-prod-2026-10-23/` périmé (tags, nœuds, points) : en reprendre un
-  avant tout nouveau lot. Base locale : `20261022200000` et `20261023150000` notées jouées (`migration repair
---local`, policies déjà en place).
+- **Pièges en cours** : instantané à jour = `analyse/etat-prod-2026-10-23b/` (nœuds, points, modèles, **tags**),
+  empreintes = prod à 12 h 20 ; l'ancien `etat-prod-2026-10-23/` reste pour `generer-migration-tags.py`. Base locale :
+  `20261022200000` et `20261023150000` notées jouées (`migration repair --local`, policies déjà en place).
 - **Worktree / branche** : aucun.
 
 ## Les 5 étapes
@@ -165,3 +165,10 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   automatique max + 1 redonnerait TSPE-626 / TCOMP-379.
 - **2026-10-23 — #1635 mergée, `db:migrate` fait.** CI verte ; seule migration en attente en prod ; vérifiée par le
   MCP (4 libellés, TSPE-626 en 201, TCOMP-379 en 53, nœud exponentielle > propriétés algébriques, grades 1..N).
+- **2026-10-23 — Instantané repris (`analyse/etat-prod-2026-10-23b/`).** Pas de relecture complète : l'ancien
+  instantané + les déplacements et tags de `tests/integration/fixtures/tags-lycee.json` (#1632) + les 2 points neufs
+  (#1635), par `etat-prod-apres-e.py`. Empreintes md5 identiques à la prod (MCP) : nœuds 699, points du lycée 1 511,
+  modèles du lycée (`grades && lycée`) 432, tags du lycée 463 (fichier `tags.json` neuf, avec `point_id`). Écart
+  apparent sur les points de 2de = format de `archived_at` seulement (texte Postgres ≠ ISO du JSON). Empreintes :
+  `id|classification_node_id` (modèles), `template_id|point_id` (tags), `id|code|grade|node_id|archived_at` en ISO
+  UTC (points), md5 de la concaténation triée des md5 de lignes.

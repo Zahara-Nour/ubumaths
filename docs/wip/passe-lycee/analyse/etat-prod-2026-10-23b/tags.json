@@ -1,0 +1,2780 @@
+[
+	{
+		"template_id": "0113c53d-ee4a-4da9-9327-537461ffdc85",
+		"grade": "1_SPE",
+		"code": "1SPE-287",
+		"point_id": "3e39b017-a2ee-45c0-ad1f-73cf981a8f09"
+	},
+	{
+		"template_id": "0140fdfa-1066-4885-b0ab-c597ff503283",
+		"grade": "1_SPE",
+		"code": "1SPE-395",
+		"point_id": "2e151870-4f2d-40d4-b5dd-8f0fb7ca2957"
+	},
+	{
+		"template_id": "03b3d9b3-2d38-4062-a70b-c9b31839444b",
+		"grade": "1_SPE",
+		"code": "1SPE-283",
+		"point_id": "424708e0-73e4-4a91-9758-554b3c4acc58"
+	},
+	{
+		"template_id": "0417223e-923d-4ae2-b25c-89b60f4c7631",
+		"grade": "1_SPE",
+		"code": "1SPE-351",
+		"point_id": "169912e8-cded-48af-90ce-aed6d788522f"
+	},
+	{
+		"template_id": "044a3ae3-c54a-4521-9265-3997fcc6b0d2",
+		"grade": "1_SPE",
+		"code": "1SPE-317",
+		"point_id": "889936c3-f8c4-42fb-b5ea-f0ef1428bac3"
+	},
+	{
+		"template_id": "046ee43f-2f1d-4563-96cb-ff96d68c7fbf",
+		"grade": "T_EXP",
+		"code": "TEXP-274",
+		"point_id": "2715819c-13d5-47f7-abd1-61d7e1ef49ef"
+	},
+	{
+		"template_id": "0495289a-abb1-4fed-b058-5e924a5f05ed",
+		"grade": "1_SPE",
+		"code": "1SPE-377",
+		"point_id": "52e04b97-7bcd-4c3f-aedd-6c2dd1557ad3"
+	},
+	{
+		"template_id": "0495289a-abb1-4fed-b058-5e924a5f05ed",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-118",
+		"point_id": "ed7dae95-79e1-4eb3-b5f8-7e41278353d6"
+	},
+	{
+		"template_id": "04ec9518-1d43-461c-beb0-aa38d62b6835",
+		"grade": "T_COMP",
+		"code": "TCOMP-230",
+		"point_id": "21904a79-1e04-4240-a710-ee9662e2f8a7"
+	},
+	{
+		"template_id": "04ec9518-1d43-461c-beb0-aa38d62b6835",
+		"grade": "T_SPE",
+		"code": "TSPE-415",
+		"point_id": "2661db73-5d79-4afe-84bc-62ada91d91f2"
+	},
+	{
+		"template_id": "05387201-2403-409a-8ebe-5898b6e77e3c",
+		"grade": "1_SPE",
+		"code": "1SPE-272",
+		"point_id": "576556ff-29aa-4509-9a20-e3dc993905b5"
+	},
+	{
+		"template_id": "05387201-2403-409a-8ebe-5898b6e77e3c",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-079",
+		"point_id": "815591c3-8942-468e-b5be-446de15b4025"
+	},
+	{
+		"template_id": "0718f490-bfdd-4a62-b78f-b15753c27d8a",
+		"grade": "1_SPE",
+		"code": "1SPE-358",
+		"point_id": "586d84af-f401-410a-a655-56e05b6e5d99"
+	},
+	{
+		"template_id": "0718f490-bfdd-4a62-b78f-b15753c27d8a",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-138",
+		"point_id": "59b42537-bd87-4a19-b5e3-3fcc3de43c93"
+	},
+	{
+		"template_id": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
+		"grade": "T_COMP",
+		"code": "TCOMP-204",
+		"point_id": "36499a00-a31c-4350-b0d3-1a8548d0a695"
+	},
+	{
+		"template_id": "07bce646-6a88-4b7c-aaf6-fe07ffa63ed6",
+		"grade": "T_SPE",
+		"code": "TSPE-382",
+		"point_id": "1a710c99-3c84-4551-9736-176ff851fc7d"
+	},
+	{
+		"template_id": "0808e518-9aa6-4241-85b0-5132033fe3c8",
+		"grade": "T_SPE",
+		"code": "TSPE-372",
+		"point_id": "f80794d5-9622-4f90-98a5-0f2fd7da8f35"
+	},
+	{
+		"template_id": "08f9ad7b-7885-474f-b0a1-630a8847140e",
+		"grade": "T_COMP",
+		"code": "TCOMP-265",
+		"point_id": "03b478c7-64d2-4c37-bd1f-64024dbd31fd"
+	},
+	{
+		"template_id": "08f9ad7b-7885-474f-b0a1-630a8847140e",
+		"grade": "T_SPE",
+		"code": "TSPE-412",
+		"point_id": "49103f8a-167a-49a4-86cd-db77f59332f7"
+	},
+	{
+		"template_id": "0943e867-e639-45f5-939d-df7492d0ecaf",
+		"grade": "T_SPE",
+		"code": "TSPE-530",
+		"point_id": "4351acd7-975d-48d4-af3a-46742e6cde03"
+	},
+	{
+		"template_id": "0965c56c-7808-4698-8c1f-8124d3a6505d",
+		"grade": "T_SPE",
+		"code": "TSPE-309",
+		"point_id": "975931e5-792f-4703-98fc-388364cc527b"
+	},
+	{
+		"template_id": "09f0c9ec-70ea-4b90-a949-7c6154e91104",
+		"grade": "2",
+		"code": "2-347",
+		"point_id": "ebc28493-c88e-452c-a79b-f861397bd258"
+	},
+	{
+		"template_id": "0a2d3681-eb19-43db-89e9-762c406d9db4",
+		"grade": "T_SPE",
+		"code": "TSPE-454",
+		"point_id": "0c6bfd9e-280b-41d4-9fd0-076d41362e18"
+	},
+	{
+		"template_id": "0af4bf32-b97e-493d-bea4-917b6bbdf6f2",
+		"grade": "1_GEN",
+		"code": "1GEN-014",
+		"point_id": "011bef0b-b551-4fa8-83af-22df24c0b398"
+	},
+	{
+		"template_id": "0af4bf32-b97e-493d-bea4-917b6bbdf6f2",
+		"grade": "1_SPE",
+		"code": "1SPE-224",
+		"point_id": "081fa2be-1faf-49ed-a821-5d9e53a73c13"
+	},
+	{
+		"template_id": "0af4bf32-b97e-493d-bea4-917b6bbdf6f2",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-037",
+		"point_id": "118b4a0f-0371-4145-ba38-c40befb6054c"
+	},
+	{
+		"template_id": "0b686e01-725c-448d-9e10-b295cf9b4128",
+		"grade": "1_GEN",
+		"code": "1GEN-061",
+		"point_id": "6e62be7a-9785-48bc-944e-c5a3d106ed8b"
+	},
+	{
+		"template_id": "0b686e01-725c-448d-9e10-b295cf9b4128",
+		"grade": "1_SPE",
+		"code": "1SPE-237",
+		"point_id": "890527bb-ab6e-4dfd-ac08-094d4f19c4cd"
+	},
+	{
+		"template_id": "0b686e01-725c-448d-9e10-b295cf9b4128",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-052",
+		"point_id": "adf80b48-4104-4063-a34a-8e68a7ca24ef"
+	},
+	{
+		"template_id": "0d2edda7-1d90-46ee-b07d-792ebbd43849",
+		"grade": "2",
+		"code": "2-261",
+		"point_id": "833e5dea-2e98-4cd5-90b0-281e3f3e69b6"
+	},
+	{
+		"template_id": "0fbe194d-003b-4407-8486-10b0141530a7",
+		"grade": "T_EXP",
+		"code": "TEXP-295",
+		"point_id": "1c318d51-ba18-4658-9a15-c46879419c6c"
+	},
+	{
+		"template_id": "0feeabaf-e90d-45a1-b5f1-997b3da067a7",
+		"grade": "T_SPE",
+		"code": "TSPE-319",
+		"point_id": "5c797ebf-482d-40af-8e0b-2a18c45ecf7e"
+	},
+	{
+		"template_id": "10393ff9-b797-4557-a841-6e0b4e18c52b",
+		"grade": "T_COMP",
+		"code": "TCOMP-220",
+		"point_id": "499bd212-fbe8-4122-9d81-e8e989b760e0"
+	},
+	{
+		"template_id": "10393ff9-b797-4557-a841-6e0b4e18c52b",
+		"grade": "T_SPE",
+		"code": "TSPE-425",
+		"point_id": "3ca852b7-41c5-42f0-831d-aef63f0d027f"
+	},
+	{
+		"template_id": "1239554b-d442-4be6-8867-d9dc38311999",
+		"grade": "1_SPE",
+		"code": "1SPE-377",
+		"point_id": "52e04b97-7bcd-4c3f-aedd-6c2dd1557ad3"
+	},
+	{
+		"template_id": "1239554b-d442-4be6-8867-d9dc38311999",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-118",
+		"point_id": "ed7dae95-79e1-4eb3-b5f8-7e41278353d6"
+	},
+	{
+		"template_id": "1315d326-1a4b-4abc-af93-f8ab9aeecc66",
+		"grade": "1_GEN",
+		"code": "1GEN-013",
+		"point_id": "9a2003f2-bc10-4e30-bdd3-b4352b499f0d"
+	},
+	{
+		"template_id": "1315d326-1a4b-4abc-af93-f8ab9aeecc66",
+		"grade": "1_SPE",
+		"code": "1SPE-213",
+		"point_id": "8a7b0863-9a85-4719-8ca8-2d2c58233efc"
+	},
+	{
+		"template_id": "1315d326-1a4b-4abc-af93-f8ab9aeecc66",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-035",
+		"point_id": "64d8cc69-542d-4caa-9edb-8ef72a530a2b"
+	},
+	{
+		"template_id": "1338da34-00a6-4500-97fc-fcece9514ae6",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "13e2d419-770b-4e97-a2f8-972d467cf2fc",
+		"grade": "T_SPE",
+		"code": "TSPE-516",
+		"point_id": "c11b9144-3beb-4362-9295-2105f160431c"
+	},
+	{
+		"template_id": "14036c68-6854-422b-b06d-3890b3745573",
+		"grade": "T_SPE",
+		"code": "TSPE-596",
+		"point_id": "c429dcee-b611-4abe-aba0-9b2fa404ca00"
+	},
+	{
+		"template_id": "146a7c79-ad5c-443c-85a1-c8d0014c2ad8",
+		"grade": "1_SPE",
+		"code": "1SPE-231",
+		"point_id": "8a4eaaf2-12df-4bc4-b043-3b5c4cb70b02"
+	},
+	{
+		"template_id": "158ecaa4-7fa7-4313-a6be-bf60fc538ab6",
+		"grade": "1_SPE",
+		"code": "1SPE-212",
+		"point_id": "1692fe2e-ceb0-4909-b8e8-d8fff738d9c0"
+	},
+	{
+		"template_id": "15d3aaa0-5eef-4c08-a38c-5b5c8d5ed6e1",
+		"grade": "1_SPE",
+		"code": "1SPE-272",
+		"point_id": "576556ff-29aa-4509-9a20-e3dc993905b5"
+	},
+	{
+		"template_id": "1602c40d-818f-4218-beb9-0d7f116992a4",
+		"grade": "1_SPE",
+		"code": "1SPE-418",
+		"point_id": "3f14f0cd-1d36-4746-a597-ebd6bfa0f153"
+	},
+	{
+		"template_id": "164edf6b-d68c-4a19-8f81-1a0d596496a4",
+		"grade": "T_COMP",
+		"code": "TCOMP-279",
+		"point_id": "317d9231-78ac-4cd1-8253-a735bd2bff06"
+	},
+	{
+		"template_id": "164edf6b-d68c-4a19-8f81-1a0d596496a4",
+		"grade": "T_SPE",
+		"code": "TSPE-490",
+		"point_id": "2ada9667-bbbf-45e3-bb77-89be82654265"
+	},
+	{
+		"template_id": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
+		"grade": "1_SPE",
+		"code": "1SPE-265",
+		"point_id": "0d8dfe12-aa1a-471c-866c-09612b381809"
+	},
+	{
+		"template_id": "1666b8e9-8225-4e66-8b8c-4d5190806ed1",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-080",
+		"point_id": "fdb257e7-e214-4da1-8fbe-665904336d05"
+	},
+	{
+		"template_id": "17f35a67-b665-4c4c-9ebf-f0b413ca43d9",
+		"grade": "T_COMP",
+		"code": "TCOMP-323",
+		"point_id": "35658911-a98f-485b-b430-210dc7d83233"
+	},
+	{
+		"template_id": "17f64f63-9af0-48ea-96b1-a74e0bef16f4",
+		"grade": "1_SPE",
+		"code": "1SPE-281",
+		"point_id": "16208677-0ee7-4a02-a8fd-2fd5c1b6aeb9"
+	},
+	{
+		"template_id": "17f64f63-9af0-48ea-96b1-a74e0bef16f4",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-075",
+		"point_id": "a651529d-fe25-4787-99fe-b9ea56969780"
+	},
+	{
+		"template_id": "1820cab8-ab88-4365-bc13-d44c5e234c49",
+		"grade": "T_EXP",
+		"code": "TEXP-339",
+		"point_id": "51938a15-dc9b-4dd6-87d1-ed8eb2625fc1"
+	},
+	{
+		"template_id": "18855802-b8e9-4fff-bfa8-256cc4d50c31",
+		"grade": "T_SPE",
+		"code": "TSPE-456",
+		"point_id": "b815b196-9e4f-4439-bc86-299a057c34c8"
+	},
+	{
+		"template_id": "18e26873-dca0-4c73-bc23-f181e0164a66",
+		"grade": "1_GEN",
+		"code": "1GEN-026",
+		"point_id": "97d8681c-72d2-4258-9e22-5f771198f495"
+	},
+	{
+		"template_id": "18e26873-dca0-4c73-bc23-f181e0164a66",
+		"grade": "1_SPE",
+		"code": "1SPE-244",
+		"point_id": "e7f7b5bf-4481-4683-ba1f-f06923a307c5"
+	},
+	{
+		"template_id": "18e26873-dca0-4c73-bc23-f181e0164a66",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-065",
+		"point_id": "dfc5a2db-3dd9-4929-a731-5715a2abde24"
+	},
+	{
+		"template_id": "18ff6a91-3e94-4391-81a8-037af4ce1470",
+		"grade": "T_EXP",
+		"code": "TEXP-241",
+		"point_id": "d5869329-8d4c-4e2c-aacc-816b469ceafe"
+	},
+	{
+		"template_id": "19961e67-88c4-43bf-a76b-6a2af61dedf3",
+		"grade": "1_SPE",
+		"code": "1SPE-237",
+		"point_id": "890527bb-ab6e-4dfd-ac08-094d4f19c4cd"
+	},
+	{
+		"template_id": "19961e67-88c4-43bf-a76b-6a2af61dedf3",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-052",
+		"point_id": "adf80b48-4104-4063-a34a-8e68a7ca24ef"
+	},
+	{
+		"template_id": "1a57c0a4-8992-4c3f-8ca7-f1a7ce9320dc",
+		"grade": "T_COMP",
+		"code": "TCOMP-224",
+		"point_id": "a3a5b2e4-3aef-427b-916c-fb7c0e7c3c8f"
+	},
+	{
+		"template_id": "1a57c0a4-8992-4c3f-8ca7-f1a7ce9320dc",
+		"grade": "T_SPE",
+		"code": "TSPE-438",
+		"point_id": "cbc7b6a7-803a-4e28-a72d-6a89636ba2a7"
+	},
+	{
+		"template_id": "1acb6d47-5d88-4ccf-830f-98dc57d0022c",
+		"grade": "1_GEN",
+		"code": "1GEN-022",
+		"point_id": "d1b0a098-fc45-45a0-9749-e02551b91f6d"
+	},
+	{
+		"template_id": "1acb6d47-5d88-4ccf-830f-98dc57d0022c",
+		"grade": "1_SPE",
+		"code": "1SPE-402",
+		"point_id": "bc49047d-a315-48a9-8b33-11ef33b7a482"
+	},
+	{
+		"template_id": "1acb6d47-5d88-4ccf-830f-98dc57d0022c",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-057",
+		"point_id": "5b1817cb-bff7-498f-b8aa-0abbbeeb495c"
+	},
+	{
+		"template_id": "1b1a6d7b-d776-491b-b2bc-b2bc9fe629fe",
+		"grade": "1_GEN",
+		"code": "1GEN-026",
+		"point_id": "97d8681c-72d2-4258-9e22-5f771198f495"
+	},
+	{
+		"template_id": "1b1a6d7b-d776-491b-b2bc-b2bc9fe629fe",
+		"grade": "1_SPE",
+		"code": "1SPE-244",
+		"point_id": "e7f7b5bf-4481-4683-ba1f-f06923a307c5"
+	},
+	{
+		"template_id": "1b1a6d7b-d776-491b-b2bc-b2bc9fe629fe",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-065",
+		"point_id": "dfc5a2db-3dd9-4929-a731-5715a2abde24"
+	},
+	{
+		"template_id": "1bbfa5f2-1c32-4a81-92cf-b9e7c5996977",
+		"grade": "1_SPE",
+		"code": "1SPE-219",
+		"point_id": "72c9c563-5821-4910-ae30-72ce9b391363"
+	},
+	{
+		"template_id": "1bbfa5f2-1c32-4a81-92cf-b9e7c5996977",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-033",
+		"point_id": "b145ae46-6884-4f95-b51d-3c17f5d02b90"
+	},
+	{
+		"template_id": "1c443c35-ef93-4dc5-8635-b7ddcea32b77",
+		"grade": "2",
+		"code": "2-377",
+		"point_id": "c6495be1-7522-46a0-9bd6-40fb73178fce"
+	},
+	{
+		"template_id": "1c65d58e-8596-4e11-b917-6c8a86d8ef0f",
+		"grade": "1_GEN",
+		"code": "1GEN-008",
+		"point_id": "8878cf22-94dd-43e3-8cd0-9c99f772570a"
+	},
+	{
+		"template_id": "1c65d58e-8596-4e11-b917-6c8a86d8ef0f",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-086",
+		"point_id": "3ab04f38-9a6b-49a8-b754-a58ff369cd63"
+	},
+	{
+		"template_id": "1c65d58e-8596-4e11-b917-6c8a86d8ef0f",
+		"grade": "T_COMP",
+		"code": "TCOMP-326",
+		"point_id": "7fbd3bfb-493c-453a-91ea-ed8dfd5f21d0"
+	},
+	{
+		"template_id": "1cfc575d-e122-406d-9b4e-60556d3260a5",
+		"grade": "2",
+		"code": "2-399",
+		"point_id": "525c22f4-27e9-4953-9e96-8744b85d0991"
+	},
+	{
+		"template_id": "1cfc575d-e122-406d-9b4e-60556d3260a5",
+		"grade": "T_COMP",
+		"code": "TCOMP-302",
+		"point_id": "305f2fa7-20de-4f3b-9873-cc5b188ab5cc"
+	},
+	{
+		"template_id": "1cfc575d-e122-406d-9b4e-60556d3260a5",
+		"grade": "T_SPE",
+		"code": "TSPE-616",
+		"point_id": "50f2a556-92c5-4c39-ba9a-6ffd610e5ed3"
+	},
+	{
+		"template_id": "1ebd1c86-7970-49c9-a373-74ba4d71d9ec",
+		"grade": "T_COMP",
+		"code": "TCOMP-209",
+		"point_id": "61721a5e-8d14-4b5a-abe0-de3e044ecb24"
+	},
+	{
+		"template_id": "1ebd1c86-7970-49c9-a373-74ba4d71d9ec",
+		"grade": "T_SPE",
+		"code": "TSPE-383",
+		"point_id": "bda106c9-6fc2-4f1c-909a-77607d8ba528"
+	},
+	{
+		"template_id": "1f88d29a-086b-4fc9-9b28-debca396c697",
+		"grade": "T_EXP",
+		"code": "TEXP-335",
+		"point_id": "11c5d29a-902e-4c46-9b8b-bc05999f2d6e"
+	},
+	{
+		"template_id": "21840f6c-e705-4ce7-b400-af9ca3ca195b",
+		"grade": "T_SPE",
+		"code": "TSPE-418",
+		"point_id": "d6d699ea-fd4d-4d4b-9e18-c27350cef757"
+	},
+	{
+		"template_id": "226e5b3b-fad4-4c99-92cb-42e123014055",
+		"grade": "2",
+		"code": "2-245",
+		"point_id": "7dc4ec3b-6286-4ee0-9290-1be83b607ec9"
+	},
+	{
+		"template_id": "234270ac-a763-4cb9-bf87-4d44f441cde5",
+		"grade": "T_EXP",
+		"code": "TEXP-322",
+		"point_id": "307db634-23cd-4254-a7c2-a0a9a986df56"
+	},
+	{
+		"template_id": "245b4eb1-11fc-497a-b4cd-0a8934719d2c",
+		"grade": "1_SPE",
+		"code": "1SPE-297",
+		"point_id": "657c4f77-8876-4f47-9be1-6430c8adf45f"
+	},
+	{
+		"template_id": "2491dd75-f888-4b86-aff6-e969c375cb5c",
+		"grade": "T_COMP",
+		"code": "TCOMP-233",
+		"point_id": "6913b802-3695-4d79-906b-c9a8d479c907"
+	},
+	{
+		"template_id": "2491dd75-f888-4b86-aff6-e969c375cb5c",
+		"grade": "T_SPE",
+		"code": "TSPE-430",
+		"point_id": "1b0860e4-7a93-467f-bafe-76c93b18e08e"
+	},
+	{
+		"template_id": "2562438e-4ad7-4c95-b9a4-0b3534ceaed0",
+		"grade": "2",
+		"code": "2-367",
+		"point_id": "5c69948e-1385-4a41-9dbf-99f0eadc7759"
+	},
+	{
+		"template_id": "25a7549a-34f5-4afc-a97d-d61c0a9efe4d",
+		"grade": "1_SPE",
+		"code": "1SPE-386",
+		"point_id": "ceb8a22b-d6cb-4c88-97bd-807d89cc17a9"
+	},
+	{
+		"template_id": "279cf28f-a9e9-4c15-bd00-adbb9442c9bd",
+		"grade": "1_SPE",
+		"code": "1SPE-216",
+		"point_id": "72264b5a-2e97-4078-a683-1a2977285c9c"
+	},
+	{
+		"template_id": "2871990c-21d1-4d96-a2df-897ee2a1cc5c",
+		"grade": "1_SPE",
+		"code": "1SPE-243",
+		"point_id": "a950a408-f419-426b-b448-08752903d3df"
+	},
+	{
+		"template_id": "288c2bf0-2442-4e2d-ad4b-afcc1d23b6b2",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "294206b9-0b78-412f-9528-505d53b372eb",
+		"grade": "T_SPE",
+		"code": "TSPE-352",
+		"point_id": "f2e4617e-973f-4be7-84b6-b39fd66b9be0"
+	},
+	{
+		"template_id": "2a1413ff-de6d-4380-912f-e8fbd977a8c9",
+		"grade": "T_COMP",
+		"code": "TCOMP-255",
+		"point_id": "723a14f2-6dc3-4e9a-8be1-9991c0022f6a"
+	},
+	{
+		"template_id": "2a1413ff-de6d-4380-912f-e8fbd977a8c9",
+		"grade": "T_SPE",
+		"code": "TSPE-607",
+		"point_id": "5ad6c557-8fe1-4c04-a463-e030d3441e13"
+	},
+	{
+		"template_id": "2af6296f-7863-40db-89de-eda542be5e45",
+		"grade": "1_SPE",
+		"code": "1SPE-357",
+		"point_id": "e18b2c95-a343-4c44-87eb-035b5e740b06"
+	},
+	{
+		"template_id": "2b382069-eaad-4627-8405-bddd24b81c38",
+		"grade": "1_SPE",
+		"code": "1SPE-281",
+		"point_id": "16208677-0ee7-4a02-a8fd-2fd5c1b6aeb9"
+	},
+	{
+		"template_id": "2bae040c-347b-401f-a646-6cd2914b3399",
+		"grade": "T_SPE",
+		"code": "TSPE-320",
+		"point_id": "a1b4475c-cb80-488d-9a66-84865ffafde2"
+	},
+	{
+		"template_id": "2bf6edc7-e12f-450e-951c-cbf2b20b1e19",
+		"grade": "T_SPE",
+		"code": "TSPE-385",
+		"point_id": "36ba9590-5508-4b06-886a-73893662b194"
+	},
+	{
+		"template_id": "2bfbf2fc-e7dc-4fd9-ab50-0cb3e7f5d402",
+		"grade": "1_SPE",
+		"code": "1SPE-318",
+		"point_id": "4a7b8894-9f58-454a-91ce-b918b87b70b2"
+	},
+	{
+		"template_id": "2c116f4d-d7ef-4d8c-8114-9f113a983c4c",
+		"grade": "1_SPE",
+		"code": "1SPE-340",
+		"point_id": "73a83287-9d39-4c47-997a-6e1535d98dad"
+	},
+	{
+		"template_id": "2d480f3d-2092-4f25-91b5-b92887f7b71b",
+		"grade": "T_SPE",
+		"code": "TSPE-468",
+		"point_id": "3ce9d5ad-0a35-4fc7-9ea9-43fcdde7c737"
+	},
+	{
+		"template_id": "2dcb4b3c-e5ad-4b8b-9728-1b4e614bcba1",
+		"grade": "T_EXP",
+		"code": "TEXP-206",
+		"point_id": "3243f08c-c33f-4e12-9684-5af9ba2e4300"
+	},
+	{
+		"template_id": "2dd2b712-3687-4910-ab92-378c46125129",
+		"grade": "1_SPE",
+		"code": "1SPE-253",
+		"point_id": "c6fd3cd4-c4f3-4ae8-95ff-6af3f30a2ace"
+	},
+	{
+		"template_id": "2dd2b712-3687-4910-ab92-378c46125129",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-063",
+		"point_id": "3b5f875e-87ed-4bd9-89d8-ce3ae372f87d"
+	},
+	{
+		"template_id": "3091d426-e98f-4da1-abc1-1777dc2061f3",
+		"grade": "T_EXP",
+		"code": "TEXP-274",
+		"point_id": "2715819c-13d5-47f7-abd1-61d7e1ef49ef"
+	},
+	{
+		"template_id": "31a77ba9-520c-4f35-82b3-066492b512c1",
+		"grade": "1_SPE",
+		"code": "1SPE-236",
+		"point_id": "00b4f145-c579-4c6f-91e8-fec3e797dcf7"
+	},
+	{
+		"template_id": "31a77ba9-520c-4f35-82b3-066492b512c1",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-050",
+		"point_id": "705dec9e-c927-4c7b-a929-71234c69cd26"
+	},
+	{
+		"template_id": "31be400c-29fb-4877-a0e8-49c33d40add7",
+		"grade": "T_EXP",
+		"code": "TEXP-314",
+		"point_id": "8d540562-de22-421b-8866-d69fec554dea"
+	},
+	{
+		"template_id": "32993a13-829a-4876-bfe2-965c4a404d03",
+		"grade": "1_SPE",
+		"code": "1SPE-386",
+		"point_id": "ceb8a22b-d6cb-4c88-97bd-807d89cc17a9"
+	},
+	{
+		"template_id": "32bb4b83-1323-435e-b21d-4dd722321dd7",
+		"grade": "T_COMP",
+		"code": "TCOMP-254",
+		"point_id": "6cadad30-f231-4375-9801-771fbb30c612"
+	},
+	{
+		"template_id": "32bb4b83-1323-435e-b21d-4dd722321dd7",
+		"grade": "T_SPE",
+		"code": "TSPE-469",
+		"point_id": "eb3ebfc8-07dd-42c0-8949-80e6bc2b8692"
+	},
+	{
+		"template_id": "337d31c3-5d6b-4bd0-b9da-f025ddb26145",
+		"grade": "1_GEN",
+		"code": "1GEN-013",
+		"point_id": "9a2003f2-bc10-4e30-bdd3-b4352b499f0d"
+	},
+	{
+		"template_id": "337d31c3-5d6b-4bd0-b9da-f025ddb26145",
+		"grade": "1_SPE",
+		"code": "1SPE-213",
+		"point_id": "8a7b0863-9a85-4719-8ca8-2d2c58233efc"
+	},
+	{
+		"template_id": "337d31c3-5d6b-4bd0-b9da-f025ddb26145",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-035",
+		"point_id": "64d8cc69-542d-4caa-9edb-8ef72a530a2b"
+	},
+	{
+		"template_id": "33be404b-d498-4243-8653-dbb819ea7542",
+		"grade": "T_SPE",
+		"code": "TSPE-366",
+		"point_id": "9ada33c6-7247-4163-bcbe-254afd712ee8"
+	},
+	{
+		"template_id": "33eb676e-e3d7-4710-a1c1-50133a060125",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "349e1be5-65c5-49ce-b8e5-627a0c4a0bf5",
+		"grade": "1_SPE",
+		"code": "1SPE-216",
+		"point_id": "72264b5a-2e97-4078-a683-1a2977285c9c"
+	},
+	{
+		"template_id": "34e569e7-7834-456f-8e48-65b2a1183030",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "35697e01-53f5-4a45-9eb5-c7e9882065b2",
+		"grade": "T_SPE",
+		"code": "TSPE-364",
+		"point_id": "897ad520-b992-487b-9ce9-e3119ec47790"
+	},
+	{
+		"template_id": "35ad8891-e0bc-4666-a7e1-8cf917927f9f",
+		"grade": "1_SPE",
+		"code": "1SPE-357",
+		"point_id": "e18b2c95-a343-4c44-87eb-035b5e740b06"
+	},
+	{
+		"template_id": "36010981-8f6b-4b95-bc86-4fcbf87be4ac",
+		"grade": "1_GEN",
+		"code": "1GEN-012",
+		"point_id": "a04ac8b1-52a4-43ed-aeda-b630f0995f91"
+	},
+	{
+		"template_id": "36010981-8f6b-4b95-bc86-4fcbf87be4ac",
+		"grade": "1_SPE",
+		"code": "1SPE-341",
+		"point_id": "d535eab6-862c-4f01-9de2-25ca43fb0696"
+	},
+	{
+		"template_id": "36010981-8f6b-4b95-bc86-4fcbf87be4ac",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-091",
+		"point_id": "67bf03fc-85d3-4a52-a19a-dc3fd072d1f8"
+	},
+	{
+		"template_id": "36abc642-aa7a-44a2-8597-4246fc62069c",
+		"grade": "2",
+		"code": "2-378",
+		"point_id": "2c1c71df-bd6f-4bdc-ad21-0ca440c0c62d"
+	},
+	{
+		"template_id": "373fc5b4-63af-409d-a1b9-1320ae9b3b75",
+		"grade": "1_GEN",
+		"code": "1GEN-014",
+		"point_id": "011bef0b-b551-4fa8-83af-22df24c0b398"
+	},
+	{
+		"template_id": "373fc5b4-63af-409d-a1b9-1320ae9b3b75",
+		"grade": "1_SPE",
+		"code": "1SPE-224",
+		"point_id": "081fa2be-1faf-49ed-a821-5d9e53a73c13"
+	},
+	{
+		"template_id": "373fc5b4-63af-409d-a1b9-1320ae9b3b75",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-037",
+		"point_id": "118b4a0f-0371-4145-ba38-c40befb6054c"
+	},
+	{
+		"template_id": "3a6583b5-9cc4-4005-9eb8-742828c5f7b4",
+		"grade": "1_SPE",
+		"code": "1SPE-332",
+		"point_id": "3d2a56f2-3ae8-4e87-bf6b-1e95ceb78369"
+	},
+	{
+		"template_id": "3aca54e9-28c7-4ea4-930b-30be6979549b",
+		"grade": "T_SPE",
+		"code": "TSPE-312",
+		"point_id": "0dc80fab-595c-44d7-9ff6-9167c53dc85d"
+	},
+	{
+		"template_id": "3b396d9c-5e35-42dd-8c21-f63323418f37",
+		"grade": "T_COMP",
+		"code": "TCOMP-267",
+		"point_id": "fa9e00db-3fd7-4ad6-93e0-afd1b096db95"
+	},
+	{
+		"template_id": "3b396d9c-5e35-42dd-8c21-f63323418f37",
+		"grade": "T_SPE",
+		"code": "TSPE-482",
+		"point_id": "5dd5df99-7f0f-4492-8c73-179288f4f553"
+	},
+	{
+		"template_id": "3bace561-460f-466d-b834-a605a59500a7",
+		"grade": "T_SPE",
+		"code": "TSPE-567",
+		"point_id": "2458ceff-0967-4cec-883a-bbdeeec3d394"
+	},
+	{
+		"template_id": "3dbc5a7b-ceea-4ab9-8922-b77ee206f329",
+		"grade": "T_COMP",
+		"code": "TCOMP-247",
+		"point_id": "dcfab691-c211-42d8-82f5-082a85555016"
+	},
+	{
+		"template_id": "3dbc5a7b-ceea-4ab9-8922-b77ee206f329",
+		"grade": "T_SPE",
+		"code": "TSPE-602",
+		"point_id": "7b99ccfe-0757-497a-bcb9-a07e355a30e1"
+	},
+	{
+		"template_id": "3edf49f2-16e4-4deb-940d-42c01fa61519",
+		"grade": "T_EXP",
+		"code": "TEXP-283",
+		"point_id": "4d994f15-7fb7-41e7-9671-ece69e72e1b9"
+	},
+	{
+		"template_id": "4016b05c-f6cf-4fe1-a1e8-19067a57a931",
+		"grade": "2",
+		"code": "2-396",
+		"point_id": "6e84b84f-4ce8-432c-a2bf-7a75cafa2952"
+	},
+	{
+		"template_id": "4016b05c-f6cf-4fe1-a1e8-19067a57a931",
+		"grade": "T_COMP",
+		"code": "TCOMP-302",
+		"point_id": "305f2fa7-20de-4f3b-9873-cc5b188ab5cc"
+	},
+	{
+		"template_id": "411abdf2-13ff-459c-a961-5fb67658bd0c",
+		"grade": "T_EXP",
+		"code": "TEXP-289",
+		"point_id": "24ae4410-694f-41c6-bfdf-82ef028b1f16"
+	},
+	{
+		"template_id": "41eb477b-89b6-487c-9951-a5393caacc46",
+		"grade": "T_EXP",
+		"code": "TEXP-335",
+		"point_id": "11c5d29a-902e-4c46-9b8b-bc05999f2d6e"
+	},
+	{
+		"template_id": "42f091c1-35f2-47e4-8fb3-e38c1bbf0dfd",
+		"grade": "T_SPE",
+		"code": "TSPE-457",
+		"point_id": "b2bcca47-74c2-4a2e-b2be-dfd3d896cb8d"
+	},
+	{
+		"template_id": "4314e62e-6357-4374-856d-69dd36883851",
+		"grade": "T_SPE",
+		"code": "TSPE-457",
+		"point_id": "b2bcca47-74c2-4a2e-b2be-dfd3d896cb8d"
+	},
+	{
+		"template_id": "448894f3-f0e8-459d-91db-fc81433038c2",
+		"grade": "1_SPE",
+		"code": "1SPE-353",
+		"point_id": "e2b3a10d-9f78-4929-87a6-08860d3ef658"
+	},
+	{
+		"template_id": "44b32cad-1803-4ff2-a649-4c502610b43c",
+		"grade": "1_SPE",
+		"code": "1SPE-226",
+		"point_id": "92d18817-aae4-4b67-84d3-399e21440314"
+	},
+	{
+		"template_id": "44b58fce-45ec-4979-819f-e4bdb8540944",
+		"grade": "1_SPE",
+		"code": "1SPE-254",
+		"point_id": "b28d5f1c-42a9-4a3c-bd15-4e7736f50b9a"
+	},
+	{
+		"template_id": "45e47034-959d-4996-a5d6-ea22fd0ac316",
+		"grade": "1_SPE",
+		"code": "1SPE-243",
+		"point_id": "a950a408-f419-426b-b448-08752903d3df"
+	},
+	{
+		"template_id": "466954a9-c86e-4692-856f-96c400b72817",
+		"grade": "T_EXP",
+		"code": "TEXP-203",
+		"point_id": "c1169ce4-0ee5-4faf-b049-e4aea3766228"
+	},
+	{
+		"template_id": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+		"grade": "1_SPE",
+		"code": "1SPE-260",
+		"point_id": "22c95999-931f-4bf3-a176-10daf37d794e"
+	},
+	{
+		"template_id": "46913a48-c97f-4f00-9cdc-b98214b8420b",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-070",
+		"point_id": "93df8af2-8534-4d31-ba30-692fa90ad52c"
+	},
+	{
+		"template_id": "49134f4f-864d-43a4-ab26-b60db0fe2388",
+		"grade": "T_EXP",
+		"code": "TEXP-344",
+		"point_id": "d3be4805-bf02-4897-84d7-96f10a9b98d5"
+	},
+	{
+		"template_id": "496f958d-4733-45a2-be3c-243dc9f7dd66",
+		"grade": "1_SPE",
+		"code": "1SPE-274",
+		"point_id": "96e587b9-fc3c-4806-af8b-e3d7d6cecd4b"
+	},
+	{
+		"template_id": "498d6d3e-f7bc-4146-934e-b35184a99d8d",
+		"grade": "2",
+		"code": "2-261",
+		"point_id": "833e5dea-2e98-4cd5-90b0-281e3f3e69b6"
+	},
+	{
+		"template_id": "4a1deda8-d1a1-4222-8763-453750dc8412",
+		"grade": "T_SPE",
+		"code": "TSPE-319",
+		"point_id": "5c797ebf-482d-40af-8e0b-2a18c45ecf7e"
+	},
+	{
+		"template_id": "4b3c1d88-c064-45da-8976-820dff5be28e",
+		"grade": "1_SPE",
+		"code": "1SPE-409",
+		"point_id": "a6c37ca3-76e2-41e7-8423-99946e22a1be"
+	},
+	{
+		"template_id": "4c4d43dc-966d-4661-be5c-85272a3d73cf",
+		"grade": "T_SPE",
+		"code": "TSPE-597",
+		"point_id": "963474d3-2f99-48bf-99a9-0dddac81db22"
+	},
+	{
+		"template_id": "4cc21ccd-03d9-4e62-b669-f5ca03a1cc9a",
+		"grade": "2",
+		"code": "2-328",
+		"point_id": "290539a2-c17f-4a28-932c-3b81f05cdb33"
+	},
+	{
+		"template_id": "4f8f420a-c93b-4d99-8fe2-acfac2d38cbe",
+		"grade": "1_SPE",
+		"code": "1SPE-221",
+		"point_id": "d0254b54-3e62-4090-bf00-599c2ed6ab12"
+	},
+	{
+		"template_id": "4ff9d049-afd9-4fd2-be40-f8e242923af4",
+		"grade": "T_COMP",
+		"code": "TCOMP-367",
+		"point_id": "92c99e4d-2d93-42b2-a814-270e6ea723bc"
+	},
+	{
+		"template_id": "4ff9d049-afd9-4fd2-be40-f8e242923af4",
+		"grade": "T_TECHNO",
+		"code": "TTECHNO-089",
+		"point_id": "6bd5d19b-c9ee-4a27-acd2-31faafca4f34"
+	},
+	{
+		"template_id": "5042401b-ceb0-4dc2-aa48-b83e90ee4bf2",
+		"grade": "1_SPE",
+		"code": "1SPE-229",
+		"point_id": "3a96a708-981a-415f-b882-cddbcbb47831"
+	},
+	{
+		"template_id": "5062197a-5ffa-47bf-805d-8ec39d4445b8",
+		"grade": "2",
+		"code": "2-403",
+		"point_id": "7ecd5a1d-56aa-4fdf-b73f-79730037067f"
+	},
+	{
+		"template_id": "5072030d-8036-4621-a92b-75df54d371f9",
+		"grade": "T_SPE",
+		"code": "TSPE-601",
+		"point_id": "028f4cef-4ded-41a1-a8d6-402852ea34de"
+	},
+	{
+		"template_id": "50b81c94-8062-4b37-985c-07291de9466a",
+		"grade": "T_EXP",
+		"code": "TEXP-220",
+		"point_id": "f37126aa-0372-411e-9bf9-7644ccad3422"
+	},
+	{
+		"template_id": "50feeefd-27d8-4b73-9e97-e3226091fb0a",
+		"grade": "T_SPE",
+		"code": "TSPE-413",
+		"point_id": "f746db89-325a-48af-ba82-b1e6c6b9744d"
+	},
+	{
+		"template_id": "518f7f0b-389b-4cf2-b67c-5591ca00afb9",
+		"grade": "1_SPE",
+		"code": "1SPE-330",
+		"point_id": "d6d76682-70a2-4e33-b4fa-fb294cac5bfc"
+	},
+	{
+		"template_id": "568c7bee-093c-4765-839c-7b94e95d4a67",
+		"grade": "1_SPE",
+		"code": "1SPE-249",
+		"point_id": "059dee26-38cc-4f3e-badf-0a415cc0d345"
+	},
+	{
+		"template_id": "56b1803f-f707-49a9-a0b7-3e6b8220f2d7",
+		"grade": "1_SPE",
+		"code": "1SPE-247",
+		"point_id": "9ec7e41c-4e6e-4b8c-b193-9b39de79a457"
+	},
+	{
+		"template_id": "57063ada-a70d-442d-a8c0-5081c8402f27",
+		"grade": "T_SPE",
+		"code": "TSPE-432",
+		"point_id": "987e8e3e-1f07-4ccd-9d10-8603ff97dbca"
+	},
+	{
+		"template_id": "570f91d5-75e6-4af8-b22b-67fae6c4bde1",
+		"grade": "1_SPE",
+		"code": "1SPE-353",
+		"point_id": "e2b3a10d-9f78-4929-87a6-08860d3ef658"
+	},
+	{
+		"template_id": "5a89b292-e311-40fb-9115-e6572d031e40",
+		"grade": "1_SPE",
+		"code": "1SPE-410",
+		"point_id": "16736415-ac92-43a0-a30e-5cfa2b503908"
+	},
+	{
+		"template_id": "5b20321f-e86a-4a13-b478-1cf4f441e920",
+		"grade": "2",
+		"code": "2-204",
+		"point_id": "8aed382f-148e-4e2e-8e00-d5772a6aea7e"
+	},
+	{
+		"template_id": "5ba712bc-fda7-4d3c-80ee-b2aa8de6cc4f",
+		"grade": "1_SPE",
+		"code": "1SPE-340",
+		"point_id": "73a83287-9d39-4c47-997a-6e1535d98dad"
+	},
+	{
+		"template_id": "5ba712bc-fda7-4d3c-80ee-b2aa8de6cc4f",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-092",
+		"point_id": "b102b805-3d09-46fa-9cc0-f1c60fd09338"
+	},
+	{
+		"template_id": "5cb7f6ce-8c71-4874-9b42-cd9afd4a1c29",
+		"grade": "1_GEN",
+		"code": "1GEN-015",
+		"point_id": "68c72ad7-b274-446a-b3e4-0226d32f97af"
+	},
+	{
+		"template_id": "5cb7f6ce-8c71-4874-9b42-cd9afd4a1c29",
+		"grade": "1_SPE",
+		"code": "1SPE-228",
+		"point_id": "7efe06d4-85d3-4f30-b987-10b83d6c1dab"
+	},
+	{
+		"template_id": "5cb7f6ce-8c71-4874-9b42-cd9afd4a1c29",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-048",
+		"point_id": "4ccd7e89-a484-45f5-96a2-69912618907f"
+	},
+	{
+		"template_id": "604f83b7-4ed3-4b0f-b393-85e60ac353b4",
+		"grade": "1_SPE",
+		"code": "1SPE-253",
+		"point_id": "c6fd3cd4-c4f3-4ae8-95ff-6af3f30a2ace"
+	},
+	{
+		"template_id": "60a428b9-72d0-4375-99a3-26ef6f594d3b",
+		"grade": "1_SPE",
+		"code": "1SPE-419",
+		"point_id": "953585bf-ede8-47e3-8230-43c097d7ae44"
+	},
+	{
+		"template_id": "6137a555-a62d-4382-b509-4a6f7cbd346b",
+		"grade": "1_SPE",
+		"code": "1SPE-294",
+		"point_id": "8a3285eb-dadc-449d-8059-580dd12f193e"
+	},
+	{
+		"template_id": "618d795c-5f19-49ba-be65-9a9ecd491e70",
+		"grade": "T_SPE",
+		"code": "TSPE-304",
+		"point_id": "3c97a7ac-dd21-4938-9d45-e671742209eb"
+	},
+	{
+		"template_id": "622c0802-8474-416c-b145-44a8f13a33dc",
+		"grade": "T_EXP",
+		"code": "TEXP-221",
+		"point_id": "9ced5fab-72fe-48bb-b516-5d36fa8cb86a"
+	},
+	{
+		"template_id": "6233c5a9-0ce4-4bc0-b613-43263c736cc3",
+		"grade": "T_EXP",
+		"code": "TEXP-292",
+		"point_id": "d1da58d8-3782-4556-952d-20dc48828298"
+	},
+	{
+		"template_id": "624bf511-0830-4aa7-91cc-1d016a94df2b",
+		"grade": "T_COMP",
+		"code": "TCOMP-249",
+		"point_id": "01931dd1-dcde-4032-8e0a-15d58984330d"
+	},
+	{
+		"template_id": "62b99aa7-ad93-43aa-b7af-7b48c0f8af50",
+		"grade": "2",
+		"code": "2-458",
+		"point_id": "3fd4afe3-0c7d-487a-9f86-dd69e93b4e77"
+	},
+	{
+		"template_id": "64e53490-57b0-44ba-9737-94779b78191b",
+		"grade": "1_SPE",
+		"code": "1SPE-243",
+		"point_id": "a950a408-f419-426b-b448-08752903d3df"
+	},
+	{
+		"template_id": "65e96f31-31fe-4c2b-b894-e689b998b849",
+		"grade": "1_GEN",
+		"code": "1GEN-014",
+		"point_id": "011bef0b-b551-4fa8-83af-22df24c0b398"
+	},
+	{
+		"template_id": "65e96f31-31fe-4c2b-b894-e689b998b849",
+		"grade": "1_SPE",
+		"code": "1SPE-224",
+		"point_id": "081fa2be-1faf-49ed-a821-5d9e53a73c13"
+	},
+	{
+		"template_id": "65e96f31-31fe-4c2b-b894-e689b998b849",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-037",
+		"point_id": "118b4a0f-0371-4145-ba38-c40befb6054c"
+	},
+	{
+		"template_id": "667a3618-fa5a-42bb-8541-046cf0e4ff03",
+		"grade": "T_COMP",
+		"code": "TCOMP-212",
+		"point_id": "da1212b5-ad0d-44b2-bf79-54fbe94f9166"
+	},
+	{
+		"template_id": "667a3618-fa5a-42bb-8541-046cf0e4ff03",
+		"grade": "T_SPE",
+		"code": "TSPE-432",
+		"point_id": "987e8e3e-1f07-4ccd-9d10-8603ff97dbca"
+	},
+	{
+		"template_id": "679a2e3e-d034-4c9f-8c8f-5e0b6f545d1a",
+		"grade": "1_SPE",
+		"code": "1SPE-307",
+		"point_id": "ecddb6a7-cce8-4b00-a1f7-0e4d6bed9bfd"
+	},
+	{
+		"template_id": "67b349ab-02c1-4e06-9026-b31d918acd46",
+		"grade": "T_SPE",
+		"code": "TSPE-307",
+		"point_id": "de88212f-71c1-48af-8404-e5ba5c432dce"
+	},
+	{
+		"template_id": "6909bfde-1fcb-4372-8205-db5bb54a05f8",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "69a05f98-9dd9-4ce5-b23e-5376e85fbbaf",
+		"grade": "1_SPE",
+		"code": "1SPE-340",
+		"point_id": "73a83287-9d39-4c47-997a-6e1535d98dad"
+	},
+	{
+		"template_id": "6a5e58da-8015-4d0d-9a1f-6c8e8d9cae4d",
+		"grade": "1_SPE",
+		"code": "1SPE-405",
+		"point_id": "c563e9b6-993d-483e-96f7-b93cb709ab1d"
+	},
+	{
+		"template_id": "6dd2f133-e203-4cf6-a422-6a0e716203f3",
+		"grade": "1_SPE",
+		"code": "1SPE-340",
+		"point_id": "73a83287-9d39-4c47-997a-6e1535d98dad"
+	},
+	{
+		"template_id": "6dd2f133-e203-4cf6-a422-6a0e716203f3",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-092",
+		"point_id": "b102b805-3d09-46fa-9cc0-f1c60fd09338"
+	},
+	{
+		"template_id": "6ece66a6-85e6-45ff-beff-25b9954c1984",
+		"grade": "2",
+		"code": "2-245",
+		"point_id": "7dc4ec3b-6286-4ee0-9290-1be83b607ec9"
+	},
+	{
+		"template_id": "6ed907d7-03b3-43b2-b737-37bf7c633f16",
+		"grade": "T_COMP",
+		"code": "TCOMP-266",
+		"point_id": "a44a5651-9c00-4afc-a64d-52682c852766"
+	},
+	{
+		"template_id": "6ed907d7-03b3-43b2-b737-37bf7c633f16",
+		"grade": "T_SPE",
+		"code": "TSPE-475",
+		"point_id": "ff10cb15-7b2d-4a5a-b5f7-ae1de8562314"
+	},
+	{
+		"template_id": "6fbc355c-aca7-4e2e-8a55-78b3a5722e17",
+		"grade": "1_SPE",
+		"code": "1SPE-356",
+		"point_id": "3c6aac5f-55a8-493c-8e2d-a6666497b643"
+	},
+	{
+		"template_id": "6fbc355c-aca7-4e2e-8a55-78b3a5722e17",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-099",
+		"point_id": "53647272-e902-410b-9fac-5b48afcf6b73"
+	},
+	{
+		"template_id": "6fe11613-789b-43c1-a38b-0d72bcb0d44e",
+		"grade": "1_SPE",
+		"code": "1SPE-405",
+		"point_id": "c563e9b6-993d-483e-96f7-b93cb709ab1d"
+	},
+	{
+		"template_id": "7026a36a-dc96-4d46-8c39-950220a60f82",
+		"grade": "T_SPE",
+		"code": "TSPE-459",
+		"point_id": "365e8cd4-8c83-4838-9ab6-b5233401830e"
+	},
+	{
+		"template_id": "7063979e-b3b5-4b12-8ff9-e6df2c05b23c",
+		"grade": "T_SPE",
+		"code": "TSPE-385",
+		"point_id": "36ba9590-5508-4b06-886a-73893662b194"
+	},
+	{
+		"template_id": "708f8a08-31c0-49f2-85f9-8f9b8a2b4a44",
+		"grade": "T_COMP",
+		"code": "TCOMP-210",
+		"point_id": "6bff0b1a-79b2-4ebc-b9c3-b7ba3bce9ae5"
+	},
+	{
+		"template_id": "708f8a08-31c0-49f2-85f9-8f9b8a2b4a44",
+		"grade": "T_SPE",
+		"code": "TSPE-383",
+		"point_id": "bda106c9-6fc2-4f1c-909a-77607d8ba528"
+	},
+	{
+		"template_id": "7179a3b5-580a-4696-a22e-cd5f89c32c29",
+		"grade": "1_SPE",
+		"code": "1SPE-405",
+		"point_id": "c563e9b6-993d-483e-96f7-b93cb709ab1d"
+	},
+	{
+		"template_id": "71d10661-2f62-47df-9e00-37e2a6789080",
+		"grade": "1_SPE",
+		"code": "1SPE-327",
+		"point_id": "a199a136-ee53-439e-b8b7-b44659ce88c6"
+	},
+	{
+		"template_id": "721324f9-6ab3-4f62-b22e-103b9eb71fda",
+		"grade": "1_SPE",
+		"code": "1SPE-320",
+		"point_id": "de63f5dc-1e20-41d3-a097-baa18a6d0407"
+	},
+	{
+		"template_id": "723779c8-23a5-4768-9648-a19cab5558be",
+		"grade": "T_COMP",
+		"code": "TCOMP-229",
+		"point_id": "e6850076-7a38-4132-9829-7b1307a78d90"
+	},
+	{
+		"template_id": "723779c8-23a5-4768-9648-a19cab5558be",
+		"grade": "T_SPE",
+		"code": "TSPE-414",
+		"point_id": "e8b22e6b-8604-4008-88c9-0c8473880741"
+	},
+	{
+		"template_id": "7247dbb0-eeb4-49f0-9c54-4b6ce26f2db8",
+		"grade": "1_GEN",
+		"code": "1GEN-013",
+		"point_id": "9a2003f2-bc10-4e30-bdd3-b4352b499f0d"
+	},
+	{
+		"template_id": "7247dbb0-eeb4-49f0-9c54-4b6ce26f2db8",
+		"grade": "1_SPE",
+		"code": "1SPE-213",
+		"point_id": "8a7b0863-9a85-4719-8ca8-2d2c58233efc"
+	},
+	{
+		"template_id": "7247dbb0-eeb4-49f0-9c54-4b6ce26f2db8",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-035",
+		"point_id": "64d8cc69-542d-4caa-9edb-8ef72a530a2b"
+	},
+	{
+		"template_id": "727fb88a-0cb7-4937-88c7-c522dffe04f4",
+		"grade": "1_SPE",
+		"code": "1SPE-225",
+		"point_id": "da67b0cf-fd71-46dc-9c8e-b9730a5a5a4d"
+	},
+	{
+		"template_id": "74d77343-34b9-4259-94c2-c9e2c473b052",
+		"grade": "1_SPE",
+		"code": "1SPE-265",
+		"point_id": "0d8dfe12-aa1a-471c-866c-09612b381809"
+	},
+	{
+		"template_id": "75fe996a-ba8e-4e72-a1c3-536078b8254e",
+		"grade": "2",
+		"code": "2-339",
+		"point_id": "97ac01d0-d905-4fad-81fe-58f08a9328a9"
+	},
+	{
+		"template_id": "760093ec-400a-4774-beb7-ca9d2cb389fb",
+		"grade": "T_EXP",
+		"code": "TEXP-247",
+		"point_id": "7f194336-9135-4247-a592-633976fc1136"
+	},
+	{
+		"template_id": "76843d15-31fa-42a3-9da3-8ee1490d6018",
+		"grade": "T_COMP",
+		"code": "TCOMP-277",
+		"point_id": "99ab4d98-d370-4f92-89e0-d364e001a20e"
+	},
+	{
+		"template_id": "76843d15-31fa-42a3-9da3-8ee1490d6018",
+		"grade": "T_SPE",
+		"code": "TSPE-483",
+		"point_id": "e2ad0e71-0074-4c14-b26f-31fc4a8a565f"
+	},
+	{
+		"template_id": "7703e625-8a3e-48bd-b4d3-245201766457",
+		"grade": "1_SPE",
+		"code": "1SPE-223",
+		"point_id": "371bdc1d-131c-401c-9975-6c643f46d201"
+	},
+	{
+		"template_id": "7703e625-8a3e-48bd-b4d3-245201766457",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-043",
+		"point_id": "b54b3858-b0ac-4776-b9ba-a8a7d6b14eaa"
+	},
+	{
+		"template_id": "77b5e06d-1040-49ca-b8a4-f524ab0448ac",
+		"grade": "T_SPE",
+		"code": "TSPE-600",
+		"point_id": "fe2626ae-03b8-4760-81c9-0de25d449654"
+	},
+	{
+		"template_id": "77d6fedc-1643-4451-a685-2451dc1616cb",
+		"grade": "2",
+		"code": "2-390",
+		"point_id": "73cd4e03-37ba-4f03-b9ff-cc8ba0961dc2"
+	},
+	{
+		"template_id": "77d6fedc-1643-4451-a685-2451dc1616cb",
+		"grade": "T_COMP",
+		"code": "TCOMP-302",
+		"point_id": "305f2fa7-20de-4f3b-9873-cc5b188ab5cc"
+	},
+	{
+		"template_id": "782bf7f8-b6af-43f2-a1d7-78089cdb9485",
+		"grade": "1_SPE",
+		"code": "1SPE-281",
+		"point_id": "16208677-0ee7-4a02-a8fd-2fd5c1b6aeb9"
+	},
+	{
+		"template_id": "782bf7f8-b6af-43f2-a1d7-78089cdb9485",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-075",
+		"point_id": "a651529d-fe25-4787-99fe-b9ea56969780"
+	},
+	{
+		"template_id": "7844be9a-36f9-4f27-8c6a-34529c3e6523",
+		"grade": "T_SPE",
+		"code": "TSPE-583",
+		"point_id": "bc0209f1-d80c-4833-974c-b85bfb240bf6"
+	},
+	{
+		"template_id": "79d69593-e815-496c-b429-637a1cd68b4d",
+		"grade": "1_SPE",
+		"code": "1SPE-377",
+		"point_id": "52e04b97-7bcd-4c3f-aedd-6c2dd1557ad3"
+	},
+	{
+		"template_id": "79d69593-e815-496c-b429-637a1cd68b4d",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-118",
+		"point_id": "ed7dae95-79e1-4eb3-b5f8-7e41278353d6"
+	},
+	{
+		"template_id": "7a28103b-435d-4f7d-a583-44d9269ff4a1",
+		"grade": "T_EXP",
+		"code": "TEXP-341",
+		"point_id": "f54c727c-419b-4de8-9721-95ccaee23f7e"
+	},
+	{
+		"template_id": "7b4b149a-5a82-4aca-8b7f-7ef48d0ffd48",
+		"grade": "T_SPE",
+		"code": "TSPE-599",
+		"point_id": "f102f089-e56f-4de3-b141-50cd574c8377"
+	},
+	{
+		"template_id": "7d094336-5d95-4530-9374-7d767348f456",
+		"grade": "T_EXP",
+		"code": "TEXP-336",
+		"point_id": "66d4516f-0764-4a73-8a77-36c16669dc4c"
+	},
+	{
+		"template_id": "7d244203-3ea6-4c4d-9b3d-869ae82ccceb",
+		"grade": "T_EXP",
+		"code": "TEXP-278",
+		"point_id": "93240b7f-fab4-4b7f-a32e-17cbf3723d42"
+	},
+	{
+		"template_id": "7df468d6-647c-4b59-9a6c-026a2279fd86",
+		"grade": "T_SPE",
+		"code": "TSPE-598",
+		"point_id": "254cabc6-9b1b-4a0b-8a5e-1685b5b6283c"
+	},
+	{
+		"template_id": "7e9b9b32-0d7a-4bd9-89f3-af0dd3a95431",
+		"grade": "1_SPE",
+		"code": "1SPE-348",
+		"point_id": "53ad4138-77d0-4921-9c42-45005eeb327b"
+	},
+	{
+		"template_id": "7f13ca89-ad64-4665-9f6b-e11fad8f8b08",
+		"grade": "T_COMP",
+		"code": "TCOMP-231",
+		"point_id": "c6b73319-a846-43f8-b34d-8f6aa67f4cff"
+	},
+	{
+		"template_id": "7f13ca89-ad64-4665-9f6b-e11fad8f8b08",
+		"grade": "T_SPE",
+		"code": "TSPE-416",
+		"point_id": "b29fe9b6-fbc1-48a8-b567-a133231cbc74"
+	},
+	{
+		"template_id": "7ff99f85-b7a4-4d4a-a346-46f8593bd7ca",
+		"grade": "T_EXP",
+		"code": "TEXP-263",
+		"point_id": "846fefcb-d3b7-4bf4-b6c0-3a09c25c6e4a"
+	},
+	{
+		"template_id": "80489c90-34aa-4212-bf2e-62438ab017a0",
+		"grade": "1_SPE",
+		"code": "1SPE-248",
+		"point_id": "3424b40c-e46e-438a-9caf-7f7c3727b403"
+	},
+	{
+		"template_id": "806c10f4-d04c-44c2-9af1-84a65b636aca",
+		"grade": "T_COMP",
+		"code": "TCOMP-230",
+		"point_id": "21904a79-1e04-4240-a710-ee9662e2f8a7"
+	},
+	{
+		"template_id": "81811b59-b17c-4d94-bbd4-7f5515b4dd6d",
+		"grade": "1_SPE",
+		"code": "1SPE-330",
+		"point_id": "d6d76682-70a2-4e33-b4fa-fb294cac5bfc"
+	},
+	{
+		"template_id": "81ff485d-b40a-4778-bb95-43c3c17818f2",
+		"grade": "T_COMP",
+		"code": "TCOMP-208",
+		"point_id": "78e04ed4-ebde-4618-85b0-a8386b04cd31"
+	},
+	{
+		"template_id": "822d0318-0c4d-4e60-9c4d-1082302e09f3",
+		"grade": "T_COMP",
+		"code": "TCOMP-270",
+		"point_id": "69e2859c-dd8a-4ca8-ac7d-8be70b741886"
+	},
+	{
+		"template_id": "822d0318-0c4d-4e60-9c4d-1082302e09f3",
+		"grade": "T_SPE",
+		"code": "TSPE-498",
+		"point_id": "ed40a70a-cf37-4669-a6c6-42036cacc8bf"
+	},
+	{
+		"template_id": "8354a0e7-f707-48e0-ac3d-f43cc5b2e2fa",
+		"grade": "1_SPE",
+		"code": "1SPE-356",
+		"point_id": "3c6aac5f-55a8-493c-8e2d-a6666497b643"
+	},
+	{
+		"template_id": "83b1f614-95db-4d74-9fbf-d4d502ee8c01",
+		"grade": "1_SPE",
+		"code": "1SPE-401",
+		"point_id": "bf2ccad0-e97d-40d9-8dd2-40ac69ec2478"
+	},
+	{
+		"template_id": "83b1f614-95db-4d74-9fbf-d4d502ee8c01",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-133",
+		"point_id": "812184bb-094e-43e8-8f0e-34830a247999"
+	},
+	{
+		"template_id": "85afd455-84a0-4caa-82c0-36840b19a219",
+		"grade": "1_SPE",
+		"code": "1SPE-216",
+		"point_id": "72264b5a-2e97-4078-a683-1a2977285c9c"
+	},
+	{
+		"template_id": "85f6e96e-f1a9-4ed3-b321-4e070e097c9d",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "86199c41-5344-4aea-8ad3-b3083ae1bfe4",
+		"grade": "T_EXP",
+		"code": "TEXP-291",
+		"point_id": "22e3e55b-b2bd-4e3b-9907-a0ad9c2c368b"
+	},
+	{
+		"template_id": "87140df3-ed7a-4afc-98d9-dcd4d43e65bb",
+		"grade": "1_SPE",
+		"code": "1SPE-246",
+		"point_id": "41d69e3e-2ce9-4797-8721-6feb5965daff"
+	},
+	{
+		"template_id": "8997f7c6-4a99-44e0-bd03-e76c7e69c596",
+		"grade": "1_SPE",
+		"code": "1SPE-394",
+		"point_id": "058e6ccb-f828-43c9-872f-d41e6177e2c4"
+	},
+	{
+		"template_id": "89d49fae-5f08-439d-a531-a0b1966dab99",
+		"grade": "T_SPE",
+		"code": "TSPE-305",
+		"point_id": "caf10e0f-6fce-43f1-945e-4a5340995dee"
+	},
+	{
+		"template_id": "8a6e41cc-264c-40df-b0b7-8a47e779d40d",
+		"grade": "T_SPE",
+		"code": "TSPE-322",
+		"point_id": "b4407061-b895-4a54-8700-65ce06ac7716"
+	},
+	{
+		"template_id": "8b599a53-7e46-44a1-8e48-860c4d501b14",
+		"grade": "T_SPE",
+		"code": "TSPE-408",
+		"point_id": "dc888c2f-7aa6-4eb1-808c-77b4f41546a1"
+	},
+	{
+		"template_id": "8b59ca4b-9a09-49df-a10c-4f3772176d46",
+		"grade": "2",
+		"code": "2-378",
+		"point_id": "2c1c71df-bd6f-4bdc-ad21-0ca440c0c62d"
+	},
+	{
+		"template_id": "8c31675a-44af-48df-bb3e-cde85a8d3f35",
+		"grade": "2",
+		"code": "2-244",
+		"point_id": "d0085cf6-eefd-4097-9766-c84289096588"
+	},
+	{
+		"template_id": "8d4e5302-a133-441d-a618-69abb9cb4b63",
+		"grade": "1_GEN",
+		"code": "1GEN-050",
+		"point_id": "6098c2d3-e4af-4d20-8d63-4de4840cf9bb"
+	},
+	{
+		"template_id": "8d4e5302-a133-441d-a618-69abb9cb4b63",
+		"grade": "1_SPE",
+		"code": "1SPE-221",
+		"point_id": "d0254b54-3e62-4090-bf00-599c2ed6ab12"
+	},
+	{
+		"template_id": "8d4e5302-a133-441d-a618-69abb9cb4b63",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-119",
+		"point_id": "a26707a3-c41c-4b6f-bf6a-3cdb40ecd21e"
+	},
+	{
+		"template_id": "8ed02829-51de-40e2-af77-8fa47d01ea98",
+		"grade": "1_GEN",
+		"code": "1GEN-049",
+		"point_id": "b4174329-d6da-4883-baca-d6279513b7f9"
+	},
+	{
+		"template_id": "8ed02829-51de-40e2-af77-8fa47d01ea98",
+		"grade": "1_SPE",
+		"code": "1SPE-224",
+		"point_id": "081fa2be-1faf-49ed-a821-5d9e53a73c13"
+	},
+	{
+		"template_id": "91c7b083-8714-4559-9a6e-8e9fe86b59bd",
+		"grade": "T_SPE",
+		"code": "TSPE-565",
+		"point_id": "9539d842-e134-4b10-83d6-0f83fad869a4"
+	},
+	{
+		"template_id": "939153b6-9aa8-4a59-809e-071a7d3b8b77",
+		"grade": "2",
+		"code": "2-420",
+		"point_id": "d6ded016-f1a4-4745-a3bc-b5df8649772b"
+	},
+	{
+		"template_id": "94e4d691-ad7e-4e7a-9130-acb805864764",
+		"grade": "T_COMP",
+		"code": "TCOMP-204",
+		"point_id": "36499a00-a31c-4350-b0d3-1a8548d0a695"
+	},
+	{
+		"template_id": "94e4d691-ad7e-4e7a-9130-acb805864764",
+		"grade": "T_SPE",
+		"code": "TSPE-577",
+		"point_id": "3bc1ed2f-829b-4bd2-b971-545684c70b38"
+	},
+	{
+		"template_id": "95c38330-063f-4ade-b1ae-152b84bce20f",
+		"grade": "1_SPE",
+		"code": "1SPE-225",
+		"point_id": "da67b0cf-fd71-46dc-9c8e-b9730a5a5a4d"
+	},
+	{
+		"template_id": "968f4295-08a9-44a4-8327-9087de7efd85",
+		"grade": "T_COMP",
+		"code": "TCOMP-253",
+		"point_id": "b7e3c215-a364-491e-8138-4c432b486a96"
+	},
+	{
+		"template_id": "968f4295-08a9-44a4-8327-9087de7efd85",
+		"grade": "T_SPE",
+		"code": "TSPE-464",
+		"point_id": "b941c1c2-65d0-4a69-9c99-28e1297c7b8b"
+	},
+	{
+		"template_id": "9755a856-1059-40aa-abf7-cb531d85cebc",
+		"grade": "1_SPE",
+		"code": "1SPE-265",
+		"point_id": "0d8dfe12-aa1a-471c-866c-09612b381809"
+	},
+	{
+		"template_id": "9765d776-cc70-4472-95e9-1c0d05396584",
+		"grade": "1_SPE",
+		"code": "1SPE-272",
+		"point_id": "576556ff-29aa-4509-9a20-e3dc993905b5"
+	},
+	{
+		"template_id": "97b3a376-01de-42cd-8297-b0f7937e38f1",
+		"grade": "1_SPE",
+		"code": "1SPE-353",
+		"point_id": "e2b3a10d-9f78-4929-87a6-08860d3ef658"
+	},
+	{
+		"template_id": "97b3a376-01de-42cd-8297-b0f7937e38f1",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-137",
+		"point_id": "489f5932-579b-41fb-8241-5f384ca487e8"
+	},
+	{
+		"template_id": "98ba277c-b99f-4e3f-b33c-8138755eb917",
+		"grade": "T_COMP",
+		"code": "TCOMP-205",
+		"point_id": "8b8237a2-0014-4e45-80ee-5eacf0f9ef66"
+	},
+	{
+		"template_id": "98ba277c-b99f-4e3f-b33c-8138755eb917",
+		"grade": "T_SPE",
+		"code": "TSPE-578",
+		"point_id": "d857d572-28a0-4880-93db-9bd99c0d563d"
+	},
+	{
+		"template_id": "9a04eb9f-18f7-413e-97b7-7ce41a899747",
+		"grade": "1_SPE",
+		"code": "1SPE-281",
+		"point_id": "16208677-0ee7-4a02-a8fd-2fd5c1b6aeb9"
+	},
+	{
+		"template_id": "9a6087c5-34e9-448e-9805-b05a4484d144",
+		"grade": "T_EXP",
+		"code": "TEXP-340",
+		"point_id": "c37c4ced-0de4-4085-a6ec-0fd3c82c7b03"
+	},
+	{
+		"template_id": "9ad36217-5f60-45c7-83ce-a1a870adc5da",
+		"grade": "T_COMP",
+		"code": "TCOMP-225",
+		"point_id": "00cb459c-a7ec-4f46-b5f5-c5ecd1d119af"
+	},
+	{
+		"template_id": "9bea5ec2-237f-4ad8-bc21-b4374b85c6f4",
+		"grade": "1_SPE",
+		"code": "1SPE-331",
+		"point_id": "19802337-a932-4ef9-818c-458b4b3b121d"
+	},
+	{
+		"template_id": "9c7f7ef0-8491-4ce9-a52c-80bcf907845f",
+		"grade": "1_SPE",
+		"code": "1SPE-321",
+		"point_id": "0aa5f181-8732-4427-8172-7733e062c45a"
+	},
+	{
+		"template_id": "9c7fb7cf-42b3-462e-9a8b-4c4cd8f37278",
+		"grade": "T_SPE",
+		"code": "TSPE-458",
+		"point_id": "2c2fa4b8-e9e6-43a9-a29c-9be9337baf33"
+	},
+	{
+		"template_id": "9d7c4d98-c7fe-4c2e-8993-d162294e1dde",
+		"grade": "2",
+		"code": "2-398",
+		"point_id": "13cae5f2-330d-47a1-9afb-f8172b061db9"
+	},
+	{
+		"template_id": "9d7c4d98-c7fe-4c2e-8993-d162294e1dde",
+		"grade": "T_COMP",
+		"code": "TCOMP-302",
+		"point_id": "305f2fa7-20de-4f3b-9873-cc5b188ab5cc"
+	},
+	{
+		"template_id": "9e1d084e-ff83-4852-ad51-fe79c3328ae0",
+		"grade": "1_SPE",
+		"code": "1SPE-250",
+		"point_id": "49149df2-959b-4db5-8be7-293353be44b8"
+	},
+	{
+		"template_id": "9f14d672-e460-4161-a9bf-da2b06f734f3",
+		"grade": "T_COMP",
+		"code": "TCOMP-214",
+		"point_id": "5e573426-36b5-483a-a0c8-82d9ace17605"
+	},
+	{
+		"template_id": "a0089728-f07a-46ba-8109-7550d2ac800d",
+		"grade": "1_SPE",
+		"code": "1SPE-253",
+		"point_id": "c6fd3cd4-c4f3-4ae8-95ff-6af3f30a2ace"
+	},
+	{
+		"template_id": "a0089728-f07a-46ba-8109-7550d2ac800d",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-063",
+		"point_id": "3b5f875e-87ed-4bd9-89d8-ce3ae372f87d"
+	},
+	{
+		"template_id": "a32e6d38-6472-41fe-8499-cb4a85a9b718",
+		"grade": "T_COMP",
+		"code": "TCOMP-271",
+		"point_id": "9e2f60ec-9e39-49e3-84f0-acf3e130318a"
+	},
+	{
+		"template_id": "a32e6d38-6472-41fe-8499-cb4a85a9b718",
+		"grade": "T_SPE",
+		"code": "TSPE-479",
+		"point_id": "f8d11706-540a-465d-883c-0245e1ffdad9"
+	},
+	{
+		"template_id": "a3f92832-2daf-4f00-94b5-68b57275e93a",
+		"grade": "1_SPE",
+		"code": "1SPE-349",
+		"point_id": "c95e8cde-79bd-436f-b229-4f773dc63515"
+	},
+	{
+		"template_id": "a3f92832-2daf-4f00-94b5-68b57275e93a",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-138",
+		"point_id": "59b42537-bd87-4a19-b5e3-3fcc3de43c93"
+	},
+	{
+		"template_id": "a3fa892a-6b80-4d70-857d-dbb98ffbc117",
+		"grade": "T_COMP",
+		"code": "TCOMP-259",
+		"point_id": "3e3abf88-b723-425b-81b6-813080f98ce8"
+	},
+	{
+		"template_id": "a3fa892a-6b80-4d70-857d-dbb98ffbc117",
+		"grade": "T_SPE",
+		"code": "TSPE-409",
+		"point_id": "af525b41-ba94-4d7d-b2fc-3080525b41e3"
+	},
+	{
+		"template_id": "a3fce9d4-948e-4042-b015-5c11feaee488",
+		"grade": "T_EXP",
+		"code": "TEXP-238",
+		"point_id": "dbbf28cd-a7a5-4c67-84a9-724fa1debca5"
+	},
+	{
+		"template_id": "a4272b10-cb61-42d1-8127-6c0224fc1d9b",
+		"grade": "1_SPE",
+		"code": "1SPE-294",
+		"point_id": "8a3285eb-dadc-449d-8059-580dd12f193e"
+	},
+	{
+		"template_id": "a430a698-851d-40b9-b4b0-146153788397",
+		"grade": "1_SPE",
+		"code": "1SPE-221",
+		"point_id": "d0254b54-3e62-4090-bf00-599c2ed6ab12"
+	},
+	{
+		"template_id": "a430a698-851d-40b9-b4b0-146153788397",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-119",
+		"point_id": "a26707a3-c41c-4b6f-bf6a-3cdb40ecd21e"
+	},
+	{
+		"template_id": "a45c83ab-d85b-4958-b43c-223342a81acc",
+		"grade": "T_EXP",
+		"code": "TEXP-319",
+		"point_id": "22380bb4-b634-43f9-8891-4b8a805d6a20"
+	},
+	{
+		"template_id": "a4d8dc52-30c4-4414-b9d7-b1a0d13f6ae9",
+		"grade": "T_COMP",
+		"code": "TCOMP-219",
+		"point_id": "c70faa77-7b7c-440d-8f77-29aff59782fa"
+	},
+	{
+		"template_id": "a4d8dc52-30c4-4414-b9d7-b1a0d13f6ae9",
+		"grade": "T_SPE",
+		"code": "TSPE-404",
+		"point_id": "987366c1-ccb5-431b-afcf-f12c48e54818"
+	},
+	{
+		"template_id": "a573d517-be46-442b-a298-03469d286e79",
+		"grade": "1_GEN",
+		"code": "1GEN-045",
+		"point_id": "8f214a2c-4ef4-46d4-8351-7195cc9499bb"
+	},
+	{
+		"template_id": "a573d517-be46-442b-a298-03469d286e79",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-088",
+		"point_id": "3c60ab8c-b0fd-4673-b67f-b8b080240d74"
+	},
+	{
+		"template_id": "a573d517-be46-442b-a298-03469d286e79",
+		"grade": "T_COMP",
+		"code": "TCOMP-328",
+		"point_id": "f7350bd9-9ab4-49d2-a449-9a861fe43b04"
+	},
+	{
+		"template_id": "a6cc7712-b21a-4d85-9cfe-52b0eda74faf",
+		"grade": "T_COMP",
+		"code": "TCOMP-322",
+		"point_id": "63b586f4-8241-4616-b91c-fcc9e78c739e"
+	},
+	{
+		"template_id": "a6d7b414-b42d-4378-a3fd-eff48890cc72",
+		"grade": "1_SPE",
+		"code": "1SPE-332",
+		"point_id": "3d2a56f2-3ae8-4e87-bf6b-1e95ceb78369"
+	},
+	{
+		"template_id": "a6f0ca3f-e981-479d-80f4-3ce032c93b80",
+		"grade": "1_SPE",
+		"code": "1SPE-317",
+		"point_id": "889936c3-f8c4-42fb-b5ea-f0ef1428bac3"
+	},
+	{
+		"template_id": "a86fc757-1639-4b22-84bd-af5abcf2b9e0",
+		"grade": "1_SPE",
+		"code": "1SPE-401",
+		"point_id": "bf2ccad0-e97d-40d9-8dd2-40ac69ec2478"
+	},
+	{
+		"template_id": "a8b51d16-261f-4acd-a2c2-933d3ea9bab5",
+		"grade": "1_GEN",
+		"code": "1GEN-014",
+		"point_id": "011bef0b-b551-4fa8-83af-22df24c0b398"
+	},
+	{
+		"template_id": "a8b51d16-261f-4acd-a2c2-933d3ea9bab5",
+		"grade": "1_SPE",
+		"code": "1SPE-224",
+		"point_id": "081fa2be-1faf-49ed-a821-5d9e53a73c13"
+	},
+	{
+		"template_id": "a8b51d16-261f-4acd-a2c2-933d3ea9bab5",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-037",
+		"point_id": "118b4a0f-0371-4145-ba38-c40befb6054c"
+	},
+	{
+		"template_id": "a95a9c0d-0d5d-4a5a-ab50-294e12bb7f47",
+		"grade": "T_COMP",
+		"code": "TCOMP-290",
+		"point_id": "03e23012-d3a3-4e39-810f-89eb3e988d29"
+	},
+	{
+		"template_id": "a95a9c0d-0d5d-4a5a-ab50-294e12bb7f47",
+		"grade": "T_SPE",
+		"code": "TSPE-510",
+		"point_id": "4a01dd85-f3af-44ba-b9f4-a32dfb9f99da"
+	},
+	{
+		"template_id": "a9aece33-74e0-4120-817d-5bdf6b9414f3",
+		"grade": "1_SPE",
+		"code": "1SPE-246",
+		"point_id": "41d69e3e-2ce9-4797-8721-6feb5965daff"
+	},
+	{
+		"template_id": "a9c71276-30e3-406f-8082-248cce389824",
+		"grade": "1_SPE",
+		"code": "1SPE-340",
+		"point_id": "73a83287-9d39-4c47-997a-6e1535d98dad"
+	},
+	{
+		"template_id": "aad6c700-242c-40a4-bd13-f24b016a8a59",
+		"grade": "1_SPE",
+		"code": "1SPE-304",
+		"point_id": "81f23a5c-a662-49f1-bc6c-45ee3d9114ee"
+	},
+	{
+		"template_id": "ab4d55f7-d89d-4629-a60e-4ab880ff155c",
+		"grade": "1_SPE",
+		"code": "1SPE-216",
+		"point_id": "72264b5a-2e97-4078-a683-1a2977285c9c"
+	},
+	{
+		"template_id": "ac94a453-5a3f-43f0-9984-d832e9117263",
+		"grade": "T_SPE",
+		"code": "TSPE-333",
+		"point_id": "fe66fb52-b8f5-4310-ad0b-534b912dc8cd"
+	},
+	{
+		"template_id": "ad555cb1-c4a2-4390-ad14-6a626b39e0fb",
+		"grade": "1_SPE",
+		"code": "1SPE-358",
+		"point_id": "586d84af-f401-410a-a655-56e05b6e5d99"
+	},
+	{
+		"template_id": "ae0ad163-0c3a-4334-8748-8ccdefc7134c",
+		"grade": "2",
+		"code": "2-474",
+		"point_id": "422694b2-ab12-4022-aed8-c91c948e708d"
+	},
+	{
+		"template_id": "aeb1389d-0805-4421-9b25-1fcb4e4f4670",
+		"grade": "1_SPE",
+		"code": "1SPE-379",
+		"point_id": "4311410a-aefb-43c0-bde2-7b8c494b11a4"
+	},
+	{
+		"template_id": "aebb400f-be97-43be-af91-d41156712dd0",
+		"grade": "T_EXP",
+		"code": "TEXP-285",
+		"point_id": "a429c865-77a1-4374-ac4b-cbf182eb6a2f"
+	},
+	{
+		"template_id": "afd9b3ff-c4ee-4061-ab99-7589aa1dc045",
+		"grade": "T_SPE",
+		"code": "TSPE-457",
+		"point_id": "b2bcca47-74c2-4a2e-b2be-dfd3d896cb8d"
+	},
+	{
+		"template_id": "affceacd-5dab-474e-aa7e-75d2d542a935",
+		"grade": "T_SPE",
+		"code": "TSPE-550",
+		"point_id": "9cf4b5d0-8de1-4b5b-9db5-feb0577c9d81"
+	},
+	{
+		"template_id": "b09c430a-8ed5-44f1-a431-7b108299982b",
+		"grade": "1_SPE",
+		"code": "1SPE-248",
+		"point_id": "3424b40c-e46e-438a-9caf-7f7c3727b403"
+	},
+	{
+		"template_id": "b125d1dd-4cac-407d-a0a5-7485741de66f",
+		"grade": "T_EXP",
+		"code": "TEXP-237",
+		"point_id": "11cc51f3-6e07-408c-9de4-a922b08fc93b"
+	},
+	{
+		"template_id": "b1e27739-f316-47b0-b820-989d5b94af10",
+		"grade": "2",
+		"code": "2-271",
+		"point_id": "cffec47f-d3c8-4277-8f40-e69f05f6467f"
+	},
+	{
+		"template_id": "b4096cd8-1aef-4b70-a185-b4b689258e08",
+		"grade": "T_COMP",
+		"code": "TCOMP-231",
+		"point_id": "c6b73319-a846-43f8-b34d-8f6aa67f4cff"
+	},
+	{
+		"template_id": "b4096cd8-1aef-4b70-a185-b4b689258e08",
+		"grade": "T_SPE",
+		"code": "TSPE-416",
+		"point_id": "b29fe9b6-fbc1-48a8-b567-a133231cbc74"
+	},
+	{
+		"template_id": "b48d72dd-e93b-4f5c-ac81-117ff1c2c79c",
+		"grade": "1_SPE",
+		"code": "1SPE-249",
+		"point_id": "059dee26-38cc-4f3e-badf-0a415cc0d345"
+	},
+	{
+		"template_id": "b500b44e-af29-4a2e-a2bd-67a57ed5ab20",
+		"grade": "T_SPE",
+		"code": "TSPE-318",
+		"point_id": "b8349e01-6e66-4cf3-80d5-8b079be18d4a"
+	},
+	{
+		"template_id": "b52c53d8-df28-48a3-b494-56fb1cd72009",
+		"grade": "T_COMP",
+		"code": "TCOMP-276",
+		"point_id": "8f0d2cb0-051c-4ebf-91ce-d6714e85b92b"
+	},
+	{
+		"template_id": "b52c53d8-df28-48a3-b494-56fb1cd72009",
+		"grade": "T_SPE",
+		"code": "TSPE-487",
+		"point_id": "e757c74d-8afc-4698-8cbb-70394d92fb0e"
+	},
+	{
+		"template_id": "b59fe450-e57a-4dfc-8aa7-29337b3fa28f",
+		"grade": "T_SPE",
+		"code": "TSPE-384",
+		"point_id": "17bc9a8a-b660-415e-a832-c1c516485b4f"
+	},
+	{
+		"template_id": "b72fae4a-f8c1-4758-a4d7-9a7523cda877",
+		"grade": "1_SPE",
+		"code": "1SPE-227",
+		"point_id": "d1192a93-1334-4c2d-a9ba-a385c672f279"
+	},
+	{
+		"template_id": "b7304fcb-afc1-449b-90ce-57343621fbc0",
+		"grade": "T_EXP",
+		"code": "TEXP-290",
+		"point_id": "f20a707c-3c95-40f5-91ac-3be9ae0b79f2"
+	},
+	{
+		"template_id": "b73923a1-ed5a-49b0-ba69-6e389e28cec3",
+		"grade": "1_SPE",
+		"code": "1SPE-321",
+		"point_id": "0aa5f181-8732-4427-8172-7733e062c45a"
+	},
+	{
+		"template_id": "b83f1392-a1b1-4c2d-8f04-599b92dbe6c0",
+		"grade": "1_SPE",
+		"code": "1SPE-348",
+		"point_id": "53ad4138-77d0-4921-9c42-45005eeb327b"
+	},
+	{
+		"template_id": "ba8ae428-e22b-4b01-b3d7-9d42af96a6c3",
+		"grade": "1_SPE",
+		"code": "1SPE-321",
+		"point_id": "0aa5f181-8732-4427-8172-7733e062c45a"
+	},
+	{
+		"template_id": "bad86bec-f4e9-4b2d-b238-7a7339e3f77f",
+		"grade": "1_SPE",
+		"code": "1SPE-357",
+		"point_id": "e18b2c95-a343-4c44-87eb-035b5e740b06"
+	},
+	{
+		"template_id": "baefb288-6fb4-4fad-8e71-114145799ab6",
+		"grade": "1_SPE",
+		"code": "1SPE-221",
+		"point_id": "d0254b54-3e62-4090-bf00-599c2ed6ab12"
+	},
+	{
+		"template_id": "bb6749d5-59a2-4b26-b259-bb64dcf9b600",
+		"grade": "T_EXP",
+		"code": "TEXP-291",
+		"point_id": "22e3e55b-b2bd-4e3b-9907-a0ad9c2c368b"
+	},
+	{
+		"template_id": "bbd211a5-536a-4d7a-bc3e-4d578d9caf68",
+		"grade": "T_EXP",
+		"code": "TEXP-239",
+		"point_id": "dd67132b-b964-4dab-9c30-fef6232a2390"
+	},
+	{
+		"template_id": "bbd511cb-73fe-4b91-9b50-06d001f5b666",
+		"grade": "2",
+		"code": "2-379",
+		"point_id": "e74d1241-8a23-457d-a9b9-5620e384f622"
+	},
+	{
+		"template_id": "bc1807a1-400e-4645-9f22-1157addd36bc",
+		"grade": "T_SPE",
+		"code": "TSPE-407",
+		"point_id": "533f5998-c1da-433a-96c9-39035dab0852"
+	},
+	{
+		"template_id": "bd45ed7f-0e09-4777-9f66-1b932cd087d0",
+		"grade": "1_SPE",
+		"code": "1SPE-294",
+		"point_id": "8a3285eb-dadc-449d-8059-580dd12f193e"
+	},
+	{
+		"template_id": "bd7f1336-d58f-47d4-869f-98bc5cc57958",
+		"grade": "T_EXP",
+		"code": "TEXP-286",
+		"point_id": "d90d3726-1559-4185-b72a-0aef53bb7496"
+	},
+	{
+		"template_id": "bf3e3211-3dc9-4a91-964a-eb8a68350903",
+		"grade": "1_SPE",
+		"code": "1SPE-219",
+		"point_id": "72c9c563-5821-4910-ae30-72ce9b391363"
+	},
+	{
+		"template_id": "bf3e3211-3dc9-4a91-964a-eb8a68350903",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-033",
+		"point_id": "b145ae46-6884-4f95-b51d-3c17f5d02b90"
+	},
+	{
+		"template_id": "bf5dadf6-ba11-4fbb-a527-014f59e3145a",
+		"grade": "1_SPE",
+		"code": "1SPE-319",
+		"point_id": "46a1dd11-584e-4a10-8eff-bc597065a8af"
+	},
+	{
+		"template_id": "bff6ba73-181e-46b5-aa84-aef634c6d7fb",
+		"grade": "T_EXP",
+		"code": "TEXP-342",
+		"point_id": "1312dcc9-a240-47dd-95a9-48980fe53d2c"
+	},
+	{
+		"template_id": "c23840b6-f01c-4d33-ac40-4c5f9c2b6eab",
+		"grade": "1_GEN",
+		"code": "1GEN-014",
+		"point_id": "011bef0b-b551-4fa8-83af-22df24c0b398"
+	},
+	{
+		"template_id": "c23840b6-f01c-4d33-ac40-4c5f9c2b6eab",
+		"grade": "1_SPE",
+		"code": "1SPE-224",
+		"point_id": "081fa2be-1faf-49ed-a821-5d9e53a73c13"
+	},
+	{
+		"template_id": "c23840b6-f01c-4d33-ac40-4c5f9c2b6eab",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-037",
+		"point_id": "118b4a0f-0371-4145-ba38-c40befb6054c"
+	},
+	{
+		"template_id": "c2add21a-3c8a-4f02-bb87-59755c033510",
+		"grade": "1_SPE",
+		"code": "1SPE-330",
+		"point_id": "d6d76682-70a2-4e33-b4fa-fb294cac5bfc"
+	},
+	{
+		"template_id": "c2e70ba1-08e2-4d6e-ba97-9194e2d2109d",
+		"grade": "1_SPE",
+		"code": "1SPE-386",
+		"point_id": "ceb8a22b-d6cb-4c88-97bd-807d89cc17a9"
+	},
+	{
+		"template_id": "c4372fd8-eb9d-4d62-a01a-7ab7618eed4b",
+		"grade": "2",
+		"code": "2-377",
+		"point_id": "c6495be1-7522-46a0-9bd6-40fb73178fce"
+	},
+	{
+		"template_id": "c4775a3a-114f-41bb-a469-d29c5484dde7",
+		"grade": "T_COMP",
+		"code": "TCOMP-265",
+		"point_id": "03b478c7-64d2-4c37-bd1f-64024dbd31fd"
+	},
+	{
+		"template_id": "c4775a3a-114f-41bb-a469-d29c5484dde7",
+		"grade": "T_SPE",
+		"code": "TSPE-420",
+		"point_id": "afabb457-a566-42a3-841e-14a1d27cdf73"
+	},
+	{
+		"template_id": "c611f92b-490e-468f-935a-06ec654fb3de",
+		"grade": "T_SPE",
+		"code": "TSPE-579",
+		"point_id": "894bf3e7-4ba2-41f9-b66a-2bede03eb0d1"
+	},
+	{
+		"template_id": "c7b5130d-15f7-4b80-b678-34c3c13dff40",
+		"grade": "1_SPE",
+		"code": "1SPE-283",
+		"point_id": "424708e0-73e4-4a91-9758-554b3c4acc58"
+	},
+	{
+		"template_id": "c7cdca01-326b-487f-8400-ba25d382de74",
+		"grade": "2",
+		"code": "2-328",
+		"point_id": "290539a2-c17f-4a28-932c-3b81f05cdb33"
+	},
+	{
+		"template_id": "c7d06dad-757d-4f44-ad7a-faa84a7871f0",
+		"grade": "T_EXP",
+		"code": "TEXP-331",
+		"point_id": "c73679a3-c3c0-43b9-a348-058b628d63a0"
+	},
+	{
+		"template_id": "c8f6970e-76b4-4bd5-beac-ee824751d6e3",
+		"grade": "T_EXP",
+		"code": "TEXP-343",
+		"point_id": "50322b7b-1bea-4935-b5ff-17b455dc9694"
+	},
+	{
+		"template_id": "c90fa022-9493-4812-adb7-c785babee9d4",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-042",
+		"point_id": "44b66d29-a628-4814-b07f-ab458f4ba7d3"
+	},
+	{
+		"template_id": "ca36b9c4-27b9-4376-ac37-7351a100abf5",
+		"grade": "T_SPE",
+		"code": "TSPE-354",
+		"point_id": "db8a691d-22d4-4ab6-ba7b-871f450bcb75"
+	},
+	{
+		"template_id": "ca8f40c2-bcb9-4f1d-8647-53e84a04ed79",
+		"grade": "1_SPE",
+		"code": "1SPE-293",
+		"point_id": "06c797fa-230e-4949-8346-d08159b66b2d"
+	},
+	{
+		"template_id": "cac2d6ed-c215-4e58-aaeb-1b314476f41d",
+		"grade": "T_SPE",
+		"code": "TSPE-459",
+		"point_id": "365e8cd4-8c83-4838-9ab6-b5233401830e"
+	},
+	{
+		"template_id": "cda8e0d2-366c-482f-8cf3-2564b4b7083d",
+		"grade": "1_SPE",
+		"code": "1SPE-265",
+		"point_id": "0d8dfe12-aa1a-471c-866c-09612b381809"
+	},
+	{
+		"template_id": "cda8e0d2-366c-482f-8cf3-2564b4b7083d",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-080",
+		"point_id": "fdb257e7-e214-4da1-8fbe-665904336d05"
+	},
+	{
+		"template_id": "cf51cb93-c89b-477d-bfed-eb3cffae5edf",
+		"grade": "1_SPE",
+		"code": "1SPE-225",
+		"point_id": "da67b0cf-fd71-46dc-9c8e-b9730a5a5a4d"
+	},
+	{
+		"template_id": "cf548ea1-2333-42f8-8d6c-e5af54f2b492",
+		"grade": "2",
+		"code": "2-488",
+		"point_id": "671fd38f-f1cc-4e5d-b3f3-eafeeea64775"
+	},
+	{
+		"template_id": "cffdd283-49ee-4292-b8ca-b6096b8b1ae2",
+		"grade": "1_SPE",
+		"code": "1SPE-274",
+		"point_id": "96e587b9-fc3c-4806-af8b-e3d7d6cecd4b"
+	},
+	{
+		"template_id": "d03e49c0-ba65-4e1b-80ef-c595bba65d10",
+		"grade": "2",
+		"code": "2-245",
+		"point_id": "7dc4ec3b-6286-4ee0-9290-1be83b607ec9"
+	},
+	{
+		"template_id": "d0930e8c-a11b-489e-a931-0a8679cef3c6",
+		"grade": "T_COMP",
+		"code": "TCOMP-251",
+		"point_id": "db202b42-1a00-494d-b5d4-3dac27f06fe8"
+	},
+	{
+		"template_id": "d0930e8c-a11b-489e-a931-0a8679cef3c6",
+		"grade": "T_SPE",
+		"code": "TSPE-467",
+		"point_id": "14bfe1d5-d8db-4813-9d39-f6814142f2f5"
+	},
+	{
+		"template_id": "d1648508-035e-4a2f-abce-87592365038f",
+		"grade": "2",
+		"code": "2-262",
+		"point_id": "beabe670-4375-403c-9f91-9230f729ad88"
+	},
+	{
+		"template_id": "d192da3e-534d-4c3e-b30e-68c9f166b8a9",
+		"grade": "T_SPE",
+		"code": "TSPE-367",
+		"point_id": "20e1219e-e5f6-405f-9652-0da543b2bcaa"
+	},
+	{
+		"template_id": "d2067413-da43-42bb-a24c-642d2a3cc5e8",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-045",
+		"point_id": "52fd0ad6-cc79-47b7-87db-49dc39be0ebf"
+	},
+	{
+		"template_id": "d2d94e71-f768-46ac-883d-ef239bb7cf17",
+		"grade": "T_EXP",
+		"code": "TEXP-292",
+		"point_id": "d1da58d8-3782-4556-952d-20dc48828298"
+	},
+	{
+		"template_id": "d3301f2d-6293-4766-a789-d432cb11b489",
+		"grade": "T_SPE",
+		"code": "TSPE-446",
+		"point_id": "f68c029c-4f31-4dba-9f56-dd02e33454e9"
+	},
+	{
+		"template_id": "d3ae0f61-3377-4d00-896e-291aaaf6ba5d",
+		"grade": "T_COMP",
+		"code": "TCOMP-235",
+		"point_id": "2d068323-0236-4694-9ac1-b2671afc5a62"
+	},
+	{
+		"template_id": "d3ae0f61-3377-4d00-896e-291aaaf6ba5d",
+		"grade": "T_SPE",
+		"code": "TSPE-431",
+		"point_id": "e76789d5-0ab1-4970-aa84-eabc0a6a7c37"
+	},
+	{
+		"template_id": "d400a330-ede5-4167-ab2a-1919eeed2468",
+		"grade": "T_EXP",
+		"code": "TEXP-365",
+		"point_id": "0409a5b0-5114-47f1-9454-e00d2ec3c8bd"
+	},
+	{
+		"template_id": "d520539a-4d14-492d-8d85-a303a6c30798",
+		"grade": "1_SPE",
+		"code": "1SPE-312",
+		"point_id": "313d0fe3-ec7e-4018-b735-f7a3cc95aec7"
+	},
+	{
+		"template_id": "d540f96e-6656-434f-bdbd-72347a2232a9",
+		"grade": "2",
+		"code": "2-245",
+		"point_id": "7dc4ec3b-6286-4ee0-9290-1be83b607ec9"
+	},
+	{
+		"template_id": "d5780995-4cd1-49f9-af54-45edca0a27b8",
+		"grade": "1_GEN",
+		"code": "1GEN-046",
+		"point_id": "b0655330-d93b-4770-b4bc-316392cd3468"
+	},
+	{
+		"template_id": "d5780995-4cd1-49f9-af54-45edca0a27b8",
+		"grade": "1_SPE",
+		"code": "1SPE-338",
+		"point_id": "046dc3c6-7441-4a21-b4d4-e0adc55553a9"
+	},
+	{
+		"template_id": "d5780995-4cd1-49f9-af54-45edca0a27b8",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-135",
+		"point_id": "50ae2339-1401-4032-8df2-069b92d7e142"
+	},
+	{
+		"template_id": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
+		"grade": "1_SPE",
+		"code": "1SPE-270",
+		"point_id": "4d1e3659-a503-42ee-9820-b0b0e2adc80e"
+	},
+	{
+		"template_id": "d58208eb-48f8-4a77-b5bb-55cddcd845ab",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-077",
+		"point_id": "208dbb2d-1db4-4dcb-9af7-a4457b44ef37"
+	},
+	{
+		"template_id": "d683e906-b1ca-44f0-bed5-8df2a9740b11",
+		"grade": "1_SPE",
+		"code": "1SPE-355",
+		"point_id": "18b84ea9-e422-4a77-885e-6dee1918630d"
+	},
+	{
+		"template_id": "d683e906-b1ca-44f0-bed5-8df2a9740b11",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-095",
+		"point_id": "9fc45aad-3980-42f7-929c-1963b2914c08"
+	},
+	{
+		"template_id": "d6938108-2f87-430c-bc69-c2b148356087",
+		"grade": "T_SPE",
+		"code": "TSPE-332",
+		"point_id": "3a430546-5eee-4dee-9987-ca79e5631e18"
+	},
+	{
+		"template_id": "d6a810f4-aa45-46b3-853a-c276a22870e7",
+		"grade": "2",
+		"code": "2-245",
+		"point_id": "7dc4ec3b-6286-4ee0-9290-1be83b607ec9"
+	},
+	{
+		"template_id": "d73d7929-fd39-4234-963c-80038c22f5a3",
+		"grade": "1_SPE",
+		"code": "1SPE-405",
+		"point_id": "c563e9b6-993d-483e-96f7-b93cb709ab1d"
+	},
+	{
+		"template_id": "d787d8c0-6f5a-45d0-84de-73b887f81bc8",
+		"grade": "1_SPE",
+		"code": "1SPE-321",
+		"point_id": "0aa5f181-8732-4427-8172-7733e062c45a"
+	},
+	{
+		"template_id": "d7ad48d8-614c-44e3-905d-b60f6630d2f5",
+		"grade": "1_SPE",
+		"code": "1SPE-333",
+		"point_id": "f8e84e1d-da70-4850-bd1e-7d89b8fd3003"
+	},
+	{
+		"template_id": "d98aa53a-2a3f-4c2f-b702-9abbc5065e6a",
+		"grade": "2",
+		"code": "2-366",
+		"point_id": "9719423a-fb10-44a8-a2d2-9936bc7e41ab"
+	},
+	{
+		"template_id": "d9937325-b96e-462e-8e99-bb74f0c92a63",
+		"grade": "T_EXP",
+		"code": "TEXP-290",
+		"point_id": "f20a707c-3c95-40f5-91ac-3be9ae0b79f2"
+	},
+	{
+		"template_id": "db8b5dc8-2d2d-41ed-9af5-a4f5551c6aaa",
+		"grade": "2",
+		"code": "2-205",
+		"point_id": "f9815717-7208-4c66-85af-ccb8e63ab536"
+	},
+	{
+		"template_id": "dd0ee69a-2203-47a3-b2b8-af70a77281d3",
+		"grade": "T_SPE",
+		"code": "TSPE-481",
+		"point_id": "28b75cf0-9f5c-4ff0-8af7-496ad6ccbfd8"
+	},
+	{
+		"template_id": "df88eea9-eb08-427a-9d19-6037a481ad40",
+		"grade": "T_COMP",
+		"code": "TCOMP-316",
+		"point_id": "8f0a3f65-9aa7-4c3a-b437-50fd2f8bdbac"
+	},
+	{
+		"template_id": "e02fb162-ca4e-417c-ae37-e39a3798f16c",
+		"grade": "T_SPE",
+		"code": "TSPE-470",
+		"point_id": "beabc41a-4c29-4109-b431-a546fdb5d809"
+	},
+	{
+		"template_id": "e05bb79b-f304-4bab-a856-ee73b5a20e6a",
+		"grade": "2",
+		"code": "2-367",
+		"point_id": "5c69948e-1385-4a41-9dbf-99f0eadc7759"
+	},
+	{
+		"template_id": "e12e4d95-1e6c-4d37-ae9c-77304ad0ea4a",
+		"grade": "T_EXP",
+		"code": "TEXP-284",
+		"point_id": "7260367d-82d0-4707-a83f-bed32f73a920"
+	},
+	{
+		"template_id": "e12e58cb-1630-4bfe-bb43-5726c325a918",
+		"grade": "2",
+		"code": "2-366",
+		"point_id": "9719423a-fb10-44a8-a2d2-9936bc7e41ab"
+	},
+	{
+		"template_id": "e2366d49-d150-4a5a-8097-0636db5b3c27",
+		"grade": "T_EXP",
+		"code": "TEXP-272",
+		"point_id": "a31a6ae4-2fbc-40f8-a2e7-2d5c08111af6"
+	},
+	{
+		"template_id": "e332140f-28aa-4069-bbc2-88ee18c81ea0",
+		"grade": "T_SPE",
+		"code": "TSPE-468",
+		"point_id": "3ce9d5ad-0a35-4fc7-9ea9-43fcdde7c737"
+	},
+	{
+		"template_id": "e5205176-140d-4376-9761-8172ca8bf10a",
+		"grade": "1_SPE",
+		"code": "1SPE-201",
+		"point_id": "9b8c6bba-612c-4795-92ef-08a4c36501c3"
+	},
+	{
+		"template_id": "e5205176-140d-4376-9761-8172ca8bf10a",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-002",
+		"point_id": "5f463bcc-ee3b-4994-9d47-0f380ae23b6b"
+	},
+	{
+		"template_id": "e67b1cbd-3a00-4379-bb4c-5a39ddff360f",
+		"grade": "1_SPE",
+		"code": "1SPE-225",
+		"point_id": "da67b0cf-fd71-46dc-9c8e-b9730a5a5a4d"
+	},
+	{
+		"template_id": "e6b429b4-e6b4-41a1-b25b-57b66c989ce4",
+		"grade": "1_SPE",
+		"code": "1SPE-294",
+		"point_id": "8a3285eb-dadc-449d-8059-580dd12f193e"
+	},
+	{
+		"template_id": "e710f32f-993f-4c49-9b18-f06ace3f1af7",
+		"grade": "1_SPE",
+		"code": "1SPE-330",
+		"point_id": "d6d76682-70a2-4e33-b4fa-fb294cac5bfc"
+	},
+	{
+		"template_id": "e7cfe442-6653-4f97-a74e-08b8853d3305",
+		"grade": "1_SPE",
+		"code": "1SPE-218",
+		"point_id": "66fcc488-da21-43f1-8c66-a660c2fc2e4d"
+	},
+	{
+		"template_id": "e814175b-95f0-4a2d-8689-e76c01ea91e6",
+		"grade": "T_SPE",
+		"code": "TSPE-417",
+		"point_id": "ed9e01cc-bdd4-430f-8317-55a90602da4b"
+	},
+	{
+		"template_id": "e90997eb-3058-460e-b120-9c045d2114e6",
+		"grade": "T_EXP",
+		"code": "TEXP-319",
+		"point_id": "22380bb4-b634-43f9-8891-4b8a805d6a20"
+	},
+	{
+		"template_id": "ea9d2de8-70df-4481-a658-d319702d57ab",
+		"grade": "T_SPE",
+		"code": "TSPE-383",
+		"point_id": "bda106c9-6fc2-4f1c-909a-77607d8ba528"
+	},
+	{
+		"template_id": "eae25eba-49aa-4be5-a3ae-eef9ec4e0a31",
+		"grade": "T_SPE",
+		"code": "TSPE-370",
+		"point_id": "b9787d89-1fc1-402c-9240-4437fd19204a"
+	},
+	{
+		"template_id": "eafd17a1-6e78-4bf3-932c-da806ac9d889",
+		"grade": "1_SPE",
+		"code": "1SPE-356",
+		"point_id": "3c6aac5f-55a8-493c-8e2d-a6666497b643"
+	},
+	{
+		"template_id": "eafd17a1-6e78-4bf3-932c-da806ac9d889",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-099",
+		"point_id": "53647272-e902-410b-9fac-5b48afcf6b73"
+	},
+	{
+		"template_id": "eb9517ed-85ed-4702-b8d0-e155f5a5d474",
+		"grade": "1_GEN",
+		"code": "1GEN-021",
+		"point_id": "34fc5e88-8756-4d2e-aada-7e9e9853db39"
+	},
+	{
+		"template_id": "eb9517ed-85ed-4702-b8d0-e155f5a5d474",
+		"grade": "1_SPE",
+		"code": "1SPE-237",
+		"point_id": "890527bb-ab6e-4dfd-ac08-094d4f19c4cd"
+	},
+	{
+		"template_id": "ebe7e788-3fdc-4d48-8429-ecc959f35349",
+		"grade": "1_GEN",
+		"code": "1GEN-047",
+		"point_id": "aefac8a4-bfb0-4453-8220-90051148e3ad"
+	},
+	{
+		"template_id": "ebe7e788-3fdc-4d48-8429-ecc959f35349",
+		"grade": "1_SPE",
+		"code": "1SPE-424",
+		"point_id": "bb49264a-c0df-40f2-a8cf-bf5680009567"
+	},
+	{
+		"template_id": "ebe7e788-3fdc-4d48-8429-ecc959f35349",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-134",
+		"point_id": "128a9656-e5b9-4428-b4b7-6cc0c9bc37df"
+	},
+	{
+		"template_id": "eca755e6-dd1f-4a49-996d-88168fcfc4e5",
+		"grade": "1_SPE",
+		"code": "1SPE-225",
+		"point_id": "da67b0cf-fd71-46dc-9c8e-b9730a5a5a4d"
+	},
+	{
+		"template_id": "ecba8a9e-bedb-478d-a324-a4f3fbdb3967",
+		"grade": "1_SPE",
+		"code": "1SPE-219",
+		"point_id": "72c9c563-5821-4910-ae30-72ce9b391363"
+	},
+	{
+		"template_id": "ecba8a9e-bedb-478d-a324-a4f3fbdb3967",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-033",
+		"point_id": "b145ae46-6884-4f95-b51d-3c17f5d02b90"
+	},
+	{
+		"template_id": "ed01a843-e3ff-4383-8933-fe7593000693",
+		"grade": "T_SPE",
+		"code": "TSPE-306",
+		"point_id": "aeef32f1-d2a0-4bf3-a50e-07b7a90ead66"
+	},
+	{
+		"template_id": "ed8444bb-dfa3-4b6c-8414-27afb3066d2b",
+		"grade": "1_SPE",
+		"code": "1SPE-261",
+		"point_id": "b58208fa-f1c2-4c4d-8819-463f571bc035"
+	},
+	{
+		"template_id": "ed8444bb-dfa3-4b6c-8414-27afb3066d2b",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-079",
+		"point_id": "815591c3-8942-468e-b5be-446de15b4025"
+	},
+	{
+		"template_id": "ee4e2ac6-c683-47ec-91bd-524409ef241e",
+		"grade": "1_SPE",
+		"code": "1SPE-305",
+		"point_id": "58fe72dc-38b7-4184-b405-e4cc26d9e5d3"
+	},
+	{
+		"template_id": "ef807ee9-f95b-469a-a6a8-4232e933b4c6",
+		"grade": "1_SPE",
+		"code": "1SPE-215",
+		"point_id": "7b542b4c-fa14-4681-8ed3-ded5ef362231"
+	},
+	{
+		"template_id": "efb12f4b-8f51-4e22-b6a3-2a5d977583b5",
+		"grade": "T_COMP",
+		"code": "TCOMP-250",
+		"point_id": "059fed73-fad9-43a2-8995-a12a15fa842e"
+	},
+	{
+		"template_id": "f01270c2-3c63-45c5-bfbb-8233154fadc6",
+		"grade": "T_SPE",
+		"code": "TSPE-468",
+		"point_id": "3ce9d5ad-0a35-4fc7-9ea9-43fcdde7c737"
+	},
+	{
+		"template_id": "f1440b52-5a2b-4e6a-a112-7182b029d023",
+		"grade": "1_SPE",
+		"code": "1SPE-274",
+		"point_id": "96e587b9-fc3c-4806-af8b-e3d7d6cecd4b"
+	},
+	{
+		"template_id": "f1963ef2-4618-4ae7-9491-9955dacd0258",
+		"grade": "T_COMP",
+		"code": "TCOMP-239",
+		"point_id": "2fc2be54-b03a-485a-a1b4-bf5c1b6df866"
+	},
+	{
+		"template_id": "f36ce3ff-9ae5-435e-b6c2-affe0ad902ec",
+		"grade": "1_SPE",
+		"code": "1SPE-377",
+		"point_id": "52e04b97-7bcd-4c3f-aedd-6c2dd1557ad3"
+	},
+	{
+		"template_id": "f36ce3ff-9ae5-435e-b6c2-affe0ad902ec",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-118",
+		"point_id": "ed7dae95-79e1-4eb3-b5f8-7e41278353d6"
+	},
+	{
+		"template_id": "f3addbe3-7254-483f-a640-0ea75e23dc69",
+		"grade": "1_SPE",
+		"code": "1SPE-348",
+		"point_id": "53ad4138-77d0-4921-9c42-45005eeb327b"
+	},
+	{
+		"template_id": "f3e68e4b-9855-4e91-bc0d-7363b7650b86",
+		"grade": "T_COMP",
+		"code": "TCOMP-302",
+		"point_id": "305f2fa7-20de-4f3b-9873-cc5b188ab5cc"
+	},
+	{
+		"template_id": "f40e8a4a-bddc-43aa-8c2c-ccf7cb5d4ae6",
+		"grade": "1_SPE",
+		"code": "1SPE-406",
+		"point_id": "ca9ca813-2417-41d7-a0e7-15e9931ae0a8"
+	},
+	{
+		"template_id": "f52395d1-31ca-4bdb-be8f-723c5d96d2ac",
+		"grade": "1_SPE",
+		"code": "1SPE-272",
+		"point_id": "576556ff-29aa-4509-9a20-e3dc993905b5"
+	},
+	{
+		"template_id": "f52395d1-31ca-4bdb-be8f-723c5d96d2ac",
+		"grade": "1_TECHNO",
+		"code": "1TECHNO-079",
+		"point_id": "815591c3-8942-468e-b5be-446de15b4025"
+	},
+	{
+		"template_id": "f52b93c4-ba45-4bb1-8d4f-e9f34f413f65",
+		"grade": "T_SPE",
+		"code": "TSPE-413",
+		"point_id": "f746db89-325a-48af-ba82-b1e6c6b9744d"
+	},
+	{
+		"template_id": "f57c0a5a-c76f-402d-8c94-49718f112ac2",
+		"grade": "2",
+		"code": "2-271",
+		"point_id": "cffec47f-d3c8-4277-8f40-e69f05f6467f"
+	},
+	{
+		"template_id": "f6219e5a-af46-4818-8537-6c65b6d9ae63",
+		"grade": "1_SPE",
+		"code": "1SPE-383",
+		"point_id": "ccb82555-6df8-4508-98d4-d905815aee0d"
+	},
+	{
+		"template_id": "f680361c-58ec-4f63-8e00-2b4399298977",
+		"grade": "T_EXP",
+		"code": "TEXP-206",
+		"point_id": "3243f08c-c33f-4e12-9684-5af9ba2e4300"
+	},
+	{
+		"template_id": "f69a6e9e-28cf-46e3-b823-5712a2e028d9",
+		"grade": "1_SPE",
+		"code": "1SPE-386",
+		"point_id": "ceb8a22b-d6cb-4c88-97bd-807d89cc17a9"
+	},
+	{
+		"template_id": "f6c423de-acdf-4e7e-a622-feabdb289cce",
+		"grade": "1_SPE",
+		"code": "1SPE-331",
+		"point_id": "19802337-a932-4ef9-818c-458b4b3b121d"
+	},
+	{
+		"template_id": "f796ffc0-d9cc-496b-97a8-9e10f07e6fc8",
+		"grade": "T_SPE",
+		"code": "TSPE-318",
+		"point_id": "b8349e01-6e66-4cf3-80d5-8b079be18d4a"
+	},
+	{
+		"template_id": "f7c15433-a944-4440-bb42-4a2f899e5f06",
+		"grade": "1_SPE",
+		"code": "1SPE-319",
+		"point_id": "46a1dd11-584e-4a10-8eff-bc597065a8af"
+	},
+	{
+		"template_id": "f98164b1-031d-4ff9-8d16-8c97ebe485f6",
+		"grade": "2",
+		"code": "2-212",
+		"point_id": "f67b0b9d-a9a2-42ff-9b1e-e5e0c2f2d253"
+	},
+	{
+		"template_id": "fc2ea212-c23b-407a-b4b7-6f3a48b40ef5",
+		"grade": "T_SPE",
+		"code": "TSPE-488",
+		"point_id": "5423dee8-68c8-41fc-ae83-84f94be4c21a"
+	},
+	{
+		"template_id": "fc921674-ee4f-488c-9fe4-5598795c0508",
+		"grade": "1_SPE",
+		"code": "1SPE-225",
+		"point_id": "da67b0cf-fd71-46dc-9c8e-b9730a5a5a4d"
+	},
+	{
+		"template_id": "fe25be0a-db90-4052-8f4e-fffcafd763e8",
+		"grade": "T_COMP",
+		"code": "TCOMP-251",
+		"point_id": "db202b42-1a00-494d-b5d4-3dac27f06fe8"
+	},
+	{
+		"template_id": "fe25be0a-db90-4052-8f4e-fffcafd763e8",
+		"grade": "T_SPE",
+		"code": "TSPE-467",
+		"point_id": "14bfe1d5-d8db-4813-9d39-f6814142f2f5"
+	},
+	{
+		"template_id": "fe407c88-478d-419e-aa02-8b3c8e1a917a",
+		"grade": "1_SPE",
+		"code": "1SPE-321",
+		"point_id": "0aa5f181-8732-4427-8172-7733e062c45a"
+	},
+	{
+		"template_id": "fece187e-691f-488b-84c6-d37c84173066",
+		"grade": "T_SPE",
+		"code": "TSPE-457",
+		"point_id": "b2bcca47-74c2-4a2e-b2be-dfd3d896cb8d"
+	},
+	{
+		"template_id": "ffd5c051-3db1-416b-9279-ee740ffb8d34",
+		"grade": "T_COMP",
+		"code": "TCOMP-236",
+		"point_id": "512660c3-1b12-419a-8cce-7ee6f19732a0"
+	},
+	{
+		"template_id": "ffd5c051-3db1-416b-9279-ee740ffb8d34",
+		"grade": "T_SPE",
+		"code": "TSPE-444",
+		"point_id": "2d3b4a7e-7380-461b-b2b3-0e169bf4d4e4"
+	}
+]
