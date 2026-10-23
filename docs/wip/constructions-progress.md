@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1649._
+_Mis à jour le 2026-10-23, lot 12 en cours (PR à ouvrir)._
 
-- **État** : lot 11 **livré** — #1649 mergée : instruments automatiques visibles à l’arrêt entre deux étapes, en position finale (crayon au bout du trait, compas à la fin de l’arc), aussi pendant `@pause`/`@instruction` ; cachés à la fin de la construction. Lots 10 et 11 partent au prochain `deploy:prod`.
-- **Prochaine action** : choisir la suite avec David — reco : phase 0 des consignes automatiques pour les étapes non chorégraphiées (compter d’abord les constructions concernées).
-- **En attente de David** : (1) vérifications notées dans `verifications-manuelles.md` (#1621 → #1649 ; serveurs 5183, 5184, 5185, 5186), David les fera plus tard → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`, `-mediatrice-mesure`, `-pause`. (2) Suites possibles : consignes automatiques ; angle plat refusé par `bissectrice` ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; côté du carré d’angle droit. Étiquette d’un segment nommé sur le milieu I : **hors lot** (aucun segment nommé en prod).
-- **Pièges en cours** : `e` = constante d’Euler, jamais comme nom dans un script. DSL : `demidroite`, pas `demi_droite`. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet. Commits et PR : aucune mention Claude.
-- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`), 5185 (`-mediatrice-mesure`), 5186 (`-pause`), branches mergées.
+- **État** : lot 12 « finitions » codé et commité sur `fix/constructions-finitions` : bissectrice d'un angle plat, méthode dans le message « P sur (AB) », paire C\*/D\* libre, carré en P côté équerre. Tests et typecheck verts.
+- **Prochaine action** : PR, revue `code-reviewer` (Opus), CI, merge ; noter les vérifications manuelles.
+- **En attente de David** : `@arc_milieu` sur un angle plat → refus (le milieu de [A′B′] est V) qui renvoie vers `@arcs_egaux`/`@mesure` : à confirmer. Vérifications #1621 → #1649 (serveurs 5183-5186), puis suppression des worktrees mergés. Suites possibles : consignes automatiques (reco : phase 0, compter d'abord les constructions concernées) ; marqueurs d'angle droit seulement en `@complet`.
+- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. DSL : `demidroite`. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. Commits et PR : aucune mention Claude.
+- **Worktree / branche** : `../ubumaths-wt-constructions-finitions` · `fix/constructions-finitions`.
 
 ---
 
@@ -245,3 +245,13 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - `holdAutoInstruments` / `heldInstruments`, `instrumentEndPoses` (`pencilEndPose`, angle de fin du compas), `constructionFinished` (`progress >= 1` et pas d’erreur — pas l’index : une `@instruction` finale à 0 ms) ; `visibleInstruments` + `instrumentEndPose` (`render-helpers.ts`).
 - Tests : `instruments-fin-etape.test.ts` 18, `visible-instruments.test.ts` (+8, test qui assertait le défaut réécrit), `ConstructionPlayer-instruments-fin-etape.svelte.test.ts` 6 ; 19 + 3 rouges sans le code. `test:server constructions-v2` 489 ✓ · `test:client` 25 ✓.
 - Revue `code-reviewer` : aucun bloquant ni important. Mineurs acceptés : `seekToEnd` d’une construction en erreur sans instruments ; branche `catch` de `handleStepChange` qui ne vide pas l’état des instruments (déjà le cas) ; crayon sans glissement d’un trait au suivant (déjà le cas) ; pose de fin sur le dernier segment si une étape en crée plusieurs (théorique).
+
+## Lot 12 — Finitions (2026-10-23)
+
+Phase 0 validée par David (« je suis tes recos ») : règle C\*/D\* limitée à `parallele` (A\*/B\* gardent leur lettre) ; marqueurs d'angle droit en `@complet` seulement : hors lot.
+
+- **Bissectrice, angle plat** (`builtins.ts`, `buildBisectorLine`) : M = A tourné de θ/2 autour de V (θ orienté de [VA) vers [VB), dans [0°, 360°[) ; droite (VM). Définie dans tous les régimes, angle rendu plat après coup compris (l'ancien milieu caché de A et B′ tombait sur V). Angle plat → ⟂ (AB) en V. A ou B = V : refus inchangé.
+- **Chorégraphies** (`bissectrice.ts`, `bisectorDirection`) : à l'angle plat, côté = (VA) tournée d'un quart de tour (sens trigonométrique) ; `@arcs_egaux`, rapporteur, `@mesure` (« on lit 180° », « 180 ÷ 2 = 90 »). **Écart** : `@arc_milieu` refuse l'angle plat (milieu de [A′B′] = V), message vers `@arcs_egaux` ou `@mesure` — à confirmer par David.
+- **Message « P sur (AB) »** (`assertPOffLine`) : cite `@euclide` ou `@equerre` avant `@double_perpendiculaire`.
+- **C\* à côté d'un vrai C** : `ctx.nameTaken` (`createNameTaken`, `names.ts`) ; `starPairStems` (`parallele.ts`) prend les deux premières lettres consécutives libres à partir de C. L'ancien test « C dans le script ne fait pas renommer C\* » asserte désormais E\*, F\*.
+- **Carré en P** (double perpendiculaire à l'équerre) : entre la parallèle et P + (F→P), dans le coin de l'équerre ; l'ancien test assertait le carré du côté de (AB).
