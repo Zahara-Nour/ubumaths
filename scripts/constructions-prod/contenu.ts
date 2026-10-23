@@ -32,8 +32,8 @@ export interface ConstructionChange {
 // CONSTANTES : SCRIPTS
 // ============================================================================
 
-/** D'après Françoise Chomat : ABCD à partir de A, B, C, par les diagonales */
-export const PARALLELOGRAMME = `# Construction d'un parallélogramme (d'après Françoise Chomat)
+/** ABCD à partir de A, B, C, par les diagonales */
+export const PARALLELOGRAMME = `# Construction d'un parallélogramme
 @instruction("Construire un parallélogramme en traçant ses diagonales.")
 @pause(1000)
 @instruction("Ici on construit un parallélogramme ABCD à partir de trois points A, B et C.")
@@ -72,8 +72,8 @@ segment(D, A)
 @pause(1000)
 `;
 
-/** D'après Jean-Louis Kahn : report de trois longueurs égales, puis deux parallèles */
-export const PARTAGE_TROIS = `# Partage d'un segment en trois parts égales (d'après Jean-Louis Kahn)
+/** Report de trois longueurs égales, puis deux parallèles */
+export const PARTAGE_TROIS = `# Partage d'un segment en trois parts égales
 @instruction("Partage d'un segment en trois parts égales (règle, compas).")
 A = point(-6, -3)
 B = point(4, -2.5)
@@ -107,8 +107,8 @@ marque_segment(N, B)
 @pause(1000)
 `;
 
-/** D'après Jean-Louis Kahn : symétrique d'un point par rapport à une droite, deux arcs */
-export const SYMETRIE_AXIALE = `# Symétrie axiale au compas (d'après Jean-Louis Kahn)
+/** Symétrique d'un point par rapport à une droite, deux arcs */
+export const SYMETRIE_AXIALE = `# Symétrie axiale au compas
 @instruction("Construction du symétrique d'un point par rapport à une droite, au compas.")
 @pause(1000)
 @instruction("On considère un point M et un axe de symétrie (d).")
@@ -149,7 +149,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		titreAvant: "Axes de symetrie et construction d'un carre",
 		title: "Axes de symétrie et construction d'un carré",
 		description:
-			"Construction d'un carré à partir de ses diagonales, avec mise en évidence des axes de symétrie. (Auteur : Sésamath)",
+			"Construction d'un carré à partir de ses diagonales, avec mise en évidence des axes de symétrie.",
 		isPublic: true
 	},
 	{
@@ -157,7 +157,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		titreAvant: 'Calcul mental : Ajouter 19',
 		title: 'Calcul mental : Ajouter 19',
 		description:
-			'Animation explicative pour le calcul mental. Technique : ajouter 20 puis soustraire 1. (Auteur : Julien Crémoux)',
+			'Animation explicative pour le calcul mental. Technique : ajouter 20 puis soustraire 1.',
 		isPublic: true
 	},
 	{
@@ -165,7 +165,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		titreAvant: 'Calcul mental : Soustraire 99',
 		title: 'Calcul mental : Soustraire 99',
 		description:
-			'Animation explicative pour le calcul mental. Technique : soustraire 100 puis ajouter 1. (Auteur : Julien Crémoux)',
+			'Animation explicative pour le calcul mental. Technique : soustraire 100 puis ajouter 1.',
 		isPublic: true
 	},
 	{
@@ -173,7 +173,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		titreAvant: "Construction d'un parallelogramme",
 		title: "Construction d'un parallélogramme",
 		description:
-			"Construction d'un parallélogramme à partir de ses diagonales, avec la règle graduée et le compas. (Auteur : Françoise Chomat)",
+			"Construction d'un parallélogramme à partir de ses diagonales, avec la règle graduée et le compas.",
 		dslScript: PARALLELOGRAMME,
 		isPublic: true
 	},
@@ -181,8 +181,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		id: 'd25a9985-1d78-4b1c-9f56-88fcd7bb3f68',
 		titreAvant: 'Exemple MathJax/LaTeX',
 		title: 'Exemple MathJax/LaTeX',
-		description:
-			"Démonstration de l'affichage de formules mathématiques avec MathJax. (Auteur : Florence Decool)",
+		description: "Démonstration de l'affichage de formules mathématiques avec MathJax.",
 		isPublic: true
 	},
 	{
@@ -197,7 +196,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		titreAvant: "Partage d'un segment en 3 parts egales",
 		title: "Partage d'un segment en trois parts égales",
 		description:
-			'Construction à la règle et au compas pour partager un segment [AB] en trois parts égales. (Auteur : Jean-Louis Kahn)',
+			'Construction à la règle et au compas pour partager un segment [AB] en trois parts égales.',
 		dslScript: PARTAGE_TROIS,
 		isPublic: true
 	},
@@ -205,8 +204,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		id: 'b050247a-9257-4852-8fd8-b51a6c2a22f8',
 		titreAvant: 'Segment avec marque',
 		title: 'Segment avec marque',
-		description:
-			"Construction simple d'un segment avec une marque de codage. (Auteur : Julien Crémoux)",
+		description: "Construction simple d'un segment avec une marque de codage.",
 		isPublic: true
 	},
 	{
@@ -214,7 +212,7 @@ export const CHANGES: readonly ConstructionChange[] = [
 		titreAvant: 'Symetrie centrale au compas',
 		title: 'Symétrie axiale au compas',
 		description:
-			"Construction du symétrique d'un point par rapport à une droite, au compas, avec deux arcs de cercle. (Auteur : Jean-Louis Kahn)",
+			"Construction du symétrique d'un point par rapport à une droite, au compas, avec deux arcs de cercle.",
 		dslScript: SYMETRIE_AXIALE,
 		isPublic: true
 	}

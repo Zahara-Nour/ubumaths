@@ -6,8 +6,8 @@
  * ⚠️ `--cible prod --publier` : lancé par David, après sa relecture du rendu en local.
  *
  * Usage :
- *   pnpm constructions:reecrire --cible local              (aperçu : insère les 3 constructions
- *                                                          réécrites dans la base locale)
+ *   pnpm constructions:reecrire --cible local              (aperçu : les 3 constructions réécrites
+ *                                                          + titres et descriptions des autres)
  *   pnpm constructions:reecrire --cible prod               (simulation : diff + sauvegarde)
  *   pnpm constructions:reecrire --cible prod --publier
  *
@@ -153,16 +153,12 @@ function describeChange(row: Row, change: ConstructionChange): string {
 	return parts.join(', ');
 }
 
-async function findLocalAdmin(supabase: SupabaseClient<Database>): Promise<string> {
-	const { data, error } = await supabase.from('profiles').select('id').eq('role', 'admin');
-	if (error) throw new Error(`lecture des admins locaux : ${error.message}`);
-	if (!data || data.length !== 1) throw new Error(`base locale : ${data?.length ?? 0} admin(s)`);
-	return data[0].id;
-}
-
-/** Aperçu local : les constructions réécrites, auteur = l'admin local (remplacées si déjà là) */
+/**
+ * Aperçu local : les constructions réécrites, sans auteur comme en prod (remplacées si déjà
+ * là) ; les autres, si la base locale les a (copie de `db:seed-riche`), reçoivent titre,
+ * description et publication.
+ */
 async function insertPreview(supabase: SupabaseClient<Database>): Promise<void> {
-	const adminId = await findLocalAdmin(supabase);
 	const rewritten = CHANGES.filter((c) => c.dslScript !== undefined);
 	const { data, error } = await supabase
 		.from('constructions')
@@ -175,7 +171,7 @@ async function insertPreview(supabase: SupabaseClient<Database>): Promise<void> 
 				script: {},
 				format: 'dsl',
 				is_public: c.isPublic,
-				author_id: adminId
+				author_id: null
 			}))
 		)
 		.select('id');
@@ -184,6 +180,18 @@ async function insertPreview(supabase: SupabaseClient<Database>): Promise<void> 
 		throw new Error(`aperçu local : ${data?.length ?? 0} ligne(s) sur ${rewritten.length}`);
 	}
 	for (const c of rewritten) console.log(`  ${c.title} : /constructions/${c.id}`);
+
+	for (const c of CHANGES.filter((change) => change.dslScript === undefined)) {
+		const { data: updated, error: updateError } = await supabase
+			.from('constructions')
+			.update({ title: c.title, description: c.description, is_public: c.isPublic })
+			.eq('id', c.id)
+			.select('id');
+		if (updateError) throw new Error(`aperçu local : ${updateError.message}`);
+		console.log(
+			`  ${c.title} : ${(updated ?? []).length === 1 ? 'mise à jour' : 'absente en local'}`
+		);
+	}
 }
 
 async function applyChange(
