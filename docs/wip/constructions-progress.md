@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1638._
+_Mis à jour le 2026-10-23, après #1643._
 
-- **État** : lot 10 `@mesure` — PR 1/3 `milieu` livrée (#1637) ; retours de David livrés (#1638) : pause de lecture selon la consigne (60 ms/caractère, [0,5 ; 4] s, toutes voies, fondu bref puis immobile), codage AI = IB seulement sur un segment tracé. Partent au prochain `deploy:prod`.
-- **Prochaine action** : PR 2/3 `bissectrice @mesure` au rapporteur (mesure au degré, moitié, repère, tracé) — phase 0 à faire valider ; brique neuve : animer le rapporteur.
-- **En attente de David** : (1) vérification #1637 + #1638 (serveur 5183, worktree `-rythme`, ligne dans `verifications-manuelles.md`) ; #1633 et marqueurs d'angle droit en `@complet` vérifiables sur le même serveur → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`. (2) Étiquette d'un segment nommé posée au milieu, sur celle du milieu I : à traiter ? (contournement : `segment(A, B)` sans nom). Consignes automatiques pour les étapes non chorégraphiées (« On place le point A », « On trace le segment [AB] ») : idée proposée, à trancher. Scripts de test de #1637/#1638 donnés à David (5 cas). (3) Suites hors `@mesure` : côté du carré d'angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d'un vrai C.
-- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script. Primes typographiques (′ ″) dans consignes et étiquettes. Étiquette auxiliaire = provisoire (`setProvisionalLabel`) : `updateLabel` la rend définitive. Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet.
-- **Worktree / branche** : PR 2 : `git worktree add -b feat/constructions-bissectrice-mesure ../ubumaths-wt-constructions-bissectrice-mesure origin/main`. Serveur de test unique : 5183 (worktree `-rythme`, branche distante supprimée).
+- **État** : lot 10 `@mesure` — PR 1/3 `milieu` (#1637) et rythme de lecture (#1638) livrées ; **PR 2/3 `bissectrice @mesure` au rapporteur livrée (#1643)** : 0 sur [VA), rapporteur retourné dans le sens horaire (lecture sur l’échelle intérieure), repère P, codage des angles égaux seulement si les deux côtés sont tracés. Partent au prochain `deploy:prod`.
+- **Prochaine action** : PR 3/3 `mediatrice @mesure` = milieu mesuré + angle droit à l’équerre — phase 0 à faire valider. Worktree : `git worktree add -b feat/constructions-mediatrice-mesure ../ubumaths-wt-constructions-mediatrice-mesure origin/main`.
+- **En attente de David** : (1) vérifications #1637 + #1638 (serveur 5183, worktree `-rythme`) et #1643 (serveur 5184, worktree `-bissectrice-mesure`), lignes dans `verifications-manuelles.md` ; #1633 et marqueurs d’angle droit en `@complet` sur 5183 → puis suppression des worktrees `../ubumaths-wt-constructions`, `-droite`, `-consignes`, `-auxiliaires`, `-mesure`, `-rythme`, `-bissectrice-mesure`. (2) Étiquette d’un segment nommé posée sur celle du milieu I : à traiter ? Consignes automatiques pour les étapes non chorégraphiées : à trancher. (3) Suites hors `@mesure` : côté du carré d’angle droit ; message « P sur (AB) » sans `@equerre` ; C\* à côté d’un vrai C ; angle plat refusé par le builtin `bissectrice` ; instruments invisibles à l’arrêt entre deux étapes.
+- **Pièges en cours** : `e` = constante d’Euler, jamais comme nom dans un script. DSL : `demidroite`, pas `demi_droite`. Étiquette auxiliaire provisoire (`setProvisionalLabel`). Shard client 1/2 de la CI peut bloquer sur `wrapDynamicImport` → relancer le job. 3 constructions en prod avec des `@cacher` sans effet. Commits et PR : aucune mention Claude (ni `Claude-Session:`, ni lien de session).
+- **Worktree / branche** : PR 3 : voir prochaine action. Serveurs de test : 5183 (`-rythme`), 5184 (`-bissectrice-mesure`, branche mergée).
 
 ---
 
