@@ -215,7 +215,7 @@ export class VariationsCommand extends BaseCommand {
 				chalk.bold('Dérivée :') +
 					` f'(${variable}) = ` +
 					// Réduite et lisible : `-2/(2x-1)^2`, jamais `{-2}/{(2x-1)^2}`
-					chalk.cyan(readableText(reducedDerivative(result.derivative)))
+					chalk.cyan(readableText(reducedDerivative(result.derivative, result.expression)))
 			);
 			lines.push('');
 

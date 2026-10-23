@@ -25,11 +25,12 @@ import type { MathNode } from '../types';
 import { add, subtract } from '../factory';
 import { isOpposite } from '../guards';
 import { tidy } from './index';
+import type { TidyOptions } from './index';
 
 /** `tidy` peut relancer une exception imprévue : on garde alors la forme brute. */
-function tidySafe(node: MathNode): MathNode {
+function tidySafe(node: MathNode, options: TidyOptions | undefined): MathNode {
 	try {
-		return tidy(node);
+		return tidy(node, options);
 	} catch {
 		return node;
 	}
@@ -52,34 +53,39 @@ function countTerms(node: MathNode): number {
  * `tidy` : un terme négatif s'écrit en soustrayant sa valeur absolue
  * (`a + (−b)` → `a − b`, `a − (−b)` → `a + b`).
  */
-function termwise(node: MathNode): MathNode {
+function termwise(node: MathNode, options: TidyOptions | undefined): MathNode {
 	if (node.type === 'addition' || node.type === 'subtraction') {
-		const left = termwise(node.left);
-		const right = tidySafe(node.right);
+		const left = termwise(node.left, options);
+		const right = tidySafe(node.right, options);
 		if (isOpposite(right)) {
 			return node.type === 'addition' ? subtract(left, right.operand) : add(left, right.operand);
 		}
 		return { ...node, left, right };
 	}
-	return tidySafe(node);
+	return tidySafe(node, options);
 }
 
-/** Une dérivée mise au propre, en gardant l'ordre de la règle quand rien ne se regroupe. */
-export function tidyTerms(node: MathNode): MathNode {
+/**
+ * Une dérivée mise au propre, en gardant l'ordre de la règle quand rien ne se regroupe.
+ *
+ * @param options - Transmises à `tidy` ; `domain: [f]` pour la dérivée de `f`
+ *   (S3 : `x·(1/x)` ne se simplifie que si le domaine de `f` exclut 0)
+ */
+export function tidyTerms(node: MathNode, options?: TidyOptions): MathNode {
 	if (node.type === 'division') {
 		// Le numérateur garde son ordre (u′v − uv′) ; mais si la mise au propre
 		// complète est plus COURTE (`{8x^3}/4` → `2x^3`), elle l'emporte
 		const ordered: MathNode = {
 			...node,
-			numerator: tidyTerms(node.numerator),
-			denominator: tidySafe(node.denominator)
+			numerator: tidyTerms(node.numerator, options),
+			denominator: tidySafe(node.denominator, options)
 		};
-		const full = tidySafe(node);
+		const full = tidySafe(node, options);
 		return nodeCount(full) < nodeCount(ordered) ? full : ordered;
 	}
-	if (!isSum(node)) return tidySafe(node);
-	const ordered = termwise(node);
-	const full = tidySafe(node);
+	if (!isSum(node)) return tidySafe(node, options);
+	const ordered = termwise(node, options);
+	const full = tidySafe(node, options);
 	if (countTerms(full) < countTerms(ordered)) return full;
 	// Même nombre de termes, mais l'ordre de `tidy` évite un négatif en tête
 	// (somme de degré 1 : `−6x + 2` → `2 − 6x`) : il l'emporte aussi.

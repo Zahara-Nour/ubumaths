@@ -88,8 +88,10 @@ describe('revue : même résultat quelle que soit l’écriture', () => {
 	it.each([
 		['(-(6x+3))/9', '-{2x+1}/3'],
 		['(-(2x+4))/(-6)', '{x+2}/3'],
-		['(x(6x+3))/(9x)', '{2x+1}/3'],
-		['((x+1)(2x+2))/(4(x+1))', '{x+1}/2']
+		// S3 (David, 2026-10-23) : le nombre se simplifie, la base qui peut
+		// s'annuler reste des deux côtés de la barre.
+		['(x(6x+3))/(9x)', '{x(2x+1)}/{3x}'],
+		['((x+1)(2x+2))/(4(x+1))', '{(x+1)^2}/{2(x+1)}']
 	])('tidy(%s) = %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});

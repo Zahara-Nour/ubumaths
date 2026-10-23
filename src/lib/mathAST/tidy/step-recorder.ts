@@ -14,6 +14,7 @@
 
 import type { MathNode } from '../types';
 import type { Verbosity } from '../common/verbosity';
+import type { TypeContext } from '../numtype';
 import { StepRecorderBase, type BaseStep } from '../common/step-recorder-base';
 
 // =============================================================================
@@ -114,6 +115,19 @@ export interface TidyOptions {
 	 *   décimale finie — sinon le choix scolaire, sinon l'écriture inchangée.
 	 */
 	readonly unitChoice?: UnitChoice;
+	/**
+	 * Les hypothèses déclarées sur les variables (ADR 0012), par exemple
+	 * « x non nul » (S3, chantier simplify-carte, 2026-10-23). Sans elles,
+	 * `tidy` ne simplifie pas une base qui peut s'annuler (`x/x` reste) ;
+	 * avec, il le fait (`x/x → 1`).
+	 */
+	readonly typeCtx?: TypeContext;
+	/**
+	 * Des expressions dont le domaine de définition est acquis (S3) : celui de
+	 * `f` pour sa dérivée. Les bases qu'elles disent non nulles (argument d'un
+	 * `ln`, dénominateur) se simplifient : avec `f = ln(kx)`, `k/(kx) → 1/x`.
+	 */
+	readonly domain?: readonly MathNode[];
 }
 
 /** Les deux politiques de choix d'unité de `tidy`. */

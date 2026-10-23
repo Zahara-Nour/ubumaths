@@ -280,7 +280,7 @@ function expandedCopy(
 				// Terme à terme : `differentiate` écrit a·n·xⁿ⁻¹ sans calculer le
 				// produit (`3*3x^2` sur la carte f′, retour de David) ; l'ordre des
 				// termes reste celui de la règle (voir `tidy-terms.ts`).
-				derived = tidyTerms(differentiate(derived));
+				derived = tidyTerms(differentiate(derived), { domain: [target.expression] });
 			}
 			// `f'` sans argument désigne la fonction ; `f'(2)` demande sa valeur en 2.
 			const args = current.args ?? [];

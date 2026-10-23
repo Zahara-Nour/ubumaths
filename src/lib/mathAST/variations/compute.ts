@@ -185,7 +185,7 @@ export function computeVariations(rawExpr: MathNode, options?: VariationOptions)
 		shownDerivative =
 			expr === rawExpr
 				? derivative
-				: tidyTerms(differentiate(rawExpr, { variable, simplify: true }));
+				: tidyTerms(differentiate(rawExpr, { variable, simplify: true }), { domain: [rawExpr] });
 		stepId = recordStep(
 			steps,
 			stepId,

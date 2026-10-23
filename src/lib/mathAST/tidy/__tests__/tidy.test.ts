@@ -194,14 +194,16 @@ describe('tidy — facteurs semblables', () => {
 		['x*x', 'x^2'],
 		['x*x*x', 'x^3'],
 		['x^2*x^3', 'x^5'],
-		['x/x', '1'],
+		// S3 (David, 2026-10-23) : une base qui peut s'annuler ne quitte pas le
+		// dénominateur — `tidy-domaine.test.ts`.
+		['x/x', 'x/x'],
 		// Parenthèses obligatoires : le parseur maison refuse `x^2/x` et lit
 		// `x/x^2` comme `(x/x)^2` — bug de priorité du `^` après `/`, relevé §6.9.
-		['(x^2)/x', 'x'],
+		['(x^2)/x', '{x^2}/x'],
 		['x/(x^2)', '1/x'],
 		['(x+1)^2*(x+1)', '(x+1)^3'],
 		['x*y*x', 'x^2y'],
-		['((x+1)^2)/(x+1)', 'x+1']
+		['((x+1)^2)/(x+1)', '{(x+1)^2}/{x+1}']
 	])('%s → %s', (input, expected) => {
 		expect(t(input)).toBe(expected);
 	});

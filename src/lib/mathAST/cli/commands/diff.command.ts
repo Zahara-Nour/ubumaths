@@ -146,6 +146,7 @@ export class DiffCommand extends BaseCommand {
 			// Dérivée mise au propre comme dans l'atelier : la dérivée brute
 			// s'écrivait `e^{3x} 3`, `2(−e^{−x})`, `cos x + (−sin x)`. `tidyTerms`
 			// garde l'ordre de la règle (u′v + uv′).
+			// Le domaine de f est acquis pour f′ (S3) : `x·(1/x)` s'y simplifie.
 			const derivative = tidyTerms(
 				indexed.restore(
 					differentiate(indexed.node, {
@@ -153,7 +154,8 @@ export class DiffCommand extends BaseCommand {
 						simplify: true,
 						functions
 					})
-				)
+				),
+				{ domain: [indexed.restore(indexed.node)] }
 			);
 
 			// Format output

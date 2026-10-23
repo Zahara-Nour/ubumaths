@@ -19,9 +19,13 @@ import { tidy } from '../tidy';
 import { nodeCount, tidyTerms } from '../tidy/terms';
 import { toCustom } from '../custom-generator';
 
-/** f′ mise au propre, numérateur d'un quotient développé et réduit. */
-export function reducedDerivative(derivative: MathNode): MathNode {
-	const tidied = tidyTerms(derivative);
+/**
+ * f′ mise au propre, numérateur d'un quotient développé et réduit.
+ *
+ * @param f - La fonction dérivée : son domaine est acquis pour f′ (S3)
+ */
+export function reducedDerivative(derivative: MathNode, f: MathNode): MathNode {
+	const tidied = tidyTerms(derivative, { domain: [f] });
 	if (!isDivision(tidied)) return tidied;
 	return { ...tidied, numerator: reducedNumerator(tidied.numerator) };
 }

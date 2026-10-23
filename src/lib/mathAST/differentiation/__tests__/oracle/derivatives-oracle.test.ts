@@ -324,7 +324,7 @@ function pedagogicalLatex(entry: DerivativeCase): Verdict {
 	const result = pedagogicalSteps(ast, entry.variable ?? 'x');
 	if (result === null) return REFUS;
 	// La réponse de la correction : la dérivée MISE AU PROPRE, comme `deriveSteps`
-	const tidied = withTidyStep([], result.derivative);
+	const tidied = withTidyStep([], result.derivative, ast);
 	return judge(
 		entry,
 		'latex-péda',

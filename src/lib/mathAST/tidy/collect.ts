@@ -20,6 +20,7 @@
 import type { FunctionNode, MathNode, RelationNode, SuperscriptNode, UnitNode } from '../types';
 import type { Unit } from '../units/types';
 import type { Rational } from '../normal/types';
+import type { TypeContext } from '../numtype';
 import type { TidyFactor, TidyQuantity, TidyTerm } from './types';
 import type { TidyOptions, TidyRule, UnitChoice } from './step-recorder';
 import { TidyStepRecorder } from './step-recorder';
@@ -30,6 +31,7 @@ import { hashMathNode, hashUnit, nodesEqual } from '../normal/hash';
 import { extractPerfectPower } from '../normal/radical';
 import {
 	ONE,
+	ZERO,
 	addRational,
 	floorRational,
 	fromInteger,
@@ -41,6 +43,7 @@ import {
 	mulRational,
 	negRational,
 	powRational,
+	subRational,
 	rational,
 	divRational,
 	absRational,
@@ -66,6 +69,7 @@ import { schoolFamily } from '../units/selection';
 import { buildSum } from './build';
 import { decimalString } from './decimal';
 import { tidySignedTemperature, tidyTemperatureSum } from './affine';
+import { cannotVanish, nonZeroBases } from './sign';
 import {
 	isPlainTerm,
 	numberFirst,
@@ -79,11 +83,37 @@ import {
 // Types internes
 // =============================================================================
 
+/** Les réglages d'un appel de `tidy`, transmis à chaque sous-expression. */
+type Settings = {
+	readonly unitChoice: UnitChoice;
+	/** Les hypothèses déclarées sur les variables (S3) ; `undefined` : aucune. */
+	readonly typeCtx: TypeContext | undefined;
+	/** Les bases non nulles sur le domaine acquis (`domain`, S3), par leur hash. */
+	readonly nonZero: ReadonlySet<string>;
+};
+
+/**
+ * Les options d'un appel interne : les réglages déjà lus par l'appel de tête,
+ * pour ne pas relire `domain` à chaque sous-expression.
+ */
+type InnerOptions = TidyOptions & { readonly settings?: Settings };
+
 /** Un facteur en cours d'accumulation — la version mutable de `TidyFactor`. */
 type MutableFactor = {
 	base: MathNode;
 	exponent: Rational;
 	readonly key: string;
+	/**
+	 * La part de l'exposant venue du dénominateur (≤ 0) : `x²/x` cumule
+	 * `exponent = 1` et `denominator = −1`. Sert à ne pas faire quitter le
+	 * dénominateur à une base qui peut s'annuler (S3, `keepDomain`).
+	 */
+	denominator: Rational;
+	/**
+	 * La base s'est rencontrée de part et d'autre de la barre : c'est
+	 * `keepDomain` qui dira si elle se simplifie, donc si le geste se nomme.
+	 */
+	crossed: boolean;
 };
 
 /**
@@ -96,8 +126,8 @@ type Accumulator = {
 	coefficient: Rational;
 	readonly factors: Map<string, MutableFactor>;
 	readonly unitSymbols: Map<string, number>;
-	/** Le choix d'unité demandé, transmis aux sous-expressions (`tidyAtom`). */
-	readonly unitChoice: UnitChoice;
+	/** Les réglages de l'appel, transmis aux sous-expressions (`tidyAtom`). */
+	readonly settings: Settings;
 	/** Le carnet de la narration. `undefined` : personne n'écoute. */
 	readonly watch: FamilyWatch;
 	/**
@@ -153,6 +183,9 @@ const MAX_RADICAND_FOR_FACTORING = 1_000_000_000_000n;
  * `bigint → number` des exposants, qui serait sinon silencieusement fausse.
  */
 const MAX_NUMERIC_EXPONENT = 256n;
+
+/** Aucune base connue non nulle : le cas sans `domain`. */
+const NO_BASE: ReadonlySet<string> = new Set();
 
 // =============================================================================
 // Helpers rationnels et numériques
@@ -410,22 +443,47 @@ function quantityOf(unit: Unit): TidyQuantity | null {
 function addFactor(acc: Accumulator, base: MathNode, exponent: Rational): void {
 	const key = hashMathNode(base);
 	const existing = acc.factors.get(key);
+	const denominator = isNegativeRational(exponent) ? exponent : ZERO;
 
 	if (existing === undefined) {
 		if (isZeroRational(exponent)) return;
-		acc.factors.set(key, { base, exponent, key });
+		acc.factors.set(key, { base, exponent, key, denominator, crossed: false });
 		return;
 	}
 
 	// Deux facteurs de même base se rejoignent : « on regroupe les facteurs ».
-	acc.watch?.add('factors');
-
-	const merged = addRational(existing.exponent, exponent);
-	if (isZeroRational(merged)) {
-		acc.factors.delete(key);
-		return;
+	// De part et d'autre de la barre, le geste n'est nommé que s'il a lieu (S3).
+	if (isNegativeRational(existing.exponent) === isNegativeRational(exponent)) {
+		acc.watch?.add('factors');
+	} else {
+		existing.crossed = true;
 	}
-	existing.exponent = merged;
+
+	// Un exposant nul n'efface pas encore le facteur : `keepDomain` décide, une
+	// fois le terme lu, si la base peut quitter le dénominateur.
+	existing.exponent = addRational(existing.exponent, exponent);
+	existing.denominator = addRational(existing.denominator, denominator);
+}
+
+/**
+ * S3 — une base qui peut s'annuler ne quitte pas le dénominateur (David,
+ * 2026-10-23) : `x/x`, `x²/x`, `(2x)/(4x) → x/(2x)` gardent leur domaine. La
+ * base se simplifie si elle reste au dénominateur (`x/x² → 1/x`), si elle ne
+ * peut pas valoir 0 (`eˣ/eˣ`, `(x²+1)/(x²+1)`) ou sous hypothèse déclarée.
+ * Sinon elle est écrite des deux côtés, exposants cumulés : `x³·x/x² → x⁴/x²`.
+ */
+function keepDomain(factor: MutableFactor, settings: Settings, watch: FamilyWatch): TidyFactor[] {
+	const { base, exponent, key, denominator } = factor;
+	const leavesDenominator = isNegativeRational(denominator) && !isNegativeRational(exponent);
+	const known = settings.nonZero.has(key) || cannotVanish(base, settings.typeCtx);
+	if (leavesDenominator && !known) {
+		return [
+			{ base, exponent: subRational(exponent, denominator), key },
+			{ base, exponent: denominator, key }
+		];
+	}
+	if (factor.crossed) watch?.add('factors');
+	return isZeroRational(exponent) ? [] : [{ base, exponent, key }];
 }
 
 /**
@@ -680,7 +738,7 @@ function absorbFactor(
 	// Finding C1 : la base est mise au propre AVANT d'être absorbée. Si la mise
 	// au propre l'a changée (`3−1` devient `2`), on la ré-absorbe pour que le
 	// nombre rejoigne le coefficient au lieu de rester un facteur.
-	const cleaned = tidyAtom(node, acc.unitChoice);
+	const cleaned = tidyAtom(node, acc.settings);
 	if (hashMathNode(cleaned) === hashMathNode(node)) {
 		addSumFactor(acc, cleaned, exponent);
 		return;
@@ -719,7 +777,7 @@ function addSumFactor(acc: Accumulator, node: MathNode, exponent: Rational): voi
  */
 function positiveLeadingSum(node: MathNode, acc: Accumulator): MathNode | null {
 	if (!isSumNode(node)) return null;
-	const terms = toSumTerms(node, undefined, acc.unitChoice);
+	const terms = toSumTerms(node, undefined, acc.settings);
 	if (terms.length < 2 || !terms.every(isPlainTerm) || isAlgebraicComplex(terms)) return null;
 	if (!isNegativeRational(sortTerms(terms)[0].coefficient)) return null;
 	return buildSum(sortTerms(terms.map(negateTerm)));
@@ -767,13 +825,9 @@ function scaleTerms(terms: readonly TidyTerm[], factor: Rational): TidyTerm[] {
  * ou un terme qui contient lui-même une somme (`2(x+1)+4` : y diviser un
  * nombre reviendrait à développer).
  */
-function sumContentOf(
-	factor: TidyFactor,
-	index: number,
-	unitChoice: UnitChoice
-): SumContent | null {
+function sumContentOf(factor: TidyFactor, index: number, settings: Settings): SumContent | null {
 	if (!isIntegerRational(factor.exponent) || !isSumNode(factor.base)) return null;
-	const terms = toSumTerms(factor.base, undefined, unitChoice);
+	const terms = toSumTerms(factor.base, undefined, settings);
 	if (terms.length < 2) return null;
 	const plain = terms.every(
 		(term) =>
@@ -828,18 +882,14 @@ function productOf(parts: readonly NumberPart[]): bigint {
  * de dénominateur : `3(x/2+1)`, `6(x/4+1)`, `2(x+1)` ne bougent pas, ni rien
  * quand la règle n'a rien à faire (`(6x+3)/2`, `3(x+1)/4`).
  */
-function reduceFractionOfSums(
-	term: TidyTerm,
-	unitChoice: UnitChoice,
-	watch: FamilyWatch
-): TidyTerm {
+function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyWatch): TidyTerm {
 	if (term.unit !== null || term.verbatim || dividesByZero(term)) return term;
 	const hasDenominator =
 		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
 
 	const sums: SumContent[] = [];
 	term.factors.forEach((factor, index) => {
-		const sum = sumContentOf(factor, index, unitChoice);
+		const sum = sumContentOf(factor, index, settings);
 		if (sum !== null) sums.push(sum);
 	});
 	if (sums.length === 0) return term;
@@ -884,7 +934,7 @@ function reduceFractionOfSums(
 
 	if (!hasDenominator && coefficient.d !== 1n) return term;
 
-	const reduced = mergeFactors(factors);
+	const reduced = mergeFactors(factors, splitKeys(term.factors));
 	if (reduced === null) return term;
 	watch?.add('other');
 	return { ...term, coefficient, factors: reduced };
@@ -894,22 +944,39 @@ function reduceFractionOfSums(
  * Les facteurs égaux réunis. Une somme réduite ne doit rencontrer aucun facteur
  * de l'autre côté de la barre : ils s'annuleraient (domaine) — `null`. Du même
  * côté, ils se multiplient : `(6x+3)(4x+2)/12` → `(2x+1)²/2`.
+ *
+ * Exception : une base déjà écrite des deux côtés, que `keepDomain` y a gardée
+ * (S3), reste des deux côtés sans s'annuler : `(x+1)(2x+2)/(4(x+1))` →
+ * `(x+1)²/(2(x+1))`.
+ *
+ * @param split - Les clés déjà présentes des deux côtés de la barre
  */
-function mergeFactors(factors: readonly TidyFactor[]): TidyFactor[] | null {
+function mergeFactors(
+	factors: readonly TidyFactor[],
+	split: ReadonlySet<string>
+): TidyFactor[] | null {
+	// Une entrée par base et par côté de la barre
 	const merged = new Map<string, TidyFactor>();
 	for (const factor of factors) {
-		const existing = merged.get(factor.key);
-		if (existing === undefined) {
-			merged.set(factor.key, factor);
-			continue;
-		}
-		if (existing.exponent.n < 0n !== factor.exponent.n < 0n) return null;
-		merged.set(factor.key, {
-			...existing,
-			exponent: addRational(existing.exponent, factor.exponent)
-		});
+		const below = factor.exponent.n < 0n;
+		const side = `${below ? '/' : '*'}${factor.key}`;
+		const across = `${below ? '*' : '/'}${factor.key}`;
+		if (merged.has(across) && !split.has(factor.key)) return null;
+		const existing = merged.get(side);
+		merged.set(
+			side,
+			existing === undefined
+				? factor
+				: { ...existing, exponent: addRational(existing.exponent, factor.exponent) }
+		);
 	}
 	return sortFactors([...merged.values()]);
+}
+
+/** Les bases écrites des deux côtés de la barre (gardées par `keepDomain`, S3). */
+function splitKeys(factors: readonly TidyFactor[]): ReadonlySet<string> {
+	const above = new Set(factors.filter((f) => f.exponent.n > 0n).map((f) => f.key));
+	return new Set(factors.filter((f) => f.exponent.n < 0n && above.has(f.key)).map((f) => f.key));
 }
 
 // =============================================================================
@@ -919,7 +986,7 @@ function mergeFactors(factors: readonly TidyFactor[]): TidyFactor[] | null {
 function toTerm(
 	node: MathNode,
 	watch: FamilyWatch,
-	unitChoice: UnitChoice,
+	settings: Settings,
 	carriedSigns = 0,
 	keepSumSign = false
 ): TidyTerm {
@@ -927,7 +994,7 @@ function toTerm(
 		coefficient: ONE,
 		factors: new Map<string, MutableFactor>(),
 		unitSymbols: new Map<string, number>(),
-		unitChoice,
+		settings,
 		watch,
 		// ⚠️ Le `−` de tête est consommé par `flattenSumShallow`, donc il n'atteint
 		// jamais `absorbFactor`. Sans lui, `−(−x)` ne comptait qu'UN signe et
@@ -945,11 +1012,9 @@ function toTerm(
 	// Un seul est porté devant — `−x·x·x` — et le vrai geste y est ailleurs.
 	if (acc.signCount >= 2) acc.watch?.add('signs');
 
-	const factors: TidyFactor[] = [...acc.factors.values()].map(({ base, exponent, key }) => ({
-		base,
-		exponent,
-		key
-	}));
+	const factors: TidyFactor[] = [...acc.factors.values()].flatMap((factor) =>
+		keepDomain(factor, acc.settings, acc.watch)
+	);
 
 	const composed = composeUnit(acc.unitSymbols);
 	// Un quotient de grandeurs de même dimension est un nombre : `3[h]/1[min]`
@@ -967,11 +1032,11 @@ function toTerm(
 		quantity,
 		decimal: false,
 		written:
-			unitChoice === 'written' && unit !== null && quantity !== null
+			settings.unitChoice === 'written' && unit !== null && quantity !== null
 				? writtenUnitOf(acc.unitSymbols, unit)
 				: null
 	};
-	return reduceFractionOfSums(term, unitChoice, watch);
+	return reduceFractionOfSums(term, settings, watch);
 }
 
 /** Un terme rendu tel quel : il porte un nœud opaque (infini, zéro signé). */
@@ -1023,7 +1088,7 @@ function expandableSum(term: TidyTerm): MathNode | null {
  * (`(a+b)+c → a+b+c`) ; précédé d'un `-` il reste opaque, sinon `tidy`
  * distribuerait le signe — ce que le contrat interdit (`-(x+2)` inchangé).
  */
-function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice): TidyTerm[] {
+function toSumTerms(node: MathNode, watch: FamilyWatch, settings: Settings): TidyTerm[] {
 	const terms: TidyTerm[] = [];
 
 	for (const { sign, term } of flattenSumShallow(node)) {
@@ -1032,7 +1097,7 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 			continue;
 		}
 		if (sign === '+' && isDelimiter(term) && isSumNode(term.content)) {
-			terms.push(...toSumTerms(term.content, watch, unitChoice));
+			terms.push(...toSumTerms(term.content, watch, settings));
 			continue;
 		}
 
@@ -1040,17 +1105,17 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
 		const collected = toTerm(
 			term,
 			watch,
-			unitChoice,
+			settings,
 			negated ? 1 : 0,
 			negated && isSumNode(stripDelimiters(term))
 		);
 		// Précédé d'un `-`, une somme reste groupée : `-(x+2)` n'est pas distribué.
 		const inner = sign === '+' ? expandableSum(collected) : null;
 		if (inner !== null) {
-			terms.push(...toSumTerms(inner, watch, unitChoice));
+			terms.push(...toSumTerms(inner, watch, settings));
 			continue;
 		}
-		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, unitChoice));
+		terms.push(withoutDoubleSign(sign === '-' ? negateTerm(collected) : collected, settings));
 	}
 
 	return terms;
@@ -1062,7 +1127,7 @@ function toSumTerms(node: MathNode, watch: FamilyWatch, unitChoice: UnitChoice):
  * (`(2x − 1)/3` ↔ `−(1 − 2x)/3`). `null` aussi si le numérateur retourné
  * rencontrerait un facteur de l'autre côté de la barre : `(2x − 1)/(3(1 − 2x))`.
  */
-function flipNumerator(term: TidyTerm, unitChoice: UnitChoice): TidyTerm | null {
+function flipNumerator(term: TidyTerm, settings: Settings): TidyTerm | null {
 	if (term.verbatim || term.unit !== null) return null;
 	const hasDenominator =
 		term.coefficient.d !== 1n || term.factors.some((factor) => factor.exponent.n < 0n);
@@ -1074,8 +1139,11 @@ function flipNumerator(term: TidyTerm, unitChoice: UnitChoice): TidyTerm | null 
 	if (numerators.length !== 1 || numerator.exponent.n !== 1n || numerator.exponent.d !== 1n) {
 		return null;
 	}
+	// Une base gardée des deux côtés de la barre (S3) ne se retourne pas :
+	// `(x−1)/(x−1)` deviendrait `−(1−x)/(x−1)`, que rien ne remet d'aplomb (revue)
+	if (splitKeys(term.factors).has(numerator.key)) return null;
 
-	const terms = toSumTerms(numerator.base, undefined, unitChoice);
+	const terms = toSumTerms(numerator.base, undefined, settings);
 	const negatives = terms.filter((inner) => isNegativeRational(inner.coefficient));
 	if (terms.length !== 2 || negatives.length !== 1 || !terms.every(isPlainTerm)) return null;
 	if (isAlgebraicComplex(terms)) return null;
@@ -1084,7 +1152,7 @@ function flipNumerator(term: TidyTerm, unitChoice: UnitChoice): TidyTerm | null 
 	const factors = term.factors.map((factor) =>
 		factor === numerator ? { base, exponent: ONE, key: hashMathNode(base) } : factor
 	);
-	const merged = mergeFactors(factors);
+	const merged = mergeFactors(factors, splitKeys(term.factors));
 	if (merged === null) return null;
 	return { ...term, coefficient: negRational(term.coefficient), factors: merged };
 }
@@ -1104,13 +1172,13 @@ function factorsKey(term: TidyTerm): string {
  * négatif retourne son numérateur, et le terme se lit après son signe : le
  * résultat ne dépend pas de l'écriture.
  */
-function collectWithSigns(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTerm[] {
+function collectWithSigns(terms: readonly TidyTerm[], settings: Settings): TidyTerm[] {
 	const canonical = terms.map((term) => {
-		const flipped = flipNumerator(term, unitChoice);
+		const flipped = flipNumerator(term, settings);
 		return flipped !== null && factorsKey(flipped) < factorsKey(term) ? flipped : term;
 	});
 	return collectLikeTerms(canonical).map((term) =>
-		isNegativeRational(term.coefficient) ? (flipNumerator(term, unitChoice) ?? term) : term
+		isNegativeRational(term.coefficient) ? (flipNumerator(term, settings) ?? term) : term
 	);
 }
 
@@ -1119,12 +1187,12 @@ function collectWithSigns(terms: readonly TidyTerm[], unitChoice: UnitChoice): T
  * d'avant la règle a + ib s'il commençait par un signe −, pour ne pas écrire
  * `−(−2 + i)` (voir `orderUnderMinus`). `−(i − 2)`, `−3(i − 2)`.
  */
-function withoutDoubleSign(term: TidyTerm, unitChoice: UnitChoice): TidyTerm {
+function withoutDoubleSign(term: TidyTerm, settings: Settings): TidyTerm {
 	if (term.verbatim || !isNegativeRational(term.coefficient)) return term;
 	let changed = false;
 	const factors = term.factors.map((factor) => {
 		if (!isSumNode(factor.base)) return factor;
-		const order = orderUnderMinus(toSumTerms(factor.base, undefined, unitChoice));
+		const order = orderUnderMinus(toSumTerms(factor.base, undefined, settings));
 		if (order === null) return factor;
 		changed = true;
 		const base = buildSum(order);
@@ -1245,7 +1313,7 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
  * `imposed` est l'unité qu'un terme symbolique de la même dimension impose à
  * toute la somme (finding I5) : `x[km]+500[m]` s'écrit `x[km]+0,5[km]`.
  */
-function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice): TidyTerm {
+function chooseUnit(term: TidyTerm, imposed: Unit | null, settings: Settings): TidyTerm {
 	const quantity = term.quantity;
 	if (quantity === null || term.verbatim || term.factors.length > 0) return term;
 
@@ -1272,7 +1340,8 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
 	// Écart B : sinon, une unité qui écrit deux fois la même dimension (`min.km/h`) est
 	// simplifiée (`km`), la valeur en fraction si rien ne tombe juste.
 	const writtenFraction = (): TidyTerm | null => {
-		if (unitChoice === 'written' && term.written !== null) return rewritten(term.written, false);
+		if (settings.unitChoice === 'written' && term.written !== null)
+			return rewritten(term.written, false);
 		const coherent = term.unit === null ? null : coherentUnitOf(term.unit);
 		return coherent === null ? null : rewritten(coherent, false);
 	};
@@ -1283,7 +1352,7 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
 	}
 
 	// `unitChoice: 'written'` — l'unité écrite d'abord, si la valeur y tombe juste.
-	if (unitChoice === 'written' && term.written !== null) {
+	if (settings.unitChoice === 'written' && term.written !== null) {
 		const chosen = rewritten(term.written);
 		if (chosen !== null) return chosen;
 	}
@@ -1322,7 +1391,7 @@ function chooseUnit(term: TidyTerm, imposed: Unit | null, unitChoice: UnitChoice
  * Finding I5 — une somme garde **une seule unité par dimension**. Un terme
  * symbolique impose son unité : `x[m]+2000[m]` ne devient pas `x[m]+2[km]`.
  */
-function chooseUnits(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTerm[] {
+function chooseUnits(terms: readonly TidyTerm[], settings: Settings): TidyTerm[] {
 	const imposed = new Map<string, Unit>();
 	for (const term of terms) {
 		if (term.quantity === null || term.unit === null) continue;
@@ -1334,7 +1403,7 @@ function chooseUnits(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTe
 		chooseUnit(
 			term,
 			term.quantity === null ? null : (imposed.get(term.quantity.dimension) ?? null),
-			unitChoice
+			settings
 		)
 	);
 }
@@ -1344,8 +1413,8 @@ function chooseUnits(terms: readonly TidyTerm[], unitChoice: UnitChoice): TidyTe
 // =============================================================================
 
 /** Étape 9 — les arguments d'une fonction sont mis au propre. */
-function tidyFunction(node: FunctionNode, unitChoice: UnitChoice): MathNode {
-	const options = unitOptions(unitChoice);
+function tidyFunction(node: FunctionNode, settings: Settings): MathNode {
+	const options = innerOptions(settings);
 	// ⚠️ Jamais `.map(tidyExpression)` : `map` passe l'INDEX en second argument,
 	// qui atterrirait dans `options`. Et la narration reste au niveau de tête —
 	// on ne raconte pas la mise au propre des arguments d'une fonction.
@@ -1366,13 +1435,13 @@ function tidyFunction(node: FunctionNode, unitChoice: UnitChoice): MathNode {
  * enfants mis au propre (§E du contrat). Les nœuds opaques (infini, zéro
  * signé) ne sont pas touchés.
  */
-function tidyAtom(node: MathNode, unitChoice: UnitChoice): MathNode {
+function tidyAtom(node: MathNode, settings: Settings): MathNode {
 	if (containsOpaqueNode(node)) return node;
-	const options = unitOptions(unitChoice);
+	const options = innerOptions(settings);
 
 	switch (node.type) {
 		case 'function':
-			return tidyFunction(node, unitChoice);
+			return tidyFunction(node, settings);
 		case 'addition':
 		case 'subtraction':
 			return tidyExpression(node, options);
@@ -1395,24 +1464,44 @@ function tidyAtom(node: MathNode, unitChoice: UnitChoice): MathNode {
 		case 'logical-not':
 		case 'complex':
 		case 'composition':
-			return tidyStructure(node, unitChoice);
+			return tidyStructure(node, settings);
 		default:
 			return node;
 	}
 }
 
+/** Les réglages d'un appel, lus une fois dans ses options. */
+function settingsOf(options: InnerOptions | undefined): Settings {
+	if (options?.settings !== undefined) return options.settings;
+	const domain = options?.domain ?? [];
+	return {
+		unitChoice: options?.unitChoice ?? 'school',
+		typeCtx: options?.typeCtx,
+		nonZero: domain.length === 0 ? NO_BASE : nonZeroBases(domain, (n) => tidyExpression(n))
+	};
+}
+
 /**
- * Les options à transmettre à une sous-expression. Le mode par défaut ne
- * transmet rien : le chemin `'school'` reste exactement celui d'avant l'option.
+ * Les options à transmettre à une sous-expression : les réglages, jamais
+ * l'enregistreur. Les réglages par défaut ne transmettent rien : le chemin sans
+ * option reste exactement celui d'avant les options.
  */
-function unitOptions(unitChoice: UnitChoice): TidyOptions | undefined {
-	return unitChoice === 'school' ? undefined : { unitChoice };
+function innerOptions(settings: Settings): InnerOptions | undefined {
+	const isDefault =
+		settings.unitChoice === 'school' &&
+		settings.typeCtx === undefined &&
+		settings.nonZero.size === 0;
+	return isDefault ? undefined : { settings };
 }
 
 /** Une expression : somme de termes, regroupés puis ordonnés puis réécrits. */
-export function tidyExpression(node: MathNode, options?: TidyOptions, source?: MathNode): MathNode {
+export function tidyExpression(
+	node: MathNode,
+	options?: InnerOptions,
+	source?: MathNode
+): MathNode {
 	const recorder = options?.recorder;
-	const unitChoice = options?.unitChoice ?? 'school';
+	const settings = settingsOf(options);
 	const written = source ?? node;
 
 	// §D.2 — l'arithmétique des températures est à part : elle ne se ramène pas
@@ -1434,14 +1523,14 @@ export function tidyExpression(node: MathNode, options?: TidyOptions, source?: M
 	// Invariant 2 — narration gratuite : sans enregistreur il n'y a pas de
 	// carnet, donc pas un `Set` de plus ni une décomposition de plus.
 	const families: FamilyWatch = recorder === undefined ? undefined : new Set<TidyFamily>();
-	const terms = toSumTerms(node, families, unitChoice);
+	const terms = toSumTerms(node, families, settings);
 
 	// Chemin muet : aucune expression intermédiaire n'est construite.
 	if (recorder === undefined || families === undefined) {
-		return buildSum(sortTerms(chooseUnits(collectWithSigns(terms, unitChoice), unitChoice)));
+		return buildSum(sortTerms(chooseUnits(collectWithSigns(terms, settings), settings)));
 	}
 
-	return narrateSum(written, terms, families, recorder, unitChoice);
+	return narrateSum(written, terms, families, recorder, settings);
 }
 
 /** Enregistre un geste d'un seul tenant, quand il n'y a pas de stage à couper. */
@@ -1541,9 +1630,9 @@ function mergesFractions(terms: readonly TidyTerm[], collected: readonly TidyTer
  * `chooseUnit` seul), et `x×0` s'affichait `0x` parce que c'est
  * `collectLikeTerms` qui jette les coefficients nuls.
  */
-function materialise(terms: readonly TidyTerm[], unitChoice: UnitChoice): MathNode {
+function materialise(terms: readonly TidyTerm[], settings: Settings): MathNode {
 	const written = terms.filter((term) => term.verbatim || !isZeroRational(term.coefficient));
-	return buildSum(chooseUnits(written, unitChoice));
+	return buildSum(chooseUnits(written, settings));
 }
 
 /**
@@ -1562,7 +1651,7 @@ function narrateSum(
 	terms: readonly TidyTerm[],
 	families: ReadonlySet<TidyFamily>,
 	recorder: TidyStepRecorder,
-	unitChoice: UnitChoice
+	settings: Settings
 ): MathNode {
 	let previous = source;
 
@@ -1574,10 +1663,10 @@ function narrateSum(
 		return after;
 	};
 
-	const united = chooseUnits(terms, unitChoice);
+	const united = chooseUnits(terms, settings);
 	const collected = collectLikeTerms(terms);
-	const signed = collectWithSigns(terms, unitChoice);
-	const unitedCollected = chooseUnits(signed, unitChoice);
+	const signed = collectWithSigns(terms, settings);
+	const unitedCollected = chooseUnits(signed, settings);
 
 	// Le travail fait terme par terme pendant la décomposition. Une seule
 	// famille a bougé : elle porte son nom. Plusieurs : le filet `tidy-terms`.
@@ -1587,7 +1676,7 @@ function narrateSum(
 		unitWritings(terms) !== unitWritings(united)
 			? 'tidy-choose-unit'
 			: (soleFamilyRule(families) ?? 'tidy-terms');
-	step(perTerm, materialise(terms, unitChoice));
+	step(perTerm, materialise(terms, settings));
 
 	const grouping: TidyRule =
 		unitWritings(united) !== unitWritings(unitedCollected)
@@ -1595,9 +1684,9 @@ function narrateSum(
 			: mergesFractions(terms, collected)
 				? 'tidy-add-fractions'
 				: 'tidy-collect-like-terms';
-	step(grouping, materialise(collected, unitChoice));
+	step(grouping, materialise(collected, settings));
 	// Le − d'une fraction entre dans son numérateur (`collectWithSigns`)
-	step('tidy-terms', materialise(signed, unitChoice));
+	step('tidy-terms', materialise(signed, settings));
 
 	// Somme sans variable, ou partie réelle d'un complexe (`3i − 2` → `−2 + 3i`) :
 	// le nombre passe d'abord en tête (sa propre phrase),
@@ -1616,11 +1705,11 @@ function narrateSum(
  */
 function tidyRelation(
 	node: RelationNode,
-	options: TidyOptions | undefined,
+	options: InnerOptions | undefined,
 	written: MathNode
 ): MathNode {
 	const recorder = options?.recorder;
-	const inner = unitOptions(options?.unitChoice ?? 'school');
+	const inner = innerOptions(settingsOf(options));
 	if (recorder === undefined) {
 		return { ...node, left: tidyNode(node.left, inner), right: tidyNode(node.right, inner) };
 	}
@@ -1655,8 +1744,8 @@ function tidyRelation(
  * §E — relation, matrice, morceau, limite : le nœud est conservé, ses enfants
  * mis au propre.
  */
-function tidyStructure(node: MathNode, unitChoice: UnitChoice): MathNode {
-	const options = unitOptions(unitChoice);
+function tidyStructure(node: MathNode, settings: Settings): MathNode {
+	const options = innerOptions(settings);
 	switch (node.type) {
 		case 'relation':
 			return { ...node, left: tidyNode(node.left, options), right: tidyNode(node.right, options) };
@@ -1699,7 +1788,7 @@ function tidyStructure(node: MathNode, unitChoice: UnitChoice): MathNode {
 }
 
 /** Point d'entrée récursif : aiguille entre structure et expression. */
-export function tidyNode(node: MathNode, options?: TidyOptions, source?: MathNode): MathNode {
+export function tidyNode(node: MathNode, options?: InnerOptions, source?: MathNode): MathNode {
 	switch (node.type) {
 		case 'relation':
 			return tidyRelation(node, options, source ?? node);
@@ -1710,7 +1799,7 @@ export function tidyNode(node: MathNode, options?: TidyOptions, source?: MathNod
 		case 'logical-not':
 		case 'complex':
 		case 'composition':
-			return tidyStructure(node, options?.unitChoice ?? 'school');
+			return tidyStructure(node, settingsOf(options));
 		case 'boolean':
 		case 'infinity':
 		case 'signed-zero':

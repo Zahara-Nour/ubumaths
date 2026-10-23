@@ -501,16 +501,32 @@ export function generatePedagogicalSimplifySteps(
 			// `(2/4)x + x` rendait `(2/4 + 1)x` au lieu de `(3/2)x`. `tidy` met au
 			// propre sans jamais DÉVELOPPER : c'est tout son contrat. Le rendu du
 			// noyau, lui, est déjà propre (et `tidy` y réordonnerait `x − 1 − √2`).
-			const result = outcome.clean ? outcome.result : tidyWithoutReordering(outcome.result);
+			const factored = outcome.clean ? outcome.result : tidyWithoutReordering(outcome.result);
 			// La dernière ligne affichée EST le résultat : la mise au propre finale
 			// (ordre du noyau, `tidy`) se fait dans la dernière étape, pas en silence
-			// Ids renumérotés : les étapes jetées (stratégie 6) ont consommé le compteur
 			const last = outcome.steps.length - 1;
-			const steps = outcome.steps.map((step, index) => ({
+			const strategySteps = outcome.steps.map((step, index) =>
+				index === last && !nodesEqual(step.globalAfter ?? step.after, factored)
+					? { ...step, globalAfter: factored }
+					: step
+			);
+			// S3 (2026-10-23) : `tidy` ne simplifie plus par une base qui peut
+			// s'annuler. Une fraction factorisée se simplifie donc en étape, la
+			// condition écrite, comme dans `auto` : `(x+1)(x−1)/(x+1) = x−1`, pour
+			// x ≠ −1. Ses deux membres sont déjà factorisés, et le reste le reste.
+			const keep = (n: MathNode) => n;
+			const fractions = simplifyPolynomialFractions(factored, keep, keep, makeStep);
+			// Une fraction facteur d'un produit laisse `3·1` : mis au propre dans la
+			// dernière étape, comme la factorisation (revue)
+			const result =
+				fractions.steps.length > 0 ? tidyWithoutReordering(fractions.result) : fractions.result;
+			const fractionSteps = fractions.steps.map((step, index) =>
+				index === fractions.steps.length - 1 ? { ...step, globalAfter: result } : step
+			);
+			// Ids renumérotés : les étapes jetées (stratégie 6) ont consommé le compteur
+			const steps = [...strategySteps, ...fractionSteps].map((step, index) => ({
 				...step,
-				id: index + 1,
-				...(index === last &&
-					!nodesEqual(step.globalAfter ?? step.after, result) && { globalAfter: result })
+				id: index + 1
 			}));
 			return { result, steps };
 		}
