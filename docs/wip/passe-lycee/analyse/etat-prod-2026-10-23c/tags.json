@@ -1,0 +1,32 @@
+[
+	{
+		"template_id": "0dee4515-8030-441c-bd7c-f1b7418e664b",
+		"grade": "1_SPE",
+		"code": "1SPE-245",
+		"point_id": "f68ea495-17eb-4488-bf78-29b0f037418a"
+	},
+	{
+		"template_id": "70e682f9-9f54-495b-8943-69c8597a5c32",
+		"grade": "1_SPE",
+		"code": "1SPE-230",
+		"point_id": "c26084e9-6faa-4786-9a51-3de8d2f74347"
+	},
+	{
+		"template_id": "88a4432e-f4a6-4109-833d-9640cb0d225f",
+		"grade": "1_SPE",
+		"code": "1SPE-383",
+		"point_id": "ccb82555-6df8-4508-98d4-d905815aee0d"
+	},
+	{
+		"template_id": "d1010214-1537-4b3d-9b99-1b3718a5d981",
+		"grade": "1_SPE",
+		"code": "1SPE-216",
+		"point_id": "72264b5a-2e97-4078-a683-1a2977285c9c"
+	},
+	{
+		"template_id": "f3100c29-23bc-4bfe-b353-20f59d07371e",
+		"grade": "1_SPE",
+		"code": "1SPE-379",
+		"point_id": "4311410a-aefb-43c0-bde2-7b8c494b11a4"
+	}
+]

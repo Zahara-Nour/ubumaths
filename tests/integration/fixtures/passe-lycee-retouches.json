@@ -1,0 +1,2650 @@
+{
+	"modeles": [
+		{
+			"id": "0dee4515-8030-441c-bd7c-f1b7418e664b",
+			"noeud": ["Fonctions", "Second degré", "somme et produit des racines"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-245"
+				}
+			],
+			"avant": {
+				"title": "Somme des racines",
+				"description": "x₁ + x₂ = −b/a sans calculer les racines",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:-b}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur somme.\n\n$x_1+x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1+x_2=-\\dfrac{b}{a}$.",
+								"Ici $a=1$ : $x_1+x_2=-b={{eval:-b}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:-b/a}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur somme.\n\n$x_1+x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1+x_2=-\\dfrac{b}{a}$.",
+								"$$x_1+x_2=-\\dfrac{b}{a}=\\dfrac{ {{eval:-b}} }{ {{a}} }={{eval:-b/a}}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"blankDefaults": {
+						"acceptDecimal": true
+					}
+				},
+				"test_specs": [
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "x^2-5x+3 : S=5, P=3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "S = b (signe oublié)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "produit donné pour la somme",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "3",
+							"c": "-7"
+						},
+						"description": "x^2+3x-7 : S=−3, P=−7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{7}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "2x^2-7x+3 : S=7/2, P=3/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "décimaux exacts 3,5 et 1,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "−b et c sans diviser par a",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{7}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "S = b/a (signe)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "-4x^2+6x+9 : S=3/2, P=−9/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{6}{4}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "fraction non réduite 6/4",
+						"variationIndex": 1
+					}
+				]
+			},
+			"apres": {
+				"title": "Somme des racines",
+				"description": "x₁ + x₂ = −b/a sans calculer les racines",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:-b}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur somme.\n\n$x_1+x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1+x_2=-\\dfrac{b}{a}$.",
+								"Ici $a=1$ : $x_1+x_2=-b={{eval:-b}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:-b/a}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur somme.\n\n$x_1+x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1+x_2=-\\dfrac{b}{a}$.",
+								"$$x_1+x_2=-\\dfrac{b}{a}=\\dfrac{ {{eval:-b}} }{ {{a}} }={{eval:-b/a}}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"blankDefaults": {
+						"acceptDecimal": true
+					}
+				},
+				"test_specs": [
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "x^2-5x+3 : S=5",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "S = b (signe oublié)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "produit donné pour la somme",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "3",
+							"c": "-7"
+						},
+						"description": "x^2+3x-7 : S=−3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{7}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "2x^2-7x+3 : S=7/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "décimal exact 3,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["7"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "−b sans diviser par a",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{7}{2}"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "S = b/a (signe)",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "-4x^2+6x+9 : S=3/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["\\frac{6}{4}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "fraction non réduite 6/4",
+						"variationIndex": 1
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Fonctions",
+				"domain": "Polynôme du second degré",
+				"subdomain": "Racines",
+				"level": 5,
+				"status": "draft"
+			},
+			"neufs": []
+		},
+		{
+			"id": "70e682f9-9f54-495b-8943-69c8597a5c32",
+			"noeud": ["Suites", "Modèles d'évolution"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-230"
+				}
+			],
+			"avant": {
+				"title": "Intérêts simples ou composés : la suite est-elle arithmétique ?",
+				"description": "Reconnaître une suite arithmétique dans un placement (intérêts simples), ou non",
+				"variations": [
+					{
+						"statement": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, on ajoute la même somme : ${{t}}\\,\\%$ de ${{C}}$ €, soit $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}$ €.",
+								"Pour tout $n$ : $u_{n+1}=u_n+{{eval:C*t/100}}$. La suite est **arithmétique** de raison ${{eval:C*t/100}}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, les intérêts sont calculés sur le capital **de l'année**, qui augmente : on n'ajoute pas toujours la même somme.",
+								"$u_0={{C}}$, $u_1={{eval:C*(1+t/100);d}}$ et $u_2={{eval:C*(1+t/100)^2;d}}$ : $u_1-u_0={{eval:C*t/100;d}}$ mais $u_2-u_1={{eval:C*(1+t/100)*t/100;d}}$.",
+								"La suite n'est **pas arithmétique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "10..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							},
+							{
+								"name": "f",
+								"expression": "10|15|20|25|30|40|50"
+							},
+							{
+								"name": "a",
+								"expression": "eval:C*(1+t/100)-f"
+							},
+							{
+								"name": "b",
+								"expression": "eval:a*(1+t/100)-f"
+							}
+						],
+						"conditions": ["f != C*t/100"],
+						"correction": {
+							"steps": [
+								"Pour tout $n$ : $u_{n+1}={{eval:1+t/100;d}}\\,u_n-{{f}}$.",
+								"$u_0={{C}}$, $u_1={{a}}$ et $u_2={{eval:b;d}}$.",
+								"$u_1-u_0={{eval:a-C}}$ et $u_2-u_1={{eval:b-a;d}}$ : les écarts ne sont pas constants, la suite n'est pas arithmétique."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui, elle est arithmétique."
+						},
+						{
+							"content": "Non, elle n'est pas arithmétique."
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « oui » accepté",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « non » refusé",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « non » accepté",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « oui » refusé",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « non » accepté",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « oui » refusé",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					}
+				]
+			},
+			"apres": {
+				"title": "Intérêts simples ou composés : la suite est-elle arithmétique ?",
+				"description": "Reconnaître une suite arithmétique dans un placement (intérêts simples), ou non",
+				"variations": [
+					{
+						"statement": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, on ajoute la même somme : ${{t}}\\,\\%$ de ${{C}}$ €, soit $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}$ €.",
+								"Pour tout $n$ : $u_{n+1}=u_n+{{eval:C*t/100}}$. La suite est **arithmétique** de raison ${{eval:C*t/100}}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, les intérêts sont calculés sur le capital **de l'année**, qui augmente : on n'ajoute pas toujours la même somme.",
+								"$u_0={{C}}$, $u_1={{eval:C*(1+t/100);d}}$ et $u_2={{eval:C*(1+t/100)^2;d}}$ : $u_1-u_0={{eval:C*t/100;d}}$ mais $u_2-u_1={{eval:C*(1+t/100)*t/100;d}}$.",
+								"La suite n'est **pas arithmétique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle arithmétique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "10..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							},
+							{
+								"name": "f",
+								"expression": "10|15|20|25|30|40|50"
+							},
+							{
+								"name": "a",
+								"expression": "eval:C*(1+t/100)-f"
+							},
+							{
+								"name": "b",
+								"expression": "eval:a*(1+t/100)-f"
+							}
+						],
+						"conditions": ["f != C*t/100"],
+						"correction": {
+							"steps": [
+								"Pour tout $n$ : $u_{n+1}={{eval:1+t/100;d}}\\,u_n-{{f}}$.",
+								"$u_0={{C}}$, $u_1={{a}}$ et $u_2={{eval:b;d}}$.",
+								"$u_1-u_0={{eval:a-C}}$ et $u_2-u_1={{eval:b-a;d}}$ : les écarts ne sont pas constants, la suite n'est **pas arithmétique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui, elle est arithmétique."
+						},
+						{
+							"content": "Non, elle n'est pas arithmétique."
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « oui » accepté",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « non » refusé",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « non » accepté",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « oui » refusé",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « non » accepté",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « oui » refusé",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Suites",
+				"domain": "Modélisation",
+				"subdomain": "Placements",
+				"level": 4,
+				"status": "draft"
+			},
+			"neufs": []
+		},
+		{
+			"id": "88a4432e-f4a6-4109-833d-9640cb0d225f",
+			"noeud": ["Fonctions", "Second degré", "somme et produit des racines"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-383"
+				}
+			],
+			"avant": {
+				"title": "Produit des racines",
+				"description": "x₁x₂ = c/a sans calculer les racines",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{c}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur produit.\n\n$x_1\\times x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1\\times x_2=\\dfrac{c}{a}$.",
+								"Ici $a=1$ : $x_1\\times x_2=c={{c}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:c/a}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur produit.\n\n$x_1\\times x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1\\times x_2=\\dfrac{c}{a}$.",
+								"$$x_1\\times x_2=\\dfrac{c}{a}=\\dfrac{ {{c}} }{ {{a}} }={{eval:c/a}}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"blankDefaults": {
+						"acceptDecimal": true
+					}
+				},
+				"test_specs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "x^2-5x+3 : S=5, P=3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "somme donnée pour le produit",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "P = −c (signe)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "3",
+							"c": "-7"
+						},
+						"description": "x^2+3x-7 : S=−3, P=−7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "2x^2-7x+3 : S=7/2, P=3/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "décimaux exacts 3,5 et 1,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "−b et c sans diviser par a",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{9}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "-4x^2+6x+9 : S=3/2, P=−9/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{18}{8}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "fraction non réduite 18/8",
+						"variationIndex": 1
+					}
+				]
+			},
+			"apres": {
+				"title": "Produit des racines",
+				"description": "x₁x₂ = c/a sans calculer les racines",
+				"variations": [
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{c}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur produit.\n\n$x_1\\times x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "1"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1\\times x_2=\\dfrac{c}{a}$.",
+								"Ici $a=1$ : $x_1\\times x_2=c={{c}}$."
+							]
+						}
+					},
+					{
+						"blanks": [
+							{
+								"expectedAnswer": "{{eval:c/a}}"
+							}
+						],
+						"statement": "Le polynôme $P(x)={{eval:ax^2+bx+c}}$ a deux racines $x_1$ et $x_2$. Sans les calculer, détermine leur produit.\n\n$x_1\\times x_2=?$",
+						"variables": [
+							{
+								"name": "x",
+								"expression": "x|x"
+							},
+							{
+								"name": "a",
+								"expression": "2..5;±"
+							},
+							{
+								"name": "b",
+								"expression": "1..9;±"
+							},
+							{
+								"name": "c",
+								"expression": "1..9;±"
+							}
+						],
+						"conditions": ["b^2-4*a*c > 0"],
+						"correction": {
+							"steps": [
+								"Le discriminant vaut $\\Delta={{eval:b;()}}^2-4\\times{{eval:a;()}}\\times{{eval:c;()}}={{eval:b^2-4*a*c}}>0$ : les deux racines existent.",
+								"Quand un trinôme $ax^2+bx+c$ a deux racines, $x_1\\times x_2=\\dfrac{c}{a}$.",
+								"$$x_1\\times x_2=\\dfrac{c}{a}=\\dfrac{ {{c}} }{ {{a}} }={{eval:c/a}}$$"
+							]
+						}
+					}
+				],
+				"shared": {
+					"blankDefaults": {
+						"acceptDecimal": true
+					}
+				},
+				"test_specs": [
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "x^2-5x+3 : P=3",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["5"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "somme donnée pour le produit",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "1",
+							"b": "-5",
+							"c": "3"
+						},
+						"description": "P = −c (signe)",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["-7"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "1",
+							"b": "3",
+							"c": "-7"
+						},
+						"description": "x^2+3x-7 : P=−7",
+						"variationIndex": 0
+					},
+					{
+						"answers": ["\\frac{3}{2}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "2x^2-7x+3 : P=3/2",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["1{,}5"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "décimal exact 1,5",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["3"],
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"a": "2",
+							"b": "-7",
+							"c": "3"
+						},
+						"description": "c sans diviser par a",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{9}{4}"],
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "-4x^2+6x+9 : P=−9/4",
+						"variationIndex": 1
+					},
+					{
+						"answers": ["-\\frac{18}{8}"],
+						"expected": {
+							"status": "unoptimal_form",
+							"constraintViolations": ["reducedFractions"]
+						},
+						"variables": {
+							"a": "-4",
+							"b": "6",
+							"c": "9"
+						},
+						"description": "fraction non réduite 18/8",
+						"variationIndex": 1
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Fonctions",
+				"domain": "Polynôme du second degré",
+				"subdomain": "Racines",
+				"level": 7,
+				"status": "draft"
+			},
+			"neufs": []
+		},
+		{
+			"id": "d1010214-1537-4b3d-9b99-1b3718a5d981",
+			"noeud": ["Suites", "Suites géométriques", "définition"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-216"
+				}
+			],
+			"avant": {
+				"title": "Reconnaître une suite géométrique sur un nuage de points",
+				"description": "Termes multipliés par un même nombre, ou non (points alignés, ni arithmétique ni géométrique)",
+				"variations": [
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "8|8"
+							},
+							{
+								"name": "N1",
+								"expression": "9|9"
+							},
+							{
+								"name": "r",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "-3..3"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:b"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:b+r"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:b+2*r"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:b+3*r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points sont alignés : d'un rang au suivant, on monte toujours de la même hauteur.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(u1)^2}}$ et $u_0\\times u_2={{eval:(u0)*(u2)}}$.",
+								"La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "8|8"
+							},
+							{
+								"name": "N1",
+								"expression": "9|9"
+							},
+							{
+								"name": "r",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "4..12"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:b"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:b-r"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:b-2*r"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:b-3*r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points sont alignés : d'un rang au suivant, on descend toujours de la même hauteur.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(u1)^2}}$ et $u_0\\times u_2={{eval:(u0)*(u2)}}$.",
+								"La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "5|5"
+							},
+							{
+								"name": "N1",
+								"expression": "6|6"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:a"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:2*a"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:4*a"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:8*a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points montent de plus en plus vite.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est le **double** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{2}$.",
+								"La suite semble **géométrique**, de raison $q=2$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "6|6"
+							},
+							{
+								"name": "N1",
+								"expression": "7|7"
+							},
+							{
+								"name": "a",
+								"expression": "32|48|64"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:a"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:a/2"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:a/4"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:a/8"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points descendent de moins en moins vite.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est la **moitié** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$.",
+								"La suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "8|8"
+							},
+							{
+								"name": "N1",
+								"expression": "9|9"
+							},
+							{
+								"name": "c",
+								"expression": "3..5"
+							},
+							{
+								"name": "d",
+								"expression": "1..3"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:c^2+d"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:(1-c)^2+d"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:(2-c)^2+d"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:(3-c)^2+d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre.",
+								"La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "6|6"
+							},
+							{
+								"name": "N1",
+								"expression": "7|7"
+							},
+							{
+								"name": "c",
+								"expression": "1..4"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:c"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:1+c"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:4+c"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:9+c"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre.",
+								"Attention : des points qui montent de plus en plus vite ne suffisent pas pour dire « géométrique ». La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui, elle semble géométrique."
+						},
+						{
+							"content": "Non, elle ne semble pas géométrique."
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "8",
+							"b": "-1",
+							"r": "2",
+							"N1": "9",
+							"u0": "-1",
+							"u1": "1",
+							"u2": "3",
+							"u3": "5"
+						},
+						"description": "v0 : « non » accepté",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "8",
+							"b": "-1",
+							"r": "2",
+							"N1": "9",
+							"u0": "-1",
+							"u1": "1",
+							"u2": "3",
+							"u3": "5"
+						},
+						"description": "v0 : « oui » refusé",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "8",
+							"b": "10",
+							"r": "3",
+							"N1": "9",
+							"u0": "10",
+							"u1": "7",
+							"u2": "4",
+							"u3": "1"
+						},
+						"description": "v1 : « non » accepté",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "8",
+							"b": "10",
+							"r": "3",
+							"N1": "9",
+							"u0": "10",
+							"u1": "7",
+							"u2": "4",
+							"u3": "1"
+						},
+						"description": "v1 : « oui » refusé",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "5",
+							"a": "1",
+							"N1": "6",
+							"u0": "1",
+							"u1": "2",
+							"u2": "4",
+							"u3": "8"
+						},
+						"description": "v2 : « oui » accepté",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "5",
+							"a": "1",
+							"N1": "6",
+							"u0": "1",
+							"u1": "2",
+							"u2": "4",
+							"u3": "8"
+						},
+						"description": "v2 : « non » refusé",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "6",
+							"a": "64",
+							"N1": "7",
+							"u0": "64",
+							"u1": "32",
+							"u2": "16",
+							"u3": "8"
+						},
+						"description": "v3 : « oui » accepté",
+						"variationIndex": 3,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "6",
+							"a": "64",
+							"N1": "7",
+							"u0": "64",
+							"u1": "32",
+							"u2": "16",
+							"u3": "8"
+						},
+						"description": "v3 : « non » refusé",
+						"variationIndex": 3,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "8",
+							"c": "4",
+							"d": "1",
+							"N1": "9",
+							"u0": "17",
+							"u1": "10",
+							"u2": "5",
+							"u3": "2"
+						},
+						"description": "v4 : « non » accepté",
+						"variationIndex": 4,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "8",
+							"c": "4",
+							"d": "1",
+							"N1": "9",
+							"u0": "17",
+							"u1": "10",
+							"u2": "5",
+							"u3": "2"
+						},
+						"description": "v4 : « oui » refusé",
+						"variationIndex": 4,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "6",
+							"c": "1",
+							"N1": "7",
+							"u0": "1",
+							"u1": "2",
+							"u2": "5",
+							"u3": "10"
+						},
+						"description": "v5 : « non » accepté",
+						"variationIndex": 5,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "6",
+							"c": "1",
+							"N1": "7",
+							"u0": "1",
+							"u1": "2",
+							"u2": "5",
+							"u3": "10"
+						},
+						"description": "v5 : « oui » refusé",
+						"variationIndex": 5,
+						"selectedChoices": [0]
+					}
+				]
+			},
+			"apres": {
+				"title": "Reconnaître une suite géométrique sur un nuage de points",
+				"description": "Termes multipliés par un même nombre, ou non (points alignés, ni arithmétique ni géométrique)",
+				"variations": [
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-2}} ; {{eval:b+8*r+2}}\ngrille: 1 ; 2\nu(n) = {{b}}+{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "8|8"
+							},
+							{
+								"name": "N1",
+								"expression": "9|9"
+							},
+							{
+								"name": "r",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "-3..3"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:b"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:b+r"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:b+2*r"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:b+3*r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points sont alignés : d'un rang au suivant, on monte toujours de la même hauteur.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(u1)^2}}$ et $u_0\\times u_2={{eval:(u0)*(u2)}}$, donc $u_1^2\\neq u_0\\times u_2$.",
+								"La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: {{eval:b-8*r-2}} ; {{eval:b+2}}\ngrille: 1 ; 2\nu(n) = {{b}}-{{r}}*n pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "8|8"
+							},
+							{
+								"name": "N1",
+								"expression": "9|9"
+							},
+							{
+								"name": "r",
+								"expression": "1..3"
+							},
+							{
+								"name": "b",
+								"expression": "4..12"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:b"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:b-r"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:b-2*r"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:b-3*r"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points sont alignés : d'un rang au suivant, on descend toujours de la même hauteur.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$ et $u_2={{u2}}$. Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(u1)^2}}$ et $u_0\\times u_2={{eval:(u0)*(u2)}}$, donc $u_1^2\\neq u_0\\times u_2$.",
+								"La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:32*a+4}}\ngrille: 1 ; {{eval:2*a}}\nu(n) = {{a}}*2^n pour n de 0 à 5   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "5|5"
+							},
+							{
+								"name": "N1",
+								"expression": "6|6"
+							},
+							{
+								"name": "a",
+								"expression": "1..3"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:a"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:2*a"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:4*a"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:8*a"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points montent de plus en plus vite.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est le **double** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{2}$.",
+								"La suite semble **géométrique**, de raison $q=2$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:a+4}}\ngrille: 1 ; {{eval:a/16}}\nu(n) = {{a}}*0.5^n pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "6|6"
+							},
+							{
+								"name": "N1",
+								"expression": "7|7"
+							},
+							{
+								"name": "a",
+								"expression": "32|48|64"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:a"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:a/2"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:a/4"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:a/8"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Les points descendent de moins en moins vite.",
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. Chaque terme est la **moitié** du précédent : $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}=\\dfrac{u_3}{u_2}=\\textcolor{{{color:primary.0}}}{\\dfrac{1}{2}}$.",
+								"La suite semble **géométrique**, de raison $q=\\dfrac{1}{2}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:d+28}}\ngrille: 1 ; 2\nu(n) = (n-{{c}})^2+{{d}} pour n de 0 à 8   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "8|8"
+							},
+							{
+								"name": "N1",
+								"expression": "9|9"
+							},
+							{
+								"name": "c",
+								"expression": "3..5"
+							},
+							{
+								"name": "d",
+								"expression": "1..3"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:c^2+d"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:(1-c)^2+d"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:(2-c)^2+d"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:(3-c)^2+d"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre.",
+								"La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "Les premiers termes d'une suite $(u_n)$, de $u_0$ à $u_{ {{N}} }$, sont représentés ci-dessous.\n\n```courbe\nx: -1 ; {{N1}}\ny: -2 ; {{eval:36+c+4}}\ngrille: 1 ; 2\nu(n) = n^2+{{c}} pour n de 0 à 6   bleu   nom=u_n\ntaille: moyenne\ndescription: Nuage de points représentant les premiers termes d'une suite, rang n en abscisse, terme en ordonnée.\n```\n\nAu vu du graphique, cette suite semble-t-elle géométrique ?",
+						"variables": [
+							{
+								"name": "N",
+								"expression": "6|6"
+							},
+							{
+								"name": "N1",
+								"expression": "7|7"
+							},
+							{
+								"name": "c",
+								"expression": "1..4"
+							},
+							{
+								"name": "u0",
+								"expression": "eval:c"
+							},
+							{
+								"name": "u1",
+								"expression": "eval:1+c"
+							},
+							{
+								"name": "u2",
+								"expression": "eval:4+c"
+							},
+							{
+								"name": "u3",
+								"expression": "eval:9+c"
+							}
+						],
+						"correction": {
+							"steps": [
+								"On lit $u_0={{u0}}$, $u_1={{u1}}$, $u_2={{u2}}$ et $u_3={{u3}}$. $\\dfrac{u_1}{u_0}={{eval:(u1)/(u0)}}$ mais $\\dfrac{u_2}{u_1}={{eval:(u2)/(u1)}}$ : on ne multiplie pas toujours par le même nombre.",
+								"Attention : des points qui montent de plus en plus vite ne suffisent pas pour dire « géométrique ». La suite ne semble **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui, elle semble géométrique."
+						},
+						{
+							"content": "Non, elle ne semble pas géométrique."
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "8",
+							"b": "-1",
+							"r": "2",
+							"N1": "9",
+							"u0": "-1",
+							"u1": "1",
+							"u2": "3",
+							"u3": "5"
+						},
+						"description": "v0 : « non » accepté",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "8",
+							"b": "-1",
+							"r": "2",
+							"N1": "9",
+							"u0": "-1",
+							"u1": "1",
+							"u2": "3",
+							"u3": "5"
+						},
+						"description": "v0 : « oui » refusé",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "8",
+							"b": "10",
+							"r": "3",
+							"N1": "9",
+							"u0": "10",
+							"u1": "7",
+							"u2": "4",
+							"u3": "1"
+						},
+						"description": "v1 : « non » accepté",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "8",
+							"b": "10",
+							"r": "3",
+							"N1": "9",
+							"u0": "10",
+							"u1": "7",
+							"u2": "4",
+							"u3": "1"
+						},
+						"description": "v1 : « oui » refusé",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "5",
+							"a": "1",
+							"N1": "6",
+							"u0": "1",
+							"u1": "2",
+							"u2": "4",
+							"u3": "8"
+						},
+						"description": "v2 : « oui » accepté",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "5",
+							"a": "1",
+							"N1": "6",
+							"u0": "1",
+							"u1": "2",
+							"u2": "4",
+							"u3": "8"
+						},
+						"description": "v2 : « non » refusé",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "6",
+							"a": "64",
+							"N1": "7",
+							"u0": "64",
+							"u1": "32",
+							"u2": "16",
+							"u3": "8"
+						},
+						"description": "v3 : « oui » accepté",
+						"variationIndex": 3,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "6",
+							"a": "64",
+							"N1": "7",
+							"u0": "64",
+							"u1": "32",
+							"u2": "16",
+							"u3": "8"
+						},
+						"description": "v3 : « non » refusé",
+						"variationIndex": 3,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "8",
+							"c": "4",
+							"d": "1",
+							"N1": "9",
+							"u0": "17",
+							"u1": "10",
+							"u2": "5",
+							"u3": "2"
+						},
+						"description": "v4 : « non » accepté",
+						"variationIndex": 4,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "8",
+							"c": "4",
+							"d": "1",
+							"N1": "9",
+							"u0": "17",
+							"u1": "10",
+							"u2": "5",
+							"u3": "2"
+						},
+						"description": "v4 : « oui » refusé",
+						"variationIndex": 4,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"N": "6",
+							"c": "1",
+							"N1": "7",
+							"u0": "1",
+							"u1": "2",
+							"u2": "5",
+							"u3": "10"
+						},
+						"description": "v5 : « non » accepté",
+						"variationIndex": 5,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"N": "6",
+							"c": "1",
+							"N1": "7",
+							"u0": "1",
+							"u1": "2",
+							"u2": "5",
+							"u3": "10"
+						},
+						"description": "v5 : « oui » refusé",
+						"variationIndex": 5,
+						"selectedChoices": [0]
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Suites",
+				"domain": "Reconnaître une suite",
+				"subdomain": "Arithmétique ou géométrique",
+				"level": 7,
+				"status": "draft"
+			},
+			"neufs": []
+		},
+		{
+			"id": "f3100c29-23bc-4bfe-b353-20f59d07371e",
+			"noeud": ["Suites", "Modèles d'évolution"],
+			"grades": ["1_SPE"],
+			"tags": [],
+			"tags_avant": [
+				{
+					"grade": "1_SPE",
+					"code": "1SPE-379"
+				}
+			],
+			"avant": {
+				"title": "Intérêts simples ou composés : la suite est-elle géométrique ?",
+				"description": "Reconnaître une suite géométrique dans un placement (intérêts composés), ou non",
+				"variations": [
+					{
+						"statement": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, on ajoute la même somme : ${{t}}\\,\\%$ de ${{C}}$ €, soit $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}$ €.",
+								"$u_0={{C}}$, $u_1={{eval:C+C*t/100}}$ et $u_2={{eval:C+2*C*t/100}}$. Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(C+C*t/100)^2}}$ et $u_0\\times u_2={{eval:C*(C+2*C*t/100)}}$.",
+								"La suite n'est **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, le capital augmente de ${{t}}\\,\\%$ : $u_{n+1}=u_n+\\dfrac{ {{t}} }{100}u_n={{eval:1+t/100;d}}\\,u_n$.",
+								"On multiplie toujours par le même nombre : la suite est **géométrique** de raison ${{eval:1+t/100;d}}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "10..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							},
+							{
+								"name": "f",
+								"expression": "10|15|20|25|30|40|50"
+							},
+							{
+								"name": "a",
+								"expression": "eval:C*(1+t/100)-f"
+							},
+							{
+								"name": "b",
+								"expression": "eval:a*(1+t/100)-f"
+							}
+						],
+						"conditions": ["f != C*t/100"],
+						"correction": {
+							"steps": [
+								"Pour tout $n$ : $u_{n+1}={{eval:1+t/100;d}}\\,u_n-{{f}}$.",
+								"$u_0={{C}}$, $u_1={{a}}$ et $u_2={{eval:b;d}}$.",
+								"Si elle était géométrique, on aurait $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}$, c'est-à-dire $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:a^2}}$ et $u_0\\times u_2={{eval:C*b}}$ : la suite n'est pas géométrique."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui, elle est géométrique."
+						},
+						{
+							"content": "Non, elle n'est pas géométrique."
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « non » accepté",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « oui » refusé",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « oui » accepté",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « non » refusé",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « non » accepté",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « oui » refusé",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					}
+				]
+			},
+			"apres": {
+				"title": "Intérêts simples ou composés : la suite est-elle géométrique ?",
+				"description": "Reconnaître une suite géométrique dans un placement (intérêts composés), ou non",
+				"variations": [
+					{
+						"statement": "On place ${{C}}$ € à **intérêts simples** au taux annuel de ${{t}}\\,\\%$ : chaque année, on ajoute au capital ${{t}}\\,\\%$ du capital **initial**. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, on ajoute la même somme : ${{t}}\\,\\%$ de ${{C}}$ €, soit $\\dfrac{ {{t}} }{100}\\times{{C}}={{eval:C*t/100}}$ €.",
+								"$u_0={{C}}$, $u_1={{eval:C+C*t/100}}$ et $u_2={{eval:C+2*C*t/100}}$. Si la suite était géométrique de raison $q$, on aurait $u_1=q\\,u_0$ et $u_2=q\\,u_1$, donc $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:(C+C*t/100)^2}}$ et $u_0\\times u_2={{eval:C*(C+2*C*t/100)}}$, donc $u_1^2\\neq u_0\\times u_2$.",
+								"La suite n'est **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					},
+					{
+						"statement": "On place ${{C}}$ € à **intérêts composés** au taux annuel de ${{t}}\\,\\%$ : chaque année, les intérêts, égaux à ${{t}}\\,\\%$ du capital **de l'année**, s'ajoutent au capital. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "5..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							}
+						],
+						"correction": {
+							"steps": [
+								"Chaque année, le capital augmente de ${{t}}\\,\\%$ : $u_{n+1}=u_n+\\dfrac{ {{t}} }{100}u_n={{eval:1+t/100;d}}\\,u_n$.",
+								"On multiplie toujours par le même nombre : la suite est **géométrique** de raison ${{eval:1+t/100;d}}$."
+							]
+						},
+						"correctChoiceIndex": ["0"]
+					},
+					{
+						"statement": "On place ${{C}}$ € sur un compte : chaque année, le capital augmente de ${{t}}\\,\\%$, puis la banque prélève ${{f}}$ € de frais. On note $u_n$ le capital (en €) au bout de $n$ années.\n\nLa suite $(u_n)$ est-elle géométrique ?",
+						"variables": [
+							{
+								"name": "k",
+								"expression": "10..50"
+							},
+							{
+								"name": "C",
+								"expression": "eval:100*k"
+							},
+							{
+								"name": "t",
+								"expression": "1..6"
+							},
+							{
+								"name": "f",
+								"expression": "10|15|20|25|30|40|50"
+							},
+							{
+								"name": "a",
+								"expression": "eval:C*(1+t/100)-f"
+							},
+							{
+								"name": "b",
+								"expression": "eval:a*(1+t/100)-f"
+							}
+						],
+						"conditions": ["f != C*t/100"],
+						"correction": {
+							"steps": [
+								"Pour tout $n$ : $u_{n+1}={{eval:1+t/100;d}}\\,u_n-{{f}}$.",
+								"$u_0={{C}}$, $u_1={{a}}$ et $u_2={{eval:b;d}}$.",
+								"Si elle était géométrique, on aurait $\\dfrac{u_1}{u_0}=\\dfrac{u_2}{u_1}$, c'est-à-dire $u_1^2=u_0\\times u_2$. Or $u_1^2={{eval:a^2}}$ et $u_0\\times u_2={{eval:C*b}}$, donc $u_1^2\\neq u_0\\times u_2$ : la suite n'est **pas géométrique**."
+							]
+						},
+						"correctChoiceIndex": ["1"]
+					}
+				],
+				"shared": {
+					"choices": [
+						{
+							"content": "Oui, elle est géométrique."
+						},
+						{
+							"content": "Non, elle n'est pas géométrique."
+						}
+					]
+				},
+				"test_specs": [
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « non » accepté",
+						"variationIndex": 0,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v0 : « oui » refusé",
+						"variationIndex": 0,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « oui » accepté",
+						"variationIndex": 1,
+						"selectedChoices": [0]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "2000",
+							"k": "20",
+							"t": "3"
+						},
+						"description": "v1 : « non » refusé",
+						"variationIndex": 1,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "correct"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « non » accepté",
+						"variationIndex": 2,
+						"selectedChoices": [1]
+					},
+					{
+						"expected": {
+							"status": "incorrect"
+						},
+						"variables": {
+							"C": "1000",
+							"a": "990",
+							"b": "979.8",
+							"f": "30",
+							"k": "10",
+							"t": "2"
+						},
+						"description": "v2 : « oui » refusé",
+						"variationIndex": 2,
+						"selectedChoices": [0]
+					}
+				]
+			},
+			"categorie": {
+				"theme": "Suites",
+				"domain": "Modélisation",
+				"subdomain": "Placements",
+				"level": 5,
+				"status": "draft"
+			},
+			"neufs": []
+		}
+	]
+}

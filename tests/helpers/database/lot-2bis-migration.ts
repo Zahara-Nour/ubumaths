@@ -576,19 +576,24 @@ export function decrireLotModifier(lot: LotModifier): void {
 			}
 		);
 
-		it('un tag déjà posé sur un modèle du lot fait échouer la migration', async () => {
-			// Un modèle qui ne bouge pas : son tag est accepté par le trigger sur le nœud d'avant.
-			const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres)!;
-			await echoue(
-				() =>
-					pg.query(
-						`insert into public.question_template_points (template_id, point_id)
-						 select $1, id from public.curriculum_points where grade = $2 and code = $3 and archived_at is null`,
-						[m.id, m.tags[0].grade, m.tags[0].code]
-					),
-				/tags déjà posés sur ces modèles : 1/
-			);
-		});
+		// Lot sans tag posé (retouches) : chaque modèle porte déjà son point de chaque programme, et le
+		// trigger refuse un second point du même programme ; un tag retiré est couvert plus bas.
+		it.runIf(modeles.some((x) => x.tags.length > 0))(
+			'un tag déjà posé sur un modèle du lot fait échouer la migration',
+			async () => {
+				// Un modèle qui ne bouge pas : son tag est accepté par le trigger sur le nœud d'avant.
+				const m = modeles.find((x) => x.tags.length > 0 && !x.noeud_apres)!;
+				await echoue(
+					() =>
+						pg.query(
+							`insert into public.question_template_points (template_id, point_id)
+							 select $1, id from public.curriculum_points where grade = $2 and code = $3 and archived_at is null`,
+							[m.id, m.tags[0].grade, m.tags[0].code]
+						),
+					/tags déjà posés sur ces modèles : 1/
+				);
+			}
+		);
 
 		it.runIf(avant.length > 0)(
 			'un tag relevé retiré depuis le relevé fait échouer la migration',

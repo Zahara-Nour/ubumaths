@@ -272,15 +272,23 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
     filtre = ' and r.apres is distinct from r.avant' if len(reecrits) < n else ''
 
     # ---- Rollback -----------------------------------------------------------------------
-    rb = [
+    # Lot sans modèle neuf (retouches) : ni bloc `$retour_neufs$`, ni suppression ; rien ne change
+    # pour les lots qui en ont (migrations jouées, régénérées à l'identique).
+    rb = ([
         "-- Rollback : il SUPPRIME les modèles neufs, rend aux origines leur contenu d'avant et retire",
         "-- les tags posés (les tags d'avant restent). Gardes : il refuse si un modèle, origine ou neuf,",
         "-- n'a plus EXACTEMENT le contenu posé par la migration (empreinte md5), si un neuf a été publié,",
         "-- rangé ailleurs ou retagué, ou si une donnée d'élève tient à un neuf (la suppression emporterait",
         "-- en cascade cartes SRS et activités de journal). Bloc éprouvé par le test d'intégration, à jouer",
+    ] if k else [
+        "-- Rollback : il rend aux modèles leur contenu d'avant (aucun modèle neuf, aucun tag posé). Garde :",
+        "-- il refuse si un modèle n'a plus EXACTEMENT le contenu posé par la migration (empreinte md5).",
+        "-- Bloc éprouvé par le test d'intégration, à jouer",
+    ]) + [
         "-- dans UNE transaction (sinon une garde qui échoue n'arrête pas la suite) :",
         "-- `psql -1 -v ON_ERROR_STOP=1 -f`, ou l'éditeur SQL en un seul envoi :",
         "-- ROLLBACK:BEGIN",
+    ] + ([
         "-- do $retour_neufs$",
         "-- declare v_intacts integer; v_eleves integer; v_ranges integer; v_tags integer; v_poses integer;",
         "-- begin",
@@ -323,6 +331,7 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
         "-- \t\traise exception 'rollback : % donnée(s) d''élève tiennent aux modèles neufs', v_eleves;",
         "-- \tend if;",
         "-- end $retour_neufs$;",
+    ] if k else []) + [
         "-- do $retour$",
         "-- declare v_intacts integer;",
         "-- begin",
@@ -358,12 +367,14 @@ def ecrire_migration(modeles: list[dict], prefixe: str, entete: str) -> str:
             "-- \tend if;",
         ] if changent else []),
         "-- end $retour$;",
-        f"-- delete from public.question_templates where id in ({liste_neufs});",
-        "-- delete from public.question_template_points q",
-        "--  using public.curriculum_points p, (values",
-        *valeurs([f"('{i}'::uuid, '{t['grade']}', '{t['code']}')" for i, t in poses], '--   '),
-        "--  ) as r(template_id, grade, code)",
-        "--  where q.template_id = r.template_id and p.id = q.point_id and p.grade = r.grade and p.code = r.code;",
+        *([f"-- delete from public.question_templates where id in ({liste_neufs});"] if k else []),
+        *([
+            "-- delete from public.question_template_points q",
+            "--  using public.curriculum_points p, (values",
+            *valeurs([f"('{i}'::uuid, '{t['grade']}', '{t['code']}')" for i, t in poses], '--   '),
+            "--  ) as r(template_id, grade, code)",
+            "--  where q.template_id = r.template_id and p.id = q.point_id and p.grade = r.grade and p.code = r.code;",
+        ] if poses else []),
         *([
             "-- update public.question_templates q",
             "--    set classification_node_id = case when r.sous_notion is null then nn.id else s.id end",
@@ -427,9 +438,9 @@ create temporary table {tmp}_tags (
 	tag_grade text not null, tag_code text not null,
 	avant boolean not null
 );
-insert into {tmp}_tags values
+''' + ('' if not (poses or any(m['tags_avant'] for m in modeles)) else f'''insert into {tmp}_tags values
 ''' + ',\n'.join([f"  ('{m['id']}', '{t['grade']}', '{t['code']}', true)" for m in modeles for t in m['tags_avant']]
-                 + [f"  ('{i}', '{t['grade']}', '{t['code']}', false)" for i, t in poses]) + ';')
+                 + [f"  ('{i}', '{t['grade']}', '{t['code']}', false)" for i, t in poses]) + ';'))
     o.append(f'''
 -- Modèles neufs : chacun copie les autres colonnes de son origine, sauf le niveau (et le nœud
 -- quand l'un de ses points vit sur une sous-notion voisine).
@@ -451,9 +462,9 @@ create temporary table {tmp}_tags_neufs (
 	rang integer not null,
 	tag_grade text not null, tag_code text not null
 );
-insert into {tmp}_tags_neufs values
+''' + ('' if not tags_neufs else f'''insert into {tmp}_tags_neufs values
 ''' + ',\n'.join(f"  ('{x['id']}', {r}, '{t['grade']}', '{t['code']}')" for x in neufs for r, t in enumerate(x['tags']))
-             + ';')
+             + ';'))
     o.append(f'''
 -- ---- 2. Résolution STRICTE des nœuds et des points --------------------------------------
 create temporary table {tmp}_resolus as
