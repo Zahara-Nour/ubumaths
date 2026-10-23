@@ -151,6 +151,13 @@ describe('getProgrammeMap', () => {
 		expect(calls.filter((c) => c.ops.includes('range'))).toHaveLength(2);
 	});
 
+	it('refuse une réponse de points pleine (plafond PostgREST) plutôt que de la tronquer', async () => {
+		const points = Array.from({ length: 1000 }, (_, i) => pointRow(String(i), 's'));
+		await expect(
+			getProgrammeMap(fakeSupabase({ calls: [], points }) as never, '2')
+		).rejects.toThrow(/paginer/);
+	});
+
 	it('lève une erreur si les points sont illisibles', async () => {
 		await expect(
 			getProgrammeMap(fakeSupabase({ calls: [], fail: 'curriculum_points' }) as never, '2')

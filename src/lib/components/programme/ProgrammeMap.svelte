@@ -97,12 +97,22 @@
 			const update = () => {
 				links[branchId] = computeLinks(tree);
 			};
-			// Le SVG est hors de `tree` : le redessiner ne relance pas l'observateur.
+			// Chaque boîte est observée : une boîte qui grandit (maths, police chargée)
+			// déplace ses voisines sans forcément changer la taille de la carte.
 			const resize = new ResizeObserver(update);
-			const mutation = new MutationObserver(update);
-			resize.observe(tree);
+			const observeBoxes = () => {
+				resize.observe(tree);
+				for (const el of tree.querySelectorAll('[data-box], [data-parent]')) resize.observe(el);
+			};
+			// Le SVG est hors de `tree` : le redessiner ne relance pas l'observateur.
+			const mutation = new MutationObserver(() => {
+				observeBoxes();
+				update();
+			});
+			observeBoxes();
 			mutation.observe(tree, { childList: true, subtree: true });
 			update();
+			document.fonts?.ready.then(update);
 			return () => {
 				resize.disconnect();
 				mutation.disconnect();

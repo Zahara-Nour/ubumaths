@@ -139,6 +139,13 @@ export async function getProgrammeMap(
 		throw new Error(`Points du programme illisibles : ${pointsResult.error.message}`);
 	}
 	const points = (pointsResult.data ?? []) as MapPointRow[];
+	// Une réponse pleine peut être tronquée par le plafond PostgREST : refuser plutôt
+	// que de montrer un programme amputé (aucun niveau n'en approche : ~300 points).
+	if (points.length >= NODE_PAGE_SIZE) {
+		throw new Error(
+			`Points du programme : plus de ${NODE_PAGE_SIZE - 1} points, lecture à paginer`
+		);
+	}
 
 	const activeIds = new Set(active.map((n) => n.id));
 	const missing = points.map((p) => p.node_id).filter((id) => !activeIds.has(id));
