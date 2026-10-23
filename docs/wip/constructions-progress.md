@@ -202,3 +202,20 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - Tests : `pause-lecture.test.ts` (6) + 4 de codage dans `milieu-mesure.test.ts` ; 8 rouges sans le code. `test:server constructions-v2` 400 ✓ ; `test:client constructions-v2` 19 ✓.
 - Revue `code-reviewer` Sonnet : **important corrigé** — le fondu d'un point/d'une droite s'étirait sur toute la pause de lecture (phases du fondu à 1) → phases `drawPhaseEnd = pausePhaseStart = fondu / durée` et `fadeInProgress` (`render-helpers.ts`) lu par le canevas ; +4 tests. Mineur accepté : à `@vitesse` élevée la pause de lecture domine (voulu). Pré-passe / exécution de `hasVisibleSegment` : pas d'écart.
 - Constat hors PR : l'étiquette d'un segment (`s = segment(A, B)`) s'affiche au milieu du segment, donc sur l'étiquette du milieu I.
+
+### PR 2 — `bissectrice @mesure` : phase 0 validée (2026-10-23, « je valide », recos suivies)
+
+- **Nominal** : `d = bissectrice(A, V, B) @mesure` (ou `bissectrice(α)`) → (1) rapporteur centre sur V, 0 sur [VA), rien de tracé : « On place le centre du rapporteur sur V, le 0 sur [VA), et on lit l’angle AVB = 74° » ; (2) crayon au bord, en face de la moitié, rapporteur visible : « 74 ÷ 2 = 37 : on repère la graduation 37° » ; (3) repère P (point auxiliaire, prime si la lettre est prise) : « On marque le repère P en face de 37° » ; (4) règle : « Règle de V à P : on trace la bissectrice » — même droite qu’en `@euclide`.
+- **Choix tranchés** : 0 sur [VA) (premier côté du script ; rapporteur retourné si B est dans le sens horaire, le 0 de l’échelle intérieure tombe sur [VA)) ; droite comme `@euclide` ; repère = point auxiliaire nommé.
+- **Lecture** au degré, moitié sur la valeur lue (75 ÷ 2 = 37,5), repère sur la bissectrice exacte. Codage des deux angles égaux (`arcs2`) en `marker`.
+- **Écarts constatés au codage** (le builtin refuse avant la chorégraphie, inchangé) : A ou B confondu avec V → message du builtin « `A` ou `B` est confondu avec `V`, l’angle n’est pas défini » ; **angle plat refusé par le builtin** (« alignés et opposés — bissectrice indéterminée »), alors que la phase 0 l’annonçait possible. Côtés confondus (lecture 0°) → « Les deux côtés sont confondus : il n’y a pas d’angle à mesurer ».
+- Tests : `core/__tests__/bissectrice-mesure.test.ts` (23 ; 21 rouges sans le code).
+
+### PR 2 — réalisé (2026-10-23)
+
+- `buildRapporteur` + `VOIES_BISSECTRICE_MESURE` (`bissectrice.ts`), ligne du registre ; `buildRulerTraceSubStep` réutilisé (paramètre réduit à un `Pick`). `PROTRACTOR_RADIUS` dans `constants.ts`, lu par `Protractor.svelte` et le repère.
+- Revue `code-reviewer` Opus : aucun bloquant. **Important tranché par David (« je te suis », sur reco)** : cas horaire laissé tel quel — rapporteur retourné, 37 se lit sur l’échelle intérieure (143 à l’extérieur), comme un vrai rapporteur. Mineurs corrigés : tests de codage qui passaient sans codage ; rayon recopié en dur → constante partagée. Acceptés : 179,6° se lit 180° ; message « côtés confondus » sous 0,5°.
+- **Décidé (reco suivie)** : codage des angles égaux seulement si les deux côtés sont tracés (`hasVisibleSide`) ; angle plat laissé refusé par le builtin (hors PR).
+- Vérifié en navigateur sans fenêtre (agent, port 5184) : sens direct et horaire, rapporteur centré sur V, 0 côté A, corps sur l’angle, crayon au bord, P juste dehors, consignes justes.
+- Tests : 29 dans `bissectrice-mesure.test.ts` (4 rouges sans `hasVisibleSide`) ; `test:server constructions-v2` 433 ✓ ; `test:client` 19 ✓.
+- Constat hors PR : à l’arrêt entre deux étapes, le lecteur n’affiche plus les instruments (comportement général, milieu compris).

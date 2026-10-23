@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { PROTRACTOR_RADIUS } from '../../constants';
+
 	// Thème (L2-b) : couleurs réalistes inchangées ; seuls les traits noirs suivent le
 	// texte de la page (`stroke: var(--color-foreground)`), pour rester visibles en sombre.
 	/**
@@ -16,7 +18,7 @@
 	const HEIGHT_FONT = 10; // External graduation font height (px, kept fixed)
 	const HEIGHT_FONT_INT = 9; // Internal graduation font height (px, kept fixed)
 	const BAR_WIDTH_MATH = 13 / 40; // Bottom bar width
-	const RAY_MATH = 156 / 40; // External radius (≈ 3.9 math units)
+	const RAY_MATH = PROTRACTOR_RADIUS; // External radius (≈ 3.9 math units)
 	const RAY_INT_MATH = 89 / 40; // Internal radius
 	const RAY_TRAIT_INT_MATH = 116 / 40; // Internal separation line radius
 	const RAY_MIRE_MATH = 7 / 40; // Sight radius
