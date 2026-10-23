@@ -541,9 +541,12 @@ function keysOf(record: Readonly<Record<string, string>>): string[] {
 const FAMILIES: readonly Family[] = [...new Set(CORPUS.map((e) => e.family))];
 
 describe('oracle numérique des dérivées', () => {
+	// Tout le corpus est calculé ici (≈ 4 s en local) : sous la charge d'un shard
+	// de CI, la forme finale de f′ (lot 5a) faisait passer le hook au-delà des
+	// 10 s par défaut (main rouge après #1656)
 	beforeAll(() => {
 		computeAll();
-	});
+	}, 120_000);
 
 	it('le corpus a des identifiants uniques', () => {
 		const ids = CORPUS.map((e) => e.id);
