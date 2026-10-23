@@ -10,7 +10,7 @@
  * contrainte `spaces` sur une réponse que seule cette règle remarque (`7900`).
  * Deux traitements (David, 2026-10-23 ; journal simplify-carte, § 43) :
  * - primaire / collège : le modèle est MARQUÉ (colonne `options`) ;
- * - les 4 brouillons de 1re spé : PAS de marquage (BIPM au lycée), leurs specs
+ * - les 5 brouillons de 1re spé : PAS de marquage (BIPM au lycée), leurs specs
  *   sont corrigées (colonne `test_specs`) : la réponse devient juste.
  *
  * Les listes sont FIGÉES (relues le 2026-10-23) : le script refuse d'écrire si la
@@ -40,7 +40,9 @@ export const LYCEE_DRAFT_IDS: readonly string[] = [
 	'245b4eb1-11fc-497a-b4cd-0a8934719d2c', // Décroissance exponentielle
 	'ef807ee9-f95b-469a-a6a8-4232e933b4c6', // Somme des premiers entiers
 	'e7cfe442-6653-4f97-a74e-08b8853d3305', // Somme des puissances successives de q
-	'27d77564-e109-4681-8a64-13a3ee1729cd' // Valeur d'un placement
+	'27d77564-e109-4681-8a64-13a3ee1729cd', // Valeur d'un placement
+	// Scindé de 27d77564 par la passe lycée (#1646), après la relecture des listes
+	'103cf8d9-a014-44d0-a4a0-08d94749a60e' // Valeur d'un placement à intérêts simples
 ];
 
 /** Modèles de primaire / collège à marquer « Espaces dès 4 chiffres » (51, tous publiés) */
