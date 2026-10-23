@@ -142,7 +142,14 @@ l'exécuteur les ramène à `(P, A, B)` avec les deux points qui portent d (`exp
 droite », `choreographies/reveal-points.ts`), classé `auxiliary-point` (visible en `@complet`
 seulement). Les voies qui n'utilisent que la direction de d n'ajoutent rien. Le critère est la
 visibilité : un point masqué par `masque(A)` dans la forme `(P, A, B)` est révélé de la même façon.
-Les consignes gardent leurs lettres en dur (« Compas en A », « (AB) »).
+**Consignes de sous-étape : vrais noms** (`choreographies/names.ts`). Toute lettre qui désigne un
+argument du script est remplacée par le nom affiché sur la figure : `parallele(M, C, D)` → « Compas
+en C, on prend la mesure |CD| » ; forme `(P, d)` → « parallèle à d » (nom de d transmis par
+`args.lineName`, rempli par `expandLineArgument`, qui suit `ctx.sub`). Argument caché, sans
+étiquette ou au nom masqué → tournure neutre (« le point choisi », « le point de passage », « le
+sommet », « la droite ») ; un angle n'est nommé que si son nom s'affiche (`showLabel`), sinon
+« l'angle ». Les points auxiliaires (Q, R, C\*, A′, B′…) et la droite `e` gardent leurs lettres. Les
+champs `description` des voies (doc) gardent A, B, P. Étiquettes écrites brutes (`A_1` tel quel).
 Nombres vérifiés par `core/__tests__/choreographies-integration.test.ts` (« int. ») et
 `transporte-choreography.test.ts`.
 

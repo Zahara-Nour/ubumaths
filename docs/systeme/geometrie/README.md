@@ -80,16 +80,16 @@ Point d'entrée : `index.ts` (barrel). API du DSL : `dsl/index.ts` → `parseDsl
 
 Doc détaillée : [constructions.md](constructions.md) (parcours, directives, chorégraphies, instruments, API, reste à faire).
 
-| Partie                                       | Rôle                                                                                                     |
-| -------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| `core/executor.ts`                           | `ConstructionExecutor` : exécute le script pas à pas (`createStepper`), gère directives et instruments   |
-| `core/timeline.svelte.ts`                    | `Timeline` : lecture, pause, vitesse (classe JS, `requestAnimationFrame`)                                |
-| `core/choreographies/`                       | Chorégraphies `@euclide` / `@equerre` : `registry.ts`, `resolve.ts`, une par builtin, `reveal-points.ts` |
-| `core/animator.ts`, `core/render-helpers.ts` | Tracé partiel (`partialSegment`, `partialArc`, `partialSegmentSVG`…)                                     |
-| `instruments/`                               | `Ruler`, `Compass`, `CompassRaised`, `Protractor`, `SetSquare`, `Pencil` (.svelte) + `positioning.ts`    |
-| `components/`                                | `ConstructionPlayer`, `ConstructionCanvas` (sur `GeometryCanvas`), `ScriptEditor`, contrôles             |
-| `converter.ts`                               | `convertXmlToDsl` : import des fichiers XML InstrumenPoche                                               |
-| `constants.ts`                               | Durées (`MS_PER_PIXEL`, `MS_PER_DEGREE`, `DEFAULT_PAUSE_DURATION`…)                                      |
+| Partie                                       | Rôle                                                                                                                 |
+| -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `core/executor.ts`                           | `ConstructionExecutor` : exécute le script pas à pas (`createStepper`), gère directives et instruments               |
+| `core/timeline.svelte.ts`                    | `Timeline` : lecture, pause, vitesse (classe JS, `requestAnimationFrame`)                                            |
+| `core/choreographies/`                       | Chorégraphies `@euclide` / `@equerre` : `registry.ts`, `resolve.ts`, une par builtin, `reveal-points.ts`, `names.ts` |
+| `core/animator.ts`, `core/render-helpers.ts` | Tracé partiel (`partialSegment`, `partialArc`, `partialSegmentSVG`…)                                                 |
+| `instruments/`                               | `Ruler`, `Compass`, `CompassRaised`, `Protractor`, `SetSquare`, `Pencil` (.svelte) + `positioning.ts`                |
+| `components/`                                | `ConstructionPlayer`, `ConstructionCanvas` (sur `GeometryCanvas`), `ScriptEditor`, contrôles                         |
+| `converter.ts`                               | `convertXmlToDsl` : import des fichiers XML InstrumenPoche                                                           |
+| `constants.ts`                               | Durées (`MS_PER_PIXEL`, `MS_PER_DEGREE`, `DEFAULT_PAUSE_DURATION`…)                                                  |
 
 Les scripts sont stockés en base dans `constructions.dsl_script`. Routes :
 `src/routes/(protected)/constructions/` (liste, `[id]`, `[id]/edit`, `new`, `conversion`) et

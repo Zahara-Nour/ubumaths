@@ -30,13 +30,23 @@
 import { exact } from '$lib/geometry-core/types/geo-value';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import type { Voie, ChoreographyFn, ChoreographyResult, SubStep, TraceTag } from './types';
+import { fixed, mesure, role, type Role } from './names';
 
 const PI_OVER_2 = Math.PI / 2;
+
+/** « La médiatrice de [AB] apparaît », ou « La première médiatrice apparaît ». */
+function mediatriceAppears(a: Role, b: Role, rank: string): string {
+	if (a.name && b.name) return `La médiatrice de [${a.name}${b.name}] apparaît`;
+	return `La ${rank} médiatrice apparaît`;
+}
 
 function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, args, principalId, visibilite, sub } = ctx;
 	const [Aid, Bid, Cid] = args.ids;
 	const [A, B, C] = args.coords;
+	const nameA = role(figure, Aid, 'le premier point');
+	const nameB = role(figure, Bid, 'le deuxième point');
+	const nameC = role(figure, Cid, 'le troisième point');
 
 	// Hide the principal circle — revealed at end by `applyFinalVisibility`.
 	figure.hideElement(principalId);
@@ -103,7 +113,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [m1],
-			instruction: 'La médiatrice de [AB] apparaît'
+			instruction: mediatriceAppears(nameA, nameB, 'première')
 		}
 	];
 	const ownSubSteps2: SubStep[] = [
@@ -114,7 +124,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [m2],
-			instruction: 'La médiatrice de [BC] apparaît'
+			instruction: mediatriceAppears(nameB, nameC, 'seconde')
 		},
 		// Intersection O of the 2 mediatrices.
 		{
@@ -135,7 +145,7 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en O, on prend la mesure |OA|'
+			instruction: `Compas en O, on prend ${mesure(fixed('O'), nameA)}`
 		},
 		// Compass draws the circle (full 360° around O).
 		{
@@ -147,7 +157,10 @@ function buildMediatricesChoreography(ctx: Parameters<ChoreographyFn>[0]): Chore
 			animateDrawableIds: [principalId],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On trace le cercle circonscrit passant par A, B, C'
+			instruction:
+				nameA.name && nameB.name && nameC.name
+					? `On trace le cercle circonscrit passant par ${nameA.name}, ${nameB.name}, ${nameC.name}`
+					: 'On trace le cercle circonscrit passant par les trois points'
 		}
 	];
 

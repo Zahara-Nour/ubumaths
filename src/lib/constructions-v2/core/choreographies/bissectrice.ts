@@ -26,6 +26,7 @@ import type {
 } from './types';
 import { isAngle } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
+import { de, droite, en, nom, role } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 const CERCLE_V_RADIUS_FACTOR = 0.6; // r1 = 0.6 × min(|VA|, |VB|)
@@ -67,6 +68,22 @@ function normalizeBissectriceCtx(ctx: ChoreographyCtx): ChoreographyCtx {
 			],
 			named: args.named
 		}
+	};
+}
+
+/**
+ * Noms des arguments (forme canonique `(A, V, B)`) : le sommet V et les
+ * côtés (VA), (VB), ou leurs tournures neutres.
+ */
+function bissectriceRoles(ctx: ChoreographyCtx) {
+	const [Aid, Vid, Bid] = ctx.args.ids;
+	const V = role(ctx.figure, Vid, 'le sommet');
+	const A = role(ctx.figure, Aid, '');
+	const B = role(ctx.figure, Bid, '');
+	return {
+		V,
+		VA: droite(V, A, undefined, 'le premier côté'),
+		VB: droite(V, B, undefined, 'le second côté')
 	};
 }
 
@@ -483,6 +500,7 @@ function buildRulerTraceSubStep(
  */
 function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, principalId } = ctx;
+	const N = bissectriceRoles(ctx);
 	const common = setupCommonGeometry(ctx);
 	const {
 		Aprime,
@@ -628,7 +646,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		common,
 		VPScalar,
 		VP0,
-		'Règle de V à P : on trace la bissectrice'
+		`Règle ${de(N.V)} à P : on trace la bissectrice`
 	);
 	// Ensure bisDir vars are referenced even when used only via the closure.
 	void bisDirX0;
@@ -645,7 +663,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [arcNearA],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V, petit arc qui coupe (VA)'
+			instruction: `Compas ${en(N.V)}, petit arc qui coupe ${nom(N.VA)}`
 		},
 		// SS2 : compass stays at V, small arc near (VB) — intersects (VB) at B'.
 		{
@@ -657,7 +675,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [arcNearB],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V (même ouverture), petit arc qui coupe (VB)'
+			instruction: `Compas ${en(N.V)} (même ouverture), petit arc qui coupe ${nom(N.VB)}`
 		},
 		// SS3 : A' and B' fade-in.
 		{
@@ -755,6 +773,7 @@ function buildArcsEgaux(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
  */
 function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, principalId } = ctx;
+	const N = bissectriceRoles(ctx);
 	const common = setupCommonGeometry(ctx);
 	const {
 		Aprime,
@@ -801,7 +820,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 		common,
 		VMScalar,
 		VM0,
-		'Règle de V à M : on trace la bissectrice'
+		`Règle ${de(N.V)} à M : on trace la bissectrice`
 	);
 
 	const subSteps: SubStep[] = [
@@ -815,7 +834,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [arcNearA],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V, petit arc qui coupe (VA)'
+			instruction: `Compas ${en(N.V)}, petit arc qui coupe ${nom(N.VA)}`
 		},
 		// SS2 : compass stays at V, small arc near (VB).
 		{
@@ -827,7 +846,7 @@ function buildArcMilieu(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult 
 			animateDrawableIds: [arcNearB],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en V (même ouverture), petit arc qui coupe (VB)'
+			instruction: `Compas ${en(N.V)} (même ouverture), petit arc qui coupe ${nom(N.VB)}`
 		},
 		// SS3 : A' and B' fade-in.
 		{

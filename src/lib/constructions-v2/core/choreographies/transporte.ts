@@ -23,6 +23,7 @@ import type { Voie, ChoreographyCtx, ChoreographyResult, SubStep, TraceTag } fro
 import { isAngle, isPointElement } from '$lib/geometry-core/types/elements';
 import { geoToNumber } from '$lib/geometry-core/compute/to-number';
 import { numeric } from '$lib/geometry-core/types/geo-value';
+import { de, en, role } from './names';
 
 const SEGMENT_TRACE_LENGTH_DEFAULT = 15;
 /** Compass opening for the 2 first arcs (units of math). Q1 in the spec. */
@@ -412,6 +413,8 @@ function setupTransporteGeometry(ctx: ChoreographyCtx): TransporteSetup | null {
 }
 
 function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
+	// β est lu avant `setup`, qui le masque jusqu'à la fin de l'animation.
+	const nameBeta = role(ctx.figure, ctx.principalId, 'le nouvel angle');
 	const setup = setupTransporteGeometry(ctx);
 	if (!setup) {
 		// Defensive : the builtin should have thrown long before. Return an
@@ -438,6 +441,13 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 		hiddenSupport
 	} = setup;
 
+	// Noms des arguments : sommet de α, V', α et β (angles nommés à l'écran seulement).
+	const alphaEl = ctx.figure.getElementById(ctx.args.ids[0]);
+	const vertexId = alphaEl && isAngle(alphaEl) ? alphaEl.vertexId : undefined;
+	const nameV = role(ctx.figure, vertexId, "le sommet de l'angle");
+	const nameVp = role(ctx.figure, ctx.args.ids[1], 'le nouveau sommet');
+	const nameAlpha = role(ctx.figure, ctx.args.ids[0], "l'angle");
+
 	const arcVLength = Math.max(MIN_ARC_LENGTH, R_TRANSPORT * initial.sweepAtV);
 	const arcVpLength = Math.max(MIN_ARC_LENGTH, R_TRANSPORT * 2 * SMALL_ARC_HALF_SWEEP);
 	const arcAppLength = Math.max(MIN_ARC_LENGTH, initial.chord0 * 2 * SMALL_ARC_HALF_SWEEP);
@@ -456,7 +466,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcV],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en V, on trace l'arc qui coupe les côtés"
+			instruction: `Compas ${en(nameV)}, on trace l'arc qui coupe les côtés`
 		},
 		// SS2 : compass slides to V' (same opening r), short arc on the
 		// direction toward A''.
@@ -473,7 +483,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [arcVp],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Compas en V' (même ouverture), petit arc sur la direction"
+			instruction: `Compas ${en(nameVp)} (même ouverture), petit arc sur la direction`
 		},
 		// SS3 : A', B' and A'' fade in (the witnesses produced by the 2 arcs).
 		{
@@ -482,7 +492,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [Aprime, Bprime, Adoubleprime],
 			animateLineIds: [],
-			instruction: "On marque A', B' (sur les côtés de α) et A'' (sur la direction)"
+			instruction: `On marque A', B' (sur les côtés ${de(nameAlpha)}) et A'' (sur la direction)`
 		},
 		// SS4 : compass at A', opens to B' (measures |A'B'|).
 		{
@@ -540,7 +550,7 @@ function buildTransporteEuclide(ctx: ChoreographyCtx): ChoreographyResult {
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "Règle de V' à B'' : on trace le second côté de β"
+			instruction: `Règle ${de(nameVp)} à B'' : on trace le second côté ${de(nameBeta)}`
 		}
 	];
 

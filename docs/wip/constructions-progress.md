@@ -2,13 +2,13 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1626._
+_Mis à jour le 2026-10-23, lot 8 lancé (phase 0 validée)._
 
-- **État** : lot 7 **livré** — #1626 mergée : `parallele(P, d)` / `perpendiculaire(P, d)` décorées s'animent comme `(P, A, B)` ; point caché de d révélé en fondu ; message explicite pour une variable nommée `e` ou `π`. Lots 1 à 7 partent au prochain `deploy:prod`. Vérification de #1626 notée dans `verifications-manuelles.md` (serveur 5178).
-- **Prochaine action** : selon la réponse de David — lot 8 (consignes neutres) ou autre.
-- **En attente de David** : (1) consignes qui écrivent « Compas en A », « (AB) », « |PA| » en dur, fausses avec `(P, d)` ou d'autres noms (`parallele.ts:297`, `:321` ; `perpendiculaire.ts:358`, `:391`, `:1133`) → reco : consignes neutres, lot 8 ; (2) supprimer `../ubumaths-wt-constructions` (lot 5) et `../ubumaths-wt-constructions-droite` (lot 7) une fois les vérifications faites ; puis `@mesure` (chantier à part), côté du carré d'angle droit.
-- **Pièges en cours** : 3 constructions en prod avec des `@cacher("T_3")`/`@cacher("arc_9")` sans effet, non réparées (choix de David) ; base locale : `migration up` bute sur `20261022200000`. `e` = constante d'Euler : jamais comme nom dans un script d'exemple. Description de `parallele @equerre @pose_equerre` dans le registre (« coin sur A ») inexacte : l'équerre est posée près du projeté de P.
-- **Worktree / branche** : lot suivant : `git worktree add -b <type>/constructions-<lot> ../ubumaths-wt-constructions-<lot> origin/main`.
+- **État** : lot 8 = consignes avec les vrais noms du script (section « Lot 8 » plus bas). Phase 0 validée par David. Lots 1 à 7 partent au prochain `deploy:prod`.
+- **Prochaine action** : tests rouges → correctif → verts → PR (revue `code-reviewer` Sonnet : textes seulement).
+- **En attente de David** : vérifications de #1621 (5177) et #1626 (5178) → puis suppression de `../ubumaths-wt-constructions` et `../ubumaths-wt-constructions-droite`. Après le lot 8 : points auxiliaires nommés dans les consignes sans étiquette sur la figure (lot à part, choix d'affichage) ; `@mesure` ; côté du carré d'angle droit.
+- **Pièges en cours** : `e` = constante d'Euler, jamais comme nom dans un script d'exemple. 3 constructions en prod avec des `@cacher` sans effet (choix de David). Base locale : `migration up` bute sur `20261022200000`.
+- **Worktree / branche** : `../ubumaths-wt-constructions-consignes` · `feat/constructions-consignes-noms`.
 
 ---
 
@@ -136,3 +136,12 @@ Revue : `code-reviewer` (Sonnet).
 - `choreographies/reveal-points.ts` : fondu des points cachés de d sur lesquels un instrument se pose — `parallelogramme` (A, B), `perpendiculaire @arcs_egaux` et `@pose_equerre` (A), donc `parallele @equerre @double_perpendiculaire` ; pas `parallele @equerre @pose_equerre` (équerre près du projeté).
 - Hors phase 0, demandé par David en cours de route : message de `e`/`π` réservés (`interpreter.ts`).
 - Tests : 44 rouges sans le code puis verts (+ 3 réutilisation de d, + 2 rendu du lecteur, + 2 message) ; `test:server constructions-v2` 277 ✓ / 21 ignorés, `geometry-core/dsl` 2009 ✓. Revue `code-reviewer` opus : aucun bloquant ; mineur 1 (pré-passe) et trou de test corrigés, mineur 2 (consignes en dur) → David. CI verte, mergée (#1626).
+
+## Lot 8 — Consignes avec les vrais noms (2026-10-23)
+
+**Phase 0 validée par David** (2026-10-23) :
+
+- **Nominal** : dans les consignes de sous-étape de **toutes** les chorégraphies (`parallele`, `perpendiculaire`, `mediatrice`, `bissectrice`, `cercle_circonscrit`, `transporte`), chaque lettre qui désigne un argument du script est remplacée par son nom sur la figure : `parallele(M, C, D)` → « Compas en M, on prend la mesure |MC| » ; forme `(P, d)` → « coupe d », « parallèle à d ».
+- **Point d'argument caché ou sans nom** (ex. point caché de d) → tournure neutre (« Compas sur le point choisi… »).
+- **Inchangé** : points auxiliaires (Q, R, C*, D*, A′, B′, A*, B*, O…) et droite intermédiaire `e`, sans étiquette sur la figure → lot à part. Scripts aux noms identiques aux lettres d'aujourd'hui → textes identiques.
+- Tests d'abord : autres noms, forme `(P, d)`, point caché, non-régression des textes actuels.

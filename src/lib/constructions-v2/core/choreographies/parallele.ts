@@ -31,6 +31,7 @@ import { exact, numeric } from '$lib/geometry-core/types/geo-value';
 import { numericNode } from '$lib/mathAST/common/numeric';
 import { ChoreographyError } from './types';
 import { revealHiddenUsedPoints } from './reveal-points';
+import { capitalize, de, en, lineFormRoles, mesure, nom, type Role } from './names';
 import type {
 	Voie,
 	ChoreographyFn,
@@ -96,6 +97,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 	const { figure, args, principalId } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
+	const N = lineFormRoles(ctx, true);
 
 	// Hide the parallel line — revealed at end by `applyFinalVisibility`.
 	figure.hideElement(principalId);
@@ -294,7 +296,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en A, on prend la mesure |AB|'
+			instruction: `Compas ${en(N.A)}, on prend ${mesure(N.A, N.B)}`
 		},
 		// SS2 : compass at P, small arc near Q direction (radius |AB|, kept from SS1).
 		{
@@ -306,7 +308,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [arcAtP],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On reporte cette ouverture en P et on trace un arc vers Q'
+			instruction: `On reporte cette ouverture ${en(N.P)} et on trace un arc vers Q`
 		},
 		// SS3 : compass at P, opens to A (measures |PA|).
 		{
@@ -318,7 +320,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en P, on prend la mesure |PA|'
+			instruction: `Compas ${en(N.P)}, on prend ${mesure(N.P, N.A)}`
 		},
 		// SS4 : compass at B, small arc near Q direction (radius |PA|, kept from SS3).
 		{
@@ -330,7 +332,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [arcAtB],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On reporte en B et on trace un arc qui croise le précédent'
+			instruction: `On reporte ${en(N.B)} et on trace un arc qui croise le précédent`
 		},
 		// SS5 : Q fade-in (intersection of the 2 arcs).
 		{
@@ -355,7 +357,7 @@ function buildParallelogramme(ctx: Parameters<ChoreographyFn>[0]): ChoreographyR
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Règle par P et Q : on trace la parallèle'
+			instruction: `Règle par ${nom(N.P)} et Q : on trace la parallèle`
 		}
 	];
 
@@ -439,6 +441,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 	const { figure, args, principalId } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
+	const N = lineFormRoles(ctx, false);
 
 	figure.hideElement(principalId);
 
@@ -682,8 +685,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction:
-				"On pose l'équerre avec son bord horizontal sur (AB), près du projeté de P sur (AB)"
+			instruction: `On pose l'équerre avec son bord horizontal sur ${nom(N.d)}, près du projeté ${de(N.P)} sur ${nom(N.d)}`
 		},
 		// SS2 : on pose la règle contre le bord vertical de l'équerre
 		// (décalée de RULER_WIDTH pour ne pas la chevaucher) — elle
@@ -717,8 +719,7 @@ function buildEquerre(ctx: Parameters<ChoreographyFn>[0]): ChoreographyResult {
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction:
-				"On fait glisser l'équerre le long de la règle jusqu'à ce que le bord horizontal passe par P"
+			instruction: `On fait glisser l'équerre le long de la règle jusqu'à ce que le bord horizontal passe par ${nom(N.P)}`
 		},
 		// SS4 : tracé le long du bord horizontal de l'équerre.
 		// La règle se masque ici (`hideAutoInstruments`), le crayon
@@ -911,13 +912,14 @@ function unitAB(A: { x: number; y: number }, B: { x: number; y: number }) {
 function assertPOffLine(
 	P: { x: number; y: number },
 	A: { x: number; y: number },
-	B: { x: number; y: number }
+	B: { x: number; y: number },
+	N: { P: Role; A: Role; B: Role; d: Role }
 ): void {
 	const u = unitAB(A, B);
 	const dist = Math.abs(u.x * (P.y - A.y) - u.y * (P.x - A.x));
 	if (!(dist > P_ON_LINE_EPSILON)) {
 		throw new ChoreographyError(
-			'`parallele(P, A, B) @double_perpendiculaire` : P est sur la droite (AB) : la parallèle est (AB) elle-même, il n’y a rien à construire.'
+			`\`${callText(N)} @double_perpendiculaire\` : ${capitalize(nom(N.P))} est sur ${laDroite(N.d)} : la parallèle est ${nom(N.d)} elle-même, il n’y a rien à construire.`
 		);
 	}
 }
@@ -958,7 +960,25 @@ function absorbSub(
 	hidden.push(...(subProduced.hiddenSupport ?? []));
 }
 
-const LINE_E_INSTRUCTION = 'La perpendiculaire e à (AB) passant par P apparaît';
+/** « parallele(P, A, B) », « parallele(P, d) », ou « parallele » sans nom lisible. */
+function callText(N: { P: Role; A: Role; B: Role; d: Role }): string {
+	const { P, A, B, d } = N;
+	if (!P.name || !d.name) return 'parallele';
+	if (A.name && B.name && d.name === `(${A.name}${B.name})`) {
+		return `parallele(${P.name}, ${A.name}, ${B.name})`;
+	}
+	return `parallele(${P.name}, ${d.name})`;
+}
+
+/** « la droite (AB) », « la droite d » ou « la droite ». */
+function laDroite(d: Role): string {
+	return d.name ? `la droite ${d.name}` : d.neutral;
+}
+
+/** Consigne de l'apparition de e (« La perpendiculaire e à (AB) passant par P apparaît »). */
+function lineEInstruction(N: { P: Role; d: Role }): string {
+	return `La perpendiculaire e à ${nom(N.d)} passant par ${nom(N.P)} apparaît`;
+}
 
 /**
  * `parallele @euclide @double_perpendiculaire`.
@@ -985,17 +1005,23 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 	const { figure, args, principalId, visibilite, sub } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
-	assertPOffLine(P, A, B);
+	const N = lineFormRoles(ctx, false);
+	assertPOffLine(P, A, B, N);
 
 	figure.hideElement(principalId);
 
 	// ─── 1re perpendiculaire : e ───
 	const { e, helpers } = createLineE(figure, args.ids);
-	const perp = sub('perpendiculaire', { ids: [Pid, Aid, Bid], coords: [P, A, B] }, e, {
-		contrainte: 'euclide',
-		methode: 'rayon_libre',
-		visibilite
-	});
+	const perp = sub(
+		'perpendiculaire',
+		{ ids: [Pid, Aid, Bid], coords: [P, A, B], lineName: args.lineName },
+		e,
+		{
+			contrainte: 'euclide',
+			methode: 'rayon_libre',
+			visibilite
+		}
+	);
 
 	// ─── Valeurs initiales (position des instruments) ───
 	const r1 = DP_INNER_RADIUS;
@@ -1073,7 +1099,7 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [e],
-			instruction: LINE_E_INSTRUCTION
+			instruction: lineEInstruction(N)
 		},
 		{
 			kind: 'compass-draw',
@@ -1084,7 +1110,7 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [arcPC],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en P, petite ouverture : un petit arc coupe e en C*'
+			instruction: `Compas ${en(N.P)}, petite ouverture : un petit arc coupe e en C*`
 		},
 		{
 			kind: 'compass-draw',
@@ -1095,7 +1121,7 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [arcPD],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Même ouverture, de l’autre côté de P : un petit arc coupe e en D*'
+			instruction: `Même ouverture, de l’autre côté ${de(N.P)} : un petit arc coupe e en D*`
 		},
 		{
 			kind: 'point-fade-in',
@@ -1103,7 +1129,7 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [],
 			animatePointIds: [Cstar, Dstar],
 			animateLineIds: [],
-			instruction: 'C* et D* apparaissent sur e, à égale distance de P'
+			instruction: `C* et D* apparaissent sur e, à égale distance ${de(N.P)}`
 		},
 		{
 			kind: 'compass-measure',
@@ -1114,7 +1140,9 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Compas en C*, on l’ouvre davantage (plus grand que PC*)'
+			instruction: N.P.name
+				? `Compas en C*, on l’ouvre davantage (plus grand que ${N.P.name}C*)`
+				: 'Compas en C*, on l’ouvre davantage (plus que la première ouverture)'
 		},
 		{
 			kind: 'compass-draw',
@@ -1155,7 +1183,7 @@ function buildDoublePerpendiculaireEuclide(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [segmentTrace],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'Règle par P et R : on trace la parallèle à (AB)'
+			instruction: `Règle par ${nom(N.P)} et R : on trace la parallèle à ${nom(N.d)}`
 		}
 	];
 
@@ -1204,17 +1232,23 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 	const { figure, args, principalId, visibilite, sub } = ctx;
 	const [Pid, Aid, Bid] = args.ids;
 	const [P, A, B] = args.coords;
-	assertPOffLine(P, A, B);
+	const N = lineFormRoles(ctx, false);
+	assertPOffLine(P, A, B, N);
 
 	figure.hideElement(principalId);
 
 	// ─── 1re perpendiculaire : e ───
 	const { e, helpers } = createLineE(figure, args.ids);
-	const perp = sub('perpendiculaire', { ids: [Pid, Aid, Bid], coords: [P, A, B] }, e, {
-		contrainte: 'equerre',
-		methode: 'pose_equerre',
-		visibilite
-	});
+	const perp = sub(
+		'perpendiculaire',
+		{ ids: [Pid, Aid, Bid], coords: [P, A, B], lineName: args.lineName },
+		e,
+		{
+			contrainte: 'equerre',
+			methode: 'pose_equerre',
+			visibilite
+		}
+	);
 
 	// ─── Valeurs initiales ───
 	const u0 = unitAB(A, B);
@@ -1290,7 +1324,7 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [e],
-			instruction: LINE_E_INSTRUCTION
+			instruction: lineEInstruction(N)
 		},
 		{
 			kind: 'compass-measure',
@@ -1301,7 +1335,7 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: "On pose l'équerre avec un bord sur e, l'angle droit en P"
+			instruction: `On pose l'équerre avec un bord sur e, l'angle droit ${en(N.P)}`
 		},
 		{
 			kind: 'ruler-trace',
@@ -1334,7 +1368,7 @@ function buildDoublePerpendiculaireEquerre(ctx: ChoreographyCtx): ChoreographyRe
 			animateDrawableIds: [segmentTrace2],
 			animatePointIds: [],
 			animateLineIds: [],
-			instruction: 'On prolonge le tracé le long de la règle : c’est la parallèle à (AB)'
+			instruction: `On prolonge le tracé le long de la règle : c’est la parallèle à ${nom(N.d)}`
 		}
 	];
 

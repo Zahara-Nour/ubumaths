@@ -42,6 +42,7 @@ import type {
 import { ChoreographyError } from './choreographies/types';
 import { CHOREOGRAPHED_BUILTINS } from './choreographies/registry';
 import { applyFinalVisibility } from './choreographies/visibility';
+import { shownName } from './choreographies/names';
 
 /**
  * A single entry in the timeline plan.
@@ -127,18 +128,22 @@ function symbolFigureId(
  * pensées pour trois points jouent telles quelles. Toute autre forme est
  * rendue inchangée.
  */
-function expandLineArgument(callExpr: DslFunctionCallExpr, stepper: DslStepper): CallArg[] {
-	if (!LINE_FORM_BUILTINS.has(callExpr.name) || callExpr.args.length !== 2) {
-		return [...callExpr.args];
-	}
+function expandLineArgument(
+	callExpr: DslFunctionCallExpr,
+	stepper: DslStepper
+): { callArgs: CallArg[]; lineName?: string } {
+	const unchanged = { callArgs: [...callExpr.args] };
+	if (!LINE_FORM_BUILTINS.has(callExpr.name) || callExpr.args.length !== 2) return unchanged;
 	const [first, second] = callExpr.args;
 	const lineId = symbolFigureId(second, stepper);
 	const el = lineId ? stepper.figure.getElementById(lineId) : undefined;
-	if (!el) return [...callExpr.args];
-	if (isLine(el)) return [first, el.point1Id, el.point2Id];
-	if (isSegment(el)) return [first, el.startId, el.endId];
-	if (isRay(el)) return [first, el.originId, el.throughId];
-	return [...callExpr.args];
+	if (!el) return unchanged;
+	// Nom de d pour les consignes (« coupe d » au lieu de « coupe (AB) »).
+	const lineName = shownName(stepper.figure, lineId ?? undefined) ?? undefined;
+	if (isLine(el)) return { callArgs: [first, el.point1Id, el.point2Id], lineName };
+	if (isSegment(el)) return { callArgs: [first, el.startId, el.endId], lineName };
+	if (isRay(el)) return { callArgs: [first, el.originId, el.throughId], lineName };
+	return unchanged;
 }
 
 export class ConstructionExecutor {
@@ -484,8 +489,10 @@ export class ConstructionExecutor {
 		if (!principalEntry?.figureId) return null;
 		const callExpr = stmt.value;
 		if (callExpr.kind !== 'call') return null;
-		const args = this.resolveCallArgsOn(expandLineArgument(callExpr, stepper), stepper);
-		if (!args) return null;
+		const { callArgs, lineName } = expandLineArgument(callExpr, stepper);
+		const resolved = this.resolveCallArgsOn(callArgs, stepper);
+		if (!resolved) return null;
+		const args = lineName ? { ...resolved, lineName } : resolved;
 		const ctx: ChoreographyCtx = {
 			figure: stepper.figure,
 			args,
