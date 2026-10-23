@@ -2,11 +2,11 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1641._
+_Mis à jour le 2026-10-23, après #1644._
 
-- **État** : chantier CLOS. Vue « Carte » mergée (#1641), essayée par David sur le serveur de la branche (« ça marche nickel »). Pas encore en prod : elle partira au prochain `deploy:prod`.
+- **État** : chantier CLOS. Vue « Carte » mergée (#1641), essayée par David sur le serveur de la branche (« ça marche nickel ») ; type du point nommé sur chaque feuille (#1644, demandé par David). Pas encore en prod : partira au prochain `deploy:prod`.
 - **Prochaine action** : aucune. Doc durable : `docs/systeme/cours-et-chapitres.md` (§ Programme, couverture, progression).
-- **En attente de David** : rien. Question restée ouverte : afficher le `kind` du point (connaissance, savoir-faire…) ? Proposé « non » pour commencer.
+- **En attente de David** : rien. Doublon noté en revue : la page élève d'une notion a sa propre table de libellés des types (majuscules).
 - **Pièges en cours** : aucun.
 - **Worktree / branche** : supprimés.
 
@@ -26,7 +26,7 @@ Maquette validée (« le rendu me va ») : https://claude.ai/artifact/RSZtjvdQKJ
 - Au départ, ouvert jusqu'aux sous-notions, points repliés ; « Tout déplier » / « Tout replier » (ne garde que les branches).
 - Points archivés masqués ; nœud archivé montré seulement s'il porte encore un point (mention « archivé »).
 - Erreur explicite si un nœud visé est introuvable, jamais d'arbre amputé en silence.
-- Pas de `kind` du point affiché (question laissée ouverte, proposé « non » pour commencer).
+- Type du point affiché dans la feuille (« 2-231 · savoir-faire · approfondissement ») : tranché par David après #1641, livré en #1644.
 
 ## Fichiers
 
