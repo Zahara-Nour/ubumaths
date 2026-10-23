@@ -17,7 +17,8 @@
 		partialArcSVGPath,
 		partialCircleSVGPath,
 		drawingTipPosition,
-		compassDrawAngle
+		compassDrawAngle,
+		visibleInstruments as visibleInstrumentsFor
 	} from '../core/render-helpers';
 	import { easeInOut, easeWithFixedRamp } from '../core/animator';
 	import {
@@ -294,17 +295,7 @@
 	// Recompute when figureVersion changes (Map reference is stable, $derived needs a hint)
 	let visibleInstruments = $derived.by(() => {
 		void figureVersion;
-		const all = [...instrumentStates.values()].filter((s) => s.visible);
-		if (!animation) return all;
-		// Hide auto-instruments when animation is complete
-		if (animation.autoInstruments.size > 0 && animation.drawProgress >= 1) {
-			return all.filter((s) => !animation.autoInstruments.has(s.type));
-		}
-		// Hide pencil during instrument move phase (pencil appears only when drawing starts)
-		if (drawProgress <= 0 && animation.autoInstruments.has('pencil')) {
-			return all.filter((s) => s.type !== 'pencil');
-		}
-		return all;
+		return visibleInstrumentsFor(instrumentStates.values(), animation, drawProgress);
 	});
 </script>
 

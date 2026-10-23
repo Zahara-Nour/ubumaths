@@ -187,3 +187,10 @@ Faites par un agent (aucun navigateur pilotable dans la session) : consignes rel
 - **Limites** : 0 sur le point le plus à gauche (le plus bas si vertical) → consigne « sur B… de B » ; 6,37 → « 6,4 » ; 6,3 ÷ 2 = 3,15 ; entier sans « ,0 » ; noms : règle des consignes du lot 8.
 - **Erreurs** : A = B → « A et B sont confondus : il n'y a pas de longueur à mesurer » ; AB > 15 cm → « AB = 17,2 cm : trop long pour la règle de 15 cm, rapprochez les points » (règle de longueur fixe, choix de David sur reco) ; `milieu @euclide` → « non disponible ».
 - Tests : `core/__tests__/milieu-mesure.test.ts` (22, tous rouges sans le code).
+
+### PR 1 — réalisé (2026-10-23)
+
+- `choreographies/milieu.ts` (voie `regle_graduee`, seule et par défaut) ; ligne `milieu` du registre ; `expandSegmentArgument` (`executor.ts`) pour `milieu(s)`.
+- Revue `code-reviewer` Sonnet : aucun bloquant. **Important corrigé** : le crayon, instrument principal d'un `compass-measure`, était caché pendant tout son déplacement (règle « crayon caché jusqu'au tracé » du canevas) → règle extraite dans `visibleInstruments` (`core/render-helpers.ts`), le crayon qui se déplace lui-même reste visible ; test `visible-instruments.test.ts` (1 rouge sans le correctif). Mineurs corrigés : 15,04 cm accepté (comparaison sur la valeur lue), lecture 0 → confondus, accord « confondues » en tournure neutre, 6,35 → 6,4 (EPS). Accepté : tournure neutre « la première / seconde extrémité » selon l'ordre du script.
+- Vérifié en navigateur sans fenêtre (port 5183) : règle posée 0 sur A, 6,8 en face de B ; crayon visible pendant son glissement ; I puis codage en `@complet`.
+- Tests : `milieu-mesure.test.ts` 25 + `visible-instruments.test.ts` 4 ; `test:server constructions-v2` 390 ✓ / 21 ignorés. `check:incremental` 0 · `types:cliquet` tenu · `lint:fast` propre. Doc : `docs/systeme/geometrie/constructions.md` § 4, § 5, § 9.

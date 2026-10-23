@@ -29,7 +29,7 @@ import { capitalize, de, nom, role, type Role } from './names';
 /** Longueur de la règle (`Ruler.svelte`, `length = 15`), en unités = cm. */
 const RULER_LENGTH = 15;
 
-/** Tolérance des comparaisons de longueur (unités math). */
+/** Tolérance des comparaisons (unités math). */
 const EPS = 1e-9;
 
 /** Nombre écrit à la française, sans zéro inutile : 6,4 · 3,15 · 6. */
@@ -54,15 +54,18 @@ const regleGradueeChoreography: ChoreographyFn = (ctx) => {
 	const nameI = role(figure, principalId, 'le milieu');
 	const ab = segmentName(nameA, nameB);
 	const length = Math.hypot(B.x - A.x, B.y - A.y);
+	// Lecture au millimètre ; le calcul de la consigne part de cette valeur.
+	// EPS : 6,35 se lit 6,4 malgré l'écriture binaire (63,4999…).
+	const read = Math.round(length * 10 + EPS) / 10;
 
-	if (length < EPS) {
+	// Moins d'un demi-millimètre : la règle lit 0, rien à mesurer.
+	if (read === 0) {
+		const both = nameA.name && nameB.name;
 		throw new ChoreographyError(
-			`${capitalize(nom(nameA))} et ${nom(nameB)} sont confondus : il n'y a pas de longueur à mesurer.`
+			`${capitalize(nom(nameA))} et ${nom(nameB)} sont ${both ? 'confondus' : 'confondues'} : il n'y a pas de longueur à mesurer.`
 		);
 	}
-	// Lecture au millimètre ; le calcul de la consigne part de cette valeur.
-	const read = Math.round(length * 10) / 10;
-	if (length > RULER_LENGTH + EPS) {
+	if (read > RULER_LENGTH) {
 		throw new ChoreographyError(
 			`${ab ?? 'Le segment'} = ${formatCm(read)} cm : trop long pour la règle de ${RULER_LENGTH} cm, rapprochez les points.`
 		);

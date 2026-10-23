@@ -125,6 +125,10 @@ describe('milieu @mesure — lecture arrondie au millimètre', () => {
 		]);
 	});
 
+	it('6,35 se lit 6,4 (pas 6,3 par l’écriture binaire)', () => {
+		expect(at(6.35)[0]).toBe('On place le 0 de la règle sur A et on lit AB = 6,4 cm');
+	});
+
 	it('valeur entière sans « ,0 »', () => {
 		expect(at(6)).toEqual([
 			'On place le 0 de la règle sur A et on lit AB = 6 cm',
@@ -225,6 +229,18 @@ describe('milieu @mesure — erreurs', () => {
 		expect(
 			loadError(['A = point(0, 0)', 'B = point(17.2, 0)', 'I = milieu(A, B) @mesure'])
 		).toMatch(/AB = 17,2 cm : trop long pour la règle de 15 cm, rapprochez les points/);
+	});
+
+	it('moins d’un demi-millimètre : la règle lit 0, points tenus pour confondus', () => {
+		expect(
+			loadError(['A = point(0, 0)', 'B = point(0.04, 0)', 'I = milieu(A, B) @mesure'])
+		).toMatch(/A et B sont confondus/);
+	});
+
+	it('15,04 cm se lit 15 cm : accepté, comme la valeur lue', () => {
+		expect(
+			loadError(['A = point(0, 0)', 'B = point(15.04, 0)', 'I = milieu(A, B) @mesure'])
+		).toBeUndefined();
 	});
 
 	it('exactement 15 cm : accepté', () => {
