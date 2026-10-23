@@ -2,14 +2,14 @@
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, après #1656 (5a mergé, pas en prod)._
+_Mis à jour le 2026-10-24, après #1660 (5b mergé, pas en prod)._
 
-- **État** : lot 5. ~~Q19~~ (#1655) et ~~5a D1 + Q18~~ (#1656, § 53-54) mergés : f′ finit par `finalDerivative` (`pedagogical-differentiation/final-form.ts`) sur les corrections, `.dériver`, le bouton et la carte.
+- **État** : lot 5. ~~Q19~~ (#1655), ~~5a D1 + Q18~~ (#1656) et ~~5b D2~~ (#1658 + #1660, § 55-56) mergés. f′ finit par `finalDerivative` (`final-form.ts`) ; dans l'étude des variations, `displayedDerivatives` (`variations/display.ts`) ajoute l'étape « On factorise pour étudier le signe » (`factoriser` lycée, garde-fous : exposants, décimaux, nombre seul devant une somme, racine + fraction).
 - **Page de synthèse pour David** : https://claude.ai/artifact/R58U2RADzLk3AMZYZ4TEJs — à republier **à chaque merge, avant le `/clear`**.
-- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → **5b D2** → 5c valeur exacte → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
-- **Prochaine action** : 5b (D2), worktree neuf depuis `origin/main`. `reducedDerivative` (variations) : numérateur par `factoriser` (lycée), étape « On factorise pour étudier le signe », Q18 aussi (§ 49-50). Repartir de `finalDerivative` (même division par le facteur commun, même signe que `tidy`).
-- **En attente de David** : vérifications manuelles des espaces (#1642) et de f′ (#1656) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
-- **Pièges en cours** : ne plus sonder avec `pnpm math` (`.diff` garde `tidyTerms`, David) ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
+- **Ordre des lots** : ~~4a~~ → … → ~~4e~~ → **5** (~~Q19~~ → ~~5a D1~~ → ~~5b D2~~ → **5c valeur exacte** → 5d D3 → 5e D4 → 5f restes) → 6 valeurs approchées → 7 renommages.
+- **Prochaine action** : 5c (§ 13 A, § 49) : une seule fonction « valeur exacte à afficher » pour `readable`, `tidyKeepingValue` (`{{eval}}`), `tidyExactValue` (tableau), `simplifyExact` (grapheur), limites et solutions ; `0,1+0,2 → 0,3`, `2,50 → 2,5`, `cos(π/6)` calculé partout. Phase 0 d'abord (comportements, à valider).
+- **En attente de David** : vérifications manuelles des espaces (#1642), de f′ (#1656) et des variations (#1658/#1660) ; choix pour `pnpm math` (supprimer avec `/calc`, ou brancher sur l'Atelier, § 54).
+- **Pièges en cours** : ne plus sonder avec `pnpm math` ; `(x^{0,5})′` écrit `0,5/x^{1/2}` (laissé) ; bug de `tidy` (somme sans parenthèse après un −) contourné dans `tidyTerms` (§ 41, à 5f) ; `sqrt-product` ne regarde pas l'indice `power` ; **pas de `Claude-Session:` ni de lien `claude.ai/code` dans commits et PR** ; ne pas re-proposer ce qui est figé (§ 0).
 - **Worktree / branche** : aucun.
 
 ## 0. Ce qui est déjà figé — ne pas re-proposer
@@ -762,3 +762,15 @@ D1 révisée (§ 17) + Q18 (§ 50) dans `withTidyStep` ; bug quot-04 d'abord en 
 Décisions de David en route : `8x + 4`, `18x + 6`, `−sin x`, `e^{eˣ+x}` acceptées (« les formes ont l'air bien » ; corpus mis à jour) ; exponentielles différentes laissées (`eˣ + 2e^{2x}`) ; `.diff` de `pnpm math` NON aligné (`/calc` à supprimer) ; ne plus sonder avec `pnpm math` — à trancher plus tard : la supprimer avec `/calc`, ou la brancher sur l'Atelier (console Calcul en CLI).
 
 Corrigés en route (rouges d'abord) : `auto` regroupe `(eˣ)²` et `e^{2x}` (identités d'Euler repassées après développement, `normalize.ts`) ; valeur fausse `sqrt-square`/`square-sqrt`/`sqrt-quotient` sur une racine n-ième (`∛(x²) → |x|`). Revue `code-reviewer` (opus) : aucune valeur fausse (41 fonctions sondées) ; ses 3 points traités. Oracle : 0 faux, ~35 fonctions rejoignent la forme de classe, aucune ajoutée. Carte : 3 ms au pire sur le corpus. CI verte (16/16).
+
+## 55. Lot 5b lancé (branche `feat/simplify-carte-5b-d2`, 2026-10-23)
+
+D2 (§ 18) + Q18 (§ 50) dans `reducedDerivative` (`variations/display.ts`) : on part de `finalDerivative` (5a), puis numérateur par `factoriser` (lycée), dénominateur gardé ; rien de factorisable (Δ < 0) → forme de 5a. `.variations` et le bouton « Variations » : étape « Dérivée » (forme de 5a, celle de `.dériver`), puis « On factorise pour étudier le signe » quand l'écriture change ; la ligne de réponse montre la forme factorisée. Appelants : `atelier/variations-steps.ts`, CLI `variations.command.ts` (aucune correction d'exercice ne l'appelle). Codé par `mathast-expert`, tests rouges d'abord.
+
+Revue `code-reviewer` (opus, 82 fonctions comparées numériquement) : aucune forme fausse. Corrigés (rouges d'abord) : `factoriser` touchait l'exposant (`2x e^{(x−1)(x+1)}`) → exponentielles gardées telles qu'écrites ; un nombre seul devant une somme non polynomiale ou de degré 1 refusé (`2(e^{2x} − 2eˣ)`, `4(x − 2)` → forme de 5a ; `−2(x² + 9)/(x² − 9)²` gardé, forme de la phase 0) ; décimal tapé gardé (`x(3x − 4,8)`, S1) ; **bug de 5a** : `(−x²/(x+2))′` gardait le numérateur `x² − 2x(x+2)` (− devant le quotient), corrigé dans `final-form.ts` (`withOppositeInNumerator`) → `−(x² + 4x)/(x+2)²`, `.dériver` compris.
+
+Laissés, à montrer à David : `x e^{−x²}` → `−2(x − √2/2)(x + √2/2)e^{−x²}` (juste, lourd ; `(1 − 2x²)e^{−x²}` se lit mieux) ; `(x² − 3x + 2)/(x² + 1)` → `3(x − 1/3 − √10/3)(x − 1/3 + √10/3)/(x²+1)²`. Pas factorisés (forme de 5a) : `x − 1/x`, `2e^{2x} − 3eˣ`, bicarrés à racines irrationnelles.
+
+## 56. Lot 5b mergé (#1658, #1660, 2026-10-24) ; racines avec fraction (David : « je te suis »)
+
+CI verte. Suite (branche `fix/simplify-carte-5b-racines`) : un facteur qui mêle racine et fraction n'est pas affiché, la forme de 5a reste — `x e^{−x²}` → `(1 − 2x²)e^{−x²}`, `(x² − 3x + 2)/(x² + 1)` → `(3x² − 2x − 3)/(x² + 1)²` ; `(x − √2)(x + √2)`, `x²(x − 2√3)(x + 2√3)` gardées. 2 tests rouges avant.

@@ -24,7 +24,7 @@ import type {
 } from '$lib/mathAST/variations/types';
 import { computeVariations } from '$lib/mathAST/variations';
 import { limitValueLatex, variationValueLatex } from '$lib/mathAST/variations/latex';
-import { reducedDerivative } from '$lib/mathAST/variations/display';
+import { displayedDerivatives } from '$lib/mathAST/variations/display';
 import { createSafeEvaluator } from '$lib/mathAST/eval/compile';
 import { endpointToNumber } from '$lib/math/intervals/endpoint';
 import { unresolvedDerivativeZerosMessage } from '$lib/mathAST/variations/format';
@@ -107,8 +107,11 @@ export function variationsRendering(
 
 		const f = `${name}(${variable})`;
 		const fPrime = `${name}'(${variable})`;
-		// Numérateur réduit : le signe de f′ doit se lire dans ce qui est écrit
-		const answer = `${fPrime} = ${toLatex(reducedDerivative(result.derivative, result.expression))}`;
+		// La forme de `.dériver`, puis sa forme factorisée : le signe de f′ doit
+		// se lire dans ce qui est écrit (D2, lot 5b de simplify-carte)
+		const derivatives = displayedDerivatives(result.derivative, result.expression);
+		const derivativeLatex = `${fPrime} = ${toLatex(derivatives.final)}`;
+		const answer = `${fPrime} = ${toLatex(derivatives.factored)}`;
 		const derivativeAt = createSafeEvaluator(result.derivative, variable);
 
 		const steps: RenderedStep[] = [];
@@ -122,7 +125,8 @@ export function variationsRendering(
 			});
 
 		push('Domaine de définition', `\\mathcal{D}_{${name}} = ${domainLatex(result.domain)}`);
-		push('Dérivée', answer);
+		push('Dérivée', derivativeLatex);
+		if (answer !== derivativeLatex) push('On factorise pour étudier le signe', answer);
 
 		if (result.derivativeZerosUnresolved) {
 			push(unresolvedDerivativeZerosMessage(variable).split('\n').join(' ; '));

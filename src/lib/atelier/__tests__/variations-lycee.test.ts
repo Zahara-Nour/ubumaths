@@ -218,8 +218,12 @@ describe('virgule décimale', () => {
 
 describe('f′ affichée réduite : son signe se lit', () => {
 	it.each([
-		['.variations (x+1)/(x-2)', /^f'\(x\) = \\dfrac\{-3\}\{\\left\( x - 2 \\right\)\^2\}$/],
-		['.variations (x^2+1)/x', /^f'\(x\) = \\dfrac\{x\^2 - 1\}\{x\^2\}$/],
+		// Le signe de la barre est celui de `tidy` (lot 5a) ; numérateur factorisé (lot 5b, D2)
+		['.variations (x+1)/(x-2)', /^f'\(x\) = -\\dfrac\{3\}\{\\left\( x - 2 \\right\)\^2\}$/],
+		[
+			'.variations (x^2+1)/x',
+			/^f'\(x\) = \\dfrac\{\\left\( x - 1 \\right\) \\left\( x \+ 1 \\right\)\}\{x\^2\}$/
+		],
 		[
 			'.variations x^2/(x-1)',
 			/^f'\(x\) = \\dfrac\{(x\^2 - 2 x|x \\left\( x - 2 \\right\))\}\{\\left\( x - 1 \\right\)\^2\}$/
@@ -258,7 +262,7 @@ describe('le texte de la ligne : notation lisible', () => {
 		expect(output).not.toContain('{-2}');
 	});
 
-	it('la dérivée du texte est réduite aussi', () => {
-		expect(run('.variations x^2/(x-1)').output).toMatch(/f'\(x\) = \(x\^2-2x\)\/\(x-1\)\^2/);
+	it('la dérivée du texte est factorisée aussi', () => {
+		expect(run('.variations x^2/(x-1)').output).toContain("f'(x) = x(x-2)/(x-1)^2");
 	});
 });

@@ -114,7 +114,10 @@ describe('la ligne « Variations »', () => {
 
 		desk.runFromPanel('variations', 'f');
 
-		expect((desk.entries[0]?.latex ?? '').replace(/\s/g, '')).toBe("f'(x)=9x^2-2x");
+		// Factorisée pour lire le signe (lot 5b de simplify-carte, D2)
+		expect((desk.entries[0]?.latex ?? '').replace(/\s/g, '')).toBe(
+			String.raw`f'(x)=x\left(9x-2\right)`
+		);
 	});
 });
 
