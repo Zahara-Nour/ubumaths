@@ -40,9 +40,11 @@
 --   ('1GEN-029', $pt$Suites géométriques : explicitation du terme de rang $n$$pt$, $pt$Suites géométriques à termes strictement positifs : explicitation du terme de rang $n$$pt$),
 --   ('1GEN-030', $pt$Suites géométriques : sens de variation$pt$, $pt$Suites géométriques à termes strictement positifs : sens de variation$pt$),
 --   ('1GEN-031', $pt$Suites géométriques : représentation graphique$pt$, $pt$Suites géométriques à termes strictement positifs : représentation graphique$pt$);
--- -- Verrou sur les points neufs : une écriture d'élève qui en viserait un (clé étrangère, FOR KEY
--- -- SHARE) attend la fin de cette transaction ; la garde ci-dessous reste vraie jusqu'au delete.
--- select 1 from public.curriculum_points p where p.code in ('TSPE-626', 'TCOMP-379') for update of p;
+-- -- Verrou sur les points neufs et les points renommés : une écriture d'élève qui viserait un point
+-- -- neuf (clé étrangère, FOR KEY SHARE) attend la fin de cette transaction ; les gardes ci-dessous
+-- -- restent vraies jusqu'aux écritures.
+-- select 1 from public.curriculum_points p
+--  where p.code in ('TSPE-626', 'TCOMP-379') or p.code in (select code from _rb_nom) for update of p;
 -- do $rb_garde$
 -- declare
 -- 	v_detail text;
@@ -74,7 +76,7 @@
 --   from public.curriculum_points n
 --  where n.code in ('TSPE-626', 'TCOMP-379') and p.grade = n.grade and p.display_order > n.display_order;
 -- delete from public.curriculum_points p where p.code in ('TSPE-626', 'TCOMP-379');
--- update public.curriculum_points p set name = r.ancien from _rb_nom r where p.code = r.code;
+-- update public.curriculum_points p set name = r.ancien from _rb_nom r where p.code = r.code and p.name = r.nom;
 -- ROLLBACK:END
 -- ============================================================================
 
@@ -194,7 +196,7 @@ begin
 	  join _pl_chemin c on c.id = n.node_id and c.chemin = s.chemin
 	  join public.curriculum_points j on j.code = s.jumeau and j.display_order = s.ordre_jumeau
 	   and n.rubrique is not distinct from j.rubrique and n.kind = j.kind and n.exigence = j.exigence
-	   and n.regime_acquisition = j.regime_acquisition;
+	   and n.regime_acquisition = j.regime_acquisition and n.rang is not distinct from j.rang;
 	if v_n <> 2 then
 		raise exception 'passe lycée : points neufs conformes : %/2', v_n;
 	end if;

@@ -27,7 +27,7 @@ import { readFileSync } from 'node:fs';
 import type { Client } from 'pg';
 import { getPostgresClient } from '../helpers/database/postgres-client';
 import { extractRollback, TRANSACTION_CONTROL } from '../helpers/database/migration-rollback';
-import { undoLaterMigrations } from '../helpers/database/later-migrations';
+import { PASSE_LYCEE, undoLaterMigrations } from '../helpers/database/later-migrations';
 
 // ============================================================================
 // TYPES
@@ -82,7 +82,7 @@ interface PointRow {
 // CONSTANTES
 // ============================================================================
 
-const MIGRATION = 'supabase/migrations/20261022180000_passe_points_lycee.sql';
+const MIGRATION = PASSE_LYCEE;
 const fixture: Fixture = JSON.parse(
 	readFileSync('tests/integration/fixtures/passe-lycee.json', 'utf-8')
 );

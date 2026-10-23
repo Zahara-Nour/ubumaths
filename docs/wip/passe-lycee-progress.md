@@ -157,3 +157,8 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   `undoLaterMigrations(pg, after)` défait seulement ce qui suit une migration ; `passe-points-lycee` lit ainsi
   l'état qu'ELLE laisse. Jouée en local par `db push` (hors test), rollback éprouvé (y compris son refus si un
   usage s'accroche à un point neuf).
+- **2026-10-23 — Revues de la PR 2 (Opus).** `security-auditor` et `code-reviewer` : aucun bloquant. Corrigé : le
+  rollback verrouille aussi les 4 points renommés et ne rend un libellé que s'il est encore celui de la migration ;
+  la vérification finale contrôle `rang` ; `passe-points-lycee` importe `PASSE_LYCEE`. Laissé : refus du rollback
+  prouvé sur une seule des 6 tables d'usages (les 6 sont lues par la garde) ; après un rollback, le numéro
+  automatique max + 1 redonnerait TSPE-626 / TCOMP-379.
