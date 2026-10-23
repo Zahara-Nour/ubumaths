@@ -14,6 +14,8 @@ import { needsOneSidedAnalysis, checkLimitsEqual, analyzeSign } from '../one-sid
 import { number, variable, divide, func, positiveInfinity, negativeInfinity } from '../../factory';
 import { getNumericValue } from '../../common/numeric';
 import { isInfinity } from '../../guards';
+import { parseCustom } from '../../parser/custom';
+import type { LimitResult } from '../types';
 
 describe('One-Sided Limits', () => {
 	describe('detection of one-sided analysis need', () => {
@@ -207,6 +209,26 @@ describe('One-Sided Limits', () => {
 			const expr = { type: 'addition', left: variable('x'), right: number('1') } as const;
 			const oneSided = analyzeOneSidedLimits(expr, 'x', number('0'));
 			const discontinuity = analyzeDiscontinuity(oneSided, number('1'));
+
+			expect(discontinuity.type).toBe('none');
+		});
+
+		it('ne dépend pas de l’ordre écrit des parenthèses d’une valeur paramétrique', () => {
+			// `tidy` garde l'ordre écrit entre deux sommes (Q13, lot 4c-bis du
+			// chantier simplify-carte) : une limite écrite `(a−1)(a+1)` et une
+			// valeur au point écrite `(a+1)(a−1)` restent le même nombre
+			const limit = (direction: 'left' | 'right'): LimitResult => ({
+				variable: 'x',
+				approach: number('0'),
+				direction,
+				status: 'exact',
+				value: parseCustom('(a-1)(a+1)'),
+				indeterminateForm: 'none',
+				technique: 'direct-substitution',
+				steps: []
+			});
+			const oneSided = { left: limit('left'), right: limit('right'), twoSidedExists: true };
+			const discontinuity = analyzeDiscontinuity(oneSided, parseCustom('(a+1)(a-1)'));
 
 			expect(discontinuity.type).toBe('none');
 		});

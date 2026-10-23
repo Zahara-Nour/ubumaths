@@ -49,6 +49,8 @@ const CASES: readonly (readonly [string, string])[] = [
 	['e^x ln(x)', 'ln(x)e^x'],
 	['e^x sin(x)', 'sin(x)e^x'],
 	['2^x*ln(2)', 'ln(2)*2^x'],
+	['(1/2)^x(x+1)', '(x+1)(1/2)^x'],
+	['(1/2)^x*ln(x)*x', 'xln(x)(1/2)^x'],
 	['sin(x)cos(x)', 'cos(x)sin(x)']
 ];
 
@@ -70,6 +72,16 @@ describe('ordre des facteurs (Q13) — idempotent', () => {
 		expect(canonical(once)).toBe(once);
 		const onceKept = kept(input);
 		expect(kept(onceKept)).toBe(onceKept);
+	});
+});
+
+describe('ordre des facteurs (Q13) — une base des deux côtés de la barre (S3)', () => {
+	it.each([
+		['(x+1)(x-1)(2x+2)/(4(x+1))', '{(x+1)^2(x-1)}/{2(x+1)}'],
+		['(x-1)(x+1)(2x+2)/(4(x+1))', '{(x-1)(x+1)^2}/{2(x+1)}']
+	])('%s → %s, idempotent', (input, expected) => {
+		expect(canonical(input)).toBe(expected);
+		expect(canonical(expected)).toBe(expected);
 	});
 });
 

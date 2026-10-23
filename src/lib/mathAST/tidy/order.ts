@@ -59,7 +59,6 @@ import {
 	isDelimiter,
 	isHole,
 	isImaginaryUnit,
-	isNumber,
 	isSegmentLength,
 	isSubscript,
 	isSymbol,
@@ -135,7 +134,7 @@ function writtenForm(node: MathNode): string {
 /**
  * Rang de la catégorie d'une base. Une puissance d'exposant non rationnel prend
  * celle de sa base pour une lettre ou une somme (`xⁿ`, `(x + 1)ⁿ`) ; de base
- * numérique ou constante, c'est une exponentielle (`eˣ`, `2ˣ`) ; le reste
+ * sans inconnue, c'est une exponentielle (`eˣ`, `2ˣ`, `(1/2)ˣ`, `(−2)ˣ`) ; le reste
  * (`(ln x)ˣ`…) passe en dernier.
  */
 function categoryOf(base: MathNode): number {
@@ -165,9 +164,8 @@ function categoryOf(base: MathNode): number {
 
 /** La catégorie d'une puissance d'exposant non rationnel, d'après sa base. */
 function powerCategory(base: MathNode): number {
-	if (isNumber(base)) return CATEGORY_EXPONENTIAL;
+	if (!containsUnknown(base)) return CATEGORY_EXPONENTIAL;
 	const category = categoryOf(base);
-	if (category === CATEGORY_CONSTANT) return CATEGORY_EXPONENTIAL;
 	if (category === CATEGORY_SYMBOL || category === CATEGORY_SUM) return category;
 	return CATEGORY_OTHER;
 }
@@ -176,29 +174,36 @@ function powerCategory(base: MathNode): number {
 // Ordre des facteurs
 // =============================================================================
 
-function compareFactors(a: TidyFactor, b: TidyFactor): number {
-	const categoryA = categoryOf(a.base);
-	const categoryB = categoryOf(b.base);
-	if (categoryA !== categoryB) return categoryA - categoryB;
-	// Deux parenthèses : l'ordre écrit reste (le tri est stable). Le regroupement
-	// des termes semblables n'en dépend pas : sa clé est triée (`factorsKey`).
-	if (categoryA === CATEGORY_SUM && !sameBase(a, b)) return 0;
+/** Un facteur décoré pour le tri : sa catégorie, son écriture, son rang écrit. */
+type FactorOrderKey = {
+	readonly factor: TidyFactor;
+	readonly category: number;
+	readonly text: string;
+	/** Rang de la première apparition de sa base dans le produit. */
+	readonly written: number;
+};
 
-	const textA = writtenForm(a.base);
-	const textB = writtenForm(b.base);
-	if (textA !== textB) return textA < textB ? -1 : 1;
-
-	return compareRational(a.exponent, b.exponent);
-}
-
-/** Les deux facteurs ont-ils la même base (`(x + 1)` et `(x + 1)²`) ? */
-function sameBase(a: TidyFactor, b: TidyFactor): boolean {
-	return writtenForm(a.base) === writtenForm(b.base);
+function compareFactors(a: FactorOrderKey, b: FactorOrderKey): number {
+	if (a.category !== b.category) return a.category - b.category;
+	// Deux parenthèses : l'ordre écrit reste — le rang de la première apparition
+	// de la base, qui garde le tri transitif quand une base revient (`(x + 1)`
+	// des deux côtés de la barre). Le regroupement des termes semblables n'en
+	// dépend pas : sa clé est triée (`factorsKey`).
+	if (a.category === CATEGORY_SUM && a.written !== b.written) return a.written - b.written;
+	if (a.text !== b.text) return a.text < b.text ? -1 : 1;
+	return compareRational(a.factor.exponent, b.factor.exponent);
 }
 
 /** Trie les facteurs d'un terme selon l'ordre canonique. */
 export function sortFactors(factors: readonly TidyFactor[]): TidyFactor[] {
-	return [...factors].sort(compareFactors);
+	const firstSeen = new Map<string, number>();
+	const keys = factors.map((factor, index): FactorOrderKey => {
+		const text = writtenForm(factor.base);
+		const written = firstSeen.get(text) ?? index;
+		firstSeen.set(text, written);
+		return { factor, category: categoryOf(factor.base), text, written };
+	});
+	return keys.sort(compareFactors).map((key) => key.factor);
 }
 
 // =============================================================================

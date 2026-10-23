@@ -10,7 +10,8 @@
 import type { MathNode } from '../types';
 import type { LimitDirection, LimitResult, OneSidedLimitResult, LimitOptions } from './types';
 import type { LimitStepRecorder } from './step-recorder';
-import { isNumber, isInfinity, isFunction } from '../guards';
+import { isNumber, isInfinity, isFunction, isZero } from '../guards';
+import { parentheses, subtract } from '../factory';
 import { classifyLimitValue } from './indeterminate';
 import { structurallyEqual } from './known-limits';
 import { tidy } from '../tidy';
@@ -188,7 +189,9 @@ const SAME_VALUE_TOLERANCE = 1e-9;
  * diffèrent : la limite est écrite par `writeLimitValue` (`0.5` d'un énoncé
  * décimal, `1 - \\sin a`), la valeur au point vient de l'évaluation exacte
  * (`\\dfrac{1}{2}`, `-\\sin a + 1`). Comparaison numérique quand les deux
- * s'évaluent ; sinon structurelle, après `tidy` des deux côtés.
+ * s'évaluent ; sinon structurelle, après `tidy` des deux côtés, ou par leur
+ * différence mise au propre : `tidy` garde l'ordre écrit entre deux sommes
+ * (`(a − 1)(a + 1)` et `(a + 1)(a − 1)` restent distincts) mais les regroupe.
  */
 function sameValue(a: MathNode, b: MathNode): boolean {
 	const x = tryApproximate(a);
@@ -196,7 +199,9 @@ function sameValue(a: MathNode, b: MathNode): boolean {
 	if (x !== null && y !== null) {
 		return Math.abs(x - y) <= SAME_VALUE_TOLERANCE * Math.max(1, Math.abs(x), Math.abs(y));
 	}
-	return structurallyEqual(tidy(a), tidy(b));
+	return (
+		structurallyEqual(tidy(a), tidy(b)) || isZero(tidy(subtract(parentheses(a), parentheses(b))))
+	);
 }
 
 function tryApproximate(node: MathNode): number | null {
