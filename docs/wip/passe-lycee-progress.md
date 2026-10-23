@@ -6,20 +6,20 @@ Suite de [arbre-notions](arbre-notions-progress.md) (passe décidée par David l
 
 ## Reprendre ici
 
-_Mis à jour le 2026-10-23, PR 2 des scissions (réécritures) en cours._
+_Mis à jour le 2026-10-23, après #1651._
 
-- **État** : lots A, B, C et scissions PR 1 en prod. PR 2 écrite (worktree `passe-lycee`) : 7 modèles, 10 neufs,
-  18 tags ; preuves faites (specs, tirages, intégration verte et rouge sans la migration). Reste PR 3 (H : 10
-  modèles dans leur vrai programme).
-- **Prochaine action** : commit poussé (typecheck 0 erreur, cliquet tenu, lint rapide propre) ; ouvrir la PR,
-  revues Opus (`code-reviewer` + `security-auditor`), merge, `db:migrate`, vérification MCP ; puis PR 3.
-- **En attente de David** : rien. À reposer pour chaque PR : la question d'accès.
+- **État** : lots A, B, C, scissions PR 1 (#1646) et PR 2 réécritures (#1651) en prod (`db:migrate` fait, vérifié
+  par le MCP). Reste PR 3 (H : 10 modèles dans leur vrai programme), dernière PR des scissions.
+- **Prochaine action** : PR 3 dans un worktree neuf (`git worktree add -b feat/passe-lycee-h ../ubumaths-wt-passe-lycee
+origin/main`) ; plan H dans `docs/wip/passe-lycee/analyse/scissions-notes.md`.
+- **En attente de David** : la question d'accès de la PR 3, à reposer avant d'écrire le SQL.
+- **Laissé de #1651** (brouillons) : 2 conclusions de corrigé sans gras (f3100c29, 70e682f9 v2) ; « ≠ » implicite
+  (d1010214 v0-v1) ; descriptions de specs S6 de l'ancienne question ; rollback trop strict sur les 2 origines intactes.
 - **Pièges en cours** : trigger des tags = point sur le nœud du modèle ou sa notion → R2 ou retrait forcé ; neufs :
-  niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par
-  `toQuestionTemplate` (et retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync`
-  avant tout `tsx` ; fixture reformatée par prettier ; `REECRIRE_MIGRATION=1` pour une migration jamais jouée ;
-  audit du rendu : « courbe invisible » = faux positif sur un bloc qui ne trace qu'une suite.
-- **Worktree / branche** : `../ubumaths-wt-passe-lycee` · `feat/passe-lycee-reecritures`.
+  niveau au-dessus du plus haut pris dans la catégorie ; `question:specs --file` : convertir par `toQuestionTemplate`
+  (retirer `created_at`, `updated_at`, `created_by`) ; worktree neuf : `svelte-kit sync` avant tout `tsx` ;
+  `REECRIRE_MIGRATION=1` pour une migration jamais jouée ; `db:migrate` refusé par le mode auto → David le lance.
+- **Worktree / branche** : aucun (PR 3 à créer).
 
 ## Les 5 étapes
 
@@ -276,3 +276,7 @@ stricte · e. page à cocher puis migration des tags. Les 12 modèles sans point
   a ≠ 0, a + r ≠ 0 (quotients définis). Specs 158/158, tirages 21 600/21 600 ; audit du rendu sans défaut hors
   faux positif « courbe invisible » (nuage de points, origine comprise). Intégration : 25 tests verts ; sans
   l'étape 4, 7 rouges et la suite nominale tombe à sa mise en place ; lots précédents toujours verts.
+- **2026-10-23 — #1651 mergée, `db:migrate` fait (par David, refusé au mode auto).** Revues Opus : `security-auditor`
+  et `code-reviewer` sans bloquant (réponses vérifiées sur toutes les valeurs tirables). Laissé : voir « Reprendre
+  ici ». CI : `vercel-maintenance.test.ts` en code 141 (SIGPIPE, instable), vert à la relance. Prod (MCP) : 10 neufs
+  brouillons, 12 tags sur les neufs, 8 sur les origines ; c90fa022 et d2067413 intacts (`updated_at` du 2026-10-01).
