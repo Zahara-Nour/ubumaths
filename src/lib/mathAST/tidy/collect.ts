@@ -144,8 +144,13 @@ type Accumulator = {
 	keepSumSign: boolean;
 	/** Un nombre décimal non entier a été lu (`0,5`) : le registre décimal (S1). */
 	decimal: boolean;
-	/** Une barre de fraction a été lue (Q3) : le résultat s'écrit en fraction (S1). */
+	/** Une fraction a été lue (`√(1/4)`, `√0,5`) : le résultat s'écrit en fraction (S1, Q8). */
 	fraction: boolean;
+	/**
+	 * Une barre de fraction a été lue. Elle ne compte comme fraction que si le
+	 * dénominateur est un nombre (Q3, Q9) : `0,5/2 → 1/4`, mais `0,5/x` reste.
+	 */
+	bar: boolean;
 };
 
 /**
@@ -697,7 +702,7 @@ function absorbFactor(
 			return;
 
 		case 'division':
-			acc.fraction = true;
+			acc.bar = true;
 			absorbFactor(node.numerator, exponent, acc, alreadyTidied);
 			absorbFactor(node.denominator, negRational(exponent), acc, alreadyTidied);
 			return;
@@ -731,8 +736,12 @@ function absorbFactor(
 			if (absorbFunctionPower(node, exponent, acc)) return;
 			const radicand = squareRootRadicand(node);
 			if (radicand !== null && absorbSquareRoot(radicand, exponent, acc)) {
-				// `√0,25 → 0,5`, mais `√(1/4) → 1/2` : le registre du radicande
-				if (hasDecimalLiteral(node.args[0])) acc.decimal = true;
+				// `√0,25 → 0,5`, mais `√(1/4) → 1/2` : le registre du radicande ;
+				// `√0,5 → √2/2`, sans écriture décimale finie (Q8)
+				if (hasDecimalLiteral(node.args[0])) {
+					if (isRationalRoot(radicand, exponent)) acc.decimal = true;
+					else acc.fraction = true;
+				}
 				if (findNodes(node.args[0], (n) => n.type === 'division').length > 0) {
 					acc.fraction = true;
 				}
@@ -890,7 +899,9 @@ function productOf(parts: readonly NumberPart[]): bigint {
  * - le facteur numérique commun se simplifie, la barre de fraction reste
  *   unique : `(6x+3)/9` → `(2x+1)/3`, jamais `2x/3 + 1/3` ;
  * - les fractions numériques internes sont chassées : `(x/2+1)/3` → `(x+2)/6`,
- *   `1/(x/2+1)` → `2/(x+2)` ;
+ *   `1/(x/2+1)` → `2/(x+2)` ; un décimal ne se chasse que sous un
+ *   dénominateur numérique (Q9) : `(0,5x+1)/3` → `(x+2)/6`, mais
+ *   `(0,5x+1)/(x+1)` reste ;
  * - le signe − passe dans l'unique numérateur, quel que soit son degré, si le
  *   nombre de signes − y diminue : `(6x−3)/(−9)` → `(1−2x)/3`,
  *   `(−6x²+3)/(−9)` → `(2x²−1)/3` ; jamais à égalité ni devant un premier
@@ -918,6 +929,14 @@ function reduceFractionOfSums(term: TidyTerm, settings: Settings, watch: FamilyW
 		if (sum !== null) sums.push(sum);
 	});
 	if (sums.length === 0) return term;
+	// Sous une barre dont le dénominateur a une variable, les décimaux d'une
+	// somme restent (Q9) : `(0,5x+1)/(x+1)`, `x/(0,5x+1)`
+	if (
+		hasVariableDenominator(term.factors) &&
+		sums.some(({ index }) => hasDecimalLiteral(term.factors[index].base))
+	) {
+		return term;
+	}
 
 	// Les nombres de part et d'autre de la barre, chacun à sa place. Le
 	// dénominateur d'une fraction interne change de côté (`(x/2+1)/3` : le 2 descend).
@@ -1027,7 +1046,8 @@ function toTerm(
 		signCount: carriedSigns,
 		keepSumSign,
 		decimal: false,
-		fraction: false
+		fraction: false,
+		bar: false
 	};
 
 	for (const { factor } of flattenProductShallow(node)) {
@@ -1057,7 +1077,7 @@ function toTerm(
 		unit,
 		verbatim: false,
 		quantity,
-		decimal: acc.decimal && !acc.fraction && writesDecimal(coefficient, factors),
+		decimal: acc.decimal && !readsFraction(acc, factors) && writesDecimal(coefficient),
 		written:
 			settings.unitChoice === 'written' && unit !== null && quantity !== null
 				? writtenUnitOf(acc.unitSymbols, unit)
@@ -1241,15 +1261,31 @@ type TermGroup = {
 	fraction: boolean;
 };
 
-/**
- * Le coefficient peut-il s'écrire en décimal (S1) ? Il faut une écriture finie,
- * et aucun facteur au dénominateur : `0,5·x⁻¹` s'écrit sous une barre, que le
- * passage suivant lirait comme une fraction (Q3) — `1/(2x)`, sinon `tidy`
- * n'est plus idempotent (revue du lot 4b).
- */
-function writesDecimal(coefficient: Rational, factors: readonly TidyFactor[]): boolean {
-	if (factors.some((factor) => factor.exponent.n < 0n)) return false;
+/** Le coefficient peut-il s'écrire en décimal (S1) ? Il faut une écriture finie. */
+function writesDecimal(coefficient: Rational): boolean {
 	return decimalString(absRational(coefficient)) !== null;
+}
+
+/**
+ * Le terme a-t-il lu une fraction (S1) ? Une barre n'en est une que si rien
+ * d'autre qu'un nombre n'y reste dessous (Q3, Q9) : `0,5/2 → 1/4`,
+ * `(0,5x+1)/3 → (x+2)/6`, mais `0,5/x` et `(0,5x+1)/(x+1)` restent. `0,5·x⁻¹`
+ * s'écrit `0,5/x`, relu de même : `tidy` reste idempotent (revue du lot 4b).
+ */
+function readsFraction(acc: Accumulator, factors: readonly TidyFactor[]): boolean {
+	return acc.fraction || (acc.bar && !hasVariableDenominator(factors));
+}
+
+/** Un facteur autre qu'un nombre est sous la barre : `x`, `x+1`. */
+function hasVariableDenominator(factors: readonly TidyFactor[]): boolean {
+	return factors.some((factor) => factor.exponent.n < 0n);
+}
+
+/** `√r` élevé à `exponent` est-il rationnel ? `√0,25`, `(√0,5)²` oui ; `√0,5` non. */
+function isRationalRoot(radicand: Rational, exponent: Rational): boolean {
+	if (exponent.d === 1n && exponent.n % 2n === 0n) return true;
+	const [, rest] = extractPerfectPower(radicand.n * radicand.d, 2n);
+	return rest === 1n;
 }
 
 /** Un coefficient écrit en fraction : non entier, hors du registre décimal (S1). */
@@ -1344,7 +1380,7 @@ function collectLikeTerms(terms: readonly TidyTerm[]): TidyTerm[] {
 		result.push({
 			...term,
 			coefficient,
-			decimal: decimal && !fraction && writesDecimal(coefficient, term.factors)
+			decimal: decimal && !fraction && writesDecimal(coefficient)
 		});
 	}
 	return result;

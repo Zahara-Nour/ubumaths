@@ -83,6 +83,44 @@ describe('tidy — une barre de fraction compte comme opérande fraction (Q3)', 
 	});
 });
 
+describe("tidy — la racine d'un décimal sans écriture décimale finie s'écrit en fraction (Q8)", () => {
+	it.each([
+		['sqrt(0.5)', 'sqrt(2)/2'],
+		['sqrt(0.2)', 'sqrt(5)/5'],
+		['sqrt(1.5)', 'sqrt(6)/2'],
+		['sqrt(0.08)', 'sqrt(2)/5'],
+		['sqrt(0.5)*x', '{xsqrt(2)}/2'],
+		['sqrt(0.5)+1', '1+sqrt(2)/2'],
+		// Racine rationnelle : le registre décimal reste
+		['sqrt(0.25)', '0.5'],
+		['sqrt(0.5)^2', '0.5'],
+		// Un décimal écrit DEVANT la racine n'est pas touché
+		['0.5*sqrt(2)', '0.5sqrt(2)'],
+		['sqrt(2)*0.5', '0.5sqrt(2)']
+	])('%s → %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
+describe('tidy — sous une barre dont le dénominateur a une variable, les décimaux restent (Q9)', () => {
+	it.each([
+		['(0.5x+1)/(x+1)', '{0.5x+1}/{x+1}'],
+		['(0.5x+0.5)/(x+1)', '{0.5x+0.5}/{x+1}'],
+		['0.5/x', '0.5/x'],
+		['0.5*x^(-1)', '0.5/x'],
+		['1.5/x', '1.5/x'],
+		['0.5/(x+1)', '0.5/{x+1}'],
+		['(x+0.5)/(x-1)', '{x+0.5}/{x-1}'],
+		['x/(0.5x+1)', 'x/{0.5x+1}'],
+		['0.5x/x', '{0.5x}/x'],
+		['0.25x^(-1)+0.25x^(-1)', '0.5/x'],
+		// Une vraie fraction interne se chasse toujours
+		['(x/2+1)/(x+1)', '{x+2}/{2(x+1)}']
+	])('%s → %s', (input, expected) => {
+		expect(t(input)).toBe(expected);
+	});
+});
+
 describe('tidy — les grandeurs gardent leur écriture décimale (§D.3)', () => {
 	it.each([
 		['2.5[m]+1[m]', '3.5[m]'],
@@ -113,14 +151,19 @@ describe('tidy — invariants sur les décimaux', () => {
 		'0.5x^2+1.5x-2',
 		'1/3+0.5',
 		'(0.5x+1)/3',
-		// Revue : une puissance négative s'écrit sous une barre, le décimal ne survit pas
+		// Revue du 4b : une puissance négative s'écrit sous une barre, relue au passage suivant
 		'0.5*x^(-1)',
 		'0.5*(x+1)^(-1)',
 		'1.5*x^(-1)',
 		'0.5x^(-2)',
 		'(x+1)^(-1)*(x-1)*0.5',
 		'0.25x^(-1)+0.25x^(-1)',
-		'0.5x^(-1)*x^2'
+		'0.5x^(-1)*x^2',
+		// Q9
+		'(0.5x+1)/(x+1)',
+		'x/(0.5x+1)',
+		'0.5x/x',
+		'(x+0.5)/(x-1)'
 	];
 
 	it.each(cases)('idempotent : %s', (input) => {
@@ -131,5 +174,12 @@ describe('tidy — invariants sur les décimaux', () => {
 	it.each(cases)('valeur conservée : %s', (input) => {
 		const node = parseCustom(input);
 		expect(areEquivalent(tidy(node), node)).toBe(true);
+	});
+
+	// Q8 : idempotence seulement. `areEquivalent` ne reconnaît pas encore
+	// `√(1/2)` égal à `√2/2` (bug d'équivalence relevé au lot 4b-bis, hors lot)
+	it.each(['sqrt(0.5)', 'sqrt(0.5)*x', 'sqrt(1.5)+0.5'])('idempotent : %s', (input) => {
+		const once = tidy(parseCustom(input));
+		expect(toCustom(tidy(once))).toBe(toCustom(once));
 	});
 });

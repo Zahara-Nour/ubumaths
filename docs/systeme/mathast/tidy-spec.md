@@ -188,12 +188,13 @@ exposant non entier.
 | valeur absolue                           | `\|−3\|`, `\|x\|²`                               | —                                  |
 | ce qui n'a pas de valeur                 | `0⁰`, `x/0`                                      | —                                  |
 
-### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3 le 2026-10-23)
+### A.3 Le registre décimal (S1, David, 2026-10-22 ; Q3, Q8, Q9 le 2026-10-23)
 
 Un décimal reste décimal. Le coefficient d'un terme s'écrit en **fraction** si
-un opérande est une fraction — **une barre de fraction en est une** (Q3) — ou
-si le résultat n'a pas d'écriture décimale finie. Un entier ne compte ni pour
-l'un ni pour l'autre. Code : `Accumulator.decimal` / `.fraction` et
+un opérande est une fraction — **une barre de fraction en est une** quand
+rien d'autre qu'un nombre n'est dessous (Q3, Q9) — ou si le résultat n'a pas
+d'écriture décimale finie. Un entier ne compte ni pour l'un ni pour l'autre.
+Code : `Accumulator.decimal` / `.fraction` / `.bar`, `readsFraction` et
 `TidyTerm.decimal` dans `collect.ts`, rendu par `buildTermMagnitude`.
 
 | entrée       | sortie    | pourquoi                                          |
@@ -212,9 +213,16 @@ l'un ni pour l'autre. Code : `Accumulator.decimal` / `.fraction` et
 | `2,5x/5`     | `x/2`     |                                                   |
 | `(0,5x+1)/3` | `(x+2)/6` | table A.1                                         |
 
-Un facteur au dénominateur impose la fraction : `0,5·x⁻¹ → 1/(2x)` (le
-terme s'écrit sous une barre, que le passage suivant lirait comme telle).
-Un radical décimal suit la règle : `√0,5 → 0,5√2` (question ouverte à David).
+**Dénominateur avec une variable (Q9)** : la barre ne compte pas comme
+fraction, les décimaux restent, au coefficient comme dans une somme —
+`0,5/x`, `0,5·x⁻¹ → 0,5/x`, `(0,5x+1)/(x+1)`, `x/(0,5x+1)`, `0,5x/x`
+inchangés. Une vraie fraction interne se chasse toujours :
+`(x/2+1)/(x+1) → (x+2)/(2(x+1))`.
+
+**Racine d'un décimal (Q8)** : un décimal **sous** la racine donne une fraction
+si la racine est irrationnelle — `√0,5 → √2/2`, `√0,2 → √5/5`,
+`√1,5 → √6/2` ; `√0,25 → 0,5` et `(√0,5)² → 0,5` restent décimaux. Un décimal
+écrit **devant** la racine n'est pas touché : `0,5√2` inchangé.
 
 Limite connue : un exposant décimal devient une fraction (`x^{0,5} → x^{1/2}`),
 l'exposant d'un facteur ne porte pas de registre.
